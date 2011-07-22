@@ -25,7 +25,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class DashboardController extends Fisma_Zend_Controller_Action_Security
 {
@@ -371,10 +370,10 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setChartType('pie')
             ->setColors(
                 array(
-                    '#FFA347',
                     '#75FF75',
-                    '#47D147',
-                    '#FF2B2B'
+                    '#FFA347',
+                    '#FF2B2B',
+                    '#47D147'
                 )
             );
             
@@ -395,11 +394,35 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $types = array_keys($summary);
         foreach ($results as $result) {
             if (in_array($result['type'], $types)) {
+                
+                // State what the abbreviation means in the tooltip
+                switch ($result['type']) {
+                    case "NONE":
+                        $pieSliceTooltip = 'Uncategorized Type';
+                        break;
+                    case "CAP":
+                        $pieSliceTooltip = 'Corrective Action Plan';
+                        break;
+                    case "FP":
+                        $pieSliceTooltip = 'False Positive:';
+                        break;
+                    case "AR":
+                        $pieSliceTooltip = 'Accepted Risk Risk';
+                        break;
+                }
+                
+                // Formate the tooltip
+                $pieSliceTooltip = '<b>' . $pieSliceTooltip . '</b><hr/>';
+                $pieSliceTooltip .= '#count# total findings<br/>';
+                $pieSliceTooltip .= '#percent#% of all findings are ' . $result['type'];
+                
                 $thisChart->addColumn(
                     $result['type'],
                     $result['typeCount'],
-                    '/finding/remediation/list?q=/type/enumIs/' . $result['type']
+                    '/finding/remediation/list?q=/type/enumIs/' . $result['type'],
+                    $pieSliceTooltip
                 );
+                
             }
         }
         

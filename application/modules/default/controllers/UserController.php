@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class UserController extends Fisma_Zend_Controller_Action_Object
 {
@@ -101,8 +100,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             // If any roles were added to the user without any organizations, make sure they're added
             // to the appropriate array for saving the User Roles.
-            foreach (array_diff_key(array_flip($values['role']), $rolesOrganizations) as $k => $v) {
-                $rolesOrganizations[$k] = array();
+            if (Inspekt::isArrayOrArrayObject($values['role'])) {
+                foreach (array_diff_key(array_flip($values['role']), $rolesOrganizations) as $k => $v) {
+                    $rolesOrganizations[$k] = array();
+                }
             }
 
             unset($values['role']);
@@ -486,7 +487,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             foreach ($organizationTree as $organization) {
                 $organizations->addCheckbox(
                     $organization['id'], 
-                    $organization['name'], 
+                    $organization['nickname'] . ' - ' . $organization['name'], 
                     $organization['level'], 
                     $roleId
                 );

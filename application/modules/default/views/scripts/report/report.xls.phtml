@@ -3,7 +3,7 @@
 $workbook = new Spreadsheet_Excel_Writer();
 $workbook->setVersion(8);
 $worksheet = $workbook->addWorksheet();
-$worksheet->setInputEncoding('UTF-8');
+$worksheet->setInputEncoding('utf-8');
 
 // Create formats for the column headers and for the data cells
 $annotationFormat = $workbook->addFormat(

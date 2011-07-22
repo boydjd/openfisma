@@ -806,7 +806,6 @@ tinyMCE.init({
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  *
  * @todo      Start migrating functionality out of this file. 
  *            Eventually this file needs to be removed 
@@ -1349,7 +1348,6 @@ function updateTimeField(id) {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 function setupEditFields() {
@@ -1489,7 +1487,6 @@ if (window.HTMLElement) {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  *
  * @todo Write a safe version of this function called selectAll that takes some kind
  *       of scope as a parameter so that it can be limited.
@@ -1873,7 +1870,6 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.AttachArtifacts = {
@@ -2295,7 +2291,6 @@ Fisma.AttachArtifacts = {
  * @requires  YAHOO.widget.AutoComplete
  * @requires  YAHOO.widget.DS_XHR
  * @requires  Fisma
- * @version   $Id$
  */
 
 Fisma.AutoComplete = function() {
@@ -2448,7 +2443,6 @@ Fisma.AutoComplete = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
 
 /**
@@ -2610,6 +2604,7 @@ Fisma.Chart = {
     // Defaults for global chart settings definition:
     globalSettingsDefaults:{
         fadingEnabled:      false,
+        usePatterns:        false,
         barShadows:         false,
         barShadowDepth:     3,
         dropShadows:        false,
@@ -2618,13 +2613,27 @@ Fisma.Chart = {
         pointLabelsOutline: false,
         showDataTable: false
     },
-
+    
+    // URLs to all available pattern images
+    patternURLs: [
+        '/images/pattern-horizontal.png',
+        '/images/pattern-diamonds.png',
+        '/images/pattern-backbg-whitedots.png',
+        '/images/pattern-diagonal-45degree.png',
+        '/images/pattern-bubbles.png',
+        '/images/pattern-checkers.png',
+        '/images/pattern-diagonal-135degree.png',
+        '/images/pattern-diagonal-bricks.png'
+    ],
+    
     // Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
     chartsOnDOM:{},
 
     // Is this client-browser Internet Explorer?
     isIE: (window.ActiveXObject) ? true : false,
     
+    // Class static variables
+    hasHookedPostDrawSeries: false,
     
     /**
      * When an external source is needed, this function should handel the returned JSON request
@@ -2647,14 +2656,13 @@ Fisma.Chart = {
                 Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
                 throw 'Error - Chart creation failed due to data source error at ' + chartParamsObj.lastURLpull;
             }
-
+            
+            Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+            
             // validate that chart plotting data (numeric information) was returned
             if (typeof chartParamsObj.chartData === 'undefined') {
-                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
                 throw 'Chart Error - The remote data source for chart "' + chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull + ' did not return data to plot on a chart';
-            } else if (chartParamsObj.chartData.length === 0) {
-                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
-            }
+            } 
 
             // call the Fisma.Chart.createJQChart() with the chartParamsObj-object initally given to Fisma.Chart.createJQChart() and the merged responce object
             return Fisma.Chart.createJQChart(chartParamsObj);
@@ -2680,7 +2688,7 @@ Fisma.Chart = {
             concatXLabel: false,
             nobackground: true,
             drawGridLines: false,
-            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: bold',
+            pointLabelStyle: 'color: black; font-size: 12pt; font-weight: regular',
             pointLabelAdjustX: -3,
             pointLabelAdjustY: -7,
             AxisLabelX: '',
@@ -2831,7 +2839,7 @@ Fisma.Chart = {
         Fisma.Chart.globalSettingRefreshUi(chartParamsObj);
         Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
         Fisma.Chart.getTableFromChartData(chartParamsObj);
-        
+        Fisma.Chart.setTitle(chartParamsObj);
         Fisma.Chart.placeCanvasesInDivs(chartParamsObj);
         
         return rtn;
@@ -2897,7 +2905,6 @@ Fisma.Chart = {
         }
 
         var jPlotParamObj = {
-            title: chartParamsObj.title,
             seriesColors: chartParamsObj.colors,
             grid: {
                 drawBorder: false,
@@ -2928,14 +2935,15 @@ Fisma.Chart = {
                     shadowOffset: 0,
                     lineLabels: true,
                     lineLabelsLineColor: '#777',
-                    diameter: chartParamsObj.height * 0.55
+                    diameter: chartParamsObj.height * 0.55,
+                    dataLabelFormatString: "%d%"
                 }
             },
             legend: {
                 location: 's',
-                show: false,
+                show: true,
                 rendererOptions: {
-                    numberRows: 1
+                    numberRows: 2
                 }
             }
         };
@@ -2948,11 +2956,48 @@ Fisma.Chart = {
         // merge any jqPlot direct chartParamsObj-arguments into jPlotParamObj from chartParamsObj
         jPlotParamObj = jQuery.extend(true, jPlotParamObj, chartParamsObj);
 
+        // dont show title on canvas, (it must be above the threat-level-legend if it exists)
+        jPlotParamObj.title = null;
+
         plot1 = $.jqplot(chartParamsObj.uniqueid, [dataSet], jPlotParamObj);
 
         // create an event handeling function that calls chartClickEvent while preserving the parm object
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
 
+        // hook highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+            }
+        );
+
+        // hook un-highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataUnhighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.hideAllChartTooltips();
+            }
+        );
+
+        /* Hook the onMouseMove even on the foward most event canvas for the pie tooltip
+           The reason for this is because the highlight event wont return the mouse X/Y location */
+        // Get the container for canvases for this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        // Find the foward most (event) canvas
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this)[0].className === 'jqplot-event-canvas';
+            }
+        );
+        // Hook onMouseMove on it
+        canvases[0].onmousemove = function (e) {
+            Fisma.Chart.chartMouseMovePieEvent(chartParamsObj, e, canvases[0]);
+        };
+        
+        // Hook onMouseOut of this canvas (to ensure tooltips are gone when so)
+        canvases[0].onmouseout = function (e) {
+            Fisma.Chart.hideAllChartTooltips();
+        };
+        
         // use the created function as the click-event-handeler
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
 
@@ -3013,7 +3058,6 @@ Fisma.Chart = {
         $.jqplot.config.enablePlugins = true;
 
         var jPlotParamObj = {
-            title: chartParamsObj.title,
             seriesColors: chartParamsObj.colors,
             stackSeries: true,
             series: seriesParam,
@@ -3052,7 +3096,7 @@ Fisma.Chart = {
                         angle: chartParamsObj.DataTextAngle,
                         fontFamily: 'arial, helvetica, clean, sans-serif',
                         fontSize: '10pt',
-                        textColor: '#555555'
+                        textColor: '#000000'
                     }
                 },
                 yaxis:{
@@ -3066,14 +3110,20 @@ Fisma.Chart = {
                         formatString: '%.0f',
                         fontFamily: 'arial, helvetica, clean, sans-serif',
                         fontSize: '10pt',
-                        textColor: '#555555'
+                        textColor: '#000000'
                     }
                 }
 
             },
-            highlighter: { 
-                show: false 
-                },
+            highlighter: {
+                show: true,
+                showMarker:false,
+                showTooltip: true,
+                tooltipAxes: 'xy',
+                yvalues: 1,
+                tooltipLocation: 'e',
+                formatString: "-"
+            },
             grid: {
                 gridLineWidth: 0,
                 shadow: false,
@@ -3084,12 +3134,12 @@ Fisma.Chart = {
                 show: chartParamsObj.drawGridLines
                 },
             legend: {
-                        show: chartParamsObj.showlegend,
-                        rendererOptions: {
-                            numberRows: 1
-                        },
-                        location: 'nw'
-                    }
+                show: chartParamsObj.showlegend,
+                rendererOptions: {
+                    numberRows: 1
+                },
+                location: 'nw'
+            }
         };
 
         // bug killer - The canvas object for IE does not understand what transparency is...
@@ -3106,14 +3156,106 @@ Fisma.Chart = {
         // override any jqPlot direct chartParamsObj-arguments based on globals setting from cookies (set by user)
         jPlotParamObj = Fisma.Chart.alterChartByGlobals(jPlotParamObj);
 
+        // dont show title on canvas, (it must be above the threat-level-legend if it exists)
+        jPlotParamObj.title = null;
+        
+        // implement hook nessesary for patterns
+        Fisma.Chart.hookPostDrawSeriesHooks();
+        
+        // trigger jqPlot lib to draw the chart
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
 
+        // hook click events for navigation/"drill-down"
         var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
-
+        
+        // hook highlight event for tooltips
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+            function (ev, seriesIndex, pointIndex, data) {
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+            }
+        );    
+        
+        // Get the container for canvases for this chart
+        var chartCanvasContainer = YAHOO.util.Dom.get(chartParamsObj.uniqueid);
+        
+        // Find the foward most (event) canvas
+        var canvases = $(chartCanvasContainer).find('canvas').filter(
+            function() {
+                return $(this)[0].className === 'jqplot-event-canvas';
+            }
+        );
+        
+        // Hook onMouseOut of this canvas (to ensure tooltips are gone when so)
+        canvases[0].onmouseout = function (e) {
+            Fisma.Chart.hideAllChartTooltips();
+        };
+        
+        // Hook the mouse events for column labels (make tooltips show on label hovering)
+        var columnLabelObjs = Fisma.Chart.getElementsByClassWithinObj('jqplot-xaxis-tick', 'canvas', chartParamsObj.uniqueid);
+        for (x = 0; x < columnLabelObjs.length; x++) {
+            
+            // note which column number this object represents
+            columnLabelObjs[x].columnNumber = x;
+            
+            // hook onMouseOver to show tooltip
+            columnLabelObjs[x].onmouseover = function (ev) {
+                var forceStyle = {
+                    'left': this.parentNode.offsetLeft + 'px',
+                    'bottom': (this.parentNode.parentNode.offsetHeight + 10) + 'px',
+                    'top': ''
+                };
+                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, 0, this.columnNumber, null, forceStyle);
+            };
+            
+            // hook onMouseOut to hide tooltip
+            columnLabelObjs[x].onmouseout = function (ev) {
+                Fisma.Chart.hideAllChartTooltips();
+            };
+            
+            // bring this label to front, otherwise onmouseover will never fire
+            columnLabelObjs[x].style.zIndex = 1;
+        }
+        
         Fisma.Chart.removeDecFromPointLabels(chartParamsObj);
         
         return Fisma.Chart.CHART_CREATE_SUCCESS;
+    },
+
+    /**
+     * Gets the tooltip div created for the chart 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     *
+     * @param object
+     * @return object[]
+     */
+    getTooltipObjOfChart : function (chartParamsObj) {
+        return Fisma.Chart.getElementsByClassWithinObj('jqplot-highlighter-tooltip', 'div', chartParamsObj.uniqueid)[0];
+    },
+
+    getElementsByClassWithinObj : function (className, objectType, withinDiv) {
+        
+        // Is WithinDiv given? If not, assume we are looking from the document.body and down
+        if (withinDiv === null || withinDiv === '') {
+            withinDiv = document.body;
+        }
+        
+        // Is withinDiv an object, or object ID? - make it an object
+        if (typeof withinDiv !== 'object') {
+            withinDiv = document.getElementById(withinDiv);
+        }
+        
+        // Find the div that has the jqplot-highlighter-tooltip class
+        var objsFound = $(withinDiv).find(objectType).filter(
+            function() {
+                return $(this)[0].className.indexOf(className) !== -1;
+            }
+        );
+        
+        // Return results
+        return objsFound;
+    
     },
 
      /**
@@ -3141,7 +3283,6 @@ Fisma.Chart = {
         }
 
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, {
-            title: chartParamsObj.title,
             seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
             series: [{label: 'Open Findings', lineWidth:4, markerOptions:{style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions:{style:'square'}}, {lineWidth:4, markerOptions:{style:'square'}}],
             seriesDefaults:{
@@ -3170,7 +3311,93 @@ Fisma.Chart = {
 
         return Fisma.Chart.CHART_CREATE_SUCCESS;
     },
+    
+    /**
+     * Setup the jqPlot library to hook its draw event. Upon postDrawSeriesHooks, create chart patterns if desiered.
+     * This function will return and do nothing if it was called before, this is to prevent multiple hooks being
+     * placed into jqPlot.
+     *
+     * @return void
+     */
+    hookPostDrawSeriesHooks : function ()
+    {
+        if (Fisma.Chart.hasHookedPostDrawSeries !== false) {
+            // we only push one hook
+            return;
+        }
+        
+        // Note that we have push this hook
+        Fisma.Chart.hasHookedPostDrawSeries = true;
+        
+        // hook jqPlot's postDrawSeriesHook to draw patterns should the user want this options
+        $.jqplot.postDrawSeriesHooks.push(function (canvasObj) {
+        
+                /* This is called after everytime a layer on a stacked bar chart is drawn (either the high,
+                   moderate, or low), so each time this is called, it is being called for a different color
+                   of chartParamsObj.colors */
+                
+                // Is the checkbox to use patterns in place of colors checked?
+                var usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
+                if (usePatterns === 'false') {
+                    return;
+                }
+                
+                // This code only works with bar charts
+                if (this._barPoints === undefined) {
+                    return;
+                }
+                
+                // Because this is a nested function, chartParamsObj may or may not be the true related
+                // instance to this trigger (it isnt in Firefox). Refreash this variable.
+                if (this.canvas._elem.context.parentNode.id !== undefined) {
+                    var uniqueId = this.canvas._elem.context.parentNode.id;
+                    chartParamsObj = Fisma.Chart.chartsOnDOM[uniqueId];
+                }
+                
+                /* chartParamsObj.patternCounter will be used (incremented for each call of this function) to
+                   keep track of which pattern should be used next (in Fisma.Chart.patternURLs). */
+                // Instance this variable if needed
+                if (Fisma.Chart.chartsOnDOM[uniqueId].patternCounter === undefined) {
+                    Fisma.Chart.chartsOnDOM[uniqueId].patternCounter = 0;
+                }
 
+                // Decide which pattern to use in place of the color for this hooked layer/series, and increment for next hook
+                var myPatternId = Fisma.Chart.chartsOnDOM[uniqueId].patternCounter;
+                var myPatternURL = Fisma.Chart.patternURLs[myPatternId];
+                Fisma.Chart.chartsOnDOM[uniqueId].patternCounter++;
+                
+                // For each bar drawn of this layer/series/color
+                for (var bar = 0; bar < this._barPoints.length; bar++) {
+
+                    var img = new Image();
+                    
+                    // because img.onload will fire within this function, store the bar information on the object
+                    img.barRect = {
+                        'x': this._barPoints[bar][0][0],
+                        'y': this._barPoints[bar][0][1],
+                        'w': this._barPoints[bar][2][0] - this._barPoints[bar][0][0],   // width
+                        'h': this._barPoints[bar][1][1] - this._barPoints[bar][3][1]    // height
+                    };
+                    
+                    img.onload = function () {
+                        // create pattern
+                        var ptrn = canvasObj.createPattern(img, 'repeat');
+                        canvasObj.fillStyle = ptrn;
+                        canvasObj.fillRect(this.barRect.x, this.barRect.y, this.barRect.w, this.barRect.h);
+                        canvasObj.restore();
+                    };
+                    
+                    // load pattern
+                    img.src = myPatternURL;
+                }
+                
+                return;
+            }
+        );
+
+        return;
+    },
+    
     /**
      * Creates the red-orange-yellow threat-legend that shows above charts
      * The generated HTML code should go into the div with the id of the
@@ -3206,24 +3433,30 @@ Fisma.Chart = {
                 var textLabel = document.createTextNode('Threat Level');
                 cell.appendChild(textLabel);
                 row.appendChild(cell);
-
-                // Red block and "High"
-                cell = document.createElement("td");
-                cell.width = '20%';
-                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FF0000', 'High'));
-                row.appendChild(cell);
-
-                // Orange block and "Moderate"
-                cell = document.createElement("td");
-                cell.width = '20%';
-                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FF6600', 'Moderate'));
-                row.appendChild(cell);
-
-                // Yellow block and "Low"
-                cell = document.createElement("td");
-                cell.width = '20%';
-                cell.appendChild(Fisma.Chart.createThreatLegendSingleColor('FFC000', 'Low'));
-                row.appendChild(cell);
+                
+                var colorToUse;
+                var usePatterns;
+                var thisLayerText;
+                for(var layerIndex in chartParamsObj.chartLayerText)
+                {
+                    cell = document.createElement("td");
+                    cell.width = '20%';
+                    
+                    // Are we using colors, or patterns?
+                    usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
+                    if (usePatterns === 'true') {
+                        colorToUse = Fisma.Chart.patternURLs[layerIndex];
+                    } else {
+                        colorToUse = chartParamsObj.colors[layerIndex];
+                        colorToUse = colorToUse.replace('#', '');
+                    }
+                    
+                    thisLayerText = chartParamsObj.chartLayerText[layerIndex];
+                    
+                    cell.appendChild(Fisma.Chart.createThreatLegendSingleColor(colorToUse, thisLayerText));
+                    
+                    row.appendChild(cell);
+                }
 
                 // close and post table on DOM
                 tblBody.appendChild(row);
@@ -3249,9 +3482,13 @@ Fisma.Chart = {
 
         var colorCell;
 
-        // Create the colored box
+        // Create the colored box or pattern
         colorCell = document.createElement("td");
-        colorCell.style.backgroundColor= '#' + blockColor;
+        if (blockColor.indexOf('/') === -1) {                   // is this a URL, or color code?
+            colorCell.style.backgroundColor = '#' + blockColor;  // its a color
+        } else {                                                // its a URL
+            colorCell.style.backgroundImage = 'url(' + blockColor + ')';
+        }
         colorCell.width = '15px';
         colorRow.appendChild(colorCell);
 
@@ -3272,6 +3509,204 @@ Fisma.Chart = {
         return colorBlockTbl;    
     },
 
+    /**
+     * Event handler for the hilight event of charts. Upon hilighting is when the chart tooltip contents should
+     * be updated, and shown if not already.
+     *
+     * @return void
+     */
+    chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data, forceTooltipStyle)
+    {
+        // Ensure all other tooltips are hidden 
+        Fisma.Chart.hideAllChartTooltips();
+        
+        var toolTipObj = Fisma.Chart.getTooltipObjOfChart(chartParamsObj);
+        var defaultTooltip;
+        
+        /* The chartParamsObj.tooltip may have one of two structures -
+           either an array (of columns)
+           or an array (of layers) of arrays (of columns)   */
+        if (typeof chartParamsObj.tooltip[0] !== 'object') {
+            customTooltip = chartParamsObj.tooltip[pointIndex];
+        } else {
+            customTooltip = chartParamsObj.tooltip[seriesIndex][pointIndex];
+        }
+        
+        // the same structure for the above applies to chartParamsObj.chartData
+        if (typeof chartParamsObj.chartData[seriesIndex] !== 'object') {
+            defaultTooltip = chartParamsObj.chartData[pointIndex];
+        } else {
+            defaultTooltip = chartParamsObj.chartData[seriesIndex][pointIndex];
+        }
+        
+        // decide tooltip HTML
+        var ttHtml = '<span class="chartToolTipText">';
+        if (customTooltip !== '' && customTooltip !== undefined) {
+            ttHtml += customTooltip;
+        } else {
+            ttHtml += defaultTooltip;
+        }
+        ttHtml += '</span>';
+
+        // apply variables
+        ttHtml = ttHtml.replace('#percent#', Fisma.Chart.getPercentage(chartParamsObj, seriesIndex, pointIndex));
+        ttHtml = ttHtml.replace('#columnName#', chartParamsObj.chartDataText[pointIndex]);
+        if (data !== undefined && data !== null) {
+            ttHtml = ttHtml.replace('#count#', data[1]);
+        }
+        if (chartParamsObj.chartLayerText) {
+            ttHtml = ttHtml.replace('#layerName#', chartParamsObj.chartLayerText[seriesIndex]);
+        }
+        if (ttHtml.indexOf('#columnReport#') !== -1) {
+            ttHtml = ttHtml.replace('#columnReport#', Fisma.Chart.getColumnReport(chartParamsObj, seriesIndex, pointIndex));
+        }
+        
+        // apply to tooltip
+        toolTipObj.innerHTML = ttHtml;
+        toolTipObj.style.display = 'block';
+        
+        // remove the .bottom and .right property - it should only exist if it is in forceTooltipStyle
+        toolTipObj.style.bottom = '';
+        toolTipObj.style.right = '';
+        
+        // IE7 (7 only) has a problem where it streatches the tooltip div
+        if (navigator.appVersion.indexOf('MSIE 7') != -1) {
+            toolTipObj.style.width = '80px';
+        }
+        
+        // apply tooltip style if requested (this makes it possible to relocate the tooltip)
+        if (forceTooltipStyle !== undefined && forceTooltipStyle !== null) {
+            for(var key in forceTooltipStyle) {
+                toolTipObj.style[key] = forceTooltipStyle[key];
+            }
+        }
+        
+        /* By this line, we are done for bar charts. The tooltip will auto show itself
+           jqPlot Pie charts however, do not support the tooltip plugin, we need to make our own */
+        if (chartParamsObj.chartType === 'pie') {
+        
+            toolTipObj.style.display = 'none';
+            
+            var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
+            pieTooltip.style.display = 'block';
+            pieTooltip.innerHTML = ttHtml;
+
+            // IE7 (7 only) has a problem where it streatches the tooltip div
+            if (navigator.appVersion.indexOf('MSIE 7') != -1) {
+                pieTooltip.style.width = '200px';
+            }
+        }
+    },
+    
+    /**
+     * Returns HTML code to be injected into a tooltip. When rendered in a browser, is a human readable
+     * report showing information about the given column.
+     *
+     * @return string
+     */
+    getColumnReport : function (chartParamsObj, layerIndex, columnIndex)
+    {
+        var report = '';
+        var total = 0;
+        
+        for (var L = 0; L < chartParamsObj.chartLayerText.length; L++) {
+            report += chartParamsObj.chartLayerText[L] + ": " + chartParamsObj.chartData[L][columnIndex] + '<br/>';
+            total += chartParamsObj.chartData[L][columnIndex];
+        }
+        
+        report += 'Total: ' + total;
+        return report;
+    },
+    
+    /**
+     * For pie-slice (or bar) referenced by pointIndex (which column/slice), returns the
+     * percentage that slice represents.
+     *
+     * @return int
+     */
+    getPercentage: function (chartParamsObj, seriesIndex, pointIndex)
+    {
+        if (typeof chartParamsObj.chartData[0] === 'object') {
+            
+            // then this is a stacked bar chart
+            return 0;
+            
+        } else {
+            
+            // This is a basic-bar or pie chart
+            
+            var total = 0;
+            for (var i = 0; i < chartParamsObj.chartData.length; i++) {
+                total += chartParamsObj.chartData[i];
+            }
+            
+            var percentage = chartParamsObj.chartData[pointIndex] / total;
+            return Math.round(percentage * 100);
+        }
+    },
+    
+    /**
+     * Hides all chart tooltips throughout the entire DOM for all charts
+     *
+     * @return void
+     */
+    hideAllChartTooltips : function ()
+    {
+        // Find all divs that are chart tooltips
+        var tooltips = $(document.body).find('div').filter(
+            function() {
+                return $(this)[0].className.indexOf('jqplot-highlighter-tooltip') !== -1;
+            }
+        );
+        
+        // Hide them all
+        for(var x = 0; x < tooltips.length; x++)
+        {
+            tooltips[x].style.display = 'none';
+        }
+    },
+
+    /**
+     * The event handler for a mouse movement on pie charts. This function should move the tooltip along 
+     * with the mouse
+     *
+     * @return void
+     */
+    chartMouseMovePieEvent : function (chartParamsObj, e, eventCanvas) {
+        var pieTooltip = document.getElementById(chartParamsObj.uniqueid + 'pieTooltip');
+        
+        var offsetX; var offsetY;
+        if (window.event !== undefined) {
+            // We are in IE
+            offsetX = window.event.offsetX;
+            offsetY = window.event.offsetY;
+            offsetY += 65;
+        } else if (e.offsetX !== undefined) {
+            // We are not in IE nor FireFox
+            offsetX = e.offsetX;
+            offsetY = e.offsetY;
+            offsetY += 45;
+        } else if (e.layerX !== undefined) {
+            // We are in Firefox
+            offsetX = e.layerX;
+            offsetY = e.layerY;
+            offsetY += 45;
+        } else {
+            // We are in a browser that clearly dosnt like standards... oh wait, none of them do
+            offsetX = 0;
+            offsetY = 0;
+        }
+        
+        pieTooltip.style.left = (offsetX + eventCanvas.offsetLeft) + 'px';
+        pieTooltip.style.top = offsetY + 'px';
+    },
+    
+    /**
+     * The event handeler for a chart click. This function should determine if the user needs to be
+     * navigated to another page or not
+     *
+     * @return void
+     */
     chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
     {
 
@@ -3705,7 +4140,7 @@ Fisma.Chart = {
             return;
         }
 
-        var fadingEnabled = Fisma.Chart.getGlobalSetting('fadingEnabled');
+        var fadingEnabled = ('fadingEnabled');
         if (fadingEnabled === 'false') {
             Fisma.Chart.makeElementVisible(eid);
             if (element.finnishFadeCallback) {
@@ -3953,6 +4388,17 @@ Fisma.Chart = {
         }
     },
 
+    /**
+     * Creates a HTML table showing the data represented by the pie chart given. 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * HTML data-table should be appended to.
+     *
+     * @param object chartParamsObj
+     * @param object dataTableObj
+     * @return void
+     */
     getTableFromChartPieChart : function (chartParamsObj, dataTableObj)
     {
         var tbl     = document.createElement("table");
@@ -3991,6 +4437,17 @@ Fisma.Chart = {
         dataTableObj.appendChild(tbl);
     },
 
+    /**
+     * Creates a HTML table showing the data represented by the bar chart given. 
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * HTML data-table should be appended to.
+     *
+     * @param object chartParamsObj
+     * @param object dataTableObj
+     * @return void
+     */
     getTableFromBarChart : function (chartParamsObj, dataTableObj)
     {
         var x = 0;
@@ -4137,6 +4594,14 @@ Fisma.Chart = {
             }
     },
 
+    /**
+     * Removes data-labels that are within a certain range of eachother. If two labels are close,
+     * the data-label showing the lesser value is hidden.
+     *
+     * Expects: A (chart-)object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
     removeOverlappingPointLabels : function (chartParamsObj)
     {
 
@@ -4233,6 +4698,11 @@ Fisma.Chart = {
                 });
     },
 
+    /**
+     * The event listener for the Hide button shown in chart options
+     *
+     * @return void
+     */
     hideButtonClick : function (scope, chartParamsObj, obj)
     {
         Fisma.Chart.setChartSettingsVisibility(chartParamsObj , false);
@@ -4337,29 +4807,16 @@ Fisma.Chart = {
         }
     },
 
-    showSetingMode : function (showBasic)
-    {
-        var x = 0;
-        var hideThese;
-        var showThese;
-
-        if (showBasic === true) {
-            showThese = document.getElementsByName('chartSettingsBasic');
-            hideThese = document.getElementsByName('chartSettingsGlobal');
-        } else {
-            hideThese = document.getElementsByName('chartSettingsBasic');
-            showThese = document.getElementsByName('chartSettingsGlobal');
-        }
-
-        for (x = 0; x < hideThese.length; x++) {
-            hideThese[x].style.display = 'none';
-        }
-
-        for (x = 0; x < hideThese.length; x++) {
-                showThese[x].style.display = '';
-        }
-    },
-
+    /**
+     * Gets a setting previously saved by Fisma.Chart.setGlobalSetting()
+     * If the setting being looked for has never been set, a value from Fisma.Chart.globalSettingsDefaults
+     * will be returned.
+     * If the setting being looked for has never beem set, and there is no default value, an 
+     * exception is thown.
+     *
+     * @param string settingName
+     * @return string
+     */
     getGlobalSetting : function (settingName)
     {
 
@@ -4370,13 +4827,20 @@ Fisma.Chart = {
         } else {
 
             if (typeof Fisma.Chart.globalSettingsDefaults[settingName] === 'undefined') {
-                throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of jqplotWrapper.js';
+                throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of Chart.js';
             } else {
                 return String(Fisma.Chart.globalSettingsDefaults[settingName]);
             }
         }
     },
 
+    /**
+     * Saves a setting with the that can be recalled later with Fisma.Chart.getGlobalSetting()
+     *
+     * @param string settingName
+     * @param string newValue
+     * @return void
+     */
     setGlobalSetting : function (settingName, newValue)
     {
         YAHOO.util.Cookie.set('chartGlobSetting_' + settingName, newValue, {path: "/"});
@@ -4477,10 +4941,18 @@ Fisma.Chart = {
 
     },
 
+    /**
+     * Shows the loading spinner in the place of the given chart on the DOM.
+     * If a chart has already been drawn, it will be destoryed.
+     *
+     * Expects: A (chart) object generated from Fisma_Chart->export('array')
+     * @param object
+     * @return void
+     */
     showChartLoadingMsg : function (chartParamsObj)
     {
         // Ensure the threat-level-legend is hidden
-        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = ''; //.style.display = 'none';
+        document.getElementById(chartParamsObj['uniqueid'] + 'toplegend').innerHTML = '';
 
         // Show spinner
         Fisma.Chart.makeElementVisible(chartParamsObj['uniqueid'] + 'loader');
@@ -4500,7 +4972,18 @@ Fisma.Chart = {
         chartContainer.appendChild(document.createElement('br'));
         chartContainer.appendChild(pTag);
     },
-
+    
+    setTitle : function (chartParamsObj)
+    {
+        if (chartParamsObj.title && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
+            var titleArea = document.getElementById(chartParamsObj.uniqueid + 'title');
+            var titleNode = document.createTextNode(chartParamsObj.title);
+            titleArea.innerHTML = '';
+            titleArea.appendChild(titleNode);
+            titleArea.appendChild(document.createElement('br'));
+        }
+    },
+    
     /**
      * Will insert a "No data to plot" message when there is no 
      * data to plot, or all plot data are 0s
@@ -4524,10 +5007,13 @@ Fisma.Chart = {
             msgOnDom.style.height = '100%';
             msgOnDom.style.textAlign = 'center';
             msgOnDom.style.verticalAlign = 'middle';
-            var textMsgOnDom = document.createTextNode('No data to plot.');
-            msgOnDom.appendChild(textMsgOnDom);
+            msgOnDom.appendChild( document.createTextNode("No data to plot. ") );
+            var changeParamsLink = document.createElement('a');
+            changeParamsLink.href = "JavaScript: Fisma.Chart.setChartSettingsVisibility('" + chartParamsObj.uniqueid + "', 'toggle');";
+            changeParamsLink.appendChild( document.createTextNode('Change chart parameters?') );
+            msgOnDom.appendChild(changeParamsLink);
             targDiv.appendChild(msgOnDom);
-
+            
             // Make sure screen-reader-table is not showing
             var dataTableObj = document.getElementById(chartParamsObj.uniqueid + 'table');
             dataTableObj.style.display = 'none';
@@ -4535,8 +5021,7 @@ Fisma.Chart = {
     },
 
     /**
-     * Returns true if there is no data to 
-     * plot, or if all plot data are 0s
+     * Returns true if there is no data to plot, or if all plot data is 0
      *
      * Expects: A (chart) object generated from Fisma_Chart->export('array')
      * @param object
@@ -4591,12 +5076,13 @@ Fisma.Chart = {
         // Wrap each canvas in <div>~</div> blocks, and add certain style-declarations to the div
         canvases.wrap(
             function() {
+                var div;
                 var canvas = $(this);
 
                 if (canvas.context.className == 'jqplot-yaxis-tick') {
 
                     // y-axis labels/ticks (labels for each row), must be placed to the farthest right of the parent
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             top: canvas.css('top'),
@@ -4619,7 +5105,7 @@ Fisma.Chart = {
                 } else if (canvas.context.className == 'jqplot-xaxis-label') {
                     
                     // X-Axis labels (label for the entire x-axis), must be centered on the bottom of the parent
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             bottom: '0px'
@@ -4629,7 +5115,7 @@ Fisma.Chart = {
                 } else {
 
                     // All other canvases elements are placed absolute and corectly, and need not to be moved for printing purposes
-                    var div = $('<div />').css(
+                    div = $('<div />').css(
                         {
                             position: 'absolute',
                             top: canvas.css('top'),
@@ -4769,7 +5255,6 @@ Fisma.CheckboxTree = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Commentable = {
@@ -4957,7 +5442,6 @@ Fisma.Commentable = {
  * @author    Ben Zheng <benzheng@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Email = function() {
@@ -5019,7 +5503,7 @@ Fisma.Email = function() {
                 'Test E-mail Configuration',
                 content.innerHTML,
                 null,
-                panelConfig );
+                panelConfig);
 
             // Set onclick handler to handle dialog_recipient
             document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
@@ -5096,7 +5580,6 @@ Fisma.Email = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Finding = {
@@ -5246,7 +5729,6 @@ Fisma.Finding = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.FindingSummary = function() {
@@ -5963,7 +6445,6 @@ Fisma.Highlighter = function() {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 Fisma.HtmlPanel = function() {
     return {
@@ -6031,7 +6512,6 @@ Fisma.HtmlPanel = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.Incident = {
@@ -6319,7 +6799,6 @@ Fisma.Incident = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Ldap = {
@@ -6495,7 +6974,6 @@ Fisma.Ldap = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Module = {
@@ -6784,8 +7262,8 @@ Fisma.Module = {
                         );
 
                         // Expand the first two levels of the tree by default
-                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
-                        $.each(defaultExpandNodes, function (key, node) {node.expand()});
+                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand();});
 
                         this._treeView.draw();
                         this._buildContextMenu();
@@ -6902,7 +7380,7 @@ Fisma.Module = {
                 this._savePanel.render(document.body);
             }
 
-            this._savePanel.setBody('<img src="/images/loading_bar.gif">')
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">');
             this._savePanel.show();
     
             YAHOO.util.Connect.asyncRequest(
@@ -6952,11 +7430,13 @@ Fisma.Module = {
             p1.appendChild(document.createTextNode(message));
 
             var p2 = document.createElement("p");
+
+            var that = this;
             var button = new YAHOO.widget.Button({
                 label: "OK",
                 container: p2,
                 onclick: {
-                    fn: function () {this._savePanel.hide();}
+                    fn: function () {that._savePanel.hide();}
                 }
             });
             
@@ -7002,9 +7482,9 @@ Fisma.Module = {
             var type = targetNode.data.type;
 
             if (type == 'agency' || type == 'bureau' || type == 'organization') {
-                var url = '/organization/view/id/' + targetNode.data.organizationId;
+                url = '/organization/view/id/' + targetNode.data.organizationId;
             } else {
-                var url = '/system/view/id/' + targetNode.data.systemId;                
+                url = '/system/view/id/' + targetNode.data.systemId;                
             }
 
             window.location = url;
@@ -7162,7 +7642,6 @@ Fisma.Module = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Remediation = {
@@ -7365,8 +7844,7 @@ Fisma.Search = function() {
                         spinner.hide();
                     }
                 },
-                postData
-            );
+                postData );
         },
 
         /**
@@ -7376,12 +7854,18 @@ Fisma.Search = function() {
          * two to use while handling this event.
          *
          * @param form Reference to the search form
+         * @param fromSearchForm {Boolean} indicate whether a search action comes from search form submission 
          */
-        executeSearch: function (form) {
+        executeSearch: function (form, fromSearchForm) {
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
                 success : function (request, response, payload) {
+ 
+                    // It sets start to 0 when fromSearchForm is true, so does payload.pagination.recordOffset
+                    if (fromSearchForm) {
+                        payload.pagination.recordOffset = 0;
+                    }
                     dataTable.onDataReturnReplaceRows(request, response, payload);
 
                     // Update YUI's visual state to show sort on first data column
@@ -7393,6 +7877,11 @@ Fisma.Search = function() {
                         
                         sortColumnIndex++;
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
+
+                    // Reset the page to 1 if search form is submitted 
+                    if (!YAHOO.lang.isUndefined(form.search)  && 'Search' === form.search.value) {
+                        dataTable.get('paginator').setPage(1);
+                    }
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -7401,7 +7890,7 @@ Fisma.Search = function() {
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
-                var postData = this.buildPostRequest(dataTable.getState());
+                var postData = this.buildPostRequest(dataTable.getState(), fromSearchForm);
 
                 dataTable.showTableMessage("Loading...");
 
@@ -7439,7 +7928,9 @@ Fisma.Search = function() {
             } catch (e) {
                 message(e);
             } finally {
-                Fisma.Search.executeSearch(form);
+
+                // Set the fromSearchForm to true when a search comes from search form submission
+                Fisma.Search.executeSearch(form, true);
             }
         },
 
@@ -7576,14 +8067,15 @@ Fisma.Search = function() {
          * Method to generate the post data for the current query and table state
          *
          * @param tableState From YUI
+         * @param fromSearchForm {Boolean} set start to 0 if it is true
          * @return {String} Post data representation of the current query
          */
-        buildPostRequest: function (tableState) {
+        buildPostRequest: function (tableState, fromSearchForm) {
             var searchType = document.getElementById('searchType').value;
             var postData = {
                 sort: tableState.sortedBy.key,
                 dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
-                start: tableState.pagination.recordOffset,
+                start: (fromSearchForm ? 0 : tableState.pagination.recordOffset),
                 count: tableState.pagination.rowsPerPage,
                 csrf: document.getElementById('searchForm').csrf.value,
                 showDeleted: Fisma.Search.showDeletedRecords,
@@ -7853,7 +8345,7 @@ Fisma.Search = function() {
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
 
                     dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1, true);
+                    dataTable.get('paginator').setPage(1);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -7921,7 +8413,24 @@ Fisma.Search = function() {
                 // if already set, go ahead and run the callback
                 this.onSetTableCallback();
             }
-        }
+        },
+
+        /**
+         * Key press listener
+         * 
+         * @param element The element to which the key event sould be attached
+         */
+        onKeyPress : function (element) {
+            var searchForm = YAHOO.util.Dom.get('searchForm');
+            var keyHandle = new YAHOO.util.KeyListener(
+                                    element,
+                                    // Just listen to 'Return' and 'Enter' key
+                                    {keys : YAHOO.util.KeyListener.KEY.ENTER},
+                                    function () {
+                                        Fisma.Search.handleSearchEvent(searchForm);
+                                    });
+            keyHandle.enable();
+         }
     };
 }();
 /**
@@ -8036,11 +8545,6 @@ Fisma.Search.Criteria.prototype = {
         
         this.container = document.createElement('div');
         
-        this.containerForm = document.createElement('form');
-        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(YAHOO.util.Dom.get('searchForm'));";
-        this.containerForm.enctype = "application/x-www-form-urlencoded";
-        this.containerForm.method = "post";
-        
         this.container.className = "searchCriteria";
 
         // IE7 will display floated elements on the next line, not the current line, unless those floated elements
@@ -8048,31 +8552,23 @@ Fisma.Search.Criteria.prototype = {
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
-        this.containerForm.appendChild(this.buttonsContainer);
+        this.container.appendChild(this.buttonsContainer);
 
         this.queryFieldContainer = document.createElement('span');
         this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.containerForm.appendChild(this.queryFieldContainer);
+        this.container.appendChild(this.queryFieldContainer);
 
         this.queryTypeContainer = document.createElement('span');
         this.renderQueryType(this.queryTypeContainer, operator);
-        this.containerForm.appendChild(this.queryTypeContainer);
+        this.container.appendChild(this.queryTypeContainer);
 
         this.queryInputContainer = document.createElement('span');
         this.renderQueryInput(this.queryInputContainer, operands);
-        this.containerForm.appendChild(this.queryInputContainer);
+        this.container.appendChild(this.queryInputContainer);
 
         var clearDiv = document.createElement('div');
         clearDiv.className = "clear";
-        this.containerForm.appendChild(clearDiv);
-
-        var searchTypeField = document.createElement('input');
-        searchTypeField.type = 'hidden';
-        searchTypeField.name = 'searchType';
-        searchTypeField.value = 'advanced';
-        this.containerForm.appendChild(searchTypeField);
-
-        this.container.appendChild(this.containerForm);
+        this.container.appendChild(clearDiv);
 
         return this.container;
     },
@@ -8565,6 +9061,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.className = "date";
             container.appendChild(lowEnd);
             Fisma.Calendar.addCalendarPopupToTextField(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -8579,6 +9076,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.className = "date";
             container.appendChild(highEnd);
             Fisma.Calendar.addCalendarPopupToTextField(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -8597,6 +9095,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "float";
             container.appendChild(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -8610,6 +9109,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "float";
             container.appendChild(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -8628,6 +9128,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "integer";
             container.appendChild(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -8641,6 +9142,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "integer";
             container.appendChild(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -8676,6 +9178,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
 
             Fisma.Calendar.addCalendarPopupToTextField(textEl);
         },
@@ -8697,6 +9200,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -8716,6 +9220,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -8734,6 +9239,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -8892,9 +9398,10 @@ Fisma.Search.Panel.prototype = {
         var Lang = YAHOO.lang;
         var QueryState = Fisma.Search.QueryState;
         var queryState = new QueryState(Dom.get("modelName").value);
+        var i, advancedCriterion, initialCriteria;
 
         if (this.showAll) {
-            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
             this.criteria.push(initialCriteria);
             this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
         } else if (this.defaultQueryTokens) {
@@ -8940,8 +9447,8 @@ Fisma.Search.Panel.prototype = {
         } else if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
             var advancedQuery = queryState.getAdvancedQuery();
 
-            for (var i in advancedQuery) {
-                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+            for (i in advancedQuery) {
+                advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
                 this.criteria.push(advancedCriterion);
                 this.container.appendChild(
                     advancedCriterion.render(
@@ -8953,8 +9460,8 @@ Fisma.Search.Panel.prototype = {
             Fisma.Search.toggleAdvancedSearchPanel();
         } else if (Fisma.Search.searchPreferences.type === 'advanced') {
             var fields = Fisma.Search.searchPreferences.fields;
-            for (var i in fields) {
-                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+            for (i in fields) {
+                advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
                 this.criteria.push(advancedCriterion);
                 this.container.appendChild(
                     advancedCriterion.render(i, fields[i]));
@@ -8963,7 +9470,7 @@ Fisma.Search.Panel.prototype = {
             Fisma.Search.toggleAdvancedSearchPanel();
         } else {
             // If not default query is specified, then just show 1 default criterion
-            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
             this.criteria.push(initialCriteria);
 
             // Update DOM
@@ -9703,7 +10210,6 @@ Fisma.Search.Panel.prototype = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 /**
@@ -9758,7 +10264,6 @@ Fisma.Spinner.prototype.hide = function () {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 /**
@@ -9955,7 +10460,6 @@ Fisma.SwitchButton.prototype = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.System = {
@@ -10300,7 +10804,6 @@ Fisma.System = {
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license http://www.openfisma.org/content/license
- * @version $Id$
  */
 
 Fisma.TabView = {};
@@ -10325,7 +10828,6 @@ Fisma.TabView = {};
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license http://www.openfisma.org/content/license
- * @version $Id$
  */
 
 Fisma.TabView.Roles = function() {
@@ -10398,7 +10900,6 @@ Fisma.TabView.Roles = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: Incident.js 3288 2010-04-29 23:36:21Z mhaase $
  */
 
 Fisma.TableFormat = {
@@ -10987,6 +11488,9 @@ Fisma.TableFormat = {
                 case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.BELOW:
                     srcNode.insertAfter(destNode);
                     break;
+                default:
+                    throw "Invalid drag location parameter";
+                    break;
             }
 
             this._treeView.getRoot().refresh();
@@ -11086,7 +11590,6 @@ Fisma.TableFormat = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.UrlPanel = function() {
@@ -11170,7 +11673,6 @@ Fisma.UrlPanel = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.User = {
@@ -11456,7 +11958,7 @@ Fisma.User = {
 
         var messageContainer = document.createElement('span');
         var warningMessage = document.createTextNode("Please add a comment explaining why you are locking" +
-                                                    " this user's account.");
+                                                     " this user's account.");
         messageContainer.appendChild(warningMessage);
         content.appendChild(messageContainer);
 
@@ -11523,7 +12025,6 @@ Fisma.User = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Util = {
@@ -11624,6 +12125,11 @@ Fisma.Util = {
     /**
      * Show confirm window with warning message. config object can have width, text, isLink, url and func
      * 
+     * If there is a config.url string, clicking "Yes" button will navigate there. If there is a config.func, 
+     * that function will be called, and the parameters passed to that function must be in an /array/ in config.args.
+     * If the event comes from a link, set config.isLink to true so that it won't be directed to the link before 
+     * "YES" button is clicked.
+     *
      * @param event
      * @param config 
      */
@@ -11667,8 +12173,10 @@ Fisma.Util = {
  
     /**
      * Show alert warning message. The config object can have width and zIndex property
-     * 
-     * @param message object
+     *
+     * Generanlly, it can just pass alert message string if it does not need to override default config 
+     *
+     * @param message string
      * @param config object
      */
     showAlertDialog : function (alertMessage, config) {
@@ -11801,11 +12309,11 @@ Fisma.Vulnerability = {
  * 
  * About: Version
  * 
- * 0.9.7r597 
+ * 1.0.0b1_r746 
  * 
  * About: Copyright & License
  * 
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
  * under both the MIT and GPL version 2.0 licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly.
@@ -11813,23 +12321,14 @@ Fisma.Vulnerability = {
  * See <GPL Version 2> and <MIT License> contained within this distribution for further information. 
  *
  * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php.  This is, of course, not required.
+ * use of jqPlot.  You can reach the author at: chris at jqplot dot com 
+ * or see http://www.jqplot.com/info.php.  This is, of course, not required.
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php.
+ *
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
  * 
- * jqPlot includes `date instance methods and printf/sprintf functions by other authors:
- * 
- * Date instance methods:
- *
- *     author Ken Snyder (ken d snyder at gmail dot com)
- *     date 2008-09-10
- *     version 2.0.2 (http://kendsnyder.com/sandbox/date/)     
- *     license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
- *
- * JavaScript printf/sprintf functions:
- *
  *     version 2007.04.27
  *     author Ash Searle
  *     http://hexmen.com/blog/2007/03/printf-sprintf/
@@ -11840,12 +12339,12 @@ Fisma.Vulnerability = {
  * 
  * About: Introduction
  * 
- * jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.4.1 is included in the distribution.  
+ * jqPlot requires jQuery (1.4+ required for certain features). jQuery 1.4.2 is included in the distribution.  
  * To use jqPlot include jQuery, the jqPlot jQuery plugin, the jqPlot css file and optionally 
  * the excanvas script for IE support in your web page:
  * 
- * > <!--[if IE]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
- * > <script language="javascript" type="text/javascript" src="jquery-1.4.2.min.js"></script>
+ * > <!--[if lt IE 9]><script language="javascript" type="text/javascript" src="excanvas.js"></script><![endif]-->
+ * > <script language="javascript" type="text/javascript" src="jquery-1.4.4.min.js"></script>
  * > <script language="javascript" type="text/javascript" src="jquery.jqplot.min.js"></script>
  * > <link rel="stylesheet" type="text/css" href="jquery.jqplot.css" />
  * 
@@ -11904,7 +12403,7 @@ Fisma.Vulnerability = {
      * 
      * attributes:
      * enablePlugins - False to disable plugins by default.  Plugins must then be explicitly 
-     *   enabled in the individual plot options.  Default: true.
+     *   enabled in the individual plot options.  Default: false.
      *   This property sets the "show" property of certain plugins to true or false.
      *   Only plugins that can be immediately active upon loading are affected.  This includes
      *   non-renderer plugins like cursor, dragable, highlighter, and trendline.
@@ -11918,12 +12417,12 @@ Fisma.Vulnerability = {
         var _data, _options;
         
         if (options == null) {
-            if (data instanceof Array) {
+            if (jQuery.isArray(data)) {
                 _data = data;
                 _options = null;   
             }
             
-            else if (data.constructor == Object) {
+            else if (typeof(data) === 'object') {
                 _data = null;
                 _options = data;
             }
@@ -11962,10 +12461,16 @@ Fisma.Vulnerability = {
             return plot;
         }
     };
+
+            
+    // Convienence function that won't hang IE of FF without FireBug.
+    $.jqplot.log = function() {
+        if (window.console) {
+            console.log.apply(console, arguments);
+        }
+    };
         
-    $.jqplot.debug = 1;
     $.jqplot.config = {
-        debug:1,
         enablePlugins:false,
         defaultHeight:300,
         defaultWidth:400,
@@ -11979,10 +12484,35 @@ Fisma.Vulnerability = {
         errorFontStyle: '',
         errorFontWeight: '',
         catchErrors: false,
-        defaultTickFormatString: "%.1f"
+        defaultTickFormatString: "%.1f",
+        defaultColors: [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"],
+        defaultNegativeColors: [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"]
+    };
+    
+    
+    $.jqplot.arrayMax = function( array ){
+        return Math.max.apply( Math, array );
+    };
+    
+    $.jqplot.arrayMin = function( array ){
+        return Math.min.apply( Math, array );
     };
     
     $.jqplot.enablePlugins = $.jqplot.config.enablePlugins;
+    
+    // canvas related tests taken from modernizer:
+    // Copyright (c) 2009 - 2010 Faruk Ates.
+    // http://www.modernizr.com
+    
+    $.jqplot.support_canvas = function() {
+        return !!document.createElement('canvas').getContext;
+    };
+            
+    $.jqplot.support_canvas_text = function() {
+        return !!(document.createElement('canvas').getContext && typeof document.createElement('canvas').getContext('2d').fillText == 'function');
+    };
+    
+    $.jqplot.use_excanvas = ($.browser.msie && !$.jqplot.support_canvas()) ? true : false;
     
     /**
      * 
@@ -12046,6 +12576,8 @@ Fisma.Vulnerability = {
         this._elem.addClass(klass);
         this._elem.css(cssopts);
         this._elem.attr(attrib);
+        // avoid memory leak;
+        elem = null;
         return this._elem;
     };
     
@@ -12186,10 +12718,12 @@ Fisma.Vulnerability = {
         // renderer specific options.  See <$.jqplot.LinearAxisRenderer> for options.
         this.rendererOptions = {};
         // prop: showTicks
-        // wether to show the ticks (both marks and labels) or not.
+        // Wether to show the ticks (both marks and labels) or not.
+        // Will not override showMark and showLabel options if specified on the ticks themselves.
         this.showTicks = true;
         // prop: showTickMarks
-        // wether to show the tick marks (line crossing grid) or not.
+        // Wether to show the tick marks (line crossing grid) or not.
+        // Overridden by showTicks and showMark option of tick itself.
         this.showTickMarks = true;
         // prop: showMinorTicks
         // Wether or not to show minor ticks.  This is renderer dependent.
@@ -12208,6 +12742,9 @@ Fisma.Vulnerability = {
         this.borderColor = null;
         // minimum and maximum values on the axis.
         this._dataBounds = {min:null, max:null};
+        // statistics (min, max, mean) as well as actual data intervals for each series attached to axis.
+        // holds collection of {intervals:[], min:, max:, mean: } objects for each series on axis.
+        this._intervalStats = [];
         // pixel position from the top left of the min value and max value on the axis.
         this._offsets = {min:null, max:null};
         this._ticks=[];
@@ -12238,6 +12775,18 @@ Fisma.Vulnerability = {
         this.renderer = new this.renderer();
         // set the axis name
         this.tickOptions.axis = this.name;
+        // if showMark or showLabel tick options not specified, use value of axis option.
+        // showTicks overrides showTickMarks.
+        if (this.tickOptions.showMark == null) {
+            this.tickOptions.showMark = this.showTicks;
+        }
+        if (this.tickOptions.showMark == null) {
+            this.tickOptions.showMark = this.showTickMarks;
+        }
+        if (this.tickOptions.showLabel == null) {
+            this.tickOptions.showLabel = this.showTicks;
+        }
+        
         if (this.label == null || this.label == '') {
             this.showLabel = false;
         }
@@ -12310,11 +12859,46 @@ Fisma.Vulnerability = {
         this.renderer.reset.call(this);
     };
     
-    Axis.prototype.resetScale = function() {
-        this.min = null;
-        this.max = null;
-        this.numberTicks = null;
-        this.tickInterval = null;
+    Axis.prototype.resetScale = function(opts) {
+        $.extend(true, this, {min: null, max: null, numberTicks: null, tickInterval: null, _ticks: [], ticks: []}, opts);
+        this.resetDataBounds();
+    };
+    
+    Axis.prototype.resetDataBounds = function() {
+        // Go through all the series attached to this axis and find
+        // the min/max bounds for this axis.
+        var db = this._dataBounds;
+        db.min = null;
+        db.max = null;
+        for (var i=0; i<this._series.length; i++) {
+            var s = this._series[i];
+            var d = s._plotData;
+            var minyidx = 1, maxyidx = 1;
+
+            if (s._type != null && s._type == 'ohlc') {
+                minyidx = 3;
+                maxyidx = 2;
+            }
+            
+            for (var j=0; j<d.length; j++) { 
+                if (this.name == 'xaxis' || this.name == 'x2axis') {
+                    if ((d[j][0] != null && d[j][0] < db.min) || db.min == null) {
+                        db.min = d[j][0];
+                    }
+                    if ((d[j][0] != null && d[j][0] > db.max) || db.max == null) {
+                        db.max = d[j][0];
+                    }
+                }              
+                else {
+                    if ((d[j][minyidx] != null && d[j][minyidx] < db.min) || db.min == null) {
+                        db.min = d[j][minyidx];
+                    }
+                    if ((d[j][maxyidx] != null && d[j][maxyidx] > db.max) || db.max == null) {
+                        db.max = d[j][maxyidx];
+                    }
+                }              
+            }
+        }
     };
 
     /**
@@ -12425,7 +13009,9 @@ Fisma.Vulnerability = {
         // if user has specified xoffset or yoffset, copy these to
         // the margin properties.
         
-        if (this.placement ==  'inside') this.placement = 'insideGrid';
+        if (this.placement ==  'inside') {
+            this.placement = 'insideGrid';
+        }
         
         if (this.xoffset >0) {
             if (this.placement == 'insideGrid') {
@@ -12650,6 +13236,12 @@ Fisma.Vulnerability = {
         // prop: lineWidth
         // width of the line in pixels.  May have different meanings depending on renderer.
         this.lineWidth = 2.5;
+        // prop: lineJoin
+        // Canvas lineJoin style between segments of series.
+        this.lineJoin = 'round';
+        // prop: lineCap
+        // Canvas lineCap style at ends of line.
+        this.lineCap = 'round';
         // prop: shadow
         // wether or not to draw a shadow on the line
         this.shadow = true;
@@ -12666,7 +13258,7 @@ Fisma.Vulnerability = {
         // Alpha channel transparency of shadow.  0 = transparent.
         this.shadowAlpha = '0.1';
         // prop: breakOnNull
-        // Not implemented. wether line segments should be be broken at null value.
+        // Wether line segments should be be broken at null value.
         // False will join point on either side of line.
         this.breakOnNull = false;
         // prop: markerRenderer
@@ -12751,6 +13343,7 @@ Fisma.Vulnerability = {
         // sum of y values in this series.
         this._sumy = 0;
         this._sumx = 0;
+        this._type = '';
     }
     
     Series.prototype = new $.jqplot.ElemContainer();
@@ -12809,9 +13402,12 @@ Fisma.Vulnerability = {
     Series.prototype.draw = function(sctx, opts, plot) {
         var options = (opts == undefined) ? {} : opts;
         sctx = (sctx == undefined) ? this.canvas._ctx : sctx;
+        
+        var j, data, gridData;
+        
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
-        for (var j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
+        for (j=0; j<$.jqplot.preDrawSeriesHooks.length; j++) {
             $.jqplot.preDrawSeriesHooks[j].call(this, sctx, options);
         }
         if (this.show) {
@@ -12819,7 +13415,7 @@ Fisma.Vulnerability = {
             if (!options.preventJqPlotSeriesDrawTrigger) {
                 $(sctx.canvas).trigger('jqplotSeriesDraw', [this.data, this.gridData]);
             }
-            var data = [];
+            data = [];
             if (options.data) {
                 data = options.data;
             }
@@ -12829,27 +13425,32 @@ Fisma.Vulnerability = {
             else {
                 data = this._plotData;
             }
-            var gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
+            gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
             this.renderer.draw.call(this, sctx, gridData, options, plot);
         }
         
-        for (var j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
+        for (j=0; j<$.jqplot.postDrawSeriesHooks.length; j++) {
             $.jqplot.postDrawSeriesHooks[j].call(this, sctx, options);
         }
+        
+        sctx = opts = plot = j = data = gridData = null;
     };
     
     Series.prototype.drawShadow = function(sctx, opts, plot) {
         var options = (opts == undefined) ? {} : opts;
         sctx = (sctx == undefined) ? this.shadowCanvas._ctx : sctx;
+        
+        var j, data, gridData;
+        
         // hooks get called even if series not shown
         // we don't clear canvas here, it would wipe out all other series as well.
-        for (var j=0; j<$.jqplot.preDrawSeriesShadowHooks.length; j++) {
+        for (j=0; j<$.jqplot.preDrawSeriesShadowHooks.length; j++) {
             $.jqplot.preDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
         if (this.shadow) {
             this.renderer.setGridData.call(this, plot);
 
-            var data = [];
+            data = [];
             if (options.data) {
                 data = options.data;
             }
@@ -12859,14 +13460,16 @@ Fisma.Vulnerability = {
             else {
                 data = this._plotData;
             }
-            var gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
+            gridData = options.gridData || this.renderer.makeGridData.call(this, data, plot);
         
             this.renderer.drawShadow.call(this, sctx, gridData, options);
         }
         
-        for (var j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
+        for (j=0; j<$.jqplot.postDrawSeriesShadowHooks.length; j++) {
             $.jqplot.postDrawSeriesShadowHooks[j].call(this, sctx, options);
         }
+        
+        sctx = opts = plot = j = data = gridData = null;
         
     };
     
@@ -13041,10 +13644,12 @@ Fisma.Vulnerability = {
         this._elem.css({ position: 'absolute', left: this._offsets.left, top: this._offsets.top });
         
         this._elem.addClass(klass);
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
+        // avoid memory leak
+        elem = null;
         return this._elem;
     };
     
@@ -13116,6 +13721,34 @@ Fisma.Vulnerability = {
         // The data should be in the form of an array of 2D or 1D arrays like
         // > [ [[x1, y1], [x2, y2],...], [y1, y2, ...] ].
         this.data = [];
+        // prop dataRenderer
+        // A callable which can be used to preprocess data passed into the plot.
+        // Will be called with 2 arguments, the plot data and a reference to the plot.
+        this.dataRenderer;
+        // prop dataRendererOptions
+        // Options that will be passed to the dataRenderer.
+        // Can be of any type.
+        this.dataRendererOptions;
+        // prop noDataIndicator
+        // Options to set up a mock plot with a data loading indicator if no data is specified.
+        this.noDataIndicator = {    
+            show: false,
+            indicator: 'Loading Data...',
+            axes: {
+                xaxis: {
+                    min: 0,
+                    max: 10,
+                    tickInterval: 2,
+                    show: true
+                },
+                yaxis: {
+                    min: 0,
+                    max: 12,
+                    tickInterval: 3,
+                    show: true
+                }
+            }
+        };
         // The id of the dom element to render the plot into
         this.targetId = null;
         // the jquery object for the dom target.
@@ -13130,7 +13763,6 @@ Fisma.Vulnerability = {
             // default options that will be applied to all series.
             // see <Series> for series options.
             seriesDefaults: {},
-            gridPadding: {top:10, right:10, bottom:23, left:10},
             series:[]
         };
         // prop: series
@@ -13157,7 +13789,8 @@ Fisma.Vulnerability = {
         this._width = null;
         this._height = null; 
         this._plotDimensions = {height:null, width:null};
-        this._gridPadding = {top:10, right:10, bottom:10, left:10};
+        this._gridPadding = {top:null, right:null, bottom:null, left:null};
+        this._defaultGridPadding = {top:10, right:10, bottom:23, left:10};
         // a shortcut for axis syncTicks options.  Not implemented yet.
         this.syncXTicks = true;
         // a shortcut for axis syncTicks options.  Not implemented yet.
@@ -13167,8 +13800,8 @@ Fisma.Vulnerability = {
         // to the series in the plot.  Colors will wrap around so, if their
         // are more series than colors, colors will be reused starting at the
         // beginning.  For pie charts, this specifies the colors of the slices.
-        this.seriesColors = [ "#4bb2c5", "#EAA228", "#c5b47f", "#579575", "#839557", "#958c12", "#953579", "#4b5de4", "#d8b83f", "#ff5800", "#0085cc", "#c747a3", "#cddf54", "#FBD178", "#26B4E3", "#bd70c7"];
-        this.negativeSeriesColors = [ "#498991", "#C08840", "#9F9274", "#546D61", "#646C4A", "#6F6621", "#6E3F5F", "#4F64B0", "#A89050", "#C45923", "#187399", "#945381", "#959E5C", "#C7AF7B", "#478396", "#907294"];
+        this.seriesColors = $.jqplot.config.defaultColors;
+        this.negativeSeriesColors = $.jqplot.config.defaultNegativeColors;
         // prop: sortData
         // false to not sort the data passed in by the user.
         // Many bar, stakced and other graphs as well as many plugins depend on
@@ -13195,6 +13828,12 @@ Fisma.Vulnerability = {
         // true or false, creates a stack or "mountain" plot.
         // Not all series renderers may implement this option.
         this.stackSeries = false;
+        // prop: defaultAxisStart
+        // 1-D data series are internally converted into 2-D [x,y] data point arrays
+        // by jqPlot.  This is the default starting value for the missing x or y value.
+        // The added data will be a monotonically increasing series (e.g. [1, 2, 3, ...])
+        // starting at this value.
+        this.defaultAxisStart = 1;
         // array to hold the cumulative stacked series data.
         // used to ajust the individual series data, which won't have access to other
         // series data.
@@ -13252,6 +13891,7 @@ Fisma.Vulnerability = {
         // sets the plot target, checks data and applies user
         // options to plot.
         this.init = function(target, data, options) {
+            options = options || {};
             for (var i=0; i<$.jqplot.preInitHooks.length; i++) {
                 $.jqplot.preInitHooks[i].call(this, target, data, options);
             }
@@ -13292,7 +13932,7 @@ Fisma.Vulnerability = {
                 this.target.css('height', h+'px');
             }
             else {
-                this._height = this.target.height();
+                this._height = h = this.target.height();
             }
             if (!this.target.width()) {
                 var w;
@@ -13309,7 +13949,7 @@ Fisma.Vulnerability = {
                 this.target.css('width', w+'px');
             }
             else {
-                this._width = this.target.width();
+                this._width = w = this.target.width();
             }
             
             this._plotDimensions.height = this._height;
@@ -13323,17 +13963,59 @@ Fisma.Vulnerability = {
                 throw "Canvas dimension not set";
             }
             
-            if (data == null) {
-                throw{
-                    name: "DataError",
-                    message: "No data to plot."
-                };
+            if (options.dataRenderer && jQuery.isFunction(options.dataRenderer)) {
+                if (options.dataRendererOptions) {
+                    this.dataRendererOptions = options.dataRendererOptions;
+                }
+                this.dataRenderer = options.dataRenderer;
+                data = this.dataRenderer(data, this, this.dataRendererOptions);
             }
-            if (data.constructor != Array || data.length == 0 || data[0].constructor != Array || data[0].length == 0) {
-                throw{
-                    name: "DataError",
-                    message: "No data to plot."
-                };
+            
+            if (options.noDataIndicator && jQuery.isPlainObject(options.noDataIndicator)) {
+                $.extend(true, this.noDataIndicator, options.noDataIndicator);
+            }
+            
+            if (data == null || jQuery.isArray(data) == false || data.length == 0 || jQuery.isArray(data[0]) == false || data[0].length == 0) {
+                
+                if (this.noDataIndicator.show == false) {
+                    throw{
+                        name: "DataError",
+                        message: "No data to plot."
+                    };
+                }
+                
+                else {
+                    // have to be descructive here in order for plot to not try and render series.
+                    // This means that $.jqplot() will have to be called again when there is data.
+                    //delete options.series;
+                    
+                    for (var ax in this.noDataIndicator.axes) {
+                        for (var prop in this.noDataIndicator.axes[ax]) {
+                            this.axes[ax][prop] = this.noDataIndicator.axes[ax][prop];
+                        }
+                    }
+                    
+                    this.postDrawHooks.add(function() {
+                        var eh = this.eventCanvas.getHeight();
+                        var ew = this.eventCanvas.getWidth();
+                        var temp = $('<div class="jqplot-noData-container" style="position:absolute;"></div>');
+                        this.target.append(temp);
+                        temp.height(eh);
+                        temp.width(ew);
+                        temp.css('top', this.eventCanvas._offsets.top);
+                        temp.css('left', this.eventCanvas._offsets.left);
+                        
+                        var temp2 = $('<div class="jqplot-noData-contents" style="text-align:center; position:relative; margin-left:auto; margin-right:auto;"></div>');
+                        temp.append(temp2);
+                        temp2.html(this.noDataIndicator.indicator);
+                        var th = temp2.height();
+                        var tw = temp2.width();
+                        temp2.height(th);
+                        temp2.width(tw);
+                        temp2.css('top', (eh - th)/2 + 'px');
+                    });
+
+                }
             }
             
             this.data = data;
@@ -13407,19 +14089,20 @@ Fisma.Vulnerability = {
         //
         // Parameters:
         // axes - Boolean to reset or not reset all axes or an array or object of axis names to reset.
-        this.resetAxesScale = function(axes) {
-            var ax = (axes != undefined) ? axes : this.axes;
+        this.resetAxesScale = function(axes, options) {
+            var opts = options || {};
+            var ax = axes || this.axes;
             if (ax === true) {
                 ax = this.axes;
             }
-            if (ax.constructor === Array) {
+            if (jQuery.isArray(ax)) {
                 for (var i = 0; i < ax.length; i++) {
-                    this.axes[ax[i]].resetScale();
+                    this.axes[ax[i]].resetScale(opts[ax[i]]);
                 }
             }
-            else if (ax.constructor === Object) {
+            else if (typeof(ax) === 'object') {
                 for (var name in ax) {
-                    this.axes[name].resetScale();
+                    this.axes[name].resetScale(opts[name]);
                 }
             }
         };
@@ -13431,6 +14114,10 @@ Fisma.Vulnerability = {
             // If plot doesn't have height and width for some
             // reason, set it by other means.  Plot must not have
             // a display:none attribute, however.
+            
+            //
+            // Wont have options here
+            /*
             if (!this.target.height()) {
                 var h;
                 if (options && options.height) {
@@ -13465,6 +14152,10 @@ Fisma.Vulnerability = {
             else {
                 this._width = this.target.width();
             }
+            */
+            
+            this._height = this.target.height();
+            this._width = this.target.width();
             
             if (this._height <=0 || this._width <=0 || !this._height || !this._width) {
                 throw "Target dimension not set";
@@ -13625,6 +14316,13 @@ Fisma.Vulnerability = {
                 series._sumx += series.data[i][0];
             }
         };
+
+        // this.setData = function(seriesIndex, newdata) {
+        //     // if newdata is null, assume all data is passed in as first argument
+        //     if (newdata == null) {
+                
+        //     }
+        // };
         
         // function to safely return colors from the color array and wrap around at the end.
         this.getNextSeriesColor = (function(t) {
@@ -13660,6 +14358,7 @@ Fisma.Vulnerability = {
             if (this.options.captureRightClick) {
                 this.captureRightClick = this.options.captureRightClick;
             }
+            this.defaultAxisStart = (options && options.defaultAxisStart != null) ? options.defaultAxisStart : this.defaultAxisStart;
             var cg = new this.colorGenerator(this.seriesColors);
             // this._gridPadding = this.options.gridPadding;
             $.extend(true, this._gridPadding, this.options.gridPadding);
@@ -13670,29 +14369,29 @@ Fisma.Vulnerability = {
                 axis._plotWidth = this._width;
                 axis._plotHeight = this._height;
             }
-            if (this.data.length == 0) {
-                this.data = [];
-                for (var i=0; i<this.options.series.length; i++) {
-                    this.data.push(this.options.series.data);
-                }    
-            }
+            // if (this.data.length == 0) {
+            //     this.data = [];
+            //     for (var i=0; i<this.options.series.length; i++) {
+            //         this.data.push(this.options.series.data);
+            //     }    
+            // }
                 
-            var normalizeData = function(data, dir) {
+            var normalizeData = function(data, dir, start) {
                 // return data as an array of point arrays,
                 // in form [[x1,y1...], [x2,y2...], ...]
                 var temp = [];
                 var i;
                 dir = dir || 'vertical';
-                if (!(data[0] instanceof Array)) {
+                if (!jQuery.isArray(data[0])) {
                     // we have a series of scalars.  One line with just y values.
                     // turn the scalar list of data into a data array of form:
                     // [[1, data[0]], [2, data[1]], ...]
                     for (i=0; i<data.length; i++) {
                         if (dir == 'vertical') {
-                            temp.push([i+1, data[i]]);   
+                            temp.push([start + i, data[i]]);   
                         }
                         else {
-                            temp.push([data[i], i+1]);
+                            temp.push([data[i], start+i]);
                         }
                     }
                 }            
@@ -13703,7 +14402,7 @@ Fisma.Vulnerability = {
                 return temp;
             };
 
-            for (var i=0; i<this.data.length; i++) { 
+            for (var i=0; i<this.data.length; i++) {
                 var temp = new Series();
                 for (var j=0; j<$.jqplot.preParseSeriesOptionsHooks.length; j++) {
                     $.jqplot.preParseSeriesOptionsHooks[j].call(temp, this.options.seriesDefaults, this.options.series[i]);
@@ -13716,7 +14415,7 @@ Fisma.Vulnerability = {
                 if (temp.renderer.constructor == $.jqplot.barRenderer && temp.rendererOptions && temp.rendererOptions.barDirection == 'horizontal') {
                     dir = 'horizontal';
                 }
-                temp.data = normalizeData(this.data[i], dir);
+                temp.data = normalizeData(this.data[i], dir, this.defaultAxisStart);
                 switch (temp.xaxis) {
                     case 'xaxis':
                         temp._xaxis = this.axes.xaxis;
@@ -13801,17 +14500,21 @@ Fisma.Vulnerability = {
         // resetAxes - true to reset all axes min, max, numberTicks and tickInterval setting so axes will rescale themselves.
         //             optionally pass in list of axes to reset (e.g. ['xaxis', 'y2axis']) (default: false).
         this.replot = function(options) {
-            var opts = (options != undefined) ? options : {};
-            var clear = (opts.clear != undefined) ? opts.clear : true;
-            var resetAxes = (opts.resetAxes != undefined) ? opts.resetAxes : false;
+            var opts =  options || {};
+            var clear = opts.clear || true;
+            var resetAxes = opts.resetAxes || false;
             this.target.trigger('jqplotPreReplot');
             if (clear) {
+                // Couple of posts on Stack Overflow indicate that empty() doesn't
+                // always cear up the dom and release memory.  Sometimes setting
+                // innerHTML property to null is needed.  Particularly on IE, may 
+                // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
-            if (resetAxes) {
-                this.resetAxesScale(resetAxes);
-            }
             this.reInitialize();
+            if (resetAxes) {
+                this.resetAxesScale(resetAxes, opts.axes);
+            }
             this.draw();
             this.target.trigger('jqplotPostReplot');
         };
@@ -13831,6 +14534,10 @@ Fisma.Vulnerability = {
             clear = (clear != null) ? clear : true;
             this.target.trigger('jqplotPreRedraw');
             if (clear) {
+                // Couple of posts on Stack Overflow indicate that empty() doesn't
+                // always cear up the dom and release memory.  Sometimes setting
+                // innerHTML property to null is needed.  Particularly on IE, may 
+                // have to directly set it to null, bypassing jQuery.
                 this.target.empty();
             }
              for (var ax in this.axes) {
@@ -13932,8 +14639,11 @@ Fisma.Vulnerability = {
                 // end of gridPadding adjustments.
                 var arr = ['top', 'bottom', 'left', 'right'];
                 for (var n in arr) {
-                    if (gridPadding[arr[n]]) {
+                    if (this._gridPadding[arr[n]] == null && gridPadding[arr[n]] > 0) {
                         this._gridPadding[arr[n]] = gridPadding[arr[n]];
+                    }
+                    else if (this._gridPadding[arr[n]] == null) {
+                        this._gridPadding[arr[n]] = this._defaultGridPadding[arr[n]];
                     }
                 }
                 
@@ -13991,7 +14701,9 @@ Fisma.Vulnerability = {
                 }
                 else {  // draw series before legend
                     this.drawSeries();
-                    $(this.series[this.series.length-1].canvas._elem).after(legendElem);
+                    if (this.series.length) {
+                        $(this.series[this.series.length-1].canvas._elem).after(legendElem);
+                    }
                     this.legend.pack(legendPadding);                
                 }
             
@@ -14035,8 +14747,8 @@ Fisma.Vulnerability = {
             if (this.captureRightClick) {
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onRightClick);
                 this.eventCanvas._elem.get(0).oncontextmenu = function() {
-					return false;
-				};
+                    return false;
+                };
             }
             else {
                 this.eventCanvas._elem.bind('mouseup', {plot:this}, this.onMouseUp);
@@ -14061,59 +14773,9 @@ Fisma.Vulnerability = {
             return {offsets:go, gridPos:gridPos, dataPos:dataPos};
         }
         
-        function getNeighborPoint(plot, x, y) {
-            var ret = null;
-            var s, i, d0, d, j, r, k;
-            var threshold, t;
-            for (var k=plot.seriesStack.length-1; k>-1; k--) {
-                i = plot.seriesStack[k];
-                s = plot.series[i];
-                r = s.renderer;
-                if (s.show) {
-                    t = s.markerRenderer.size/2+s.neighborThreshold;
-                    threshold = (t > 0) ? t : 0;
-                    for (var j=0; j<s.gridData.length; j++) {
-                        p = s.gridData[j];
-                        // neighbor looks different to OHLC chart.
-                        if (r.constructor == $.jqplot.OHLCRenderer) {
-                            if (r.candleStick) {
-                                var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r._bodyWidth/2 && x <= p[0]+r._bodyWidth/2 && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                                }
-                            }
-                            // if an open hi low close chart
-                            else if (!r.hlc){
-                                var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][2]) && y <= yp(s.data[j][3])) {
-                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                                }
-                            }
-                            // a hi low close chart
-                            else {
-                                var yp = s._yaxis.series_u2p;
-                                if (x >= p[0]-r._tickLength && x <= p[0]+r._tickLength && y >= yp(s.data[j][1]) && y <= yp(s.data[j][2])) {
-                                    return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                                }
-                            }
-                            
-                        }
-                        else {
-                            d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
-                            if (d <= threshold && (d <= d0 || d0 == null)) {
-                               d0 = d;
-                               return {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
-                            }
-                        }
-                    } 
-                }
-            }
-            return ret;
-        }
-        
         
         // function to check if event location is over a area area
-        function checkIntersection(gridpos, plot, theCanvas) {
+        function checkIntersection(gridpos, plot) {
             var series = plot.series;
             var i, j, k, s, r, x, y, theta, sm, sa, minang, maxang;
             var d0, d, p, pp, points, bw;
@@ -14125,8 +14787,9 @@ Fisma.Vulnerability = {
                     case $.jqplot.BarRenderer:
                         x = gridpos.x;
                         y = gridpos.y;
-                        for (j=s.gridData.length-1; j>=0; j--) {
+                        for (j=0; j<s._barPoints.length; j++) {
                             points = s._barPoints[j];
+                            p = s.gridData[j];
                             if (x>points[0][0] && x<points[2][0] && y>points[2][1] && y<points[0][1]) {
                                 return {seriesIndex:s.index, pointIndex:j, gridData:p, data:s.data[j], points:s._barPoints[j]};
                             }
@@ -14180,8 +14843,8 @@ Fisma.Vulnerability = {
                         
                     case $.jqplot.PieRenderer:
                         sa = s.startAngle/180*Math.PI;
-                        x = gridpos.x - (theCanvas.width / 2); // s._center[0];
-                        y = gridpos.y - (theCanvas.height / 2); //s._center[1];
+                        x = gridpos.x - s._center[0];
+                        y = gridpos.y - s._center[1];
                         r = Math.sqrt(Math.pow(x, 2) + Math.pow(y, 2));
                         if (x > 0 && -y >= 0) {
                             theta = 2*Math.PI - Math.atan(-y/x);
@@ -14237,7 +14900,9 @@ Fisma.Vulnerability = {
                                    ret = {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]};
                                 }
                             }
-                            if (ret != null) return ret;
+                            if (ret != null) {
+                                return ret;
+                            }
                         }
                         break;
                         
@@ -14248,7 +14913,8 @@ Fisma.Vulnerability = {
                             vfirst = v[0],
                             vlast = v[v.length-1],
                             lex,
-                            rex;
+                            rex,
+                            cv;
     
                         // equations of right and left sides, returns x, y values given height of section (y value and 2 points)
     
@@ -14277,8 +14943,6 @@ Fisma.Vulnerability = {
                         r = s.renderer;
                         if (s.show) {
                             if (s.fill) {
-                                x = gridpos.x;
-                                y = gridpos.y;
                                 // first check if it is in bounding box
                                 var inside = false;
                                 if (x>s._boundingBox[0][0] && x<s._boundingBox[1][0] && y>s._boundingBox[1][1] && y<s._boundingBox[0][1]) { 
@@ -14289,16 +14953,16 @@ Fisma.Vulnerability = {
                                     var j = numPoints-1;
 
                                     for(var ii=0; ii < numPoints; ii++) { 
-                                    	var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
-                                    	var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
+                                        var vertex1 = [s._areaPoints[ii][0], s._areaPoints[ii][1]];
+                                        var vertex2 = [s._areaPoints[j][0], s._areaPoints[j][1]];
 
-                                    	if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)	 {
-                                    		if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
-                                    			inside = !inside;
-                                    		}
-                                    	}
+                                        if (vertex1[1] < y && vertex2[1] >= y || vertex2[1] < y && vertex1[1] >= y)     {
+                                            if (vertex1[0] + (y - vertex1[1]) / (vertex2[1] - vertex1[1]) * (vertex2[0] - vertex1[0]) < x) {
+                                                inside = !inside;
+                                            }
+                                        }
 
-                                    	j = ii;
+                                        j = ii;
                                     }        
                                 }
                                 if (inside) {
@@ -14336,7 +15000,7 @@ Fisma.Vulnerability = {
                                         }
                             
                                     }
-                                    else {
+                                    else if (p[0] != null && p[1] != null){
                                         d = Math.sqrt( (x-p[0]) * (x-p[0]) + (y-p[1]) * (y-p[1]) );
                                         if (d <= threshold && (d <= d0 || d0 == null)) {
                                            d0 = d;
@@ -14404,7 +15068,7 @@ Fisma.Vulnerability = {
             // Event passed out is unnormalized.
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = checkIntersection(positions.gridPos, p, this);
+            var neighbor = checkIntersection(positions.gridPos, p);
             var evt = jQuery.Event('jqplotClick');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
@@ -14416,7 +15080,7 @@ Fisma.Vulnerability = {
             // Event passed out is unnormalized.
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = checkIntersection(positions.gridPos, p, this);
+            var neighbor = checkIntersection(positions.gridPos, p);
             var evt = jQuery.Event('jqplotDblClick');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
@@ -14426,7 +15090,7 @@ Fisma.Vulnerability = {
         this.onMouseDown = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = checkIntersection(positions.gridPos, p, this);
+            var neighbor = checkIntersection(positions.gridPos, p);
             var evt = jQuery.Event('jqplotMouseDown');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
@@ -14444,7 +15108,7 @@ Fisma.Vulnerability = {
         this.onRightClick = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = checkIntersection(positions.gridPos, p, this);
+            var neighbor = checkIntersection(positions.gridPos, p);
             if (p.captureRightClick) {
                 if (ev.which == 3) {
                 var evt = jQuery.Event('jqplotRightClick');
@@ -14464,7 +15128,7 @@ Fisma.Vulnerability = {
         this.onMouseMove = function(ev) {
             var positions = getEventPosition(ev);
             var p = ev.data.plot;
-            var neighbor = checkIntersection(positions.gridPos, p, this);
+            var neighbor = checkIntersection(positions.gridPos, p);
             var evt = jQuery.Event('jqplotMouseMove');
             evt.pageX = ev.pageX;
             evt.pageY = ev.pageY;
@@ -14498,8 +15162,8 @@ Fisma.Vulnerability = {
         this.drawSeries = function(options, idx){
             var i, series, ctx;
             // if only one argument passed in and it is a number, use it ad idx.
-            idx = (typeof(options) == "number" && idx == null) ? options : idx;
-            options = (typeof(options) == "object") ? options : {};
+            idx = (typeof(options) === "number" && idx == null) ? options : idx;
+            options = (typeof(options) === "object") ? options : {};
             // draw specified series
             if (idx != undefined) {
                 series = this.series[idx];
@@ -14531,6 +15195,7 @@ Fisma.Vulnerability = {
                     series.draw(ctx, options, this);
                 }
             }
+            options = idx = i = series = ctx = null;
         };
         
         // method: moveSeriesToFront
@@ -14593,7 +15258,7 @@ Fisma.Vulnerability = {
         // Useful to put a series back where it belongs after moving
         // it to the front.
         this.restorePreviousSeriesOrder = function () {
-            var i, j, serelem, shadelem, temp;
+            var i, j, serelem, shadelem, temp, move, keep;
             // if no change, return.
             if (this.seriesStack == this.previousSeriesStack) {
                 return;
@@ -14616,7 +15281,7 @@ Fisma.Vulnerability = {
         // Restore the series canvas order to its original order
         // when the plot was created.
         this.restoreOriginalSeriesOrder = function () {
-            var i, j, arr=[];
+            var i, j, arr=[], serelem, shadelem;
             for (i=0; i<this.series.length; i++) {
                 arr.push(i);
             }
@@ -14642,7 +15307,7 @@ Fisma.Vulnerability = {
     // conpute a highlight color or array of highlight colors from given colors.
     $.jqplot.computeHighlightColors  = function(colors) {
         var ret;
-        if (typeof(colors) == "array") {
+        if (jQuery.isArray(colors)) {
             ret = [];
             for (var i=0; i<colors.length; i++){
                 var rgba = $.jqplot.getColorComponents(colors[i]);
@@ -14671,6 +15336,7 @@ Fisma.Vulnerability = {
     };
         
    $.jqplot.ColorGenerator = function(colors) {
+        colors = colors || $.jqplot.config.defaultColors;
         var idx = 0;
         
         this.next = function () { 
@@ -14714,7 +15380,7 @@ Fisma.Vulnerability = {
     $.jqplot.hex2rgb = function(h, a) {
         h = h.replace('#', '');
         if (h.length == 3) {
-            h = h[0]+h[0]+h[1]+h[1]+h[2]+h[2];
+            h = h.charAt(0)+h.charAt(0)+h.charAt(1)+h.charAt(1)+h.charAt(2)+h.charAt(2);
         }
         var rgb;
         rgb = 'rgba('+parseInt(h.slice(0,2), 16)+', '+parseInt(h.slice(2,4), 16)+', '+parseInt(h.slice(4,6), 16);
@@ -14730,7 +15396,7 @@ Fisma.Vulnerability = {
         var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *(?:, *[0-9.]*)?\)/;
         var m = s.match(pat);
         var h = '#';
-        for (i=1; i<4; i++) {
+        for (var i=1; i<4; i++) {
             var temp;
             if (m[i].search(/%/) != -1) {
                 temp = parseInt(255*m[i]/100, 10).toString(16);
@@ -14770,7 +15436,7 @@ Fisma.Vulnerability = {
         var pat = /rgba?\( *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *, *([0-9]{1,3}\.?[0-9]*%?) *,? *([0-9.]* *)?\)/;
         var m = rgb.match(pat);
         var ret = [];
-        for (i=1; i<4; i++) {
+        for (var i=1; i<4; i++) {
             if (m[i].search(/%/) != -1) {
                 ret[i-1] = parseInt(255*m[i]/100, 10);
             }
@@ -14783,19 +15449,7 @@ Fisma.Vulnerability = {
     };
     
     $.jqplot.colorKeywordMap = {aliceblue: 'rgb(240, 248, 255)', antiquewhite: 'rgb(250, 235, 215)', aqua: 'rgb( 0, 255, 255)', aquamarine: 'rgb(127, 255, 212)', azure: 'rgb(240, 255, 255)', beige: 'rgb(245, 245, 220)', bisque: 'rgb(255, 228, 196)', black: 'rgb( 0, 0, 0)', blanchedalmond: 'rgb(255, 235, 205)', blue: 'rgb( 0, 0, 255)', blueviolet: 'rgb(138, 43, 226)', brown: 'rgb(165, 42, 42)', burlywood: 'rgb(222, 184, 135)', cadetblue: 'rgb( 95, 158, 160)', chartreuse: 'rgb(127, 255, 0)', chocolate: 'rgb(210, 105, 30)', coral: 'rgb(255, 127, 80)', cornflowerblue: 'rgb(100, 149, 237)', cornsilk: 'rgb(255, 248, 220)', crimson: 'rgb(220, 20, 60)', cyan: 'rgb( 0, 255, 255)', darkblue: 'rgb( 0, 0, 139)', darkcyan: 'rgb( 0, 139, 139)', darkgoldenrod: 'rgb(184, 134, 11)', darkgray: 'rgb(169, 169, 169)', darkgreen: 'rgb( 0, 100, 0)', darkgrey: 'rgb(169, 169, 169)', darkkhaki: 'rgb(189, 183, 107)', darkmagenta: 'rgb(139, 0, 139)', darkolivegreen: 'rgb( 85, 107, 47)', darkorange: 'rgb(255, 140, 0)', darkorchid: 'rgb(153, 50, 204)', darkred: 'rgb(139, 0, 0)', darksalmon: 'rgb(233, 150, 122)', darkseagreen: 'rgb(143, 188, 143)', darkslateblue: 'rgb( 72, 61, 139)', darkslategray: 'rgb( 47, 79, 79)', darkslategrey: 'rgb( 47, 79, 79)', darkturquoise: 'rgb( 0, 206, 209)', darkviolet: 'rgb(148, 0, 211)', deeppink: 'rgb(255, 20, 147)', deepskyblue: 'rgb( 0, 191, 255)', dimgray: 'rgb(105, 105, 105)', dimgrey: 'rgb(105, 105, 105)', dodgerblue: 'rgb( 30, 144, 255)', firebrick: 'rgb(178, 34, 34)', floralwhite: 'rgb(255, 250, 240)', forestgreen: 'rgb( 34, 139, 34)', fuchsia: 'rgb(255, 0, 255)', gainsboro: 'rgb(220, 220, 220)', ghostwhite: 'rgb(248, 248, 255)', gold: 'rgb(255, 215, 0)', goldenrod: 'rgb(218, 165, 32)', gray: 'rgb(128, 128, 128)', grey: 'rgb(128, 128, 128)', green: 'rgb( 0, 128, 0)', greenyellow: 'rgb(173, 255, 47)', honeydew: 'rgb(240, 255, 240)', hotpink: 'rgb(255, 105, 180)', indianred: 'rgb(205, 92, 92)', indigo: 'rgb( 75, 0, 130)', ivory: 'rgb(255, 255, 240)', khaki: 'rgb(240, 230, 140)', lavender: 'rgb(230, 230, 250)', lavenderblush: 'rgb(255, 240, 245)', lawngreen: 'rgb(124, 252, 0)', lemonchiffon: 'rgb(255, 250, 205)', lightblue: 'rgb(173, 216, 230)', lightcoral: 'rgb(240, 128, 128)', lightcyan: 'rgb(224, 255, 255)', lightgoldenrodyellow: 'rgb(250, 250, 210)', lightgray: 'rgb(211, 211, 211)', lightgreen: 'rgb(144, 238, 144)', lightgrey: 'rgb(211, 211, 211)', lightpink: 'rgb(255, 182, 193)', lightsalmon: 'rgb(255, 160, 122)', lightseagreen: 'rgb( 32, 178, 170)', lightskyblue: 'rgb(135, 206, 250)', lightslategray: 'rgb(119, 136, 153)', lightslategrey: 'rgb(119, 136, 153)', lightsteelblue: 'rgb(176, 196, 222)', lightyellow: 'rgb(255, 255, 224)', lime: 'rgb( 0, 255, 0)', limegreen: 'rgb( 50, 205, 50)', linen: 'rgb(250, 240, 230)', magenta: 'rgb(255, 0, 255)', maroon: 'rgb(128, 0, 0)', mediumaquamarine: 'rgb(102, 205, 170)', mediumblue: 'rgb( 0, 0, 205)', mediumorchid: 'rgb(186, 85, 211)', mediumpurple: 'rgb(147, 112, 219)', mediumseagreen: 'rgb( 60, 179, 113)', mediumslateblue: 'rgb(123, 104, 238)', mediumspringgreen: 'rgb( 0, 250, 154)', mediumturquoise: 'rgb( 72, 209, 204)', mediumvioletred: 'rgb(199, 21, 133)', midnightblue: 'rgb( 25, 25, 112)', mintcream: 'rgb(245, 255, 250)', mistyrose: 'rgb(255, 228, 225)', moccasin: 'rgb(255, 228, 181)', navajowhite: 'rgb(255, 222, 173)', navy: 'rgb( 0, 0, 128)', oldlace: 'rgb(253, 245, 230)', olive: 'rgb(128, 128, 0)', olivedrab: 'rgb(107, 142, 35)', orange: 'rgb(255, 165, 0)', orangered: 'rgb(255, 69, 0)', orchid: 'rgb(218, 112, 214)', palegoldenrod: 'rgb(238, 232, 170)', palegreen: 'rgb(152, 251, 152)', paleturquoise: 'rgb(175, 238, 238)', palevioletred: 'rgb(219, 112, 147)', papayawhip: 'rgb(255, 239, 213)', peachpuff: 'rgb(255, 218, 185)', peru: 'rgb(205, 133, 63)', pink: 'rgb(255, 192, 203)', plum: 'rgb(221, 160, 221)', powderblue: 'rgb(176, 224, 230)', purple: 'rgb(128, 0, 128)', red: 'rgb(255, 0, 0)', rosybrown: 'rgb(188, 143, 143)', royalblue: 'rgb( 65, 105, 225)', saddlebrown: 'rgb(139, 69, 19)', salmon: 'rgb(250, 128, 114)', sandybrown: 'rgb(244, 164, 96)', seagreen: 'rgb( 46, 139, 87)', seashell: 'rgb(255, 245, 238)', sienna: 'rgb(160, 82, 45)', silver: 'rgb(192, 192, 192)', skyblue: 'rgb(135, 206, 235)', slateblue: 'rgb(106, 90, 205)', slategray: 'rgb(112, 128, 144)', slategrey: 'rgb(112, 128, 144)', snow: 'rgb(255, 250, 250)', springgreen: 'rgb( 0, 255, 127)', steelblue: 'rgb( 70, 130, 180)', tan: 'rgb(210, 180, 140)', teal: 'rgb( 0, 128, 128)', thistle: 'rgb(216, 191, 216)', tomato: 'rgb(255, 99, 71)', turquoise: 'rgb( 64, 224, 208)', violet: 'rgb(238, 130, 238)', wheat: 'rgb(245, 222, 179)', white: 'rgb(255, 255, 255)', whitesmoke: 'rgb(245, 245, 245)', yellow: 'rgb(255, 255, 0)', yellowgreen: 'rgb(154, 205, 50)'};
-        
-    // Convienence function that won't hang IE.
-    $.jqplot.log = function() {
-        if (window.console && $.jqplot.debug) {
-           if (arguments.length == 1) {
-               console.log (arguments[0]);
-            }
-           else {
-               console.log(arguments);
-            }
-        }
-    };
-    var log = $.jqplot.log;
+
     
 
     // class: $.jqplot.AxisLabelRenderer
@@ -14915,6 +15569,7 @@ Fisma.Vulnerability = {
         // css spec for the color attribute.
         this.textColor;
         this._elem;
+		this._breakTick = false;
         
         $.extend(true, this, options);
     };
@@ -14943,7 +15598,7 @@ Fisma.Vulnerability = {
         if (this.prefix && !this.formatString) {
             this.label = this.prefix + this.label;
         }
-        style ='style="position:absolute;';
+        var style ='style="position:absolute;';
         if (Number(this.label)) {
             style +='white-space:nowrap;';
         }
@@ -14961,6 +15616,9 @@ Fisma.Vulnerability = {
         if (this.textColor) {
             this._elem.css('color', this.textColor);
         }
+		if (this._breakTick) {
+			this._elem.addClass('jqplot-breakTick');
+		}
         return this._elem;
     };
         
@@ -15005,10 +15663,10 @@ Fisma.Vulnerability = {
         this._elem = $(elem);
         this._elem.addClass('jqplot-grid-canvas');
         this._elem.css({ position: 'absolute', left: 0, top: 0 });
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
         }
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             elem = window.G_vmlCanvasManager.initElement(elem);
         }
         this._top = this._offsets.top;
@@ -15017,6 +15675,8 @@ Fisma.Vulnerability = {
         this._right = w - this._offsets.right;
         this._width = this._right - this._left;
         this._height = this._bottom - this._top;
+        // avoid memory leak
+        elem = null;
         return this._elem;
     };
     
@@ -15030,13 +15690,13 @@ Fisma.Vulnerability = {
         ctx.fillStyle = this.backgroundColor || this.background;
         ctx.fillRect(this._left, this._top, this._width, this._height);
         
-        if (this.drawGridlines) {
+        if (true) {
             ctx.save();
             ctx.lineJoin = 'miter';
             ctx.lineCap = 'butt';
             ctx.lineWidth = this.gridLineWidth;
             ctx.strokeStyle = this.gridLineColor;
-            var b, e;
+            var b, e, s, m;
             var ax = ['xaxis', 'yaxis', 'x2axis', 'y2axis'];
             for (var i=4; i>0; i--) {
                 var name = ax[i-1];
@@ -15050,12 +15710,12 @@ Fisma.Vulnerability = {
                             switch (name) {
                                 case 'xaxis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(pos, this._top, pos, this._bottom);
                                     }
                                     
                                     // draw the mark
-                                    if (t.showMark && t.mark) {
+	                                if (t.showMark && t.mark) {
                                         s = t.markSize;
                                         m = t.mark;
                                         var pos = Math.round(axis.u2p(t.value)) + 0.5;
@@ -15087,7 +15747,7 @@ Fisma.Vulnerability = {
                                     break;
                                 case 'yaxis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(this._right, pos, this._left, pos);
                                     }
                                     // draw the mark
@@ -15122,7 +15782,7 @@ Fisma.Vulnerability = {
                                     break;
                                 case 'x2axis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(pos, this._bottom, pos, this._top);
                                     }
                                     // draw the mark
@@ -15157,7 +15817,7 @@ Fisma.Vulnerability = {
                                     break;
                                 case 'y2axis':
                                     // draw the grid line
-                                    if (t.showGridline) {
+                                    if (t.showGridline && this.drawGridlines) {
                                         drawLine(this._left, pos, this._right, pos);
                                     }
                                     // draw the mark
@@ -15195,7 +15855,10 @@ Fisma.Vulnerability = {
                             }
                         }
                     }
+                    t = null;
                 }
+                axis = null;
+                ticks = null;
             }
             // Now draw grid lines for additional y axes
             ax = ['y3axis', 'y4axis', 'y5axis', 'y6axis', 'y7axis', 'y8axis', 'y9axis'];
@@ -15246,8 +15909,12 @@ Fisma.Vulnerability = {
                             // draw the line
                             drawLine(b, pos, e, pos, {strokeStyle:axis.borderColor});
                         }
+                        t = null;
                     }
+                    t0 = null;
                 }
+                axis = null;
+                ticks =  null;
             }
             
             ctx.restore();
@@ -15282,576 +15949,11 @@ Fisma.Vulnerability = {
         // ctx.strokeStyle = this.borderColor;
         // ctx.strokeRect(this._left, this._top, this._width, this._height);
         
-    
         ctx.restore();
+        ctx =  null;
+        axes = null;
     };
-   
-    /**
-     * Date instance methods
-     *
-     * @author Ken Snyder (ken d snyder at gmail dot com)
-     * @date 2008-09-10
-     * @version 2.0.2 (http://kendsnyder.com/sandbox/date/)     
-     * @license Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
-     *
-     * @contributions Chris Leonello
-     * @comment Bug fix to 12 hour time and additions to handle milliseconds and 
-     * @comment 24 hour time without am/pm suffix
-     *
-     */
  
-    // begin by creating a scope for utility variables
-    
-    //
-    // pre-calculate the number of milliseconds in a day
-    //  
-    
-    var day = 24 * 60 * 60 * 1000;
-    //
-    // function to add leading zeros
-    //
-    var zeroPad = function(number, digits) {
-        number = String(number);
-        while (number.length < digits) {
-            number = '0' + number;
-        }
-        return number;
-    };
-    //
-    // set up integers and functions for adding to a date or subtracting two dates
-    //
-    var multipliers = {
-        millisecond: 1,
-        second: 1000,
-        minute: 60 * 1000,
-        hour: 60 * 60 * 1000,
-        day: day,
-        week: 7 * day,
-        month: {
-            // add a number of months
-            add: function(d, number) {
-                // add any years needed (increments of 12)
-                multipliers.year.add(d, Math[number > 0 ? 'floor' : 'ceil'](number / 12));
-                // ensure that we properly wrap betwen December and January
-                var prevMonth = d.getMonth() + (number % 12);
-                if (prevMonth == 12) {
-                    prevMonth = 0;
-                    d.setYear(d.getFullYear() + 1);
-                } else if (prevMonth == -1) {
-                    prevMonth = 11;
-                    d.setYear(d.getFullYear() - 1);
-                }
-                d.setMonth(prevMonth);
-            },
-            // get the number of months between two Date objects (decimal to the nearest day)
-            diff: function(d1, d2) {
-                // get the number of years
-                var diffYears = d1.getFullYear() - d2.getFullYear();
-                // get the number of remaining months
-                var diffMonths = d1.getMonth() - d2.getMonth() + (diffYears * 12);
-                // get the number of remaining days
-                var diffDays = d1.getDate() - d2.getDate();
-                // return the month difference with the days difference as a decimal
-                return diffMonths + (diffDays / 30);
-            }
-        },
-        year: {
-            // add a number of years
-            add: function(d, number) {
-                d.setYear(d.getFullYear() + Math[number > 0 ? 'floor' : 'ceil'](number));
-            },
-            // get the number of years between two Date objects (decimal to the nearest day)
-            diff: function(d1, d2) {
-                return multipliers.month.diff(d1, d2) / 12;
-            }
-        }        
-    };
-    //
-    // alias each multiplier with an 's' to allow 'year' and 'years' for example
-    //
-    for (var unit in multipliers) {
-        if (unit.substring(unit.length - 1) != 's') { // IE will iterate newly added properties :|
-            multipliers[unit + 's'] = multipliers[unit];
-        }
-    }
-    //
-    // take a date instance and a format code and return the formatted value
-    //
-    var format = function(d, code) {
-            if (Date.prototype.strftime.formatShortcuts[code]) {
-                    // process any shortcuts recursively
-                    return d.strftime(Date.prototype.strftime.formatShortcuts[code]);
-            } else {
-                    // get the format code function and toPaddedString() argument
-                    var getter = (Date.prototype.strftime.formatCodes[code] || '').split('.');
-                    var nbr = d['get' + getter[0]] ? d['get' + getter[0]]() : '';
-                    // run toPaddedString() if specified
-                    if (getter[1]) {
-                        nbr = zeroPad(nbr, getter[1]);
-                    }
-                    // prepend the leading character
-                    return nbr;
-            }       
-    };
-    //
-    // Add methods to Date instances
-    //
-    var instanceMethods = {
-        //
-        // Return a date one day ahead (or any other unit)
-        //
-        // @param string unit
-        // units: year | month | day | week | hour | minute | second | millisecond
-        // @return object Date
-        //
-        succ: function(unit) {
-            return this.clone().add(1, unit);
-        },
-        //
-        // Add an arbitrary amount to the currently stored date
-        //
-        // @param integer/float number      
-        // @param string unit
-        // @return object Date (chainable)      
-        //
-        add: function(number, unit) {
-            var factor = multipliers[unit] || multipliers.day;
-            if (typeof factor == 'number') {
-                this.setTime(this.getTime() + (factor * number));
-            } else {
-                factor.add(this, number);
-            }
-            return this;
-        },
-        //
-        // Find the difference between the current and another date
-        //
-        // @param string/object dateObj
-        // @param string unit
-        // @param boolean allowDecimal
-        // @return integer/float
-        //
-        diff: function(dateObj, unit, allowDecimal) {
-            // ensure we have a Date object
-            dateObj = Date.create(dateObj);
-            if (dateObj === null) {
-                return null;
-            }
-            // get the multiplying factor integer or factor function
-            var factor = multipliers[unit] || multipliers.day;
-            if (typeof factor == 'number') {
-                // multiply
-                var unitDiff = (this.getTime() - dateObj.getTime()) / factor;
-            } else {
-                // run function
-                var unitDiff = factor.diff(this, dateObj);
-            }
-            // if decimals are not allowed, round toward zero
-            return (allowDecimal ? unitDiff : Math[unitDiff > 0 ? 'floor' : 'ceil'](unitDiff));          
-        },
-        //
-        // Convert a date to a string using traditional strftime format codes
-        //
-        // @param string formatStr
-        // @return string
-        //
-        strftime: function(formatStr) {
-            // default the format string to year-month-day
-            var source = formatStr || '%Y-%m-%d', result = '', match;
-            // Account for display of time in local time or as UTC time
-            // var val = ($.jqplot.comfig.convertUTCtoLocaltime) ? this : 
-            // replace each format code
-            while (source.length > 0) {
-                if (match = source.match(Date.prototype.strftime.formatCodes.matcher)) {
-                    result += source.slice(0, match.index);
-                    result += (match[1] || '') + format(this, match[2]);
-                    source = source.slice(match.index + match[0].length);
-                } else {
-                    result += source;
-                    source = '';
-                }
-            }
-            return result;
-        },
-        //
-        // Return a proper two-digit year integer
-        //
-        // @return integer
-        //
-        getShortYear: function() {
-            return this.getYear() % 100;
-        },
-        //
-        // Get the number of the current month, 1-12
-        //
-        // @return integer
-        //
-        getMonthNumber: function() {
-            return this.getMonth() + 1;
-        },
-        //
-        // Get the name of the current month
-        //
-        // @return string
-        //
-        getMonthName: function() {
-            return Date.MONTHNAMES[this.getMonth()];
-        },
-        //
-        // Get the abbreviated name of the current month
-        //
-        // @return string
-        //
-        getAbbrMonthName: function() {
-            return Date.ABBR_MONTHNAMES[this.getMonth()];
-        },
-        //
-        // Get the name of the current week day
-        //
-        // @return string
-        //      
-        getDayName: function() {
-            return Date.DAYNAMES[this.getDay()];
-        },
-        //
-        // Get the abbreviated name of the current week day
-        //
-        // @return string
-        //      
-        getAbbrDayName: function() {
-            return Date.ABBR_DAYNAMES[this.getDay()];
-        },
-        //
-        // Get the ordinal string associated with the day of the month (i.e. st, nd, rd, th)
-        //
-        // @return string
-        //      
-        getDayOrdinal: function() {
-            return Date.ORDINALNAMES[this.getDate() % 10];
-        },
-        //
-        // Get the current hour on a 12-hour scheme
-        //
-        // @return integer
-        //
-        getHours12: function() {
-            var hours = this.getHours();
-            return hours > 12 ? hours - 12 : (hours == 0 ? 12 : hours);
-        },
-        //
-        // Get the AM or PM for the current time
-        //
-        // @return string
-        //
-        getAmPm: function() {
-            return this.getHours() >= 12 ? 'PM' : 'AM';
-        },
-        //
-        // Get the current date as a Unix timestamp
-        //
-        // @return integer
-        //
-        getUnix: function() {
-            return Math.round(this.getTime() / 1000, 0);
-        },
-        //
-        // Get the GMT offset in hours and minutes (e.g. +06:30)
-        //
-        // @return string
-        //
-        getGmtOffset: function() {
-            // divide the minutes offset by 60
-            var hours = this.getTimezoneOffset() / 60;
-            // decide if we are ahead of or behind GMT
-            var prefix = hours < 0 ? '+' : '-';
-            // remove the negative sign if any
-            hours = Math.abs(hours);
-            // add the +/- to the padded number of hours to : to the padded minutes
-            return prefix + zeroPad(Math.floor(hours), 2) + ':' + zeroPad((hours % 1) * 60, 2);
-        },
-        //
-        // Get the browser-reported name for the current timezone (e.g. MDT, Mountain Daylight Time)
-        //
-        // @return string
-        //
-        getTimezoneName: function() {
-            var match = /(?:\((.+)\)$| ([A-Z]{3}) )/.exec(this.toString());
-            return match[1] || match[2] || 'GMT' + this.getGmtOffset();
-        },
-        //
-        // Convert the current date to an 8-digit integer (%Y%m%d)
-        //
-        // @return int
-        //
-        toYmdInt: function() {
-            return (this.getFullYear() * 10000) + (this.getMonthNumber() * 100) + this.getDate();
-        },  
-        //
-        // Create a copy of a date object
-        //
-        // @return object
-        //       
-        clone: function() {
-                return new Date(this.getTime());
-        }
-    };
-    for (var name in instanceMethods) {
-        Date.prototype[name] = instanceMethods[name];
-    }
-    //
-    // Add static methods to the date object
-    //
-    var staticMethods = {
-        //
-        // The heart of the date functionality: returns a date object if given a convertable value
-        //
-        // @param string/object/integer date
-        // @return object Date
-        //
-        create: function(date) {
-            // If the passed value is already a date object, return it
-            if (date instanceof Date) {
-                return date;
-            }
-            // if (typeof date == 'number') return new Date(date);
-            // If the passed value is an integer, interpret it as a javascript timestamp
-            if (typeof date == 'number') {
-                return new Date(date);
-            }
-            // If the passed value is a string, attempt to parse it using Date.parse()
-            var parsable = String(date).replace(/^\s*(.+)\s*$/, '$1'), i = 0, length = Date.create.patterns.length, pattern;
-            var current = parsable;
-            while (i < length) {
-                ms = Date.parse(current);
-                if (!isNaN(ms)) {
-                    return new Date(ms);
-                }
-                pattern = Date.create.patterns[i];
-                if (typeof pattern == 'function') {
-                    obj = pattern(current);
-                    if (obj instanceof Date) {
-                        return obj;
-                    }
-                } else {
-                    current = parsable.replace(pattern[0], pattern[1]);
-                }
-                i++;
-            }
-            return NaN;
-        },
-        //
-        // constants representing month names, day names, and ordinal names
-        // (same names as Ruby Date constants)
-        //
-        MONTHNAMES          : 'January February March April May June July August September October November December'.split(' '),
-        ABBR_MONTHNAMES : 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' '),
-        DAYNAMES                : 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' '),
-        ABBR_DAYNAMES       : 'Sun Mon Tue Wed Thu Fri Sat'.split(' '),
-        ORDINALNAMES        : 'th st nd rd th th th th th th'.split(' '),
-        //
-        // Shortcut for full ISO-8601 date conversion
-        //
-        ISO: '%Y-%m-%dT%H:%M:%S.%N%G',
-        //
-        // Shortcut for SQL-type formatting
-        //
-        SQL: '%Y-%m-%d %H:%M:%S',
-        //
-        // Setter method for month, day, and ordinal names for i18n
-        //
-        // @param object newNames
-        //
-        daysInMonth: function(year, month) {
-            if (month == 2) {
-                return new Date(year, 1, 29).getDate() == 29 ? 29 : 28;
-            }
-            return [undefined,31,undefined,31,30,31,30,31,31,30,31,30,31][month];
-        }
-    };
-    for (var name in staticMethods) {
-        Date[name] = staticMethods[name];
-    }
-    //
-    // format codes for strftime
-    //
-    // each code must be an array where the first member is the name of a Date.prototype function
-    // and optionally a second member indicating the number to pass to Number#toPaddedString()
-    //
-    Date.prototype.strftime.formatCodes = {
-        //
-        // 2-part regex matcher for format codes
-        //
-        // first match must be the character before the code (to account for escaping)
-        // second match must be the format code character(s)
-        //
-        matcher: /()%(#?(%|[a-z]))/i,
-        // year
-        Y: 'FullYear',
-        y: 'ShortYear.2',
-        // month
-        m: 'MonthNumber.2',
-        '#m': 'MonthNumber',
-        B: 'MonthName',
-        b: 'AbbrMonthName',
-        // day
-        d: 'Date.2',
-        '#d': 'Date',
-        e: 'Date',
-        A: 'DayName',
-        a: 'AbbrDayName',
-        w: 'Day',
-        o: 'DayOrdinal',
-        // hours
-        H: 'Hours.2',
-        '#H': 'Hours',
-        I: 'Hours12.2',
-        '#I': 'Hours12',
-        p: 'AmPm',
-        // minutes
-        M: 'Minutes.2',
-        '#M': 'Minutes',
-        // seconds
-        S: 'Seconds.2',
-        '#S': 'Seconds',
-        s: 'Unix',
-        // milliseconds
-        N: 'Milliseconds.3',
-        '#N': 'Milliseconds',
-        // timezone
-        O: 'TimezoneOffset',
-        Z: 'TimezoneName',
-        G: 'GmtOffset'  
-    };
-    //
-    // shortcuts that will be translated into their longer version
-    //
-    // be sure that format shortcuts do not refer to themselves: this will cause an infinite loop
-    //
-    Date.prototype.strftime.formatShortcuts = {
-        // date
-        F: '%Y-%m-%d',
-        // time
-        T: '%H:%M:%S',
-        X: '%H:%M:%S',
-        // local format date
-        x: '%m/%d/%y',
-        D: '%m/%d/%y',
-        // local format extended
-        '#c': '%a %b %e %H:%M:%S %Y',
-        // local format short
-        v: '%e-%b-%Y',
-        R: '%H:%M',
-        r: '%I:%M:%S %p',
-        // tab and newline
-        t: '\t',
-        n: '\n',
-        '%': '%'
-    };
-    //
-    // A list of conversion patterns (array arguments sent directly to gsub)
-    // Add, remove or splice a patterns to customize date parsing ability
-    //
-    Date.create.patterns = [
-        [/-/g, '/'], // US-style time with dashes => Parsable US-style time
-        [/st|nd|rd|th/g, ''], // remove st, nd, rd and th        
-        [/(3[01]|[0-2]\d)\s*\.\s*(1[0-2]|0\d)\s*\.\s*([1-9]\d{3})/, '$2/$1/$3'], // World time => Parsable US-style time
-        [/([1-9]\d{3})\s*-\s*(1[0-2]|0\d)\s*-\s*(3[01]|[0-2]\d)/, '$2/$3/$1'], // ISO-style time => Parsable US-style time
-        function(str) { // 12-hour or 24 hour time with milliseconds
-            // var match = str.match(/^(?:(.+)\s+)?([1-9]|1[012])(?:\s*\:\s*(\d\d))?(?:\s*\:\s*(\d\d))?\s*(am|pm)\s*$/i);
-            var match = str.match(/^(?:(.+)\s+)?([012]?\d)(?:\s*\:\s*(\d\d))?(?:\s*\:\s*(\d\d(\.\d*)?))?\s*(am|pm)?\s*$/i);
-            //                   opt. date      hour       opt. minute     opt. second       opt. msec   opt. am or pm
-            if (match) {
-                if (match[1]) {
-                    var d = Date.create(match[1]);
-                    if (isNaN(d)) {
-                        return;
-                    }
-                } else {
-                    var d = new Date();
-                    d.setMilliseconds(0);
-                }
-                var hour = parseFloat(match[2]);
-                if (match[6]) {
-                    hour = match[6].toLowerCase() == 'am' ? (hour == 12 ? 0 : hour) : (hour == 12 ? 12 : hour + 12);
-                }
-                d.setHours(hour, parseInt(match[3] || 0, 10), parseInt(match[4] || 0, 10), ((parseFloat(match[5] || 0)) || 0)*1000);
-                return d;
-            }
-            else {
-                return str;
-            }
-        },
-        function(str) { // ISO timestamp with time zone.
-            var match = str.match(/^(?:(.+))[T|\s+]([012]\d)(?:\:(\d\d))(?:\:(\d\d))(?:\.\d+)([\+\-]\d\d\:\d\d)$/i);
-            if (match) {
-                if (match[1]) {
-                    var d = Date.create(match[1]);
-                    if (isNaN(d)) {
-                        return;
-                    }
-                } else {
-                    var d = new Date();
-                    d.setMilliseconds(0);
-                }
-                var hour = parseFloat(match[2]);
-                d.setHours(hour, parseInt(match[3], 10), parseInt(match[4], 10), parseFloat(match[5])*1000);
-                return d;
-            }
-            else {
-                    return str;
-            }
-        },
-        function(str) {
-            var match = str.match(/^([0-3]?\d)\s*[-\/.\s]{1}\s*([a-zA-Z]{3,9})\s*[-\/.\s]{1}\s*([0-3]?\d)$/);
-            if (match) {
-                var d = new Date();
-                var y = parseFloat(String(d.getFullYear()).slice(2,4));
-                var cent = parseInt(String(d.getFullYear())/100, 10)*100;
-                var centoffset = 1;
-                var m1 = parseFloat(match[1]);
-                var m3 = parseFloat(match[3]);
-                var ny, nd, nm;
-                if (m1 > 31) { // first number is a year
-                    nd = match[3];
-                    if (m1 < y+centoffset) { // if less than 1 year out, assume it is this century.
-                        ny = cent + m1;
-                    }
-                    else {
-                        ny = cent - 100 + m1;
-                    }
-                }
-                
-                else { // last number is the year
-                    nd = match[1];
-                    if (m3 < y+centoffset) { // if less than 1 year out, assume it is this century.
-                        ny = cent + m3;
-                    }
-                    else {
-                        ny = cent - 100 + m3;
-                    }
-                }
-                
-                var nm = $.inArray(match[2], Date.ABBR_MONTHNAMES);
-                
-                if (nm == -1) {
-                    nm = $.inArray(match[2], Date.MONTHNAMES);
-                }
-            
-                d.setFullYear(ny, nm, nd);
-                d.setHours(0,0,0,0);
-                return d;
-            }
-            
-            else {
-                return str;
-            }
-        }        
-    ];
-    
-    if ($.jqplot.config.debug) {
-        $.date = Date.create;
-    }
-
     // Class: $.jqplot.DivTitleRenderer
     // The default title renderer for jqPlot.  This class has no options beyond the <Title> class. 
     $.jqplot.DivTitleRenderer = function() {
@@ -15906,6 +16008,7 @@ Fisma.Vulnerability = {
     // called with scope of series.
     $.jqplot.LineRenderer.prototype.init = function(options, plot) {
         options = options || {};
+        this._type='line';
         var lopts = {highlightMouseOver: options.highlightMouseOver, highlightMouseDown: options.highlightMouseDown, highlightColor: options.highlightColor};
         
         delete (options.highlightMouseOver);
@@ -15914,7 +16017,7 @@ Fisma.Vulnerability = {
         
         $.extend(true, this.renderer, options);
         // set the shape renderer options
-        var opts = {lineJoin:'round', lineCap:'round', fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, closePath:this.fill};
+        var opts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, strokeStyle:this.color, fillStyle:this.fillColor, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shapeRenderer.init(opts);
         // set the shadow renderer options
         // scale the shadowOffset to the width of the line.
@@ -15926,7 +16029,7 @@ Fisma.Vulnerability = {
         else {
             var shadow_offset = this.shadowOffset*Math.atan((this.lineWidth/2.5))/0.785398163;
         }
-        var sopts = {lineJoin:'round', lineCap:'round', fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
+        var sopts = {lineJoin:this.lineJoin, lineCap:this.lineCap, fill:this.fill, isarc:false, angle:this.shadowAngle, offset:shadow_offset, alpha:this.shadowAlpha, depth:this.shadowDepth, lineWidth:this.lineWidth, closePath:this.fill};
         this.renderer.shadowRenderer.init(sopts);
         this._areaPoints = [];
         this._boundingBox = [[],[]];
@@ -15934,11 +16037,11 @@ Fisma.Vulnerability = {
         if (!this.isTrendline && this.fill) {
         
             // prop: highlightMouseOver
-            // True to highlight slice when moused over.
+            // True to highlight area on a filled plot when moused over.
             // This must be false to enable highlightMouseDown to highlight when clicking on an area on a filled plot.
             this.highlightMouseOver = true;
             // prop: highlightMouseDown
-            // True to highlight when a mouse button is pressed over a area on a filled plot.
+            // True to highlight when a mouse button is pressed over an area on a filled plot.
             // This will be disabled if highlightMouseOver is true.
             this.highlightMouseDown = false;
             // prop: highlightColor
@@ -15954,10 +16057,14 @@ Fisma.Vulnerability = {
             if (!this.highlightColor) {
                 this.highlightColor = $.jqplot.computeHighlightColors(this.fillColor);
             }
-            // turn off traditional highlighter
+            // turn off (disable) the highlighter plugin
             if (this.highlighter) {
                 this.highlighter.show = false;
             }
+        }
+        
+        if (!this.isTrendline && plot) {
+            plot.plugins.lineRenderer = {};
             plot.postInitHooks.addOnce(postInit);
             plot.postDrawHooks.addOnce(postPlotDraw);
             plot.eventListenerHooks.addOnce('jqplotMouseMove', handleMove);
@@ -15982,11 +16089,27 @@ Fisma.Vulnerability = {
         this.gridData = [];
         this._prevGridData = [];
         for (var i=0; i<this.data.length; i++) {
-            if (data[i] != null) {
+            // if not a line series or if no nulls in data, push the converted point onto the array.
+            if (data[i][0] != null && data[i][1] != null) {
                 this.gridData.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
             }
-            if (pdata[i] != null) {
+            // else if there is a null, preserve it.
+            else if (data[i][0] == null) {
+                this.gridData.push([null, yp.call(this._yaxis, data[i][1])]);
+            }
+            else if (data[i][1] == null) {
+                this.gridData.push([xp.call(this._xaxis, data[i][0]), null]);
+            }
+            // if not a line series or if no nulls in data, push the converted point onto the array.
+            if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] != null) {
                 this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), yp.call(this._yaxis, pdata[i][1])]);
+            }
+            // else if there is a null, preserve it.
+            else if (pdata[i] != null && pdata[i][0] == null) {
+                this._prevGridData.push([null, yp.call(this._yaxis, pdata[i][1])]);
+            }  
+            else if (pdata[i] != null && pdata[i][0] != null && pdata[i][1] == null) {
+                this._prevGridData.push([xp.call(this._xaxis, pdata[i][0]), null]);
             }
         }
     };
@@ -16004,8 +16127,16 @@ Fisma.Vulnerability = {
         var gd = [];
         var pgd = [];
         for (var i=0; i<data.length; i++) {
-            if (data[i] != null) {
+            // if not a line series or if no nulls in data, push the converted point onto the array.
+            if (data[i][0] != null && data[i][1] != null) {
                 gd.push([xp.call(this._xaxis, data[i][0]), yp.call(this._yaxis, data[i][1])]);
+            }
+            // else if there is a null, preserve it.
+            else if (data[i][0] == null) {
+                gd.push([null, yp.call(this._yaxis, data[i][1])]);
+            }
+            else if (data[i][1] == null) {
+                gd.push([xp.call(this._xaxis, data[i][0]), null]);
             }
         }
         return gd;
@@ -16119,6 +16250,9 @@ Fisma.Vulnerability = {
                             this.renderer.shapeRenderer.draw(ctx, gd, opts);
                         }
                     }
+                    /////////////////////////
+                    // Not filled to zero
+                    ////////////////////////
                     else {                    
                         // if stoking line as well as filling, get a copy of line data.
                         if (fillAndStroke) {
@@ -16130,7 +16264,7 @@ Fisma.Vulnerability = {
                             var gridymin = ctx.canvas.height;
                             // IE doesn't return new length on unshift
                             gd.unshift([gd[0][0], gridymin]);
-                            len = gd.length;
+                            var len = gd.length;
                             gd.push([gd[len - 1][0], gridymin]);                   
                         }
                         // if stacked, fill to line below 
@@ -16194,7 +16328,9 @@ Fisma.Vulnerability = {
             // now draw the markers
             if (this.markerRenderer.show && !fill) {
                 for (i=0; i<gd.length; i++) {
-                    this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts.markerOptions);
+                    if (gd[i][0] != null && gd[i][1] != null) {
+                        this.markerRenderer.draw(gd[i][0], gd[i][1], ctx, opts.markerOptions);
+                    }
                 }
             }
         }
@@ -16209,7 +16345,7 @@ Fisma.Vulnerability = {
     // called with scope of plot.
     // make sure to not leave anything highlighted.
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.LineRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {
@@ -16224,11 +16360,11 @@ Fisma.Vulnerability = {
     // create a canvas which we can draw on.
     // insert it before the eventCanvas, so eventCanvas will still capture events.
     function postPlotDraw() {
-        this.plugins.lineRenderer = {highlightedSeriesIndex:null};
+        this.plugins.lineRenderer.highlightedSeriesIndex = null;
         this.plugins.lineRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
         this.eventCanvas._elem.before(this.plugins.lineRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-lineRenderer-highlight-canvas', this._plotDimensions));
-        var hctx = this.plugins.lineRenderer.highlightCanvas.setContext();
+        this.plugins.lineRenderer.highlightCanvas.setContext();
     } 
     
     function highlight (plot, sidx, pidx, points) {
@@ -16239,6 +16375,7 @@ Fisma.Vulnerability = {
         plot.plugins.lineRenderer.highlightedSeriesIndex = sidx;
         var opts = {fillStyle: s.highlightColor};
         s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
+        canvas = null;
     }
     
     function unhighlight (plot) {
@@ -16249,6 +16386,7 @@ Fisma.Vulnerability = {
         }
         plot.plugins.lineRenderer.highlightedSeriesIndex = null;
         plot.target.trigger('jqplotDataUnhighlight');
+        canvas = null;
     }
     
     
@@ -16328,33 +16466,47 @@ Fisma.Vulnerability = {
     
     // called with scope of axis object.
     $.jqplot.LinearAxisRenderer.prototype.init = function(options){
+		// prop: breakPoints
+		// EXPERIMENTAL!! Use at your own risk!
+		// Works only with linear axes and the default tick renderer.
+		// Array of [start, stop] points to create a broken axis.
+		// Broken axes have a "jump" in them, which is an immediate 
+		// transition from a smaller value to a larger value.
+		// Currently, axis ticks MUST be manually assigned if using breakPoints
+		// by using the axis ticks array option.
+		this.breakPoints = null;
+		// prop: breakTickLabel
+		// Label to use at the axis break if breakPoints are specified.
+		this.breakTickLabel = "&asymp;";
+        // prop: forceTickAt0
+        // This will ensure that there is always a tick mark at 0.
+        // If data range is strictly positive or negative,
+        // this will force 0 to be inside the axis bounds unless
+        // the appropriate axis pad (pad, padMin or padMax) is set
+        // to 0, then this will force an axis min or max value at 0.
+        // This has know effect when any of the following options
+        // are set:  autoscale, min, max, numberTicks or tickInterval.
+        this.forceTickAt0 = false;
+        // prop: forceTickAt100
+        // This will ensure that there is always a tick mark at 100.
+        // If data range is strictly above or below 100,
+        // this will force 100 to be inside the axis bounds unless
+        // the appropriate axis pad (pad, padMin or padMax) is set
+        // to 0, then this will force an axis min or max value at 100.
+        // This has know effect when any of the following options
+        // are set:  autoscale, min, max, numberTicks or tickInterval.
+        this.forceTickAt100 = false;
+        this._autoFormatString = '';
         $.extend(true, this, options);
-        var db = this._dataBounds;
-        // Go through all the series attached to this axis and find
-        // the min/max bounds for this axis.
-        for (var i=0; i<this._series.length; i++) {
-            var s = this._series[i];
-            var d = s._plotData;
-            
-            for (var j=0; j<d.length; j++) { 
-                if (this.name == 'xaxis' || this.name == 'x2axis') {
-                    if (d[j][0] < db.min || db.min == null) {
-                        db.min = d[j][0];
-                    }
-                    if (d[j][0] > db.max || db.max == null) {
-                        db.max = d[j][0];
-                    }
-                }              
-                else {
-                    if (d[j][1] < db.min || db.min == null) {
-                        db.min = d[j][1];
-                    }
-                    if (d[j][1] > db.max || db.max == null) {
-                        db.max = d[j][1];
-                    }
-                }              
-            }
-        }
+		if (this.breakPoints) {
+			if (!$.isArray(this.breakPoints)) {
+				this.breakPoints = null;
+			}
+			else if (this.breakPoints.length < 2 || this.breakPoints[1] <= this.breakPoints[0]) {
+				this.breakPoints = null;
+			}
+		}
+		this.resetDataBounds();
     };
     
     // called with scope of axis
@@ -16386,21 +16538,21 @@ Fisma.Vulnerability = {
             // create a _label object.
             this.labelOptions.axis = this.name;
             this._label = new this.labelRenderer(this.labelOptions);
+            var elem;
             if (this._label.show) {
-                var elem = this._label.draw(ctx);
+                elem = this._label.draw(ctx);
                 elem.appendTo(this._elem);
             }
     
-            if (this.showTicks) {
-                var t = this._ticks;
-                for (var i=0; i<t.length; i++) {
-                    var tick = t[i];
-                    if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        var elem = tick.draw(ctx);
-                        elem.appendTo(this._elem);
-                    }
+            var t = this._ticks;
+            for (var i=0; i<t.length; i++) {
+                var tick = t[i];
+                if (tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                    elem = tick.draw(ctx);
+                    elem.appendTo(this._elem);
                 }
             }
+            elem = null;
         }
         return this._elem;
     };
@@ -16421,11 +16573,11 @@ Fisma.Vulnerability = {
         var w = 0;
         var h = 0;
         var lshow = (this._label == null) ? false : this._label.show;
-        if (this.show && this.showTicks) {
+        if (this.show) {
             var t = this._ticks;
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
-                if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                if (!tick._breakTick && tick.show && tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
                     if (this.name == 'xaxis' || this.name == 'x2axis') {
                         temp = tick._elem.outerHeight(true);
                     }
@@ -16494,28 +16646,44 @@ Fisma.Vulnerability = {
                 var ut = userTicks[i];
                 var t = new this.tickRenderer(this.tickOptions);
                 if (ut.constructor == Array) {
-                    t.value = ut[0];
-                    t.label = ut[1];
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
+	                t.value = ut[0];
+					if (this.breakPoints) {
+						if (ut[0] == this.breakPoints[0]) {
+							t.label = this.breakTickLabel;
+							t._breakTick = true;
+							t.showGridline = false;
+							t.showMark = false;
+						}
+						else if (ut[0] > this.breakPoints[0] && ut[0] <= this.breakPoints[1]) {
+							t.show = false;
+							t.showGridline = false;
+		                    t.label = ut[1];
+						}
+						else {
+		                    t.label = ut[1];
+						}
+					}
+					else {
+	                    t.label = ut[1];
+					}
                     t.setTick(ut[0], this.name);
                     this._ticks.push(t);
                 }
                 
                 else {
-                    t.value = ut;
-                    if (!this.showTicks) {
-                        t.showLabel = false;
-                        t.showMark = false;
-                    }
-                    else if (!this.showTickMarks) {
-                        t.showMark = false;
-                    }
+	                t.value = ut;
+					if (this.breakPoints) {
+						if (ut == this.breakPoints[0]) {
+							t.label = this.breakTickLabel;
+							t._breakTick = true;
+							t.showGridline = false;
+							t.showMark = false;
+						}
+						else if (ut > this.breakPoints[0] && ut <= this.breakPoints[1]) {
+							t.show = false;
+							t.showGridline = false;
+						}
+					}
                     t.setTick(ut, this.name);
                     this._ticks.push(t);
                 }
@@ -16549,270 +16717,365 @@ Fisma.Vulnerability = {
         
             min = ((this.min != null) ? this.min : db.min);
             max = ((this.max != null) ? this.max : db.max);
-            
-            // if min and max are same, space them out a bit
-            if (min == max) {
-                var adj = 0.05;
-                if (min > 0) {
-                    adj = Math.max(Math.log(min)/Math.LN10, 0.05);
-                }
-                min -= adj;
-                max += adj;
-            }
 
             var range = max - min;
             var rmin, rmax;
             var temp;
-            
-            // autoscale.  Can't autoscale if min or max is supplied.
-            // Will use numberTicks and tickInterval if supplied.  Ticks
-            // across multiple axes may not line up depending on how
-            // bars are to be plotted.
-            if (this.autoscale && this.min == null && this.max == null) {
-                var rrange, ti, margin;
-                var forceMinZero = false;
-                var forceZeroLine = false;
-                var intervals = {min:null, max:null, average:null, stddev:null};
-                // if any series are bars, or if any are fill to zero, and if this
-                // is the axis to fill toward, check to see if we can start axis at zero.
-                for (var i=0; i<this._series.length; i++) {
-                    var s = this._series[i];
-                    var faname = (s.fillAxis == 'x') ? s._xaxis.name : s._yaxis.name;
-                    // check to see if this is the fill axis
-                    if (this.name == faname) {
-                        var vals = s._plotValues[s.fillAxis];
-                        var vmin = vals[0];
-                        var vmax = vals[0];
-                        for (var j=1; j<vals.length; j++) {
-                            if (vals[j] < vmin) {
-                                vmin = vals[j];
+
+            // Doing complete autoscaling
+            if (this.min == null && this.max == null && this.numberTicks == null && this.tickInterval == null && !this.autoscale) {
+                // Check if user must have tick at 0 or 100 and ensure they are in range.
+                // The autoscaling algorithm will always place ticks at 0 and 100 if they are in range.
+                if (this.forceTickAt0) {
+                    if (min > 0) {
+                        min = 0;
+                    }
+                    if (max < 0) {
+                        max = 0;
+                    }
+                }
+
+                if (this.forceTickAt100) {
+                    if (min > 100) {
+                        min = 100;
+                    }
+                    if (max < 100) {
+                        max = 100;
+                    }
+                }
+
+                var ret = $.jqplot.LinearTickGenerator(min, max); 
+                // calculate a padded max and min, points should be less than these
+                // so that they aren't too close to the edges of the plot.
+                // User can adjust how much padding is allowed with pad, padMin and PadMax options. 
+                var tumin = min + range*(this.padMin - 1);
+                var tumax = max - range*(this.padMax - 1);
+
+                if (min <=tumin || max >= tumax) {
+                    tumin = min - range*(this.padMin - 1);
+                    tumax = max + range*(this.padMax - 1);
+                    ret = $.jqplot.LinearTickGenerator(tumin, tumax);
+                }
+
+                this.min = ret[0];
+                this.max = ret[1];
+                this.numberTicks = ret[2];
+                this._autoFormatString = ret[3];
+                //this.tickInterval = Math.abs(this.max - this.min)/(this.numberTicks - 1);
+                this.tickInterval = ret[4];
+            }
+
+            // User has specified some axis scale related option, can use auto algorithm
+            else {
+                
+                // if min and max are same, space them out a bit
+                if (min == max) {
+                    var adj = 0.05;
+                    if (min > 0) {
+                        adj = Math.max(Math.log(min)/Math.LN10, 0.05);
+                    }
+                    min -= adj;
+                    max += adj;
+                }
+                
+                // autoscale.  Can't autoscale if min or max is supplied.
+                // Will use numberTicks and tickInterval if supplied.  Ticks
+                // across multiple axes may not line up depending on how
+                // bars are to be plotted.
+                if (this.autoscale && this.min == null && this.max == null) {
+                    var rrange, ti, margin;
+                    var forceMinZero = false;
+                    var forceZeroLine = false;
+                    var intervals = {min:null, max:null, average:null, stddev:null};
+                    // if any series are bars, or if any are fill to zero, and if this
+                    // is the axis to fill toward, check to see if we can start axis at zero.
+                    for (var i=0; i<this._series.length; i++) {
+                        var s = this._series[i];
+                        var faname = (s.fillAxis == 'x') ? s._xaxis.name : s._yaxis.name;
+                        // check to see if this is the fill axis
+                        if (this.name == faname) {
+                            var vals = s._plotValues[s.fillAxis];
+                            var vmin = vals[0];
+                            var vmax = vals[0];
+                            for (var j=1; j<vals.length; j++) {
+                                if (vals[j] < vmin) {
+                                    vmin = vals[j];
+                                }
+                                else if (vals[j] > vmax) {
+                                    vmax = vals[j];
+                                }
                             }
-                            else if (vals[j] > vmax) {
-                                vmax = vals[j];
+                            var dp = (vmax - vmin) / vmax;
+                            // is this sries a bar?
+                            if (s.renderer.constructor == $.jqplot.BarRenderer) {
+                                // if no negative values and could also check range.
+                                if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
+                                    forceMinZero = true;
+                                }
+                                else {
+                                    forceMinZero = false;
+                                    if (s.fill && s.fillToZero && vmin < 0 && vmax > 0) {
+                                        forceZeroLine = true;
+                                    }
+                                    else {
+                                        forceZeroLine = false;
+                                    }
+                                }
                             }
-                        }
-                        var dp = (vmax - vmin) / vmax;
-                        // is this sries a bar?
-                        if (s.renderer.constructor == $.jqplot.BarRenderer) {
-                            // if no negative values and could also check range.
-                            if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
-                                forceMinZero = true;
-                            }
-                            else {
-                                forceMinZero = false;
-                                if (s.fill && s.fillToZero && vmin < 0 && vmax > 0) {
+                            
+                            // if not a bar and filling, use appropriate method.
+                            else if (s.fill) {
+                                if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
+                                    forceMinZero = true;
+                                }
+                                else if (vmin < 0 && vmax > 0 && s.fillToZero) {
+                                    forceMinZero = false;
                                     forceZeroLine = true;
                                 }
                                 else {
+                                    forceMinZero = false;
                                     forceZeroLine = false;
                                 }
                             }
-                        }
-                        
-                        // if not a bar and filling, use appropriate method.
-                        else if (s.fill) {
-                            if (vmin >= 0 && (s.fillToZero || dp > 0.1)) {
-                                forceMinZero = true;
-                            }
-                            else if (vmin < 0 && vmax > 0 && s.fillToZero) {
+                            
+                            // if not a bar and not filling, only change existing state
+                            // if it doesn't make sense
+                            else if (vmin < 0) {
                                 forceMinZero = false;
-                                forceZeroLine = true;
-                            }
-                            else {
-                                forceMinZero = false;
-                                forceZeroLine = false;
                             }
                         }
-                        
-                        // if not a bar and not filling, only change existing state
-                        // if it doesn't make sense
-                        else if (vmin < 0) {
-                            forceMinZero = false;
-                        }
-                    }
-                }
-                
-                // check if we need make axis min at 0.
-                if (forceMinZero) {
-                    // compute number of ticks
-                    this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
-                    this.min = 0;
-                    userMin = 0;
-                    // what order is this range?
-                    // what tick interval does that give us?
-                    ti = max/(this.numberTicks-1);
-                    temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                    if (ti/temp == parseInt(ti/temp, 10)) {
-                        ti += temp;
-                    }
-                    this.tickInterval = Math.ceil(ti/temp) * temp;
-                    this.max = this.tickInterval * (this.numberTicks - 1);
-                }
-                
-                // check if we need to make sure there is a tick at 0.
-                else if (forceZeroLine) {
-                    // compute number of ticks
-                    this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
-                    var ntmin = Math.ceil(Math.abs(min)/range*(this.numberTicks-1));
-                    var ntmax = this.numberTicks - 1  - ntmin;
-                    ti = Math.max(Math.abs(min/ntmin), Math.abs(max/ntmax));
-                    temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                    this.tickInterval = Math.ceil(ti/temp) * temp;
-                    this.max = this.tickInterval * ntmax;
-                    this.min = -this.tickInterval * ntmin;                  
-                }
-                
-                // if nothing else, do autoscaling which will try to line up ticks across axes.
-                else {  
-                    if (this.numberTicks == null){
-                        if (this.tickInterval) {
-                            this.numberTicks = 3 + Math.ceil(range / this.tickInterval);
-                        }
-                        else {
-                            this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
-                        }
-                    }
-            
-                    if (this.tickInterval == null) {
-                        // get a tick interval
-                        ti = range/(this.numberTicks - 1);
-
-                        if (ti < 1) {
-                            temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
-                        }
-                        else {
-                            temp = 1;
-                        }
-                        this.tickInterval = Math.ceil(ti*temp*this.pad)/temp;
-                    }
-                    else {
-                        temp = 1 / this.tickInterval;
                     }
                     
-                    // try to compute a nicer, more even tick interval
-                    // temp = Math.pow(10, Math.floor(Math.log(ti)/Math.LN10));
-                    // this.tickInterval = Math.ceil(ti/temp) * temp;
-                    rrange = this.tickInterval * (this.numberTicks - 1);
-                    margin = (rrange - range)/2;
-       
-                    if (this.min == null) {
-                        this.min = Math.floor(temp*(min-margin))/temp;
+                    // check if we need make axis min at 0.
+                    if (forceMinZero) {
+                        // compute number of ticks
+                        this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                        this.min = 0;
+                        userMin = 0;
+                        // what order is this range?
+                        // what tick interval does that give us?
+                        ti = max/(this.numberTicks-1);
+                        temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
+                        if (ti/temp == parseInt(ti/temp, 10)) {
+                            ti += temp;
+                        }
+                        this.tickInterval = Math.ceil(ti/temp) * temp;
+                        this.max = this.tickInterval * (this.numberTicks - 1);
                     }
-                    if (this.max == null) {
-                        this.max = this.min + rrange;
+                    
+                    // check if we need to make sure there is a tick at 0.
+                    else if (forceZeroLine) {
+                        // compute number of ticks
+                        this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
+                        var ntmin = Math.ceil(Math.abs(min)/range*(this.numberTicks-1));
+                        var ntmax = this.numberTicks - 1  - ntmin;
+                        ti = Math.max(Math.abs(min/ntmin), Math.abs(max/ntmax));
+                        temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
+                        this.tickInterval = Math.ceil(ti/temp) * temp;
+                        this.max = this.tickInterval * ntmax;
+                        this.min = -this.tickInterval * ntmin;
                     }
-                }
-            }
-            
-            // Use the default algorithm which pads each axis to make the chart
-            // centered nicely on the grid.
-            else {
-                rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
-                rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);
-                this.min = rmin;
-                this.max = rmax;
-                range = this.max - this.min;
-    
-                if (this.numberTicks == null){
-                    // if tickInterval is specified by user, we will ignore computed maximum.
-                    // max will be equal or greater to fit even # of ticks.
-                    if (this.tickInterval != null) {
-                        this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval)+1;
-                        this.max = this.min + this.tickInterval*(this.numberTicks-1);
-                    }
-                    else if (dim > 100) {
-                        this.numberTicks = parseInt(3+(dim-100)/75, 10);
-                    }
-                    else {
-                        this.numberTicks = 2;
-                    }
-                }
-            
-                if (this.tickInterval == null) {
-                    this.tickInterval = range / (this.numberTicks-1);
-                }
-            }
-            
-            if (this.renderer.constructor == $.jqplot.LinearAxisRenderer) {
-                // fix for misleading tick display with small range and low precision.
-                range = this.max - this.min;
-                // figure out precision
-                var temptick = new this.tickRenderer(this.tickOptions);
-                // use the tick formatString or, the default.
-                var fs = temptick.formatString || $.jqplot.config.defaultTickFormatString; 
-                var fs = fs.match($.jqplot.sprintf.regex)[0];
-                var precision = 0;
-                if (fs) {
-                    if (fs.search(/[fFeEgGpP]/) > -1) {
-                        var m = fs.match(/\%\.(\d{0,})?[eEfFgGpP]/);
-                        if (m) precision = parseInt(m[1], 10);
-                        else precision = 6;
-                    }
-                    else if (fs.search(/[di]/) > -1) {
-                        precision = 0;
-                    }
-                    // fact will be <= 1;
-                    var fact = Math.pow(10, -precision);
-                    if (this.tickInterval < fact) {
-                        // need to correct underrange
-                        if (userNT == null && userTI == null) {
-                            this.tickInterval = fact;
-                            if (userMax == null && userMin == null) {
-                                // this.min = Math.floor((this._dataBounds.min - this.tickInterval)/fact) * fact;
-                                this.min = Math.floor(this._dataBounds.min/fact) * fact;
-                                if (this.min == this._dataBounds.min) {
-                                    this.min = this._dataBounds.min - this.tickInterval;
-                                }
-                                // this.max = Math.ceil((this._dataBounds.max + this.tickInterval)/fact) * fact;
-                                this.max = Math.ceil(this._dataBounds.max/fact) * fact;
-                                if (this.max == this._dataBounds.max) {
-                                    this.max = this._dataBounds.max + this.tickInterval;
-                                }
-                                var n = (this.max - this.min)/this.tickInterval;
-                                n = n.toFixed(11);
-                                n = Math.ceil(n);
-                                this.numberTicks = n + 1;
+                    
+                    // if nothing else, do autoscaling which will try to line up ticks across axes.
+                    else {  
+                        if (this.numberTicks == null){
+                            if (this.tickInterval) {
+                                this.numberTicks = 3 + Math.ceil(range / this.tickInterval);
                             }
-                            else if (userMax == null) {
-                                // add one tick for top of range.
-                                var n = (this._dataBounds.max - this.min) / this.tickInterval;
-                                n = n.toFixed(11);
-                                this.numberTicks = Math.ceil(n) + 2;
-                                this.max = this.min + this.tickInterval * (this.numberTicks-1);
+                            else {
+                                this.numberTicks = 2 + Math.ceil((dim-(this.tickSpacing-1))/this.tickSpacing);
                             }
-                            else if (userMin == null) {
-                                // add one tick for bottom of range.
-                                var n = (this.max - this._dataBounds.min) / this.tickInterval;
-                                n = n.toFixed(11);
-                                this.numberTicks = Math.ceil(n) + 2;
-                                this.min = this.max - this.tickInterval * (this.numberTicks-1);
+                        }
+                
+                        if (this.tickInterval == null) {
+                            // get a tick interval
+                            ti = range/(this.numberTicks - 1);
+
+                            if (ti < 1) {
+                                temp = Math.pow(10, Math.abs(Math.floor(Math.log(ti)/Math.LN10)));
+                            }
+                            else {
+                                temp = 1;
+                            }
+                            this.tickInterval = Math.ceil(ti*temp*this.pad)/temp;
+                        }
+                        else {
+                            temp = 1 / this.tickInterval;
+                        }
+                        
+                        // try to compute a nicer, more even tick interval
+                        // temp = Math.pow(10, Math.floor(Math.log(ti)/Math.LN10));
+                        // this.tickInterval = Math.ceil(ti/temp) * temp;
+                        rrange = this.tickInterval * (this.numberTicks - 1);
+                        margin = (rrange - range)/2;
+           
+                        if (this.min == null) {
+                            this.min = Math.floor(temp*(min-margin))/temp;
+                        }
+                        if (this.max == null) {
+                            this.max = this.min + rrange;
+                        }
+                    }
+                }
+                
+                // Use the default algorithm which pads each axis to make the chart
+                // centered nicely on the grid.
+                else {
+                    rmin = (this.min != null) ? this.min : min - range*(this.padMin - 1);
+                    rmax = (this.max != null) ? this.max : max + range*(this.padMax - 1);
+                    this.min = rmin;
+                    this.max = rmax;
+                    range = this.max - this.min;
+        
+                    if (this.numberTicks == null){
+                        // if tickInterval is specified by user, we will ignore computed maximum.
+                        // max will be equal or greater to fit even # of ticks.
+                        if (this.tickInterval != null) {
+                            this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval)+1;
+                            this.max = this.min + this.tickInterval*(this.numberTicks-1);
+                        }
+                        else if (dim > 100) {
+                            this.numberTicks = parseInt(3+(dim-100)/75, 10);
+                        }
+                        else {
+                            this.numberTicks = 2;
+                        }
+                    }
+                
+                    if (this.tickInterval == null) {
+                        this.tickInterval = range / (this.numberTicks-1);
+                    }
+                }
+                
+                if (this.renderer.constructor == $.jqplot.LinearAxisRenderer) {
+                    // fix for misleading tick display with small range and low precision.
+                    range = this.max - this.min;
+                    // figure out precision
+                    var temptick = new this.tickRenderer(this.tickOptions);
+                    // use the tick formatString or, the default.
+                    var fs = temptick.formatString || $.jqplot.config.defaultTickFormatString; 
+                    var fs = fs.match($.jqplot.sprintf.regex)[0];
+                    var precision = 0;
+                    if (fs) {
+                        if (fs.search(/[fFeEgGpP]/) > -1) {
+                            var m = fs.match(/\%\.(\d{0,})?[eEfFgGpP]/);
+                            if (m) {
+                                precision = parseInt(m[1], 10);
+                            }
+                            else {
+                                precision = 6;
+                            }
+                        }
+                        else if (fs.search(/[di]/) > -1) {
+                            precision = 0;
+                        }
+                        // fact will be <= 1;
+                        var fact = Math.pow(10, -precision);
+                        if (this.tickInterval < fact) {
+                            // need to correct underrange
+                            if (userNT == null && userTI == null) {
+                                this.tickInterval = fact;
+                                if (userMax == null && userMin == null) {
+                                    // this.min = Math.floor((this._dataBounds.min - this.tickInterval)/fact) * fact;
+                                    this.min = Math.floor(this._dataBounds.min/fact) * fact;
+                                    if (this.min == this._dataBounds.min) {
+                                        this.min = this._dataBounds.min - this.tickInterval;
+                                    }
+                                    // this.max = Math.ceil((this._dataBounds.max + this.tickInterval)/fact) * fact;
+                                    this.max = Math.ceil(this._dataBounds.max/fact) * fact;
+                                    if (this.max == this._dataBounds.max) {
+                                        this.max = this._dataBounds.max + this.tickInterval;
+                                    }
+                                    var n = (this.max - this.min)/this.tickInterval;
+                                    n = n.toFixed(11);
+                                    n = Math.ceil(n);
+                                    this.numberTicks = n + 1;
+                                }
+                                else if (userMax == null) {
+                                    // add one tick for top of range.
+                                    var n = (this._dataBounds.max - this.min) / this.tickInterval;
+                                    n = n.toFixed(11);
+                                    this.numberTicks = Math.ceil(n) + 2;
+                                    this.max = this.min + this.tickInterval * (this.numberTicks-1);
+                                }
+                                else if (userMin == null) {
+                                    // add one tick for bottom of range.
+                                    var n = (this.max - this._dataBounds.min) / this.tickInterval;
+                                    n = n.toFixed(11);
+                                    this.numberTicks = Math.ceil(n) + 2;
+                                    this.min = this.max - this.tickInterval * (this.numberTicks-1);
+                                }
+                                else {
+                                    // calculate a number of ticks so max is within axis scale
+                                    this.numberTicks = Math.ceil((userMax - userMin)/this.tickInterval) + 1;
+                                    // if user's min and max don't fit evenly in ticks, adjust.
+                                    // This takes care of cases such as user min set to 0, max set to 3.5 but tick
+                                    // format string set to %d (integer ticks)
+                                    this.min =  Math.floor(userMin*Math.pow(10, precision))/Math.pow(10, precision);
+                                    this.max =  Math.ceil(userMax*Math.pow(10, precision))/Math.pow(10, precision);
+                                    // this.max = this.min + this.tickInterval*(this.numberTicks-1);
+                                    this.numberTicks = Math.ceil((this.max - this.min)/this.tickInterval) + 1;
+                                }
                             }
                         }
                     }
                 }
+                
             }
             
-            
+            if ((this.tickOptions == null || !this.tickOptions.formatString) && this._autoFormatString != '') {
+                this.tickOptions = this.tickOptions || {};
+                this.tickOptions.formatString = this._autoFormatString;
+            }
 
             for (var i=0; i<this.numberTicks; i++){
                 tt = this.min + i * this.tickInterval;
                 var t = new this.tickRenderer(this.tickOptions);
                 // var t = new $.jqplot.AxisTickRenderer(this.tickOptions);
-                if (!this.showTicks) {
-                    t.showLabel = false;
-                    t.showMark = false;
-                }
-                else if (!this.showTickMarks) {
-                    t.showMark = false;
-                }
+
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
             }
         }
     };
+	
+	// Used to reset just the values of the ticks and then repack, which will
+	// recalculate the positioning functions.  It is assuemd that the 
+	// number of ticks is the same and the values of the new array are at the
+	// proper interval.
+	// This method needs to be called with the scope of an axis object, like:
+	//
+	// > plot.axes.yaxis.renderer.resetTickValues.call(plot.axes.yaxis, yarr);
+	//
+	$.jqplot.LinearAxisRenderer.prototype.resetTickValues = function(opts) {
+		if ($.isArray(opts) && opts.length == this._ticks.length) {
+			var t;
+			for (var i=0; i<opts.length; i++) {
+				t = this._ticks[i];
+				t.value = opts[i];
+				t.label = t.formatter(t.formatString, opts[i]);
+				// add prefix if needed
+				if (t.prefix && !t.formatString) {
+					t.label = t.prefix + t.label;
+				}
+				t._elem.html(t.label);
+			}
+			this.min = $.jqplot.arrayMin(opts);
+			this.max = $.jqplot.arrayMax(opts);
+			this.pack();
+		}
+		// Not implemented yet.
+        // else if ($.isPlainObject(opts)) {
+        // 
+        // }
+	};
     
     // called with scope of axis
     $.jqplot.LinearAxisRenderer.prototype.pack = function(pos, offsets) {
+		// Add defaults for repacking from resetTickValues function.
+		pos = pos || {};
+		offsets = offsets || this._offsets;
+		
         var ticks = this._ticks;
         var max = this.max;
         var min = this.min;
@@ -16830,35 +17093,90 @@ Fisma.Vulnerability = {
         var unitlength = max - min;
         
         // point to unit and unit to point conversions references to Plot DOM element top left corner.
-        this.p2u = function(p){
-            return (p - offmin) * unitlength / pixellength + min;
-        };
+		if (this.breakPoints) {
+			unitlength = unitlength - this.breakPoints[1] + this.breakPoints[0];
+			
+	        this.p2u = function(p){
+	            return (p - offmin) * unitlength / pixellength + min;
+	        };
         
-        this.u2p = function(u){
-            return (u - min) * pixellength / unitlength + offmin;
-        };
+	        this.u2p = function(u){
+				if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+					u = this.breakPoints[0];
+				}
+				if (u <= this.breakPoints[0]) {
+	            	return (u - min) * pixellength / unitlength + offmin;
+				}
+				else {
+					return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength + offmin;
+				}
+	        };
                 
-        if (this.name == 'xaxis' || this.name == 'x2axis'){
-            this.series_u2p = function(u){
-                return (u - min) * pixellength / unitlength;
-            };
-            this.series_p2u = function(p){
-                return p * unitlength / pixellength + min;
-            };
-        }
+	        if (this.name.charAt(0) == 'x'){
+	            this.series_u2p = function(u){
+					if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+						u = this.breakPoints[0];
+					}
+					if (u <= this.breakPoints[0]) {
+		            	return (u - min) * pixellength / unitlength;
+					}
+					else {
+						return (u - this.breakPoints[1] + this.breakPoints[0] - min) * pixellength / unitlength;
+					}
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + min;
+	            };
+	        }
         
-        else {
-            this.series_u2p = function(u){
-                return (u - max) * pixellength / unitlength;
-            };
-            this.series_p2u = function(p){
-                return p * unitlength / pixellength + max;
-            };
-        }
+	        else {
+	            this.series_u2p = function(u){
+					if (u > this.breakPoints[0] && u < this.breakPoints[1]){
+						u = this.breakPoints[0];
+					}
+					if (u >= this.breakPoints[1]) {
+		            	return (u - max) * pixellength / unitlength;
+					}
+					else {
+						return (u + this.breakPoints[1] - this.breakPoints[0] - max) * pixellength / unitlength;
+					}
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + max;
+	            };
+	        }
+		}
+		else {
+	        this.p2u = function(p){
+	            return (p - offmin) * unitlength / pixellength + min;
+	        };
+        
+	        this.u2p = function(u){
+	            return (u - min) * pixellength / unitlength + offmin;
+	        };
+                
+	        if (this.name == 'xaxis' || this.name == 'x2axis'){
+	            this.series_u2p = function(u){
+	                return (u - min) * pixellength / unitlength;
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + min;
+	            };
+	        }
+        
+	        else {
+	            this.series_u2p = function(u){
+	                return (u - max) * pixellength / unitlength;
+	            };
+	            this.series_p2u = function(p){
+	                return p * unitlength / pixellength + max;
+	            };
+	        }
+		}
         
         if (this.show) {
             if (this.name == 'xaxis' || this.name == 'x2axis') {
-                for (i=0; i<ticks.length; i++) {
+                for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {
                         var shim;
@@ -16912,7 +17230,7 @@ Fisma.Vulnerability = {
                 }
             }
             else {
-                for (i=0; i<ticks.length; i++) {
+                for (var i=0; i<ticks.length; i++) {
                     var t = ticks[i];
                     if (t.show && t.showLabel) {                        
                         var shim;
@@ -16974,6 +17292,81 @@ Fisma.Vulnerability = {
                 }
             }
         }
+    };
+
+
+    /**
+    * The following code was generaously given to me a while back by Scott Prahl.
+    * He did a good job at computing axes min, max and number of ticks for the 
+    * case where the user has not set any scale related parameters (tickInterval,
+    * numberTicks, min or max).  I had ignored this use case for a long time,
+    * focusing on the more difficult case where user has set some option controlling
+    * tick generation.  Anyway, about time I got this into jqPlot.
+    * Thanks Scott!!
+    */
+    
+    /**
+    * Copyright (c) 2010 Scott Prahl
+    * The next three routines are currently available for use in all personal 
+    * or commercial projects under both the MIT and GPL version 2.0 licenses. 
+    * This means that you can choose the license that best suits your project 
+    * and use it accordingly. 
+    */
+
+    // A good format string depends on the interval. If the interval is greater 
+    // than 1 then there is no need to show any decimal digits. If it is < 1.0, then
+    // use the magnitude of the interval to determine the number of digits to show.
+    function bestFormatString (interval)
+    {
+        interval = Math.abs(interval);
+        if (interval > 1) {return '%d';}
+
+        var expv = -Math.floor(Math.log(interval)/Math.LN10);
+        return '%.' + expv + 'f'; 
+    }
+
+    // This will return an interval of form 2 * 10^n, 5 * 10^n or 10 * 10^n
+    function bestLinearInterval(range) {
+        var expv = Math.floor(Math.log(range)/Math.LN10);
+        var magnitude = Math.pow(10, expv);
+        var f = range / magnitude;
+
+        if (f<=1.6) {return 0.2*magnitude;}
+        if (f<=4.0) {return 0.5*magnitude;}
+        if (f<=8.0) {return magnitude;}
+        return 2*magnitude; 
+    }
+
+    // Given the min and max for a dataset, return suitable endpoints
+    // for the graphing, a good number for the number of ticks, and a
+    // format string so that extraneous digits are not displayed.
+    // returned is an array containing [min, max, nTicks, format]
+    $.jqplot.LinearTickGenerator = function(axis_min, axis_max) {
+        // if endpoints are equal try to include zero otherwise include one
+        if (axis_min == axis_max) {
+        axis_max = (axis_max) ? 0 : 1;
+        }
+
+        // make sure range is positive
+        if (axis_max < axis_min) {
+        var a = axis_max;
+        axis_max = axis_min;
+        axis_min = a;
+        }
+
+        var ss = bestLinearInterval(axis_max - axis_min);
+        var r = [];
+
+        // Figure out the axis min, max and number of ticks
+        // the min and max will be some multiple of the tick interval,
+        // 1*10^n, 2*10^n or 5*10^n.  This gaurantees that, if the
+        // axis min is negative, 0 will be a tick.
+        r[0] = Math.floor(axis_min / ss) * ss;  // min
+        r[1] = Math.ceil(axis_max / ss) * ss;   // max
+        r[2] = Math.round((r[1]-r[0])/ss+1);    // number of ticks
+        r[3] = bestFormatString(ss);            // format string
+        r[4] = ss;                              // tick Interval
+        return r;
     };
 
 
@@ -17054,8 +17447,6 @@ Fisma.Vulnerability = {
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawPlus = function(x, y, ctx, fill, options) {
@@ -17071,8 +17462,6 @@ Fisma.Vulnerability = {
         }
         this.shapeRenderer.draw(ctx, points1, opts);
         this.shapeRenderer.draw(ctx, points2, opts);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawX = function(x, y, ctx, fill, options) {
@@ -17088,8 +17477,6 @@ Fisma.Vulnerability = {
         }
         this.shapeRenderer.draw(ctx, points1, opts);
         this.shapeRenderer.draw(ctx, points2, opts);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawDash = function(x, y, ctx, fill, options) {
@@ -17101,8 +17488,14 @@ Fisma.Vulnerability = {
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-
-        // ctx.restore();
+    };
+    
+    $.jqplot.MarkerRenderer.prototype.drawLine = function(p1, p2, ctx, fill, options) {
+        var points = [p1, p2];
+        if (this.shadow) {
+            this.shadowRenderer.draw(ctx, points);
+        }
+        this.shapeRenderer.draw(ctx, points, options);
     };
     
     $.jqplot.MarkerRenderer.prototype.drawSquare = function(x, y, ctx, fill, options) {
@@ -17114,8 +17507,6 @@ Fisma.Vulnerability = {
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.drawCircle = function(x, y, ctx, fill, options) {
@@ -17126,8 +17517,6 @@ Fisma.Vulnerability = {
             this.shadowRenderer.draw(ctx, points);
         }
         this.shapeRenderer.draw(ctx, points, options);
-        
-        // ctx.restore();
     };
     
     $.jqplot.MarkerRenderer.prototype.draw = function(x, y, ctx, options) {
@@ -17168,6 +17557,9 @@ Fisma.Vulnerability = {
                     break;
                 case 'dash':
                     this.drawDash(x,y,ctx, true, options);
+                    break;
+                case 'line':
+                    this.drawLine(x, y, ctx, false, options);
                     break;
                 default:
                     this.drawDiamond(x,y,ctx, false, options);
@@ -17245,10 +17637,22 @@ Fisma.Vulnerability = {
             if (isarc) {
                 ctx.arc(points[0], points[1], points[2], points[3], points[4], true);                
             }
-            else {
-                ctx.moveTo(points[0][0], points[0][1]);
-                for (var i=1; i<points.length; i++) {
-                    ctx.lineTo(points[i][0], points[i][1]);
+            else if (points && points.length){
+                var move = true;
+                for (var i=0; i<points.length; i++) {
+                    // skip to the first non-null point and move to it.
+                    if (points[i][0] != null && points[i][1] != null) {
+                        if (move) {
+                            ctx.moveTo(points[i][0], points[i][1]);
+                            move = false;
+                        }
+                        else {
+                            ctx.lineTo(points[i][0], points[i][1]);
+                        }
+                    }
+                    else {
+                        move = true;
+                    }
                 }
                 
             }
@@ -17328,7 +17732,7 @@ Fisma.Vulnerability = {
         var clearRect = (opts.clearRect != null) ? opts.clearRect : this.clearRect;
         var isarc = (opts.isarc != null) ? opts.isarc : this.isarc;
         ctx.lineWidth = opts.lineWidth || this.lineWidth;
-        ctx.lineJoin = opts.lineJoing || this.lineJoin;
+        ctx.lineJoin = opts.lineJoin || this.lineJoin;
         ctx.lineCap = opts.lineCap || this.lineCap;
         ctx.strokeStyle = (opts.strokeStyle || opts.color) || this.strokeStyle;
         ctx.fillStyle = opts.fillStyle || this.fillStyle;
@@ -17362,10 +17766,22 @@ Fisma.Vulnerability = {
                 return;
             }
         }
-        else {
-            ctx.moveTo(points[0][0], points[0][1]);
-            for (var i=1; i<points.length; i++) {
-                ctx.lineTo(points[i][0], points[i][1]);
+        else if (points && points.length){
+            var move = true;
+            for (var i=0; i<points.length; i++) {
+                // skip to the first non-null point and move to it.
+                if (points[i][0] != null && points[i][1] != null) {
+                    if (move) {
+                        ctx.moveTo(points[i][0], points[i][1]);
+                        move = false;
+                    }
+                    else {
+                        ctx.lineTo(points[i][0], points[i][1]);
+                    }
+                }
+                else {
+                    move = true;
+                }
             }
             if (closePath) {
                 ctx.closePath();
@@ -17392,11 +17808,13 @@ Fisma.Vulnerability = {
         
     $.jqplot.TableLegendRenderer.prototype.addrow = function (label, color, pad, reverse) {
         var rs = (pad) ? this.rowSpacing : '0';
+        var tr,
+        	elem;
         if (reverse){
-            var tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
+            tr = $('<tr class="jqplot-table-legend"></tr>').prependTo(this._elem);
         }
         else{
-            var tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
+            tr = $('<tr class="jqplot-table-legend"></tr>').appendTo(this._elem);
         }
         if (this.showSwatches) {
             $('<td class="jqplot-table-legend" style="text-align:center;padding-top:'+rs+';">'+
@@ -17404,7 +17822,7 @@ Fisma.Vulnerability = {
             '</div></td>').appendTo(tr);
         }
         if (this.showLabels) {
-            var elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
+            elem = $('<td class="jqplot-table-legend" style="padding-top:'+rs+';"></td>');
             elem.appendTo(tr);
             if (this.escapeHtml) {
                 elem.text(label);
@@ -17413,6 +17831,8 @@ Fisma.Vulnerability = {
                 elem.html(label);
             }
         }
+        tr = null;
+        elem = null;
     };
     
     // called with scope of legend
@@ -17434,7 +17854,8 @@ Fisma.Vulnerability = {
             this._elem = $('<table class="jqplot-table-legend" style="'+ss+'"></table>');
         
             var pad = false, 
-                reverse = false;
+                reverse = false,
+				s;
             for (var i = 0; i< series.length; i++) {
                 s = series[i];
                 if (s._stack || s.renderer.constructor == $.jqplot.BezierCurveRenderer){
@@ -17461,6 +17882,7 @@ Fisma.Vulnerability = {
                             pad = true;
                         } 
                     }
+                    lt = null;
                 }
             }
         }
@@ -17797,7 +18219,7 @@ Fisma.Vulnerability = {
     $.jqplot.ThemeEngine.prototype.init = function() {
         // get the Default theme from the current plot settings.
         var th = new $.jqplot.Theme({_name:'Default'});
-        var n, i;
+        var n, i, nn;
         
         for (n in th.target) {
             if (n == "textColor") {
@@ -17999,7 +18421,7 @@ Fisma.Vulnerability = {
                 }
             }
             
-            for (axname in plot.axes) {
+            for (var axname in plot.axes) {
                 var axis = plot.axes[axname];
                 if (axis.show) {
                     var thaxis = th.axes[axname] || {};
@@ -18016,7 +18438,7 @@ Fisma.Vulnerability = {
                         redrawPlot = true;
                     }
                     if (axis._ticks && axis._ticks[0]) {
-                        for (nn in thax.ticks) {
+                        for (var nn in thax.ticks) {
                             // val = null;
                             // if (th.axesStyles.ticks && th.axesStyles.ticks[nn] != null) {
                             //     val = th.axesStyles.ticks[nn];
@@ -18033,7 +18455,7 @@ Fisma.Vulnerability = {
                         }
                     }
                     if (axis._label && axis._label.show) {
-                        for (nn in thax.label) {
+                        for (var nn in thax.label) {
                             // val = null;
                             // if (th.axesStyles.label && th.axesStyles.label[nn] != null) {
                             //     val = th.axesStyles.label[nn];
@@ -18231,50 +18653,50 @@ Fisma.Vulnerability = {
     
         // Use the jQuery 1.3.2 extend function since behaviour in jQuery 1.4 seems problematic
     $.jqplot.extend = function() {
-    	// copy reference to target object
-    	var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
+        // copy reference to target object
+        var target = arguments[0] || {}, i = 1, length = arguments.length, deep = false, options;
 
-    	// Handle a deep copy situation
-    	if ( typeof target === "boolean" ) {
-    		deep = target;
-    		target = arguments[1] || {};
-    		// skip the boolean and the target
-    		i = 2;
-    	}
-
-    	// Handle case when target is a string or something (possible in deep copy)
-    	if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
-    	    target = {};
-    	}
-
-    	for ( ; i < length; i++ ){
-    		// Only deal with non-null/undefined values
-    		if ( (options = arguments[ i ]) != null ) {
-    			// Extend the base object
-    			for ( var name in options ) {
-    				var src = target[ name ], copy = options[ name ];
-
-    				// Prevent never-ending loop
-    				if ( target === copy ) {
-    					continue;
-    				}
-
-    				// Recurse if we're merging object values
-    				if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
-    					target[ name ] = $.jqplot.extend( deep, 
-    						// Never move original objects, clone them
-    						src || ( copy.length != null ? [ ] : { } )
-    					, copy );
-                    }
-    				// Don't bring in undefined values
-    				else if ( copy !== undefined ) {
-    					target[ name ] = copy;
-    				}
-    			}
-    		}
+        // Handle a deep copy situation
+        if ( typeof target === "boolean" ) {
+            deep = target;
+            target = arguments[1] || {};
+            // skip the boolean and the target
+            i = 2;
         }
-    	// Return the modified object
-    	return target;
+
+        // Handle case when target is a string or something (possible in deep copy)
+        if ( typeof target !== "object" && !toString.call(target) === "[object Function]" ) {
+            target = {};
+        }
+
+        for ( ; i < length; i++ ){
+            // Only deal with non-null/undefined values
+            if ( (options = arguments[ i ]) != null ) {
+                // Extend the base object
+                for ( var name in options ) {
+                    var src = target[ name ], copy = options[ name ];
+
+                    // Prevent never-ending loop
+                    if ( target === copy ) {
+                        continue;
+                    }
+
+                    // Recurse if we're merging object values
+                    if ( deep && copy && typeof copy === "object" && !copy.nodeType ) {
+                        target[ name ] = $.jqplot.extend( deep, 
+                            // Never move original objects, clone them
+                            src || ( copy.length != null ? [ ] : { } )
+                        , copy );
+                    }
+                    // Don't bring in undefined values
+                    else if ( copy !== undefined ) {
+                        target[ name ] = copy;
+                    }
+                }
+            }
+        }
+        // Return the modified object
+        return target;
     };
 
     /**
@@ -18493,6 +18915,1434 @@ Fisma.Vulnerability = {
     };
         
 
+
+
+    /** 
+     * @description
+     * <p>Object with extended date parsing and formatting capabilities.
+     * This library borrows many concepts and ideas from the Date Instance 
+     * Methods by Ken Snyder along with some parts of Ken's actual code.</p>
+     *
+     * <p>jsDate takes a different approach by not extending the built-in 
+     * Date Object, improving date parsing, allowing for multiple formatting 
+     * syntaxes and multiple and more easily expandable localization.</p>
+     * 
+     * @author Chris Leonello
+     * @date #date#
+     * @version #VERSION#
+     * @copyright (c) 2010 Chris Leonello
+     * jsDate is currently available for use in all personal or commercial projects 
+     * under both the MIT and GPL version 2.0 licenses. This means that you can 
+     * choose the license that best suits your project and use it accordingly.
+     * 
+     * <p>Ken's origianl Date Instance Methods and copyright notice:</p>
+     * <pre>
+     * Ken Snyder (ken d snyder at gmail dot com)
+     * 2008-09-10
+     * version 2.0.2 (http://kendsnyder.com/sandbox/date/)     
+     * Creative Commons Attribution License 3.0 (http://creativecommons.org/licenses/by/3.0/)
+     * </pre>
+     * 
+     * @class
+     * @name jsDate
+     * @param  {String | Number | Array | Date&nbsp;Object | Options&nbsp;Object} arguments Optional arguments, either a parsable date/time string,
+     * a JavaScript timestamp, an array of numbers of form [year, month, day, hours, minutes, seconds, milliseconds],
+     * a Date object, or an options object of form {syntax: "perl", date:some Date} where all options are optional.
+     */
+     
+    var jsDate = function () {
+    
+        this.syntax = jsDate.config.syntax;
+        this._type = "jsDate";
+        this.utcOffset = new Date().getTimezoneOffset * 60000;
+        this.proxy = new Date();
+        this.options = {};
+        this.locale = jsDate.regional.getLocale();
+        this.formatString = '';
+        this.defaultCentury = jsDate.config.defaultCentury;
+
+        switch ( arguments.length ) {
+            case 0:
+                break;
+            case 1:
+                // other objects either won't have a _type property or,
+                // if they do, it shouldn't be set to "jsDate", so
+                // assume it is an options argument.
+                if (get_type(arguments[0]) == "[object Object]" && arguments[0]._type != "jsDate") {
+                    var opts = this.options = arguments[0];
+                    this.syntax = opts.syntax || this.syntax;
+                    this.defaultCentury = opts.defaultCentury || this.defaultCentury;
+                    this.proxy = jsDate.createDate(opts.date);
+                }
+                else {
+                    this.proxy = jsDate.createDate(arguments[0]);
+                }
+                break;
+            default:
+                var a = [];
+                for ( var i=0; i<arguments.length; i++ ) {
+                    a.push(arguments[i]);
+                }
+                this.proxy = new Date( this.utcOffset );
+                this.proxy.setFullYear.apply( this.proxy, a.slice(0,3) );
+                if ( a.slice(3).length ) {
+                    this.proxy.setHours.apply( this.proxy, a.slice(3) );
+                }
+                break;
+        }
+    };
+    
+    /**
+     * @namespace Configuration options that will be used as defaults for all instances on the page.
+     * @property {String} defaultLocale The default locale to use [en].
+     * @property {String} syntax The default syntax to use [perl].
+     */
+    jsDate.config = {
+        defaultLocale: 'en',
+        syntax: 'perl',
+        defaultCentury: 1900
+    };
+        
+    /**
+     * Add an arbitrary amount to the currently stored date
+     * 
+     * @param {Number} number      
+     * @param {String} unit
+     * @returns {jsDate}       
+     */
+     
+    jsDate.prototype.add = function(number, unit) {
+        var factor = multipliers[unit] || multipliers.day;
+        if (typeof factor == 'number') {
+            this.proxy.setTime(this.proxy.getTime() + (factor * number));
+        } else {
+            factor.add(this, number);
+        }
+        return this;
+    };
+        
+    /**
+     * Create a new jqplot.date object with the same date
+     * 
+     * @returns {jsDate}
+     */  
+     
+    jsDate.prototype.clone = function() {
+            return new jsDate(this.proxy.getTime());
+    };
+
+    /**
+     * Find the difference between this jsDate and another date.
+     * 
+     * @param {String| Number| Array| jsDate&nbsp;Object| Date&nbsp;Object} dateObj
+     * @param {String} unit
+     * @param {Boolean} allowDecimal
+     * @returns {Number} Number of units difference between dates.
+     */
+     
+    jsDate.prototype.diff = function(dateObj, unit, allowDecimal) {
+        // ensure we have a Date object
+        dateObj = new jsDate(dateObj);
+        if (dateObj === null) {
+            return null;
+        }
+        // get the multiplying factor integer or factor function
+        var factor = multipliers[unit] || multipliers.day;
+        if (typeof factor == 'number') {
+            // multiply
+            var unitDiff = (this.proxy.getTime() - dateObj.proxy.getTime()) / factor;
+        } else {
+            // run function
+            var unitDiff = factor.diff(this.proxy, dateObj.proxy);
+        }
+        // if decimals are not allowed, round toward zero
+        return (allowDecimal ? unitDiff : Math[unitDiff > 0 ? 'floor' : 'ceil'](unitDiff));          
+    };
+    
+    /**
+     * Get the abbreviated name of the current week day
+     * 
+     * @returns {String}
+     */   
+     
+    jsDate.prototype.getAbbrDayName = function() {
+        return jsDate.regional[this.locale]["dayNamesShort"][this.proxy.getDay()];
+    };
+    
+    /**
+     * Get the abbreviated name of the current month
+     * 
+     * @returns {String}
+     */
+     
+    jsDate.prototype.getAbbrMonthName = function() {
+        return jsDate.regional[this.locale]["monthNamesShort"][this.proxy.getMonth()];
+    };
+    
+    /**
+     * Get UPPER CASE AM or PM for the current time
+     * 
+     * @returns {String}
+     */
+     
+    jsDate.prototype.getAMPM = function() {
+        return this.proxy.getHours() >= 12 ? 'PM' : 'AM';
+    };
+    
+    /**
+     * Get lower case am or pm for the current time
+     * 
+     * @returns {String}
+     */
+     
+    jsDate.prototype.getAmPm = function() {
+        return this.proxy.getHours() >= 12 ? 'pm' : 'am';
+    };
+    
+    /**
+     * Get the century (19 for 20th Century)
+     *
+     * @returns {Integer} Century (19 for 20th century).
+     */
+    jsDate.prototype.getCentury = function() { 
+        return parseInt(this.proxy.getFullYear()/100, 10);
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getDate = function() {
+        return this.proxy.getDate();
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getDay = function() {
+        return this.proxy.getDay();
+    };
+    
+    /**
+     * Get the Day of week 1 (Monday) thru 7 (Sunday)
+     * 
+     * @returns {Integer} Day of week 1 (Monday) thru 7 (Sunday)
+     */
+    jsDate.prototype.getDayOfWeek = function() { 
+        var dow = this.proxy.getDay(); 
+        return dow===0?7:dow; 
+    };
+    
+    /**
+     * Get the day of the year
+     * 
+     * @returns {Integer} 1 - 366, day of the year
+     */
+    jsDate.prototype.getDayOfYear = function() {
+        var d = this.proxy;
+        var ms = d - new Date('' + d.getFullYear() + '/1/1 GMT');
+        ms += d.getTimezoneOffset()*60000;
+        d = null;
+        return parseInt(ms/60000/60/24, 10)+1;
+    };
+    
+    /**
+     * Get the name of the current week day
+     * 
+     * @returns {String}
+     */  
+     
+    jsDate.prototype.getDayName = function() {
+        return jsDate.regional[this.locale]["dayNames"][this.proxy.getDay()];
+    };
+    
+    /**
+     * Get the week number of the given year, starting with the first Sunday as the first week
+     * @returns {Integer} Week number (13 for the 13th full week of the year).
+     */
+    jsDate.prototype.getFullWeekOfYear = function() {
+        var d = this.proxy;
+        var doy = this.getDayOfYear();
+        var rdow = 6-d.getDay();
+        var woy = parseInt((doy+rdow)/7, 10);
+        return woy;
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getFullYear = function() {
+        return this.proxy.getFullYear();
+    };
+    
+    /**
+     * Get the GMT offset in hours and minutes (e.g. +06:30)
+     * 
+     * @returns {String}
+     */
+     
+    jsDate.prototype.getGmtOffset = function() {
+        // divide the minutes offset by 60
+        var hours = this.proxy.getTimezoneOffset() / 60;
+        // decide if we are ahead of or behind GMT
+        var prefix = hours < 0 ? '+' : '-';
+        // remove the negative sign if any
+        hours = Math.abs(hours);
+        // add the +/- to the padded number of hours to : to the padded minutes
+        return prefix + addZeros(Math.floor(hours), 2) + ':' + addZeros((hours % 1) * 60, 2);
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getHours = function() {
+        return this.proxy.getHours();
+    };
+    
+    /**
+     * Get the current hour on a 12-hour scheme
+     * 
+     * @returns {Integer}
+     */
+     
+    jsDate.prototype.getHours12  = function() {
+        var hours = this.proxy.getHours();
+        return hours > 12 ? hours - 12 : (hours == 0 ? 12 : hours);
+    };
+    
+    
+    jsDate.prototype.getIsoWeek = function() {
+        var d = this.proxy;
+        var woy = d.getWeekOfYear();
+        var dow1_1 = (new Date('' + d.getFullYear() + '/1/1')).getDay();
+        // First week is 01 and not 00 as in the case of %U and %W,
+        // so we add 1 to the final result except if day 1 of the year
+        // is a Monday (then %W returns 01).
+        // We also need to subtract 1 if the day 1 of the year is 
+        // Friday-Sunday, so the resulting equation becomes:
+        var idow = woy + (dow1_1 > 4 || dow1_1 <= 1 ? 0 : 1);
+        if(idow == 53 && (new Date('' + d.getFullYear() + '/12/31')).getDay() < 4)
+        {
+            idow = 1;
+        }
+        else if(idow === 0)
+        {
+            d = new jsDate(new Date('' + (d.getFullYear()-1) + '/12/31'));
+            idow = d.getIsoWeek();
+        }
+        d = null;
+        return idow;
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getMilliseconds = function() {
+        return this.proxy.getMilliseconds();
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getMinutes = function() {
+        return this.proxy.getMinutes();
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getMonth = function() {
+        return this.proxy.getMonth();
+    };
+    
+    /**
+     * Get the name of the current month
+     * 
+     * @returns {String}
+     */
+     
+    jsDate.prototype.getMonthName = function() {
+        return jsDate.regional[this.locale]["monthNames"][this.proxy.getMonth()];
+    };
+    
+    /**
+     * Get the number of the current month, 1-12
+     * 
+     * @returns {Integer}
+     */
+     
+    jsDate.prototype.getMonthNumber = function() {
+        return this.proxy.getMonth() + 1;
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getSeconds = function() {
+        return this.proxy.getSeconds();
+    };
+    
+    /**
+     * Return a proper two-digit year integer
+     * 
+     * @returns {Integer}
+     */
+     
+    jsDate.prototype.getShortYear = function() {
+        return this.proxy.getYear() % 100;
+    };
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getTime = function() {
+        return this.proxy.getTime();
+    };
+    
+    /**
+     * Get the timezone abbreviation
+     *
+     * @returns {String} Abbreviation for the timezone
+     */
+    jsDate.prototype.getTimezoneAbbr = function() {
+        return this.proxy.toString().replace(/^.*\(([^)]+)\)$/, '$1'); 
+    };
+    
+    /**
+     * Get the browser-reported name for the current timezone (e.g. MDT, Mountain Daylight Time)
+     * 
+     * @returns {String}
+     */
+    jsDate.prototype.getTimezoneName = function() {
+        var match = /(?:\((.+)\)$| ([A-Z]{3}) )/.exec(this.toString());
+        return match[1] || match[2] || 'GMT' + this.getGmtOffset();
+    }; 
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getTimezoneOffset = function() {
+        return this.proxy.getTimezoneOffset();
+    };
+    
+    
+    /**
+     * Get the week number of the given year, starting with the first Monday as the first week
+     * @returns {Integer} Week number (13 for the 13th week of the year).
+     */
+    jsDate.prototype.getWeekOfYear = function() {
+        var doy = this.getDayOfYear();
+        var rdow = 7 - this.getDayOfWeek();
+        var woy = parseInt((doy+rdow)/7, 10);
+        return woy;
+    };
+    
+    /**
+     * Get the current date as a Unix timestamp
+     * 
+     * @returns {Integer}
+     */
+     
+    jsDate.prototype.getUnix = function() {
+        return Math.round(this.proxy.getTime() / 1000, 0);
+    }; 
+    
+    /**
+     * Implements Date functionality
+     */
+    jsDate.prototype.getYear = function() {
+        return this.proxy.getYear();
+    };
+    
+    /**
+     * Return a date one day ahead (or any other unit)
+     * 
+     * @param {String} unit Optional, year | month | day | week | hour | minute | second | millisecond
+     * @returns {jsDate}
+     */
+     
+    jsDate.prototype.next = function(unit) {
+        unit = unit || 'day';
+        return this.clone().add(1, unit);
+    };
+    
+    /**
+     * Set the jsDate instance to a new date.
+     *
+     * @param  {String | Number | Array | Date Object | jsDate Object | Options Object} arguments Optional arguments, 
+     * either a parsable date/time string,
+     * a JavaScript timestamp, an array of numbers of form [year, month, day, hours, minutes, seconds, milliseconds],
+     * a Date object, jsDate Object or an options object of form {syntax: "perl", date:some Date} where all options are optional.
+     */
+    jsDate.prototype.set = function() {
+        switch ( arguments.length ) {
+            case 0:
+                this.proxy = new Date();
+                break;
+            case 1:
+                // other objects either won't have a _type property or,
+                // if they do, it shouldn't be set to "jsDate", so
+                // assume it is an options argument.
+                if (get_type(arguments[0]) == "[object Object]" && arguments[0]._type != "jsDate") {
+                    var opts = this.options = arguments[0];
+                    this.syntax = opts.syntax || this.syntax;
+                    this.defaultCentury = opts.defaultCentury || this.defaultCentury;
+                    this.proxy = jsDate.createDate(opts.date);
+                }
+                else {
+                    this.proxy = jsDate.createDate(arguments[0]);
+                }
+                break;
+            default:
+                var a = [];
+                for ( var i=0; i<arguments.length; i++ ) {
+                    a.push(arguments[i]);
+                }
+                this.proxy = new Date( this.utcOffset );
+                this.proxy.setFullYear.apply( this.proxy, a.slice(0,3) );
+                if ( a.slice(3).length ) {
+                    this.proxy.setHours.apply( this.proxy, a.slice(3) );
+                }
+                break;
+        }
+    };
+    
+    /**
+     * Sets the day of the month for a specified date according to local time.
+     * @param {Integer} dayValue An integer from 1 to 31, representing the day of the month. 
+     */
+    jsDate.prototype.setDate = function(n) {
+        return this.proxy.setDate(n);
+    };
+    
+    /**
+     * Sets the full year for a specified date according to local time.
+     * @param {Integer} yearValue The numeric value of the year, for example, 1995.  
+     * @param {Integer} monthValue Optional, between 0 and 11 representing the months January through December.  
+     * @param {Integer} dayValue Optional, between 1 and 31 representing the day of the month. If you specify the dayValue parameter, you must also specify the monthValue. 
+     */
+    jsDate.prototype.setFullYear = function() {
+        return this.proxy.setFullYear.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Sets the hours for a specified date according to local time.
+     * 
+     * @param {Integer} hoursValue An integer between 0 and 23, representing the hour.  
+     * @param {Integer} minutesValue Optional, An integer between 0 and 59, representing the minutes.  
+     * @param {Integer} secondsValue Optional, An integer between 0 and 59, representing the seconds. 
+     * If you specify the secondsValue parameter, you must also specify the minutesValue.  
+     * @param {Integer} msValue Optional, A number between 0 and 999, representing the milliseconds. 
+     * If you specify the msValue parameter, you must also specify the minutesValue and secondsValue. 
+     */
+    jsDate.prototype.setHours = function() {
+        return this.proxy.setHours.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setMilliseconds = function(n) {
+        return this.proxy.setMilliseconds(n);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setMinutes = function() {
+        return this.proxy.setMinutes.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setMonth = function() {
+        return this.proxy.setMonth.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setSeconds = function() {
+        return this.proxy.setSeconds.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setTime = function(n) {
+        return this.proxy.setTime(n);
+    };
+    
+    /**
+     * Implements Date functionality
+     */ 
+    jsDate.prototype.setYear = function() {
+        return this.proxy.setYear.apply(this.proxy, arguments);
+    };
+    
+    /**
+     * Provide a formatted string representation of this date.
+     * 
+     * @param {String} formatString A format string.  
+     * See: {@link jsDate.formats}.
+     * @returns {String} Date String.
+     */
+            
+    jsDate.prototype.strftime = function(formatString) {
+        formatString = formatString || this.formatString || jsDate.regional[this.locale]['formatString'];
+        return jsDate.strftime(this, formatString, this.syntax);
+    };
+        
+    /**
+     * Return a String representation of this jsDate object.
+     * @returns {String} Date string.
+     */
+    
+    jsDate.prototype.toString = function() {
+        return this.proxy.toString();
+    };
+        
+    /**
+     * Convert the current date to an 8-digit integer (%Y%m%d)
+     * 
+     * @returns {Integer}
+     */
+     
+    jsDate.prototype.toYmdInt = function() {
+        return (this.proxy.getFullYear() * 10000) + (this.getMonthNumber() * 100) + this.proxy.getDate();
+    };
+    
+    /**
+     * @namespace Holds localizations for month/day names.
+     * <p>jsDate attempts to detect locale when loaded and defaults to 'en'.
+     * If a localization is detected which is not available, jsDate defaults to 'en'.
+     * Additional localizations can be added after jsDate loads.  After adding a localization,
+     * call the jsDate.regional.getLocale() method.  Currently, en, fr and de are defined.</p>
+     * 
+     * <p>Localizations must be an object and have the following properties defined:  monthNames, monthNamesShort, dayNames, dayNamesShort and Localizations are added like:</p>
+     * <pre class="code">
+     * jsDate.regional['en'] = {
+     * monthNames      : 'January February March April May June July August September October November December'.split(' '),
+     * monthNamesShort : 'Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec'.split(' '),
+     * dayNames        : 'Sunday Monday Tuesday Wednesday Thursday Friday Saturday'.split(' '),
+     * dayNamesShort   : 'Sun Mon Tue Wed Thu Fri Sat'.split(' ')
+     * };
+     * </pre>
+     * <p>After adding localizations, call <code>jsDate.regional.getLocale();</code> to update the locale setting with the
+     * new localizations.</p>
+     */
+     
+    jsDate.regional = {
+        'en': {
+            monthNames: ['January','February','March','April','May','June','July','August','September','October','November','December'],
+            monthNamesShort: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun','Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            dayNames: ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+            dayNamesShort: ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'fr': {
+            monthNames: ['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],
+            monthNamesShort: ['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],
+            dayNames: ['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],
+            dayNamesShort: ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'de': {
+            monthNames: ['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],
+            monthNamesShort: ['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'],
+            dayNames: ['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],
+            dayNamesShort: ['So','Mo','Di','Mi','Do','Fr','Sa'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'es': {
+            monthNames: ['Enero','Febrero','Marzo','Abril','Mayo','Junio', 'Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],
+            monthNamesShort: ['Ene','Feb','Mar','Abr','May','Jun', 'Jul','Ago','Sep','Oct','Nov','Dic'],
+            dayNames: ['Domingo','Lunes','Martes','Mi&eacute;rcoles','Jueves','Viernes','S&aacute;bado'],
+            dayNamesShort: ['Dom','Lun','Mar','Mi&eacute;','Juv','Vie','S&aacute;b'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'ru': {
+            monthNames: ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'],
+            monthNamesShort: ['Янв','Фев','Мар','Апр','Май','Июн','Июл','Авг','Сен','Окт','Ноя','Дек'],
+            dayNames: ['воскресенье','понедельник','вторник','среда','четверг','пятница','суббота'],
+            dayNamesShort: ['вск','пнд','втр','срд','чтв','птн','сбт'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'ar': {
+            monthNames: ['كانون الثاني', 'شباط', 'آذار', 'نيسان', 'آذار', 'حزيران','تموز', 'آب', 'أيلول',   'تشرين الأول', 'تشرين الثاني', 'كانون الأول'],
+            monthNamesShort: ['1','2','3','4','5','6','7','8','9','10','11','12'],
+            dayNames: ['السبت', 'الأحد', 'الاثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة'],
+            dayNamesShort: ['سبت', 'أحد', 'اثنين', 'ثلاثاء', 'أربعاء', 'خميس', 'جمعة'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        },
+        
+        'pt': {
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','S&aacute;b'],
+            formatString: '%Y-%m-%d %H:%M:%S'   
+        },
+        
+        'pt-BR': {
+            monthNames: ['Janeiro','Fevereiro','Mar&ccedil;o','Abril','Maio','Junho', 'Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'],
+            monthNamesShort: ['Jan','Fev','Mar','Abr','Mai','Jun','Jul','Ago','Set','Out','Nov','Dez'],
+            dayNames: ['Domingo','Segunda-feira','Ter&ccedil;a-feira','Quarta-feira','Quinta-feira','Sexta-feira','S&aacute;bado'],
+            dayNamesShort: ['Dom','Seg','Ter','Qua','Qui','Sex','S&aacute;b'],
+            formatString: '%Y-%m-%d %H:%M:%S'
+        }
+        
+    
+    };
+    
+    // Set english variants to 'en'
+    jsDate.regional['en-US'] = jsDate.regional['en-GB'] = jsDate.regional['en'];
+    
+    /**
+     * Try to determine the users locale based on the lang attribute of the html page.  Defaults to 'en'
+     * if it cannot figure out a locale of if the locale does not have a localization defined.
+     * @returns {String} locale
+     */
+     
+    jsDate.regional.getLocale = function () {
+        var l = jsDate.config.defaultLocale;
+        
+        if ( document && document.getElementsByTagName('html') && document.getElementsByTagName('html')[0].lang ) {
+            l = document.getElementsByTagName('html')[0].lang;
+            if (!jsDate.regional.hasOwnProperty(l)) {
+                l = jsDate.config.defaultLocale;
+            }
+        }
+        
+        return l;
+    };
+    
+    // ms in day
+    var day = 24 * 60 * 60 * 1000;
+    
+    // padd a number with zeros
+    var addZeros = function(num, digits) {
+        num = String(num);
+        var i = digits - num.length;
+        var s = String(Math.pow(10, i)).slice(1);
+        return s.concat(num);
+    };
+
+    // representations used for calculating differences between dates.
+    // This borrows heavily from Ken Snyder's work.
+    var multipliers = {
+        millisecond: 1,
+        second: 1000,
+        minute: 60 * 1000,
+        hour: 60 * 60 * 1000,
+        day: day,
+        week: 7 * day,
+        month: {
+            // add a number of months
+            add: function(d, number) {
+                // add any years needed (increments of 12)
+                multipliers.year.add(d, Math[number > 0 ? 'floor' : 'ceil'](number / 12));
+                // ensure that we properly wrap betwen December and January
+                var prevMonth = d.getMonth() + (number % 12);
+                if (prevMonth == 12) {
+                    prevMonth = 0;
+                    d.setYear(d.getFullYear() + 1);
+                } else if (prevMonth == -1) {
+                    prevMonth = 11;
+                    d.setYear(d.getFullYear() - 1);
+                }
+                d.setMonth(prevMonth);
+            },
+            // get the number of months between two Date objects (decimal to the nearest day)
+            diff: function(d1, d2) {
+                // get the number of years
+                var diffYears = d1.getFullYear() - d2.getFullYear();
+                // get the number of remaining months
+                var diffMonths = d1.getMonth() - d2.getMonth() + (diffYears * 12);
+                // get the number of remaining days
+                var diffDays = d1.getDate() - d2.getDate();
+                // return the month difference with the days difference as a decimal
+                return diffMonths + (diffDays / 30);
+            }
+        },
+        year: {
+            // add a number of years
+            add: function(d, number) {
+                d.setYear(d.getFullYear() + Math[number > 0 ? 'floor' : 'ceil'](number));
+            },
+            // get the number of years between two Date objects (decimal to the nearest day)
+            diff: function(d1, d2) {
+                return multipliers.month.diff(d1, d2) / 12;
+            }
+        }        
+    };
+    //
+    // Alias each multiplier with an 's' to allow 'year' and 'years' for example.
+    // This comes from Ken Snyders work.
+    //
+    for (var unit in multipliers) {
+        if (unit.substring(unit.length - 1) != 's') { // IE will iterate newly added properties :|
+            multipliers[unit + 's'] = multipliers[unit];
+        }
+    }
+    
+    //
+    // take a jsDate instance and a format code and return the formatted value.
+    // This is a somewhat modified version of Ken Snyder's method.
+    //
+    var format = function(d, code, syntax) {
+        // if shorcut codes are used, recursively expand those.
+        if (jsDate.formats[syntax]["shortcuts"][code]) {
+            return jsDate.strftime(d, jsDate.formats[syntax]["shortcuts"][code], syntax);
+        } else {
+            // get the format code function and addZeros() argument
+            var getter = (jsDate.formats[syntax]["codes"][code] || '').split('.');
+            var nbr = d['get' + getter[0]] ? d['get' + getter[0]]() : '';
+            if (getter[1]) {
+                nbr = addZeros(nbr, getter[1]);
+            }
+            return nbr;
+        }       
+    };
+    
+    /**
+     * @static
+     * Static function for convert a date to a string according to a given format.  Also acts as namespace for strftime format codes.
+     * <p>strftime formatting can be accomplished without creating a jsDate object by calling jsDate.strftime():</p>
+     * <pre class="code">
+     * var formattedDate = jsDate.strftime('Feb 8, 2006 8:48:32', '%Y-%m-%d %H:%M:%S');
+     * </pre>
+     * @param {String | Number | Array | jsDate&nbsp;Object | Date&nbsp;Object} date A parsable date string, JavaScript time stamp, Array of form [year, month, day, hours, minutes, seconds, milliseconds], jsDate Object or Date object.
+     * @param {String} formatString String with embedded date formatting codes.  
+     * See: {@link jsDate.formats}. 
+     * @param {String} syntax Optional syntax to use [default perl].
+     * @param {String} locale Optional locale to use.
+     * @returns {String} Formatted representation of the date.
+    */
+    //
+    // Logic as implemented here is very similar to Ken Snyder's Date Instance Methods.
+    //
+    jsDate.strftime = function(d, formatString, syntax, locale) {
+        var syn = 'perl';
+        var loc = jsDate.regional.getLocale();
+        
+        // check if syntax and locale are available or reversed
+        if (syntax && jsDate.formats.hasOwnProperty(syntax)) {
+            syn = syntax;
+        }
+        else if (syntax && jsDate.regional.hasOwnProperty(syntax)) {
+            loc = syntax;
+        }
+        
+        if (locale && jsDate.formats.hasOwnProperty(locale)) {
+            syn = locale;
+        }
+        else if (locale && jsDate.regional.hasOwnProperty(locale)) {
+            loc = locale;
+        }
+        
+        if (get_type(d) != "[object Object]" || d._type != "jsDate") {
+            d = new jsDate(d);
+            d.locale = loc;
+        }
+        if (!formatString) {
+            formatString = d.formatString || jsDate.regional[loc]['formatString'];
+        }
+        // default the format string to year-month-day
+        var source = formatString || '%Y-%m-%d', 
+            result = '', 
+            match;
+        // replace each format code
+        while (source.length > 0) {
+            if (match = source.match(jsDate.formats[syn].codes.matcher)) {
+                result += source.slice(0, match.index);
+                result += (match[1] || '') + format(d, match[2], syn);
+                source = source.slice(match.index + match[0].length);
+            } else {
+                result += source;
+                source = '';
+            }
+        }
+        return result;
+    };
+    
+    /**
+     * @namespace
+     * Namespace to hold format codes and format shortcuts.  "perl" and "php" format codes 
+     * and shortcuts are defined by default.  Additional codes and shortcuts can be
+     * added like:
+     * 
+     * <pre class="code">
+     * jsDate.formats["perl"] = {
+     *     "codes": {
+     *         matcher: /someregex/,
+     *         Y: "fullYear",  // name of "get" method without the "get",
+     *         ...,            // more codes
+     *     },
+     *     "shortcuts": {
+     *         F: '%Y-%m-%d',
+     *         ...,            // more shortcuts
+     *     }
+     * };
+     * </pre>
+     * 
+     * <p>Additionally, ISO and SQL shortcuts are defined and can be accesses via:
+     * <code>jsDate.formats.ISO</code> and <code>jsDate.formats.SQL</code>
+     */
+    
+    jsDate.formats = {
+        ISO:'%Y-%m-%dT%H:%M:%S.%N%G',
+        SQL:'%Y-%m-%d %H:%M:%S'
+    };
+    
+    /**
+     * Perl format codes and shortcuts for strftime.
+     * 
+     * A hash (object) of codes where each code must be an array where the first member is 
+     * the name of a Date.prototype or jsDate.prototype function to call
+     * and optionally a second member indicating the number to pass to addZeros()
+     * 
+     * <p>The following format codes are defined:</p>
+     * 
+     * <pre class="code">
+     * Code    Result                    Description
+     * == Years ==           
+     * %Y      2008                      Four-digit year
+     * %y      08                        Two-digit year
+     * 
+     * == Months ==          
+     * %m      09                        Two-digit month
+     * %#m     9                         One or two-digit month
+     * %B      September                 Full month name
+     * %b      Sep                       Abbreviated month name
+     * 
+     * == Days ==            
+     * %d      05                        Two-digit day of month
+     * %#d     5                         One or two-digit day of month
+     * %e      5                         One or two-digit day of month
+     * %A      Sunday                    Full name of the day of the week
+     * %a      Sun                       Abbreviated name of the day of the week
+     * %w      0                         Number of the day of the week (0 = Sunday, 6 = Saturday)
+     * 
+     * == Hours ==           
+     * %H      23                        Hours in 24-hour format (two digits)
+     * %#H     3                         Hours in 24-hour integer format (one or two digits)
+     * %I      11                        Hours in 12-hour format (two digits)
+     * %#I     3                         Hours in 12-hour integer format (one or two digits)
+     * %p      PM                        AM or PM
+     * 
+     * == Minutes ==         
+     * %M      09                        Minutes (two digits)
+     * %#M     9                         Minutes (one or two digits)
+     * 
+     * == Seconds ==         
+     * %S      02                        Seconds (two digits)
+     * %#S     2                         Seconds (one or two digits)
+     * %s      1206567625723             Unix timestamp (Seconds past 1970-01-01 00:00:00)
+     * 
+     * == Milliseconds ==    
+     * %N      008                       Milliseconds (three digits)
+     * %#N     8                         Milliseconds (one to three digits)
+     * 
+     * == Timezone ==        
+     * %O      360                       difference in minutes between local time and GMT
+     * %Z      Mountain Standard Time    Name of timezone as reported by browser
+     * %G      06:00                     Hours and minutes between GMT
+     * 
+     * == Shortcuts ==       
+     * %F      2008-03-26                %Y-%m-%d
+     * %T      05:06:30                  %H:%M:%S
+     * %X      05:06:30                  %H:%M:%S
+     * %x      03/26/08                  %m/%d/%y
+     * %D      03/26/08                  %m/%d/%y
+     * %#c     Wed Mar 26 15:31:00 2008  %a %b %e %H:%M:%S %Y
+     * %v      3-Sep-2008                %e-%b-%Y
+     * %R      15:31                     %H:%M
+     * %r      03:31:00 PM               %I:%M:%S %p
+     * 
+     * == Characters ==      
+     * %n      \n                        Newline
+     * %t      \t                        Tab
+     * %%      %                         Percent Symbol
+     * </pre>
+     * 
+     * <p>Formatting shortcuts that will be translated into their longer version.
+     * Be sure that format shortcuts do not refer to themselves: this will cause an infinite loop.</p>
+     * 
+     * <p>Format codes and format shortcuts can be redefined after the jsDate
+     * module is imported.</p>
+     * 
+     * <p>Note that if you redefine the whole hash (object), you must supply a "matcher"
+     * regex for the parser.  The default matcher is:</p>
+     * 
+     * <code>/()%(#?(%|[a-z]))/i</code>
+     * 
+     * <p>which corresponds to the Perl syntax used by default.</p>
+     * 
+     * <p>By customizing the matcher and format codes, nearly any strftime functionality is possible.</p>
+     */
+     
+    jsDate.formats.perl = {
+        codes: {
+            //
+            // 2-part regex matcher for format codes
+            //
+            // first match must be the character before the code (to account for escaping)
+            // second match must be the format code character(s)
+            //
+            matcher: /()%(#?(%|[a-z]))/i,
+            // year
+            Y: 'FullYear',
+            y: 'ShortYear.2',
+            // month
+            m: 'MonthNumber.2',
+            '#m': 'MonthNumber',
+            B: 'MonthName',
+            b: 'AbbrMonthName',
+            // day
+            d: 'Date.2',
+            '#d': 'Date',
+            e: 'Date',
+            A: 'DayName',
+            a: 'AbbrDayName',
+            w: 'Day',
+            // hours
+            H: 'Hours.2',
+            '#H': 'Hours',
+            I: 'Hours12.2',
+            '#I': 'Hours12',
+            p: 'AMPM',
+            // minutes
+            M: 'Minutes.2',
+            '#M': 'Minutes',
+            // seconds
+            S: 'Seconds.2',
+            '#S': 'Seconds',
+            s: 'Unix',
+            // milliseconds
+            N: 'Milliseconds.3',
+            '#N': 'Milliseconds',
+            // timezone
+            O: 'TimezoneOffset',
+            Z: 'TimezoneName',
+            G: 'GmtOffset'  
+        },
+        
+        shortcuts: {
+            // date
+            F: '%Y-%m-%d',
+            // time
+            T: '%H:%M:%S',
+            X: '%H:%M:%S',
+            // local format date
+            x: '%m/%d/%y',
+            D: '%m/%d/%y',
+            // local format extended
+            '#c': '%a %b %e %H:%M:%S %Y',
+            // local format short
+            v: '%e-%b-%Y',
+            R: '%H:%M',
+            r: '%I:%M:%S %p',
+            // tab and newline
+            t: '\t',
+            n: '\n',
+            '%': '%'
+        }
+    };
+    
+    /**
+     * PHP format codes and shortcuts for strftime.
+     * 
+     * A hash (object) of codes where each code must be an array where the first member is 
+     * the name of a Date.prototype or jsDate.prototype function to call
+     * and optionally a second member indicating the number to pass to addZeros()
+     * 
+     * <p>The following format codes are defined:</p>
+     * 
+     * <pre class="code">
+     * Code    Result                    Description
+     * === Days ===        
+     * %a      Sun through Sat           An abbreviated textual representation of the day
+     * %A      Sunday - Saturday         A full textual representation of the day
+     * %d      01 to 31                  Two-digit day of the month (with leading zeros)
+     * %e      1 to 31                   Day of the month, with a space preceding single digits.
+     * %j      001 to 366                Day of the year, 3 digits with leading zeros
+     * %u      1 - 7 (Mon - Sun)         ISO-8601 numeric representation of the day of the week
+     * %w      0 - 6 (Sun - Sat)         Numeric representation of the day of the week
+     *                                  
+     * === Week ===                     
+     * %U      13                        Full Week number, starting with the first Sunday as the first week
+     * %V      01 through 53             ISO-8601:1988 week number, starting with the first week of the year 
+     *                                   with at least 4 weekdays, with Monday being the start of the week
+     * %W      46                        A numeric representation of the week of the year, 
+     *                                   starting with the first Monday as the first week
+     * === Month ===                    
+     * %b      Jan through Dec           Abbreviated month name, based on the locale
+     * %B      January - December        Full month name, based on the locale
+     * %h      Jan through Dec           Abbreviated month name, based on the locale (an alias of %b)
+     * %m      01 - 12 (Jan - Dec)       Two digit representation of the month
+     * 
+     * === Year ===                     
+     * %C      19                        Two digit century (year/100, truncated to an integer)
+     * %y      09 for 2009               Two digit year
+     * %Y      2038                      Four digit year
+     * 
+     * === Time ===                     
+     * %H      00 through 23             Two digit representation of the hour in 24-hour format
+     * %I      01 through 12             Two digit representation of the hour in 12-hour format
+     * %l      1 through 12              Hour in 12-hour format, with a space preceeding single digits
+     * %M      00 through 59             Two digit representation of the minute
+     * %p      AM/PM                     UPPER-CASE 'AM' or 'PM' based on the given time
+     * %P      am/pm                     lower-case 'am' or 'pm' based on the given time
+     * %r      09:34:17 PM               Same as %I:%M:%S %p
+     * %R      00:35                     Same as %H:%M
+     * %S      00 through 59             Two digit representation of the second
+     * %T      21:34:17                  Same as %H:%M:%S
+     * %X      03:59:16                  Preferred time representation based on locale, without the date
+     * %z      -0500 or EST              Either the time zone offset from UTC or the abbreviation
+     * %Z      -0500 or EST              The time zone offset/abbreviation option NOT given by %z
+     * 
+     * === Time and Date ===            
+     * %D      02/05/09                  Same as %m/%d/%y
+     * %F      2009-02-05                Same as %Y-%m-%d (commonly used in database datestamps)
+     * %s      305815200                 Unix Epoch Time timestamp (same as the time() function)
+     * %x      02/05/09                  Preferred date representation, without the time
+     * 
+     * === Miscellaneous ===            
+     * %n        ---                     A newline character (\n)
+     * %t        ---                     A Tab character (\t)
+     * %%        ---                     A literal percentage character (%)
+     * </pre>
+     */
+ 
+    jsDate.formats.php = {
+        codes: {
+            //
+            // 2-part regex matcher for format codes
+            //
+            // first match must be the character before the code (to account for escaping)
+            // second match must be the format code character(s)
+            //
+            matcher: /()%((%|[a-z]))/i,
+            // day
+            a: 'AbbrDayName',
+            A: 'DayName',
+            d: 'Date.2',
+            e: 'Date',
+            j: 'DayOfYear.3',
+            u: 'DayOfWeek',
+            w: 'Day',
+            // week
+            U: 'FullWeekOfYear.2',
+            V: 'IsoWeek.2',
+            W: 'WeekOfYear.2',
+            // month
+            b: 'AbbrMonthName',
+            B: 'MonthName',
+            m: 'MonthNumber.2',
+            h: 'AbbrMonthName',
+            // year
+            C: 'Century.2',
+            y: 'ShortYear.2',
+            Y: 'FullYear',
+            // time
+            H: 'Hours.2',
+            I: 'Hours12.2',
+            l: 'Hours12',
+            p: 'AMPM',
+            P: 'AmPm',
+            M: 'Minutes.2',
+            S: 'Seconds.2',
+            s: 'Unix',
+            O: 'TimezoneOffset',
+            z: 'GmtOffset',
+            Z: 'TimezoneAbbr'
+        },
+        
+        shortcuts: {
+            D: '%m/%d/%y',
+            F: '%Y-%m-%d',
+            T: '%H:%M:%S',
+            X: '%H:%M:%S',
+            x: '%m/%d/%y',
+            R: '%H:%M',
+            r: '%I:%M:%S %p',
+            t: '\t',
+            n: '\n',
+            '%': '%'
+        }
+    };   
+    //
+    // Conceptually, the logic implemented here is similar to Ken Snyder's Date Instance Methods.
+    // I use his idea of a set of parsers which can be regular expressions or functions,
+    // iterating through those, and then seeing if Date.parse() will create a date.
+    // The parser expressions and functions are a little different and some bugs have been
+    // worked out.  Also, a lot of "pre-parsing" is done to fix implementation
+    // variations of Date.parse() between browsers.
+    //
+    jsDate.createDate = function(date) {
+        // if passing in multiple arguments, try Date constructor
+        if (date == null) {
+            return new Date();
+        }
+        // If the passed value is already a date object, return it
+        if (date instanceof Date) {
+            return date;
+        }
+        // if (typeof date == 'number') return new Date(date * 1000);
+        // If the passed value is an integer, interpret it as a javascript timestamp
+        if (typeof date == 'number') {
+            return new Date(date);
+        }
+        
+        // Before passing strings into Date.parse(), have to normalize them for certain conditions.
+        // If strings are not formatted staccording to the EcmaScript spec, results from Date parse will be implementation dependent.  
+        // 
+        // For example: 
+        //  * FF and Opera assume 2 digit dates are pre y2k, Chome assumes <50 is pre y2k, 50+ is 21st century.  
+        //  * Chrome will correctly parse '1984-1-25' into localtime, FF and Opera will not parse.
+        //  * Both FF, Chrome and Opera will parse '1984/1/25' into localtime.
+        
+        // remove leading and trailing spaces
+        var parsable = String(date).replace(/^\s*(.+)\s*$/g, '$1');
+        
+        // replace dahses (-) with slashes (/) in dates like n[nnn]/n[n]/n[nnn]
+        parsable = parsable.replace(/^([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,4})/, "$1/$2/$3");
+        
+        /////////
+        // Need to check for '15-Dec-09' also.
+        // FF will not parse, but Chrome will.
+        // Chrome will set date to 2009 as well.
+        /////////
+        
+        // first check for 'dd-mmm-yyyy' or 'dd/mmm/yyyy' like '15-Dec-2010'
+        parsable = parsable.replace(/^(3[01]|[0-2]?\d)[-\/]([a-z]{3,})[-\/](\d{4})/i, "$1 $2 $3");
+        
+        // Now check for 'dd-mmm-yy' or 'dd/mmm/yy' and normalize years to default century.
+        var match = parsable.match(/^(3[01]|[0-2]?\d)[-\/]([a-z]{3,})[-\/](\d{2})\D*/i);
+        if (match && match.length > 3) {
+            var m3 = parseFloat(match[3]);
+            var ny = jsDate.config.defaultCentury + m3;
+            ny = String(ny);
+            
+            // now replace 2 digit year with 4 digit year
+            parsable = parsable.replace(/^(3[01]|[0-2]?\d)[-\/]([a-z]{3,})[-\/](\d{2})\D*/i, match[1] +' '+ match[2] +' '+ ny);
+            
+        }
+        
+        // Check for '1/19/70 8:14PM'
+        // where starts with mm/dd/yy or yy/mm/dd and have something after
+        // Check if 1st postiion is greater than 31, assume it is year.
+        // Assme all 2 digit years are 1900's.
+        // Finally, change them into US style mm/dd/yyyy representations.
+        match = parsable.match(/^([0-9]{1,2})[-\/]([0-9]{1,2})[-\/]([0-9]{1,2})[^0-9]/);
+        
+        function h1(parsable, match) {
+            var m1 = parseFloat(match[1]);
+            var m2 = parseFloat(match[2]);
+            var m3 = parseFloat(match[3]);
+            var cent = jsDate.config.defaultCentury;
+            var ny, nd, nm, str;
+            
+            if (m1 > 31) { // first number is a year
+                nd = m3;
+                nm = m2;
+                ny = cent + m1;
+            }
+            
+            else { // last number is the year
+                nd = m2;
+                nm = m1;
+                ny = cent + m3;
+            }
+            
+            str = nm+'/'+nd+'/'+ny;
+            
+            // now replace 2 digit year with 4 digit year
+            return  parsable.replace(/^([0-9]{1,2})[-\/]([0-9]{1,2})[-\/]([0-9]{1,2})/, str);
+        
+        }
+        
+        if (match && match.length > 3) {
+            parsable = h1(parsable, match);
+        }
+        
+        // Now check for '1/19/70' with nothing after and do as above
+        var match = parsable.match(/^([0-9]{1,2})[-\/]([0-9]{1,2})[-\/]([0-9]{1,2})$/);
+        
+        if (match && match.length > 3) {
+            parsable = h1(parsable, match);
+        }
+                
+        
+        var i = 0;
+        var length = jsDate.matchers.length;
+        var pattern,
+            ms,
+            current = parsable;
+        while (i < length) {
+            ms = Date.parse(current);
+            if (!isNaN(ms)) {
+                return new Date(ms);
+            }
+            pattern = jsDate.matchers[i];
+            if (typeof pattern == 'function') {
+                var obj = pattern.call(jsDate, current);
+                if (obj instanceof Date) {
+                    return obj;
+                }
+            } else {
+                current = parsable.replace(pattern[0], pattern[1]);
+            }
+            i++;
+        }
+        return NaN;
+    };
+    
+
+    /**
+     * @static
+     * Handy static utility function to return the number of days in a given month.
+     * @param {Integer} year Year
+     * @param {Integer} month Month (1-12)
+     * @returns {Integer} Number of days in the month.
+    */
+    //
+    // handy utility method Borrowed right from Ken Snyder's Date Instance Mehtods.
+    // 
+    jsDate.daysInMonth = function(year, month) {
+        if (month == 2) {
+            return new Date(year, 1, 29).getDate() == 29 ? 29 : 28;
+        }
+        return [undefined,31,undefined,31,30,31,30,31,31,30,31,30,31][month];
+    };
+
+
+    //
+    // An Array of regular expressions or functions that will attempt to match the date string.
+    // Functions are called with scope of a jsDate instance.
+    //
+    jsDate.matchers = [
+        // convert dd.mmm.yyyy to mm/dd/yyyy (world date to US date).
+        [/(3[01]|[0-2]\d)\s*\.\s*(1[0-2]|0\d)\s*\.\s*([1-9]\d{3})/, '$2/$1/$3'],
+        // convert yyyy-mm-dd to mm/dd/yyyy (ISO date to US date).
+        [/([1-9]\d{3})\s*-\s*(1[0-2]|0\d)\s*-\s*(3[01]|[0-2]\d)/, '$2/$3/$1'],
+        // Handle 12 hour or 24 hour time with milliseconds am/pm and optional date part.
+        function(str) { 
+            var match = str.match(/^(?:(.+)\s+)?([012]?\d)(?:\s*\:\s*(\d\d))?(?:\s*\:\s*(\d\d(\.\d*)?))?\s*(am|pm)?\s*$/i);
+            //                   opt. date      hour       opt. minute     opt. second       opt. msec   opt. am or pm
+            if (match) {
+                if (match[1]) {
+                    var d = this.createDate(match[1]);
+                    if (isNaN(d)) {
+                        return;
+                    }
+                } else {
+                    var d = new Date();
+                    d.setMilliseconds(0);
+                }
+                var hour = parseFloat(match[2]);
+                if (match[6]) {
+                    hour = match[6].toLowerCase() == 'am' ? (hour == 12 ? 0 : hour) : (hour == 12 ? 12 : hour + 12);
+                }
+                d.setHours(hour, parseInt(match[3] || 0, 10), parseInt(match[4] || 0, 10), ((parseFloat(match[5] || 0)) || 0)*1000);
+                return d;
+            }
+            else {
+                return str;
+            }
+        },
+        // Handle ISO timestamp with time zone.
+        function(str) {
+            var match = str.match(/^(?:(.+))[T|\s+]([012]\d)(?:\:(\d\d))(?:\:(\d\d))(?:\.\d+)([\+\-]\d\d\:\d\d)$/i);
+            if (match) {
+                if (match[1]) {
+                    var d = this.createDate(match[1]);
+                    if (isNaN(d)) {
+                        return;
+                    }
+                } else {
+                    var d = new Date();
+                    d.setMilliseconds(0);
+                }
+                var hour = parseFloat(match[2]);
+                d.setHours(hour, parseInt(match[3], 10), parseInt(match[4], 10), parseFloat(match[5])*1000);
+                return d;
+            }
+            else {
+                    return str;
+            }
+        },
+        // Try to match ambiguous strings like 12/8/22.
+        // Use FF date assumption that 2 digit years are 20th century (i.e. 1900's).
+        // This may be redundant with pre processing of date already performed.
+        function(str) {
+            var match = str.match(/^([0-3]?\d)\s*[-\/.\s]{1}\s*([a-zA-Z]{3,9})\s*[-\/.\s]{1}\s*([0-3]?\d)$/);
+            if (match) {
+                var d = new Date();
+                var cent = jsDate.config.defaultCentury;
+                var m1 = parseFloat(match[1]);
+                var m3 = parseFloat(match[3]);
+                var ny, nd, nm;
+                if (m1 > 31) { // first number is a year
+                    nd = m3;
+                    ny = cent + m1;
+                }
+                
+                else { // last number is the year
+                    nd = m1;
+                    ny = cent + m3;
+                }
+                
+                var nm = inArray(match[2], jsDate.regional[this.locale]["monthNamesShort"]);
+                
+                if (nm == -1) {
+                    nm = inArray(match[2], jsDate.regional[this.locale]["monthNames"]);
+                }
+            
+                d.setFullYear(ny, nm, nd);
+                d.setHours(0,0,0,0);
+                return d;
+            }
+            
+            else {
+                return str;
+            }
+        }      
+    ];
+
+    //
+    // I think John Reisig published this method on his blog, ejohn.
+    //
+    function inArray( elem, array ) {
+        if ( array.indexOf ) {
+            return array.indexOf( elem );
+        }
+
+        for ( var i = 0, length = array.length; i < length; i++ ) {
+            if ( array[ i ] === elem ) {
+                return i;
+            }
+        }
+
+        return -1;
+    }
+    
+    //
+    // Thanks to Kangax, Christian Sciberras and Stack Overflow for this method.
+    //
+    function get_type(thing){
+        if(thing===null) return "[object Null]"; // special case
+        return Object.prototype.toString.call(thing);
+    }
+    
+    $.jsDate = jsDate;
+
       
     /**
      * JavaScript printf/sprintf functions.
@@ -18557,6 +20407,14 @@ Fisma.Vulnerability = {
 
         }
 
+		function thousand_separate(value) {
+			var value_str = new String(value);
+			for (var i=10; i>0; i--) {
+				if (value_str == (value_str = value_str.replace(/^(\d+)(\d{3})/, "$1"+$.jqplot.sprintf.thousandsSeparator+"$2"))) break;
+			}
+			return value_str; 
+		}
+
         function justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace) {
             var diff = minWidth - value.length;
             if (diff > 0) {
@@ -18592,14 +20450,15 @@ Fisma.Vulnerability = {
             if (substring == '%%') { return '%'; }
 
             // parse flags
-            var leftJustify = false, positivePrefix = '', zeroPad = false, prefixBaseX = false, htmlSpace = false;
-                for (var j = 0; flags && j < flags.length; j++) switch (flags.charAt(j)) {
+            var leftJustify = false, positivePrefix = '', zeroPad = false, prefixBaseX = false, htmlSpace = false, thousandSeparation = false;
+            for (var j = 0; flags && j < flags.length; j++) switch (flags.charAt(j)) {
                 case ' ': positivePrefix = ' '; break;
                 case '+': positivePrefix = '+'; break;
                 case '-': leftJustify = true; break;
                 case '0': zeroPad = true; break;
                 case '#': prefixBaseX = true; break;
                 case '&': htmlSpace = true; break;
+				case '\'': thousandSeparation = true; break;
             }
 
             // parameters may be null, undefined, empty-string or real valued
@@ -18663,7 +20522,9 @@ Fisma.Vulnerability = {
                 return '';
               }
               var prefix = number < 0 ? '-' : positivePrefix;
-              value = prefix + pad(String(Math.abs(number)), precision, '0', false);
+              var number_str = thousandSeparation ? thousand_separate(String(Math.abs(number))): String(Math.abs(number));
+			  value = prefix + pad(number_str, precision, '0', false);
+              //value = prefix + pad(String(Math.abs(number)), precision, '0', false);
               return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace);
                   }
             case 'd': {
@@ -18672,7 +20533,8 @@ Fisma.Vulnerability = {
                 return '';
               }
               var prefix = number < 0 ? '-' : positivePrefix;
-              value = prefix + pad(String(Math.abs(number)), precision, '0', false);
+              var number_str = thousandSeparation ? thousand_separate(String(Math.abs(number))): String(Math.abs(number));
+			  value = prefix + pad(number_str, precision, '0', false);
               return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace);
                   }
             case 'e':
@@ -18689,7 +20551,9 @@ Fisma.Vulnerability = {
                       var prefix = number < 0 ? '-' : positivePrefix;
                       var method = ['toExponential', 'toFixed', 'toPrecision']['efg'.indexOf(type.toLowerCase())];
                       var textTransform = ['toString', 'toUpperCase']['eEfFgG'.indexOf(type) % 2];
-                      value = prefix + Math.abs(number)[method](precision);
+                      var number_str = Math.abs(number)[method](precision);
+                      number_str = thousandSeparation ? thousand_separate(number_str): number_str;
+                      value = prefix + number_str;
                       return justify(value, prefix, leftJustify, minWidth, zeroPad, htmlSpace)[textTransform]();
                   }
             case 'p':
@@ -18731,24 +20595,39 @@ Fisma.Vulnerability = {
             }
         });
     };
-    
-    $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0& ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([nAscboxXuidfegpEGP])/g;
 
-})(jQuery);  /**
- * Copyright (c) 2009 - 2010 Chris Leonello
+	$.jqplot.sprintf.thousandsSeparator = ',';
+    
+    $.jqplot.sprintf.regex = /%%|%(\d+\$)?([-+#0&\' ]*)(\*\d+\$|\*|\d+)?(\.(\*\d+\$|\*|\d+))?([nAscboxXuidfegpEGP])/g;
+
+})(jQuery);  
+/**
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -18908,33 +20787,45 @@ Fisma.Vulnerability = {
         this._elem = $(domelem);
         this._elem.addClass('jqplot-'+this.axis+'-label');
         
+        domelem = null;
         return this._elem;
     };
     
     $.jqplot.CanvasAxisLabelRenderer.prototype.pack = function() {
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
             this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
         }
-        var ctx = this._elem.get(0).getContext("2d");
-        this._textRenderer.draw(ctx, this.label);
+        this._textRenderer.draw(this._elem.get(0).getContext("2d"), this.label);
     };
     
 })(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -19133,33 +21024,45 @@ Fisma.Vulnerability = {
         this._elem.css(this._styles);
         this._elem.addClass('jqplot-'+this.axis+'-tick');
         
+        domelem = null;
         return this._elem;
     };
     
     $.jqplot.CanvasAxisTickRenderer.prototype.pack = function() {
-        if ($.browser.msie) {
+        if ($.jqplot.use_excanvas) {
             window.G_vmlCanvasManager.init_(document);
             this._domelem = window.G_vmlCanvasManager.initElement(this._domelem);
         }
-        var ctx = this._elem.get(0).getContext("2d");
-        this._textRenderer.draw(ctx, this.label);
+        this._textRenderer.draw(this._elem.get(0).getContext("2d"), this.label);
     };
     
 })(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {    
@@ -19199,7 +21102,7 @@ Fisma.Vulnerability = {
     // returns float
     $.jqplot.CanvasTextRenderer.prototype.normalizeFontSize = function(sz) {
         sz = String(sz);
-        n = parseFloat(sz);
+        var n = parseFloat(sz);
         if (sz.indexOf('px') > -1) {
             return n/this.pt2px;
         }
@@ -19308,7 +21211,7 @@ Fisma.Vulnerability = {
         var total = 0;
         var len = str.length;
  
-        for ( i = 0; i < len; i++) {
+        for (var i = 0; i < len; i++) {
             var c = this.letter(str.charAt(i));
             if (c) {
                 total += c.width * this.normalizedFontSize / 25.0 * this.fontStretch;
@@ -19553,20 +21456,32 @@ Fisma.Vulnerability = {
     };
     
 })(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {   
@@ -19687,12 +21602,12 @@ Fisma.Vulnerability = {
                 // need a marker before and after the tick
                 var t = new this.tickRenderer(this.tickOptions);
                 t.showLabel = false;
-                t.showMark = true;
+                // t.showMark = true;
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
                 var t = new this.tickRenderer(this.tickOptions);
                 t.label = userTicks[i];
-                t.showLabel = true;
+                // t.showLabel = true;
                 t.showMark = false;
                 t.showGridline = false;
                 t.setTick(tt+0.5, this.name);
@@ -19701,7 +21616,7 @@ Fisma.Vulnerability = {
             // now add the last tick at the end
             var t = new this.tickRenderer(this.tickOptions);
             t.showLabel = false;
-            t.showMark = true;
+            // t.showMark = true;
             t.setTick(tt+1, this.name);
             this._ticks.push(t);
         }
@@ -19831,13 +21746,6 @@ Fisma.Vulnerability = {
                     t.showMark = false;
                     t.showGridline = false;
                 }
-                if (!this.showTicks) {
-                    t.showLabel = false;
-                    t.showMark = false;
-                }
-                else if (!this.showTickMarks) {
-                    t.showMark = false;
-                }
                 t.setTick(tt, this.name);
                 this._ticks.push(t);
             }
@@ -19879,14 +21787,12 @@ Fisma.Vulnerability = {
                 elem.appendTo(this._elem);
             }
     
-            if (this.showTicks) {
-                var t = this._ticks;
-                for (var i=0; i<t.length; i++) {
-                    var tick = t[i];
-                    if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
-                        var elem = tick.draw(ctx);
-                        elem.appendTo(this._elem);
-                    }
+            var t = this._ticks;
+            for (var i=0; i<t.length; i++) {
+                var tick = t[i];
+                if (tick.showLabel && (!tick.isMinorTick || this.showMinorTicks)) {
+                    var elem = tick.draw(ctx);
+                    elem.appendTo(this._elem);
                 }
             }
         
@@ -19910,7 +21816,7 @@ Fisma.Vulnerability = {
         var w = 0;
         var h = 0;
         var lshow = (this._label == null) ? false : this._label.show;
-        if (this.show && this.showTicks) {
+        if (this.show) {
             var t = this._ticks;
             for (var i=0; i<t.length; i++) {
                 var tick = t[i];
@@ -19978,7 +21884,8 @@ Fisma.Vulnerability = {
         var offmax = offsets.max;
         var offmin = offsets.min;
         var lshow = (this._label == null) ? false : this._label.show;
-        
+        var i;
+		
         for (var p in pos) {
             this._elem.css(p, pos[p]);
         }
@@ -20182,20 +22089,437 @@ Fisma.Vulnerability = {
     
     
 })(jQuery);/**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
+ * 
+ */
+(function($) {
+    $.jqplot.eventListenerHooks.push(['jqplotMouseMove', handleMove]);
+    
+    /**
+     * Class: $.jqplot.Highlighter
+     * Plugin which will highlight data points when they are moused over.
+     * 
+     * To use this plugin, include the js
+     * file in your source:
+     * 
+     * > <script type="text/javascript" src="plugins/jqplot.highlighter.js"></script>
+     * 
+     * A tooltip providing information about the data point is enabled by default.
+     * To disable the tooltip, set "showTooltip" to false.
+     * 
+     * You can control what data is displayed in the tooltip with various
+     * options.  The "tooltipAxes" option controls wether the x, y or both
+     * data values are displayed.
+     * 
+     * Some chart types (e.g. hi-low-close) have more than one y value per
+     * data point. To display the additional values in the tooltip, set the
+     * "yvalues" option to the desired number of y values present (3 for a hlc chart).
+     * 
+     * By default, data values will be formatted with the same formatting
+     * specifiers as used to format the axis ticks.  A custom format code
+     * can be supplied with the tooltipFormatString option.  This will apply 
+     * to all values in the tooltip.  
+     * 
+     * For more complete control, the "formatString" option can be set.  This
+     * Allows conplete control over tooltip formatting.  Values are passed to
+     * the format string in an order determined by the "tooltipAxes" and "yvalues"
+     * options.  So, if you have a hi-low-close chart and you just want to display 
+     * the hi-low-close values in the tooltip, you could set a formatString like:
+     * 
+     * > highlighter: {
+     * >     tooltipAxes: 'y',
+     * >     yvalues: 3,
+     * >     formatString:'<table class="jqplot-highlighter">
+     * >         <tr><td>hi:</td><td>%s</td></tr>
+     * >         <tr><td>low:</td><td>%s</td></tr>
+     * >         <tr><td>close:</td><td>%s</td></tr></table>'
+     * > }
+     * 
+     */
+    $.jqplot.Highlighter = function(options) {
+        // Group: Properties
+        //
+        //prop: show
+        // true to show the highlight.
+        this.show = $.jqplot.config.enablePlugins;
+        // prop: markerRenderer
+        // Renderer used to draw the marker of the highlighted point.
+        // Renderer will assimilate attributes from the data point being highlighted,
+        // so no attributes need set on the renderer directly.
+        // Default is to turn off shadow drawing on the highlighted point.
+        this.markerRenderer = new $.jqplot.MarkerRenderer({shadow:false});
+        // prop: showMarker
+        // true to show the marker
+        this.showMarker  = true;
+        // prop: lineWidthAdjust
+        // Pixels to add to the lineWidth of the highlight.
+        this.lineWidthAdjust = 2.5;
+        // prop: sizeAdjust
+        // Pixels to add to the overall size of the highlight.
+        this.sizeAdjust = 5;
+        // prop: showTooltip
+        // Show a tooltip with data point values.
+        this.showTooltip = true;
+        // prop: tooltipLocation
+        // Where to position tooltip, 'n', 'ne', 'e', 'se', 's', 'sw', 'w', 'nw'
+        this.tooltipLocation = 'nw';
+        // prop: fadeTooltip
+        // true = fade in/out tooltip, flase = show/hide tooltip
+        this.fadeTooltip = true;
+        // prop: tooltipFadeSpeed
+        // 'slow', 'def', 'fast', or number of milliseconds.
+        this.tooltipFadeSpeed = "fast";
+        // prop: tooltipOffset
+        // Pixel offset of tooltip from the highlight.
+        this.tooltipOffset = 2;
+        // prop: tooltipAxes
+        // Which axes to display in tooltip, 'x', 'y' or 'both', 'xy' or 'yx'
+        // 'both' and 'xy' are equivalent, 'yx' reverses order of labels.
+        this.tooltipAxes = 'both';
+        // prop; tooltipSeparator
+        // String to use to separate x and y axes in tooltip.
+        this.tooltipSeparator = ', ';
+        // prop; tooltipContentEditor
+        // Function used to edit/augment/replace the formatted tooltip contents.
+        // Called as str = tooltipContentEditor(str, seriesIndex, pointIndex)
+        // where str is the generated tooltip html and seriesIndex and pointIndex identify
+        // the data point being highlighted. Should return the html for the tooltip contents.
+        this.tooltipContentEditor = null;
+        // prop: useAxesFormatters
+        // Use the x and y axes formatters to format the text in the tooltip.
+        this.useAxesFormatters = true;
+        // prop: tooltipFormatString
+        // sprintf format string for the tooltip.
+        // Uses Ash Searle's javascript sprintf implementation
+        // found here: http://hexmen.com/blog/2007/03/printf-sprintf/
+        // See http://perldoc.perl.org/functions/sprintf.html for reference.
+        // Additional "p" and "P" format specifiers added by Chris Leonello.
+        this.tooltipFormatString = '%.5P';
+        // prop: formatString
+        // alternative to tooltipFormatString
+        // will format the whole tooltip text, populating with x, y values as
+        // indicated by tooltipAxes option.  So, you could have a tooltip like:
+        // 'Date: %s, number of cats: %d' to format the whole tooltip at one go.
+        // If useAxesFormatters is true, values will be formatted according to
+        // Axes formatters and you can populate your tooltip string with 
+        // %s placeholders.
+        this.formatString = null;
+        // prop: yvalues
+        // Number of y values to expect in the data point array.
+        // Typically this is 1.  Certain plots, like OHLC, will
+        // have more y values in each data point array.
+        this.yvalues = 1;
+        // prop: bringSeriesToFront
+        // This option requires jQuery 1.4+
+        // True to bring the series of the highlighted point to the front
+        // of other series.
+        this.bringSeriesToFront = false;
+        this._tooltipElem;
+        this.isHighlighting = false;
+
+        $.extend(true, this, options);
+    };
+    
+    var locations = ['nw', 'n', 'ne', 'e', 'se', 's', 'sw', 'w'];
+    var locationIndicies = {'nw':0, 'n':1, 'ne':2, 'e':3, 'se':4, 's':5, 'sw':6, 'w':7};
+    var oppositeLocations = ['se', 's', 'sw', 'w', 'nw', 'n', 'ne', 'e'];
+    
+    // axis.renderer.tickrenderer.formatter
+    
+    // called with scope of plot
+    $.jqplot.Highlighter.init = function (target, data, opts){
+        var options = opts || {};
+        // add a highlighter attribute to the plot
+        this.plugins.highlighter = new $.jqplot.Highlighter(options.highlighter);
+    };
+    
+    // called within scope of series
+    $.jqplot.Highlighter.parseOptions = function (defaults, options) {
+        // Add a showHighlight option to the series 
+        // and set it to true by default.
+        this.showHighlight = true;
+    };
+    
+    // called within context of plot
+    // create a canvas which we can draw on.
+    // insert it before the eventCanvas, so eventCanvas will still capture events.
+    $.jqplot.Highlighter.postPlotDraw = function() {
+        this.plugins.highlighter.highlightCanvas = new $.jqplot.GenericCanvas();
+        
+        this.eventCanvas._elem.before(this.plugins.highlighter.highlightCanvas.createElement(this._gridPadding, 'jqplot-highlight-canvas', this._plotDimensions));
+        this.plugins.highlighter.highlightCanvas.setContext();
+        
+        var p = this.plugins.highlighter;
+        p._tooltipElem = $('<div class="jqplot-highlighter-tooltip" style="position:absolute;display:none"></div>');
+        this.eventCanvas._elem.before(p._tooltipElem);
+    };
+    
+    $.jqplot.preInitHooks.push($.jqplot.Highlighter.init);
+    $.jqplot.preParseSeriesOptionsHooks.push($.jqplot.Highlighter.parseOptions);
+    $.jqplot.postDrawHooks.push($.jqplot.Highlighter.postPlotDraw);
+    
+    function draw(plot, neighbor) {
+        var hl = plot.plugins.highlighter;
+        var s = plot.series[neighbor.seriesIndex];
+        var smr = s.markerRenderer;
+        var mr = hl.markerRenderer;
+        mr.style = smr.style;
+        mr.lineWidth = smr.lineWidth + hl.lineWidthAdjust;
+        mr.size = smr.size + hl.sizeAdjust;
+        var rgba = $.jqplot.getColorComponents(smr.color);
+        var newrgb = [rgba[0], rgba[1], rgba[2]];
+        var alpha = (rgba[3] >= 0.6) ? rgba[3]*0.6 : rgba[3]*(2-rgba[3]);
+        mr.color = 'rgba('+newrgb[0]+','+newrgb[1]+','+newrgb[2]+','+alpha+')';
+        mr.init();
+        mr.draw(s.gridData[neighbor.pointIndex][0], s.gridData[neighbor.pointIndex][1], hl.highlightCanvas._ctx);
+    }
+    
+    function showTooltip(plot, series, neighbor) {
+        // neighbor looks like: {seriesIndex: i, pointIndex:j, gridData:p, data:s.data[j]}
+        // gridData should be x,y pixel coords on the grid.
+        // add the plot._gridPadding to that to get x,y in the target.
+        var hl = plot.plugins.highlighter;
+        var elem = hl._tooltipElem;
+        if (hl.useAxesFormatters) {
+            var xf = series._xaxis._ticks[0].formatter;
+            var yf = series._yaxis._ticks[0].formatter;
+            var xfstr = series._xaxis._ticks[0].formatString;
+            var yfstr = series._yaxis._ticks[0].formatString;
+            var str;
+            var xstr = xf(xfstr, neighbor.data[0]);
+            var ystrs = [];
+            for (var i=1; i<hl.yvalues+1; i++) {
+                ystrs.push(yf(yfstr, neighbor.data[i]));
+            }
+            if (hl.formatString) {
+                switch (hl.tooltipAxes) {
+                    case 'both':
+                    case 'xy':
+                        ystrs.unshift(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    case 'yx':
+                        ystrs.push(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    case 'x':
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, [hl.formatString, xstr]);
+                        break;
+                    case 'y':
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                    default: // same as xy
+                        ystrs.unshift(xstr);
+                        ystrs.unshift(hl.formatString);
+                        str = $.jqplot.sprintf.apply($.jqplot.sprintf, ystrs);
+                        break;
+                } 
+            }
+            else {
+                switch (hl.tooltipAxes) {
+                    case 'both':
+                    case 'xy':
+                        str = xstr;
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += hl.tooltipSeparator + ystrs[i];
+                        }
+                        break;
+                    case 'yx':
+                        str = '';
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += ystrs[i] + hl.tooltipSeparator;
+                        }
+                        str += xstr;
+                        break;
+                    case 'x':
+                        str = xstr;
+                        break;
+                    case 'y':
+                        str = ystrs.join(hl.tooltipSeparator);
+                        break;
+                    default: // same as 'xy'
+                        str = xstr;
+                        for (var i=0; i<ystrs.length; i++) {
+                            str += hl.tooltipSeparator + ystrs[i];
+                        }
+                        break;
+                    
+                }                
+            }
+        }
+        else {
+            var str;
+            if (hl.tooltipAxes == 'both' || hl.tooltipAxes == 'xy') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]) + hl.tooltipSeparator + $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+            }
+            else if (hl.tooltipAxes == 'yx') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]) + hl.tooltipSeparator + $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]);
+            }
+            else if (hl.tooltipAxes == 'x') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[0]);
+            }
+            else if (hl.tooltipAxes == 'y') {
+                str = $.jqplot.sprintf(hl.tooltipFormatString, neighbor.data[1]);
+            } 
+        }
+        if ($.isFunction(hl.tooltipContentEditor)) {
+            // args str, seriesIndex, pointIndex are essential so the hook can look up
+            // extra data for the point.
+            str = hl.tooltipContentEditor(str, neighbor.seriesIndex, neighbor.pointIndex, plot);
+        }
+        elem.html(str);
+        var gridpos = {x:neighbor.gridData[0], y:neighbor.gridData[1]};
+        var ms = 0;
+        var fact = 0.707;
+        if (series.markerRenderer.show == true) { 
+            ms = (series.markerRenderer.size + hl.sizeAdjust)/2;
+        }
+		
+		var loc = locations;
+		if (series.fillToZero && series.fill && neighbor.data[1] < 0) {
+			loc = oppositeLocations;
+		}
+		
+        switch (loc[locationIndicies[hl.tooltipLocation]]) {
+            case 'nw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+            case 'n':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - ms;
+                break;
+            case 'ne':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+            case 'e':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + ms;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            case 'se':
+                var x = gridpos.x + plot._gridPadding.left + hl.tooltipOffset + fact * ms;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
+                break;
+            case 's':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true)/2;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + ms;
+                break;
+            case 'sw':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top + hl.tooltipOffset + fact * ms;
+                break;
+            case 'w':
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - ms;
+                var y = gridpos.y + plot._gridPadding.top - elem.outerHeight(true)/2;
+                break;
+            default: // same as 'nw'
+                var x = gridpos.x + plot._gridPadding.left - elem.outerWidth(true) - hl.tooltipOffset - fact * ms;
+                var y = gridpos.y + plot._gridPadding.top - hl.tooltipOffset - elem.outerHeight(true) - fact * ms;
+                break;
+        }
+        elem.css('left', x);
+        elem.css('top', y);
+        if (hl.fadeTooltip) {
+            // Fix for stacked up animations.  Thnanks Trevor!
+            elem.stop(true,true).fadeIn(hl.tooltipFadeSpeed);
+        }
+        else {
+            elem.show();
+        }
+        elem = null;
+        
+    }
+    
+    function handleMove(ev, gridpos, datapos, neighbor, plot) {
+        var hl = plot.plugins.highlighter;
+        var c = plot.plugins.cursor;
+        if (hl.show) {
+            if (neighbor == null && hl.isHighlighting) {
+               var ctx = hl.highlightCanvas._ctx;
+               ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                if (hl.fadeTooltip) {
+                    hl._tooltipElem.fadeOut(hl.tooltipFadeSpeed);
+                }
+                else {
+                    hl._tooltipElem.hide();
+                }
+                if (hl.bringSeriesToFront) {
+                    plot.restorePreviousSeriesOrder();
+                }
+               hl.isHighlighting = false;
+        	  ctx = null;
+            
+            }
+            else if (neighbor != null && plot.series[neighbor.seriesIndex].showHighlight && !hl.isHighlighting) {
+                hl.isHighlighting = true;
+                if (hl.showMarker) {
+                    draw(plot, neighbor);
+                }
+                if (hl.showTooltip && (!c || !c._zoom.started)) {
+                    showTooltip(plot, plot.series[neighbor.seriesIndex], neighbor);
+                }
+                if (hl.bringSeriesToFront) {
+                    plot.moveSeriesToFront(neighbor.seriesIndex);
+                }
+            }
+        }
+    }
+})(jQuery);/**
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
+ * jqPlot is currently available for use in all personal or commercial projects 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
+ * choose the license that best suits your project and use it accordingly. 
+ *
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
+ *
+ * If you are feeling kind and generous, consider supporting the project by
+ * making a donation at: http://www.jqplot.com/donate.php .
+ *
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -20245,7 +22569,12 @@ Fisma.Vulnerability = {
         // group bars into this many groups
         this.groups = 1;
         // prop: varyBarColor
-        // true to color each bar separately.
+        // true to color each bar of a series separately rather than
+        // have every bar of a given series the same color.
+        // If used for non-stacked multiple series bar plots, user should
+        // specify a separate 'seriesColors' array for each series.
+        // Otherwise, each series will set their bars to the same color array.
+        // This option has no Effect for stacked bar charts and is disabled.
         this.varyBarColor = false;
         // prop: highlightMouseOver
         // True to highlight slice when moused over.
@@ -20258,6 +22587,7 @@ Fisma.Vulnerability = {
         // prop: highlightColors
         // an array of colors to use when highlighting a bar.
         this.highlightColors = [];
+        this._type = 'bar';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -20424,7 +22754,8 @@ Fisma.Vulnerability = {
     
     $.jqplot.BarRenderer.prototype.draw = function(ctx, gridData, options) {
         var i;
-        var opts = (options != undefined) ? options : {};
+        // Ughhh, have to make a copy of options b/c it may be modified later.
+        var opts = $.extend({}, options);
         var shadow = (opts.shadow != undefined) ? opts.shadow : this.shadow;
         var showLine = (opts.showLine != undefined) ? opts.showLine : this.showLine;
         var fill = (opts.fill != undefined) ? opts.fill : this.fill;
@@ -20432,7 +22763,7 @@ Fisma.Vulnerability = {
         var yaxis = this.yaxis;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var pointx, pointy, nvals, nseries, pos;
+        var pointx, pointy;
         // clear out data colors.
         this._dataColors = [];
         this._barPoints = [];
@@ -20442,9 +22773,10 @@ Fisma.Vulnerability = {
         }
         
         var temp = this._plotSeriesInfo = this.renderer.calcSeriesNumbers.call(this);
-        nvals = temp[0];
-        nseries = temp[1];
-        pos = temp[2];
+        var nvals = temp[0];
+        var nseries = temp[1];
+        var pos = temp[2];
+		var points = [];
         
         if (this._stack) {
             this._barNudge = 0;
@@ -20460,6 +22792,9 @@ Fisma.Vulnerability = {
                 negativeColor = opts.fillStyle;
             }
             var positiveColor = opts.fillStyle;
+			var base;
+			var xstart; 
+			var ystart;
             
             if (this.barDirection == 'vertical') {
                 for (var i=0; i<gridData.length; i++) {
@@ -20467,8 +22802,8 @@ Fisma.Vulnerability = {
                         continue;
                     }
                     points = [];
-                    var base = gridData[i][0] + this._barNudge;
-                    var ystart;
+                    base = gridData[i][0] + this._barNudge;
+                    ystart;
                     
                     // stacked
                     if (this._stack && this._prevGridData.length) {
@@ -20482,12 +22817,34 @@ Fisma.Vulnerability = {
                         else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
                             ystart = this.gridData[i-1][1];
                         }
+                        else if (this.waterfall && i == 0 && i < this.gridData.length-1) {
+                            if (this._yaxis.min <= 0 && this._yaxis.max >= 0) {
+                                ystart = this._yaxis.series_u2p(0);
+                            }
+                            else if (this._yaxis.min > 0) {
+                                ystart = ctx.canvas.height;
+                            }
+                            else {
+                                ystart = 0;
+                            }
+                        }
+                        else if (this.waterfall && i == this.gridData.length - 1) {
+                            if (this._yaxis.min <= 0 && this._yaxis.max >= 0) {
+                                ystart = this._yaxis.series_u2p(0);
+                            }
+                            else if (this._yaxis.min > 0) {
+                                ystart = ctx.canvas.height;
+                            }
+                            else {
+                                ystart = 0;
+                            }
+                        }
                         else {
                             ystart = ctx.canvas.height;
                         }
                     }
                     if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             if (this.useNegativeColors) {
                                 opts.fillStyle = negativeColors.next();
                             }
@@ -20500,18 +22857,27 @@ Fisma.Vulnerability = {
                         }
                     }
                     else {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             opts.fillStyle = positiveColors.next();
                         }
                         else {
                             opts.fillStyle = positiveColor;
                         }
                     }
-                    
-                    points.push([base-this.barWidth/2, ystart]);
-                    points.push([base-this.barWidth/2, gridData[i][1]]);
-                    points.push([base+this.barWidth/2, gridData[i][1]]);
-                    points.push([base+this.barWidth/2, ystart]);
+					
+					if (!this.fillToZero || this._plotData[i][1] >= 0) { 
+						points.push([base-this.barWidth/2, ystart]);
+						points.push([base-this.barWidth/2, gridData[i][1]]);
+						points.push([base+this.barWidth/2, gridData[i][1]]);
+						points.push([base+this.barWidth/2, ystart]);
+					}
+					// for negative bars make sure points are always ordered clockwise
+					else {              
+						points.push([base-this.barWidth/2, gridData[i][1]]);
+						points.push([base-this.barWidth/2, ystart]);
+						points.push([base+this.barWidth/2, ystart]);
+						points.push([base+this.barWidth/2, gridData[i][1]]);
+					}
                     this._barPoints.push(points);
                     // now draw the shadows if not stacked.
                     // for stacked plots, they are predrawn by drawShadow
@@ -20533,8 +22899,8 @@ Fisma.Vulnerability = {
                         continue;
                     }
                     points = [];
-                    var base = gridData[i][1] - this._barNudge;
-                    var xstart;
+                    base = gridData[i][1] - this._barNudge;
+                    xstart;
                     
                     if (this._stack && this._prevGridData.length) {
                         xstart = this._prevGridData[i][0];
@@ -20547,12 +22913,34 @@ Fisma.Vulnerability = {
                         else if (this.waterfall && i > 0 && i < this.gridData.length-1) {
                             xstart = this.gridData[i-1][1];
                         }
+                        else if (this.waterfall && i == 0 && i < this.gridData.length-1) {
+                            if (this._xaxis.min <= 0 && this._xaxis.max >= 0) {
+                                xstart = this._xaxis.series_u2p(0);
+                            }
+                            else if (this._xaxis.min > 0) {
+                                xstart = 0;
+                            }
+                            else {
+                                xstart = ctx.canvas.width;
+                            }
+                        }
+                        else if (this.waterfall && i == this.gridData.length - 1) {
+                            if (this._xaxis.min <= 0 && this._xaxis.max >= 0) {
+                                xstart = this._xaxis.series_u2p(0);
+                            }
+                            else if (this._xaxis.min > 0) {
+                                xstart = 0;
+                            }
+                            else {
+                                xstart = ctx.canvas.width;
+                            }
+                        }
                         else {
                             xstart = 0;
                         }
                     }
                     if ((this.fillToZero && this._plotData[i][1] < 0) || (this.waterfall && this._data[i][1] < 0)) {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             if (this.useNegativeColors) {
                                 opts.fillStyle = negativeColors.next();
                             }
@@ -20562,7 +22950,7 @@ Fisma.Vulnerability = {
                         }
                     }
                     else {
-                        if (this.varyBarColor) {
+                        if (this.varyBarColor && !this._stack) {
                             opts.fillStyle = positiveColors.next();
                         }
                         else {
@@ -20615,7 +23003,7 @@ Fisma.Vulnerability = {
         var yaxis = this.yaxis;
         var xp = this._xaxis.series_u2p;
         var yp = this._yaxis.series_u2p;
-        var pointx, pointy, nvals, nseries, pos;
+        var pointx, points, pointy, nvals, nseries, pos;
         
         if (this._stack && this.shadow) {
             if (this.barWidth == null) {
@@ -20693,7 +23081,7 @@ Fisma.Vulnerability = {
     };
     
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.BarRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {
@@ -20712,7 +23100,7 @@ Fisma.Vulnerability = {
         this.plugins.barRenderer.highlightCanvas = new $.jqplot.GenericCanvas();
         
         this.eventCanvas._elem.before(this.plugins.barRenderer.highlightCanvas.createElement(this._gridPadding, 'jqplot-barRenderer-highlight-canvas', this._plotDimensions));
-        var hctx = this.plugins.barRenderer.highlightCanvas.setContext();
+        this.plugins.barRenderer.highlightCanvas.setContext();
     }   
     
     function highlight (plot, sidx, pidx, points) {
@@ -20723,6 +23111,7 @@ Fisma.Vulnerability = {
         plot.plugins.barRenderer.highlightedSeriesIndex = sidx;
         var opts = {fillStyle: s.highlightColors[pidx]};
         s.renderer.shapeRenderer.draw(canvas._ctx, points, opts);
+        canvas = null;
     }
     
     function unhighlight (plot) {
@@ -20733,6 +23122,7 @@ Fisma.Vulnerability = {
         }
         plot.plugins.barRenderer.highlightedSeriesIndex = null;
         plot.target.trigger('jqplotDataUnhighlight');
+        canvas =  null;
     }
     
     
@@ -20805,20 +23195,32 @@ Fisma.Vulnerability = {
     
     
 })(jQuery);    /**
- * Copyright (c) 2009 - 2010 Chris Leonello
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris at jqplot dot com 
- * or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -20937,10 +23339,11 @@ Fisma.Vulnerability = {
         // -90 = on the positive y axis.
         // 90 = on the negaive y axis.
         // 180 or - 180 = on the negative x axis.
-        this.startAngle = -90;
+        this.startAngle = 0;
         this.tickRenderer = $.jqplot.PieTickRenderer;
         // Used as check for conditions where pie shouldn't be drawn.
         this._drawData = true;
+        this._type = 'pie';
         
         // if user has passed in highlightMouseDown option and not set highlightMouseOver, disable highlightMouseOver
         if (options.highlightMouseDown && options.highlightMouseOver == null) {
@@ -20948,9 +23351,6 @@ Fisma.Vulnerability = {
         }
         
         $.extend(true, this, options);
-        if (this.diameter != null) {
-            this.diameter = this.diameter - this.sliceMargin;
-        }
         this._diameter = null;
         this._radius = null;
         // array of [start,end] angles arrays, one for each slice.  In radians.
@@ -21044,27 +23444,43 @@ Fisma.Vulnerability = {
     
     $.jqplot.PieRenderer.prototype.drawSlice = function (ctx, ang1, ang2, color, isShadow) {
         if (this._drawData) {
-            var r = this._diameter / 2;
+            var r = this._diameter / 2.0;
             var fill = this.fill;
             var lineWidth = this.lineWidth;
+            var sm = this.sliceMargin;
+            if (this.fill == false) {
+                sm += this.lineWidth;
+            }
             ctx.save();
             ctx.translate(this._center[0], this._center[1]);
-            ctx.translate(this.sliceMargin*Math.cos((ang1+ang2)/2), this.sliceMargin*Math.sin((ang1+ang2)/2));
-    
+            var rprime = 0;
+            if (Math.abs(ang2-ang1) > 0) {
+                rprime = parseFloat(sm) / 2.0 / Math.sin((ang2 - ang1)/2.0);
+            }
+            var transx = rprime * Math.cos((ang1 + ang2) / 2.0);
+            var transy = rprime * Math.sin((ang1 + ang2) / 2.0);
+            if ((ang2 - ang1) <= Math.PI) {
+                r -= rprime;  
+            }
+            else {
+                r += rprime;
+            }
+            ctx.translate(transx, transy);
+            
             if (isShadow) {
                 for (var i=0; i<this.shadowDepth; i++) {
                     ctx.save();
                     ctx.translate(this.shadowOffset*Math.cos(this.shadowAngle/180*Math.PI), this.shadowOffset*Math.sin(this.shadowAngle/180*Math.PI));
-                    doDraw();
+                    doDraw(r);
                 }
             }
     
             else {
-                doDraw();
+                doDraw(r);
             }
         }
     
-        function doDraw () {
+        function doDraw (rad) {
             // Fix for IE and Chrome that can't seem to draw circles correctly.
             // ang2 should always be <= 2 pi since that is the way the data is converted.
              if (ang2 > 6.282 + this.startAngle) {
@@ -21083,7 +23499,7 @@ Fisma.Vulnerability = {
             ctx.fillStyle = color;
             ctx.strokeStyle = color;
             ctx.lineWidth = lineWidth;
-            ctx.arc(0, 0, r, ang1, ang2, false);
+            ctx.arc(0, 0, rad, ang1, ang2, false);
             ctx.lineTo(0,0);
             ctx.closePath();
         
@@ -21159,47 +23575,30 @@ Fisma.Vulnerability = {
         var mindim = Math.min(w,h);
         var d = mindim;
         // this._diameter = this.diameter || d;
-        this._diameter = this.diameter  || d - this.sliceMargin;
-
-         // damian: required for line labels
-         var total = 0;
-         for (var i=0; i<gd.length; i++) {
-             total += this._plotData[i][1];
-         }  
+        this._diameter = this.diameter  || d; // - this.sliceMargin;
 
         var r = this._radius = this._diameter/2;
         var sa = this.startAngle / 180 * Math.PI;
-
-        // bug killer for pie-charts with a single 100% pie slice (the startting angle must be 0 for them)
-        var percentage = this._plotData[0][1] * 100 / total;
-        percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
-        if (percentage === 100) {
-            sa = 0;
-        }
-
         this._center = [(cw - trans * offx)/2 + trans * offx, (ch - trans*offy)/2 + trans * offy];
+        
+        // Fixes issue #272.  Thanks hugwijst!
+        // reset slice angles array.
+        this._sliceAngles = [];
         
         if (this.shadow) {
             var shadowColor = 'rgba(0,0,0,'+this.shadowAlpha+')';
             for (var i=0; i<gd.length; i++) {
                 var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
                 // Adjust ang1 and ang2 for sliceMargin
-                ang1 += this.sliceMargin/180*Math.PI;
+                // ang1 += this.sliceMargin/180*Math.PI;
                 this.renderer.drawSlice.call (this, ctx, ang1, gd[i][1]+sa, shadowColor, true);
             }
             
         }
-        
-        // damian: required for line labels
-        var origin = {
-            x: parseInt(ctx.canvas.style.left) + cw/2,
-            y: parseInt(ctx.canvas.style.top) + ch/2
-        };
-        
         for (var i=0; i<gd.length; i++) {
             var ang1 = (i == 0) ? sa : gd[i-1][1] + sa;
             // Adjust ang1 and ang2 for sliceMargin
-            ang1 += this.sliceMargin/180*Math.PI;
+            // ang1 += this.sliceMargin/180*Math.PI;
             var ang2 = gd[i][1] + sa;
             this._sliceAngles.push([ang1, ang2]);
                       
@@ -21243,40 +23642,6 @@ Fisma.Vulnerability = {
                 y = Math.round(y);
                 labelelem.css({left: x, top: y});
             }
-
-             // damian: line labels
-             if (typeof(this.lineLabels !== 'undefined') && this.lineLabels) {
-             
-                 // percentage
-                 var percentage = this._plotData[i][1] * 100 / total;
-                 percentage = (percentage < 1) ? percentage.toFixed(2) : Math.round(percentage);
-                    
-                 var mid_ang = (ang1 + (gd[i][1]-ang1)/2);
-                 mid_ang += 5.49778714; 4.71238898;
-                 
-                 // line 1
-                 var incDiameter = 10;
-                 var line1_start_x = Math.cos(mid_ang) * ((this._diameter/1.9) + incDiameter);
-                 var line1_start_y = Math.sin(mid_ang) * ((this._diameter/1.9) + incDiameter);
-                 var line1_end_x = Math.cos(mid_ang) * ((this._diameter/1.63) + incDiameter);
-                 var line1_end_y = Math.sin(mid_ang) * ((this._diameter/1.63) + incDiameter);
-                 
-                 // line 2
-                 var line2_end_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 6 : -6;
-                 var line2_end_x = line1_end_x + line2_end_x_offset;
-                 var line2_end_y = line1_end_y;    
-                 
-                 // label
-                 var l = $("<div class='jqplot-pie-line-label' style='position: absolute;'>"+gd[i][0]+"</div>").insertAfter(ctx.canvas);
-                 var l_x_offset = (mid_ang >= 4.712 || mid_ang <= 1.57) ? 4 : -1 * l.width() - 4;
-                 var l_y_offset = -1 * l.height() / 2;
-                 var l_x = line2_end_x + origin.x + l_x_offset;
-                 var l_y = line2_end_y + origin.y + l_y_offset;
-                 l_x -= 30;
-                 //l_y += 10;
-                 l.css({left: l_x+"px", top: l_y+"px"});
-            }    
-            
         }
                
     };
@@ -21358,7 +23723,8 @@ Fisma.Vulnerability = {
             
             var pad = false, 
                 reverse = false,
-                nr, nc;
+                nr, 
+                nc;
             var s = series[0];
             var colorGenerator = new $.jqplot.ColorGenerator(s.seriesColors);
             
@@ -21488,7 +23854,7 @@ Fisma.Vulnerability = {
     }
     
     function postInit(target, data, options) {
-        for (i=0; i<this.series.length; i++) {
+        for (var i=0; i<this.series.length; i++) {
             if (this.series[i].renderer.constructor == $.jqplot.PieRenderer) {
                 // don't allow mouseover and mousedown at same time.
                 if (this.series[i].highlightMouseOver) {
@@ -21624,22 +23990,33 @@ Fisma.Vulnerability = {
     
 })(jQuery);
     
-    
-/**
- * Copyright (c) 2009 - 2010 Chris Leonello
+    /**
+ * jqPlot
+ * Pure JavaScript plotting plugin using jQuery
+ *
+ * Version: 1.0.0b1_r746
+ *
+ * Copyright (c) 2009-2011 Chris Leonello
  * jqPlot is currently available for use in all personal or commercial projects 
- * under both the MIT and GPL version 2.0 licenses. This means that you can 
+ * under both the MIT (http://www.opensource.org/licenses/mit-license.php) and GPL 
+ * version 2.0 (http://www.gnu.org/licenses/gpl-2.0.html) licenses. This means that you can 
  * choose the license that best suits your project and use it accordingly. 
  *
- * The author would appreciate an email letting him know of any substantial
- * use of jqPlot.  You can reach the author at: chris dot leonello at gmail 
- * dot com or see http://www.jqplot.com/info.php .  This is, of course, 
- * not required.
+ * Although not required, the author would appreciate an email letting him 
+ * know of any substantial use of jqPlot.  You can reach the author at: 
+ * chris at jqplot dot com or see http://www.jqplot.com/info.php .
  *
  * If you are feeling kind and generous, consider supporting the project by
  * making a donation at: http://www.jqplot.com/donate.php .
  *
- * Thanks for using jqPlot!
+ * sprintf functions contained in jqplot.sprintf.js by Ash Searle:
+ *
+ *     version 2007.04.27
+ *     author Ash Searle
+ *     http://hexmen.com/blog/2007/03/printf-sprintf/
+ *     http://hexmen.com/js/sprintf.js
+ *     The author (Ash Searle) has placed this code in the public domain:
+ *     "This code is unrestricted: you are free to use it however you like."
  * 
  */
 (function($) {
@@ -21704,7 +24081,7 @@ Fisma.Vulnerability = {
         this.labelsFromSeries = false;
         // prop: seriesLabelIndex
         // array index for location of labels within data point arrays.
-        // if null, will use the last element of teh data point array.
+        // if null, will use the last element of the data point array.
         this.seriesLabelIndex = null;
         // prop: labels
         // array of arrays of labels, one array for each series.
@@ -21768,7 +24145,7 @@ Fisma.Vulnerability = {
         if (p.seriesLabelIndex != null) {
             labelIdx = p.seriesLabelIndex;
         }
-        else if (this.renderer.constuctor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
+        else if (this.renderer.constructor == $.jqplot.BarRenderer && this.barDirection == 'horizontal') {
             labelIdx = 0;
         }
         else {
@@ -21917,7 +24294,7 @@ Fisma.Vulnerability = {
                     elem.html(label);
                 }
                 var location = p.location;
-                if (this.waterfall && parseInt(label, 10) < 0) {
+                if ((this.fillToZero && pd[i][1] < 0) || (this.waterfall && parseInt(label, 10)) < 0) {
                     location = oppositeLocations[locationIndicies[location]];
                 }
                 var ell = xax.u2p(pd[i][0]) + p.xOffset(elem, location);

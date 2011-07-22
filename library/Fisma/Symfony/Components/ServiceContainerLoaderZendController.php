@@ -21,7 +21,6 @@
  * 
  * @uses Fisma_Symfony_Components_ServiceContainerLoaderAnnotations
  * @package Fisma_Symfony_Components 
- * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @author Loïc Frering <loic.frering@gmail.com>

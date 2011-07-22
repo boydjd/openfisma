@@ -27,7 +27,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Chart
- * @version    $Id$
  */
 class Fisma_Chart
 {
@@ -37,11 +36,11 @@ class Fisma_Chart
      *     Obj['chartData']       Array to pass to jqPlot as the data to plot (numbers).
      *     Obj['chartDataText']   Array of labels (strings) for each data set in chartData
      *     Obj['chartLayerText']  Array of labels (strings) for each different line/layer in a milti-line-char or 
-                                  stacked-bar-chart
+     *                            stacked-bar-chart
      *     Obj['links']           (optional) Array of links of which the browser should navigate to when a given data 
-           element is clicked on
+     *     element is clicked on
      *     Obj['linksdebug']      (optional) Boolean, if set true, an alert box of what was clicked on will pop up 
-                                  instead of browser navigation based on Obj['links']
+     *                            instead of browser navigation based on Obj['links']
      *
      * @var Array
      */
@@ -60,6 +59,7 @@ class Fisma_Chart
         $this->chartParamArr['chartDataText'] = array();
         $this->chartParamArr['widgets'] = array();
         $this->chartParamArr['links'] = array();
+        $this->chartParamArr['tooltip'] = array();
         $this->inheritanceControle('minimal');
         $this->setAlign('center');
         
@@ -294,7 +294,8 @@ class Fisma_Chart
      * 
      * @return Fisma_Chart
      */
-    public function setLayerCount($inInteger) {
+    public function setLayerCount($inInteger)
+    {
         if ($inInteger < 1) {
             return $this;
         }
@@ -303,6 +304,16 @@ class Fisma_Chart
         }
         
         return $this;
+    }
+    
+    public function getLayerCount()
+    {
+        if ($this->isStacked() === false) {
+            return 1;
+        } else {
+            // There is one layer-label for every layer
+            return count($this->chartParamArr['chartLayerText']);
+        }
     }
     
     public function setAlign($inString)
@@ -323,7 +334,7 @@ class Fisma_Chart
      * 
      * @return Fisma_Chart
      */
-    public function addColumn($columnLabel, $addValue, $addLink = null)
+    public function addColumn($columnLabel, $addValue, $addLink = null, $tooltip = '')
     {
         // Do not add null values
         if (empty($addValue)) {
@@ -362,12 +373,27 @@ class Fisma_Chart
         // Add label for this column
         $this->chartParamArr['chartDataText'][] = $columnLabel;
         
+        // If the tooltip field is ungiven, apply defaults 
+        if ($tooltip === '') {
+            
+            // apply tooltip default based on chartType
+            switch ($this->getChartType()) {
+            case "stackedbar":
+                $tooltip = "<b>#columnName#</b><hr/>#columnReport#";
+                break;
+            case "pie":
+                $tooltip = "<b>#columnName#</b><hr/>#count# (#percent#%)";
+                break;
+            }
+        }
+        
         // Add data to plot
         if (strpos($this->getChartType(), 'stacked') === false) {
             // This is not a stacked chart. Each data-point/column-height should be in each element of the data array
             
             $this->chartParamArr['chartData'][] = $addValue;
             $this->chartParamArr['links'][] = Fisma_String::escapeJsString($addLink, 'url');
+            $this->chartParamArr['tooltip'][] = $tooltip;
             
         } else {
             // This is a stacked chart. Each element of the chartParamArr['chartType'] array is a layer, not a column
@@ -380,6 +406,15 @@ class Fisma_Chart
                 );
             }
             
+            // Ensure a stacked bar chart with N layers(stacks) has a value for each layer. count($addValue) should = N
+            if (count($addValue) !== $this->getLayerCount()) {
+                    throw new Fisma_Zend_Exception(
+                        "When adding a column to a stacked bar chart, you must add a value for each layer(stack)." . 
+                        "Fisma_Chart->addColumn() was called to add a column with " . count($addValue) . " layers," . 
+                        " expected " . $this->getLayerCount()
+                    );
+            }
+            
             // We need to know the dimensions of the data array
             $layerCount = count($this->chartParamArr['chartData']);
             if ($layerCount === 0) {
@@ -390,11 +425,14 @@ class Fisma_Chart
             }
             
             for ($layer = 0; $layer < count($addValue); $layer++) {
+            
                 $this->chartParamArr['chartData'][$layer][] = $addValue[$layer];
                 
                 if (!empty($addLink)) {
                     $this->chartParamArr['links'][$layer][] = Fisma_String::escapeJsString($addLink[$layer], 'url');
                 }
+                
+                $this->chartParamArr['tooltip'][$layer][] = $tooltip;
             }
         }
         
@@ -479,6 +517,11 @@ class Fisma_Chart
             }
             
             $newColData[$c] = $thisColumnTotal;
+        }
+        
+        // if this was a stackedbar chart, remove the tooltip
+        if (strpos($this->getChartType(), 'stacked') !== false) {
+            $this->chartParamArr['tooltip'] = array();
         }
         
         // update chart type

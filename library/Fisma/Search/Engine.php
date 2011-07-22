@@ -626,9 +626,9 @@ class Fisma_Search_Engine
             if (!is_numeric($intValue)) {
                 continue;
             }
-            $subterms[] = "-$fieldName:$intValue";
+            $subterms[] = "$fieldName:$intValue";
         }
-        return '(' . implode(' AND ', $subterms) . ')';
+        return '-(' . implode(' OR ', $subterms) . ')';
     }
 
     /**

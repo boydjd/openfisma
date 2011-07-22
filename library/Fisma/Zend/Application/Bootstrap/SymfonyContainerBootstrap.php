@@ -21,7 +21,6 @@
  * 
  * @uses Zend_Application_Bootstrap_Bootstrap
  * @package Fisma_Zend_Application_Bootstrap 
- * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @author Loïc Frering <loic.frering@gmail.com>
