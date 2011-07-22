@@ -260,7 +260,7 @@ Fisma.System = {
             var myRow = document.createElement('tr');
 
             var cellDescr = document.createElement('td');
-            var descTextNode = document.createTextNode(descriptionText);
+            var descTextNode = document.createTextNode(descriptionText + ':');
             cellDescr.appendChild(descTextNode);
 
             var cellInput = document.createElement('td');
@@ -297,11 +297,11 @@ Fisma.System = {
         
         var dialogHead = document.createElement('div');
         dialogHead.className = 'hd';
-        dialogHead.appendChild(document.createTextNode('Please enter system information'));
+        dialogHead.appendChild(document.createTextNode('System information'));
         var dialogBody = document.createElement('div');
         dialogBody.className = 'bd';
         
-        var msg = document.createTextNode("Please input the needed system information in order to complete conversion");
+        var msg = document.createTextNode("Please input the needed system information in order to complete conversion.");
         dialogBody.appendChild(msg);
         dialogBody.appendChild(document.createElement('br'));
         dialogBody.appendChild(document.createElement('br'));
@@ -317,6 +317,11 @@ Fisma.System = {
 
         myDialogForm.appendChild(dialogHead);
         myDialogForm.appendChild(dialogBody);
+        var csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.value = $('[name="csrf"]').val();
+        csrf.name = 'csrf';
+        myDialogForm.appendChild(csrf);
         return myDialogForm;
     },
     
@@ -339,8 +344,8 @@ Fisma.System = {
             }
         );
         waitPanel.setHeader('Converting...');
-        waitPanel.render(document.body);
         waitPanel.setBody('<img src="/images/loading_bar.gif">');
+        waitPanel.render(document.body);
         waitPanel.show();
     }
 };
