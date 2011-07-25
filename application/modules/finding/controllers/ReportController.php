@@ -127,15 +127,6 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function fismaAction()
     {        
-       
-        $orgTypeId = $this->_helper->OrganizationType->getOrganizationTypeId($this->_me->id, 'finding_fisma');
-        $filterForm = $this->_helper->OrganizationType->getFilterForm(false);  
-
-        $this->view->organizationTypeForm = $filterForm;
-        $this->view->orgTypeId = $orgTypeId;
-        $this->view->namespace = 'Finding_Fisma_Report';
-        $this->view->url = "/finding/report/fisma";
-       
         $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()
                                                     ->toString(Fisma_Date::FORMAT_DATE);
         $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString(Fisma_Date::FORMAT_DATE);
@@ -150,7 +141,8 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function fismaQuarterlyAction()
     {
-        $orgTypeId = $this->_helper->OrganizationType->getOrganizationTypeId($this->_me->id, 'Finding_Fisma_Report');
+        $bureauId = Fisma::configuration()->getConfig('default_bureau_id');
+
         // Agency Name
         $agency = Organization::getAgency();
         $this->view->agencyName = $agency->name;
@@ -159,7 +151,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         $this->view->submissionDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
         
         // Bureau Statistics
-        $bureaus = Organization::getBureaus($orgTypeId);
+        $bureaus = Organization::getBureaus($bureauId);
         $stats = array();
         foreach ($bureaus as $bureau) {
             $bureauStats = $bureau->getFismaStatistics();
@@ -179,16 +171,17 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function fismaAnnualAction()
     {
-        $orgTypeId = $this->_helper->OrganizationType->getOrganizationTypeId($this->_me->id, 'Finding_Fisma_Report');
+        $bureauId = Fisma::configuration()->getConfig('default_bureau_id');
+
         // Agency Name
         $agency = Organization::getAgency();
         $this->view->agencyName = $agency->name;
-
+         
         // Submission Date
         $this->view->submissionDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
         
         // Bureau Statistics
-        $bureaus = Organization::getBureaus($orgTypeId);
+        $bureaus = Organization::getBureaus($bureauId);
         $stats = array();
         foreach ($bureaus as $bureau) {
             $bureauStats = $bureau->getFismaStatistics();

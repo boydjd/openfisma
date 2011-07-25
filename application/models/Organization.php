@@ -85,9 +85,13 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
      * @param orgTypeId
      * @return Doctrine_Collection The collection of organization node
      */
-    public static function getBureaus($orgTypeId)
+    public static function getBureaus($bureauId)
     {
-        $bureaus = Doctrine::getTable('Organization')->findByOrganizationType($orgTypeId);
+        $bureaus = Doctrine_Query::Create()
+                   ->select('o.*')
+                   ->from('Organization o')
+                   ->where('o.orgtypeid = ?', $bureauId)
+                   ->execute();
 
         return $bureaus;
     }
