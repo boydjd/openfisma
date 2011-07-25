@@ -121,6 +121,12 @@ class Version119 extends Doctrine_Migration_Base
               'foreign' => 'id',
               'foreignTable' => 'organization_type',
               ));
+
+        // Add default organization type column
+        $this->addColumn('configuration', 'default_bureau_id', 'integer', '1', array(
+            'notblank' => '1',
+            'comment' => 'The ID of the default organization type which is used when the user does not explicitly organization type.',
+        ));
     }
 
     /*
@@ -282,6 +288,11 @@ class Version119 extends Doctrine_Migration_Base
             $organizationType->link('Organization', $organizationIds);
             $organizationType->save();
         }
+
+        // Set bureau id as default organization type
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET default_bureau_id = '$bureau->id'";
+        $conn->exec($updateSql);
     }
 
     /*

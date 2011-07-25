@@ -75,6 +75,8 @@ class Fisma_Menu
             if ($acl->hasArea('finding_admin')) {
                 $findingAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
+                $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding General', '/finding/config/general'));
+
                 if ($acl->hasPrivilegeForClass('read', 'Source')) {
                     $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding Sources', '/finding/source/list'));
                 }
