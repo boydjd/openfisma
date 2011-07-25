@@ -3,34 +3,6 @@
 // Holds the Fisma.FindingSummary object which is rendered on this page
 var findingSummary;
 
-YAHOO.util.Event.onDOMReady(function () {
-    // Reset popup menus to default state (some browsers will maintain the state if the user hits the back button
-    document.getElementById('summaryViews').selectedIndex = 0;
-    document.getElementById('types').selectedIndex = 0;
-    document.getElementById('sources').selectedIndex = 0;
-
-    // Load summary data
-    YAHOO.util.Connect.asyncRequest('GET', 
-                                    '/finding/summary/data/format/json', 
-                                    {
-                                        success: function(o) {
-                                            var summaryData = YAHOO.lang.JSON.parse(o.responseText).summaryData;
-                                            hideLoadingRow();
-                                            findingSummary = new Fisma.FindingSummary();
-                                            findingSummary.render('findingSummaryTable', summaryData, true);
-                                            document.getElementById('summaryViews').disabled = false;
-                                            document.getElementById('types').disabled = false;
-                                            document.getElementById('sources').disabled = false;
-                                        },
-                                        failure: function(o) {
-                                            var message = 'Unable to load finding summary: ' + o.statusText;
-                                            Fisma.Util.showAlertDialog(message);
-                                            hideLoadingRow();
-                                        }
-                                    }, 
-                                    null);
-});
-
 function expandAll() {
     findingSummary.expandAll();
     return false;
@@ -131,31 +103,51 @@ function menuHandler(source) {
     endforeach; 
     ?>
 }
+
+YAHOO.util.Event.onDOMReady(function () {
+    findingSummary = new Fisma.FindingSummary();
+    // reuse menu handler functionality
+    menuHandler(null);
+});
 </script>
 
 <div class="searchBox" style="text-align: center;">
     <b>Summary Type:&nbsp;</b>
-    <select id="summaryViews" onchange="menuHandler(this);" disabled="true">
-        <option value="OHV">Organization Hierarchy View</option>
-        <option value="SAV">System Aggregation View</option>
-        <option value="POCV">Point of Contact View</option>
-    </select>
+    <?php
+        echo $this->escape(
+            $this->formSelect(
+                'summaryViews',
+                $this->summaryType,
+                $this->selectAttributes,
+                $this->summaryTypes
+            ),
+            'none'
+        );
+    ?>
     <b>Filter by Mitigation Type:&nbsp;</b>
-    <select id='types' onchange='menuHandler(this);' disabled="true">
-        <option value="ALL">All Types</option>
-        <option value="CAP">CAP - Corrective Action Plan</option>
-        <option value="AR">AR - Accepted Risk</option>
-        <option value="FP">FP - False Positive</option>
-    </select>
+    <?php
+        echo $this->escape(
+            $this->formSelect(
+                'types',
+                $this->type,
+                $this->selectAttributes,
+                $this->mitigationTypes
+            ),
+            'none'
+        );
+    ?>
     <b>Filter by Finding Source:&nbsp;</b>
-    <select id='sources' onchange='menuHandler(this);' disabled="true">
-        <option value="ALL_SOURCES">All Sources</option>
-        <?php foreach ($this->findingSources as $source): ?>
-        <option value='<?php echo $this->escape($source->nickname) ?>'>
-            <?php echo $this->escape($source->nickname);?> - <?php echo $this->escape($source->name); ?>
-        </option>
-        <?php endforeach; ?>
-    </select>
+    <?php
+        echo $this->escape(
+            $this->formSelect(
+                'sources',
+                $this->source,
+                $this->selectAttributes,
+                $this->findingSources
+            ),
+            'none'
+        );
+    ?>
 </div>
 
 <div class="buttonBar">

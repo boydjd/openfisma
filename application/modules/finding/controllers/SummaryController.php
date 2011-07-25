@@ -85,10 +85,38 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $columns[] = 'CLOSED';
         $columns[] = 'TOTAL';
 
+        $storage = Doctrine::getTable('Storage')
+            ->getUserIdAndNamespaceQuery($this->_me->id, 'FindingSummary')
+            ->fetchOne();
+        $this->view->summaryType = 'OHV';
+        $this->view->source = null;
+        $this->view->type = null;
+        if (!empty($storage)) {
+            $this->view->summaryType = $storage->data['view'];
+            $this->view->source = $storage->data['source'];
+            $this->view->type = $storage->data['type'];
+        }
+
+        $this->view->selectAttributes = array('onchange' => 'menuHandler(this);', 'disabled' => 'true');
+        $this->view->summaryTypes = array(
+            'OHV' => 'Organization Hierarchy View',
+            'SAV' => 'System Aggregation View',
+            'POCV' => 'Point of Contact View'
+        );
+        $this->view->mitigationTypes = array(
+            'ALL' => 'All Types',
+            'CAP' => 'CAP - Corrective Action Plan',
+            'AR' => 'AR - Accepted Risk',
+            'FP' => 'FP - False Positive'
+        );
+        $this->view->findingSources = array('ALL_SOURCES' => 'All Sources');
+        foreach (Doctrine::getTable('Source')->findAll() as $source) {
+            $this->view->findingSources[$source->nickname] = $source->nickname . ' - ' . $source->name;
+        }
+
         $this->view->statusArray = $columns;
         $this->view->mitigationEvaluations = $mitigationEvaluations;
         $this->view->evidenceEvaluations = $evidenceEvaluations;
-        $this->view->findingSources = Doctrine::getTable('Source')->findAll();
     }
 
     /**
@@ -105,7 +133,22 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $type = $this->getRequest()->getParam('type');
         $source = $this->getRequest()->getParam('sourceNickname');        
         $format = $this->_request->getParam('format');
-        // Prepare summary data
+
+        // persist most recent view settings
+        $storage = Doctrine::getTable('Storage')
+            ->getUserIdAndNamespaceQuery($this->_me->id, 'FindingSummary')
+            ->fetchOne();
+        if (empty($storage)) {
+            $storage = new Storage();
+            $storage->userId = $this->_me->id;
+            $storage->namespace = 'FindingSummary';
+        }
+        $storage->data = array(
+            'view' => $view,
+            'type' => $type,
+            'source' => $source
+        );
+        $storage->save();
 
         // Get user organizations
         $organizationsQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read');
