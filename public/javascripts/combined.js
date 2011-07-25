@@ -1516,7 +1516,7 @@ if (window.HTMLElement) {
                 containerId: autocompleteResultsDiv.id,
                 hiddenFieldId: hiddenTextField.id,
                 queryPrepend: element.getAttribute("queryPrepend"),
-                callback: ''
+                setupCallback: element.getAttribute('setupCallback')
             }
         );        
     };
@@ -2420,7 +2420,7 @@ Fisma.AutoComplete = function() {
             ac.containerPopulateEvent.subscribe(function () {
                 Fisma.AutoComplete.resultsPopulated = true;
             });
-            
+
             /**
              * Override generateRequest method of YAHOO.widget.AutoComplete
              *
@@ -2452,34 +2452,45 @@ Fisma.AutoComplete = function() {
             };
 
             ac.itemSelectEvent.subscribe(
-                Fisma.AutoComplete.subscribe, 
-                {
-                    hiddenFieldId : params.hiddenFieldId,
-                    callback : params.callback
-                }
+                Fisma.AutoComplete.updateHiddenField, 
+                params.hiddenFieldId
             );
+
+            ac.selectionEnforceEvent.subscribe(
+                Fisma.AutoComplete.clearHiddenField, 
+                params.hiddenFieldId
+            );
+            
+            // Call the setup callback, if it is defined. This allows an implementer to tweak the autocomplete object.
+            if (YAHOO.lang.isValue(params.setupCallback)) {
+                var setupCallback = Fisma.Util.getObjectFromName(params.setupCallback);
+
+                setupCallback(ac, params);
+            }
         },
 
         /**
          * Sets value of hiddenField to item selected
          *
-         * @param sType
-         * @param aArgs
-         * @param {Array} params
+         * @param sType {String} The event name
+         * @param aArgs {Array} YUI event arguments
+         * @param hiddenFieldId {String} The ID of the hidden field
          */
-        subscribe : function(sType, aArgs, params) {
-            document.getElementById(params.hiddenFieldId).value = aArgs[2][1]['id'];
-            $('#' + params.hiddenFieldId).trigger('change');
-            // If a valid callback is specified, then call it
-            try {
-                var callbackFunction = Fisma.Util.getObjectFromName(params.callback);
-
-                if ('function' == typeof callbackFunction) {
-                    callbackFunction();
-                }
-            } catch (error) {
-                // do nothing
-            }
+        updateHiddenField : function(sType, aArgs, hiddenFieldId) {
+            document.getElementById(hiddenFieldId).value = aArgs[2][1]['id'];
+            $('#' + hiddenFieldId).trigger('change');
+        },
+        
+        /**
+         * Clears the value of the hidden field
+         *
+         * @param sType {String} The event name
+         * @param aArgs {Array} YUI event arguments
+         * @param hiddenFieldId {String} The ID of the hidden field
+         */
+        clearHiddenField : function (sType, aArgs, hiddenFieldId) {
+            document.getElementById(hiddenFieldId).value = null;
+            $('#' + hiddenFieldId).trigger('change');            
         }
     };
 }();
@@ -5653,7 +5664,32 @@ Fisma.Finding = {
      * This reference will be set when the page loads by the script which initializes the table
      */
     commentTable : null,
+
+    /**
+     * The ID of the container that displays the "POC not found" message
+     */
+    POC_MESSAGE_CONTAINER_ID : "findingPocNotMatched",
+
+    /**
+     * A static reference to the POC create form panel
+     */
+    createPocPanel : null,
     
+    /**
+     * A static reference to the username that should prepopulate the POC create panel
+     */
+    createPocDefaultUsername : null,
+    
+    /**
+     * A static reference to the autocomplete which is used for matching a POC
+     */
+    pocAutocomplete : null,
+    
+    /**
+     * A static reference to the hidden input element that stores the POC id
+     */
+    pocHiddenEl : null,
+
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
      * 
@@ -5765,8 +5801,237 @@ Fisma.Finding = {
                 }
             }
         );
-    }
+    },
 
+    /**
+     * Configure the autocomplete that is used for selecting a POC
+     * 
+     * @param autocomplete {YAHOO.widget.AutoComplete}
+     * @param params {Array} The arguments passed to the autocomplete constructor
+     */
+    setupPocAutocomplete : function (autocomplete, params) {
+        Fisma.Finding.pocAutocomplete = autocomplete;
+        Fisma.Finding.pocHiddenEl = document.getElementById(params.hiddenFieldId);
+
+        // Set up the events to display the POC not found message
+        autocomplete.dataReturnEvent.subscribe(Fisma.Finding.displayPocNotFoundMessage);
+        autocomplete.containerCollapseEvent.subscribe(Fisma.Finding.displayPocNotFoundMessage);
+
+        // Set up the events to hide the POC not found message
+        autocomplete.itemSelectEvent.subscribe(Fisma.Finding.hidePocNotFoundMessage);
+        autocomplete.containerExpandEvent.subscribe(Fisma.Finding.hidePocNotFoundMessage);
+    },
+
+    /**
+     * Display a message to let the user know that the POC they were looking for could not be found
+     * 
+     * This is registered as the event handler for both the data return event and the container collapse event, so it
+     * has some conditional logic based on what "type" and what arguments it receives.
+     * 
+     * @param type {String} Name of the event.
+     * @param args {Array} Event arguments.
+     */   
+    displayPocNotFoundMessage : function (type, args) {
+        var autocomplete = Fisma.Finding.pocAutocomplete;
+
+        // This event handler handles 2 events, only 1 of which has a results array, so this setter is conditional.
+        var results = args.length >= 2 ? args[2] : null;
+
+        // Don't show the POC message if there are autocomplete results available
+        if (YAHOO.lang.isValue(results) && results.length != 0) {
+            Fisma.Finding.hidePocNotFoundMessage();
+            return;
+        }
+
+        /* Don't show the POC message if the user selected an item.
+         * 
+         * There's no way to do this without using autocomplete's private member _bItemSelected.
+         */
+        if (type == "containerCollapse" && autocomplete._bItemSelected) {
+            return;
+        }
+
+        // Don't display the POC not found message if the autocomplete list is visible
+        if (autocomplete.isContainerOpen()) {
+            return;
+        }
+
+        var unmatchedQuery = autocomplete.getInputEl().value;
+
+        // Don't show the POC not found message if the 
+        if (unmatchedQuery.match(/^\s*$/)) {
+            return;
+        }
+
+        // Otherwise, display the POC not found message
+        var container = document.getElementById(Fisma.Finding.POC_MESSAGE_CONTAINER_ID);
+
+        if (YAHOO.lang.isNull(container)) {
+            container = Fisma.Finding._createPocNotFoundContainer(
+                Fisma.Finding.POC_MESSAGE_CONTAINER_ID, 
+                autocomplete.getInputEl().parentNode
+            );
+        }
+
+        container.firstChild.nodeValue = "No point of contact named \"" 
+                                       + unmatchedQuery
+                                       + "\" was found. Click here to create one.";
+        container.style.display = 'block';
+
+        Fisma.Finding.createPocDefaultUsername = unmatchedQuery;
+    },
+
+    /**
+     * Create the container for the POC not found message
+     * 
+     * @param id {String} The ID to set on the container
+     * @param parent {HTMLElement} The autocomplete that this container belongs to
+     */
+    _createPocNotFoundContainer : function (id, parent) {
+        var container = document.createElement('div');
+
+        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm);
+        container.className = 'pocNotMatched';
+        container.id = id;
+        container.appendChild(document.createTextNode());            
+
+        parent.appendChild(container);
+        
+        return container;
+    },
+
+    /**
+     * Hide the POC not found message
+     */
+    hidePocNotFoundMessage : function () {
+        var container = document.getElementById(Fisma.Finding.POC_MESSAGE_CONTAINER_ID);
+
+        if (YAHOO.lang.isValue(container)) {
+            container.style.display = 'none';
+        }
+    },
+
+    /**
+     * Display a POC creation form inside a modal dialog.
+     * 
+     * When setting a finding POC, if the user doesn't select from the autocomplete list, then prompt them to see if
+     * they want to create a new POC instead.
+     */
+    displayCreatePocForm : function () {
+        var panelConfig = {width : "50em", modal : true};
+
+        Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
+            'Create New Point Of Contact',
+            '/poc/form',
+            Fisma.Finding.populatePocForm,
+            'createPocPanel',
+            panelConfig
+        );
+    },
+    
+    /**
+     * Populate the POC create form with some default values
+     */
+    populatePocForm : function () {
+        /* The message() API is so tacky... in order to display "message" feedback in this dialog, I have to
+         * temporarily hijack the message() output. It gets set back in the Fisma.Finding.createPoc() method.
+         */
+        document.getElementById('msgbar').id = 'oldMessageBar';
+        document.getElementById('pocMessageBar').id = 'msgbar';
+        
+        // Fill in the username
+        var usernameEl = document.getElementById('username');
+        usernameEl.value = Fisma.Finding.createPocDefaultUsername;
+
+        // The form contains some scripts that need to be executed
+        var scriptNodes = Fisma.Finding.createPocPanel.body.getElementsByTagName('script');
+
+        for (var i=0; i < scriptNodes.length; i++) {
+            try {
+                eval(scriptNodes[i].text);
+            } catch (e) {
+                var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                Fisma.Util.showAlertDialog(message);
+            } 
+        }
+        
+        // The tool tips will display underneath the modal dialog mask, so we'll move them up to a higher layer.
+        var tooltips = YAHOO.util.Dom.getElementsByClassName('yui-tt', 'div');
+        
+        for (var index in tooltips) {
+            var tooltip = tooltips[index];
+
+            // The yui panel is usually 4, so anything higher is good.
+            tooltip.style.zIndex = 5;
+        }
+    },
+    
+    /**
+     * Submit an XHR to create a POC object
+     */
+    createPoc : function () {
+        // The scope is the button that was clicked, so save it for closures
+        var button = this;
+        var form = Fisma.Finding.createPocPanel.body.getElementsByTagName('form')[0];
+
+        // Disable the submit button
+        button.set("disabled", true);
+
+        // Save the username so we can populate it back on the create finding form
+        var username = document.getElementById("username").value;
+
+        YAHOO.util.Connect.setForm(form);
+        YAHOO.util.Connect.asyncRequest('POST', '/poc/create/format/json', {
+            success : function(o) {
+                var result;
+
+                try {
+                    result = YAHOO.lang.JSON.parse(o.responseText).result;
+                } catch (e) {
+                    result = {success : false, message : e};
+                }
+
+                if (result.success) {
+                    Fisma.Finding.createPocPanel.hide();
+                    Fisma.Finding.hidePocNotFoundMessage();
+
+                    /* Trick the autocomplete into think it has selected an item. This violates it's abstraction (by
+                     * accessing a private member) but there is no public api to do this. Otherwise, if the user clicks
+                     * on the field, YUI will clear it out due to the "enforce selection" feature. 
+                     */
+                    Fisma.Finding.pocAutocomplete._bItemSelected = true;
+
+                    // Populate the autocomplete with the values corresponding to this new POC
+                    var pocId = parseInt(result.message);
+                    Fisma.Finding.pocHiddenEl.value = pocId;
+                    Fisma.Finding.pocAutocomplete.getInputEl().value = username;
+
+                    // Undo the message bar hack from Fisma.Finding.populatePocForm()
+                    document.getElementById('msgbar').id = 'pocMessageBar';
+                    document.getElementById('oldMessageBar').id = 'msgbar';
+
+                    message('A point of contact has been created.', 'info', true);
+                } else {
+                    message(result.message, 'warning', true);
+                    button.set("disabled", false);
+                }
+            },
+            failure : function(o) {
+                var alertMessage = 'Failed to create new point of contact: ' + o.statusText;
+                Fisma.Finding.createPocPanel.setBody(alertMessage);
+            }
+        }, null);
+    },
+
+    /**
+     * Configure the autocomplete that is used for selecting a security control
+     * 
+     * @param autocomplete {YAHOO.widget.AutoComplete}
+     * @param params {Array} The arguments passed to the autocomplete constructor
+     */
+    setupSecurityControlAutocomplete : function (autocomplete, params) {
+        autocomplete.itemSelectEvent.subscribe(Fisma.AutoComplete.handleSecurityControlSelection);
+    }
 };
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -11943,7 +12208,6 @@ Fisma.UrlPanel = function() {
             // Instantiate YUI panel for rendering
             var panel = new YAHOO.widget.Panel(element, userConfig);
             panel.setHeader(title);
-            /** @todo english */
             panel.setBody("Loading...");
             panel.render(document.body);
             panel.center();
@@ -12020,6 +12284,22 @@ Fisma.User = {
      * This reference will be set when the page loads by the script which initializes the table
      */
     commentTable : null,
+
+    /**
+     * Map LDAP column names onto names of fields in this form
+     * 
+     * ldap name => field name
+     */
+    ldapColumnMap : {
+        'givenname' : 'nameFirst',
+        'mail' : 'email',
+        'mobile' : 'phoneMobile',
+        'samaccountname' : 'username',
+        'sn' : 'nameLast',
+        'telephonenumber' : 'phoneOffice',
+        'title' : 'title',
+        'uid' : 'username'
+    },
 
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
@@ -12208,39 +12488,29 @@ Fisma.User = {
             url,
             {
                 success : function (o) {
-                    var data = YAHOO.lang.JSON.parse(o.responseText);
-                    message(data.msg, data.type, true);
+                    try {
+                        var data = YAHOO.lang.JSON.parse(o.responseText);
 
-                    // Openfisma column's name is corresponding to LDAP account column's name
-                    var openfismaColumns = new Array('nameFirst',
-                                                     'nameLast',
-                                                     'phoneOffice',
-                                                     'phoneMobile',
-                                                     'email',
-                                                     'title');
+                        // Query comes originally from the user. Escape it just to be safe.
+                        data.query = escape(data.query);
 
-                    // LDAP account column's name
-                    var ldapColumns = new Array('givenname',
-                                                'sn',
-                                                'telephonenumber',
-                                                'mobile',
-                                                'mail',
-                                                'title');
-
-                    // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo !== null) {
-                        for (var i in ldapColumns) {
-                            if (!ldapColumns.hasOwnProperty(i)) {
-                                continue;
-                            }
-
-                            var columnValue = data.accountInfo[ldapColumns[i]];
-
-                            if (columnValue !== null) {
-                                document.getElementById(openfismaColumns[i]).value = columnValue;
+                        // Make sure each column value is not null in LDAP account, then populate to related elements.
+                        if (YAHOO.lang.isValue(data.accounts)) {
+                            if (data.accounts.length == 0) {
+                                message('No account matches your query: ' + escape(data.query) + '.', 'warning', true);
+                            } else if (data.accounts.length == 1) {
+                                Fisma.User.populateAccountForm(data.accounts[0]);
                             } else {
-                                document.getElementById(openfismaColumns[i]).value = '';
+                                Fisma.User.showMultipleAccounts(data.accounts);
                             }
+                        } else {
+                            message(data.msg, data.type, true);
+                        }
+                    } catch (e) {
+                        if (YAHOO.lang.isValue(e.message)) {
+                            message('Error: ' + e.message, 'warning', true);
+                        } else {
+                            message('An unknown error occurred.', 'warning', true);
                         }
                     }
 
@@ -12257,6 +12527,62 @@ Fisma.User = {
                 }
             },
             null);
+    },
+
+    /**
+     * Fill in the account info for one user and display a success message
+     * 
+     * @param account {Object} A dictionary of LDAP data for an account.
+     */
+    populateAccountForm : function (account) {
+        message('Your search matched one user: ' + account.dn, 'info', true);
+
+        for (var ldapColumn in Fisma.User.ldapColumnMap) {
+            if (!Fisma.User.ldapColumnMap.hasOwnProperty(ldapColumn)) {
+                continue;
+            }
+
+            var fieldName = Fisma.User.ldapColumnMap[ldapColumn];
+            var fieldValue = account[ldapColumn];
+        
+            if (YAHOO.lang.isValue(fieldValue)) {
+                document.getElementById(fieldName).value = fieldValue;
+            }
+        }
+    },
+
+    /**
+     * Display a list of accounts that a user can select from
+     * 
+     * @param accounts {Object} An array of LDAP account dictionaries.
+     */
+    showMultipleAccounts : function (accounts) {
+        message('<p>Multiple accounts match your query. Click a name to select it.</p>', 'info', 'true');
+        var msgBar = document.getElementById('msgbar');
+
+        var accountsContainer = document.createElement('p');
+
+        for (var index in accounts) {
+            var account = accounts[index];
+            
+            var accountLink = document.createElement('a');
+            accountLink.setAttribute('href', '#');
+            accountLink.account = account;
+            accountLink.onclick = function () {Fisma.User.populateAccountForm(this.account);};
+
+            var accountText = account.givenname
+                            + ' '
+                            + account.sn
+                            + ' ['
+                            + (YAHOO.lang.isValue(account.samaccountname) ? account.samaccountname : account.uid)
+                            + ']';
+            accountLink.appendChild(document.createTextNode(accountText));
+            accountLink.appendChild(document.createElement('br'));
+
+            accountsContainer.appendChild(accountLink);
+        }
+        
+        msgBar.appendChild(accountsContainer);
     },
 
     /**
