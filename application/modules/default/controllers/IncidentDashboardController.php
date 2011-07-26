@@ -121,7 +121,7 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
                 'bureau',
                 'Show:',
                 'combo',
-                'none',
+                $orgOptions[0],
                 $orgOptions
             );
 
