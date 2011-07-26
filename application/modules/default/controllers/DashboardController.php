@@ -367,8 +367,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
     public function totalTypeAction()
     {
         $thisChart = new Fisma_Chart();
-        $thisChart->setTitle('Mitigation Strategy Distribution')
-            ->setChartType('pie')
+        $thisChart->setChartType('pie')
             ->setColors(
                 array(
                     '#75FF75',

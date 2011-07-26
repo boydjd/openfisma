@@ -2400,15 +2400,15 @@ Fisma.Chart = {
         chartContainer.appendChild(pTag);
     },
     
+    /**
+     * Does nothing. Used to set a title on a chart, but now, nothing.
+     *
+     * @deprecated
+     * @param object
+     * @return void
+     */
     setTitle : function (chartParamsObj)
     {
-        if (chartParamsObj.title && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
-            var titleArea = document.getElementById(chartParamsObj.uniqueid + 'title');
-            var titleNode = document.createTextNode(chartParamsObj.title);
-            titleArea.innerHTML = '';
-            titleArea.appendChild(titleNode);
-            titleArea.appendChild(document.createElement('br'));
-        }
     },
     
     /**
