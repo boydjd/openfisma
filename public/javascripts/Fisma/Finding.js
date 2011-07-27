@@ -202,7 +202,7 @@ Fisma.Finding = {
         var results = args.length >= 2 ? args[2] : null;
 
         // Don't show the POC message if there are autocomplete results available
-        if (YAHOO.lang.isValue(results) && results.length != 0) {
+        if (YAHOO.lang.isValue(results) && results.length !== 0) {
             Fisma.Finding.hidePocNotFoundMessage();
             return;
         }
@@ -366,7 +366,7 @@ Fisma.Finding = {
                     Fisma.Finding.pocAutocomplete._bItemSelected = true;
 
                     // Populate the autocomplete with the values corresponding to this new POC
-                    var pocId = parseInt(result.message);
+                    var pocId = parseInt(result.message, 10);
                     Fisma.Finding.pocHiddenEl.value = pocId;
                     Fisma.Finding.pocAutocomplete.getInputEl().value = username;
 

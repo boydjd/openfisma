@@ -235,8 +235,8 @@
                         );
 
                         // Expand the first two levels of the tree by default
-                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
-                        $.each(defaultExpandNodes, function (key, node) {node.expand()});
+                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand();});
 
                         this._treeView.draw();
                         this._buildContextMenu();
@@ -271,7 +271,7 @@
                 var yuiNode = new YAHOO.widget.TextNode(
                     {
                         label: nodeText,
-                        systemId: node.id,
+                        systemId: node.id
                     }, 
                     parent,
                     false
@@ -346,7 +346,7 @@
                 this._savePanel.render(document.body);
             }
 
-            this._savePanel.setBody('<img src="/images/loading_bar.gif">')
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">');
             this._savePanel.show();
     
             YAHOO.util.Connect.asyncRequest(
@@ -448,9 +448,9 @@
             var type = targetNode.data.type;
 
             if (type == 'agency' || type == 'bureau' || type == 'organization') {
-                var url = '/organization/view/id/' + targetNode.data.organizationId;
+                url = '/organization/view/id/' + targetNode.data.organizationId;
             } else {
-                var url = '/system/view/id/' + targetNode.data.systemId;                
+                url = '/system/view/id/' + targetNode.data.systemId;                
             }
 
             window.location = url;
