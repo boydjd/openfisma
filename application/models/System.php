@@ -424,6 +424,8 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
             'id' => $this->id,
             'label' => $this->Organization->nickname . ' - ' . $this->Organization->name,
             'sysTypeLabel' => $this->getTypeLabel(),
+            'orgType' => $this->type,
+            'sdlcPhase' => $this->sdlcPhase,
             'parent' => $this->aggregateSystemId,
             'children' => array()
         );

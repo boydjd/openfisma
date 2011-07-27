@@ -277,6 +277,9 @@
                     false
                 );
 
+                // Set the label style
+                yuiNode.labelStyle = node.orgType;
+
                 if (node.sdlcPhase === 'disposal') {
                     yuiNode.labelStyle += " disposal";
                 }
