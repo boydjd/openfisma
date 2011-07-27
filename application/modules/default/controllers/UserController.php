@@ -897,7 +897,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         if ('database' == Fisma::configuration()->getConfig('auth_type')) {
             $form->removeElement('checkAccount');
-            $this->_view->requirements =  $passwordRequirements->direct();
+            $this->view->requirements =  $passwordRequirements->direct();
         } else {
             $form->removeElement('password');
             $form->removeElement('confirmPassword');
