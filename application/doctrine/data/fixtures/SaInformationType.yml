@@ -818,9 +818,9 @@ SaInformationType:
     itish:
         name: Information Sharing
         category: Information and Technology Management
-        confidentiality: N/A
-        integrity: N/A
-        availability: N/A
+        confidentiality: LOW
+        integrity: MODERATE
+        availability: LOW
         description: >
             <p>The BRM provided in the FEA Consolidated Reference Model Document, Version 2.3, October 2007 specifies 
             Information Sharing as relating to any method or function, for a given business area, facilitating: data 

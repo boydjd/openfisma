@@ -1,20 +1,22 @@
 <?php
+
 $links = array(
     'Overview' => '/sa/security-authorization/view/id/' . $this->sa->id,
-    'Select' => '/sa/security-authorization/select-controls/id/' . $this->sa->id,
-    'Implement' => '/sa/security-authorization/implementation/id/' . $this->sa->id,
-    'Assessment' => '/sa/security-authorization/assessment-plan/id/' . $this->sa->id,
-    'Authorization' => '/sa/security-authorization/authorization/id/' . $this->sa->id
+    '(1) Categorize' => '/sa/security-authorization/fips/id/' . $this->sa->id,
+    '(2) Select' => '/sa/security-authorization/select-controls/id/' . $this->sa->id,
+    '(3) Implement' => '/sa/security-authorization/implementation/id/' . $this->sa->id,
+    '(4) Assessment' => '/sa/security-authorization/assessment-plan/id/' . $this->sa->id,
+    '(5) Authorization' => '/sa/security-authorization/authorization/id/' . $this->sa->id
 );
 // null value means disabled, disable tabs based on status
 switch ($this->sa->status) {
     case 'Select':
-        $links['Implement'] = null;
+        $links['(3) Implement'] .= '';
     case 'Implement':
-        $links['Assessment'] = null;
+        $links['(4) Assessment'] .= '';
     case 'Assessment Plan':
     case 'Assessment':
-        $links['Authorization'] = null;
+        $links['(5) Authorization'] .= '';
     case 'Authorization':
     case 'Active':
     case 'Retired':
@@ -38,4 +40,3 @@ Security Authorization <?php echo $this->escape($this->sa->id); ?><br />
     <?php endforeach; ?>
     </ul>
 </div>
-

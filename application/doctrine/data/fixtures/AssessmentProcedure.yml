@@ -217,7 +217,7 @@ AssessmentProcedure:
             duties; information system configuration settings and associated documentation; list of divisions of
             responsibility and separation of duties; information system audit records; other relevant documents or records]. (M) (H)
         interview: |
-            [SELECT FROM: Organizational personnel with responsibilities for defining appropriate divisions of 
+            [SELECT FROM: Organizational personnel with responsibilities for defining appropriate divisions of
             responsibility and separation of duties]. (H)
         test: "[SELECT FROM: Automated mechanisms implementing separation of duties policy]. (H)"
         Catalog: 800_53A_Rev_0
@@ -425,7 +425,7 @@ AssessmentProcedure:
             output; information system output; information system design documentation; information system
             configuration settings and associated documentation; other relevant documents or records]. (H)
         interview: |
-            [SELECT FROM: Organizational personnel with responsibilities for defining special dissemination, handling, 
+            [SELECT FROM: Organizational personnel with responsibilities for defining special dissemination, handling,
             and marking instructions for information system output]. (H)
         test: "[SELECT FROM: Automated mechanisms implementing automated marking of information system output]. (H)"
         Catalog: 800_53A_Rev_0
@@ -923,7 +923,7 @@ AssessmentProcedure:
             [SELECT FROM: Audit and accountability policy; procedures addressing audit monitoring, analysis, and
             reporting; information system design documentation; information system configuration settings and
             associated documentation; other relevant documents or records]. (H)
-        interview: [SELECT FROM: Organizational personnel with information system audit monitoring, analysis, and reporting responsibilities]. (H)
+        interview: "[SELECT FROM: Organizational personnel with information system audit monitoring, analysis, and reporting responsibilities]. (H)"
         test: "[SELECT FROM: Automated mechanisms integrating audit monitoring, analysis, and reporting into an organizational process for investigation and response to suspicious activities]. (H)"
         Catalog: 800_53A_Rev_0
 
@@ -1068,7 +1068,7 @@ AssessmentProcedure:
             [SELECT FROM: Security assessment and certification and accreditation policies and procedures; other 
             relevant documents or records]. (L) (M) (H)
         interview: |
-            [SELECT FROM: Organizational personnel with security assessment and certification and accreditation 
+            [SELECT FROM: Organizational personnel with security assessment and certification and accreditation
             responsibilities]. (H)
         Catalog: 800_53A_Rev_0
 
@@ -1086,7 +1086,7 @@ AssessmentProcedure:
             [SELECT FROM: Security assessment and certification and accreditation policies and procedures; other 
             relevant documents or records]. (L) (M) (H)
         interview: |
-            [SELECT FROM: Organizational personnel with security assessment and certification and accreditation 
+            [SELECT FROM: Organizational personnel with security assessment and certification and accreditation
             responsibilities]. (H)
         Catalog: 800_53A_Rev_0
 
@@ -1122,7 +1122,7 @@ AssessmentProcedure:
             configuration management and control documentation; security assessment report; plan of action and 
             milestones; other relevant documents or records]. (L) (M) (H)
         interview: |
-            [SELECT FROM: Organizational personnel with responsibility for developing, implementing, or approving 
+            [SELECT FROM: Organizational personnel with responsibility for developing, implementing, or approving
             information system connection agreements]. (H)
         Catalog: 800_53A_Rev_0
 
@@ -2231,7 +2231,7 @@ AssessmentProcedure:
             [SELECT FROM: Incident response policy; procedures addressing incident response training; incident
             response training material; security plan; incident response training records; other relevant documents
             or records]. (M) (H)
-        interview: "[SELECT FROM: Organizational personnel with incident response training and operational responsibilities]." (M) (H)
+        interview: "[SELECT FROM: Organizational personnel with incident response training and operational responsibilities]. (M) (H)"
         Catalog: 800_53A_Rev_0
 
     53A_Rev0_IR_02E1_1:
@@ -3313,7 +3313,7 @@ AssessmentProcedure:
             to electromagnetic signals emanations; mechanisms protecting the information system against electronic
             signals emanation; facility housing the information system; records from electromagnetic signals emanation
             tests; other relevant documents or records].
-        test: "[SELECT FROM: Information system for information leakage due to electromagnetic signals emanations].
+        test: "[SELECT FROM: Information system for information leakage due to electromagnetic signals emanations]."
         Catalog: 800_53A_Rev_0
 
     53A_Rev0_PL_01_1:
@@ -8630,7 +8630,7 @@ AssessmentProcedure:
             [SELECT FROM: Contingency planning policy; procedures addressing contingency operations
             for the information system; contingency plan; capacity planning documents; other relevant
             documents or records].
-        interview: "[[SELECT FROM: Organizational personnel with contingency planning and plan implementation responsibilities]."
+        interview: "[SELECT FROM: Organizational personnel with contingency planning and plan implementation responsibilities]."
         Catalog: 800_53A_Rev_1
 
     53A_Rev1_CP_02E3_1:
@@ -13381,7 +13381,7 @@ AssessmentProcedure:
             [SELECT FROM: System and communications protection policy; procedures addressing
             application partitioning; information system design documentation; information system
             configuration settings and associated documentation; other relevant documents or records].
-        test: [SELECT FROM: Separation of user functionality from information system management functionality].
+        test: "[SELECT FROM: Separation of user functionality from information system management functionality]."
         Catalog: 800_53A_Rev_1
 
     53A_Rev1_SC_02E1_1:

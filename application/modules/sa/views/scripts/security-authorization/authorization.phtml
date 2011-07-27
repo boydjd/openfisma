@@ -1,7 +1,7 @@
 <?php 
-echo $this->partial('navigation.phtml', array('sa' => $this->sa, 'current' => 'Authorization'));
 
 Fisma_Format_Section::startSection("Authorization");
+echo $this->stepStatus('Authorization');
 
 foreach ($this->buttonbar as $elem) {
     echo $this->escape($elem, 'none');

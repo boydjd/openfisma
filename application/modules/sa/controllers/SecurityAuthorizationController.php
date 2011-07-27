@@ -58,6 +58,21 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     protected $_modelName = 'SecurityAuthorization';
 
     /**
+     * Returned by overridden getSingularModelName() to display in the form Title.
+     *
+     * @var string
+     */
+    public $_singularModelName = 'Security Authorization';
+
+    /**
+     * @var array
+     */
+    public $_status = array('Implement' => 0,
+                            'Assessment' => 0,
+                            'Authorization' => 0,
+                            );
+
+    /**
      * @return void
      */
     public function indexAction()
@@ -180,6 +195,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
     public function implementationAction()
     {
+        $this->_helper->layout()->disableLayout();
         $this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
         $this->view->id = $this->_request->getParam('id');
         $dataTable = new Fisma_Yui_DataTable_Remote();
@@ -209,10 +225,12 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $buttonbar[] = $this->_createCompleteStepForm($sa);
 
         $this->view->buttonbar = $buttonbar;
+        $this->isEnabled();
     }
 
     public function assessmentPlanAction()
     {
+        $this->_helper->layout()->disableLayout();
         $this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
         $this->view->id = $this->_request->getParam('id');
         $this->view->dataTable = $this->_baseAssessmentPlanDataTable();
@@ -236,6 +254,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $buttonbar[] = $this->_createCompleteStepForm($sa);
 
         $this->view->buttonbar = $buttonbar;
+        $this->isEnabled();
     }
 
     /**
@@ -243,6 +262,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      */
     public function authorizationAction()
     {
+        $this->_helper->layout()->disableLayout();
         $this->view->id = $this->_request->getParam('id');
         $dataTable = $this->_baseAssessmentPlanDataTable();
         $dataTable->setDataUrl('/sa/assessment-plan-entry/search/said/' . $this->view->id . '/otherThanSatisfied/true')
@@ -259,6 +279,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $buttonbar[] = $this->_createCompleteStepForm($sa);
 
         $this->view->buttonbar = $buttonbar;
+        $this->isEnabled();
     }
 
     /**
@@ -327,6 +348,33 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                      ->setDefaults(array('id' => $sa->id, 'step' => $sa->status));
         return $completeForm;
     }
+    /**
+     * View the specified system
+     *
+     * @return void
+     */
+    public function viewAction()
+    {
+        //$this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
+        $id = $this->_request->getParam('id');
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
+        $this->view->sa = $sa;
+
+        $tabView = new Fisma_Yui_TabView('SecurityAuthorizationView', $id);
+        $tabView->addTab($sa->Organization->nickname, "/sa/security-authorization/overview/id/$id");
+        $tabView->addTab("1. Categorize", "/sa/security-authorization/fips/id/$id");
+        $tabView->addTab("2. Select", "/sa/security-authorization/select-controls/id/$id");
+        $tabView->addTab("3. Implementation", "/sa/security-authorization/implementation/id/$id");
+        $tabView->addTab("4. Assessment", "/sa/security-authorization/assessment-plan/id/$id");
+        $tabView->addTab("5. Authorization", "/sa/security-authorization/authorization/id/$id");
+
+        $this->view->tabView = $tabView;
+    }
+
+    public function overviewAction()
+    {
+        $this->_helper->layout()->disableLayout();
+    }
 
     /**
      * Display details for a single record.
@@ -335,10 +383,13 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      *
      * @return void
      */
+
+    /*
     public function viewAction()
     {
         $this->_viewObject();
     }
+    */
 
     protected function _implementationProgress(SecurityAuthorization $sa)
     {
@@ -374,6 +425,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
     public function selectControlsAction()
     {
+        $this->_helper->layout()->disableLayout();
         $this->_viewObject();
         $this->view->buttons = array(
             new Fisma_Yui_Form_Button(
@@ -621,5 +673,108 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             $common->setValue('none');
         }
         $this->view->form = $form;
+    }
+
+    public function getSingularModelName()
+    {
+        return $this->_singularModelName;
+
+    }
+
+
+        /**
+     * Display CIA criteria and FIPS-199 categorization
+     *
+     * @return void
+     */
+    public function fipsAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
+        $this->_acl->requirePrivilegeForObject('read', $organization);
+        $this->_helper->layout()->disableLayout();
+
+        $this->view->organization = $organization;
+        $this->view->system = $this->view->organization->System;
+        // BEGIN: Build the data table of information types associated with the system
+
+        $informationTypesTable = new Fisma_Yui_DataTable_Remote();
+
+        $informationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, null, 'category'))
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, null, 'name'))
+                              ->addColumn(
+                                  new Fisma_Yui_DataTable_Column('Description', false, null, null, 'description')
+                              )
+                              ->addColumn(
+                                  new Fisma_Yui_DataTable_Column('Confidentiality', true, null, null, 'confidentiality')
+                              )
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Integrity', true, null, null, 'integrity'))
+                              ->addColumn(
+                                  new Fisma_Yui_DataTable_Column('Availability', true, null, null, 'availability')
+                              )
+                              ->setResultVariable('informationTypes')
+                              ->setInitialSortColumn('category')
+                              ->setSortAscending(true)
+                              ->setRowCount(10)
+                              ->setDataUrl("/system/information-types/id/{$id}/format/json");
+
+        $this->view->informationTypesTable = $informationTypesTable;
+        // END: Building of data table
+
+        // BEGIN: Build the data table of available information types to assign to the system
+
+        if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
+            $availableInformationTypesTable = clone $informationTypesTable;
+
+            $availableInformationTypesTable->addColumn(
+                new Fisma_Yui_DataTable_Column('Add', 'false', 'Fisma.System.addInformationType', null, 'id')
+            );
+
+            $availableInformationTypesTable->setDataUrl(
+                "/sa/information-type/active-types/systemId/{$id}/format/json"
+            );
+
+            $this->view->availableInformationTypesTable = $availableInformationTypesTable;
+            // END: Building of the data table
+
+            $this->view->informationTypesTable->addColumn(
+                new Fisma_Yui_DataTable_Column('Remove', 'false', 'Fisma.System.removeInformationType', null, 'id')
+            );
+
+            $addInformationTypeButton = new Fisma_Yui_Form_Button(
+                'addInformationTypeButton',
+                array(
+                    'label' => 'Add Information Types',
+                    'onClickFunction' => 'Fisma.System.showInformationTypes',
+                )
+            );
+            $this->view->addInformationTypeButton = $addInformationTypeButton;
+        }
+
+        $this->render();
+    }
+
+    public function isEnabled()
+    {
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
+        switch ($sa->status) {
+            case 'Select':
+                $this->_status['Implement'] = 1;
+            case 'Implement':
+                $this->_status['Assessment'] = 0;
+            case 'Assessment Plan':
+            case 'Assessment':
+                $this->_status['Authorization'] = 0;
+            case 'Authorization':
+            case 'Active':
+            case 'Retired':
+                // do nothing
+                break;
+            default:
+                throw new Fisma_Zend_Exception('Unknown SA status encountered.');
+
+        }
+        $this->view->status = $this->_status;
+
     }
 }

@@ -627,3 +627,11 @@ div#swfstoreContainer {
 form#transitionsForm {
     display: inline;
 }
+
+div#overview-container {
+    display:  table;
+}
+
+#overview-name, #overview-complete, #overview-progress {
+    display: table-cell;
+}

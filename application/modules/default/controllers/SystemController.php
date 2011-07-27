@@ -40,6 +40,14 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      */
     protected $_aclResource = 'Organization';
 
+    public function init()
+    {
+        parent::init();
+        $this->_helper->ajaxContext
+                      ->setActionContext('create', 'html')
+                      ->initContext('');
+    }
+
     /**
      * View the specified system
      *
@@ -69,7 +77,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $firstTab = $this->view->escape($organization->name)
                   . ' (' . $this->view->escape($organization->nickname) . ')';
         $tabView->addTab($firstTab, "/system/system/id/$id");
-        $tabView->addTab("FIPS-199", "/system/fips/id/$id");
+        $tabView->addTab("Information Types", "/system/fips/id/$id");
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab("Documentation", "/system/artifacts/id/$id");
         $tabView->addTab("Users", "/system/user/id/$id");
