@@ -813,8 +813,12 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             // Loop through the keys and rename them as defined in the array above
             foreach ($keys as $list => $category) {
                 foreach ($category as $k => $v) {
-                    $organization[$list][$k] = $organization[$v];
-                    unset($organization[$v]);
+                    if (isset($organization[$v])) {
+                        $organization[$list][$k] = $organization[$v];
+                        unset($organization[$v]);
+                    } else {
+                        $organization[$list][$k] = 0;
+                    }
                 }
             }
         }
