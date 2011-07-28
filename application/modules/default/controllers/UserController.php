@@ -920,6 +920,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $form->removeElement('lockTs');
         }
 
+        // Populate <select> for responsible organization
+        $organizations = Doctrine::getTable('Organization')->getOrganizationSelectQuery()->execute();
+        $selectArray = $this->view->systemSelect($organizations);
+        $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
+
         return $form;
     }
 }
