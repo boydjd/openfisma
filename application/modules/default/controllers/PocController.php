@@ -119,4 +119,15 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->form = $form;
     }
+
+    /**
+     * A protected method which holds all of the logic for the view action, but does not actually render a view
+     */
+    protected function _viewObject()
+    {
+        parent::_viewObject();
+        if ($this->view->subject->type === 'User') {
+            $this->_redirect('/user/view/id/' . $this->view->id);
+        }
+    }
 }
