@@ -287,9 +287,9 @@ Fisma.FindingSummary = function() {
             // If the node has children, then hide those children
             if (treeNode.children.length > 0) {
                 this.hideSubtree(treeNode.children);
+                document.getElementById(treeNode.nickname + "Img").src = "/images/plus.png";
             }
 
-            document.getElementById(treeNode.nickname + "Img").src = "/images/plus.png";
             treeNode.expanded = false;
         }, 
         
