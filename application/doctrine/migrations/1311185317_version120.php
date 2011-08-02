@@ -94,6 +94,16 @@ class Version120 extends Doctrine_Migration_Base
         );
     }
 
+    public function postUp()
+    {
+        $conn = Doctrine_Manager::connection();
+        $selectSql = "SELECT id FROM organization WHERE level = 0 LIMIT 1";
+        $org = $conn->fetchRow($selectSql);
+        $orgId = $org['id'];
+        $updateSql = "UPDATE poc SET reportingorganizationid = ? WHERE reportingorganizationid IS NULL";
+        $conn->exec($updateSql, array($orgId));
+    }
+
     public function down()
     {
     }
