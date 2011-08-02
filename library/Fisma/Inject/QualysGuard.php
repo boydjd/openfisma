@@ -134,64 +134,73 @@ class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
         }
 
         foreach ($parsedData as $host) {
+            if (!is_array($host)) {
+                continue;
+            }
+
             foreach ($host as $cats) {
+                if (!is_array($cats)) {
+                    continue;
+                }
+
                 foreach ($cats as $findings) {
-                    if (is_array($findings)) {
-                        foreach ($findings as $finding) {
-                            if (!empty($finding['severity']) && 'NONE' != $finding['severity']) {
+                    if (!is_array($findings)) {
+                        continue;
+                    }
 
-                                if (!isset($host['ip'])) {
-                                    $host['ip']  = $host['name'];
-                                }
+                    foreach ($findings as $finding) {
+                        if (!empty($finding['severity']) && 'NONE' != $finding['severity']) {
 
-                                // Prepare asset
-                                $asset = array();
-                                $asset['name'] = (!empty($cats['port'])) ? $host['ip'] . ':' . $cats['port'] : 
-                                    $host['ip'];
-                                $asset['networkId'] = (int) $this->_networkId;
-                                $asset['addressIp'] = $host['ip'];
-                                $asset['addressPort'] = (!empty($cats['port'])) ? (int) $cats['port'] : NULL;
-                                $asset['source'] = 'scan';
-
-                                // Prepare finding
-                                $findingInstance = array();
-                                $findingInstance['uploadId'] = (int) $uploadId;
-                                $discoveredDate = new Zend_Date(
-                                    strtotime($parsedData['discoveredDate']),
-                                    Zend_Date::TIMESTAMP
-                                );
-                                $findingInstance['discoveredDate'] = (!empty($discoveredDate)) ? 
-                                    $discoveredDate->toString(Fisma_Date::FORMAT_DATE) : NULL;
-
-                                $findingInstance['sourceId'] = (int) $this->_findingSourceId;
-                                $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
-                                $findingInstance['description'] = (!empty($finding['description'])) ? 
-                                    $finding['description'] : NULL;
-
-                                $findingInstance['threat'] = (!empty($finding['consequence'])) ? 
-                                    $finding['consequence'] : NULL;
-
-                                $findingInstance['recommendation'] = (!empty($finding['solution'])) ? 
-                                    $finding['solution'] : NULL;
-
-                                $findingInstance['threatLevel'] = (!empty($finding['severity'])) ? $finding['severity'] 
-                                    : NULL;
-
-                                if (!empty($finding['cve'])) {
-                                    foreach ($finding['cve'] as $cve) {
-                                        $findingInstance['cve'][] = $cve;
-                                    }
-                                }
-
-                                if (!empty($finding['bid'])) {
-                                    foreach ($finding['bid'] as $bugtraq) {
-                                        $findingInstance['bugtraq'][] = $bugtraq;
-                                    }
-                                }
-
-                                // Save finding and asset
-                                $this->_save($findingInstance, $asset);
+                            if (!isset($host['ip'])) {
+                                $host['ip']  = $host['name'];
                             }
+
+                            // Prepare asset
+                            $asset = array();
+                            $asset['name'] = (!empty($cats['port'])) ? $host['ip'] . ':' . $cats['port'] : $host['ip'];
+                            $asset['networkId'] = (int) $this->_networkId;
+                            $asset['addressIp'] = $host['ip'];
+                            $asset['addressPort'] = (!empty($cats['port'])) ? (int) $cats['port'] : NULL;
+                            $asset['source'] = 'scan';
+
+                            // Prepare finding
+                            $findingInstance = array();
+                            $findingInstance['uploadId'] = (int) $uploadId;
+                            $discoveredDate = new Zend_Date(
+                                strtotime($parsedData['discoveredDate']),
+                                Zend_Date::TIMESTAMP
+                            );
+                            $findingInstance['discoveredDate'] = (!empty($discoveredDate)) ? 
+                                $discoveredDate->toString(Fisma_Date::FORMAT_DATE) : NULL;
+
+                            $findingInstance['sourceId'] = (int) $this->_findingSourceId;
+                            $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
+                            $findingInstance['description'] = (!empty($finding['description'])) ? 
+                                $finding['description'] : NULL;
+
+                            $findingInstance['threat'] = (!empty($finding['consequence'])) ? 
+                                $finding['consequence'] : NULL;
+
+                            $findingInstance['recommendation'] = (!empty($finding['solution'])) ? 
+                                $finding['solution'] : NULL;
+
+                            $findingInstance['threatLevel'] = (!empty($finding['severity'])) ? $finding['severity'] 
+                                : NULL;
+
+                            if (!empty($finding['cve'])) {
+                                foreach ($finding['cve'] as $cve) {
+                                    $findingInstance['cve'][] = $cve;
+                                }
+                            }
+
+                            if (!empty($finding['bid'])) {
+                                foreach ($finding['bid'] as $bugtraq) {
+                                    $findingInstance['bugtraq'][] = $bugtraq;
+                                }
+                            }
+
+                            // Save finding and asset
+                            $this->_save($findingInstance, $asset);
                         }
                     }
                 }
