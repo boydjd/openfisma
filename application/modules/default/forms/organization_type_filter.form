@@ -7,5 +7,5 @@
 [organization_type_filter]
 
 elements.orgTypeFilter.type = "select"
-elements.orgTypeFilter.options.label = "Filter by Organization Type:"
+elements.orgTypeFilter.options.label = "Show Organization Type Column:"
 elements.orgTypeFilter.options.value = "0"
