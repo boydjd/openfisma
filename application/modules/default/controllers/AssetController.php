@@ -59,8 +59,8 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         if ($this->getRequest()->getParam('sub') != 'edit') 
             $form->getElement('product')->setAttrib('readonly', true);
 
-        $form->getElement('product')->setValue($subject->productId)
-                                    ->setDisplayText($subject->Product->name);
+        $form->getElement('productId')->setValue($subject->productId);
+        $form->getElement('product')->setValue($subject->Product->name);
 
         return parent::setForm($subject, $form);
     }
@@ -82,13 +82,6 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         }
 
         $values = $form->getValues();
-
-        $productIdField = $form->getElement('product')->getAttrib('hiddenField');
-        $values['productId'] = $this->getRequest()->getParam($productIdField);
-
-        if (empty($values['productId'])) {
-            unset($values['productId']);
-        }
 
         $subject->merge($values);
         $subject->save();
