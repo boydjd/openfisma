@@ -96,12 +96,17 @@ class Version120 extends Doctrine_Migration_Base
 
     public function postUp()
     {
+        // All POCs should report to an Organization, make it the root Organization by default
         $conn = Doctrine_Manager::connection();
         $selectSql = "SELECT id FROM organization WHERE level = 0 LIMIT 1";
         $org = $conn->fetchRow($selectSql);
         $orgId = $org['id'];
         $updateSql = "UPDATE poc SET reportingorganizationid = ? WHERE reportingorganizationid IS NULL";
         $conn->exec($updateSql, array($orgId));
+
+        // All existing POCs are users, tell Doctrine as much
+        $updateTypeSql = "UPDATE poc SET type = 'User'";
+        $conn->exec($updateTypeSql);
     }
 
     public function down()
