@@ -85,6 +85,13 @@ class Version120 extends Doctrine_Migration_Base
 
         $this->addColumn('system', 'aggregatesystemid', 'integer', 8);
         $this->addColumn('poc', 'type', 'string', 255);
+        $this->addColumn(
+            'poc',
+            'reportingorganizationid',
+            'integer',
+            8,
+            array('comment' => "Foreign key to the point of contact''s reporting organization.")
+        );
     }
 
     public function down()

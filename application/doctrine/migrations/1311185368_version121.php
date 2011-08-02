@@ -87,6 +87,11 @@ class Version121 extends Doctrine_Migration_Base
             'system_aggregatesystemid_system_id',
             array('local' => 'aggregatesystemid', 'foreign' => 'id', 'foreignTable' => 'system')
         );
+        $this->createForeignKey(
+            'poc',
+            'poc_reportingorganizationid_organization_id',
+            array('local' => 'reportingorganizationid', 'foreign' => 'id', 'foreignTable' => 'organization')
+        );
     }
 
     public function down()
