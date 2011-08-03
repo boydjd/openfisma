@@ -78,7 +78,7 @@ class Fisma_Inject_Retina extends Fisma_Inject_Abstract
                 } elseif ($oXml->name == 'date') {
                     $parsedData[$itemCounter]['date'] = $oXml->readString();
                 } elseif ($oXml->name == 'risk') {
-                    $risk = $oXml->readString('risk');
+                    $risk = $oXml->readString();
                     switch($risk) {
                         case "Low": 
                             $risk = 'LOW';
