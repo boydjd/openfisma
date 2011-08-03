@@ -110,9 +110,6 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                     }
                    
                     $discoveredDate = new Zend_Date($testDate[0]);
-        
-                     // The creation timestamp for each finding is the current system time
-                    $creationDate = new Zend_Date();
                 } elseif ($oXml->name == 'appName') {
                     
                     // Asset information is parsed out of the appName field.
@@ -213,7 +210,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
 
                 $findingInstance['threat'] = (!empty($finding['threat'])) ? 
                                              Fisma_String::textToHtml($finding['threat']) : NULL;
-                if (!empty($findingInstance['recommendation'])) {
+                if (!empty($finding['recommendation'])) {
                     $findingInstance['recommendation'] = preg_replace(self::REMOVE_PHRASE, 
                                                                       '', 
                                                                       $finding['recommendation']);
