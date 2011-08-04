@@ -3083,7 +3083,7 @@ Fisma.Chart = {
                     enableFontSupport: true,
                     fontFamily: 'arial, helvetica, clean, sans-serif',
                     fontSize: '12pt',
-                    textColor: '#555555'
+                    textColor: '#000000'
                 }
             },
             axes: {
@@ -3421,7 +3421,7 @@ Fisma.Chart = {
                 // Tabel to hold all colored boxes and labels
                 var threatTable = document.createElement("table");
                 threatTable.style.fontSize = '12px';
-                threatTable.style.color = '#555555';
+                threatTable.style.color = '#000000';
                 threatTable.width = threatLegendWidth;
                 var tblBody = document.createElement("tbody");
                 var row = document.createElement("tr");
@@ -3430,7 +3430,7 @@ Fisma.Chart = {
                 cell.style.textAlign = 'center';
                 cell.style.fontWeight = 'bold';
                 cell.width = '40%';
-                var textLabel = document.createTextNode('Threat Level');
+                var textLabel = document.createTextNode('');
                 cell.appendChild(textLabel);
                 row.appendChild(cell);
                 
@@ -4973,15 +4973,15 @@ Fisma.Chart = {
         chartContainer.appendChild(pTag);
     },
     
+    /**
+     * Does nothing. Used to set a title on a chart, but now, nothing.
+     *
+     * @deprecated
+     * @param object
+     * @return void
+     */
     setTitle : function (chartParamsObj)
     {
-        if (chartParamsObj.title && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
-            var titleArea = document.getElementById(chartParamsObj.uniqueid + 'title');
-            var titleNode = document.createTextNode(chartParamsObj.title);
-            titleArea.innerHTML = '';
-            titleArea.appendChild(titleNode);
-            titleArea.appendChild(document.createElement('br'));
-        }
     },
     
     /**
