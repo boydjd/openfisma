@@ -97,6 +97,8 @@ class Fisma_Inject_Factory
             return 'QualysGuard';
         } elseif (preg_match('/^<scanJob>/', $contents)) {
             return 'Retina';
+        } elseif (stristr($contents, 'SAINTwriter')) {
+            return 'Saint';
         } else {
             return FALSE;
         }
