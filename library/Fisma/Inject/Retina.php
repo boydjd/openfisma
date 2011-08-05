@@ -17,7 +17,7 @@
  */
 
 /**
- * A scan result injection plugin for injecting Nessus XML output directly into OpenFISMA.
+ * A scan result injection plugin for injecting Retina XML output directly into OpenFISMA.
  * 
  * @author     Mark Ma <mark.ma@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
