@@ -140,11 +140,11 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
             $incident['reporterFirstName'] = 'John';
             $incident['reporterLastName'] = 'Doe';
             $incident['reporterOrganization'] = 'Acme, Inc.';
-            $incident['reporterAddress1'] = rand(100,9999) . ' Pennsylvania Ave.';
-            $incident['reporterAddress2'] = 'Suite ' . rand (100,999);
+            $incident['reporterAddress1'] = rand(100, 9999) . ' Pennsylvania Ave.';
+            $incident['reporterAddress2'] = 'Suite ' . rand (100, 999);
             $incident['reporterCity'] = 'Washington';
-            $incident['reporterState'] = chr(rand(65,90)) . chr(rand(65,90));
-            $incident['reporterZip'] = rand(10000,99999);
+            $incident['reporterState'] = chr(rand(65, 90)) . chr(rand(65, 90));
+            $incident['reporterZip'] = rand(10000, 99999);
             // PHP can't generate a random number greater than 2147483647, so concat a few numbers together to make a
             // phone number.
             $incident['reporterPhone'] = $this->_getRandomPhoneNumber();
@@ -153,7 +153,7 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
             $incident['reporterIp'] = $this->_getRandomIpAddress();
 
             $incident['locationBuilding'] = "L'enfant Plaza";
-            $incident['locationRoom'] = rand(100,999);
+            $incident['locationRoom'] = rand(100, 999);
 
             $incident['incidentDate'] = $oldDate->getDate()->toString(Fisma_Date::FORMAT_DATE);
             $incident['incidentTime'] = $oldDate->getDate()->toString(Fisma_Date::FORMAT_TIME);
@@ -173,11 +173,11 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
             $incident['piiEncrypted'] = $yesNo[array_rand($yesNo)];
             $incident['piiAuthoritiesContacted'] = $yesNo[array_rand($yesNo)];
             $incident['piiPoliceReport'] = $yesNo[array_rand($yesNo)];
-            $incident['piiIndividualsCount'] = rand(1,999999);
+            $incident['piiIndividualsCount'] = rand(1, 999999);
             $incident['piiIndividualsNotified'] = $yesNo[array_rand($yesNo)];
             $incident['piiShipment'] = $yesNo[array_rand($yesNo)];
             $incident['piiShipmentSenderContacted'] = $yesNo[array_rand($yesNo)];
-            $incident['piiShipmentSenderCompany'] = ucwords(Fisma_String::loremIpsum(rand(1,3)));
+            $incident['piiShipmentSenderCompany'] = ucwords(Fisma_String::loremIpsum(rand(1, 3)));
             $incident['piiShipmentTimeline'] = Fisma_String::loremIpsum(rand(100, 200), 'html');
             $incident['piiShipmentTrackingNumbers'] = Fisma_String::loremIpsum(rand(100, 200), 'html');
 
@@ -217,7 +217,7 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
                 $i->merge($incident);
 
                 // 50% are reported by a real user, 50% reported by an anonymous user
-                if (rand(1,100) > 50) {
+                if (rand(1, 100) > 50) {
                     $i->ReportingUser = $this->_getRandomUser();                    
                 }
                 $i->Organization = $this->_getRandomOrganization();
@@ -292,7 +292,7 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
      */
     private function _getRandomPhoneNumber()
     {
-        return '(' . rand(100,999) . ') ' . rand(100,999) . '-' . rand(1000,9999);
+        return '(' . rand(100, 999) . ') ' . rand(100, 999) . '-' . rand(1000, 9999);
     }
 
     /**
@@ -302,6 +302,6 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
      */
     private function _getRandomIpAddress()
     {
-        return rand(1,255) . '.' . rand(1,255) . '.' . rand(1,255) . '.' . rand(1,255);
+        return rand(1, 255) . '.' . rand(1, 255) . '.' . rand(1, 255) . '.' . rand(1, 255);
     }
 }
