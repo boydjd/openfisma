@@ -5606,6 +5606,10 @@ Fisma.Finding = {
             comment : comment.comment
         };
 
+        if (YAHOO.lang.isObject(Fisma.Util.yuiDataTable)) {
+            this.commentTable = Fisma.Util.yuiDataTable;
+        }
+
         this.commentTable.addRow(commentRow);
         
         /*
@@ -6547,7 +6551,11 @@ Fisma.Incident = {
             username : comment.username,
             comment : comment.comment
         };
-        
+
+        if (YAHOO.lang.isObject(Fisma.Util.yuiDataTable)) {
+            this.commentTable = Fisma.Util.yuiDataTable;
+        }
+
         this.commentTable.addRow(commentRow);
         
         /*
@@ -11499,6 +11507,10 @@ Fisma.User = {
             comment : comment.comment
         };
 
+        if (YAHOO.lang.isObject(Fisma.Util.yuiDataTable)) {
+            this.commentTable = Fisma.Util.yuiDataTable;
+        }
+
         this.commentTable.addRow(commentRow);
 
         /*
@@ -11811,7 +11823,11 @@ Fisma.User = {
  */
  
 Fisma.Util = {
-    
+    /**
+     * A reference to the YUI data table which is used for displaying YUI datatable results
+     */
+    yuiDataTable : null,
+
     /**
      * Escapes the specified string so that it can be included in a regex without special characters affecting
      * the regex's meaning
@@ -12004,8 +12020,16 @@ Fisma.Util = {
                 } ); 
 
         return dialog;
-    }
+    },
 
+    /**
+     * A method to add a YUI table to the "registry" that this object keeps track of
+     *
+     * @var table A YUI table
+     */
+    setTable : function (table) {
+        this.yuiDataTable = table;
+    }
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -12053,6 +12077,10 @@ Fisma.Vulnerability = {
             username : comment.username,
             comment : comment.comment
         };
+
+        if (YAHOO.lang.isObject(Fisma.Util.yuiDataTable)) {
+            this.commentTable = Fisma.Util.yuiDataTable;
+        }
 
         this.commentTable.addRow(commentRow);
         

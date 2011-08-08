@@ -45,6 +45,10 @@ Fisma.Finding = {
             comment : comment.comment
         };
 
+        if (YAHOO.lang.isObject(Fisma.Util.yuiDataTable)) {
+            this.commentTable = Fisma.Util.yuiDataTable;
+        }
+
         this.commentTable.addRow(commentRow);
         
         /*

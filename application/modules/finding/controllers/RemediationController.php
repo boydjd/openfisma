@@ -668,6 +668,25 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $comments = $finding->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
 
+        $commentRows = array();
+
+        foreach ($comments as $comment) {
+            $commentRows[] = array(
+                'timestamp' => $this->view->escape($comment['createdTs']),
+                'username' => $this->view->userInfo($comment['User']['username']),
+                'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment']))
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, null, null, 'timestamp'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, null, null, 'username'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Comment', false, null, null, 'comment'))
+                  ->setData($commentRows);
+
+        $this->view->dataTable = $dataTable;
+
         $commentButton = new Fisma_Yui_Form_Button(
             'commentButton', 
             array(
@@ -689,7 +708,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->commentButton = $commentButton;
-        $this->view->comments = $comments;
         $this->_helper->layout->setLayout('ajax');
     }
     
@@ -1115,14 +1133,25 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->layout->setLayout('ajax');
         
         $logs = $this->view->finding->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
-        
-        // Convert log messages from plain text to HTML
-        foreach ($logs as &$log) {
-            $log['o_message'] = $this->view->textToHtml($this->view->escape($log['o_message']));
+
+        $logRows = array();
+
+        foreach ($logs as $log) {
+            $logRows[] = array(
+                'timestamp' => $this->view->escape($log['o_createdTs']),
+                'user' => $this->view->userInfo($log['u_username']),
+                'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
+            );
         }
 
-        $this->view->columns = array('Timestamp', 'User', 'Message');
-        $this->view->rows = $logs;
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, null, null, 'timestamp'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, null, null, 'username'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Message', false, null, null, 'message'))
+                  ->setData($logRows);
+
+        $this->view->dataTable = $dataTable;
     }
 
     /**

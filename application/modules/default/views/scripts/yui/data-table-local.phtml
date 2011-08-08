@@ -12,7 +12,7 @@
             <?php foreach ($this->data as $row): ?>
                 <tr>
                     <?php foreach($row as $cell): ?>
-                    <td><?php echo $this->escape($cell) ?></td>
+                    <td><?php echo $this->escape($cell, 'none') ?></td>
                     <?php endforeach;?>
                 </tr>
             <?php endforeach; ?>
@@ -49,7 +49,10 @@
             dataSource, 
             {}
         );
-        
+
+        // Register data table with Fisma.Util -- this allows it to be found after this scope disappears
+        Fisma.Util.setTable(dataTable);
+
         // Enable row highlighting for mouse over events
         dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow); 
         dataTable.subscribe("rowMouseoutEvent", dataTable.onEventUnhighlightRow);

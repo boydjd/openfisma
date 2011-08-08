@@ -201,8 +201,28 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     
         $this->view->username = $user->username;
         $this->view->columns = array('Timestamp', 'User', 'Message');
-        $this->view->rows = $user->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
         $this->view->viewLink = "/user/view/id/$id";
+
+        $logs = $user->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
+
+        $logRows = array();
+
+        foreach ($logs as $log) {
+            $logRows[] = array(
+                'timestamp' => $this->view->escape($log['o_createdTs']),
+                'user' => $this->view->userInfo($log['u_username']),
+                'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, null, null, 'timestamp'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, null, null, 'username'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Message', false, null, null, 'message'))
+                  ->setData($logRows);
+
+        $this->view->dataTable = $dataTable;
     }
 
     /**
@@ -713,6 +733,25 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $comments = $user->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
 
+        $commentRows = array();
+
+        foreach ($comments as $comment) {
+            $commentRows[] = array(
+                'timestamp' => $this->view->escape($comment['createdTs']),
+                'username' => $this->view->userInfo($comment['User']['username']),
+                'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment']))
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, null, null, 'timestamp'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, null, null, 'username'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Comment', false, null, null, 'comment'))
+                  ->setData($commentRows);
+
+        $this->view->dataTable = $dataTable;
+
         $this->view->username = $user->username;
         $this->view->viewLink = "/user/view/id/$id";
 
@@ -733,7 +772,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         );
 
         $this->view->commentButton = $commentButton;
-        $this->view->comments = $comments;
     }
 
     /**

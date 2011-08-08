@@ -59,8 +59,28 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
                         ->orderBy('v.version desc');
         $versionHistory = $historyQuery->execute();
 
+        $historyRows = array();
+
+        foreach ($versionHistory as $history) {
+            $downloadUrl = '/system-document/download/id/' . $history->id . '/version/' . $history->version;
+            $historyRows[] = array(
+                'fileName' => "<a href=$downloadUrl>" . $this->view->escape($history->fileName) . "</a>",
+                'version' => $this->view->escape($history->version),
+                'description' => $this->view->textToHtml($this->view->escape($history->description)),
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('File Name', true, null, null, 'fileName'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Version', true, null, null, 'version'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Version Notes', false, null, null, 'description'))
+                  ->setData($historyRows);
+
+        $this->view->dataTable = $dataTable;
+
         $this->view->document = $document;
-        $this->view->versionHistory = $versionHistory;
+
         $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
