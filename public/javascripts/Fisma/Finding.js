@@ -257,7 +257,7 @@ Fisma.Finding = {
         YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm);
         container.className = 'pocNotMatched';
         container.id = id;
-        container.appendChild(document.createTextNode());            
+        container.appendChild(document.createTextNode(""));
 
         parent.appendChild(container);
         
