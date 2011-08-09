@@ -571,7 +571,34 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $integrity = $this->getRequest()->getParam('Integrity');
         $availability = $this->getRequest()->getParam('Availability');
         
-        $organization = Doctrine::getTable('Organization')->find($id);
+        $organizationTable = Doctrine::getTable('Organization');
+
+        // validate form inputs
+        $errors = array();
+        if (!in_array($type, array('gss', 'major', 'minor'))) {
+            $errors[] = "Invalid type specified.";
+        }
+        if (!in_array($sdlcPhase, array('initiation','development','implementation','operations','disposal'))) {
+            $errors[] = "Invalid SDLC phase specified.";
+        }
+        if (!in_array($confidentiality, array('NA', 'HIGH', 'MODERATE', 'LOW'))) {
+            $errors[] = "Invalid confidentiality specified.";
+        }
+        if (!in_array($integrity, array('HIGH', 'MODERATE', 'LOW'))) {
+            $errors[] = "Invalid integrity specified.";
+        }
+        if (!in_array($availability, array('HIGH', 'MODERATE', 'LOW'))) {
+            $errors[] = "Invalid availability specified.";
+        }
+        if (!empty($errors)) {
+            $this->view->priorityMessenger(
+                'Could not convert Organization to System: <br>' . implode('<br>', $errors),
+                'warning'
+            );
+            $this->_redirect('/organization/view/id/' . $id);
+        }
+
+        $organization = $organizationTable->find($id);
         $organization->convertToSystem($type, $sdlcPhase, $confidentiality, $integrity, $availability);
         
         $this->view->priorityMessenger('Converted to system successfully', 'notice');
