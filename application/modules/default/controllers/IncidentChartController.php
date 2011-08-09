@@ -80,9 +80,9 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
             )
             ->setColors(
                 array(
-                    '#FF0000',
+                    '#00FF00',
                     '#FFFF00',
-                    '#00FF00'
+                    '#FF0000'
                 )
             )
             ->setThreatLegendVisibility(true)
