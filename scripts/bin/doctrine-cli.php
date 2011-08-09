@@ -162,7 +162,7 @@ try {
     }
 
     // Kick off the CLI
-    $cli = new Doctrine_Cli($configuration);
+    $cli = new Fisma_Doctrine_Cli($configuration);
     $cli->run($_SERVER['argv']);
     
     // Remove sample data build directory if it exists
