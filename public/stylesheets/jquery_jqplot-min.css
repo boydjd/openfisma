@@ -17,7 +17,7 @@
 .jqplot-y2axis-label,.jqplot-y3axis-label,.jqplot-y4axis-label,.jqplot-y5axis-label,.jqplot-y6axis-label,.jqplot-y7axis-label,.jqplot-y8axis-label,.jqplot-y9axis-label{font-size:11pt;position:absolute;}
 table.jqplot-table-legend{margin-top:12px;margin-bottom:12px;margin-left:12px;margin-right:12px;color:000000;}
 table.jqplot-table-legend,table.jqplot-cursor-legend{background-color:rgba(255,255,255,0.6);border:1px solid #ccc;position:absolute;font-size:.75em;}
-td.jqplot-table-legend{vertical-align:middle;}
+td.jqplot-table-legend{vertical-align:middle;padding:.5em!important;}
 td.jqplot-seriesToggle:hover,td.jqplot-seriesToggle:active{cursor:pointer;}
 td.jqplot-table-legend>div{border:1px solid #ccc;padding:1px;color:#000;}
 div.jqplot-table-legend-swatch{width:0;height:0;border-top-width:5px;border-bottom-width:5px;border-left-width:6px;border-right-width:6px;border-top-style:solid;border-bottom-style:solid;border-left-style:solid;border-right-style:solid;color:#000;}

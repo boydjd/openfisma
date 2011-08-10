@@ -370,7 +370,7 @@ Fisma.Chart = {
                 location: 's',
                 show: true,
                 rendererOptions: {
-                    numberRows: chartParamsObj.chartData.length  
+                    numberRows: 2 
                 }
             }
         };
@@ -563,7 +563,7 @@ Fisma.Chart = {
             legend: {
                 show: chartParamsObj.showlegend,
                 rendererOptions: {
-                    numberRows: chartParamsObj.chartDataText.length
+                    numberRows: 2 
                 },
                 location: 'nw'
             }
@@ -730,7 +730,7 @@ Fisma.Chart = {
             legend: {
                         show: true,
                         rendererOptions: {
-                            numberRows: chartParamsObj.chartDataText.length 
+                            numberRows: 2 
                         },
                         location: 'nw'
                     }
