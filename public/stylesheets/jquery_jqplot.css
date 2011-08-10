@@ -119,6 +119,7 @@ table.jqplot-table-legend, table.jqplot-cursor-legend {
 
 td.jqplot-table-legend {
     vertical-align:middle;
+    padding: .5em !important;
 }
 
 td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
