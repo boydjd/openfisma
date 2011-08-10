@@ -93,7 +93,7 @@ class Fisma_Inject_Factory
             return 'Nessus';
         } elseif (stristr($contents, 'AppDetective')) {
             return 'AppDetective';
-        } elseif ( preg_match('/^<scanJob>/', $contents)) {
+        } elseif (preg_match('/^<scanJob>/', $contents)) {
             return 'Retina';
         } else {
             return FALSE;

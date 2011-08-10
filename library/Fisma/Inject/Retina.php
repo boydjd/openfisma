@@ -101,9 +101,10 @@ class Fisma_Inject_Retina extends Fisma_Inject_Abstract
                     $parsedData[$itemCounter]['fixInformation'] = $oXml->readString();
                 } elseif ($oXml->name == 'rthID') {
 
+                    //Retina (eeye) unique ID within eEye products, and doesn't track with other vulnerability type IDs
                     // The findings with the same rthIds are identical. So, parse out only one finding. 
                     // If save all identical findings to database, it causes error when upload the same file again.  
-                    $rthId =$oXml->readString();
+                    $rthId = $oXml->readString();
                     if (!in_array($rthId, $rthIds)) {
                         array_push($rthIds, $rthId);
                     } else {
@@ -138,13 +139,16 @@ class Fisma_Inject_Retina extends Fisma_Inject_Abstract
                 if ($finding['cvssScore'] != 'N/A') {
                     $score = array();
                     $vector = array();
-                    if (preg_match('/[0-9]\.?[0-9]?/', $finding['cvssScore'], $score)) {
+
+                    // Parse out cvss score which is range from 0-10
+                    if (preg_match('/(10|[0-9])(\.[0-9]+)?/', $finding['cvssScore'], $score)) {
                         $findingInstance['cvssBaseScore'] = $score[0];
                     } else {
                         $findingInstance['cvssBaseScore'] = NULL;
                     }
           
-                    if (preg_match('/\[(.*)\]/', $finding['cvssScore'], $vector)) {
+                    // Parse out cvss vector which is the string in one []
+                    if (preg_match('/\[(.*?)\]/', $finding['cvssScore'], $vector)) {
                         $findingInstance['cvssVector'] = $vector[1];
                     } else {
                         $findingInstance['cvssVector'] = NULL;
