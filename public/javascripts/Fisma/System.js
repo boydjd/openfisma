@@ -210,41 +210,43 @@ Fisma.System = {
      * @return void
      */
     askForOrgToSysInput : function (sysId) {
-        
-        var inputForm = Fisma.System.getSystemConversionForm(sysId);
-        inputForm.name = 'sysConversionForm';
-        inputForm.id = 'sysConversionForm';
-        inputForm.className = 'yui-pe-content';
-        document.body.appendChild(inputForm);
-        
-        var submitButtonEvent = function () {
-                Fisma.System.showWaitPanelWhileConverting();
-                YAHOO.util.Dom.get('sysConversionForm').submit();
-                this.hide(); 
-            };
-        var cancleButtonEvent = function () {
-                this.destroy(); 
-            };
-        var dialogButtons = [
-                { text:"Submit", handler:submitButtonEvent, isDefault:true }, 
-                { text:"Cancel", handler:cancleButtonEvent }
-            ];
-        var inputSysInfoDialog = new YAHOO.widget.Dialog(
-            "sysConversionForm",  
-            {
-                width : "300px", 
-                fixedcenter : true, 
-                visible : false,  
-                constraintoviewport : true, 
-                buttons : dialogButtons
-            }
-        ); 
+        var panel;
 
-        YAHOO.util.Dom.removeClass("sysConversionForm", "yui-pe-content");
-        
-        inputSysInfoDialog.render();
-        inputSysInfoDialog.show();
+        var populateForm = function () {
+
+            // The form contains some scripts that need to be executed
+            var scriptNodes = panel.body.getElementsByTagName('script');
+
+            for (var i=0; i < scriptNodes.length; i++) {
+                try {
+                    eval(scriptNodes[i].text);
+                } catch (e) {
+                    var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                    Fisma.Util.showAlertDialog(message);
+                } 
+            }
+
+            // The tool tips will display underneath the modal dialog mask, so we'll move them up to a higher layer.
+            var tooltips = YAHOO.util.Dom.getElementsByClassName('yui-tt', 'div');
+
+            for (var index in tooltips) {
+                var tooltip = tooltips[index];
+
+                // The yui panel is usually 4, so anything higher is good.
+                tooltip.style.zIndex = 5;
+            }
+        };
+        var panelConfig = {width : "50em", modal : true};
+
+        panel = Fisma.UrlPanel.showPanel(
+            'Convert Organization To System',
+            '/organization/convert-to-system-form/format/html/id/' + sysId,
+            populateForm,
+            'convertToSystemPanel',
+            panelConfig
+        );
     },
+
     
     /**
      * Creates and HTML input form which asks for the requiered information needed to 
