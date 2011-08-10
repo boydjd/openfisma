@@ -35,6 +35,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override to provide a better singular name
+     * 
+     * @return string
      */
     public function getSingularModelName()
     {
@@ -43,6 +45,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
    
     /**
      * Override base class to prevent deletion of POC objects
+     *
+     * @return boolean
      */
     protected function _isDeletable()
     {

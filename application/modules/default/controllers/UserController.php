@@ -579,6 +579,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      * consistent, we have to manually update the POC index.
      * 
      * @param int $id The primary key of the User/POC object.
+     * @return void
      */
     private function _updatePocIndex($id)
     {
