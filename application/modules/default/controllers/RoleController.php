@@ -335,10 +335,10 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                     
                         // Remove this privilege for this role
                         $removeRolePrivilegeQuery = Doctrine_Query::create()
-                            ->delete('RolePrivilege rp')
+                            ->from('RolePrivilege rp')
                             ->where('rp.roleId = ' . $roleId)
                             ->andWhere('rp.privilegeId = ' . $privilegeId);
-                        $removeRolePrivilegeQuery->execute();
+                        $removeRolePrivilegeQuery->execute()->delete();
                         
                         // Add to message stack
                         $msg[] = "Removed the '" . $privilegeDescription . "' privilege from the " . $roleName . ' role.';
@@ -347,14 +347,13 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                 }
                 
                 Doctrine_Manager::connection()->commit();
-                
             } catch (Exception $e) {
                 Doctrine_Manager::connection()->rollBack();
                 $this->view->priorityMessenger('An error occurred while saving privileges', 'warning');
                 $this->_redirect('/role/view-matrix');
                 return;
             }
-            
+
             // Send priority messenger if there are messeges to send
             if (!empty($msg)) {
                 $msg = implode("<br/>", $msg);
