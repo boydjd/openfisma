@@ -95,6 +95,7 @@
             // DataSource instance
             var dataSource = new YAHOO.util.XHRDataSource('<?php echo $this->escape($this->dataUrl); ?>');
             dataSource.connMethodPost = false;
+            dataSource.maxCacheEntries = 5;
             dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
             dataSource.responseSchema = {
                 resultsList : "<?php echo $this->escape($this->resultVariable, 'javascript'); ?>",
