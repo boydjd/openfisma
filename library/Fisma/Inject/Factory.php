@@ -95,6 +95,8 @@ class Fisma_Inject_Factory
             return 'AppDetective';
         } elseif (stristr($contents, 'QualysGuard')) {
             return 'QualysGuard';
+        } elseif (preg_match('/^<scanJob>/', $contents)) {
+            return 'Retina';
         } else {
             return FALSE;
         }
