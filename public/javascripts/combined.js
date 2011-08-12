@@ -1354,7 +1354,8 @@ function setupEditFields() {
     var editable = YAHOO.util.Selector.query('.editable');
     YAHOO.util.Event.on(editable, 'click', function (o){
         var t_name = this.getAttribute('target');
-        this.parentNode.removeChild(this);
+        YAHOO.util.Dom.removeClass(this, 'editable'); 
+        this.removeAttribute('target');
         if(t_name) {
              var target = document.getElementById(t_name);
              var name = target.getAttribute('name');
@@ -1388,6 +1389,7 @@ function setupEditFields() {
                  textareaEl.style.height = oldHeight + "px";
                  tinyMCE.execCommand("mceAddControl", true, name);
              } else if (type == 'autocomplete') {
+                 this.parentNode.removeChild(this);
                  Fisma.Editable.makeAutocomplete(target);
              } else {
                  if (val = target.getAttribute('value')) {
