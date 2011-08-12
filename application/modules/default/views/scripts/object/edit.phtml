@@ -27,8 +27,11 @@ if (!empty($deleteUrl)):
 <script type="text/javascript">
     YAHOO.util.Event.onDOMReady(function () {
 
-        var url = {url : '<?php echo $this->escape($deleteUrl) ?>' };
-        YAHOO.util.Event.addListener("DeleteLink", "click", Fisma.Util.showDeleteWarning, url);
+        var config = {url : '<?php echo $this->escape($deleteUrl) ?>',
+                      isLink : true,
+                      text : 'WARNING: You are about to delete the record. This action cannot be undone. '
+                            + 'Do you want to continue?'};
+        YAHOO.util.Event.addListener("DeleteLink", "click", Fisma.Util.showConfirmDialog, config);
     });
 </script>
 <?php

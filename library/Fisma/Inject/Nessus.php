@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Inject
- * @version    $Id$
  */
 class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
 {
@@ -84,17 +83,24 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                     $parsedData[$hostCounter]['startTime'] = $oXml->readString();
                 } elseif ($oXml->name == 'ReportItem') {
                     $parsedData[$hostCounter]['findings'][$itemCounter] = array();
-                    $severity = $oXml->getAttribute('severity');
                     $parsedData[$hostCounter]['findings'][$itemCounter]['port'] = $oXml->getAttribute('port');
+                } elseif ($oXml->name == 'risk_factor') {
+                    $riskFactor = $oXml->readString();
 
-                    switch($severity) {
-                        case "1": 
+                    switch($riskFactor) {
+                        case "None":
+                            $severity = 'NONE';
+                            break;
+                        case "Low":
                             $severity = 'LOW';
                             break;
-                        case "2":
+                        case "Medium":
                             $severity = 'MODERATE';
                             break;
-                        case "3":
+                        case "High":
+                            $severity = 'HIGH';
+                            break;
+                        case "Critical":
                             $severity = 'HIGH';
                             break;
                         default:
@@ -140,7 +146,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
             foreach ($host as $findings) {
                 if (is_array($findings)) {
                     foreach ($findings as $finding) {
-                        if (($finding['severity'] != 'NONE') && ($finding['severity'] != 'LOW')) {
+                        if (!empty($finding['severity']) && $finding['severity'] != 'NONE') {
                                                        
                             if (!isset($host['ip'])) {
                                 $host['ip']  = $host['name'];
@@ -210,7 +216,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                                 $findingInstance['recommendation'] = $findingInstance['recommendation'] . "<ul>" 
                                     . $seeAlsoList . "</ul>"; 
                             }
-    
+
                             // Save finding and asset
                             $this->_save($findingInstance, $asset);
                         }

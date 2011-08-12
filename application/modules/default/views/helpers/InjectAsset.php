@@ -20,7 +20,6 @@
  * @author    Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
  * @license   http://openfisma.org/content/license
- * @version   $Id$
  * @package   View_Helper
  */
 
@@ -157,8 +156,9 @@ class View_Helper_InjectAsset
          * If we're not in debug mode, then insert the application version and -min into
          * the path.
          */
+        $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
         if (!Fisma::debug()) {
-            $appVersion = Fisma::configuration()->getConfig('app_version');
+            $appVersion = $versions['application'];
 
             foreach ($assets as &$asset) {
                 $asset = str_replace(

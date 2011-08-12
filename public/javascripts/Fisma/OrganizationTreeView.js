@@ -236,15 +236,16 @@
                         );
 
                         // Expand the first two levels of the tree by default
-                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
-                        $.each(defaultExpandNodes, function (key, node) {node.expand()});
+                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand();});
 
                         this._treeView.draw();
                         this._buildContextMenu();
                         this._hideLoadingImage();
                     },
                     failure: function (response) {
-                        alert('Unable to load the organization tree: ' + response.statusText);
+                        var alertMessage = 'Unable to load the organization tree: ' + response.statusText;
+                        Fisma.Util.showAlertDialog(alertMessage);
                     },
                     scope: this
                 }, 
@@ -353,7 +354,7 @@
                 this._savePanel.render(document.body);
             }
 
-            this._savePanel.setBody('<img src="/images/loading_bar.gif">')
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">');
             this._savePanel.show();
     
             YAHOO.util.Connect.asyncRequest(
@@ -403,11 +404,13 @@
             p1.appendChild(document.createTextNode(message));
 
             var p2 = document.createElement("p");
+
+            var that = this;
             var button = new YAHOO.widget.Button({
                 label: "OK",
                 container: p2,
                 onclick: {
-                    fn: function () {this._savePanel.hide();}
+                    fn: function () {that._savePanel.hide();}
                 }
             });
             
@@ -453,9 +456,9 @@
             var type = targetNode.data.type;
 
             if (type == 'agency' || type == 'bureau' || type == 'organization') {
-                var url = '/organization/view/id/' + targetNode.data.organizationId;
+                url = '/organization/view/id/' + targetNode.data.organizationId;
             } else {
-                var url = '/system/view/id/' + targetNode.data.systemId;                
+                url = '/system/view/id/' + targetNode.data.systemId;                
             }
 
             window.location = url;

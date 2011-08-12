@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class AuthController extends Zend_Controller_Action
 {
@@ -137,7 +136,7 @@ class AuthController extends Zend_Controller_Action
             }            
 
             // Check whether the user's password is about to expire (for database authentication only)
-            if ('database' == Fisma::configuration()->getConfig('auth_type')) {
+            if ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username) {
 
                 // Check if the user's mustResetPassword flag is set 
                 if ($user->mustResetPassword) {

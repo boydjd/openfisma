@@ -111,8 +111,8 @@
             
             // Reject clicks for deleted records
             if (rowData.getData('deleted_at')) {
-                alert('This record cannot be viewed because it was deleted.');
-                
+                var message = 'This record cannot be viewed because it was deleted.';
+                Fisma.Util.showAlertDialog(message);
                 return;
             }
             

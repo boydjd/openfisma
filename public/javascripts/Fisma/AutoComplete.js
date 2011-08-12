@@ -25,7 +25,6 @@
  * @requires  YAHOO.widget.AutoComplete
  * @requires  YAHOO.widget.DS_XHR
  * @requires  Fisma
- * @version   $Id$
  */
 
 Fisma.AutoComplete = function() {

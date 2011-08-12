@@ -19,7 +19,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.User = {
@@ -204,7 +203,8 @@ Fisma.User = {
                 failure : function (o) {
                     spinner.hide();
 
-                    alert('Failed to generate password: ' + o.statusText);
+                    var alertMessage = 'Failed to generate password: ' + o.statusText;
+                    Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
             null);
@@ -278,7 +278,8 @@ Fisma.User = {
                 failure : function(o) {
                     spinner.hide();
 
-                    alert('Failed to check account password: ' + o.statusText);
+                    var alertMessage = {text : 'Failed to check account password: ' + o.statusText};
+                    Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
             null);
@@ -302,8 +303,8 @@ Fisma.User = {
         var content = document.createElement('div');
 
         var messageContainer = document.createElement('span');
-        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking"
-                                                   + " this user's account.");
+        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking" +
+                                                     " this user's account.");
         messageContainer.appendChild(warningMessage);
         content.appendChild(messageContainer);
 

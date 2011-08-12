@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Yui
- * @version    $Id$
  */
 class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
 {

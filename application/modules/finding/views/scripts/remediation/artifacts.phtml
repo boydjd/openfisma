@@ -35,9 +35,19 @@ else:
     endforeach;
 endif;
 
-$uploadEvidenceButton = new Fisma_Yui_Form_Button('uploadEvidenceButton',
-                                            array('label' => 'Upload Evidence', 
-                                                  'onClickFunction' => 'Fisma.Remediation.upload_evidence'));
+$message = "WARNING: You are about to upload evidence. This action cannot be undone."
+           . ' Please click "Yes" to confirm your action or click "No" to stop.';
+$uploadEvidenceButton = new Fisma_Yui_Form_Button(
+    'uploadEvidenceButton',
+    array(
+          'label' => 'Upload Evidence', 
+          'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+          'onClickArgument' => array(
+                  'text' => $message, 
+                  'func' => 'Fisma.Remediation.upload_evidence'
+              )
+        )
+    );
 
 if (
     $this->finding->isDeleted() || 

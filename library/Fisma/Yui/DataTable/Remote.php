@@ -30,7 +30,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Yui
- * @version    $Id$
  */
 class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
 {

@@ -54,9 +54,43 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
                 <b><?php echo $this->escape($activeEvaluation->name)?></b>
                 <input type="hidden" name="comment" value="" />
                 <input type="hidden" name="decision" value="APPROVED" />
-                <input name="submit_ea" type="button" value="APPROVED"
-                    onclick="Fisma.Remediation.ev_approve(document.finding_detail);"/>&nbsp;
-                <input type="button" value="DENIED" onclick="Fisma.Remediation.ev_deny(document.finding_detail);" />
+<?php
+        $message = 'WARNING: You are about to approve the evidence package. This action cannot be undone.'
+                 . ' Are you sure that you want to continue?';
+    
+        $approveButton = new Fisma_Yui_Form_Button(
+            'approveButton',
+             array(
+                  'label' => 'APPROVED', 
+                  'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                  'onClickArgument' => array(
+                      'text' => $message, 
+                      'func' => 'Fisma.Remediation.remediationAction',
+                      'args' => array("APPROVED", "finding_detail", "Evidence Approval")
+                 )
+            )    
+        );
+        echo $this->escape($approveButton, 'none');
+    
+        $message = 'WARNING: You are about to deny the evidence package. This action cannot be undone.'
+                 . ' Are you sure that you want to continue?';
+    
+        $denyButton = new Fisma_Yui_Form_Button(
+            'denyButton',
+            array(
+                  'label' => 'DENIED', 
+                  'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                  'onClickArgument' => array(
+                      'text' => $message, 
+                      'func' => 'Fisma.Remediation.remediationAction',
+                      'args' => array("DENIED", "finding_detail", "Evidence Denial")
+                  )
+            )
+        );
+
+        echo $this->escape($denyButton, 'none');
+?>
+
             </p>
         </div>
     <?php
