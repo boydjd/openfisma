@@ -2,6 +2,10 @@
 <project name="OpenFISMA" default="init" basedir=".">
     <description>OpenFISMA is an open, customizable application sponsored by Endeavor Systems, Inc. that greatly reduces the cost and complexity associated with FISMA compliance and risk management for U.S. Federal agencies.</description>
 
+    <taskdef name="jslint"
+        classname="com.googlecode.jslint4java.ant.JSLintTask"
+        classpath="bin/jslint4java-2.0.0.jar" />
+
     <target name="-load.properties">
         <property file="config.properties"/>
     </target>
@@ -86,6 +90,30 @@
         <antcall target="-js.clean"/>
     </target>
 
+    <target name="jslint" depends="jslint-single, jslint-default"/>
+
+    <target name="check-jslint-cond">
+        <condition property="cond-is-true">
+            <isset property="filename"/>
+        </condition>
+    </target>
+
+    <target name="jslint-default" depends="check-jslint-cond" unless="cond-is-true">
+        <jslint options="browser,sloppy,white,vars,plusplus,nomen" haltOnFailure="false">
+            <predef>jQuery,$$,Fisma,YAHOO,document,PHP_JS,$$P</predef>
+            <formatter type="plain" />
+            <fileset dir="../../public/javascripts/Fisma" includes="**/*.js" excludes="**/*-min.js" />
+        </jslint>
+    </target>
+
+    <target name="jslint-single" depends="check-jslint-cond" if="cond-is-true">
+        <jslint options="browser,sloppy,white,vars,plusplus,nomen" haltOnFailure="false">
+            <predef>jQuery,$$,Fisma,YAHOO,document,PHP_JS,$$P</predef>
+            <formatter type="plain" />
+            <fileset file="${filename}"/>
+        </jslint>
+    </target>
+
     <target name="init">
         <echo message="Usage:"/>
         <echo message="===================="/>
@@ -93,5 +121,8 @@
         <echo message=" -- Minifies and combines JS/CSS"/>
         <echo message="ant clean"/>
         <echo message=" -- Removes all files created by the minify task"/>
+        <echo message="ant jslint"/>
+        <echo message=" -- Runs jslint"/>
+        <echo message="      To run on a specific file, execute with -Dfilename=/path/to/file.js"/>
     </target>
 </project>
