@@ -57,6 +57,11 @@
 
                 newTab.subscribe("dataLoadedChange", prepareTab);
                 tabView.addTab(newTab);
+                YAHOO.lang.later(0, newTab, function() {
+                    if (!this.get('dataLoaded')) {
+                        this._dataConnect();
+                    }
+                });
             <?php
             endforeach;
             ?>
