@@ -180,12 +180,8 @@ table.jqplot-cursor-tooltip {
     padding: 1px;
     opacity: 0.8;
     filter: alpha(opacity = 80);
-<<<<<<< HEAD
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
     color: #000000;
-=======
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
->>>>>>> master
 }
 
 .jqplot-point-label {
@@ -203,10 +199,6 @@ td.jqplot-cursor-legend-swatch {
 div.jqplot-cursor-legend-swatch {
     width:1.2em;
     height:0.7em;
-}
-
-.jqplot-data-label {
-    color: #000000;
 }
 
 .jqplot-data-label {

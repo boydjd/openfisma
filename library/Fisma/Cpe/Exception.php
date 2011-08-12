@@ -24,6 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Cpe
+ * @version    $Id$
  */
 class Fisma_Cpe_Exception extends Fisma_Zend_Exception
 {

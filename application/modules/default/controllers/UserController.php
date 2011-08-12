@@ -23,6 +23,7 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
+ * @version    $Id$
  */
 class UserController extends Fisma_Zend_Controller_Action_Object
 {
@@ -100,10 +101,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             // If any roles were added to the user without any organizations, make sure they're added
             // to the appropriate array for saving the User Roles.
-            if (Inspekt::isArrayOrArrayObject($values['role'])) {
-                foreach (array_diff_key(array_flip($values['role']), $rolesOrganizations) as $k => $v) {
-                    $rolesOrganizations[$k] = array();
-                }
+            foreach (array_diff_key(array_flip($values['role']), $rolesOrganizations) as $k => $v) {
+                $rolesOrganizations[$k] = array();
             }
 
             unset($values['role']);
@@ -161,20 +160,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 unset($userRole);
             }
             $conn->commit();
-
-            // Just send out email when create a new account or change password by admin user,
-            // and it does not sent out email when the root user changes his own password.
-            $actionName = strtolower($this->_request->getActionName());
-            if ('create' === $actionName) {
-                $mail = new Fisma_Zend_Mail();
-                $mail->sendAccountInfo($subject);
-            } else if ('edit' === $actionName
-                       && !empty($values['password'])
-                       && ('root' !== $subject->username || $this->_me->username !== 'root')) {
-                $mail = new Fisma_Zend_Mail();
-                $mail->sendPassword($subject);
-            }
-
             return $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
@@ -501,7 +486,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             foreach ($organizationTree as $organization) {
                 $organizations->addCheckbox(
                     $organization['id'], 
-                    $organization['nickname'] . ' - ' . $organization['name'], 
+                    $organization['name'], 
                     $organization['level'], 
                     $roleId
                 );

@@ -116,11 +116,10 @@ div.jqplot-table-legend-swatch{width:0;height:0;border-top-width:5px;border-bott
 .jqplot-title{top:0;left:0;padding-bottom:.5em;font-size:1.2em;}
 table.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;color:#000;}
 .jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);opacity:.8;filter:alpha(opacity = 80);padding:1px;color:#000;}
-.jqplot-highlighter-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background-color:#d0d0d0;background:rgba(208,208,208,0.8);z-index:1;padding:1px;opacity:.8;filter:alpha(opacity = 80);<<<<<<< HEAD -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";color:#000;======= -ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";>>>>>>>master;}
+.jqplot-highlighter-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background-color:#d0d0d0;background:rgba(208,208,208,0.8);z-index:1;padding:1px;opacity:.8;filter:alpha(opacity = 80);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";color:#000;}
 .jqplot-point-label{font-size:.75em;z-index:1;color:#000;}
 td.jqplot-cursor-legend-swatch{vertical-align:middle;text-align:center;color:#000;}
 div.jqplot-cursor-legend-swatch{width:1.2em;height:.7em;}
-.jqplot-data-label{color:#000;}
 .jqplot-data-label{color:#000;}
 .jqplot-error{text-align:center;}
 .jqplot-error-message{position:relative;top:46%;display:inline-block;}

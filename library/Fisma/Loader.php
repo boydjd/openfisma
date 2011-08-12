@@ -20,6 +20,7 @@
  * @author    Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
  * @license   http://openfisma.org/content/license 
+ * @version   $Id$
  * @package   Fisma_Loader
  */
 
@@ -50,9 +51,8 @@ class Fisma_Loader
      */
     public function __construct($config = NULL)
     {
-        $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
-        $this->_appVersion = $versions['application'];
-        $this->_yuiVersion = $versions['yui'];
+        $this->_appVersion = Fisma::configuration()->getConfig('app_version');
+        $this->_yuiVersion = Fisma::configuration()->getConfig('yui_version');
         $this->_debug = Fisma::debug();
 
         /**

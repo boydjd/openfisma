@@ -8,6 +8,7 @@
  * @package    ##PACKAGE##
  * @subpackage ##SUBPACKAGE##
  * @author     ##NAME## <##EMAIL##>
+ * @version    SVN: $Id$
  */
 class IrSubCategory extends BaseIrSubCategory
 {

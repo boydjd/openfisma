@@ -27,6 +27,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Record
+ * @version    $Id$
  */
 class Fisma_Doctrine_Record_Listener extends Doctrine_Record_Listener
 {

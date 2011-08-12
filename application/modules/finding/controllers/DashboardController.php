@@ -23,6 +23,7 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controllers
+ * @version    $Id$
  */
 class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 {
@@ -640,15 +641,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         // Get counts in between the day ranges given
         for ($x = 0; $x < count($dayRanges) - 1; $x++) {
 
-            $toDayDiff = $dayRanges[$x];
-            $toDay = new Zend_Date();
-            $toDay->subDay($toDayDiff);
-            $toDayStr = $toDay->toString('YYY-MM-dd');
-            
-            $fromDayDiff = $dayRanges[$x+1] - 1;
+            $fromDayDiff = $dayRanges[$x];
             $fromDay = new Zend_Date();
-            $fromDay->subDay($fromDayDiff);
+            $fromDay->addDay($fromDayDiff);
             $fromDayStr = $fromDay->toString('YYY-MM-dd');
+            
+            $toDayDiff = $dayRanges[$x+1] - 1;
+            $toDay = new Zend_Date();
+            $toDay->addDay($toDayDiff);
+            $toDayStr = $toDay->toString('YYY-MM-dd');
 
             $q = Doctrine_Query::create();
             $q
@@ -686,15 +687,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 }
             }
 
-            $thisToDate = new Zend_Date();
-            $thisToDate = $thisToDate->addDay($toDayDiff)->toString('YYY-MM-dd');
             $thisFromDate = new Zend_Date();
             $thisFromDate = $thisFromDate->addDay($fromDayDiff)->toString('YYY-MM-dd');
+            $thisToDate = new Zend_Date();
+            $thisToDate = $thisToDate->addDay($toDayDiff)->toString('YYY-MM-dd');
             
             if ($x === count($dayRanges) - 2) {
                 $thisColLabel = $dayRanges[$x] . '+';
             } else {
-                $thisColLabel = $toDayDiff . '-' . $fromDayDiff;
+                $thisColLabel = $fromDayDiff . '-' . $toDayDiff;
             }
             
             // The links to associate with entire columns when this is not a stacked bar chart
@@ -713,15 +714,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 array('',
                     '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                    '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
+                    '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/HIGH',
                     '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                    '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
+                    '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/MODERATE',
                     '/finding/remediation/list?q=' . 
                     '/denormalizedStatus/textDoesNotContain/CLOSED' .
-                    '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
+                    '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate .
                     '/threatLevel/enumIs/LOW'
                 )
             );

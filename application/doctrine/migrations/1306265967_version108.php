@@ -1,5 +1,4 @@
 <?php
-// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *
@@ -19,6 +18,8 @@
 
 /**
  * Remove configuration fields for Search -- this is basically the reverse of migration 81
+ *
+ * @codingStandardsIgnoreFile
  *
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}

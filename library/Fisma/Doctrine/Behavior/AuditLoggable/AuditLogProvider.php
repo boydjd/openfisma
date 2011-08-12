@@ -24,6 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Behavior_AuditLoggable
+ * @version    $Id$
  */
 interface Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider
 {

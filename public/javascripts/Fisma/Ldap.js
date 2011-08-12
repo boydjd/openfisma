@@ -19,6 +19,7 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 Fisma.Ldap = {

@@ -1,5 +1,4 @@
 <?php
-// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -19,6 +18,8 @@
 
 /**
  * Add denormalized status column and residual risk column to finding model, rename incident category privileges
+ *
+ * @codingStandardsIgnoreFile
  *
  * @package Migration
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}

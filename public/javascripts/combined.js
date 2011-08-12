@@ -806,6 +806,7 @@ tinyMCE.init({
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  *
  * @todo      Start migrating functionality out of this file. 
  *            Eventually this file needs to be removed 
@@ -1348,6 +1349,7 @@ function updateTimeField(id) {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 function setupEditFields() {
@@ -1487,6 +1489,7 @@ if (window.HTMLElement) {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  *
  * @todo Write a safe version of this function called selectAll that takes some kind
  *       of scope as a parameter so that it can be limited.
@@ -1870,6 +1873,7 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
  
 Fisma.AttachArtifacts = {
@@ -1985,9 +1989,7 @@ Fisma.AttachArtifacts = {
         var fileUploadEl = document.getElementById('fileUpload');
 
         if ("" === fileUploadEl.value) {
-            var alertMessage = "Please select a file.";
-            var config = {zIndex : 10000};
-            Fisma.Util.showAlertDialog(alertMessage, config);
+            alert("Please select a file.");
             
             return false;
         }
@@ -2097,7 +2099,7 @@ Fisma.AttachArtifacts = {
                 },
                 
                 failure : function (o) {
-                    Fisma.Util.showAlertDialog('Document upload failed.');
+                    alert('Document upload failed.');
                 }
             }, 
             null);
@@ -2210,10 +2212,8 @@ Fisma.AttachArtifacts = {
         progressTextEl.nodeValue = 'Verifying file.';
 
         if (!responseStatus.success) {
-            var alertMessage = "Upload Failed: " + responseStatus.message;
-            var config = {zIndex : 10000};
-            Fisma.Util.showAlertDialog(alertMessage, config);
- 
+            alert("Upload Failed: " + responseStatus.message);
+            
             progressTextEl.nodeValue = 'Uploading...';
             
             document.getElementById('progressBarContainer').style.display = 'none';
@@ -2291,6 +2291,7 @@ Fisma.AttachArtifacts = {
  * @requires  YAHOO.widget.AutoComplete
  * @requires  YAHOO.widget.DS_XHR
  * @requires  Fisma
+ * @version   $Id$
  */
 
 Fisma.AutoComplete = function() {
@@ -2443,6 +2444,7 @@ Fisma.AutoComplete = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
 
 /**
@@ -2943,7 +2945,7 @@ Fisma.Chart = {
                 location: 's',
                 show: true,
                 rendererOptions: {
-                    numberRows: 2
+                    numberRows: 2 
                 }
             }
         };
@@ -3744,7 +3746,7 @@ Fisma.Chart = {
             var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
             msg += "The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
             if (theLink !== false) { msg += "The link with this element is " + theLink; }
-            Fisma.Util.showAlertDialog(msg);
+            alert(msg);
         } else {
 
             // We are not in link-debug mode, navigate if there is a link
@@ -5255,6 +5257,7 @@ Fisma.CheckboxTree = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Commentable = {
@@ -5346,7 +5349,7 @@ Fisma.Commentable = {
                  },
 
                  failure : function (o) {
-                     Fisma.Util.showAlertDialog('Document upload failed.');
+                     alert('Document upload failed.');
                  }
              }, 
              null);
@@ -5380,8 +5383,7 @@ Fisma.Commentable = {
          }
 
          if (!responseStatus.success) {
-             var alertMessage = "Error: " + responseStatus.message;
-             Fisma.Util.showAlertDialog(alertMessage);
+             alert("Error: " + responseStatus.message);
 
              return;
          }
@@ -5442,6 +5444,7 @@ Fisma.Commentable = {
  * @author    Ben Zheng <benzheng@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 Fisma.Email = function() {
@@ -5503,7 +5506,8 @@ Fisma.Email = function() {
                 'Test E-mail Configuration',
                 content.innerHTML,
                 null,
-                panelConfig);
+                panelConfig
+            );
 
             // Set onclick handler to handle dialog_recipient
             document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
@@ -5516,9 +5520,7 @@ Fisma.Email = function() {
             
             if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
-                var alertMessage = "Recipient is required.";
-                var config = {zIndex : 10000};
-                Fisma.Util.showAlertDialog(alertMessage, config);
+                alert("Recipient is required.");
                 document.getElementById('testEmailRecipient').focus();
                 return false;
             }
@@ -5542,8 +5544,8 @@ Fisma.Email = function() {
                     spinner.hide();
                 },
                 failure : function(o) {
-                    var alertMessage = 'Failed to send test mail: ' + o.statusText;
-                    Fisma.Util.showAlertDialog(alertMessage);
+                    alert('Failed to send test mail: ' + o.statusText);
+                    
                     spinner.hide();
                 }
             }, null);
@@ -5580,6 +5582,7 @@ Fisma.Email = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Finding = {
@@ -5697,12 +5700,44 @@ Fisma.Finding = {
                 },
                 
                 failure : function (connection) {
-                    Fisma.Util.showAlertDialog('Unable to load security control definition.');
+                    alert('Unable to load security control definition.');
                 }
             }
         );
-    }
+    },
 
+    /**
+     * Show the warning message before a find is deleted.
+     */
+    deleteFinding : function (event, config) {
+        var  warningDialog =  
+            new YAHOO.widget.SimpleDialog("warningDialog",  
+                { width: "300px", 
+                  fixedcenter: true, 
+                  visible: false, 
+                  draggable: false, 
+                  close: true,
+                  modal: true,
+                  text: "WARNING: You are about to delete the finding record. This action cannot be undone. "
+                        + "Do you want to continue?", 
+                  icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
+                  constraintoviewport: true, 
+                  buttons: [ { text:"Yes", handler : function () {
+                                   document.location = "/finding/remediation/delete/id/" + config.id;
+                                   this.hide(); 
+                               }
+                             }, 
+                             { text:"No",  handler : function () {
+                                   this.hide(); 
+                               }
+                             } 
+                           ] 
+                } ); 
+ 
+         warningDialog.setHeader("Are you sure?");
+         warningDialog.render(document.body);
+         warningDialog.show();
+    }
 };
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -5729,6 +5764,7 @@ Fisma.Finding = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
  
 Fisma.FindingSummary = function() {
@@ -6445,6 +6481,7 @@ Fisma.Highlighter = function() {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 Fisma.HtmlPanel = function() {
     return {
@@ -6512,6 +6549,7 @@ Fisma.HtmlPanel = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
  
 Fisma.Incident = {
@@ -6799,6 +6837,7 @@ Fisma.Incident = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 Fisma.Ldap = {
@@ -6974,6 +7013,7 @@ Fisma.Ldap = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 Fisma.Module = {
@@ -7015,8 +7055,7 @@ Fisma.Module = {
         }
         
         if (!responseStatus.success) {
-            var alertMessage = 'Error: Not able to change module status. Reason: ' + responseStatus.message;
-            Fisma.Util.showAlertDialog(alertMessage);
+            alert('Error: Not able to change module status. Reason: ' + responseStatus.message);
         }
         
         // Disable switch button spinner
@@ -7262,16 +7301,15 @@ Fisma.Module = {
                         );
 
                         // Expand the first two levels of the tree by default
-                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
-                        $.each(defaultExpandNodes, function (key, node) {node.expand();});
+                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand()});
 
                         this._treeView.draw();
                         this._buildContextMenu();
                         this._hideLoadingImage();
                     },
                     failure: function (response) {
-                        var alertMessage = 'Unable to load the organization tree: ' + response.statusText;
-                        Fisma.Util.showAlertDialog(alertMessage);
+                        alert('Unable to load the organization tree: ' + response.statusText);
                     },
                     scope: this
                 }, 
@@ -7380,7 +7418,7 @@ Fisma.Module = {
                 this._savePanel.render(document.body);
             }
 
-            this._savePanel.setBody('<img src="/images/loading_bar.gif">');
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">')
             this._savePanel.show();
     
             YAHOO.util.Connect.asyncRequest(
@@ -7430,13 +7468,11 @@ Fisma.Module = {
             p1.appendChild(document.createTextNode(message));
 
             var p2 = document.createElement("p");
-
-            var that = this;
             var button = new YAHOO.widget.Button({
                 label: "OK",
                 container: p2,
                 onclick: {
-                    fn: function () {that._savePanel.hide();}
+                    fn: function () {this._savePanel.hide();}
                 }
             });
             
@@ -7482,9 +7518,9 @@ Fisma.Module = {
             var type = targetNode.data.type;
 
             if (type == 'agency' || type == 'bureau' || type == 'organization') {
-                url = '/organization/view/id/' + targetNode.data.organizationId;
+                var url = '/organization/view/id/' + targetNode.data.organizationId;
             } else {
-                url = '/system/view/id/' + targetNode.data.systemId;                
+                var url = '/system/view/id/' + targetNode.data.systemId;                
             }
 
             window.location = url;
@@ -7642,6 +7678,7 @@ Fisma.Module = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 Fisma.Remediation = {
@@ -7651,6 +7688,9 @@ Fisma.Remediation = {
      * @return {Boolean} False to interrupt consequent operations
      */
     upload_evidence : function() {
+        if (!form_confirm(document.finding_detail, 'Upload Evidence')) {
+            return false;
+        }
 
         Fisma.UrlPanel.showPanel(
             'Upload Evidence', 
@@ -7670,23 +7710,119 @@ Fisma.Remediation = {
         document.finding_detail_upload_evidence.action = document.finding_detail.action;
     },
 
-   /**
-     * To approve or deny mitigation strategy or evidence with comment
+    /**
+     * To approve evidence with optional comment
      * 
-     * @param {String} action The action name: APPROVED or DENIED
-     * @param {String} formId 
-     * @param {String} panelTitle the text shows on the panel.
+     * @param {String} formname The main form name from page
+     * @return {Boolean} False if user gives up this operation
      */
-    remediationAction : function(action, formId, panelTitle) {
+    ev_approve : function(formname) {
+        if (!form_confirm(document.finding_detail, 'approve the evidence package')) {
+            return false;
+        }
 
         var content = document.createElement('div');
         var p = document.createElement('p');
-        var c_title;
-        if ('APPROVED' === action) {
-            c_title = document.createTextNode('Comments (OPTIONAL):');
-        } else {
-            c_title = document.createTextNode('Comments:');
+        p.appendChild(document.createTextNode('Comments (OPTIONAL):'));
+        content.appendChild(p);
+        var dt = document.createElement('textarea');
+        dt.rows = 5;
+        dt.cols = 60;
+        dt.id = 'dialog_comment';
+        dt.name = 'comment';
+        content.appendChild(dt);
+        var div = document.createElement('div');
+        div.style.height = '20px';
+        content.appendChild(div);
+        var button = document.createElement('input');
+        button.type = 'button';
+        button.id = 'dialog_continue';
+        button.value = 'Continue';
+        content.appendChild(button);
+
+        Fisma.HtmlPanel.showPanel('Evidence Approval', content.innerHTML);
+        document.getElementById('dialog_continue').onclick = function (){
+            var form2 = formname;
+            var comment = document.getElementById('dialog_comment').value;
+            form2.elements['comment'].value = comment;
+            form2.elements['decision'].value = 'APPROVED';
+            var submitMsa = document.createElement('input');
+            submitMsa.type = 'hidden';
+            submitMsa.name = 'submit_ea';
+            submitMsa.value = 'APPROVED';
+            form2.appendChild(submitMsa);
+            form2.submit();
+        };
+        
+        return true;
+    },
+
+    /**
+     * To deny evidence with comment
+     * 
+     * @param {String} formname The main form name from page
+     * @return {Boolean} False if user gives up this operation
+     */
+    ev_deny : function(formname) {
+        if (!form_confirm(document.finding_detail, 'deny the evidence package')) {
+            return false;
         }
+
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        p.appendChild(document.createTextNode('Comments:'));
+        content.appendChild(p);
+        var dt = document.createElement('textarea');
+        dt.rows = 5;
+        dt.cols = 60;
+        dt.id = 'dialog_comment';
+        dt.name = 'comment';
+        content.appendChild(dt);
+        var div = document.createElement('div');
+        div.style.height = '20px';
+        content.appendChild(div);
+        var button = document.createElement('input');
+        button.type = 'button';
+        button.id = 'dialog_continue';
+        button.value = 'Continue';
+        content.appendChild(button);
+
+        Fisma.HtmlPanel.showPanel('Evidence Denial', content.innerHTML);
+        document.getElementById('dialog_continue').onclick = function (){
+            var form2 = formname;
+            var comment = document.getElementById('dialog_comment').value;
+            if (comment.match(/^\s*$/)) {
+                alert('Comments are required in order to deny.');
+                return;
+            }
+            form2.elements['comment'].value = comment;
+            form2.elements['decision'].value = 'DENIED';
+            var submitMsa = document.createElement('input');
+            submitMsa.type = 'hidden';
+            submitMsa.name = 'submit_ea';
+            submitMsa.value = 'DENIED';
+            form2.appendChild(submitMsa);
+            form2.submit();
+            return;
+        };
+        
+        return true;
+    },
+
+    /**
+     * To approve mitigation strategy with optional comment
+     * 
+     * @param {String} formname The main form name from page
+     * @return {Boolean} False if user gives up this operation
+     */
+    ms_approve : function(formname) {
+        if (!form_confirm(document.finding_detail, 'approve the mitigation strategy')) {
+            return false;
+        }
+
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        var c_title = document.createTextNode('Comments (OPTIONAL):');
         p.appendChild(c_title);
         content.appendChild(p);
         var textarea = document.createElement('textarea');
@@ -7703,37 +7839,76 @@ Fisma.Remediation = {
         button.id = 'dialog_continue';
         button.value = 'Continue';
         content.appendChild(button);
-       
-        Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
-
+        
+        Fisma.HtmlPanel.showPanel('Mitigation Strategy Approval', content.innerHTML);
         document.getElementById('dialog_continue').onclick = function (){
-            var form2 = document.getElementById(formId);
+            var form2 = formname;
             var comment = document.getElementById('dialog_comment').value;
-
-            if ('DENIED' === action) { 
-                if (comment.match(/^\s*$/)) {
-                    var alertMessage = 'Comments are required in order to submit.';
-                    var config = {zIndex : 10000};
-                    Fisma.Util.showAlertDialog(alertMessage, config);
-                    return;
-                }
-            }
-
             form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = action;
+            form2.elements['decision'].value = 'APPROVED';
+            var submitMsa = document.createElement('input');
+            submitMsa.type = 'hidden';
+            submitMsa.name = 'submit_msa';
+            submitMsa.value = 'APPROVED';
+            form2.appendChild(submitMsa);
+            form2.submit();
+        };
+        
+        return true;
+    },
 
-            var sub = document.createElement('input');
-            sub.type = 'hidden';
-            sub.name = 'submit_msa';
-            sub.value = action;
-            form2.appendChild(sub);
+    /**
+     * To deny mitigation strategy with comment
+     * 
+     * @param {String} formname The main form name from page
+     * @return {Boolean} False if user gives up this operation
+     */
+    ms_deny : function(formname) {
+        if (!form_confirm(document.finding_detail, 'deny the mitigation strategy')) {
+            return false;
+        }
+
+        var content = document.createElement('div');
+        var p = document.createElement('p');
+        var c_title = document.createTextNode('Comments:');
+        p.appendChild(c_title);
+        content.appendChild(p);
+        var textarea = document.createElement('textarea');
+        textarea.id = 'dialog_comment';
+        textarea.name = 'comment';
+        textarea.rows = 5;
+        textarea.cols = 60;
+        content.appendChild(textarea);
+        var div = document.createElement('div');
+        div.style.height = '20px';
+        content.appendChild(div);
+        var button = document.createElement('input');
+        button.type = 'button';
+        button.id = 'dialog_continue';
+        button.value = 'Continue';
+        content.appendChild(button);
+        
+        Fisma.HtmlPanel.showPanel('Mitigation Strategy Denial', content.innerHTML);
+        document.getElementById('dialog_continue').onclick = function (){
+            var form2 = formname;
+            var comment = document.getElementById('dialog_comment').value;
+            if (comment.match(/^\s*$/)) {
+                alert('Comments are required in order to submit.');
+                return;
+            }
+            form2.elements['comment'].value = comment;
+            form2.elements['decision'].value = 'DENIED';
+            var submitMsa = document.createElement('input');
+            submitMsa.type = 'hidden';
+            submitMsa.name = 'submit_msa';
+            submitMsa.value = 'DENIED';
+            form2.appendChild(submitMsa);
             form2.submit();
             return;
         };
         
         return true;
     }
-
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -7844,7 +8019,8 @@ Fisma.Search = function() {
                         spinner.hide();
                     }
                 },
-                postData );
+                postData
+            );
         },
 
         /**
@@ -7854,18 +8030,12 @@ Fisma.Search = function() {
          * two to use while handling this event.
          *
          * @param form Reference to the search form
-         * @param fromSearchForm {Boolean} indicate whether a search action comes from search form submission 
          */
-        executeSearch: function (form, fromSearchForm) {
+        executeSearch: function (form) {
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
                 success : function (request, response, payload) {
- 
-                    // It sets start to 0 when fromSearchForm is true, so does payload.pagination.recordOffset
-                    if (fromSearchForm) {
-                        payload.pagination.recordOffset = 0;
-                    }
                     dataTable.onDataReturnReplaceRows(request, response, payload);
 
                     // Update YUI's visual state to show sort on first data column
@@ -7877,11 +8047,6 @@ Fisma.Search = function() {
                         
                         sortColumnIndex++;
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
-
-                    // Reset the page to 1 if search form is submitted 
-                    if (!YAHOO.lang.isUndefined(form.search)  && 'Search' === form.search.value) {
-                        dataTable.get('paginator').setPage(1);
-                    }
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -7890,7 +8055,7 @@ Fisma.Search = function() {
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
-                var postData = this.buildPostRequest(dataTable.getState(), fromSearchForm);
+                var postData = this.buildPostRequest(dataTable.getState());
 
                 dataTable.showTableMessage("Loading...");
 
@@ -7900,7 +8065,7 @@ Fisma.Search = function() {
             } catch (error) {
                 // If a string is thrown, then display that string to the user
                 if ('string' == typeof error) {
-                    Fisma.Util.showAlertDialog(error);
+                    alert(error);
                 }
             }
         },
@@ -7928,9 +8093,7 @@ Fisma.Search = function() {
             } catch (e) {
                 message(e);
             } finally {
-
-                // Set the fromSearchForm to true when a search comes from search form submission
-                Fisma.Search.executeSearch(form, true);
+                Fisma.Search.executeSearch(form);
             }
         },
 
@@ -8067,15 +8230,14 @@ Fisma.Search = function() {
          * Method to generate the post data for the current query and table state
          *
          * @param tableState From YUI
-         * @param fromSearchForm {Boolean} set start to 0 if it is true
          * @return {String} Post data representation of the current query
          */
-        buildPostRequest: function (tableState, fromSearchForm) {
+        buildPostRequest: function (tableState) {
             var searchType = document.getElementById('searchType').value;
             var postData = {
                 sort: tableState.sortedBy.key,
                 dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
-                start: (fromSearchForm ? 0 : tableState.pagination.recordOffset),
+                start: tableState.pagination.recordOffset,
                 count: tableState.pagination.rowsPerPage,
                 csrf: document.getElementById('searchForm').csrf.value,
                 showDeleted: Fisma.Search.showDeletedRecords,
@@ -8303,26 +8465,12 @@ Fisma.Search = function() {
                 
                 return;
             }
-            var deleteRecords = [];
-            deleteRecords.push(YAHOO.lang.JSON.stringify(checkedRecords));          
-
-            var warningMessage = '';  
-            if (1 === checkedRecords.length) {
-                warningMessage = 'Delete 1 record?';
-            } else {
-                warningMessage = "Delete " + checkedRecords.length + " records?";
+            
+            if (!confirm("Delete " + checkedRecords.length + " records?")) {
+                return;
             }
-            var config = {text : warningMessage, 
-                          func : 'Fisma.Search.doDelete', 
-                          args : deleteRecords  };
-            var e = null;
-            Fisma.Util.showConfirmDialog(e, config);
-           
-          },
 
-         doDelete : function (checkedRecords) {
             // Derive the URL for the multi-delete action
-            var dataTable = Fisma.Search.yuiDataTable;
             var searchUrl = Fisma.Search.yuiDataTable.getDataSource().liveData;
             var urlPieces = searchUrl.split('/');
             
@@ -8345,7 +8493,7 @@ Fisma.Search = function() {
                     } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
 
                     dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
-                    dataTable.get('paginator').setPage(1);
+                    dataTable.get('paginator').setPage(1, true);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -8356,7 +8504,7 @@ Fisma.Search = function() {
             var postString = "csrf=";
             postString += document.getElementById('searchForm').csrf.value;
             postString += "&records=";
-            postString += checkedRecords;
+            postString += YAHOO.lang.JSON.stringify(checkedRecords);
             
             // Submit request to delete records        
             YAHOO.util.Connect.asyncRequest(
@@ -8413,24 +8561,7 @@ Fisma.Search = function() {
                 // if already set, go ahead and run the callback
                 this.onSetTableCallback();
             }
-        },
-
-        /**
-         * Key press listener
-         * 
-         * @param element The element to which the key event sould be attached
-         */
-        onKeyPress : function (element) {
-            var searchForm = YAHOO.util.Dom.get('searchForm');
-            var keyHandle = new YAHOO.util.KeyListener(
-                                    element,
-                                    // Just listen to 'Return' and 'Enter' key
-                                    {keys : YAHOO.util.KeyListener.KEY.ENTER},
-                                    function () {
-                                        Fisma.Search.handleSearchEvent(searchForm);
-                                    });
-            keyHandle.enable();
-         }
+        }
     };
 }();
 /**
@@ -8545,6 +8676,11 @@ Fisma.Search.Criteria.prototype = {
         
         this.container = document.createElement('div');
         
+        this.containerForm = document.createElement('form');
+        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(YAHOO.util.Dom.get('searchForm'));";
+        this.containerForm.enctype = "application/x-www-form-urlencoded";
+        this.containerForm.method = "post";
+        
         this.container.className = "searchCriteria";
 
         // IE7 will display floated elements on the next line, not the current line, unless those floated elements
@@ -8552,23 +8688,31 @@ Fisma.Search.Criteria.prototype = {
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
-        this.container.appendChild(this.buttonsContainer);
+        this.containerForm.appendChild(this.buttonsContainer);
 
         this.queryFieldContainer = document.createElement('span');
         this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.container.appendChild(this.queryFieldContainer);
+        this.containerForm.appendChild(this.queryFieldContainer);
 
         this.queryTypeContainer = document.createElement('span');
         this.renderQueryType(this.queryTypeContainer, operator);
-        this.container.appendChild(this.queryTypeContainer);
+        this.containerForm.appendChild(this.queryTypeContainer);
 
         this.queryInputContainer = document.createElement('span');
         this.renderQueryInput(this.queryInputContainer, operands);
-        this.container.appendChild(this.queryInputContainer);
+        this.containerForm.appendChild(this.queryInputContainer);
 
         var clearDiv = document.createElement('div');
         clearDiv.className = "clear";
-        this.container.appendChild(clearDiv);
+        this.containerForm.appendChild(clearDiv);
+
+        var searchTypeField = document.createElement('input');
+        searchTypeField.type = 'hidden';
+        searchTypeField.name = 'searchType';
+        searchTypeField.value = 'advanced';
+        this.containerForm.appendChild(searchTypeField);
+
+        this.container.appendChild(this.containerForm);
 
         return this.container;
     },
@@ -9061,7 +9205,6 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.className = "date";
             container.appendChild(lowEnd);
             Fisma.Calendar.addCalendarPopupToTextField(lowEnd);
-            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -9076,7 +9219,6 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.className = "date";
             container.appendChild(highEnd);
             Fisma.Calendar.addCalendarPopupToTextField(highEnd);
-            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -9095,7 +9237,6 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "float";
             container.appendChild(lowEnd);
-            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -9109,7 +9250,6 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "float";
             container.appendChild(highEnd);
-            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -9128,7 +9268,6 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "integer";
             container.appendChild(lowEnd);
-            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -9142,7 +9281,6 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "integer";
             container.appendChild(highEnd);
-            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -9178,7 +9316,6 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
-            Fisma.Search.onKeyPress(textEl);
 
             Fisma.Calendar.addCalendarPopupToTextField(textEl);
         },
@@ -9200,7 +9337,6 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
-            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -9220,7 +9356,6 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
-            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -9239,7 +9374,6 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
-            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -9398,10 +9532,9 @@ Fisma.Search.Panel.prototype = {
         var Lang = YAHOO.lang;
         var QueryState = Fisma.Search.QueryState;
         var queryState = new QueryState(Dom.get("modelName").value);
-        var i, advancedCriterion, initialCriteria;
 
         if (this.showAll) {
-            initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
             this.criteria.push(initialCriteria);
             this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
         } else if (this.defaultQueryTokens) {
@@ -9447,8 +9580,8 @@ Fisma.Search.Panel.prototype = {
         } else if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
             var advancedQuery = queryState.getAdvancedQuery();
 
-            for (i in advancedQuery) {
-                advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+            for (var i in advancedQuery) {
+                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
                 this.criteria.push(advancedCriterion);
                 this.container.appendChild(
                     advancedCriterion.render(
@@ -9460,8 +9593,8 @@ Fisma.Search.Panel.prototype = {
             Fisma.Search.toggleAdvancedSearchPanel();
         } else if (Fisma.Search.searchPreferences.type === 'advanced') {
             var fields = Fisma.Search.searchPreferences.fields;
-            for (i in fields) {
-                advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
+            for (var i in fields) {
+                var advancedCriterion = new Fisma.Search.Criteria(this, this.searchableFields);
                 this.criteria.push(advancedCriterion);
                 this.container.appendChild(
                     advancedCriterion.render(i, fields[i]));
@@ -9470,7 +9603,7 @@ Fisma.Search.Panel.prototype = {
             Fisma.Search.toggleAdvancedSearchPanel();
         } else {
             // If not default query is specified, then just show 1 default criterion
-            initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
+            var initialCriteria = new Fisma.Search.Criteria(this, this.searchableFields);
             this.criteria.push(initialCriteria);
 
             // Update DOM
@@ -10210,6 +10343,7 @@ Fisma.Search.Panel.prototype = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 /**
@@ -10264,6 +10398,7 @@ Fisma.Spinner.prototype.hide = function () {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 /**
@@ -10460,6 +10595,7 @@ Fisma.SwitchButton.prototype = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.System = {
@@ -10587,6 +10723,7 @@ Fisma.System = {
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license http://www.openfisma.org/content/license
+ * @version $Id$
  */
 
 Fisma.TabView = {};
@@ -10611,6 +10748,7 @@ Fisma.TabView = {};
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license http://www.openfisma.org/content/license
+ * @version $Id$
  */
 
 Fisma.TabView.Roles = function() {
@@ -10683,6 +10821,7 @@ Fisma.TabView.Roles = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id: Incident.js 3288 2010-04-29 23:36:21Z mhaase $
  */
 
 Fisma.TableFormat = {
@@ -11271,9 +11410,6 @@ Fisma.TableFormat = {
                 case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.BELOW:
                     srcNode.insertAfter(destNode);
                     break;
-                default:
-                    throw "Invalid drag location parameter";
-                    break;
             }
 
             this._treeView.getRoot().refresh();
@@ -11373,6 +11509,7 @@ Fisma.TableFormat = {
  * @author    Jackson Yang <yangjianshan@users.sourceforge.net>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id$
  */
 
 Fisma.UrlPanel = function() {
@@ -11425,7 +11562,7 @@ Fisma.UrlPanel = function() {
                     },
                     failure : function(o) {
                         /** @todo english */
-                        Fisma.Util.showAlertDialog('Failed to load the specific panel.');
+                        alert('Failed to load the specified panel.');
                     },
                     argument : panel
                 }, null);
@@ -11456,6 +11593,7 @@ Fisma.UrlPanel = function() {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.User = {
@@ -11640,8 +11778,7 @@ Fisma.User = {
                 failure : function (o) {
                     spinner.hide();
 
-                    var alertMessage = 'Failed to generate password: ' + o.statusText;
-                    Fisma.Util.showAlertDialog(alertMessage);
+                    alert('Failed to generate password: ' + o.statusText);
                 }
             },
             null);
@@ -11715,8 +11852,7 @@ Fisma.User = {
                 failure : function(o) {
                     spinner.hide();
 
-                    var alertMessage = {text : 'Failed to check account password: ' + o.statusText};
-                    Fisma.Util.showAlertDialog(alertMessage);
+                    alert('Failed to check account password: ' + o.statusText);
                 }
             },
             null);
@@ -11740,8 +11876,8 @@ Fisma.User = {
         var content = document.createElement('div');
 
         var messageContainer = document.createElement('span');
-        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking" +
-                                                     " this user's account.");
+        var warningMessage = document.createTextNode("Please add a comment explaining why you are locking"
+                                                   + " this user's account.");
         messageContainer.appendChild(warningMessage);
         content.appendChild(messageContainer);
 
@@ -11808,6 +11944,7 @@ Fisma.User = {
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
+ * @version   $Id: AttachArtifacts.js 3188 2010-04-08 19:35:38Z mhaase $
  */
  
 Fisma.Util = {
@@ -11906,106 +12043,38 @@ Fisma.Util = {
     },
 
     /**
-     * Show confirm window with warning message. config object can have width, text, isLink, url and func
-     * 
-     * If there is a config.url string, clicking "Yes" button will navigate there. If there is a config.func, 
-     * that function will be called, and the parameters passed to that function must be in an /array/ in config.args.
-     * If the event comes from a link, set config.isLink to true so that it won't be directed to the link before 
-     * "YES" button is clicked.
-     *
-     * @param event
-     * @param config 
+     * Show a warning message before a record is deleted.
      */
-    showConfirmDialog : function (event, config) {
-        var confirmDialog = Fisma.Util.getDialog();
- 
-        var buttons = [ { text:"Yes", handler : function () {
-                            if (config.url) {
-                                document.location = config.url;
-                             }else if(config.func) {
-                                 var funcObj = Fisma.Util.getObjectFromName(config.func);
-                                 if (YAHOO.lang.isFunction(funcObj)) {
-                                     if (config.args) {
-                                         funcObj.apply(this, config.args);
-                                     } else {
-                                         funcObj.call();
-                                     }
-                                 }
-                             }
-                             this.destroy();
-                            }
-                        },
-                        { text:"No",  handler : function () {
-                            this.destroy();
-                            }    
-                        } 
-                     ]; 
- 
-        confirmDialog.setHeader("Are you sure?");
-        confirmDialog.setBody(config.text); 
-        confirmDialog.cfg.queueProperty("buttons", buttons); 
-        if (config.width) {
-            confirmDialog.cfg.setProperty("width", config.width); 
-        }
-        confirmDialog.render(document.body);
-        confirmDialog.show();
-        if (config.isLink) {
-            YAHOO.util.Event.preventDefault(event);
-        }
-    },
- 
-    /**
-     * Show alert warning message. The config object can have width and zIndex property
-     *
-     * Generanlly, it can just pass alert message string if it does not need to override default config 
-     *
-     * @param message string
-     * @param config object
-     */
-    showAlertDialog : function (alertMessage, config) {
-        var alertDialog = Fisma.Util.getDialog();
- 
-        var handleOk =  function() {
-            this.destroy();
-        };
-        var button = [ { text: "Ok", handler: handleOk } ];
-
-        alertDialog.setHeader("WARNING");
-        alertDialog.setBody(alertMessage); 
-        alertDialog.cfg.queueProperty("buttons", button); 
-
-        if (!YAHOO.lang.isUndefined(config) && config.width) {
-            alertDialog.cfg.setProperty("width", config.width); 
-        }
-        if (!YAHOO.lang.isUndefined(config) && config.zIndex) {
-            alertDialog.cfg.setProperty("zIndex", config.zIndex); 
-        }
-
-        alertDialog.render(document.body);
-        alertDialog.show();
-    },
-
-    /**
-     * Generate a YUI SimpleDialog
-     * 
-     * @return a YUI SimpleDialog
-     */
-    getDialog : function(){
-        var dialog =  
+    showDeleteWarning : function (event, config) {
+        var  warningDialog =  
             new YAHOO.widget.SimpleDialog("warningDialog",  
-                { width: "400px", 
+                { width: "300px", 
                   fixedcenter: true, 
                   visible: false, 
+                  draggable: false, 
                   close: true,
                   modal: true,
+                  text: "WARNING: You are about to delete the record. This action cannot be undone. "
+                         + "Do you want to continue?", 
                   icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
                   constraintoviewport: true, 
-                  draggable: false
+                  buttons: [ { text:"Yes", handler : function () {
+                                     document.location = config.url
+                                     this.hide();
+                                 }
+                             }, 
+                             { text:"No",  handler : function () {
+                                     this.hide(); 
+                                 }
+                             } 
+                           ] 
                 } ); 
-
-        return dialog;
+ 
+        warningDialog.setHeader("Are you sure?");
+        warningDialog.render(document.body);
+        warningDialog.show();
+        YAHOO.util.Event.preventDefault(event);
     }
-
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.

@@ -24,6 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend_Auth
+ * @version    $Id$
  */
 class Fisma_Zend_Auth_Adapter_Doctrine implements Zend_Auth_Adapter_Interface
 {

@@ -1,5 +1,4 @@
 <?php
-// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *

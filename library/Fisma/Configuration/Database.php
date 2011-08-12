@@ -24,6 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Configuration
+ * @version    $Id$
  */
 class Fisma_Configuration_Database implements Fisma_Configuration_Interface
 {

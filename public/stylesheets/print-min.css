@@ -21,4 +21,3 @@ div.section{color:black;border:1px solid black;border-top:none;}
 table.searchFilters{display:none;}
 .editable{background-image:none;}
 div#footer{display:none;}
-.yui-hidden{width:inherit!important;overflow:auto!important;left:0!important;visibility:visible!important;position:inherit!important;height:inherit!important;}

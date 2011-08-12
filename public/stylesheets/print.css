@@ -145,12 +145,3 @@ table.searchFilters {
 div#footer {
     display: none;
 }
-
-.yui-hidden {
-    width: inherit !important;
-    overflow: auto !important;
-    left: 0 !important;
-    visibility: visible !important;
-    position: inherit !important;
-    height: inherit !important;
-}

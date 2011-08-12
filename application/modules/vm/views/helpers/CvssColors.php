@@ -21,6 +21,7 @@
  * 
  * @uses Zend_View_Helper_Abstract
  * @package View_Helper 
+ * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Christian Smith <christian.smith@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
@@ -85,3 +86,7 @@ class Vm_View_Helper_CvssColors extends Zend_View_Helper_Abstract
         }
     }
 }
+            
+
+        
+    
