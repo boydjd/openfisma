@@ -1,5 +1,6 @@
 <?php
 $links = array(
+    'Categorize' => '/sa/security-authorization/fips/id/' . $this->sa->id,
     'Select' => '/sa/security-authorization/select-controls/id/' . $this->sa->id,
     'Implement' => '/sa/security-authorization/implementation/id/' . $this->sa->id,
     'Assessment' => '/sa/security-authorization/assessment-plan/id/' . $this->sa->id,
@@ -7,12 +8,14 @@ $links = array(
 );
 // null value means disabled, disable tabs based on status
 $status = array(
+    'Categorize' => 1,
     'Select' => 1,
     'Implement' => 1,
     'Assessment' => 1,
     'Authorization' => 1,
 );
 switch ($this->sa->status) {
+    case 'Categorize':
     case 'Select':
         $status['Implement'] = 0;
     case 'Implement':
@@ -27,15 +30,15 @@ switch ($this->sa->status) {
         // do nothing
         break;
     default:
-
-        //throw new Fisma_Zend_Exception('Unknown SA status encountered.');
+        throw new Fisma_Zend_Exception('Unknown SA status encountered.');
 }
 Fisma_Format_Section::startSection("Overview");
 ?>
 <div id="overview-container">
     <div id="overview-name">
     <?php foreach ($links as $label => &$value): ?>
-                <li><a href="<?php echo $this->escape($value); ?>"><?php echo $this->escape($label);?></a></li>
+                <li><a href="<?php echo $this->escape($value); ?>">
+                <?php echo $this->escape($label);?></a></li>
     <?php endforeach; ?>
         </div>
     <div id="overview-complete">

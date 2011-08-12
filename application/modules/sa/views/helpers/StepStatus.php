@@ -28,23 +28,27 @@
 class Sa_View_Helper_StepStatus extends Zend_View_Helper_Abstract
 {
     /**
-     * @var array
+     * Set the steps (tabs) all to true first so that incomplete
+     * steps will fall through the switch statement and set to 0
+     *
+     * @var array Array of steps
      */
-    public $_status = array('Select' => 1,
+    public $_status = array('Categorize' => 1,
+                            'Select' => 1,
                             'Implement' => 1,
                             'Assessment' => 1,
                             'Authorization' => 1,
     );
 
-
-    public $_string;
     /**
-     * @return void
+     * The status determines the steps that have been completed and the ones that
+     * are incomplete.
      */
     public function stepStatus($step)
     {
         $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
         switch ($sa->status) {
+            case 'Categorize':
             case 'Select':
                 $this->_status['Implement'] = 0;
             case 'Implement':
@@ -73,10 +77,36 @@ class Sa_View_Helper_StepStatus extends Zend_View_Helper_Abstract
         }
 
         if(!empty($steps)) {
-            return 'Please complete steps: ' . implode(", ", $steps);
+            $message = 'Please complete steps: ' . implode(", ", $steps);
+            $severity = 'notice';
+
+            return $this->message($message, $severity, 1);
         }
         else {
             return '';
         }
+    }
+
+    /**
+     * Setup the PriorityMessenger code via Javascript since the page will not be refreshed
+     *
+     * @param null $message PriorityMessenger message
+     * @param null $severity The severity level (for color)
+     * @param null $clear If the messenger should be cleared first
+     * @return string Javascript to be sent to the view
+     */
+    public function message($message = null, $severity = null, $clear = null)
+    {
+        $messenger = '<script type="text/javascript">'
+                     . $this->view->escape('window.message("', 'none')
+                     . $this->view->escape($message, 'javascript')
+                     . $this->view->escape('", "', 'none')
+                     . $this->view->escape($severity, 'javascript')
+                     . $this->view->escape('", "', 'none')
+                     . $this->view->escape($clear, 'javascript')
+                     . $this->view->escape("\");\n", 'none')
+                     . '</script>';
+
+        return $messenger;
     }
 }

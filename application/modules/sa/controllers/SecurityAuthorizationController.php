@@ -58,13 +58,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     protected $_modelName = 'SecurityAuthorization';
 
     /**
-     * Returned by overridden getSingularModelName() to display in the form Title.
-     *
-     * @var string
-     */
-    public $_singularModelName = 'Security Authorization';
-
-    /**
      * @var array
      */
     public $_status = array('Implement' => 0,
@@ -225,7 +218,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $buttonbar[] = $this->_createCompleteStepForm($sa);
 
         $this->view->buttonbar = $buttonbar;
-        $this->isEnabled();
     }
 
     public function assessmentPlanAction()
@@ -254,7 +246,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $buttonbar[] = $this->_createCompleteStepForm($sa);
 
         $this->view->buttonbar = $buttonbar;
-        $this->isEnabled();
     }
 
     /**
@@ -279,7 +270,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $buttonbar[] = $this->_createCompleteStepForm($sa);
 
         $this->view->buttonbar = $buttonbar;
-        $this->isEnabled();
     }
 
     /**
@@ -358,7 +348,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         //$this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
         $id = $this->_request->getParam('id');
         $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
-        $this->view->sa = $sa;
 
         $tabView = new Fisma_Yui_TabView('SecurityAuthorizationView', $id);
         $tabView->addTab($sa->Organization->nickname, "/sa/security-authorization/overview/id/$id");
@@ -373,7 +362,10 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
     public function overviewAction()
     {
+        $id = $this->_request->getParam('id');
         $this->_helper->layout()->disableLayout();
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
+        $this->view->sa = $sa;
     }
 
     /**
@@ -675,14 +667,17 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->form = $form;
     }
 
+    /**
+     * Override to properly return a two-word model name
+     *
+     * @return string Model name split into two-words
+     */
     public function getSingularModelName()
     {
-        return $this->_singularModelName;
-
+        return 'Security Authorization';
     }
 
-
-        /**
+    /**
      * Display CIA criteria and FIPS-199 categorization
      *
      * @return void
@@ -752,29 +747,5 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         }
 
         $this->render();
-    }
-
-    public function isEnabled()
-    {
-        $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
-        switch ($sa->status) {
-            case 'Select':
-                $this->_status['Implement'] = 1;
-            case 'Implement':
-                $this->_status['Assessment'] = 0;
-            case 'Assessment Plan':
-            case 'Assessment':
-                $this->_status['Authorization'] = 0;
-            case 'Authorization':
-            case 'Active':
-            case 'Retired':
-                // do nothing
-                break;
-            default:
-                throw new Fisma_Zend_Exception('Unknown SA status encountered.');
-
-        }
-        $this->view->status = $this->_status;
-
     }
 }

@@ -21,7 +21,6 @@
  * @license   http://www.openfisma.org/content/license
  */
 
-
 Fisma.SecurityAuthorization = {
     /**
      * Popup a panel for upload evidence
