@@ -50,8 +50,9 @@ class Fisma_Loader
      */
     public function __construct($config = NULL)
     {
-        $this->_appVersion = Fisma::configuration()->getConfig('app_version');
-        $this->_yuiVersion = Fisma::configuration()->getConfig('yui_version');
+        $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
+        $this->_appVersion = $versions['application'];
+        $this->_yuiVersion = $versions['yui'];
         $this->_debug = Fisma::debug();
 
         /**
