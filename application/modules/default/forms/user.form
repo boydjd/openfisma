@@ -85,7 +85,7 @@ displayGroups.accountInfo.elements.email = "email"
 ; change at any time.
 elements.role.type = "multiselect"
 elements.role.options.label = "Role(s)"
-elements.role.options.required = false
+elements.role.options.required = true
 elements.role.options.size = 10
 displayGroups.accountInfo.elements.roles = "role"
 

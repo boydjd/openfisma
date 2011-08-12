@@ -7262,8 +7262,8 @@ Fisma.Module = {
                         );
 
                         // Expand the first two levels of the tree by default
-                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2});
-                        $.each(defaultExpandNodes, function (key, node) {node.expand()});
+                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand();});
 
                         this._treeView.draw();
                         this._buildContextMenu();
@@ -7380,7 +7380,7 @@ Fisma.Module = {
                 this._savePanel.render(document.body);
             }
 
-            this._savePanel.setBody('<img src="/images/loading_bar.gif">')
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">');
             this._savePanel.show();
     
             YAHOO.util.Connect.asyncRequest(
@@ -7482,9 +7482,9 @@ Fisma.Module = {
             var type = targetNode.data.type;
 
             if (type == 'agency' || type == 'bureau' || type == 'organization') {
-                var url = '/organization/view/id/' + targetNode.data.organizationId;
+                url = '/organization/view/id/' + targetNode.data.organizationId;
             } else {
-                var url = '/system/view/id/' + targetNode.data.systemId;                
+                url = '/system/view/id/' + targetNode.data.systemId;                
             }
 
             window.location = url;
@@ -7844,8 +7844,7 @@ Fisma.Search = function() {
                         spinner.hide();
                     }
                 },
-                postData
-            );
+                postData );
         },
 
         /**
@@ -7855,12 +7854,18 @@ Fisma.Search = function() {
          * two to use while handling this event.
          *
          * @param form Reference to the search form
+         * @param fromSearchForm {Boolean} indicate whether a search action comes from search form submission 
          */
-        executeSearch: function (form) {
+        executeSearch: function (form, fromSearchForm) {
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
                 success : function (request, response, payload) {
+ 
+                    // It sets start to 0 when fromSearchForm is true, so does payload.pagination.recordOffset
+                    if (fromSearchForm) {
+                        payload.pagination.recordOffset = 0;
+                    }
                     dataTable.onDataReturnReplaceRows(request, response, payload);
 
                     // Update YUI's visual state to show sort on first data column
@@ -7885,7 +7890,7 @@ Fisma.Search = function() {
 
             // Construct a query URL based on whether this is a simple or advanced search
             try {
-                var postData = this.buildPostRequest(dataTable.getState());
+                var postData = this.buildPostRequest(dataTable.getState(), fromSearchForm);
 
                 dataTable.showTableMessage("Loading...");
 
@@ -7923,7 +7928,9 @@ Fisma.Search = function() {
             } catch (e) {
                 message(e);
             } finally {
-                Fisma.Search.executeSearch(form);
+
+                // Set the fromSearchForm to true when a search comes from search form submission
+                Fisma.Search.executeSearch(form, true);
             }
         },
 
@@ -8060,14 +8067,15 @@ Fisma.Search = function() {
          * Method to generate the post data for the current query and table state
          *
          * @param tableState From YUI
+         * @param fromSearchForm {Boolean} set start to 0 if it is true
          * @return {String} Post data representation of the current query
          */
-        buildPostRequest: function (tableState) {
+        buildPostRequest: function (tableState, fromSearchForm) {
             var searchType = document.getElementById('searchType').value;
             var postData = {
                 sort: tableState.sortedBy.key,
                 dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
-                start: tableState.pagination.recordOffset,
+                start: (fromSearchForm ? 0 : tableState.pagination.recordOffset),
                 count: tableState.pagination.rowsPerPage,
                 csrf: document.getElementById('searchForm').csrf.value,
                 showDeleted: Fisma.Search.showDeletedRecords,
@@ -8405,7 +8413,24 @@ Fisma.Search = function() {
                 // if already set, go ahead and run the callback
                 this.onSetTableCallback();
             }
-        }
+        },
+
+        /**
+         * Key press listener
+         * 
+         * @param element The element to which the key event sould be attached
+         */
+        onKeyPress : function (element) {
+            var searchForm = YAHOO.util.Dom.get('searchForm');
+            var keyHandle = new YAHOO.util.KeyListener(
+                                    element,
+                                    // Just listen to 'Return' and 'Enter' key
+                                    {keys : YAHOO.util.KeyListener.KEY.ENTER},
+                                    function () {
+                                        Fisma.Search.handleSearchEvent(searchForm);
+                                    });
+            keyHandle.enable();
+         }
     };
 }();
 /**
@@ -8520,11 +8545,6 @@ Fisma.Search.Criteria.prototype = {
         
         this.container = document.createElement('div');
         
-        this.containerForm = document.createElement('form');
-        this.containerForm.action =  "JavaScript: Fisma.Search.handleSearchEvent(YAHOO.util.Dom.get('searchForm'));";
-        this.containerForm.enctype = "application/x-www-form-urlencoded";
-        this.containerForm.method = "post";
-        
         this.container.className = "searchCriteria";
 
         // IE7 will display floated elements on the next line, not the current line, unless those floated elements
@@ -8532,31 +8552,23 @@ Fisma.Search.Criteria.prototype = {
         this.buttonsContainer = document.createElement('span');
         this.buttonsContainer.className = "searchQueryButtons";
         this.renderButtons(this.buttonsContainer);
-        this.containerForm.appendChild(this.buttonsContainer);
+        this.container.appendChild(this.buttonsContainer);
 
         this.queryFieldContainer = document.createElement('span');
         this.renderQueryField(this.queryFieldContainer, fieldName);
-        this.containerForm.appendChild(this.queryFieldContainer);
+        this.container.appendChild(this.queryFieldContainer);
 
         this.queryTypeContainer = document.createElement('span');
         this.renderQueryType(this.queryTypeContainer, operator);
-        this.containerForm.appendChild(this.queryTypeContainer);
+        this.container.appendChild(this.queryTypeContainer);
 
         this.queryInputContainer = document.createElement('span');
         this.renderQueryInput(this.queryInputContainer, operands);
-        this.containerForm.appendChild(this.queryInputContainer);
+        this.container.appendChild(this.queryInputContainer);
 
         var clearDiv = document.createElement('div');
         clearDiv.className = "clear";
-        this.containerForm.appendChild(clearDiv);
-
-        var searchTypeField = document.createElement('input');
-        searchTypeField.type = 'hidden';
-        searchTypeField.name = 'searchType';
-        searchTypeField.value = 'advanced';
-        this.containerForm.appendChild(searchTypeField);
-
-        this.container.appendChild(this.containerForm);
+        this.container.appendChild(clearDiv);
 
         return this.container;
     },
@@ -9049,6 +9061,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.className = "date";
             container.appendChild(lowEnd);
             Fisma.Calendar.addCalendarPopupToTextField(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -9063,6 +9076,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.className = "date";
             container.appendChild(highEnd);
             Fisma.Calendar.addCalendarPopupToTextField(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -9081,6 +9095,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "float";
             container.appendChild(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -9094,6 +9109,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "float";
             container.appendChild(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -9112,6 +9128,7 @@ Fisma.Search.CriteriaRenderer = function () {
             lowEnd.type = "text";
             lowEnd.className = "integer";
             container.appendChild(lowEnd);
+            Fisma.Search.onKeyPress(lowEnd);
 
             var text = document.createTextNode(" and ");
             container.appendChild(text);
@@ -9125,6 +9142,7 @@ Fisma.Search.CriteriaRenderer = function () {
             highEnd.type = "text";
             highEnd.className = "integer";
             container.appendChild(highEnd);
+            Fisma.Search.onKeyPress(highEnd);
         },
 
         /**
@@ -9160,6 +9178,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
 
             Fisma.Calendar.addCalendarPopupToTextField(textEl);
         },
@@ -9181,6 +9200,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -9200,6 +9220,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -9218,6 +9239,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             container.appendChild(textEl);
+            Fisma.Search.onKeyPress(textEl);
         },
 
         /**
@@ -11248,6 +11270,9 @@ Fisma.TableFormat = {
                     break;
                 case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.BELOW:
                     srcNode.insertAfter(destNode);
+                    break;
+                default:
+                    throw "Invalid drag location parameter";
                     break;
             }
 

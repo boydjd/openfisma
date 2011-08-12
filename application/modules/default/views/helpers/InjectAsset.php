@@ -156,8 +156,9 @@ class View_Helper_InjectAsset
          * If we're not in debug mode, then insert the application version and -min into
          * the path.
          */
+        $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
         if (!Fisma::debug()) {
-            $appVersion = Fisma::configuration()->getConfig('app_version');
+            $appVersion = $versions['application'];
 
             foreach ($assets as &$asset) {
                 $asset = str_replace(
