@@ -1,6 +1,6 @@
 <?php
     echo $this->escape("{$this->doctype()}\n", 'none');
-    $inactivityPeriod = Fisma::configuration()->getConfig('session_inactivity_period');
+    $inactivityPeriod = Fisma::configuration()->getConfig('session_inactivity_period') * 60;
 ?>
 <html>
     <head>

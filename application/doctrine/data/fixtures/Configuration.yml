@@ -4,9 +4,9 @@ Configuration:
 
         failure_threshold: 3
 
-        session_inactivity_period: 1200 
+        session_inactivity_period: 20 
 
-        session_inactivity_notice: 1080
+        session_inactivity_notice: 18
 
         auth_type: database
 

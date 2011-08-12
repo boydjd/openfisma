@@ -17,13 +17,13 @@ Configuration:
             notblank: true
             unsigned: true
             default: 0
-            comment: Session timeout (seconds)
+            comment: Session timeout (minutes)
         session_inactivity_notice:
             type: integer(2)
             notblank: true
             unsigned: true
             default: 0
-            comment: Session timeout (seconds)
+            comment: Session timeout (minutes)
         auth_type:
             type: enum
             notblank: true

@@ -1,7 +1,7 @@
 <?php
     echo $this->escape("{$this->doctype()}\n", 'none');
-    $inactivityPeriod = Fisma::configuration()->getConfig('session_inactivity_period');
-    $inactivityNotice = Fisma::configuration()->getConfig('session_inactivity_notice');
+    $inactivityPeriod = Fisma::configuration()->getConfig('session_inactivity_period') * 60;
+    $inactivityNotice = Fisma::configuration()->getConfig('session_inactivity_notice') * 60;
 ?>
 <html>
     <head>
