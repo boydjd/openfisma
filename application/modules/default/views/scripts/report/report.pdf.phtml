@@ -113,6 +113,8 @@ $pdf->ezTable(
     array(
         'fontSize' => $defaultFontSize,
         'width' => $contentWidth,
+        'splitRows' => 1,
+        'protectRows' => 0,
         'xPos' => $contentLeftEdge + 5, // for some reason, ezpdf draws the tables 5 pixels too far to the left
         'xOrientation' => 'right'
     )
