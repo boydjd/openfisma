@@ -406,7 +406,9 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         // Trees mapped
         $trees = array();
         $l = 0;
-        if (count($collection) > 0) {
+
+        // Ensure collection is a tree
+        if (is_array($collection) && count($collection) > 0) {
             // Node Stack. Used to help building the hierarchy
             $rootLevel = $collection[0]->level;
 
