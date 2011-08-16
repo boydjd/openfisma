@@ -62,7 +62,7 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
                 'initiallyVisible' => true,
                 'label' => 'Organization Type',
                 'join' => array(
-                    'model' => 'organizationType',
+                    'model' => 'OrganizationType',
                     'relation' => 'OrganizationType',
                     'field' => 'nickname'
                 ),

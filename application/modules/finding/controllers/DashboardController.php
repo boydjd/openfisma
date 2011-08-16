@@ -148,7 +148,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'displayBy',
                     'Display By:',
                     'combo',
-                    'Organization',
+                    $orgTypeOptions[0],
                     $orgTypeOptions 
                 )
                 ->addWidget(
