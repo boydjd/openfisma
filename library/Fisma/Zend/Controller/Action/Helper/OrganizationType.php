@@ -70,7 +70,7 @@ class Fisma_Zend_Controller_Action_Helper_OrganizationType extends Zend_Controll
      * @includNone default is true
      * @return $id organization type id 
      */
-    public function getOrganizationTypeId($userId, $namespace, $includeNone = true)
+    public function getOrganizationTypeIdByStorageOrRequest($userId, $namespace, $includeNone = true)
     {
         $orgTypeStorage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)
                              ->fetchOne();               

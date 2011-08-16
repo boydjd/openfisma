@@ -98,6 +98,7 @@ class OrganizationTypeTable extends Fisma_Doctrine_Table implements Fisma_Search
      */
     public function getOrganizationTypeArray($includeSystem = true)
     {
+        $orgTypeArray = array();
         $orgTypes = $this->findAll(Doctrine::HYDRATE_ARRAY);
         foreach ($orgTypes as $orgType) {
             if (!$includeSystem) {

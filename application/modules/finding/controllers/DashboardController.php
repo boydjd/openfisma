@@ -283,17 +283,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 that Systems shouldnt have children (unlike Bureaus for example) 
                 a different query will be used here */
                
-                $systemTypeIdQuery = Doctrine_Query::create()
-                                    ->from('OrganizationType ot')
-                                    ->where('nickname = ?', 'system')
-                                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-                
-                $systemType = $systemTypeIdQuery->fetchOne(); 
                 $systemCountsQuery = Doctrine_Query::create();
                 $systemCountsQuery->addSelect('COUNT(f.id), o.nickname, o.name, f.threatLevel')
                     ->from('Finding f')
                     ->leftJoin('f.ResponsibleOrganization o')
-                    ->where('o.orgtypeid = ?', $systemType['id'])
+                    ->leftJoin('o.OrganizationType ot')
+                    ->where('ot.nickname = ?', 'system')
                     ->whereIn('o.id ', FindingTable::getOrganizationIds())
                     ->groupBy('o.nickname, f.threatLevel')
                     ->orderBy('o.nickname')

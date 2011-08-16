@@ -118,7 +118,7 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     public function getSearchIndexQuery(Doctrine_Query $baseQuery, $relationAliases)
     {
         // Table aliases are generated from doctrine metadata (without user input) and are safe to interpolate
-        $baseTableAlias = $relationAliases['Organization'];
+        $baseTableAlias = $relationAliases['OrganizationType'];
         return $baseQuery->where("$baseTableAlias.nickname <> ?", 'system');
     }
 

@@ -252,7 +252,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
     {
         $storageNamespace = 'Incident.Organization.Report';
         $orgTypeId = $this->_helper->OrganizationType
-                          ->getOrganizationTypeId($this->_me->id, $storageNamespace, false);
+                          ->getOrganizationTypeIdByStorageOrRequest($this->_me->id, $storageNamespace, false);
 
         $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId, false);
 

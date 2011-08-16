@@ -32,6 +32,7 @@ Organization:
         OrganizationType:
             local: orgTypeId
             foreign: id
+            foreignAlias: Organizations
 
     actAs:
         NestedSet:

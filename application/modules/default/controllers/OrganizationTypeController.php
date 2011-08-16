@@ -52,17 +52,6 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Override parent to use the specified form
-     *
-     * @param string|null $formName The name of the specified form
-     * @return Zend_Form The specified form of the subject model
-     */
-    public function getForm($formName = null)
-    {
-        return parent::getForm('organization_type');
-    }
-
-    /**
      * Override to indicate that this model is not deletable.
      * 
      * @return bool

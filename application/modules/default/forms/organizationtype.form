@@ -4,7 +4,7 @@
 ; Copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
 ; License   http://www.openfisma.org/content/license
 
-[organization_type]
+[organizationtype]
 
 elements.name.type = "text"
 elements.name.options.label = "Name"

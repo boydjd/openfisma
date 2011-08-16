@@ -204,8 +204,8 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
      */
     public function bureauAction()
     {
-        $bureau = $this->getRequest()->getParam('bureau');
-        
+        $bureau = Inspekt::getAlpha($this->getRequest()->getParam('bureau'));
+
         $rtnChart = new Fisma_Chart();
         $rtnChart
             ->setChartType('bar')
