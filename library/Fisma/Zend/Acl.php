@@ -126,6 +126,7 @@ class Fisma_Zend_Acl extends Zend_Acl
     {
         if (empty($organizationId)) {
             $privilege = "unaffiliated";
+            $resourceName = "asset";
         } else {
             $resourceName = "$organizationId/$resourceName";
         }
