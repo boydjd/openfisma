@@ -134,7 +134,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Sisplays a (checkbox-)table of privileges associated with each role
+     * Displays a (checkbox-)table of privileges associated with each role
      * 
      * @return void
      */
@@ -351,7 +351,6 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                 Doctrine_Manager::connection()->rollBack();
                 $this->view->priorityMessenger('An error occurred while saving privileges', 'warning');
                 $this->_redirect('/role/view-matrix');
-                return;
             }
 
             // Send priority messenger if there are messeges to send
