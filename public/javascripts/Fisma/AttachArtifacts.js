@@ -22,7 +22,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
  
 Fisma.AttachArtifacts = {
@@ -138,7 +137,9 @@ Fisma.AttachArtifacts = {
         var fileUploadEl = document.getElementById('fileUpload');
 
         if ("" === fileUploadEl.value) {
-            alert("Please select a file.");
+            var alertMessage = "Please select a file.";
+            var config = {zIndex : 10000};
+            Fisma.Util.showAlertDialog(alertMessage, config);
             
             return false;
         }
@@ -248,7 +249,7 @@ Fisma.AttachArtifacts = {
                 },
                 
                 failure : function (o) {
-                    alert('Document upload failed.');
+                    Fisma.Util.showAlertDialog('Document upload failed.');
                 }
             }, 
             null);
@@ -361,8 +362,10 @@ Fisma.AttachArtifacts = {
         progressTextEl.nodeValue = 'Verifying file.';
 
         if (!responseStatus.success) {
-            alert("Upload Failed: " + responseStatus.message);
-            
+            var alertMessage = "Upload Failed: " + responseStatus.message;
+            var config = {zIndex : 10000};
+            Fisma.Util.showAlertDialog(alertMessage, config);
+ 
             progressTextEl.nodeValue = 'Uploading...';
             
             document.getElementById('progressBarContainer').style.display = 'none';

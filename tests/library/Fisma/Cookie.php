@@ -26,7 +26,6 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend_Form
- * @version    $Id$
  * 
  * @uses       Test_Case_Unit
  */

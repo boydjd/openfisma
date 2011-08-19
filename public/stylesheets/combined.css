@@ -528,6 +528,79 @@ div.toolbar {
     padding: 5px 10px;
     text-align: right;
 }
+/* Styles for a draggable YUI tree */
+
+div.showDisposalSystem {
+    margin: 0px 0px 5px 3px;
+    font-weight: bold;
+}
+
+div.showDisposalSystem input {
+    vertical-align: middle;
+    margin: 0px 5px 3px 0px;
+}
+
+.treeNodeDragAbove span {
+    border-top: 4px solid #bbc6d6;
+}
+
+
+.treeNodeDragOnto {
+    background-color: #bbc6d6;
+}
+
+.treeNodeDragBelow span {
+    border-bottom: 4px solid #bbc6d6;
+}
+
+.treeNodeDragProxy {
+    border: 1px solid #bbc6d6 !important;
+    padding: 3px;
+    opacity: 0.75;
+}
+
+/* The following styles are for the organization tree view icons */
+.draggableTreeContainer .agency {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/agency-small.png) no-repeat;
+}
+
+.draggableTreeContainer .bureau {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/bureau-small.png) no-repeat;
+}
+
+.draggableTreeContainer .organization {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/organization-small.png) no-repeat;
+}
+
+.draggableTreeContainer .gss {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/gss-small.png) no-repeat;
+}
+
+.draggableTreeContainer .major {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/major-small.png) no-repeat;
+}
+
+.draggableTreeContainer .minor {
+       display: block;
+       padding-left: 20px; 
+       background: url(/images/minor-small.png) no-repeat;
+}
+
+.draggableTreeContainer .disposal {
+       display: block;
+       padding-left: 20px; 
+       background-color: pink;
+}
 /* Style for the UserInfo view helper */
 
 span.userInfo {
@@ -581,6 +654,20 @@ span.userInfo:active {
     page-break-inside: avoid;
 }
 
+/* style for our cutom-made tooltip. This is nessesary for jqPlotPie charts as they do not support tooltips out of the box */
+.pieToolTip {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    display: none
+}
+
+/* style for _text_ on jqPlot tool tips. For the rest of the tooltip, see jquery_jqplot.css/.jqplot-highlighter-tooltip */
+.chartToolTipText {
+    font-size: 14px;
+}
+
 /* style for the data-table for screen readers */
 .screenReaderTabel {
     width: 100%;
@@ -608,7 +695,7 @@ span.userInfo:active {
 /*rules for the plot target div.  These will be cascaded down to all plot elements according to css rules*/
 .jqplot-target {
     position: relative;
-    color: #666666;
+    color: #000000;
     font-family: "Trebuchet MS", Arial, Helvetica, sans-serif;
     font-size: 1em;
 }
@@ -638,14 +725,15 @@ span.userInfo:active {
 /*rules applied to all axis tick divs*/
 .jqplot-axis-tick, .jqplot-xaxis-tick, .jqplot-yaxis-tick, .jqplot-x2axis-tick, .jqplot-y2axis-tick, .jqplot-y3axis-tick, .jqplot-y4axis-tick, .jqplot-y5axis-tick, .jqplot-y6axis-tick, .jqplot-y7axis-tick, .jqplot-y8axis-tick, .jqplot-y9axis-tick {
     position: absolute;
+    color: #000000;
 }
-
 
 .jqplot-xaxis-tick {
     top: 0px;
     /* initial position untill tick is drawn in proper place */
     left: 15px;
     vertical-align: top;
+    color: #000000;
 }
 
 .jqplot-x2axis-tick {
@@ -660,6 +748,7 @@ span.userInfo:active {
     /* initial position untill tick is drawn in proper place */
     top: 15px;
     text-align: right;
+    color: #000000;
 }
 
 .jqplot-y2axis-tick, .jqplot-y3axis-tick, .jqplot-y4axis-tick, .jqplot-y5axis-tick, .jqplot-y6axis-tick, .jqplot-y7axis-tick, .jqplot-y8axis-tick, .jqplot-y9axis-tick {
@@ -706,6 +795,7 @@ table.jqplot-table-legend {
     margin-bottom: 12px;
     margin-left: 12px;
     margin-right: 12px;
+    color: 000000;
 }
 
 table.jqplot-table-legend, table.jqplot-cursor-legend {
@@ -753,12 +843,13 @@ table.jqplot-cursor-tooltip {
     font-size: 0.75em;
 }
 
-
 .jqplot-cursor-tooltip {
     border: 1px solid #cccccc;
     font-size: 0.75em;
     white-space: nowrap;
     background: rgba(208,208,208,0.5);
+    opacity: 0.8;
+    filter: alpha(opacity = 80);
     padding: 1px;
 }
 
@@ -766,13 +857,19 @@ table.jqplot-cursor-tooltip {
     border: 1px solid #cccccc;
     font-size: 0.75em;
     white-space: nowrap;
-    background: rgba(208,208,208,0.5);
+    background-color: rgb(208,208,208);
+    background: rgba(208,208,208,0.8);
+    z-index: 1;
     padding: 1px;
+    opacity: 0.8;
+    filter: alpha(opacity = 80);
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
 }
 
 .jqplot-point-label {
     font-size: 0.75em;
     z-index: 1;
+    color: #000000;
 }
       
 td.jqplot-cursor-legend-swatch {
@@ -783,6 +880,10 @@ text-align:center;
 div.jqplot-cursor-legend-swatch {
 width:1.2em;
 height:0.7em;
+}
+
+.jqplot-data-label {
+    color: #000000;
 }
 
 .jqplot-error {
@@ -1221,60 +1322,6 @@ div#msgbar {
 .yui-navset div.loading div {
     background:url(/lib/2.8.2/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;
     height:8em; /* hold some space while loading */
-}
-
-/* The following styles are for the organization tree view icons */
-.agency {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/agency-small.png) no-repeat;
-}
-
-.bureau {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/bureau-small.png) no-repeat;
-}
-
-.organization {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/organization-small.png) no-repeat;
-}
-
-.gss {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/gss-small.png) no-repeat;
-}
-
-.major {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/major-small.png) no-repeat;
-}
-
-.minor {
-	display:block;
-	padding-left: 20px; 
-	background: url(/images/minor-small.png) no-repeat;
-}
-
-/* Style for displaying background color of disposal systems are pink */
-.disposal {
-    background-color: pink;
-}
-
-/* Style for displaying showDisposalSystem div including checkbox and text*/
-div#showDisposalSystem {
-    margin: 0px 0px 5px 3px;
-    font-weight: bold;
-}
-
-/* Style for displaying checkbox in organization tree */
-div#showDisposalSystem input {
-    vertical-align: middle;
-    margin: 0px 5px 3px 0px;
 }
 
 /* 

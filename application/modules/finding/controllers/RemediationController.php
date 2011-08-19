@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 {
@@ -597,12 +596,20 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         if (!$finding->isDeleted()) {
             // Display the delete finding button if the user has the delete finding privilege
             if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
-                $deleteFindingButtonConfig = array(
-                    'value' => 'Delete Finding',
-                    'href' => '/finding/remediation/delete/id/' . $finding->id
-                );
 
-                $buttons['delete'] = new Fisma_Yui_Form_Button_Link('deleteFinding', $deleteFindingButtonConfig);
+                $buttons['delete'] = new Fisma_Yui_Form_Button(
+                    'deleteFinding', 
+                    array(
+                          'label' => 'Delete Finding',
+                          'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                          'onClickArgument' => array(
+                              'url' => "/finding/remediation/delete/id/$id",
+                              'text' => "WARNING: You are about to delete the finding record. This action cannot be " 
+                                        . "undone. Do you want to continue?",
+                              'isLink' => false
+                        ) 
+                    )
+                );
             }
             
             // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
@@ -1191,5 +1198,22 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
         $this->view->finding = $finding;
+    }
+
+    /**
+     * Override createAction() to show the warning message on the finding create page if there is no system.
+     * 
+     * @return void
+     */
+    public function createAction()
+    {
+        parent::createAction();
+
+        $systemCount = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')->count(); 
+        if (0 === $systemCount) {
+            $message = "There are no organizations or systems to create findings for. "
+                     . "Please create an organization or system first.";
+            $this->view->priorityMessenger($message, 'warning');
+        }
     }
 }

@@ -20,7 +20,6 @@
  * Update app version 
  * 
  * @package Migration
- * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3

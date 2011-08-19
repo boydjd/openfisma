@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend_Acl
- * @version    $Id$
  */
 class Fisma_Zend_Acl extends Zend_Acl
 {
@@ -127,6 +126,7 @@ class Fisma_Zend_Acl extends Zend_Acl
     {
         if (empty($organizationId)) {
             $privilege = "unaffiliated";
+            $resourceName = "asset";
         } else {
             $resourceName = "$organizationId/$resourceName";
         }

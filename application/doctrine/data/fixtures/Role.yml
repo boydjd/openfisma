@@ -5,38 +5,80 @@ Role:
         description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The information system security officer is the individual responsible to the authorizing official, information system owner, or the senior agency information security officer for ensuring the appropriate operational security posture is maintained for an information system or program. The information system security officer also serves as the principal advisor to the authorizing official, information system owner, or senior agency information security officer on all matters (technical and otherwise) involving the security of the information system. The information system security officer typically has the detailed knowledge and expertise required to manage the security aspects of the information system and, in many agencies, is assigned responsibility for the day-to-day security operations of the system. This responsibility may also include, but is not limited to, physical security, personnel security, incident handling, and security training and awareness. The information system security officer may be called upon to assist in the development of the system security policy and to ensure compliance with that policy on a routine basis. In close coordination with the information system owner, the information system security officer often plays an active role in developing and updating the system security plan as well as in managing and controlling changes to the system and assessing the security impact of those changes.</p><p><strong>[OpenFISMA definition]</strong></p><p>The Information Systems Security Officer Group is designed to allow Information System Security Officers the ability to identify, assess, prioritize, and monitor the progress of corrective efforts for security weaknesses found in their system.</p>
         Privileges: 
             - areas_dashboard
-            - finding_area
-            - finding_report_area
-            - findings_read
-            - findings_update_type
-            - findings_update_description
-            - findings_update_course_of_action
-            - findings_update_control_assignment
-            - findings_update_countermeasures
-            - findings_update_finding_resources
-            - findings_update_ecd
-            - findings_update_legacy_finding_key
-            - findings_update_finding_source
-            - findings_upload_evidence
-            - findings_comment
-            - findings_mitigation_strategy_submit
-            - findings_mitigation_strategy_revise
-            - finding_mitigation_isso
-            - finding_evidence_isso
-            - notification_asset
-            - notification_finding
-            - organization_read
-            - organization_update
             - asset_read
             - asset_update
+            - finding_area
+            - finding_evidence_isso
+            - finding_mitigation_isso
+            - finding_report_area
+            - findings_comment
+            - findings_mitigation_strategy_revise
+            - findings_mitigation_strategy_submit
+            - findings_read
+            - findings_update_control_assignment
+            - findings_update_countermeasures
+            - findings_update_course_of_action
+            - findings_update_description
+            - findings_update_ecd
+            - findings_update_finding_resources
+            - findings_update_finding_source
+            - findings_update_legacy_finding_key
+            - findings_update_type
+            - findings_upload_evidence
+            - incident_area
+            - notification_asset
+            - notification_finding
+            - notification_vulnerability
+            - organization_read
+            - organization_update
+            - system_inventory_area
             - vulnerability_area
-            - vulnerability_report_area
             - vulnerability_comment
             - vulnerability_create
             - vulnerability_read
+            - vulnerability_report_area
             - vulnerability_update
-            - vulnerability_comment
+
+    alt_isso_role:
+        name: Alternate Information System Security Officer
+        nickname: ALT-ISSO
+        description: <p>The Alternate ISSO has similar privileges to the ISSO and acts as a stand-in when the ISSO is unavailable.</p>
+        Privileges: 
+            - areas_dashboard
+            - asset_read
+            - asset_update
+            - finding_area
+            - finding_evidence_isso
+            - finding_mitigation_isso
+            - finding_report_area
+            - findings_comment
+            - findings_mitigation_strategy_revise
+            - findings_mitigation_strategy_submit
+            - findings_read
+            - findings_update_control_assignment
+            - findings_update_countermeasures
+            - findings_update_course_of_action
+            - findings_update_description
+            - findings_update_ecd
+            - findings_update_finding_resources
+            - findings_update_finding_source
+            - findings_update_legacy_finding_key
+            - findings_update_type
+            - findings_upload_evidence
+            - incident_area
+            - notification_asset
+            - notification_finding
             - notification_vulnerability
+            - organization_read
+            - organization_update
+            - system_inventory_area
+            - vulnerability_area
+            - vulnerability_comment
+            - vulnerability_comment
+            - vulnerability_create
+            - vulnerability_read
+            - vulnerability_report_area
+            - vulnerability_update
 
     reviewer_role:
         name: Reviewer
@@ -44,222 +86,221 @@ Role:
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Reviewer Group gives users the ability to view all information on the Plan of Actions and Milestones report for the information system. They do not have the ability to create, edit, or delete any information.</p>
         Privileges: 
             - areas_dashboard
+            - asset_read
+            - finding_area
             - finding_report_area
             - findings_read
-            - organization_read
-            - asset_read
             - notification_asset
             - notification_finding
-            - vulnerability_area
-            - vulnerability_report_area
-            - vulnerability_read
             - notification_vulnerability
-        
+            - organization_read
+            - system_inventory_area
+            - vulnerability_area
+            - vulnerability_read
+            - vulnerability_report_area
+
     ivv_role:
         name: Independent Verification and Validation
         nickname: IV&V
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Independent Verification and Validation group serves as a third party independent of the correction process who validates whether or not the security weakness has been successfully closed. They have the ability to view all agency Plan of Actions and Milestone information and the ability to close an open item.</p>
         Privileges:
             - areas_dashboard
-            - finding_report_area
-            - system_inventory_report_area
-            - finding_area
-            - system_inventory_area
-            - findings_create
-            - findings_read
-            - findings_update_description
-            - findings_inject
-            - findings_approve
-            - findings_update_course_of_action
-            - findings_update_findings_assignment
-            - findings_update_control_assignment
-            - findings_update_countermeasures
-            - findings_update_threat
-            - findings_update_finding_recommendation
-            - findings_update_finding_resources
-            - findings_update_ecd
-            - findings_update_locked_ecd
-            - findings_update_legacy_finding_key
-            - findings_update_finding_source
-            - findings_upload_evidence
-            - findings_comment
-            - findings_mitigation_strategy_submit
-            - findings_mitigation_strategy_revise
-            - finding_mitigation_ivv
-            - finding_evidence_ivv
             - asset_create
             - asset_read
-            - asset_update
             - asset_unaffiliated
-            - organization_read
+            - asset_update
+            - finding_area
+            - finding_evidence_ivv
+            - finding_mitigation_ivv
+            - finding_report_area
+            - findings_comment
+            - findings_create
+            - findings_inject
+            - findings_mitigation_strategy_revise
+            - findings_mitigation_strategy_submit
+            - findings_read
+            - findings_update_control_assignment
+            - findings_update_countermeasures
+            - findings_update_course_of_action
+            - findings_update_description
+            - findings_update_ecd
+            - findings_update_finding_recommendation
+            - findings_update_finding_resources
+            - findings_update_finding_source
+            - findings_update_findings_assignment
+            - findings_update_legacy_finding_key
+            - findings_update_locked_ecd
+            - findings_update_threat
+            - findings_upload_evidence
             - notification_asset
             - notification_finding
+            - notification_vulnerability
+            - organization_read
             - product_read
+            - system_inventory_area
+            - system_inventory_report_area
             - vulnerability_area
-            - vulnerability_report_area
             - vulnerability_comment
             - vulnerability_create
             - vulnerability_read
-            - vulnerability_update
+            - vulnerability_report_area
             - vulnerability_resolution_read
-            - notification_vulnerability         
+            - vulnerability_update
 
-    saiso_role:
-        name: Senior Agency Information Security Officer
+    ciso_role:
+        name: Chief Information Security Officer
         nickname: SAISO
-        description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The senior agency information security officer is the agency official responsible for:</p><p><ol><li>carrying out the Chief Information Officer responsibilities under FISMA; <li>possessing professional qualifications, including training and experience, required to administer the information security program functions; <li>having information security duties as that official's primary duty; and <li>heading an office with the mission and resources to assist in ensuring agency compliance with FISMA.</ol>The senior agency information security officer (or supporting staff member) may also serve as the authorizing officials designated representative. The senior agency information security officer serves as the Chief Information Officer's primary liaison to the agency's authorizing officials, information system owners, and information system security officers.</p><p><strong>[OpenFISMA Definition]</strong></p><p>The SAISO has the ability to view all agency wide Plan of Actions and Milestone information as well as generate reports and provide comments and guidance to the Information System Security Officers through the remediation page.</p>
+        description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The chief information security officer is the agency official responsible for:</p><p><ol><li>carrying out the Chief Information Officer responsibilities under FISMA; <li>possessing professional qualifications, including training and experience, required to administer the information security program functions; <li>having information security duties as that official's primary duty; and <li>heading an office with the mission and resources to assist in ensuring agency compliance with FISMA.</ol>The senior agency information security officer (or supporting staff member) may also serve as the authorizing officials designated representative. The senior agency information security officer serves as the Chief Information Officer's primary liaison to the agency's authorizing officials, information system owners, and information system security officers.</p><p><strong>[OpenFISMA Definition]</strong></p><p>The CISO has the ability to view all agency wide Plan of Actions and Milestone information as well as generate reports and provide comments and guidance to the Information System Security Officers through the remediation page.</p>
         Privileges: 
             - areas_dashboard
-            - finding_report_area
-            - system_inventory_report_area
-            - findings_create
-            - findings_read
-            - findings_update_type
-            - findings_update_description
-            - findings_inject
-            - findings_approve
-            - findings_update_course_of_action
-            - findings_update_findings_assignment
-            - findings_update_control_assignment
-            - findings_update_countermeasures
-            - findings_update_threat
-            - findings_update_finding_recommendation
-            - findings_update_finding_resources
-            - findings_update_ecd
-            - findings_update_locked_ecd
-            - findings_update_legacy_finding_key
-            - findings_update_finding_source
-            - findings_upload_evidence
-            - findings_comment            
-            - findings_mitigation_strategy_submit
-            - findings_mitigation_strategy_revise
             - asset_create
             - asset_read
-            - asset_update
             - asset_unaffiliated
-            - organization_read
+            - asset_update
+            - finding_area
+            - finding_report_area
+            - findings_comment
+            - findings_create
+            - findings_inject
+            - findings_mitigation_strategy_revise
+            - findings_mitigation_strategy_submit
+            - findings_read
+            - findings_update_control_assignment
+            - findings_update_countermeasures
+            - findings_update_course_of_action
+            - findings_update_description
+            - findings_update_ecd
+            - findings_update_finding_recommendation
+            - findings_update_finding_resources
+            - findings_update_finding_source
+            - findings_update_findings_assignment
+            - findings_update_legacy_finding_key
+            - findings_update_locked_ecd
+            - findings_update_threat
+            - findings_update_type
+            - findings_upload_evidence
             - notification_admin
             - notification_asset
             - notification_finding
+            - notification_vulnerability
+            - organization_read
             - product_read
+            - system_inventory_report_area
             - vulnerability_area
-            - vulnerability_report_area
             - vulnerability_comment
             - vulnerability_create
             - vulnerability_read
-            - vulnerability_update
+            - vulnerability_report_area
             - vulnerability_resolution_read
-            - notification_vulnerability
+            - vulnerability_update
     
     admin_role:
         name: Application Administrator
         nickname: ADMIN
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Application Administrators group provides administrative privileges to the OpenFISMA application. Users will have the ability to access all security controls and functions.</p>
         Privileges: 
-            - areas_dashboard
             - areas_admin
-            - finding_area
-            - finding_report_area
+            - areas_dashboard
+            - asset_create
+            - asset_delete
+            - asset_read
+            - asset_unaffiliated
+            - asset_update
+            - document_type_create
+            - document_type_delete
+            - document_type_read
+            - document_type_update
             - finding_admin_area
-            - system_inventory_area
-            - system_inventory_report_area
-            - system_inventory_admin_area
-            - findings_create
-            - findings_update_type
-            - findings_read
-            - findings_update_description
-            - findings_delete
-            - findings_inject
-            - findings_approve
-            - findings_update_course_of_action
-            - findings_update_findings_assignment
-            - findings_update_control_assignment
-            - findings_update_countermeasures
-            - findings_update_threat
-            - findings_update_finding_recommendation
-            - findings_update_finding_resources
-            - findings_update_ecd
-            - findings_update_locked_ecd
-            - findings_update_legacy_finding_key
-            - findings_update_finding_source
-            - findings_upload_evidence
-            - findings_comment
-            - findings_mitigation_strategy_submit
-            - findings_mitigation_strategy_revise
-            - finding_mitigation_isso
-            - finding_mitigation_ivv
+            - finding_area
             - finding_evidence_isso
             - finding_evidence_ivv
-            - asset_create
-            - asset_read
-            - asset_update
-            - asset_delete
-            - asset_unaffiliated
-            - user_create
-            - user_read
-            - user_update
-            - user_delete
-            - organization_create
-            - organization_read
-            - organization_update
-            - organization_delete
-            - product_create
-            - product_read
-            - product_update
-            - product_delete
-            - source_create
-            - source_read
-            - source_update
-            - source_delete
-            - roles_create
-            - roles_read
-            - roles_update
-            - roles_delete
-            - roles_assignPrivileges
+            - finding_mitigation_isso
+            - finding_mitigation_ivv
+            - finding_report_area
+            - findings_comment
+            - findings_create
+            - findings_delete
+            - findings_inject
+            - findings_mitigation_strategy_revise
+            - findings_mitigation_strategy_submit
+            - findings_read
+            - findings_update_control_assignment
+            - findings_update_countermeasures
+            - findings_update_course_of_action
+            - findings_update_description
+            - findings_update_ecd
+            - findings_update_finding_recommendation
+            - findings_update_finding_resources
+            - findings_update_finding_source
+            - findings_update_findings_assignment
+            - findings_update_legacy_finding_key
+            - findings_update_locked_ecd
+            - findings_update_threat
+            - findings_update_type
+            - findings_upload_evidence
+            - incident_admin_area
+            - incident_area
+            - incident_classify
+            - incident_close
+            - incident_create
+            - incident_lock
+            - incident_read
+            - incident_report_area
+            - incident_resolve
+            - incident_update
+            - ir_sub_category_create
+            - ir_sub_category_delete
+            - ir_sub_category_read
+            - ir_sub_category_update
+            - ir_workflow_def_create
+            - ir_workflow_def_delete
+            - ir_workflow_def_read
+            - ir_workflow_def_update
             - networks_create
+            - networks_delete
             - networks_read
             - networks_update
-            - networks_delete
             - notification_admin
             - notification_asset
             - notification_finding
-            - incident_area
-            - incident_admin_area
-            - incident_report_area
-            - incident_read
-            - incident_classify
-            - incident_reject
-            - incident_resolve
-            - incident_close
-            - incident_create
-            - incident_update
-            - incident_lock
-            - ir_workflow_def_read
-            - ir_workflow_def_create
-            - ir_workflow_def_update
-            - ir_workflow_def_delete
-            - ir_sub_category_read
-            - ir_sub_category_update
-            - ir_sub_category_create
-            - ir_sub_category_delete
-            - vulnerability_area
+            - notification_vulnerability
+            - organization_create
+            - organization_delete
+            - organization_read
+            - organization_update
+            - product_create
+            - product_delete
+            - product_read
+            - product_update
+            - roles_assignPrivileges
+            - roles_create
+            - roles_delete
+            - roles_read
+            - roles_update
+            - source_create
+            - source_delete
+            - source_read
+            - source_update
+            - system_inventory_admin_area
+            - system_inventory_area
+            - system_inventory_report_area
+            - user_create
+            - user_delete
+            - user_read
+            - user_read
+            - user_update
             - vulnerability_admin_area
+            - vulnerability_area
             - vulnerability_comment
-            - vulnerability_report_area
             - vulnerability_create
-            - vulnerability_read
             - vulnerability_delete
-            - vulnerability_update
+            - vulnerability_read
+            - vulnerability_report_area
             - vulnerability_resolution_create
+            - vulnerability_resolution_delete
             - vulnerability_resolution_read
             - vulnerability_resolution_update
-            - vulnerability_resolution_delete
-            - notification_vulnerability
-            - user_read
-            - document_type_create
-            - document_type_read
-            - document_type_update
-            - document_type_delete
+            - vulnerability_update
 
     certagent_role:
         name: Certification Agent
@@ -267,22 +308,23 @@ Role:
         description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The certification agent is an individual, group, or organization responsible for conducting a security certification, or comprehensive assessment of the management, operational, and technical security controls in an information system to determine the extent to which the controls are implemented correctly, operating as intended, and producing the desired outcome with respect to meeting the security requirements for the system. The certification agent also provides recommended corrective actions to reduce or eliminate vulnerabilities in the information system. Prior to initiating the security assessment activities that are a part of the certification process, the certification agent provides an independent assessment of the system security plan to ensure the plan provides a set of security controls for the information system that is adequate to meet all applicable security requirements. </p><p><p><strong>[OpenFISMA Definition]</strong></p><p>This group is used by independent auditors to view finding information, create findings, set initial risk levels, and provide recommended corrective actions.</p>
         Privileges: 
             - areas_dashboard
+            - finding_area
+            - findings_comment
             - findings_create
             - findings_read
             - findings_update_description
-            - findings_update_threat
             - findings_update_finding_recommendation
-            - findings_update_legacy_finding_key
             - findings_update_finding_source
-            - findings_comment
+            - findings_update_legacy_finding_key
+            - findings_update_threat
             - notification_finding
+            - notification_vulnerability
             - vulnerability_area
             - vulnerability_comment
-            - vulnerability_report_area
             - vulnerability_create
             - vulnerability_read
+            - vulnerability_report_area
             - vulnerability_update
-            - notification_vulnerability
 
     iso_role:
         name: Information System Owner
@@ -290,32 +332,33 @@ Role:
         description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The information system owner is an agency official responsible for the overall procurement, development, integration, modification, or operation and maintenance of an information system. The information system owner is responsible for the development and maintenance of the system security plan and ensures the system is deployed and operated according to the agreed-upon security requirements. The information system owner is also responsible for deciding who has access to the information system (and with what types of privileges or access rights) and ensures that system users and support personnel receive the requisite security training (e.g., instruction in rules of behavior). The information system owner informs key agency officials of the need to conduct a security certification and accreditation of the information system, ensures that appropriate resources are available for the effort, and provides the necessary system-related documentation to the certification agent. The information system owner receives the security assessment results from the certification agent. After taking appropriate steps to reduce or eliminate vulnerabilities, the information system owner assembles the security accreditation package and submits the package to the authorizing official or the authorizing officials designated representative for adjudication. </p><p>The role of information system owner can be interpreted in a variety of ways depending on the particular agency and the system development life cycle phase of the information system. Some agencies may refer to information system owners as program managers or business/asset/mission owners. In some situations, the notification of the need to conduct a security certification and accreditation may come from the senior agency information security officer or authorizing official as they endeavor to ensure compliance with federal or agency policy. The responsibility for ensuring appropriate resources are allocated to the security certification and accreditation effort depends on whether the agency uses a centralized or decentralized funding mechanism. Depending on how the agency has organized and structured its security certification and accreditation activities, the authorizing official may choose to designate an individual other than the information system owner to compile and assemble the information for the accreditation package. In this situation, the designated individual must coordinate the compilation and assembly activities with the information system owner.</p>
         Privileges: 
             - areas_dashboard
+            - finding_area
             - finding_report_area
+            - findings_comment
             - findings_create
+            - findings_mitigation_strategy_revise
+            - findings_mitigation_strategy_submit
             - findings_read
-            - findings_update_description
-            - findings_update_course_of_action
             - findings_update_control_assignment
             - findings_update_countermeasures
+            - findings_update_course_of_action
+            - findings_update_description
+            - findings_update_ecd
             - findings_update_finding_recommendation
             - findings_update_finding_resources
-            - findings_update_ecd
-            - findings_update_legacy_finding_key
             - findings_update_finding_source
+            - findings_update_legacy_finding_key
             - findings_upload_evidence
-            - findings_comment
-            - findings_mitigation_strategy_submit
-            - findings_mitigation_strategy_revise
-            - organization_read
             - notification_asset
             - notification_finding
+            - notification_vulnerability
+            - organization_read
             - vulnerability_area
             - vulnerability_comment
-            - vulnerability_report_area
             - vulnerability_create
             - vulnerability_read
+            - vulnerability_report_area
             - vulnerability_update
-            - notification_vulnerability
 
     ao_role:
         name: Authorizing Official
@@ -323,19 +366,20 @@ Role:
         description: <p>The authorizing official (or designated approving/accrediting authority as referred to by some agencies) is a senior management official or executive with the authority to formally assume responsibility for operating an information system at an acceptable level of risk to agency operations, agency assets, or individuals. </p><p>The authorizing official should have the authority to oversee the budget and business operations of the information system within the agency and is often called upon to approve system security requirements, system security plans, and memorandums of agreement and/or memorandums of understanding. </p><p>The AO issues a formal approval to operate and information system, an interim authorization to operate the information system under specific terms and conditions; or deny authorization to operate the information system (or if the system is already operational, halt operations) if unacceptable security risks exist.</p>
         Privileges: 
             - areas_dashboard
+            - finding_area
             - finding_report_area
-            - system_inventory_report_area
-            - findings_read
             - findings_comment
-            - organization_read
+            - findings_read
             - notification_asset
             - notification_finding
+            - notification_vulnerability
+            - organization_read
+            - system_inventory_report_area
             - vulnerability_area
             - vulnerability_comment
-            - vulnerability_report_area
             - vulnerability_read
+            - vulnerability_report_area
             - vulnerability_update
-            - notification_vulnerability
 
     oss_role:
         name: Operational Support Staff
@@ -343,30 +387,31 @@ Role:
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>Operational Support StaffOperational support staff has the ability to view POA&M information and participates in the POA&M process in any or all of the following ways: </p><p><ul><li>Submitting course of action, mitigation strategy and/or expected completion date for the approval of the SSO. <li>Submitting threats and countermeasures information for the approval of the SSO. <li>Submitting evidence packages for the approval of the SSO.</ul></p>
         Privileges: 
             - areas_dashboard
+            - asset_read
+            - finding_area
+            - findings_comment
+            - findings_mitigation_strategy_revise
+            - findings_mitigation_strategy_submit
             - findings_read
-            - findings_update_type
-            - findings_update_course_of_action
             - findings_update_control_assignment
             - findings_update_countermeasures
-            - findings_update_finding_resources
+            - findings_update_course_of_action
             - findings_update_ecd
-            - findings_update_legacy_finding_key
+            - findings_update_finding_resources
             - findings_update_finding_source
+            - findings_update_legacy_finding_key
+            - findings_update_type
             - findings_upload_evidence
-            - findings_comment
-            - findings_mitigation_strategy_submit
-            - findings_mitigation_strategy_revise
-            - asset_read
             - notification_asset
             - notification_finding
-            - vulnerability_area
+            - notification_vulnerability
             - vulnerability_admin_area
+            - vulnerability_area
             - vulnerability_comment
-            - vulnerability_report_area
             - vulnerability_create
             - vulnerability_read
+            - vulnerability_report_area
             - vulnerability_update
-            - notification_vulnerability
 
     oig_role:
         name: OIG Representative
@@ -376,34 +421,33 @@ Role:
             - incident_area
             - incident_create
             - incident_lock
-            - vulnerability_area
-            - vulnerability_report_area
-            - vulnerability_read
             - notification_vulnerability
+            - vulnerability_area
+            - vulnerability_read
+            - vulnerability_report_area
 
     irc_role:
         name: Incident Response Coordinator
         nickname: IRC
         description:
         Privileges: 
-            - incident_area
             - incident_admin_area
-            - incident_report_area
-            - incident_read
-            - incident_reject
+            - incident_area
             - incident_classify
-            - incident_resolve
             - incident_close
             - incident_create
+            - incident_read
+            - incident_report_area
+            - incident_resolve
             - incident_update
-            - ir_sub_category_read
-            - ir_sub_category_update
             - ir_sub_category_create
             - ir_sub_category_delete
-            - ir_workflow_def_read
-            - ir_workflow_def_update
+            - ir_sub_category_read
+            - ir_sub_category_update
             - ir_workflow_def_create
             - ir_workflow_def_delete
+            - ir_workflow_def_read
+            - ir_workflow_def_update
     
     dbr_role:
         name: Data Breach Representative

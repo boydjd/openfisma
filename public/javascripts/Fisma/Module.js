@@ -19,7 +19,6 @@
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
- * @version   $Id$
  */
 
 Fisma.Module = {
@@ -61,7 +60,8 @@ Fisma.Module = {
         }
         
         if (!responseStatus.success) {
-            alert('Error: Not able to change module status. Reason: ' + responseStatus.message);
+            var alertMessage = 'Error: Not able to change module status. Reason: ' + responseStatus.message;
+            Fisma.Util.showAlertDialog(alertMessage);
         }
         
         // Disable switch button spinner

@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend_Mail
- * @version    $Id$
  */
 class Fisma_Zend_Mail extends Zend_Mail
 {

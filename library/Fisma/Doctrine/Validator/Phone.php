@@ -21,7 +21,6 @@
  * 
  * @package Fisma
  * @subpackage Fisma_Doctrine_Validator
- * @version $Id$
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3

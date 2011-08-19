@@ -29,7 +29,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Record
- * @version    $Id$
  */
 abstract class Fisma_Doctrine_Record extends Doctrine_Record
 {
@@ -180,6 +179,75 @@ abstract class Fisma_Doctrine_Record extends Doctrine_Record
     }
     
     /**
+     * Override parent isValid 
+     * 
+     * @access public
+     * @return void
+     */
+    public function isValid($deep = false, $hooks = true)
+    {
+
+        if ( ! $this->_table->getAttribute(Doctrine::ATTR_VALIDATE)) {
+            return true;
+        }
+
+        if ($this->_state == self::STATE_LOCKED || $this->_state == self::STATE_TLOCKED) {
+            return true;
+        }
+
+        if ($hooks) {
+            $this->invokeSaveHooks('pre', 'save');
+            $this->invokeSaveHooks('pre', $this->exists() ? 'update' : 'insert');
+        }
+
+        // Clear the stack from any previous errors.
+        $this->getErrorStack()->clear();
+
+        // Run validation process
+        $event = new Doctrine_Event($this, Doctrine_Event::RECORD_VALIDATE);
+        $this->preValidate($event);
+        $this->getTable()->getRecordListener()->preValidate($event);
+        
+        if ( ! $event->skipOperation) {
+
+            // Using Fisma_Doctrine_Validator which suppresses the warning message of FileNotFound. 
+            $validator = new Fisma_Doctrine_Validator();
+            $validator->validateRecord($this);
+            $this->validate();
+            if ($this->_state == self::STATE_TDIRTY || $this->_state == self::STATE_TCLEAN) {
+                $this->validateOnInsert();
+            } else {
+                $this->validateOnUpdate();
+            }
+        }
+
+        $this->getTable()->getRecordListener()->postValidate($event);
+        $this->postValidate($event);
+
+        $valid = $this->getErrorStack()->count() == 0 ? true : false;
+        if ($valid && $deep) {
+            $stateBeforeLock = $this->_state;
+            $this->_state = $this->exists() ? self::STATE_LOCKED : self::STATE_TLOCKED;
+
+            foreach ($this->_references as $reference) {
+                if ($reference instanceof Doctrine_Record) {
+                    if ( ! $valid = $reference->isValid($deep)) {
+                        break;
+                    }
+                } else if ($reference instanceof Doctrine_Collection) {
+                    foreach ($reference as $record) {
+                        if ( ! $valid = $record->isValid($deep)) {
+                            break;
+                        }
+                    }
+                }
+            }
+            $this->_state = $stateBeforeLock;
+        }
+
+        return $valid;
+    }
+    /**
      * Get a customized error validation message that is suitable for displaying to an end user
      * 
      * @see _customValidationErrorMessage
@@ -227,7 +295,8 @@ abstract class Fisma_Doctrine_Record extends Doctrine_Record
      */
     protected function _getCache()
     {
-        $bootstrap = (Zend_Controller_Front::getInstance()->getParam('bootstrap')) ? Zend_Controller_Front::getInstance()->getParam('bootstrap') : false;
+        $bootstrap = (Zend_Controller_Front::getInstance()->getParam('bootstrap')) ? 
+                        Zend_Controller_Front::getInstance()->getParam('bootstrap') : false;
 
         return ($bootstrap) ? $bootstrap->getResource('cachemanager')->getCache('default') : null;
     }

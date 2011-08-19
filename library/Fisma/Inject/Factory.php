@@ -24,7 +24,6 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Inject
- * @version    $Id$
  */
 class Fisma_Inject_Factory
 {
@@ -94,6 +93,10 @@ class Fisma_Inject_Factory
             return 'Nessus';
         } elseif (stristr($contents, 'AppDetective')) {
             return 'AppDetective';
+        } elseif (stristr($contents, 'QualysGuard')) {
+            return 'QualysGuard';
+        } elseif (preg_match('/^<scanJob>/', $contents)) {
+            return 'Retina';
         } else {
             return FALSE;
         }

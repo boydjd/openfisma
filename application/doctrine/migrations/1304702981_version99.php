@@ -32,7 +32,7 @@ class Version99 extends Doctrine_Migration_Base
     public function up()
     {
         $conn = Doctrine_Manager::connection();
-        $updateSql = "UPDATE configuration SET app_version = '2.13.0'";
+        $updateSql = "UPDATE configuration SET app_version = '2.13.1'";
         $conn->exec($updateSql);
     }
 

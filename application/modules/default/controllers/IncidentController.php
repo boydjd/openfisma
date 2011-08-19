@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class IncidentController extends Fisma_Zend_Controller_Action_Object
 {
@@ -114,11 +113,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function reportAction() 
     {
+        $subFormValid = true;
+
         // Unauthenticated users see a different layout that doesn't have a menubar
         if (!$this->_me) {
             $this->_helper->layout->setLayout('anonymous');
         }
         
+        // Get the current step of the process, defaults to zero
+        $step = $this->getRequest()->getParam('step');
+
         // Fetch the incident report draft from the session or create it if necessary
         $session = Fisma::getSession();
         if (isset($session->irDraft)) {
@@ -128,13 +132,15 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         }
 
         // Save the current form into the Incident and save the incident into the sesion
-        $incident->merge($this->getRequest()->getPost());
+        if ($this->_request->isPost()) {
+            if (!is_null($step) && $step != 0 && $step < 8) {
+                $subForm = $this->getFormPart($step);
+                $subFormValid = $subForm->isValid($this->_request->getPost());
+                $incident->merge($subForm->getValues());
+                $session->irDraft = serialize($incident);
+            }
+        }
                 
-        $session->irDraft = serialize($incident);
-
-        // Get the current step of the process, defaults to zero
-        $step = $this->getRequest()->getParam('step');
-
         if (is_null($step)) {
             $step = 0;
         } elseif ($this->getRequest()->getParam('irReportCancel')) {
@@ -142,6 +148,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             return;
         } elseif (!$incident->isValid()) {
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
+        } elseif (!$subFormValid) {
+            $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
+            $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
         } else {
             // The user can move forwards or backwards
             if ($this->getRequest()->getParam('irReportForwards')) {
@@ -167,9 +176,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $step--;
             }
         }
-        
+
         // Skip past PII sections if they are not applicable
-        if ($step == 5 && 'YES' != $incident->piiInvolved) {
+        if (($step == 5 || $step == 6) && 'YES' != $incident->piiInvolved) {
             if ($this->getRequest()->getParam('irReportForwards')) {
                 $step = 7;
             } else {
@@ -182,7 +191,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $step = 5;
             }            
         }
-        
+
         // Load the form part corresponding to this step
         if ($step < count($this->_formParts)) {
             $formPart = $this->getFormPart($step);            

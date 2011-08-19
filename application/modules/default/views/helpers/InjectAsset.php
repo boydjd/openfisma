@@ -20,7 +20,6 @@
  * @author    Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
  * @license   http://openfisma.org/content/license
- * @version   $Id$
  * @package   View_Helper
  */
 
@@ -58,6 +57,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Ldap.js',
                                       '/javascripts/Fisma/Menu.js',
                                       '/javascripts/Fisma/Module.js',
+                                      '/javascripts/Fisma/OrganizationTreeView.js',
                                       '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/Search.js',
                                       '/javascripts/Fisma/Search/Criteria.js',
@@ -65,6 +65,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Search/CriteriaQuery.js',
                                       '/javascripts/Fisma/Search/CriteriaRenderer.js',
                                       '/javascripts/Fisma/Search/Panel.js',
+                                      '/javascripts/Fisma/SessionManager.js',
                                       '/javascripts/Fisma/Spinner.js',
                                       '/javascripts/Fisma/Storage.js',
                                       '/javascripts/Fisma/PersistentStorage.js',
@@ -75,6 +76,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/TableFormat.js',
                                       '/javascripts/Fisma/TabView.js',
                                       '/javascripts/Fisma/TabView/Roles.js',
+                                      '/javascripts/Fisma/TreeNodeDragBehavior.js',
                                       '/javascripts/Fisma/UrlPanel.js',
                                       '/javascripts/Fisma/User.js',
                                       '/javascripts/Fisma/Util.js',
@@ -85,6 +87,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/jqPlot/plugins/jqplot_canvasAxisLabelRenderer.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasAxisTickRenderer.js',
                                       '/javascripts/jqPlot/plugins/jqplot_categoryAxisRenderer.js',
+                                      '/javascripts/jqPlot/plugins/jqplot_highlighter.js',
                                       '/javascripts/jqPlot/renderers/jqplot_barRenderer.js',
                                       '/javascripts/jqPlot/renderers/jqplot_pointLabels.js',
                                       '/javascripts/jqPlot/renderers/jqplot_pieRenderer.js',
@@ -103,6 +106,7 @@ class View_Helper_InjectAsset
                                       '/stylesheets/Modules.css',
                                       '/stylesheets/Search.css',
                                       '/stylesheets/SwitchButton.css',
+                                      '/stylesheets/TreeNodeDragBehavior.css',
                                       '/stylesheets/Toolbar.css',
                                       '/stylesheets/User.css'
                                 )
@@ -152,8 +156,9 @@ class View_Helper_InjectAsset
          * If we're not in debug mode, then insert the application version and -min into
          * the path.
          */
+        $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
         if (!Fisma::debug()) {
-            $appVersion = Fisma::configuration()->getConfig('app_version');
+            $appVersion = $versions['application'];
 
             foreach ($assets as &$asset) {
                 $asset = str_replace(

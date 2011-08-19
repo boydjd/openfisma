@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller_Action_Security
 {
@@ -578,7 +577,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $visibleColumns = $this->_getColumnVisibility();
 
         // Look up searchable columns and add them to the table
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
 
         foreach ($searchableFields as $fieldName => $searchParams) {
 
@@ -724,7 +723,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         // Execute simple search (default) or advanced search (if explicitly requested)
-        $searchEngine = Fisma_Search_BackendFactory::getSearchBackend();
+        $searchEngine = Zend_Registry::get('search_engine');
         
         // For exports, disable highlighting and result length truncation
         if (!empty($format)) {

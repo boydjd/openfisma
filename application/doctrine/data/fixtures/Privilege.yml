@@ -81,10 +81,6 @@ Privilege:
         resource: finding
         action: inject
         description: Inject Findings
-    findings_approve:
-        resource: finding
-        action: approve
-        description: Approve Pending Findings
     findings_update_type:
         resource: finding
         action: update_type
@@ -382,10 +378,6 @@ Privilege:
         resource: incident
         action: update
         description: Update Incident
-    incident_reject:
-        resource: incident
-        action: reject
-        description: Reject Incident
     incident_classify:
         resource: incident
         action: classify

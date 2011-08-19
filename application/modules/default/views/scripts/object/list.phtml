@@ -1,4 +1,4 @@
-<?php echo $this->escape( $this->searchBox( $this->toolbarButtons, $this->searchForm), 'none'); ?>
+<?php echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none'); ?>
 
 <div id="moreSearchOptions" class="searchBox searchBoxAdditional" style="display: none;">
     <p>More Search Options:</p>
@@ -175,8 +175,8 @@
                 
                 // Reject clicks for deleted records
                 if (rowData.getData('deleted_at')) {
-                    alert('This record cannot be viewed because it was deleted.');
-                    
+                    var message = 'This record cannot be viewed because it was deleted.';
+                    Fisma.Util.showAlertDialog(message);
                     return;
                 }
                 

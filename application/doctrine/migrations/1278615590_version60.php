@@ -1,4 +1,5 @@
 <?php
+// @codingStandardsIgnoreFile
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -20,10 +21,7 @@
  * Rename the current security control table, then create new security control table, security catalog control table,
  * and security control enhancements table.
  * 
- * @codingStandardsIgnoreFile
- * 
  * @package Migration
- * @version $Id: 1276885091_version57.php 3531 2010-06-18 19:32:58Z jboyd $
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @author Mark E. Haase <mhaase@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3

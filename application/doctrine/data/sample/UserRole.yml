@@ -3,20 +3,536 @@ UserRole:
         User: sample
         Role: admin_role
         Organizations:
+            - ARP_ORG
             - BGA_ORG
-            - BOP_ORG
-            - OCIO_ORG
-            - WDC_ORG
-            - OF_ORG
-            - OSC_ORG
-            - OCFO_ORG
-            - FMS_ORG
-            - TETS_ORG
-            - BOS_ORG
-            - OIG_ORG
-            - IAD_ORG
             - CIT_ORG
-            - OCOO_ORG
-            - SCMS_ORG
             - CRMS_ORG
             - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG
+    mike_green_user_role:
+        User: mike_green
+        Role: ao_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG
+    alexander_ovechkin_user_role:
+        User: alexander_ovechkin
+        Role: oig_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG
+    alexander_semin_user_role:
+        User: alexander_semin
+        Role: ciso_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG
+    mike_knuble_user_role:
+        User: mike_knuble
+        Role: oig_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG
+    nicklas_backstrom_user_role:
+        User: nicklas_backstrom
+        Role: oig_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG
+    michael_neuvirth_user_role:
+        User: michael_neuvirth
+        Role: isso_role
+        Organizations:
+            - HAZMAT_ORG
+    bruce_boudreau_user_role:
+        User: bruce_boudreau
+        Role: isso_role
+        Organizations:
+            - RCD_ORG
+    george_mcphee_user_role:
+        User: george_mcphee
+        Role: isso_role
+        Organizations:
+            - GREEN_NRG_ORG
+    semyon_varlamov_user_role:
+        User: semyon_varlamov
+        Role: isso_role
+        Organizations:
+            - WIND_ORG
+    braden_holtby_user_role:
+        User: braden_holtby
+        Role: isso_role
+        Organizations:
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - ORACLE_ORG
+            - RESTON_ORG
+    john_erskine_user_role:
+        User: john_erskine
+        Role: isso_role
+        Organizations:
+            - HERNDON_ORG
+    matt_hendricks_user_role:
+        User: matt_hendricks
+        Role: isso_role
+        Organizations:
+            - RMTRP_ORG
+            - ROCP_ORG
+    matt_bradley_user_role:
+        User: matt_bradley
+        Role: isso_role
+        Organizations:
+            - H20_RIGHTS_ORG
+            - WILDLIFE_ORG
+    john_carlson_user_role:
+        User: john_carlson
+        Role: isso_role
+        Organizations:
+            - IAD_ORG
+            - OF_ORG
+            - SCMS_ORG
+    jeff_schultz_user_role:
+        User: jeff_schultz
+        Role: isso_role
+        Organizations:
+            - CIT_ORG
+            - CRMS_ORG
+            - OSC_ORG
+    karl_alzner_user_role:
+        User: karl_alzner
+        Role: isso_role
+        Organizations:
+            - TPP_ORG
+    jason_chimera_user_role:
+        User: jason_chimera
+        Role: iso_role
+        Organizations:
+            - OCIO_ORG
+            - OF_ORG
+            - OSC_ORG
+            - TPP_ORG
+    boyd_gordon_user_role:
+        User: boyd_gordon
+        Role: iso_role
+        Organizations:
+            - CRMS_ORG
+            - OCOO_ORG
+            - SCMS_ORG
+    marcus_johansson_user_role:
+        User: marcus_johansson
+        Role: iso_role
+        Organizations:
+            - CIT_ORG
+            - IAD_ORG
+            - OIG_ORG
+    mathieu_perreault_user_role:
+        User: mathieu_perreault
+        Role: ivv_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG
+    brooks_laich_user_role:
+        User: brooks_laich
+        Role: ivv_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG
+    marco_sturm_user_role:
+        User: marco_sturm
+        Role: alt_isso_role
+        Organizations:
+            - CIT_ORG
+            - CRMS_ORG
+            - IAD_ORG
+            - OF_ORG
+            - OSC_ORG
+            - SCMS_ORG
+            - TPP_ORG
+    jason_chimera_user_role:
+        User: jason_chimera
+        Role: irc_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG
+    dennis_wideman_user_role:
+        User: dennis_wideman
+        Role: alt_isso_role
+        Organizations:
+            - H20_RIGHTS_ORG
+            - HERNDON_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - ROCP_ORG
+            - WILDLIFE_ORG
+    tom_poti_user_role:
+        User: tom_poti
+        Role: alt_isso_role
+        Organizations:
+            - GREEN_NRG_ORG
+            - HAZMAT_ORG
+            - RCD_ORG
+            - WIND_ORG
+    sean_collins_user_role:
+        User: sean_collins
+        Role: pa_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG

@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class RoleController extends Fisma_Zend_Controller_Action_Object
 {
@@ -130,5 +129,10 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             $this->view->assign('existFunctions', $existFunctions);
             $this->render('right');
         }
+    }
+    
+    protected function _isDeletable()
+    {
+        return false;
     }
 }

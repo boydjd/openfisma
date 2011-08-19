@@ -4916,7 +4916,7 @@ SecurityControl:
     Rev1_PS_01:
         code: PS-01
         name: Personnel Security Policy And Procedures
-        class: Operational
+        class: OPERATIONAL
         family: Personnel Security
         control: >
             The organization develops, disseminates, and periodically reviews/updates: <ol><li>a formal, documented, 

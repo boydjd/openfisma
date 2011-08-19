@@ -23,7 +23,6 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * @version    $Id$
  */
 class UserController extends Fisma_Zend_Controller_Action_Object
 {
@@ -48,7 +47,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->contextSwitch()
                       ->setAutoJsonSerialization(false)
                       ->addActionContext('check-account', 'json')
-                      ->addActionContext('set-cookie', 'json')
                       ->initContext();
     }
     
@@ -72,6 +70,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->removeElement('lockReason');
         $form->removeElement('lockTs');
         $form->removeElement('comment');
+        $form->removeElement('mustResetPassword');
         return $form;
     }
 
@@ -101,8 +100,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             // If any roles were added to the user without any organizations, make sure they're added
             // to the appropriate array for saving the User Roles.
-            foreach (array_diff_key(array_flip($values['role']), $rolesOrganizations) as $k => $v) {
-                $rolesOrganizations[$k] = array();
+            if (Inspekt::isArrayOrArrayObject($values['role'])) {
+                foreach (array_diff_key(array_flip($values['role']), $rolesOrganizations) as $k => $v) {
+                    $rolesOrganizations[$k] = array();
+                }
             }
 
             unset($values['role']);
@@ -160,6 +161,20 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 unset($userRole);
             }
             $conn->commit();
+
+            // Just send out email when create a new account or change password by admin user,
+            // and it does not sent out email when the root user changes his own password.
+            $actionName = strtolower($this->_request->getActionName());
+            if ('create' === $actionName) {
+                $mail = new Fisma_Zend_Mail();
+                $mail->sendAccountInfo($subject);
+            } else if ('edit' === $actionName
+                       && !empty($values['password'])
+                       && ('root' !== $subject->username || $this->_me->username !== 'root')) {
+                $mail = new Fisma_Zend_Mail();
+                $mail->sendPassword($subject);
+            }
+
             return $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
@@ -275,8 +290,20 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     $user->save();
                     $message = "Password updated successfully."; 
                     $model   = 'notice';
-                    if ($this->_helper->AccessControl->hasAccessControl($user->id, 'mustResetPassword')) {
-                        $this->_helper->AccessControl->unRegisterAccessControl($user->id, 'mustResetPassword');
+                    if ($this->_helper->ForcedAction->hasForcedAction($user->id, 'mustResetPassword')) {
+
+                        // Remove the forced action of mustResetPassword from session, and send users to 
+                        // their original requested page or dashboard otherwise.
+                        $this->_helper->ForcedAction->unregisterForcedAction($user->id, 'mustResetPassword');
+
+                        $session = Fisma::getSession();
+                        if (isset($session->redirectPage) && !empty($session->redirectPage)) {
+                            $path = $session->redirectPage;
+                            unset($session->redirectPage);
+                            $this->_response->setRedirect($path);
+                        } else {
+                            $this->_redirect('/index/index');
+                        }
                     }
                 } catch (Doctrine_Exception $e) {
                     $message = $e->getMessage();
@@ -335,56 +362,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Set a cookie that will be reloaded whenever this user logs in
-     * 
-     * @return void
-     */
-    public function setCookieAction()
-    {
-        $response = new Fisma_AsyncResponse();
-        
-        $cookieName = $this->getRequest()->getParam('name');
-        $cookieValue = $this->getRequest()->getParam('value');
-
-        if (empty($cookieName) || is_null($cookieValue)) {
-            throw new Fisma_Zend_Exception("Cookie name and/or cookie value cannot be null");
-        }
-
-        // See if a cookie exists already
-        $query = Doctrine_Query::create()
-                 ->from('Cookie c')
-                 ->where('c.userId = ? AND c.name = ?', array($this->_me->id, $cookieName))
-                 ->limit(1);
-
-        $result = $query->execute();
-
-        if (0 == count($result)) {
-            // Insert new cookie
-            $cookie = new Cookie;
-
-            $cookie->name = $cookieName;
-            $cookie->value = $cookieValue;
-            $cookie->userId = $this->_me->id;
-        } else {
-            // Update existing cookie
-            $cookie = $result[0];
-
-            $cookie->value = $cookieValue;
-        }
-        
-        try {
-            $cookie->save();
-        } catch (Doctrine_Validator_Exception $e) {
-            $response->fail($e->getMessage());
-        }
-
-        $this->_helper->layout->setLayout('ajax');
-        $this->_helper->viewRenderer->setNoRender();
-
-        echo Zend_Json::encode($response);
-    }
-    
-    /**
      * Store user last accept rob and create a audit event
      * 
      * @return void
@@ -399,8 +376,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $user->lastRob = Fisma::now();
             $user->save();
        
-            if ($this->_helper->AccessControl->hasAccessControl($user->id, 'rulesOfBehavior')) {
-                $this->_helper->AccessControl->unRegisterAccessControl($user->id, 'rulesOfBehavior');
+            if ($this->_helper->ForcedAction->hasForcedAction($user->id, 'rulesOfBehavior')) {
+                $this->_helper->ForcedAction->unregisterForcedAction($user->id, 'rulesOfBehavior');
             }
 
             $this->_helper->layout->setLayout('layout');
@@ -524,7 +501,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             foreach ($organizationTree as $organization) {
                 $organizations->addCheckbox(
                     $organization['id'], 
-                    $organization['name'], 
+                    $organization['nickname'] . ' - ' . $organization['name'], 
                     $organization['level'], 
                     $roleId
                 );
@@ -717,6 +694,25 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
+     * Add a comment to a specified user
+     */
+    public function addCommentAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $user = Doctrine::getTable('User')->find($id);
+
+        $comment = $this->getRequest()->getParam('comment');
+
+        if ('' != trim(strip_tags($comment))) {
+            $user->getComments()->addComment($comment);
+        } else {
+            $this->view->priorityMessenger('Comment field is blank', 'warning');
+        }
+        
+        $this->_redirect("/user/comments/id/$id");
+    }
+
+    /**
      * Displays the user comment interface
      *
      * @return void
@@ -734,22 +730,24 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->username = $user->username;
         $this->view->viewLink = "/user/view/id/$id";
 
-        $commentData = array();
-        foreach ($comments as $comment) {
-            $commentData[] = array(
-                $comment['createdTs'], 
-                $this->view->userInfo($comment['User']['username']), 
-                $comment['comment'],
-            );
-        }
+        $commentButton = new Fisma_Yui_Form_Button(
+            'commentButton', 
+            array(
+                'label' => 'Add Comment', 
+                'onClickFunction' => 'Fisma.Commentable.showPanel',
+                'onClickArgument' => array(
+                    'id' => $id,
+                    'type' => 'User',
+                    'callback' => array(
+                        'object' => 'User',
+                        'method' => 'commentCallback'
+                    )
+                )
+            )
+        );
 
-        $dataTable = new Fisma_Yui_DataTable_Local();
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, 'YAHOO.widget.DataTable.formatText'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, 'Fisma.TableFormat.formatHtml'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Comment', false))
-                  ->setData($commentData);
-
-        $this->view->dataTable = $dataTable;
+        $this->view->commentButton = $commentButton;
+        $this->view->comments = $comments;
     }
 
     /**
@@ -824,6 +822,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         
         Doctrine::getTable('UserRoleOrganization')
         ->getByOrganizationIdAndUserRoleIdQuery($organizationId, $userRoles)
+        ->execute()
         ->delete();
 
         foreach ($userRoles as $userRole) { 
@@ -834,5 +833,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         }
 
         Doctrine_Manager::connection()->commit();
+    }
+    
+    protected function _isDeletable()
+    {
+        return false;
     }
 }
