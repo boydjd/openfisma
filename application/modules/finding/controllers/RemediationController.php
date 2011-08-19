@@ -89,6 +89,16 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                           ->addActionContext('summary-data', array('pdf', 'xls'));
         }
 
+        $this->_helper->ajaxContext()
+             ->addActionContext('finding', 'html')
+             ->addActionContext('mitigation-strategy', 'html')
+             ->addActionContext('risk-analysis', 'html')
+             ->addActionContext('security-control', 'html')
+             ->addActionContext('comments', 'html')
+             ->addActionContext('artifacts', 'html')
+             ->addActionContext('audit-log', 'html')
+             ->initContext();
+
         parent::init();
     }
     
@@ -574,13 +584,13 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $tabView = new Fisma_Yui_TabView('FindingView', $id);
 
-        $tabView->addTab("Finding $id", "/finding/remediation/finding/id/$id");
-        $tabView->addTab("Mitigation Strategy", "/finding/remediation/mitigation-strategy/id/$id");
-        $tabView->addTab("Risk Analysis", "/finding/remediation/risk-analysis/id/$id");
-        $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id");
-        $tabView->addTab("Comments ($commentCount)", "/finding/remediation/comments/id/$id");
-        $tabView->addTab("Artifacts (" . $finding->Evidence->count() . ")", "/finding/remediation/artifacts/id/$id");
-        $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id");
+        $tabView->addTab("Finding $id", "/finding/remediation/finding/id/$id/format/html");
+        $tabView->addTab("Mitigation Strategy", "/finding/remediation/mitigation-strategy/id/$id/format/html");
+        $tabView->addTab("Risk Analysis", "/finding/remediation/risk-analysis/id/$id/format/html");
+        $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id/format/html");
+        $tabView->addTab("Comments ($commentCount)", "/finding/remediation/comments/id/$id/format/html");
+        $tabView->addTab("Artifacts (" . $finding->Evidence->count() . ")", "/finding/remediation/artifacts/id/$id/format/html");
+        $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id/format/html");
 
         $this->view->tabView = $tabView;
 
@@ -631,7 +641,32 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             }
         }
 
+        // printer friendly version
+        $buttons['print'] = new Fisma_Yui_Form_Button_Link(
+            'toolbarPrintButton',
+            array(
+                'value' => 'Printer Friendly Version',
+                'href' => $this->getBaseUrl() . '/print/id/' . $id,
+                'target' => '_new'
+            )
+        );
         $this->view->toolbarButtons = $buttons;
+    }
+
+    /**
+     * Printer-friendly version of the finding view page.
+     * 
+     * @return void
+     */
+    public function printAction()
+    {
+        $this->findingAction();
+        $this->mitigationStrategyAction();
+        $this->riskAnalysisAction();
+        $this->securityControlAction();
+        $this->commentsAction();
+        $this->artifactsAction();
+        $this->auditLogAction();
     }
 
     /**
@@ -690,7 +725,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->commentButton = $commentButton;
         $this->view->comments = $comments;
-        $this->_helper->layout->setLayout('ajax');
     }
     
     /**
@@ -1048,7 +1082,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->view->organizationViewUrl = "/$controller/view/$idParameter/$organization->id";
 
         $this->view->keywords = $this->_request->getParam('keywords');
-        $this->_helper->layout->setLayout('ajax');
     }
 
     /**
@@ -1059,7 +1092,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function mitigationStrategyAction() 
     {
         $this->_viewFinding();
-        $this->_helper->layout->setLayout('ajax');
     }
 
     /**
@@ -1071,7 +1103,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_viewFinding();
         $this->view->keywords = $this->_request->getParam('keywords');
-        $this->_helper->layout->setLayout('ajax');
     }
 
     /**
@@ -1082,7 +1113,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function artifactsAction() 
     {
         $this->_viewFinding();
-        $this->_helper->layout->setLayout('ajax');
 
         // Get a list of artifacts related to this finding
         $artifactsQuery = Doctrine_Query::create()
@@ -1112,7 +1142,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function auditLogAction() 
     {
         $this->_viewFinding();
-        $this->_helper->layout->setLayout('ajax');
         
         $logs = $this->view->finding->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
         
@@ -1133,7 +1162,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function securityControlAction() 
     {
         $this->_viewFinding();
-        $this->_helper->layout->setLayout('ajax');
         
         $form = Fisma_Zend_Form_Manager::loadForm('finding_security_control');
 
