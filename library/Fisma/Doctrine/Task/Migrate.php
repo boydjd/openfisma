@@ -47,25 +47,23 @@ class Fisma_Doctrine_Task_Migrate extends Doctrine_Task
         } 
 
         if ($from == $to) {
-            throw new Doctrine_Migration_Exception('Already at version # ' . $to);
+            throw new Doctrine_Migration_Exception('Already at version #' . $to);
         }
 
         if ($from < $to) {
-            $this->notify('Doctrine migrates from version ' . ((int)$from + 1) .' to '. $to);
-        } else {
-            $this->notify('Doctrine migrates from version ' . $from .' to '. $to);
+            $this->notify('Planning migration from #' . $from .' to #'. $to);
         }
 
         $migrationClasses = $migration->getMigrationClasses();
 
         if ($to < $from) {
             for ($i = (int)$from - 1; $i >= (int)$to; $i--) {
-                $this->notify('Doctrine executing migration :' . ($i + 1));
+                $this->notify('Migrate down #' . ($i + 1));
                 $version = $migration->migrate($i);
             }
         } else {
             for ($i = (int)$from + 1; $i <= (int)$to; $i++) {
-                $this->notify('Doctrine executing migration :' . $i);
+                $this->notify('Migrate up #' . $i);
                 $migration->migrate($i);
             }
         }
