@@ -28,7 +28,6 @@ Fisma.SecurityAuthorization = {
      * @return {Boolean} False to interrupt consequent operations
      */
     showPanel : function (event) {
-
         // Create a new panel
         var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : true});
         newPanel.setHeader('Select System');
@@ -65,5 +64,9 @@ Fisma.SecurityAuthorization = {
                 argument: newPanel
             },
             null);
+    },
+
+    completeForm : function(event) {
+        document.getElementById('completeForm').submit();
     },
 }
