@@ -2945,6 +2945,9 @@ Fisma.Chart = {
                 rendererOptions: {
                     numberRows: 2 
                 }
+            },
+            highlighter: {
+                show: false
             }
         };
 
