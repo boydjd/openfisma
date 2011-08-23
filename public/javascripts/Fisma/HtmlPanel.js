@@ -58,7 +58,7 @@ Fisma.HtmlPanel = function() {
             panel.show();
             
             // Fill the panel with HTML text
-            if (html !== '') {
+            if (YAHOO.lang.isValue(html) && html !== '') {
                 panel.setBody(html);
                 panel.center();
             }

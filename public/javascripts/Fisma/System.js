@@ -32,6 +32,35 @@ Fisma.System = {
     },
 
     /**
+     * Displays the hidden block on the FIPS-199 page to add information types to a system 
+     */
+    showInformationTypes : function () {
+        document.getElementById('addInformationTypes').style.display = 'block';
+    },
+
+    /**
+     * Build URL for adding information type to the system 
+     */
+    addInformationType : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = "<a href='/system/add-information-type/id/" 
+                         + oRecord.getData('system') 
+                         + "/sitId/" 
+                         + oData 
+                         + "'>Add</a>";
+    },
+
+    /**
+     * Build URL for removing information types from a system 
+     */
+    removeInformationType : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = "<a href='/system/remove-information-type/id/" 
+                         + oRecord.getData('system') 
+                         + "/sitId/" 
+                         + oData 
+                         + "'>Remove</a>";
+    },
+
+    /**
      * removeSelectedUsers 
      * 
      * @param event $event 
