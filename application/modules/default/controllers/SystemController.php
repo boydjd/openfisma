@@ -266,7 +266,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         if (is_null($system)) {
             $system = new System();
             $system->Organization = new Organization();
-            $system->Organization->orgType = 'system';
+            $systemType = Doctrine::getTable('OrganizationType')->findOneByNickname('system');
+            $system->Organization->orgTypeId = $systemType->id;
 
             /**
              * Set a flag indicating that this system needs to be added to the current user's ACL... this is used below.
