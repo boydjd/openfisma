@@ -693,6 +693,15 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->system = $this->view->organization->System;
         // BEGIN: Build the data table of information types associated with the system
 
+        $addInformationTypeButton = new Fisma_Yui_Form_Button(
+            'addInformationTypeButton',
+            array(
+                 'label' => 'Add Information Types',
+                 'onClickFunction' => 'Fisma.System.showInformationTypes',
+            )
+        );
+        $this->view->addInformationTypeButton = $addInformationTypeButton;
+
         $informationTypesTable = new Fisma_Yui_DataTable_Remote();
 
         $informationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, null, 'category'))
