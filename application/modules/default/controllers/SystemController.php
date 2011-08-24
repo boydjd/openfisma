@@ -311,25 +311,19 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         // Copy users and roles from another organization
         if (!empty($systemData['cloneOrganizationId'])) {
-            $usersAndRoles = Doctrine::getTable('Organization')
-                             ->getUsersAndRolesByOrganizationIdQuery($systemData['cloneOrganizationId'])
-                             ->execute();
+            $userRoles = Doctrine_Query::create()
+                 ->from('UserRole ur')
+                 ->leftJoin('ur.User u')
+                 ->leftJoin('ur.UserRoleOrganization uro')
+                 ->leftJoin('uro.Organization o')
+                 ->where('o.id = ?', $systemData['cloneOrganizationId'])
+                 ->execute();
 
-            Doctrine_Manager::connection()->beginTransaction();
-
-            foreach ($usersAndRoles as $userAndRole) {
-
-                $userRole = Doctrine_Query::create()
-                            ->from('UserRole ur')
-                            ->where('ur.userid = ?', $userAndRole['u_id'])
-                            ->andWhere('ur.roleid = ?', $userAndRole['r_id'])
-                            ->fetchOne();
-
+            foreach ($userRoles as $userRole) {
                 $userRole->Organizations[] = $system->Organization;
-                $userRole->save();
             }
 
-            Doctrine_Manager::connection()->commit();
+            $userRoles->save();
         }
 
         return $system->id;
