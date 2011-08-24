@@ -227,6 +227,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     $modified = $user->getModified();
                     $user->save();
                     Doctrine_Manager::connection()->commit();
+                    $this->_updatePocIndex($user->id);
                     $message = "Profile updated successfully"; 
                     $model   = 'notice';
                 } catch (Doctrine_Exception $e) {
