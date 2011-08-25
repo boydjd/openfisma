@@ -199,15 +199,18 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function documentationComplianceAction()
     {
-        $systemDocuments = Doctrine::getTable('SystemDocument')->getSystemDocumentQuery()->execute();
-
+        $systemDocuments = Doctrine::getTable('SystemDocument')->getSystemDocumentReportDataQuery()->execute();
+        $allRequiredDocumentTypeName = Doctrine::getTable('DocumentType')
+                                       ->getAllRequiredDocumentTypeQuery()
+                                       ->execute()
+                                       ->toKeyValueArray('id', 'name');
         $systemData = array();
-        $documentType = Doctrine::getTable('DocumentType');
         foreach ($systemDocuments as $systemDocument) {
             $systemData[] = array(
                 $systemDocument['o_name'],
                 $systemDocument['dt_percentage'],
-                $documentType->getMissingDocumentTypeName($systemDocument['s_id'])
+                $this->_getMissingDocumentTypeName($allRequiredDocumentTypeName, 
+                                                   $systemDocument['dt_uploadedRequiredDocument'])
             );
         }
 
@@ -235,5 +238,23 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                ->setData($systemData);
 
         $this->_helper->reportContextSwitch()->setReport($report);
+    }
+
+    /**
+     * Get the missing document type name(s) by comparing $allRequiredDocumentType 
+     * and $uploadedRequiredDocumentType
+     */
+    private function _getMissingDocumentTypeName($allRequiredDocumentType, $uploadedRequiredDocumentType)
+    {
+        if ('N/A' != $uploadedRequiredDocumentType && count($allRequiredDocumentType) > 0) {
+            $uploadedRequiredDocumentTypeArray = explode(',', $uploadedRequiredDocumentType);
+            $missingDocumentTypeNames = array_diff($allRequiredDocumentType, $uploadedRequiredDocumentTypeArray);
+
+            return count($missingDocumentTypeNames) > 0 ? join(',', $missingDocumentTypeNames) : 'N/A';
+        } else if (count($allRequiredDocumentType) > 0) {
+            return join(',', $allRequiredDocumentType);
+        } else {
+            return 'N/A';
+        }
     }
 }

@@ -113,11 +113,12 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
     }
 
     /*
-     * Get an array of system documents including system id, name and percentage
+     * Get an array of system documents including system id, nickname - name, uploaded required document
+     * and percentage
      * 
      * @return array
      */
-    public function getSystemDocumentQuery()
+    public function getSystemDocumentReportDataQuery()
     {
         $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
@@ -126,18 +127,19 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
         // Get data for the report
         $systemDocumentQuery = $baseQuery
                                ->select('s.id As id')
-                               ->addSelect('o.name AS name')
+                               ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS name")
                                ->addSelect(
                                    "ROUND(SUM(IF(dt.required = true, 1, 0)) / "
                                    . "($docTypeRequiredCount)*100, 1) AS percentage"
                                )
+                               ->addSelect("IFNULL(GROUP_CONCAT(dt.name), 'N/A') AS uploadedRequiredDocument")
                                ->leftJoin('o.System s')
                                ->leftJoin('s.Documents sd')
                                ->leftJoin('sd.DocumentType dt')
                                ->andWhere('o.orgType = ?', array('system'))
                                ->andWhere('s.sdlcPhase <> ?', 'disposal')
-                               ->groupBy('o.name')
-                               ->orderBy('o.name')
+                               ->groupBy('o.nickname')
+                               ->orderBy('o.nickname')
                                ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         return $systemDocumentQuery;
