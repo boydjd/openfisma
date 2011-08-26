@@ -8,6 +8,18 @@
             <td>Username</td>
             <td><?php echo $this->escape($this->user->username); ?></td>
         </tr>
+        <?php if (!empty($this->user->reportingOrganizationId)) : ?>
+        <tr>
+            <td>Reporting Organization</td>
+            <td>
+                <a href="/organization/view/id/<?php echo $this->escape($this->user->reportingOrganizationId); ?>">
+                    <?php echo $this->escape($this->user->ReportingOrganization->nickname); ?>
+                    -
+                    <?php echo $this->escape($this->user->ReportingOrganization->name); ?>
+                </a>
+            </td>
+        </tr>
+        <?php endif; ?>
         <tr>
             <td>E-mail</td>
             <td>
