@@ -120,7 +120,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                              ->execute();
 
         if (0 == count($this->_samplePocs)) {
-            throw new Fisma_Exception("Cannot generate sample data because the application has no users.");
+            throw new Fisma_Exception("Cannot generate sample data because the application has no POCs.");
         }        
 
         // Get the evaluation ID for MSA
@@ -202,7 +202,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                 $f = new Finding();
                 $f->merge($finding);
                 $f->CreatedBy = $this->_getRandomUser();
-                $f->PointOfContact = $this->_getRandomPoc();
+                $f->pocId = $this->_getRandomPoc()->id;
                 $f->save();
                 
                 if ($f->status == 'MSA') {
