@@ -11,8 +11,17 @@
         <tbody>
             <?php foreach ($this->data as $row): ?>
                 <tr>
-                    <?php foreach($row as $cell): ?>
-                    <td><?php echo $this->escape($cell) ?></td>
+                    <?php 
+                    foreach ($row = array_values($row) as $cell) : 
+                        if (
+                            !empty($this->columnDefinitions[key($row)]['formatter']) &&
+                            $this->columnDefinitions[key($row)]['formatter'] == 'Fisma.TableFormat.formatHtml'
+                        ) {
+                            $format = 'none';
+                        } else {
+                            $format = 'html';
+                        }?>
+                    <td><?php echo $this->escape($cell, $format)?></td>
                     <?php endforeach;?>
                 </tr>
             <?php endforeach; ?>
