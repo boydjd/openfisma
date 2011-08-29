@@ -635,22 +635,6 @@ class User extends BaseUser
     }
 
     /**
-     * Doctrine hook for post-insert
-     *
-     * @param Doctrine_Event $event The triggered doctrine event
-     * @return void
-     */
-    public function postInsert($event)
-    {
-        //Send account creation email during user creation
-        // OFJ-435: quick hack for release 2.5, only send emails in web app mode
-        if (isset($this->email) && !empty($this->email) && Fisma::RUN_MODE_WEB_APP == Fisma::mode()) {
-            $mail = new Fisma_Zend_Mail();
-            $mail->sendAccountInfo($this);
-        }
-    }
-
-    /**
      * Doctrine hook for post-update
      *
      * @param Doctrine_Event $event The triggered doctrine event
@@ -660,12 +644,6 @@ class User extends BaseUser
     public function postUpdate($event)
     {
         $modified = $this->getModified(true, true);
-
-        //send password changing email after password updated
-        if (isset($modified['password'])) {
-            $mail = new Fisma_Zend_Mail();
-            $mail->sendPassword($this);
-        }
 
         // Ensure that any user can not change root username
         if (isset($modified['username']) && 'root' == $modified['username']) {

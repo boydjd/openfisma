@@ -182,12 +182,21 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
 
             foreach ($findings as $finding) {
                 $f = new Finding();
+
+                // Because the finding model is awful, we're setting the current evaluation early so that
+                // the mutators don't freak out.
+                if ($finding['status'] == 'MSA') {
+                    $f->CurrentEvaluation = $msaEvaluation;
+                } elseif ($finding['status'] == 'EA') {
+                    $f->CurrentEvaluation = $eaEvaluation;
+                }
+
                 $f->merge($finding);
                 $f->CreatedBy = $this->_getRandomUser();
+
                 $f->save();
                 
                 if ($f->status == 'MSA') {
-                    $f->CurrentEvaluation = $msaEvaluation;
                     $f->updateDenormalizedStatus();
                     $f->save();
 
@@ -204,7 +213,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                     
                     $evidence->save();
                     
-                    $f->CurrentEvaluation = $eaEvaluation;
                     $f->updateDenormalizedStatus();
                     $f->save();
 

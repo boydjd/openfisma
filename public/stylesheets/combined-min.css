@@ -110,16 +110,16 @@ span.userInfo:active{color:#416ed7;}
 .jqplot-y2axis-label,.jqplot-y3axis-label,.jqplot-y4axis-label,.jqplot-y5axis-label,.jqplot-y6axis-label,.jqplot-y7axis-label,.jqplot-y8axis-label,.jqplot-y9axis-label{font-size:11pt;position:absolute;}
 table.jqplot-table-legend{margin-top:12px;margin-bottom:12px;margin-left:12px;margin-right:12px;color:000000;}
 table.jqplot-table-legend,table.jqplot-cursor-legend{background-color:rgba(255,255,255,0.6);border:1px solid #ccc;position:absolute;font-size:.75em;}
-td.jqplot-table-legend{vertical-align:middle;}
+td.jqplot-table-legend{vertical-align:middle;padding:.5em!important;}
 td.jqplot-seriesToggle:hover,td.jqplot-seriesToggle:active{cursor:pointer;}
-td.jqplot-table-legend>div{border:1px solid #ccc;padding:1px;}
-div.jqplot-table-legend-swatch{width:0;height:0;border-top-width:5px;border-bottom-width:5px;border-left-width:6px;border-right-width:6px;border-top-style:solid;border-bottom-style:solid;border-left-style:solid;border-right-style:solid;}
+td.jqplot-table-legend>div{border:1px solid #ccc;padding:1px;color:#000;}
+div.jqplot-table-legend-swatch{width:0;height:0;border-top-width:5px;border-bottom-width:5px;border-left-width:6px;border-right-width:6px;border-top-style:solid;border-bottom-style:solid;border-left-style:solid;border-right-style:solid;color:#000;}
 .jqplot-title{top:0;left:0;padding-bottom:.5em;font-size:1.2em;}
-table.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;}
-.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);opacity:.8;filter:alpha(opacity = 80);padding:1px;}
-.jqplot-highlighter-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background-color:#d0d0d0;background:rgba(208,208,208,0.8);z-index:1;padding:1px;opacity:.8;filter:alpha(opacity = 80);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";}
+table.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;color:#000;}
+.jqplot-cursor-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background:rgba(208,208,208,0.5);opacity:.8;filter:alpha(opacity = 80);padding:1px;color:#000;}
+.jqplot-highlighter-tooltip{border:1px solid #ccc;font-size:.75em;white-space:nowrap;background-color:#d0d0d0;background:rgba(208,208,208,0.8);z-index:1;padding:1px;opacity:.8;filter:alpha(opacity = 80);-ms-filter:"progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";color:#000;}
 .jqplot-point-label{font-size:.75em;z-index:1;color:#000;}
-td.jqplot-cursor-legend-swatch{vertical-align:middle;text-align:center;}
+td.jqplot-cursor-legend-swatch{vertical-align:middle;text-align:center;color:#000;}
 div.jqplot-cursor-legend-swatch{width:1.2em;height:.7em;}
 .jqplot-data-label{color:#000;}
 .jqplot-error{text-align:center;}

@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
  * Tests for the system model
@@ -27,7 +27,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @package    Test
  * @subpackage Test_Model
  */
-class Test_Application_Models_System extends Test_FismaUnitTest
+class Test_Application_Models_System extends Test_Case_Unit
 {
     /**
      * FIPS category is the high water mark of CIA

@@ -2,20 +2,28 @@ Evaluation:
     columns:
         name: 
             type: string(255)
+            notnull: true
         nickname:
             type: string(255)
+            notnull: true
         nextId: 
             type: integer
             comment: Relates to itself and points to the next Evaluation record
         precedence: 
             type: integer
+            notnull: true
             comment: The order in which this evaluation is positioned relative to the others in its group, starting at 0
         approvalGroup:
             type: enum
             values: [action, evidence]
+            notnull: true
             comment: Which approval group this evaluation belongs to. "Action" is short for course of action and "evidence" refers to evidence artifacts.
-        eventId: integer
-        privilegeId: integer
+        eventId:
+            type: integer
+            notnull: true
+        privilegeId:
+            type: integer
+            notnull: true
         daysUntilDue:
             type: integer
             default: 7
