@@ -12,10 +12,10 @@
             <?php foreach ($this->data as $row): ?>
                 <tr>
                     <?php 
-                    foreach ($row = array_values($row) as $cell) : 
+                    foreach ($row = array_values($row) as $key => $cell) : 
                         if (
-                            !empty($this->columnDefinitions[key($row)]['formatter']) &&
-                            $this->columnDefinitions[key($row)]['formatter'] == 'Fisma.TableFormat.formatHtml'
+                            !empty($this->columnDefinitions[$key]['formatter']) &&
+                            $this->columnDefinitions[$key]['formatter'] == 'Fisma.TableFormat.formatHtml'
                         ) {
                             $format = 'none';
                         } else {

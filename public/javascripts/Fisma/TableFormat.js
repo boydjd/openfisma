@@ -200,7 +200,8 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     formatHtml : function(el, oRecord, oColumn, oData) {
-        el.innerHTML = oData.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+        var value = (YAHOO.lang.isValue(oData)) ? oData : "";
+        el.innerHTML = value.toString().replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
     },
 
     /**
