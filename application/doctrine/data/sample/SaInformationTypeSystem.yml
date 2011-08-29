@@ -1,0 +1,70 @@
+SaInformationTypeSystem:
+    CIT_INFOTYPE_1:
+        InformationType: issc
+        System: CIT_SYS
+    CRMS_INFOTYPE_1:
+        InformationType: papr
+        System: CRMS_SYS
+    DISPOSAL_INFOTYPE_1:
+        InformationType: lrlt
+        System: DISPOSAL_SYS
+    GREEN_NRG_INFOTYPE_1:
+        InformationType: fmfc
+        System: GREEN_NRG_SYS
+    H20_RIGHTS_INFOTYPE_1:
+        InformationType: fma
+        System: H20_RIGHTS_SYS
+    HAZMAT_INFOTYPE_1:
+        InformationType: hsbts
+        System: HAZMAT_SYS
+    HERNDON_INFOTYPE_1:
+        InformationType: eecp
+        System: HERNDON_SYS
+    HIDDEN_INFOTYPE_1:
+        InformationType: eerm
+        System: HIDDEN_SYS
+    IAD_INFOTYPE_1:
+        InformationType: wmlrm
+        System: IAD_SYS
+    LINUX_INFOTYPE_1:
+        InformationType: lajald
+        System: LINUX_SYS
+    MAINFRAME_INFOTYPE_1:
+        InformationType: ffafg
+        System: MAINFRAME_SYS
+    OF_INFOTYPE_1:
+        InformationType: coca
+        System: OF_SYS
+    OF_INFOTYPE_2:
+        InformationType: itis
+        System: OF_SYS
+    ORACLE_INFOTYPE_1:
+        InformationType: tslgfg
+        System: ORACLE_SYS
+    OSC_INFOTYPE_1:
+        InformationType: tslgsl
+        System: OSC_SYS
+    RCD_INFOTYPE_1:
+        InformationType: pacs
+        System: RCD_SYS
+    RESTON_INFOTYPE_1:
+        InformationType: ggtm
+        System: RESTON_SYS
+    RMTRP_INFOTYPE_1:
+        InformationType: amt
+        System: RMTRP_SYS
+    ROCP_INFOTYPE_1:
+        InformationType: fma
+        System: ROCP_SYS
+    SCMS_INFOTYPE_1:
+        InformationType: fmp
+        System: SCMS_SYS
+    TPP_INFOTYPE_1:
+        InformationType: hrmer
+        System: TPP_SYS
+    WILDLIFE_INFOTYPE_1:
+        InformationType: itsd
+        System: WILDLIFE_SYS
+    WIND_INFOTYPE_1:
+        InformationType: hskacip
+        System: WIND_SYS
