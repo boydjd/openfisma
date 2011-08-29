@@ -17,7 +17,7 @@
  */
 
 /**
- * Remove app_version and yui_version from Configuration model. 
+ * Version119 
  * 
  * @uses Doctrine_Migration_Base
  * @package Migration 
@@ -25,16 +25,25 @@
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Version118 extends Doctrine_Migration_Base
+class Version119 extends Doctrine_Migration_Base
 {
+    /**
+     * Update application version.
+     */
     public function up()
     {
-        $this->removeColumn('configuration', 'app_version');
-        $this->removeColumn('configuration', 'yui_version');
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.14.5'";
+        $conn->exec($updateSql);
     }
 
+    /**
+     * Remove configuration 
+     */
     public function down()
     {
-        throw new Doctrine_Migration_IrreversibleMigrationException();
+        $conn = Doctrine_Manager::connection();
+        $updateSql = "UPDATE configuration SET app_version = '2.14.4'";
+        $conn->exec($updateSql);
     }
 }

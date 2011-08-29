@@ -16,8 +16,8 @@ ul.yui-nav{display:none;}
 div.yui-content{clear:both;}
 .yui-skin-sam .yui-navset .yui-content{background:white;padding:0;border:none;}
 .yui-navset .yui-content .yui-hidden{visibility:visible;position:static;}
-div.sectionHeader{clear:both;color:black;background:#eee;border:1px solid black;border-bottom:none;}
-div.section{color:black;border:1px solid black;border-top:none;}
+div.sectionHeader{clear:both;color:black;background:#eee;margin-top:1em;padding:1em;padding-bottom:0;border:1px solid black;border-bottom:none;}
+div.section{color:black;padding:1em;border:1px solid black;border-top:none;text-align:left;}
 table.searchFilters{display:none;}
 .editable{background-image:none;}
 div#footer{display:none;}

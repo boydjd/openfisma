@@ -366,8 +366,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
     public function totalTypeAction()
     {
         $thisChart = new Fisma_Chart();
-        $thisChart->setTitle('Mitigation Strategy Distribution')
-            ->setChartType('pie')
+        $thisChart->setChartType('pie')
             ->setColors(
                 array(
                     '#75FF75',
@@ -404,10 +403,10 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                         $pieSliceTooltip = 'Corrective Action Plan';
                         break;
                     case "FP":
-                        $pieSliceTooltip = 'False Positive:';
+                        $pieSliceTooltip = 'False Positive';
                         break;
                     case "AR":
-                        $pieSliceTooltip = 'Accepted Risk Risk';
+                        $pieSliceTooltip = 'Accepted Risk';
                         break;
                 }
                 
