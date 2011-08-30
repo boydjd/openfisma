@@ -283,71 +283,45 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             '/organization/organizationSubtree/';
 
         if ($displayBy === 'system') {
+            $systemCounts = Doctrine_Query::create()
+                ->select('parent.id, parent.nickname, parent.name')
+                ->addSelect("SUM(IF(finding.id IS NOT NULL AND finding.threatLevel IS NULL, 1, 0)) isnull")
+                ->addSelect("SUM(IF(finding.threatLevel = 'LOW', 1, 0)) low")
+                ->addSelect("SUM(IF(finding.threatLevel = 'MODERATE', 1, 0)) moderate")
+                ->addSelect("SUM(IF(finding.threatLevel = 'HIGH', 1, 0)) high")
+                ->from('Organization parent')
+                ->leftJoin('parent.System system')
+                ->leftJoin('Organization node')
+                ->leftJoin("node.Findings finding WITH finding.status <> 'CLOSED'")
+                ->leftJoin('node.System nodeSystem')
+                ->where('node.lft BETWEEN parent.lft and parent.rgt')
+                ->andWhere('nodeSystem.sdlcPhase <> ?', array('disposal'))
+                ->andWhere('system.sdlcPhase <> ?', array('disposal'))
+                ->andWhereIn('parent.id', $this->_visibleOrgs)
+                ->groupBy('parent.nickname')
+                ->orderBy('parent.nickname')
+                ->having('SUM(IF(finding.id IS NOT NULL, 1, 0)) > 0')
+                ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+                ->execute();
 
-            /* Because of the number of systems this query involves, and the fact
-               that Systems shouldnt have children (unlike Bureaus for example) 
-               a different query will be used here */
-
-            $systemCountsQuery = Doctrine_Query::create();
-            $systemCountsQuery->addSelect('COUNT(f.id), o.nickname, o.name, f.threatLevel')
-                ->from('Finding f')
-                ->leftJoin('f.ResponsibleOrganization o')
-                ->where('o.orgtype = "system"')
-                ->whereIn('o.id ', $this->_visibleOrgs)
-                ->groupBy('o.nickname, f.threatLevel')
-                ->orderBy('o.nickname')
-                ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-            $systemCounts = $systemCountsQuery->execute();
-
-            $findingCounts = array('NULL' => 0, 'HIGH' => 0, 'MODERATE' => 0, 'LOW' => 0);
             foreach ($systemCounts as $systemCountInfo) {
-
-                $orgName = $systemCountInfo['o_nickname'];
-
-                if (!empty($lastResultOrg) && $systemCountInfo['o_nickname'] !== $lastResultOrg) {
-                    // then all high/mod/low counts for the lastResultOrg organization have been scanned through
-
-                    $rtnChart->addColumn(
-                            $orgName,
-                            array_values($findingCounts),
-                            array(
-                                '',
-                                $basicLink . $orgName . '/threatLevel/enumIs/HIGH',
-                                $basicLink . $orgName . '/threatLevel/enumIs/MODERATE',
-                                $basicLink . $orgName . '/threatLevel/enumIs/LOW'
-                                ),
-                            $systemCountInfo['o_name'] . '<hr/>#columnReport#'
-                            );
-
-                    $findingCounts = array('Null' => 0, 'HIGH' => 0, 'MODERATE' => 0, 'LOW' => 0);
-                    $lastOrgChartted = $orgName;
-                }
-
-                if (in_array($systemCountInfo['f_threatLevel'], $findingCounts)) {
-                    // findingCounts [ of this threatLevel ] = number of findings of this threatLevel
-                    $findingCounts[$systemCountInfo['f_threatLevel']] = $systemCountInfo['f_COUNT'];
-                } else {
-                    $findingCounts['NULL'] = $systemCountInfo['f_COUNT'];
-                }
-
-                $lastResultOrg = $orgName;
-
-            }
-
-            // Was the last organization in the systemCounts array added to the chart?
-            if ($orgName !== $lastOrgChartted) {
                 $rtnChart->addColumn(
-                        $orgName,
-                        $findingCounts,
-                        array(
-                            '',
-                            $basicLink . $thisParentOrg['o_nickname'] . '/threatLevel/enumIs/HIGH',
-                            $basicLink . $thisParentOrg['o_nickname'] . '/threatLevel/enumIs/MODERATE',
-                            $basicLink . $thisParentOrg['o_nickname'] . '/threatLevel/enumIs/LOW'
-                            )
-                        );
-            }                
-
+                    $systemCountInfo['parent_nickname'],
+                    array(
+                        $systemCountInfo['finding_isnull'],
+                        $systemCountInfo['finding_high'],
+                        $systemCountInfo['finding_moderate'],
+                        $systemCountInfo['finding_low']
+                    ),
+                    array(
+                        '',
+                        $basicLink . $orgName . '/threatLevel/enumIs/HIGH',
+                        $basicLink . $orgName . '/threatLevel/enumIs/MODERATE',
+                        $basicLink . $orgName . '/threatLevel/enumIs/LOW'
+                    ),
+                    $systemCountInfo['parent_name'] . '<hr/>#columnReport#'
+                );
+            }
         } else {
 
             // Get a list of requested organization-parent types (Agency-organizations, Bureau-organizations, gss, etc)
