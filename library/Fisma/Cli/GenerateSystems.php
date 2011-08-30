@@ -61,8 +61,6 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
         $inMemoryConfig = new Fisma_Configuration_Array();
         Fisma::setConfiguration($inMemoryConfig, true);
 
-        $configuration = Zend_Registry::get('doctrine_config');
-
         $numSystems = $this->getOption('number');
 
         if (is_null($numSystems)) {
@@ -130,7 +128,6 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
                 $s->Organization = new Organization();
                 $s->Organization->orgType = 'system';
                 $s->Organization->merge($system);
-                $s->merge($system);
                 $s->save();
 
                 $s->Organization->getNode()->insertAsLastChildOf($this->_getRandomOrganization());
@@ -157,6 +154,6 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
      */
     private function _getRandomOrganization()
     {
-        return $this->_sampleOrganizations[rand(0, count($this->_sampleOrganizations))];
+        return $this->_sampleOrganizations[array_rand($this->_sampleOrganizations)];
     }
 }
