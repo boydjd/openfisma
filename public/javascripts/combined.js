@@ -2394,6 +2394,13 @@ Fisma.AutoComplete = function() {
                     callback : params.callback
                 }
             );
+
+            ac.selectionEnforceEvent.subscribe(function (ev, args) {
+                // if selection enforcement forces an empty field, clear the hidden id field as well
+                if (args[1] === '') {
+                    document.getElementById(params.hiddenFieldId).value = '';
+                }
+            });
         },
 
         /**
