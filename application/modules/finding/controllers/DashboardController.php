@@ -305,8 +305,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->execute();
 
             foreach ($systemCounts as $systemCountInfo) {
+                $orgName = $systemCountInfo['parent_nickname'];
                 $rtnChart->addColumn(
-                    $systemCountInfo['parent_nickname'],
+                    $orgName,
                     array(
                         $systemCountInfo['finding_isnull'],
                         $systemCountInfo['finding_high'],
