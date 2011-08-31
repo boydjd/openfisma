@@ -57,6 +57,7 @@ elements.smtp_port.options.label = "SMTP Port"
 elements.smtp_port.options.validators.int.validator = "Int"
 elements.smtp_port.options.validators.greaterThan.validator = "GreaterThan"
 elements.smtp_port.options.validators.greaterThan.options.min = 0
+elements.smtp_port.options.required = true
 elements.smtp_port.options.size = 30
 displayGroups.general.elements.smtp_port = "smtp_port"
 
