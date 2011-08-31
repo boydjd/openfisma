@@ -102,7 +102,7 @@ class View_Helper_InjectAsset
                                  ),
                                 '/stylesheets/combined.css' =>
                                 array('/stylesheets/datatablegrouper.css',
-                                      '/stylesheets/jquery_jqplot.css'
+                                      '/stylesheets/jquery_jqplot.css',
                                       '/stylesheets/main.css',
                                       '/stylesheets/nesteddatatable.css',
                                       '/stylesheets/AutoComplete.css',
