@@ -48,7 +48,48 @@ Fisma.SecurityAuthorization = {
      * @param int authorizationId The primary key of the authorization object
      */
     importBaselineControls: function (authorizationId) {
-        alert(authorizationId);
+        var image = "<img src='/images/loading_bar.gif'>";
+        var dialogConfig = {width: '20em', modal: true, close: false};
+        var modalDialog = Fisma.HtmlPanel.showPanel("Importing baseline controls…", image, null, dialogConfig);
+        
+        // Import controls via XHR
+        YAHOO.util.Connect.asyncRequest(
+            'GET',
+            '/sa/security-authorization/import-baseline-security-controls/id/' + authorizationId + '/format/json',
+            {
+                success: function(o) {
+                    try {
+                        var response = YAHOO.lang.JSON.parse(o.responseText).response;
+                        
+                        if (response.success) {
+                            // Hide warning message
+                            var noControlsWarning = document.getElementById("no-security-controls-warning");
+                            console.log(noControlsWarning);
+                            if (noControlsWarning) {
+                                noControlsWarning.style.display = 'none';
+                            }
+
+                            // Refresh controls table
+                            var dt = Fisma.SecurityAuthorization.selectControlsTable;
+                            dt.showTableMessage("Loading baseline controls...");
+                            dt.getDataSource().sendRequest('', {success: dt.onDataReturnInitializeTable, scope: dt});
+                        } else {
+                            Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
+                        }
+                    } catch (error) {
+                        Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+                    }
+
+                    modalDialog.destroy();
+                },
+
+                failure: function(o) {
+                    Fisma.Util.showAlertDialog('An unexpected error occurred.');
+                    modalDialog.destroy();
+                }
+            },
+            null
+        );
     },
 
     /**

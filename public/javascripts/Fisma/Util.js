@@ -187,7 +187,7 @@ Fisma.Util = {
         };
         var button = [ { text: "Ok", handler: handleOk } ];
 
-        alertDialog.setHeader("WARNING");
+        alertDialog.setHeader("Alert…");
         alertDialog.setBody(alertMessage); 
         alertDialog.cfg.queueProperty("buttons", button); 
 

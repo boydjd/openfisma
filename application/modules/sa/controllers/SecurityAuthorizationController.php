@@ -38,7 +38,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->_helper->contextSwitch()
                       ->addActionContext('control-table-master', 'json')
                       ->addActionContext('control-table-nested', 'json')
-                      ->addActionContext('import-baseline-controls', 'json')
+                      ->addActionContext('import-baseline-security-controls', 'json')
                       ->addActionContext('remove-control', 'json')
                       ->addActionContext('remove-enhancement', 'json')
                       ->initContext();
@@ -641,38 +641,47 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      */
     public function importBaselineSecurityControlsAction()
     {
+        $response = new Fisma_AsyncResponse;
+
         $id = $this->_getParam('id');
         $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
         $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
 
-        // Import baseline controls
-        $controls = Doctrine::getTable('SecurityControl')
-                    ->getCatalogIdAndImpactQuery($catalogId, $sa->impact)
-                    ->execute();
-
-        foreach ($controls as $control) {
-            $sacontrol = new SaSecurityControl();
-            $sacontrol->securityAuthorizationId = $sa->id;
-            $sacontrol->securityControlId = $control->id;
-            $sacontrol->save();
-            $sacontrol->free();
-        }
-
-        // Import baseline enhancements
-        $sacontrols = Doctrine::getTable('SaSecurityControl')
-                      ->getEnhancementsForSaAndImpactQuery($sa->id, $sa->impact)
-                      ->execute();
-
-        foreach ($sacontrols as $sacontrol) {
-            $control = $sacontrol->SecurityControl;
-            foreach ($control->Enhancements as $ce) {
-                $sace = new SaSecurityControlEnhancement();
-                $sace->securityControlEnhancementId = $ce->id;
-                $sace->saSecurityControlId = $sacontrol->id;
-                $sace->save();
-                $sace->free();
+        try {
+            // Import baseline controls
+            $controls = Doctrine::getTable('SecurityControl')
+                        ->getCatalogIdAndImpactQuery($catalogId, $sa->Organization->System->fipsCategory)
+                        ->execute();
+        
+            foreach ($controls as $control) {
+                $sacontrol = new SaSecurityControl();
+                $sacontrol->securityAuthorizationId = $sa->id;
+                $sacontrol->securityControlId = $control->id;
+                $sacontrol->save();
+                $sacontrol->free();
             }
-            $sacontrol->free();
+        
+            // Import baseline enhancements
+            $sacontrols = Doctrine::getTable('SaSecurityControl')
+                          ->getEnhancementsForSaAndImpactQuery($sa->id, $sa->Organization->System->fipsCategory)
+                          ->execute();
+        
+            foreach ($sacontrols as $sacontrol) {
+                $control = $sacontrol->SecurityControl;
+                foreach ($control->Enhancements as $ce) {
+                    $sace = new SaSecurityControlEnhancement();
+                    $sace->securityControlEnhancementId = $ce->id;
+                    $sace->saSecurityControlId = $sacontrol->id;
+                    $sace->save();
+                    $sace->free();
+                }
+                $sacontrol->free();
+            }
+        } catch (Exception $e) {
+            $this->getInvokeArg('bootstrap')->getResource('Log')->log($e, Zend_Log::ERR);
+            $response->fail($e);
         }
+
+        $this->view->response = $response;
     }    
 }

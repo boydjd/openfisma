@@ -65,12 +65,21 @@ class Fisma_AsyncResponse
     /**
      * Mark response as failed
      * 
-     * @param string $message Optional message which is safe to display to the end user
+     * The error parameter can be an exception, an object, or a string. If it's an exception, then there is some 
+     * logic to determine if that exception is safe to show to the user. If it's an object, then it's cast to a string.
+     * 
+     * @param Exception|string $error
      */
-    public function fail($message = null)
+    public function fail($error = null)
     {
         $this->success = false;
         
-        $this->message = empty($message) ? null : $message;
+        if ($error instanceof Fisma_Zend_Exception_User) {
+            $this->message = "An exception occurred: " . $error->getMessage();
+        } elseif ($error instanceof Exception) {
+            $this->message = "An exception occurred.";
+        } else {
+            $this->message = empty($error) ? null : (string)$error;
+        }
     }
 }
