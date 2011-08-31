@@ -64,7 +64,6 @@ Fisma.SecurityAuthorization = {
                         if (response.success) {
                             // Hide warning message
                             var noControlsWarning = document.getElementById("no-security-controls-warning");
-                            console.log(noControlsWarning);
                             if (noControlsWarning) {
                                 noControlsWarning.style.display = 'none';
                             }

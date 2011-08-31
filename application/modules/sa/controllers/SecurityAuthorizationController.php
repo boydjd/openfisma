@@ -641,6 +641,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      */
     public function importBaselineSecurityControlsAction()
     {
+        Doctrine_Manager::connection()->beginTransaction();
         $response = new Fisma_AsyncResponse;
 
         $id = $this->_getParam('id');
@@ -648,37 +649,69 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
 
         try {
-            // Import baseline controls
+            // Get list of existing controls in this SA
+            $existingControls = Doctrine_Query::create()
+                                ->select('c.securityControlId')
+                                ->from('SaSecurityControl c')
+                                ->where('c.securityAuthorizationId = ?', $sa->id)
+                                ->execute()
+                                ->toKeyValueArray('securityControlId', 'securityControlId');
+
+            // Get a list of baseline controls
             $controls = Doctrine::getTable('SecurityControl')
                         ->getCatalogIdAndImpactQuery($catalogId, $sa->Organization->System->fipsCategory)
                         ->execute();
-        
+
+            // Copy the controls that exist in the baseline but not in the SA
             foreach ($controls as $control) {
+                if (isset($existingControls[$control->id])) {
+                    continue;
+                }
+
                 $sacontrol = new SaSecurityControl();
                 $sacontrol->securityAuthorizationId = $sa->id;
                 $sacontrol->securityControlId = $control->id;
                 $sacontrol->save();
                 $sacontrol->free();
             }
-        
-            // Import baseline enhancements
-            $sacontrols = Doctrine::getTable('SaSecurityControl')
+
+            // Get a list of existing control enhancements in this SA
+            $existingEnhancements = Doctrine_Query::create()
+                                    ->select('e.securityControlEnhancementId')
+                                    ->from('SaSecurityControlEnhancement e')
+                                    ->leftJoin('SaSecurityControl c')
+                                    ->where('c.securityAuthorizationId = ?', $sa->id)
+                                    ->execute()
+                                    ->toKeyValueArray('securityControlEnhancementId', 'securityControlEnhancementId');
+
+            // Get a list of baseline enhancements
+            $saControls = Doctrine::getTable('SaSecurityControl')
                           ->getEnhancementsForSaAndImpactQuery($sa->id, $sa->Organization->System->fipsCategory)
                           ->execute();
-        
-            foreach ($sacontrols as $sacontrol) {
-                $control = $sacontrol->SecurityControl;
-                foreach ($control->Enhancements as $ce) {
-                    $sace = new SaSecurityControlEnhancement();
-                    $sace->securityControlEnhancementId = $ce->id;
-                    $sace->saSecurityControlId = $sacontrol->id;
-                    $sace->save();
-                    $sace->free();
+
+            // Copy the enhancements that exist in the baseline but not in the SA                    
+            foreach ($saControls as $saControl) {
+                $control = $saControl->SecurityControl;
+
+                foreach ($control->Enhancements as $baselineEnhancement) {
+                    if (isset($existingEnhancements[$baselineEnhancement->id])) {
+                        continue;
+                    }
+                    
+                    $enhancement = new SaSecurityControlEnhancement();
+                    $enhancement->securityControlEnhancementId = $baselineEnhancement->id;
+                    $enhancement->saSecurityControlId = $saControl->id;
+                    $enhancement->save();
+                    $enhancement->free();
                 }
-                $sacontrol->free();
+
+                $saControl->free();
             }
+
+            Doctrine_Manager::connection()->commit();
         } catch (Exception $e) {
             $this->getInvokeArg('bootstrap')->getResource('Log')->log($e, Zend_Log::ERR);
+            Doctrine_Manager::connection()->rollback();
             $response->fail($e);
         }
 
