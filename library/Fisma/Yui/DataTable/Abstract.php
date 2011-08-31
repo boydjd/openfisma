@@ -33,7 +33,15 @@ abstract class Fisma_Yui_DataTable_Abstract
      * @var array
      */
     private $_columns;
-    
+   
+    /**
+     * Optional field to group rows by
+     * 
+     * @var string 
+     * @access protected
+     */
+    protected $_groupBy;
+
     /**
      * Abstract method for rendering the table
      * 
@@ -93,6 +101,18 @@ abstract class Fisma_Yui_DataTable_Abstract
         }
                 
         return $columnDefinitions;
+    }
+
+    /**
+     * setGroupBy 
+     * 
+     * @param string $groupBy 
+     * @access public
+     * @return void
+     */
+    public function setGroupBy($groupBy = NULL)
+    {
+        $this->_groupBy = $groupBy;
     }
 
     /**

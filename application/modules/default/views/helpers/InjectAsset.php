@@ -40,6 +40,7 @@ class View_Helper_InjectAsset
                                 array('/javascripts/php.js',
                                       '/javascripts/tiny_mce_config.js',
                                       '/javascripts/nesteddatatable.js',
+                                      '/javascripts/groupeddatatable.js',
                                       '/javascripts/fisma.js',
                                       '/javascripts/editable.js',
                                       '/javascripts/selectallselectnone.js',
@@ -62,6 +63,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Module.js',
                                       '/javascripts/Fisma/OrganizationTreeView.js',
                                       '/javascripts/Fisma/Remediation.js',
+                                      '/javascripts/Fisma/Role.js',
                                       '/javascripts/Fisma/Search.js',
                                       '/javascripts/Fisma/Search/Criteria.js',
                                       '/javascripts/Fisma/Search/CriteriaDefinition.js',
@@ -99,7 +101,10 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Chart.js'
                                  ),
                                 '/stylesheets/combined.css' =>
-                                array('/stylesheets/main.css',
+                                array('/stylesheets/datatablegrouper.css',
+                                      '/stylesheets/jquery_jqplot.css'
+                                      '/stylesheets/main.css',
+                                      '/stylesheets/nesteddatatable.css',
                                       '/stylesheets/AutoComplete.css',
                                       '/stylesheets/AttachArtifacts.css',
                                       '/stylesheets/chart.css',
@@ -114,9 +119,7 @@ class View_Helper_InjectAsset
                                       '/stylesheets/SwitchButton.css',
                                       '/stylesheets/TreeNodeDragBehavior.css',
                                       '/stylesheets/Toolbar.css',
-                                      '/stylesheets/User.css',
-                                      '/stylesheets/nesteddatatable.css',
-                                      '/stylesheets/jquery_jqplot.css'
+                                      '/stylesheets/User.css'
                                 )
                             );
 
