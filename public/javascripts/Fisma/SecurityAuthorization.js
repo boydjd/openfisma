@@ -23,6 +23,35 @@
 
 Fisma.SecurityAuthorization = {
     /**
+     * Store a data table used for selecting controls
+     */
+    selectControlsTable : null,
+
+    /**
+     * Run the import baseline controls action and update the table with the results
+     * 
+     * @param int authorizationId The primary key of the authorization object
+     */
+    confirmImportBaselineControls: function (event, authorizationId) {
+        confirmation = {
+            func: Fisma.SecurityAuthorization.importBaselineControls,
+            args: [authorizationId],
+            text: "Are you sure you want to import the baseline controls for this information system?"
+        };
+        
+        Fisma.Util.showConfirmDialog(null, confirmation);
+    },
+
+    /**
+     * Run the import baseline controls action and update the table with the results
+     * 
+     * @param int authorizationId The primary key of the authorization object
+     */
+    importBaselineControls: function (authorizationId) {
+        alert(authorizationId);
+    },
+
+    /**
      * Popup a panel for upload evidence
      *
      * @return {Boolean} False to interrupt consequent operations

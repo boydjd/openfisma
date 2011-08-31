@@ -133,8 +133,14 @@ Fisma.Util = {
         var buttons = [ { text:"Yes", handler : function () {
                             if (config.url) {
                                 document.location = config.url;
-                             }else if(config.func) {
-                                 var funcObj = Fisma.Util.getObjectFromName(config.func);
+                             } else if(config.func) {
+                                 var funcObj;
+                                 if (typeof config.func == "string") {
+                                     funcObj = Fisma.Util.getObjectFromName(config.func);
+                                 } else {
+                                     funcObj = config.func;
+                                 }
+
                                  if (YAHOO.lang.isFunction(funcObj)) {
                                      if (config.args) {
                                          funcObj.apply(this, config.args);
@@ -152,7 +158,7 @@ Fisma.Util = {
                         } 
                      ]; 
  
-        confirmDialog.setHeader("Are you sure?");
+        confirmDialog.setHeader("Confirmation…");
         confirmDialog.setBody(config.text); 
         confirmDialog.cfg.queueProperty("buttons", buttons); 
         if (config.width) {

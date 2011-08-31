@@ -64,12 +64,6 @@ class SecurityAuthorizationTable extends Fisma_Doctrine_Table implements Fisma_S
                 'sortable' => true,
                 'type' => 'text'
             ),
-            'impact' => array(
-                'initiallyVisible' => true,
-                'label' => 'Impact',
-                'sortable' => true,
-                'type' => 'text'
-            ),
             'createdTs' => array(
                 'initiallyVisible' => true,
                 'label' => 'Created',

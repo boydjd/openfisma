@@ -6,6 +6,17 @@
     ?>
 </div>
 
+<?php if ($this->controlCount == 0): ?>
+    <div class="warning">
+        <p>This security plan does not contain any security controls.</p>
+        <p>
+            You can import the baseline security controls 
+            for this <em><?php echo $this->escape($this->systemImpact); ?></em> system by 
+            clicking the "Import Baseline Controls" button.
+        </p>
+    </div>
+<?php endif; ?>
+
 <?php
 Fisma_Format_Section::startSection("Select Controls");
 ?>
@@ -13,7 +24,8 @@ Fisma_Format_Section::startSection("Select Controls");
 <div id="selectSecurityControlsContainer"></div>
 
 <script type="text/javascript">
-var dataTable = new Fisma.SecurityControlTable("selectSecurityControlsContainer", <?php echo $this->escape($this->id); ?>);
+Fisma.SecurityAuthorization.selectControlsTable = new Fisma.SecurityControlTable("selectSecurityControlsContainer",
+                                                      <?php echo $this->escape($this->id); ?>);
 </script>
 
 <?php

@@ -409,6 +409,26 @@ div#msgbar {
     display: none;
 }
 
+/* Used to display a block of warning text */
+.warning {
+    color: red;
+    border: 1px solid red;
+    background-color: pink;
+    margin-top: 10px;
+    text-align: center;
+    padding: 3px;
+}
+
+/* Used to display a block of notice text */
+.notice {
+    color: green;
+    border: 1px solid green;
+    background-color: lightgreen;
+    margin-top: 10px;
+    text-align: center;
+    padding: 3px;
+}
+
 /* This style adds a loading graphic to the YUI tab view */
 .yui-navset div.loading div {
     background:url(/lib/2.8.2/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;

@@ -38,6 +38,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->_helper->contextSwitch()
                       ->addActionContext('control-table-master', 'json')
                       ->addActionContext('control-table-nested', 'json')
+                      ->addActionContext('import-baseline-controls', 'json')
                       ->addActionContext('remove-control', 'json')
                       ->addActionContext('remove-enhancement', 'json')
                       ->initContext();
@@ -300,7 +301,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
 
         $tabView = new Fisma_Yui_TabView('SecurityAuthorizationView', $id);
-        $tabView->addTab($sa->Organization->nickname, "/sa/security-authorization/overview/id/$id");
+        $tab1Name = $sa->Organization->nickname . ' Security Authorization';
+        $tabView->addTab($tab1Name, "/sa/security-authorization/overview/id/$id");
         $tabView->addTab("1. Categorize", "/system/fips/id/$id");
         $tabView->addTab("2. Select", "/sa/security-authorization/select-controls/id/$id/format/html");
         $tabView->addTab("3. Implementation", "/sa/security-authorization/implementation/id/$id/format/html");
@@ -364,6 +366,9 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             return;
         }
         
+        $this->view->controlCount = $sa->SecurityControls->count();
+        $this->view->systemImpact = $sa->Organization->System->fipsCategory;
+        
         $this->view->id = $id;
         $this->_viewObject();
         $this->view->buttons = array(
@@ -379,7 +384,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                 'importBaselineControls',
                 array(
                     'label' => 'Import Baseline Controls',
-                    'onClickFunction' => 'Fisma.SecurityControlTable.importControlBaselines',
+                    'onClickFunction' => 'Fisma.SecurityAuthorization.confirmImportBaselineControls',
                     'onClickArgument' => $this->view->id
                 )
             ),
@@ -636,6 +641,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      */
     public function importBaselineSecurityControlsAction()
     {
+        $id = $this->_getParam('id');
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
         $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
 
         // Import baseline controls
