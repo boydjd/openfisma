@@ -8477,7 +8477,8 @@ Fisma.Role = {
         var column = this.getColumn(checkboxObj);
         var roleName = column.key;
         // The 2nd column (hidden) has the privilegeId
-        var privilegeId = this.getRow(checkboxObj).childNodes[1].childNodes[0].childNodes[0].textContent;
+        var privilegeCell = this.getRow(checkboxObj).childNodes[1].childNodes[0].childNodes[0];
+        var privilegeId = $(privilegeCell).text();
 
         // Update array of changes to apply
         var newChange = {
@@ -8491,7 +8492,8 @@ Fisma.Role = {
         YAHOO.util.Dom.get('rolePrivChanges').value = YAHOO.lang.JSON.stringify(Fisma.Role.rolePrivChanges);
     }
     
-};/**
+};
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.

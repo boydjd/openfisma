@@ -31,7 +31,8 @@ Fisma.Role = {
         var column = this.getColumn(checkboxObj);
         var roleName = column.key;
         // The 2nd column (hidden) has the privilegeId
-        var privilegeId = this.getRow(checkboxObj).childNodes[1].childNodes[0].childNodes[0].textContent;
+        var privilegeCell = this.getRow(checkboxObj).childNodes[1].childNodes[0].childNodes[0];
+        var privilegeId = $(privilegeCell).text();
 
         // Update array of changes to apply
         var newChange = {
