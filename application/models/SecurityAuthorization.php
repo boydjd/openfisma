@@ -127,4 +127,31 @@ class SecurityAuthorization extends BaseSecurityAuthorization
 
         $coll->save();
     }
+
+    /**
+     * Return -1 if $status is before this SA's status, return 1 if $status is after this SA's status, and return
+     * 0 if $status is this SA's status.
+     * 
+     * @param string $status
+     * @return int
+     */
+    public function compareStatus($status)
+    {
+        $statuses = $this->getTable()->getEnumValues('status');
+        
+        $compareIndex = array_search($status, $statuses);
+        $thisIndex = array_search($this->status, $statuses);
+
+        if ($compareIndex === FALSE) {
+            throw new Fisma_Zend_Exception("Invalid status used for comparison: " . $status);
+        }
+
+        if ($compareIndex < $thisIndex) {
+            return -1;
+        } elseif ($compareIndex > $thisIndex) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
 }

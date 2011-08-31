@@ -41,10 +41,15 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                       ->addActionContext('remove-control', 'json')
                       ->addActionContext('remove-enhancement', 'json')
                       ->initContext();
+
         $this->_helper->ajaxContext()
                       ->addActionContext('add-control', 'html')
                       ->addActionContext('add-enhancements', 'html')
+                      ->addActionContext('assessment-plan', 'html')
+                      ->addActionContext('authorization', 'html')
                       ->addActionContext('edit-common-control', 'html')
+                      ->addActionContext('implementation', 'html')
+                      ->addActionContext('select-controls', 'html')
                       ->initContext();
     }
 
@@ -105,93 +110,20 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     }
 
     /**
-     * Hooks for manipulating and saving the values retrieved by Forms
-     *
-     * @param Zend_Form $form The specified form
-     * @param Doctrine_Record|null $subject The specified subject model
-     * @return integer ID of the object saved. 
-     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
+     * Display the step 3 (implement) user interface
      */
-    protected function saveValue($form, $subject=null)
-    {
-        $sa = $subject;
-
-        /** 
-         * if subject is null we need to add in the impact from the system before passing the form onto the save
-         * method.
-         */
-        if (is_null($subject)) {
-            // fetch the system and use its impact values to set the impact of this SA
-            $org = Doctrine::getTable('Organization')->find($form->getValue('sysOrgId'));
-            $system = $org->System;
-            if (empty($system)) {
-                throw new Fisma_Exception('A non-system was set to the Security Authorization');
-            }
-
-            $sa = new SecurityAuthorization();
-    
-            $impacts = array(
-                $system->confidentiality,
-                $system->integrity,
-                $system->availability
-            );
-            if (in_array('HIGH', $impacts)) {
-                $sa->impact = 'HIGH';
-            } else if (in_array('MODERATE', $impacts)) {
-                $sa->impact = 'MODERATE';
-            } else {
-                $sa->impact = 'LOW';
-            }
-        }
-        
-        // call default implementation and save the ID
-        $saId = parent::saveValue($form, $sa);
-
-        // if subject null, we're creating a new object and we need to populate relations
-        if (is_null($subject)) {
-            $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
-
-            // associate suggested controls
-            $controls = Doctrine::getTable('SecurityControl')
-                ->getCatalogIdAndImpactQuery($catalogId, $sa->impact)
-                ->execute();
-            foreach ($controls as $control) {
-                $sacontrol = new SaSecurityControl();
-                $sacontrol->securityAuthorizationId = $sa->id;
-                $sacontrol->securityControlId = $control->id;
-                $sacontrol->save();
-                $sacontrol->free();
-            }
-            $controls->free();
-            unset($controls);
-
-            // associate suggested enhancements
-            $sacontrols = Doctrine::getTable('SaSecurityControl')
-                ->getEnhancementsForSaAndImpactQuery($sa->id, $sa->impact)
-                ->execute();
-            foreach ($sacontrols as $sacontrol) {
-                $control = $sacontrol->SecurityControl;
-                foreach ($control->Enhancements as $ce) {
-                    $sace = new SaSecurityControlEnhancement();
-                    $sace->securityControlEnhancementId = $ce->id;
-                    $sace->saSecurityControlId = $sacontrol->id;
-                    $sace->save();
-                    $sace->free();
-                }
-                $sacontrol->free();
-            }
-            $sacontrols->free();
-            unset($sacontrols);
-        }
-
-        return $saId;
-    }
-
     public function implementationAction()
     {
-        $this->_helper->layout()->disableLayout();
         $this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
         $this->view->id = $this->_request->getParam('id');
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
+
+        // Disable tab if previous step has not been completed.
+        if ($sa->compareStatus('Implement') > 0) {
+            $this->render('step-is-locked');
+            return;
+        }
+        
         $dataTable = new Fisma_Yui_DataTable_Remote();
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('ID', true, null, null, 'id', true))
                   ->addColumn(new Fisma_Yui_DataTable_Column('Control', true, null, null, 'code'))
@@ -206,14 +138,16 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                   ->setClickEventVariableName('id');
         $this->view->dataTable = $dataTable;
  
-        $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
         $this->view->sa = $sa;
         $this->view->progress = $this->_implementationProgress($sa);
         $buttonbar = array();
 
         $buttonbar[] = new Fisma_Yui_Form_Button(
             'completeImplementation',
-             array('label' => 'Complete Implementation', 'onClickFunction' => 'Fisma.SecurityAuthorization.completeForm')
+            array(
+                 'label' => 'Complete Implementation', 
+                 'onClickFunction' => 'Fisma.SecurityAuthorization.completeForm'
+            )
         );
 
         $buttonbar[] = $this->_createCompleteStepForm($sa);
@@ -221,14 +155,23 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->buttonbar = $buttonbar;
     }
 
+    /**
+     * Show the step 4 (assessment case creation and assessment case evaluation) user interface
+     */    
     public function assessmentPlanAction()
     {
-        $this->_helper->layout()->disableLayout();
         $this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
         $this->view->id = $this->_request->getParam('id');
-        $this->view->dataTable = $this->_baseAssessmentPlanDataTable();
 
         $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
+        
+        // Disable tab if previous step has not been completed.
+        if ($sa->compareStatus('Assessment Plan') > 0) {
+            $this->render('step-is-locked');
+            return;
+        }
+
+        $this->view->dataTable = $this->_baseAssessmentPlanDataTable();
         $this->view->sa = $sa;
         $buttonbar = array();
 
@@ -250,18 +193,25 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     }
 
     /**
-     * @return void
+     * Show the step 5 (authorization) user interface
      */
     public function authorizationAction()
     {
-        $this->_helper->layout()->disableLayout();
         $this->view->id = $this->_request->getParam('id');
+
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
+        
+        // Disable tab if previous step has not been completed.
+        if ($sa->compareStatus('Authorization') > 0) {
+            $this->render('step-is-locked');
+            return;
+        }
+
         $dataTable = $this->_baseAssessmentPlanDataTable();
         $dataTable->setDataUrl('/sa/assessment-plan-entry/search/said/' . $this->view->id . '/otherThanSatisfied/true')
                   ->addColumn(new Fisma_Yui_DataTable_Column('Finding', false, null, null, 'findingId'));
         $this->view->dataTable = $dataTable;
 
-        $sa = Doctrine::getTable('SecurityAuthorization')->find($this->view->id);
         $this->view->sa = $sa;
         $buttonbar = array();
         $buttonbar[] = new Fisma_Yui_Form_Button(
@@ -346,17 +296,16 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      */
     public function viewAction()
     {
-        //$this->_acl->requirePrivilegeForClass('read', 'AssessmentPlanEntry');
         $id = $this->_request->getParam('id');
         $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
 
         $tabView = new Fisma_Yui_TabView('SecurityAuthorizationView', $id);
         $tabView->addTab($sa->Organization->nickname, "/sa/security-authorization/overview/id/$id");
         $tabView->addTab("1. Categorize", "/system/fips/id/$id");
-        $tabView->addTab("2. Select", "/sa/security-authorization/select-controls/id/$id");
-        $tabView->addTab("3. Implementation", "/sa/security-authorization/implementation/id/$id");
-        $tabView->addTab("4. Assessment", "/sa/security-authorization/assessment-plan/id/$id");
-        $tabView->addTab("5. Authorization", "/sa/security-authorization/authorization/id/$id");
+        $tabView->addTab("2. Select", "/sa/security-authorization/select-controls/id/$id/format/html");
+        $tabView->addTab("3. Implementation", "/sa/security-authorization/implementation/id/$id/format/html");
+        $tabView->addTab("4. Assessment", "/sa/security-authorization/assessment-plan/id/$id/format/html");
+        $tabView->addTab("5. Authorization", "/sa/security-authorization/authorization/id/$id/format/html");
 
         $this->view->tabView = $tabView;
     }
@@ -368,21 +317,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
         $this->view->sa = $sa;
     }
-
-    /**
-     * Display details for a single record.
-     *
-     * Override default implementation to use custom view script.
-     *
-     * @return void
-     */
-
-    /*
-    public function viewAction()
-    {
-        $this->_viewObject();
-    }
-    */
 
     protected function _implementationProgress(SecurityAuthorization $sa)
     {
@@ -416,10 +350,21 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         );
     }
 
+    /**
+     * Display the step 2 (Select) user interface
+     */
     public function selectControlsAction()
     {
-        $this->_helper->layout()->disableLayout();
-        $this->view->id = $this->_request->getParam('id');
+        $id = $this->_getParam('id');
+        $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
+        
+        // Disable tab if previous step has not been completed.
+        if ($sa->compareStatus('Select') > 0) {
+            $this->render('step-is-locked');
+            return;
+        }
+        
+        $this->view->id = $id;
         $this->_viewObject();
         $this->view->buttons = array(
             new Fisma_Yui_Form_Button(
@@ -431,8 +376,16 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                 )
             ),
             new Fisma_Yui_Form_Button(
+                'importBaselineControls',
+                array(
+                    'label' => 'Import Baseline Controls',
+                    'onClickFunction' => 'Fisma.SecurityControlTable.importControlBaselines',
+                    'onClickArgument' => $this->view->id
+                )
+            ),
+            new Fisma_Yui_Form_Button(
                 'completeSelection',
-                 array('label' => 'Complete Selection', 'onClickFunction' => 'Fisma.SecurityAuthorization.completeForm')
+                 array('label' => 'Complete Step 2', 'onClickFunction' => 'Fisma.SecurityAuthorization.completeForm')
             )
         );
         $completeForm = new Fisma_Zend_Form();
@@ -677,4 +630,42 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     {
         return 'Security Authorization';
     }
+    
+    /**
+     * Import the baseline security controls into this assessment
+     */
+    public function importBaselineSecurityControlsAction()
+    {
+        $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
+
+        // Import baseline controls
+        $controls = Doctrine::getTable('SecurityControl')
+                    ->getCatalogIdAndImpactQuery($catalogId, $sa->impact)
+                    ->execute();
+
+        foreach ($controls as $control) {
+            $sacontrol = new SaSecurityControl();
+            $sacontrol->securityAuthorizationId = $sa->id;
+            $sacontrol->securityControlId = $control->id;
+            $sacontrol->save();
+            $sacontrol->free();
+        }
+
+        // Import baseline enhancements
+        $sacontrols = Doctrine::getTable('SaSecurityControl')
+                      ->getEnhancementsForSaAndImpactQuery($sa->id, $sa->impact)
+                      ->execute();
+
+        foreach ($sacontrols as $sacontrol) {
+            $control = $sacontrol->SecurityControl;
+            foreach ($control->Enhancements as $ce) {
+                $sace = new SaSecurityControlEnhancement();
+                $sace->securityControlEnhancementId = $ce->id;
+                $sace->saSecurityControlId = $sacontrol->id;
+                $sace->save();
+                $sace->free();
+            }
+            $sacontrol->free();
+        }
+    }    
 }

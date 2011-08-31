@@ -1,0 +1,21 @@
+<div>
+    <?php
+    foreach ($this->buttons as $button) {
+        echo $this->escape($button, 'none');
+    }
+    ?>
+</div>
+
+<?php
+Fisma_Format_Section::startSection("Select Controls");
+?>
+
+<div id="selectSecurityControlsContainer"></div>
+
+<script type="text/javascript">
+var dataTable = new Fisma.SecurityControlTable("selectSecurityControlsContainer", <?php echo $this->escape($this->id); ?>);
+</script>
+
+<?php
+Fisma_Format_Section::stopSection();
+?>

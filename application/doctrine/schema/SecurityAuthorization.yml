@@ -1,11 +1,9 @@
 SecurityAuthorization:
+    listeners: [IndexListener]
+
     columns:
         sysOrgId: 
             type: integer
-        impact:
-            type: enum
-            values: [LOW, MODERATE, HIGH]
-            notnull: true
         status:
             type: enum
             values: [Categorize, Select, Implement, "Assessment Plan", Assessment, Authorization, Active, Retired]
