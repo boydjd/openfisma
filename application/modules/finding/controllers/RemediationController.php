@@ -464,8 +464,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             ->addSelect('parent.rgt as rgt')
             ->addSelect('parent.id as id')
             ->addSelect(
-                "IF(orgtype.nickname <> 'system', CONCAT(UPPER(SUBSTRING(orgtype.nickname, 1, 1)), SUBSTRING"
-                . "(orgtype.nickname, 2)), CASE WHEN system.type = 'gss' then 'General Support System' WHEN "
+                "IF(orgtype.nickname <> 'system', orgtype.name,"
+                . "CASE WHEN system.type = 'gss' then 'General Support System' WHEN "
                 . "system.type = 'major' THEN 'Major Application' WHEN system.type = 'minor' THEN "
                 . "'Minor Application' END) orgTypeLabel"
             )
