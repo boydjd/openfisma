@@ -29,20 +29,6 @@ class DocumentTypeTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
                                                                 Fisma_Search_CustomIndexBuilder_Interface
 {
     /**
-     * Return the count of required document types
-     * 
-     * @return integer
-     */
-    public function getRequiredDocTypeCount()
-    {
-        $requiredDocTypeQuery = Doctrine_Query::create()
-                                ->from('DocumentType')
-                                ->where('required = ?', true);
-
-        return $requiredDocTypeQuery->count();
-    }
-
-    /**
      * Return a list of required document types
      * 
      * @return Doctrine_Query

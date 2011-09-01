@@ -122,7 +122,7 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
     {
         $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
-        $docTypeRequiredCount = Doctrine::getTable('DocumentType')->getRequiredDocTypeCount();
+        $docTypeRequiredCount = Doctrine::getTable('DocumentType')->getAllRequiredDocumentTypeQuery()->count();
 
         // Get data for the report
         $systemDocumentQuery = $baseQuery
