@@ -7,9 +7,8 @@
 ; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
 ; License   http://www.openfisma.org/mw/index.php?title=License
 
-[securityauthorizationaddcontrol]
-method = "post"
-elementFilters.trim = "StringTrim"
+[add_control]
+attribs.onsubmit = "Fisma.SecurityAuthorization.addControl(this); return false;"
 
 elements.securityAuthorizationId.type = "hidden"
 elements.securityAuthorizationId.options.hideLabel = true
@@ -20,7 +19,6 @@ elements.securityControlId.options.label = "Security Control"
 elements.securityControlId.options.required = true
 displayGroups.sa.elements.securityControlId = "securityControlId"
 
-elements.save.type = "Submit"
+elements.save.type = "submit"
 elements.save.options.label = "Add"
 displayGroups.sa.elements.save = "save"
-

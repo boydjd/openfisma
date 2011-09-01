@@ -36,6 +36,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     {
         parent::init();
         $this->_helper->contextSwitch()
+                      ->addActionContext('add-control', 'json')
                       ->addActionContext('control-table-master', 'json')
                       ->addActionContext('control-table-nested', 'json')
                       ->addActionContext('import-baseline-security-controls', 'json')
@@ -44,13 +45,13 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                       ->initContext();
 
         $this->_helper->ajaxContext()
-                      ->addActionContext('add-control', 'html')
                       ->addActionContext('add-enhancements', 'html')
                       ->addActionContext('assessment-plan', 'html')
                       ->addActionContext('authorization', 'html')
                       ->addActionContext('edit-common-control', 'html')
                       ->addActionContext('implementation', 'html')
                       ->addActionContext('select-controls', 'html')
+                      ->addActionContext('show-add-control-form', 'html')
                       ->initContext();
     }
 
@@ -376,7 +377,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                 'addControl',
                 array(
                     'label' => 'Add Control',
-                    'onClickFunction' => 'Fisma.SecurityControlTable.addControl',
+                    'onClickFunction' => 'Fisma.SecurityAuthorization.showAddControlForm',
                     'onClickArgument' => $this->view->id
                 )
             ),
@@ -486,38 +487,57 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     }
 
     /**
-     * @return void
+     * Add a single security control to an SA
      */
     public function addControlAction()
     {
-        $id = $this->_request->getParam('id');
-        if ($this->_request->isPost()) {
+        Doctrine_Manager::connection()->beginTransaction();
+        $response = new Fisma_AsyncResponse;
+
+        try {
             $post = $this->_request->getPost();
-            $saSc = new SaSecurityControl();
-            $saSc->merge($post);
-            $saSc->save();
-            $this->_redirect('/sa/security-authorization/select-controls/id/'.$id);
-            return;
+
+            $control = new SaSecurityControl();
+            $control->merge($post);
+            $control->save();
+
+            Doctrine_Manager::connection()->commit();
+        } catch (Exception $e) {
+            $this->getInvokeArg('bootstrap')->getResource('Log')->log($e, Zend_Log::ERR);
+            Doctrine_Manager::connection()->rollback();
+            $response->fail($e);
         }
 
+        $this->view->response = $response;
+    }
+    
+    /**
+     * Show a user interface for adding a single security control to an SA
+     * 
+     * This is displayed on the client side in a modal dialog
+     */
+    public function showAddControlFormAction()
+    {
+        $id = $this->_request->getParam('id');
+        
         // get list of controls for the form
         $currentControls = Doctrine::getTable('SecurityControl')
             ->getSaQuery($id)
             ->execute()
             ->toKeyValueArray('id', 'id');
-        $this->view->currentControls = $currentControls;
         $catalogId = Fisma::configuration()->getConfig('default_security_control_catalog_id');
+        
         $controls = Doctrine::getTable('SecurityControl')
-            ->getCatalogExcludeControlsQuery($catalogId, $currentControls)
+             ->getCatalogExcludeControlsQuery($catalogId, $currentControls)
              ->execute();
+        
         $controlArray = array();
         foreach ($controls as $control) {
             $controlArray[$control->id] = $control->code . ' ' . $control->name;
         }
-
+        
         // build form
-        $form = $this->getForm('securityauthorizationaddcontrol');
-        $form->setAction('/sa/security-authorization/add-control/id/'.$id);
+        $form = $this->getForm('add_control');
         $form->setDefault('securityAuthorizationId', $id);
         $form->getElement('securityControlId')->addMultiOptions($controlArray);
         $this->view->id = $id;

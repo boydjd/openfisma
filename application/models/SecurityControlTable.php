@@ -155,9 +155,13 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
      */
     public function getCatalogExcludeControlsQuery($catalogId, array $excludeControlIds)
     {
-        return Doctrine_Query::create()
-            ->from('SecurityControl sc')
-            ->whereNotIn('sc.id', $excludeControlIds)
-            ->andWhere('sc.securityControlCatalogId = ?', $catalogId);
+        $query = Doctrine_Query::create()->from('SecurityControl sc');
+        
+        if (!empty($excludeControlIds)) {
+            $query->whereNotIn('sc.id', $excludeControlIds);
+        }
+
+        $query->andWhere('sc.securityControlCatalogId = ?', $catalogId);
+        return $query;
     }
 }

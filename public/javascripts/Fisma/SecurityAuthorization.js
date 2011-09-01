@@ -25,7 +25,12 @@ Fisma.SecurityAuthorization = {
     /**
      * Store a data table used for selecting controls
      */
-    selectControlsTable : null,
+    selectControlsTable: null,
+    
+    /**
+     * Store a panel which displays the add control form
+     */
+    addControlPanel: null,
 
     /**
      * Run the import baseline controls action and update the table with the results
@@ -72,14 +77,17 @@ Fisma.SecurityAuthorization = {
                             var dt = Fisma.SecurityAuthorization.selectControlsTable;
                             dt.showTableMessage("Loading baseline controls...");
                             dt.getDataSource().sendRequest('', {success: dt.onDataReturnInitializeTable, scope: dt});
+                            dt.on("dataReturnEvent", function () {
+                                modalDialog.destroy();
+                            });
                         } else {
                             Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
+                            modalDialog.destroy();
                         }
                     } catch (error) {
                         Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+                        modalDialog.destroy();
                     }
-
-                    modalDialog.destroy();
                 },
 
                 failure: function(o) {
@@ -138,4 +146,83 @@ Fisma.SecurityAuthorization = {
     completeForm : function(event) {
         document.getElementById('completeForm').submit();
     },
+    
+    /**
+     * Run an XHR request to add a single security control to an SA
+     * 
+     * @param HTMLElement addControlForm
+     */
+    addControl: function (addControlForm) {
+        var modalDialog = Fisma.SecurityAuthorization.addControlPanel;
+
+        YAHOO.util.Connect.setForm(addControlForm);
+        YAHOO.util.Connect.asyncRequest(
+            'POST',
+            '/sa/security-authorization/add-control/format/json',
+            {
+                success: function(o) {
+                    try {
+                        var response = YAHOO.lang.JSON.parse(o.responseText).response;
+                        
+                        if (response.success) {
+                            // Hide warning message
+                            var noControlsWarning = document.getElementById("no-security-controls-warning");
+                            if (noControlsWarning) {
+                                noControlsWarning.style.display = 'none';
+                            }
+
+                            // Refresh controls table
+                            var dt = Fisma.SecurityAuthorization.selectControlsTable;
+                            dt.showTableMessage("Updating list of controls…");
+                            dt.getDataSource().sendRequest('', {success: dt.onDataReturnInitializeTable, scope: dt});
+                            dt.on("dataReturnEvent", function () {
+                                modalDialog.destroy();
+                            });
+                        } else {
+                            Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
+                            modalDialog.destroy();
+                        }
+                    } catch (error) {
+                        Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+                        modalDialog.destroy();
+                    }
+                },
+
+                failure: function(o) {
+                    Fisma.Util.showAlertDialog('An unexpected error occurred.');
+                    modalDialog.destroy();
+                }
+            },
+            null
+        );
+    },
+
+    /**
+     * Show the form for adding a single security control
+     * 
+     * @param YAHOO.util.Event ev
+     * @param object obj
+     */
+    showAddControlForm: function (ev, obj) {
+        var id = obj,
+            panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true }),
+            url = "/sa/security-authorization/show-add-control-form/format/html/id/" + id;
+
+        var callbacks = {
+            success: function(o) {
+                var panel = o.argument;
+                panel.setBody(o.responseText);
+                panel.center();
+            },
+            failure: function(o) {
+                alert('Error getting "add control" form: ' + o.statusText);
+                var panel = o.argument;
+                panel.destroy();
+            },
+            argument: panel
+        };
+
+        Fisma.SecurityAuthorization.addControlPanel = panel;
+        YAHOO.util.Connect.asyncRequest('GET', url, callbacks, null);
+    }
 }

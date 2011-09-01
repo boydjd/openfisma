@@ -69,28 +69,6 @@
         return SCT._instanceMap[name];
     };
 
-    /**
-     * @static
-     */
-    SCT.addControl = function (ev, obj) {
-        var id = obj,
-            panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true }),
-            url = "/sa/security-authorization/add-control/format/html/id/" + id;
-        var callbacks = {
-                success: function(o) {
-                    var panel = o.argument;
-                    panel.setBody(o.responseText);
-                    panel.center();
-                },
-                failure: function(o) {
-                    alert('Error getting "add control" form: ' + o.statusText);
-                    var panel = o.argument;
-                    panel.destroy();
-                },
-                argument: panel
-            };
-        YAHOO.util.Connect.asyncRequest( 'GET', url, callbacks, null);
-    };
     Lang.extend(SCT, NDT, {
         /**
          * Security Authorization id

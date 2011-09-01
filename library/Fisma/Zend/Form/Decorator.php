@@ -161,6 +161,10 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
         } else if ($element instanceof Zend_Form) {
             $enctype = $element->getAttrib('enctype');
             $id      = $element->getAttrib('id');
+            
+            $onsubmit = $element->getAttrib('onsubmit') 
+                      ? (' onsubmit="' . $element->getAttrib('onsubmit') . '" ')
+                      : '';
 
             if ($element->isReadOnly()) {
                 $render = '<div class=\'form\'>'
@@ -168,7 +172,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
                         . '</div><div class="clear"></div>';            
             } else {
                 $render = "<form method='{$element->getMethod()}'"
-                        . " action='{$element->getAction()}'"
+                        . " action='{$element->getAction()}' $onsubmit"
                         . (isset($enctype) ? " enctype=\"$enctype\"" : '')
                         . (isset($id) ? " id=\"$id\"" : '')
                         . '>'
