@@ -687,11 +687,6 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 }
             }
 
-            $thisToDate = new Zend_Date();
-            $thisToDate = $thisToDate->addDay($toDayDiff)->toString('YYY-MM-dd');
-            $thisFromDate = new Zend_Date();
-            $thisFromDate = $thisFromDate->addDay($fromDayDiff)->toString('YYY-MM-dd');
-
             if ($x === count($dayRanges) - 2) {
                 $thisColLabel = $dayRanges[$x] . '+';
             } else {
@@ -701,7 +696,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             // The links to associate with entire columns when this is not a stacked bar chart
             $nonStackedLinks[] = '/finding/remediation/list?q=' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                '/currentEcd/dateBetween/' . $thisFromDate . '/' . $thisToDate;            
+                '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr;            
 
             $thisChart->addColumn(
                     $thisColLabel,

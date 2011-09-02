@@ -55,19 +55,6 @@ class Test_Application_Models_DocumentTypeTable extends Test_Case_Unit
     }
 
     /**
-     * testGetMissingDocumentTypeNameWithEmptySystemId 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testGetMissingDocumentTypeNameWithEmptySystemId()
-    {
-        $missing = DocumentTypeTable::getMissingDocumentTypeName(null);
-
-        $this->assertNull($missing);
-    }
-
-    /**
      * testGetSearchIndexQuery 
      * 
      * @access public

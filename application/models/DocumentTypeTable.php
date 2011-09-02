@@ -29,68 +29,19 @@ class DocumentTypeTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
                                                                 Fisma_Search_CustomIndexBuilder_Interface
 {
     /**
-     * Return the count of required document types
+     * Return a list of required document types
      * 
-     * @return integer
+     * @return Doctrine_Query
      */
-    public function getRequiredDocTypeCount()
+    public function getAllRequiredDocumentTypeQuery()
     {
-        $requiredDocTypeQuery = Doctrine_Query::create()
-                                ->from('DocumentType')
-                                ->where('required = ?', true);
+        $requiredDocumentTypeQuery = Doctrine_Query::create()
+                                         ->from('DocumentType dt')
+                                         ->where('dt.required = ?', true);
 
-        return $requiredDocTypeQuery->count();
+        return $requiredDocumentTypeQuery;
     }
 
-    /**
-     * Return a list of missing document type names for specify systemid
-     * 
-     * @param  string $id The specified system id to get missing document types
-     * @return string
-     */
-    public function getMissingDocumentTypeName($systemId)
-    {
-        if (empty($systemId)) {
-            return null;
-        }
-
-        $documentTypeIds = $this->_getDocumentTypeIds($systemId);
-
-        $documentTypesQuery = Doctrine_Query::create()
-            ->select('IFNULL(GROUP_CONCAT(dt.name), \'N/A\') AS name')
-            ->from('DocumentType dt')
-            ->where('dt.required = ?', true)
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-        if (count($documentTypeIds) > 0) {
-             $documentTypesQuery->andWhereNotIn('dt.id', $documentTypeIds);
-        }
-
-        $documentTypes = $documentTypesQuery->fetchOne();
-
-        return $documentTypes['name'];
-    }
-
-    /**
-     * Return a list of document type ids for specify systemid from system document table
-     * 
-     * @param  string $id The specified system id to get the array of document type id
-     * @return array
-     */
-    protected function _getDocumentTypeIds($systemId)
-    {
-        if (empty($systemId)) {
-            return null;
-        }
-
-        $documentTypeIds = Doctrine_Query::create()
-                           ->select('sd.documenttypeid AS id')
-                           ->from('SystemDocument sd')
-                           ->where('sd.systemid = ?', $systemId)
-                           ->execute();
-
-        return $documentTypeIds->toKeyValueArray('id', 'id');
-    }
-    
     /**
      * Implement the interface for Searchable
      */
