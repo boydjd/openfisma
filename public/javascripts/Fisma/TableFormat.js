@@ -356,5 +356,26 @@ Fisma.TableFormat = {
 
             elCell.appendChild(checkbox);
         }        
+    },
+    
+    /**
+     * Truncates a length of text down to a specified size.
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    maximumTextLength : function (elCell, oRecord, oColumn, oData) {
+        var maxLength = oColumn.formatterParameters;
+        var truncatedText = $P.strip_tags(oData);
+
+        if (truncatedText.length > maxLength) {
+            truncatedText = truncatedText.substring(0, maxLength) + "…";
+        }
+        
+        var textNode = document.createTextNode(truncatedText);
+
+        elCell.appendChild(textNode);
     }
 };

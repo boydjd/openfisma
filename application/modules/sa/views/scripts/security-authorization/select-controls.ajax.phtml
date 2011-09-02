@@ -6,7 +6,9 @@
     ?>
 </div>
 
-<?php if ($this->controlCount == 0): ?>
+<?php
+if ($this->controlCount == 0):
+?>
     <div id="no-security-controls-warning" class="warning">
         <p>This security plan does not contain any security controls.</p>
         <p>
@@ -15,19 +17,10 @@
             clicking the "Import Baseline Controls" button.
         </p>
     </div>
-<?php endif; ?>
-
 <?php
+endif;
+
 Fisma_Format_Section::startSection("Select Controls");
-?>
-
-<div id="selectSecurityControlsContainer"></div>
-
-<script type="text/javascript">
-Fisma.SecurityAuthorization.selectControlsTable = new Fisma.SecurityControlTable("selectSecurityControlsContainer",
-                                                      <?php echo $this->escape($this->id); ?>);
-</script>
-
-<?php
+echo $this->escape($this->dataTable, 'none');
 Fisma_Format_Section::stopSection();
 ?>

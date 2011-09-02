@@ -76,7 +76,9 @@
         
         // Update number of returned records
         dataTable.handleDataReturnPayload = function(request, response, payload) { 
-            payload.totalRecords = response.meta.totalRecords; 
+            if (YAHOO.lang.isValue(payload)) {
+                payload.totalRecords = response.meta.totalRecords;
+            }
 
             // Display total records in the search results header
             var searchResultsHeader = document.getElementById('searchResultsTotalFound');
@@ -191,5 +193,10 @@
             
             checkbox.checked = false;
         });
+        
+        <?php if (isset($this->globalVariableName)): ?>
+            // Set a global reference for this data table.
+            <?php echo $this->escape($this->globalVariableName, 'javascript'); ?> = dataTable;
+        <?php endif; ?>
     });
 </script>

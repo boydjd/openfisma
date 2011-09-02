@@ -37,11 +37,10 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         parent::init();
         $this->_helper->contextSwitch()
                       ->addActionContext('add-control', 'json')
-                      ->addActionContext('control-table-master', 'json')
-                      ->addActionContext('control-table-nested', 'json')
                       ->addActionContext('import-baseline-security-controls', 'json')
                       ->addActionContext('remove-control', 'json')
                       ->addActionContext('remove-enhancement', 'json')
+                      ->addActionContext('select-control-table', 'json')
                       ->initContext();
 
         $this->_helper->ajaxContext()
@@ -394,6 +393,25 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                  array('label' => 'Complete Step 2', 'onClickFunction' => 'Fisma.SecurityAuthorization.completeForm')
             )
         );
+
+        $dataTable = new Fisma_Yui_DataTable_Remote();
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Control', true, null, null, 'c_code'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Family', true, null, null, 'c_family'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Class', true, null, null, 'c_class'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, null, 'c_name'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Description', 
+                                                             true, 
+                                                             'Fisma.TableFormat.maximumTextLength', 
+                                                             150, 
+                                                             'c_control'))
+                  ->setDataUrl('/sa/security-authorization/select-control-table/id/' . $id . '/format/json')
+                  ->setResultVariable('controls')
+                  ->setRowCount(20)
+                  ->setInitialSortColumn('c_code')
+                  ->setSortAscending(true)
+                  ->setGlobalVariableName("Fisma.SecurityAuthorization.selectControlsTable");
+        $this->view->dataTable = $dataTable;
+
         $completeForm = new Fisma_Zend_Form();
         $completeForm->setAction('/sa/security-authorization/complete-step')
                      ->setAttrib('id', 'completeForm')
@@ -404,43 +422,32 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->buttons[] = $completeForm;
     }
 
-    public function controlTableMasterAction()
+    /**
+     * Called asynchronously to load the currently selected security controls into a data table
+     */
+    public function selectControlTableAction()
     {
         $id = $this->_getParam('id');
         $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
-        $records = array();
-        foreach ($sa->SaSecurityControls as $sasc) {
-            $sceCount = $sasc->SecurityControl->Enhancements->count();
-            $sasceCount = $sasc->SaSecurityControlEnhancements->count();
-            $records[] = array(
-                'id' => $sasc->id,
-                'securityControlId' => $sasc->SecurityControl->id,
-                'code' => $sasc->SecurityControl->code,
-                'name' => $sasc->SecurityControl->name,
-                'class' => $sasc->SecurityControl->class,
-                'family' => $sasc->SecurityControl->family,
-                'hasEnhancements' => $sasceCount > 0,
-                'hasMoreEnhancements' => $sceCount > $sasceCount
-            );
-        }
-        $this->view->records = $records;
-        $this->view->totalRecords = count($records);
-    }
 
-    public function controlTableNestedAction()
-    {
-        $id = $this->_getParam('id');
-        $sasc = Doctrine::getTable('SaSecurityControl')->find($id);
-        $records = array();
-        foreach ($sasc->SaSecurityControlEnhancements as $sasce) {
-            $records[] = array(
-                'id' => $sasce->id,
-                'securityControlEnhancementId' => $sasce->SecurityControlEnhancement->id,
-                'number' => $sasce->SecurityControlEnhancement->number
-            );
-        }
-        $this->view->records = $records;
-        $this->view->totalRecords = count($records);
+        $id    = $this->getRequest()->getParam('id');
+        $count = $this->getRequest()->getParam('count', 20);
+        $start = $this->getRequest()->getParam('start', 0);
+        $sort  = $this->getRequest()->getParam('sort', 'category');
+        $dir   = $this->getRequest()->getParam('dir', 'asc');
+
+        $controlsQuery = Doctrine_Query::create()
+            ->select("s.id, c.code, c.family, c.class, c.name, c.control")
+            ->from('SaSecurityControl s')
+            ->leftJoin('s.SecurityControl c')
+            ->where('s.securityAuthorizationId = ?', $sa->id)
+            ->orderBy("c.code")
+            ->limit($count)
+            ->offset($start)
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
+        $this->view->totalRecords = $controlsQuery->count();
+        $this->view->controls = $controlsQuery->execute();
     }
 
     /**

@@ -106,6 +106,13 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
      * @var bool
      */
     protected $_deferData = false;    
+
+    /**
+     * If set, the data table reference will be assigned to a global variable matching this name.
+     * 
+     * @var bool
+     */
+    protected $_globalVariableName = null;
     
     /**
      * Render the datatable with HTML and/or Javascript
@@ -139,6 +146,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
             'dataUrl' => $this->_dataUrl,
             'deferData' => $this->_deferData,
             'initialSortColumn' => $this->_initialSortColumn,
+            'globalVariableName' => $this->_globalVariableName,
             'renderEventFunction' => $this->_renderEventFunction,
             'requestConstructor' => $this->_requestConstructor,
             'resultVariable' => $this->_resultVariable,
@@ -308,4 +316,22 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
         
         return $this;
     }
+
+    /**
+     * Mutator for $_globalVariableName
+     * 
+     * Fluent interface
+     * 
+     * @param string $globalVariableName
+     */
+    public function setGlobalVariableName($globalVariableName)
+    {
+        if (empty($globalVariableName)) {
+            throw new Fisma_Zend_Exception("Global variable name cannot be null or blank.");
+        }
+
+        $this->_globalVariableName = $globalVariableName;
+        
+        return $this;
+    }    
 }
