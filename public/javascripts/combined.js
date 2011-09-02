@@ -11614,15 +11614,22 @@ Fisma.TableFormat = {
     },
 
     /**
-     * A formatter which converts escaped HTML into unescaped HTML
+     * A formatter which used to convert escaped HTML into unescaped HTML ...
+     * Now it uses the default formatter, for a few reasons:
+     *    1. We don't store html unescaped anymore, unless it's unsafe html
+     *    2. The javascript in data-table-local.phtml is wrong, and doesn't execute YAHOO formatters properly
+     *    3. Using this as it was resulted in an XSS vulnerability, and I don't have time to rewrite the entire
+     *       implementation so that it works properly.
      *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
      * @param oData The data stored in this cell
+     * @TODO Fix data-table-local.phtml script so that it works with YAHOO formatters
+     * @deprecated
      */
     formatHtml : function(el, oRecord, oColumn, oData) {
-        el.innerHTML = oData.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+        YAHOO.widget.DataTable.formatDefault.apply(this, arguments);
     },
 
     /**
