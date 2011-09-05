@@ -240,6 +240,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
      */
     private function _getRandomUser()
     {
-        return $this->_sampleUsers[rand(0, count($this->_sampleUsers))];
+        return $this->_sampleUsers[rand(0, count($this->_sampleUsers)-1)];
     }
 }
