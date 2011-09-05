@@ -16,33 +16,34 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
+require_once(realpath(dirname(__FILE__) . '/../Bootstrap.php'));
+
 /**
- * Remove orgtype column from organization table
+ * This is the base class for all unit tests in OpenFISMA. This class bootstraps the runtime for unit tests.
  * 
- * @author     Ben Zheng <ben.zheng@reyosoft.com>
+ * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Migration
+ * @package    Test
  */
-class Version120 extends Doctrine_Migration_Base
+abstract class Test_Case_Unit extends PHPUnit_Framework_TestCase
 {
     /**
-     * Remove orgtype column
-     * 
-     * @return void
+     * The bootstrapper object for tests
      */
-    public function up()
-    {
-        $this->removeColumn('organization', 'orgtype');
-    }
+    static private $_bootstrap;
 
     /**
-     * Irreversible migration 
-     * 
-     * @return void
+     * Override the parent constructor in order to ensure the bootstrap runs once
      */
-    public function down()
+    public function __construct($name = NULL, array $data = array(), $dataName = '')
     {
-        throw new Doctrine_Migration_IrreversibleMigrationException();
+        parent::__construct($name, $data, $dataName);
+
+        if (!self::$_bootstrap) {
+            self::$_bootstrap = new Test_Bootstrap;
+
+            self::$_bootstrap->bootstrapUnitTest();
+        }
     }
 }

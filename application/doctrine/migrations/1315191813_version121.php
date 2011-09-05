@@ -26,7 +26,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Version119 extends Doctrine_Migration_Base
+class Version121 extends Doctrine_Migration_Base
 {
     /**
      * Add organization_type table, organization orgtypeid column and foreign key

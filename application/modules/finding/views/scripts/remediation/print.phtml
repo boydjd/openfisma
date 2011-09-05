@@ -1,0 +1,5 @@
+<?php
+    $parts = array('finding', 'mitigation-strategy', 'risk-analysis', 'security-control', 'comments', 'artifacts', 'audit-log');
+    foreach($parts as $part) {
+        echo $this->partial('remediation/' . $part . '.ajax.phtml', $this->getVars());
+    }

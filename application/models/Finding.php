@@ -339,7 +339,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]      = $findingEvaluation;
 
-        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . "\n\nComment:\n" . $comment . '</p>');
+        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . "\n\nComment:\n" . $comment);
 
         switch ($this->status) {
             case 'MSA':

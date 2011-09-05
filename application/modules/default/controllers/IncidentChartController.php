@@ -80,9 +80,9 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
             )
             ->setColors(
                 array(
-                    '#FF0000',
-                    '#FF6600',
-                    '#FFC000'
+                    '#00FF00',
+                    '#FFFF00',
+                    '#FF0000'
                 )
             )
             ->setThreatLegendVisibility(true)
@@ -193,7 +193,11 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
 
         foreach ($queryResults as $rsltElement) {
             $colLabel = $rsltElement['category'] . ' - ' . $rsltElement['name'];
-            $rtnChart->addColumn($colLabel, $rsltElement['count']);
+
+            $pieSliceTooltip = '<b>' . $colLabel . '</b><hr/>';
+            $pieSliceTooltip .= '#count# (#percent#%)';
+
+            $rtnChart->addColumn($rsltElement['category'], $rsltElement['count'], null, $pieSliceTooltip);
         }
         
         $this->view->chart = $rtnChart->export('array');

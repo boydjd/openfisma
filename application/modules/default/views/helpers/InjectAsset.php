@@ -42,6 +42,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/fisma.js',
                                       '/javascripts/editable.js',
                                       '/javascripts/selectallselectnone.js',
+                                      '/javascripts/groupeddatatable.js',
                                       '/javascripts/Fisma/AttachArtifacts.js',
                                       '/javascripts/Fisma/AutoComplete.js',
                                       '/javascripts/Fisma/Blinker.js',
@@ -59,6 +60,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Module.js',
                                       '/javascripts/Fisma/OrganizationTreeView.js',
                                       '/javascripts/Fisma/Remediation.js',
+                                      '/javascripts/Fisma/Role.js',
                                       '/javascripts/Fisma/Search.js',
                                       '/javascripts/Fisma/Search/Criteria.js',
                                       '/javascripts/Fisma/Search/CriteriaDefinition.js',
@@ -108,7 +110,8 @@ class View_Helper_InjectAsset
                                       '/stylesheets/SwitchButton.css',
                                       '/stylesheets/TreeNodeDragBehavior.css',
                                       '/stylesheets/Toolbar.css',
-                                      '/stylesheets/User.css'
+                                      '/stylesheets/User.css',
+                                      '/stylesheets/datatablegrouper.css'
                                 )
                             );
 

@@ -29,7 +29,7 @@ Fisma.Chart = {
     CHART_CREATE_EXTERNAL: 3,
 
     // Defaults for global chart settings definition:
-    globalSettingsDefaults:{
+    globalSettingsDefaults: {
         fadingEnabled:      false,
         usePatterns:        false,
         barShadows:         false,
@@ -54,7 +54,7 @@ Fisma.Chart = {
     ],
     
     // Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
-    chartsOnDOM:{},
+    chartsOnDOM: {},
 
     // Is this client-browser Internet Explorer?
     isIE: (window.ActiveXObject) ? true : false,
@@ -71,8 +71,7 @@ Fisma.Chart = {
      *
      * @return integer
      */
-    createJQChart_asynchReturn : function (requestNumber, value, chartParamsObj)
-    {
+    createJQChart_asynchReturn : function (requestNumber, value, chartParamsObj) {
         // If anything (json) was returned at all...
         if (value) {
 
@@ -88,8 +87,14 @@ Fisma.Chart = {
             
             // validate that chart plotting data (numeric information) was returned
             if (typeof chartParamsObj.chartData === 'undefined') {
-                throw 'Chart Error - The remote data source for chart "' + chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull + ' did not return data to plot on a chart';
-            } 
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+                var msg = 'Chart Error - The remote data source for chart "';
+                msg += chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull;
+                msg += ' did not return data to plot on a chart';
+                throw msg;
+            } else if (chartParamsObj.chartData.length === 0) {
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+            }
 
             // call the Fisma.Chart.createJQChart() with the chartParamsObj-object initally given to Fisma.Chart.createJQChart() and the merged responce object
             return Fisma.Chart.createJQChart(chartParamsObj);
@@ -107,8 +112,7 @@ Fisma.Chart = {
      *
      * @return boolean
      */
-    createJQChart : function (chartParamsObj)
-    {
+    createJQChart : function (chartParamsObj) {
 
         // load in default values for paramiters, and replace it with any given params
         var defaultParams = {
@@ -142,12 +146,14 @@ Fisma.Chart = {
              * If it is being loaded from an external source
              *   setup a json request
              *   have the json request return to createJQChart_asynchReturn
-             *   exit this function as createJQChart_asynchReturn will call this function again with the same chartParamsObj object with chartParamsObj.externalSource taken out
+             *   exit this function as createJQChart_asynchReturn will call this function again 
+             *   with the same chartParamsObj object with chartParamsObj.externalSource taken out
             */
 
             document.getElementById(chartParamsObj.uniqueid).innerHTML = 'Loading chart data...';
 
-            // note externalSource, and remove/relocate it from its place in chartParamsObj[] so it dosnt retain and cause us to loop 
+            // note externalSource, and remove/relocate it from its place in chartParamsObj[] so 
+            // it dosnt retain and cause us to loop 
             var externalSource = chartParamsObj.externalSource;
             if (!chartParamsObj.oldExternalSource) {
                 chartParamsObj.oldExternalSource = chartParamsObj.externalSource;
@@ -156,7 +162,7 @@ Fisma.Chart = {
 
             // Send data from widgets to external data source if needed7 (will load from cookies and defaults if widgets are not drawn yet)
             chartParamsObj = Fisma.Chart.buildExternalSourceParams(chartParamsObj);
-            externalSource += String(chartParamsObj.externalSourceParams).replace(/ /g,'%20');
+            externalSource += String(chartParamsObj.externalSourceParams).replace(/ /g, '%20');
             chartParamsObj.lastURLpull = externalSource;
 
             var myDataSource = new YAHOO.util.DataSource(externalSource);
@@ -180,15 +186,31 @@ Fisma.Chart = {
 
         // handel aliases and short-cut vars
         if (typeof chartParamsObj.barMargin !== 'undefined') {
-            chartParamsObj = jQuery.extend(true, chartParamsObj, {'seriesDefaults': {'rendererOptions': {'barMargin': chartParamsObj.barMargin}}});
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {
+                'seriesDefaults' : {
+                    'rendererOptions' : {
+                        'barMargin' : chartParamsObj.barMargin
+                    }
+                }
+            });
             chartParamsObj.barMargin = undefined;
         }
         if (typeof chartParamsObj.legendLocation !== 'undefined') {
-            chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'location': chartParamsObj.legendLocation }});
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {
+                'legend' : {
+                    'location' : chartParamsObj.legendLocation
+                }
+            });
             chartParamsObj.legendLocation = undefined;
         }
         if (typeof chartParamsObj.legendRowCount !== 'undefined') {
-            chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'rendererOptions': {'numberRows': chartParamsObj.legendRowCount}}});
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {
+                'legend' : {
+                    'rendererOptions' : {
+                        'numberRows' : chartParamsObj.legendRowCount
+                    }
+                }
+            });
             chartParamsObj.legendRowCount = undefined;
         }
 
@@ -213,47 +235,46 @@ Fisma.Chart = {
         var rtn = Fisma.Chart.CHART_CREATE_FAILURE;
         if (!Fisma.Chart.chartIsEmpty(chartParamsObj)) {
 
-            switch(chartParamsObj.chartType)
-            {
-                case 'stackedbar':
+            switch (chartParamsObj.chartType) {
+            case 'stackedbar':
+                chartParamsObj.varyBarColor = false;
+                            if (typeof chartParamsObj.showlegend === 'undefined') { chartParamsObj.showlegend = true; }
+                rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
+                break;
+            case 'bar':
+
+                // Is this a simple-bar chart (not-stacked-bar) with multiple series?
+                if (typeof chartParamsObj.chartData[0] === 'object') {
+
+                    // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
+                    // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
+
                     chartParamsObj.varyBarColor = false;
-                                if (typeof chartParamsObj.showlegend === 'undefined') { chartParamsObj.showlegend = true; }
-                    rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
-                    break;
-                case 'bar':
+                    chartParamsObj.showlegend = true;
 
-                    // Is this a simple-bar chart (not-stacked-bar) with multiple series?
-                    if (typeof chartParamsObj.chartData[0] === 'object') {
-
-                        // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
-                        // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
-
-                        chartParamsObj.varyBarColor = false;
-                        chartParamsObj.showlegend = true;
-
-                    } else {
-                        chartParamsObj.chartData = [chartParamsObj.chartData];  // force to 2 dimensional array
-                        chartParamsObj.links = [chartParamsObj.links];
-                        chartParamsObj.varyBarColor = true;
-                        chartParamsObj.showlegend = false;
-                    }
-
-                    chartParamsObj.stackSeries = false;
-                    rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
-                    break;
-
-                case 'line':
-                    rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
-                    break;
-                case 'stackedline':
-                    rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
-                    break;
-                case 'pie':
+                } else {
+                    chartParamsObj.chartData = [chartParamsObj.chartData];  // force to 2 dimensional array
                     chartParamsObj.links = [chartParamsObj.links];
-                    rtn = Fisma.Chart.createChartPie(chartParamsObj);
-                    break;
-                default:
-                    throw 'createJQChart Error - chartType is invalid (' + chartParamsObj.chartType + ')';
+                    chartParamsObj.varyBarColor = true;
+                    chartParamsObj.showlegend = false;
+                }
+
+                chartParamsObj.stackSeries = false;
+                rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
+                break;
+
+            case 'line':
+                rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
+                break;
+            case 'stackedline':
+                rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
+                break;
+            case 'pie':
+                chartParamsObj.links = [chartParamsObj.links];
+                rtn = Fisma.Chart.createChartPie(chartParamsObj);
+                break;
+            default:
+                throw 'createJQChart Error - chartType is invalid (' + chartParamsObj.chartType + ')';
             }
         }
 
@@ -282,8 +303,7 @@ Fisma.Chart = {
      * @return void
      * 
     */
-    mergeExtrnIntoParamObjectByInheritance : function (chartParamsObj, externResponse)
-    {
+    mergeExtrnIntoParamObjectByInheritance : function (chartParamsObj, externResponse) {
         var joinedParam = {};
 
         // Is there an inheritance mode? 
@@ -320,8 +340,7 @@ Fisma.Chart = {
       * @param object
       * @return void
      */
-    createChartPie : function (chartParamsObj)
-    {
+    createChartPie : function (chartParamsObj) {
         var x = 0;
         var dataSet = [];
         usedLabelsPie = chartParamsObj.chartDataText;
@@ -339,21 +358,21 @@ Fisma.Chart = {
                 shadow: false
             },
             axes: {
-                xaxis:{
+                xaxis: {
                     tickOptions: {
                         angle: chartParamsObj.DataTextAngle,
                         fontSize: '10pt',
                         formatString: '%.0f'
                     }
                 },
-                yaxis:{
+                yaxis: {
                     tickOptions: {
                         formatString: '%.0f'
                     }
                 }
 
             },
-            seriesDefaults:{
+            seriesDefaults: {
                 renderer:$.jqplot.PieRenderer,
                 rendererOptions: {
                     sliceMargin: 0,
@@ -370,8 +389,11 @@ Fisma.Chart = {
                 location: 's',
                 show: true,
                 rendererOptions: {
-                    numberRows: 2
+                    numberRows: 2 
                 }
+            },
+            highlighter: {
+                show: false
             }
         };
 
@@ -440,8 +462,7 @@ Fisma.Chart = {
       * @param object
       * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
      */
-    createChartStackedBar : function (chartParamsObj)
-    {
+    createChartStackedBar : function (chartParamsObj) {
         var x = 0; var y = 0;
         var thisSum = 0;
         var maxSumOfAll = 0;
@@ -488,16 +509,16 @@ Fisma.Chart = {
             seriesColors: chartParamsObj.colors,
             stackSeries: true,
             series: seriesParam,
-            seriesDefaults:{
+            seriesDefaults: {
                 renderer: $.jqplot.BarRenderer,
-                rendererOptions:{
+                rendererOptions: {
                     barWidth: 35,
                     showDataLabels: true,
                     varyBarColor: chartParamsObj.varyBarColor,
                     shadowAlpha: 0.15,
                     shadowOffset: 0
                 },
-                pointLabels:{
+                pointLabels: {
                     show: false,
                     location: 's',
                     hideZeros: true
@@ -510,11 +531,11 @@ Fisma.Chart = {
                     enableFontSupport: true,
                     fontFamily: 'arial, helvetica, clean, sans-serif',
                     fontSize: '12pt',
-                    textColor: '#555555'
+                    textColor: '#000000'
                 }
             },
             axes: {
-                xaxis:{
+                xaxis: {
                     label: chartParamsObj.AxisLabelX,
                     labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                     renderer: $.jqplot.CategoryAxisRenderer,
@@ -526,7 +547,7 @@ Fisma.Chart = {
                         textColor: '#000000'
                     }
                 },
-                yaxis:{
+                yaxis: {
                     label: chartParamsObj.AxisLabelY,
                     labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                     min: 0,
@@ -563,7 +584,7 @@ Fisma.Chart = {
             legend: {
                 show: chartParamsObj.showlegend,
                 rendererOptions: {
-                    numberRows: 1
+                    numberRows: 2 
                 },
                 location: 'nw'
             }
@@ -694,8 +715,7 @@ Fisma.Chart = {
       * @param object
       * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
      */
-    createChartStackedLine : function (chartParamsObj)
-    {
+    createChartStackedLine : function (chartParamsObj) {
         var x = 0; var y = 0;
         var thisSum = 0;
 
@@ -711,18 +731,18 @@ Fisma.Chart = {
 
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, {
             seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
-            series: [{label: 'Open Findings', lineWidth:4, markerOptions:{style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions:{style:'square'}}, {lineWidth:4, markerOptions:{style:'square'}}],
-            seriesDefaults:{
+            series: [{label: 'Open Findings', lineWidth:4, markerOptions: {style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions: {style:'square'}}, {lineWidth:4, markerOptions: {style:'square'}}],
+            seriesDefaults: {
                 fill:false,
                 showMarker: true,
                 showLine: true
             },
             axes: {
-                xaxis:{
+                xaxis: {
                     renderer:$.jqplot.CategoryAxisRenderer,
                     ticks:chartParamsObj.chartDataText
                 },
-                yaxis:{
+                yaxis: {
                     min: 0
                 }
             },
@@ -730,7 +750,7 @@ Fisma.Chart = {
             legend: {
                         show: true,
                         rendererOptions: {
-                            numberRows: 1
+                            numberRows: 2 
                         },
                         location: 'nw'
                     }
@@ -832,8 +852,7 @@ Fisma.Chart = {
      *
      * @return boolean/integer
      */
-    createChartThreatLegend : function (chartParamsObj)
-    {
+    createChartThreatLegend : function (chartParamsObj) {
         if (chartParamsObj.showThreatLegend && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
             if (chartParamsObj.showThreatLegend === true) {
 
@@ -848,7 +867,7 @@ Fisma.Chart = {
                 // Tabel to hold all colored boxes and labels
                 var threatTable = document.createElement("table");
                 threatTable.style.fontSize = '12px';
-                threatTable.style.color = '#555555';
+                threatTable.style.color = '#000000';
                 threatTable.width = threatLegendWidth;
                 var tblBody = document.createElement("tbody");
                 var row = document.createElement("tr");
@@ -857,7 +876,7 @@ Fisma.Chart = {
                 cell.style.textAlign = 'center';
                 cell.style.fontWeight = 'bold';
                 cell.width = '40%';
-                var textLabel = document.createTextNode('Threat Level');
+                var textLabel = document.createTextNode('');
                 cell.appendChild(textLabel);
                 row.appendChild(cell);
                 
@@ -1136,7 +1155,6 @@ Fisma.Chart = {
      */
     chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
     {
-
         var theLink = false;
         if (paramObj.links) {
             if (typeof paramObj.links === 'string') {
@@ -1191,8 +1209,7 @@ Fisma.Chart = {
      *
      * @return array
      */
-    forceIntegerArray : function (inptArray)
-    {
+    forceIntegerArray : function (inptArray) {
         var x = 0;
         for (x = 0; x < inptArray.length; x++) {
             if (typeof inptArray[x] === 'object') {
@@ -1214,8 +1231,7 @@ Fisma.Chart = {
      *
      * @return void
      */
-    applyChartBorders : function (chartParamsObj)
-    {
+    applyChartBorders : function (chartParamsObj) {
         var x = 0;
 
         // What borders should be drawn? (L = left, B = bottom, R = right, T = top)
@@ -1285,8 +1301,7 @@ Fisma.Chart = {
         }
     },
 
-    applyChartBackground : function (chartParamsObj)
-    {
+    applyChartBackground : function (chartParamsObj) {
 
         var targDiv = document.getElementById(chartParamsObj.uniqueid);
 
@@ -1346,8 +1361,7 @@ Fisma.Chart = {
      *
      * @return void
      */
-    applyChartWidgets : function (chartParamsObj)
-    {
+    applyChartWidgets : function (chartParamsObj) {
         var x = 0;
         var y = 0;
 
@@ -1424,8 +1438,7 @@ Fisma.Chart = {
      *
      * @return void
      */
-    applyChartWidgetSettings : function (chartParamsObj)
-    {
+    applyChartWidgetSettings : function (chartParamsObj) {
         var x = 0;
 
         if (chartParamsObj.widgets) {
@@ -1467,8 +1480,7 @@ Fisma.Chart = {
      *
      * @return Array
      */
-    buildExternalSourceParams : function (chartParamsObj)
-    {
+    buildExternalSourceParams : function (chartParamsObj) {
 
         // build arguments to send to the remote data source
 
@@ -1517,8 +1529,7 @@ Fisma.Chart = {
       * @param object
       * @return void
      */
-    widgetEvent : function (chartParamsObj)
-    {
+    widgetEvent : function (chartParamsObj) {
         var x = 0;
 
         // first, save the widget values (as cookies) so they can be retained later when the widgets get redrawn
@@ -1545,22 +1556,19 @@ Fisma.Chart = {
         Fisma.Chart.fadeOut(chartParamsObj.uniqueid + 'holder', 300);
     },
 
-    makeElementVisible : function (eleId)
-    {
+    makeElementVisible : function (eleId) {
         var ele = document.getElementById(eleId);
         ele.style.opacity = '1';
         ele.style.filter = "alpha(opacity = '100')";
     },
 
-    makeElementInvisible : function (eleId)
-    {
+    makeElementInvisible : function (eleId) {
         var ele = document.getElementById(eleId);
         ele.style.opacity = '0';
         ele.style.filter = "alpha(opacity = '0')";
     },
 
-    fadeIn : function (eid, TimeToFade)
-    {
+    fadeIn : function (eid, TimeToFade) {
 
         var element = document.getElementById(eid);
         if (element === null) {
@@ -1594,8 +1602,7 @@ Fisma.Chart = {
         Fisma.Chart.fade(eid, TimeToFade);
     },
 
-    fadeOut : function (eid, TimeToFade)
-    {
+    fadeOut : function (eid, TimeToFade) {
 
         var element = document.getElementById(eid);
         if (element === null) { return; }
@@ -1627,8 +1634,7 @@ Fisma.Chart = {
         Fisma.Chart.fade(eid, TimeToFade);
     },
 
-    fade : function (eid, TimeToFade)
-    {
+    fade : function (eid, TimeToFade) {
 
         var element = document.getElementById(eid);
         if (element === null) { return; }
@@ -1655,8 +1661,7 @@ Fisma.Chart = {
         }  
     },
 
-    animateFade : function (lastTick, eid, TimeToFade)
-    {  
+    animateFade : function (lastTick, eid, TimeToFade) {  
         var curTick = new Date().getTime();
         var elapsedTicks = curTick - lastTick;
 
@@ -1706,8 +1711,7 @@ Fisma.Chart = {
      *
      * @return void
      */
-    setChartWidthAttribs : function (chartParamsObj)
-    {
+    setChartWidthAttribs : function (chartParamsObj) {
 
         var makeScrollable = false;
         var minSpaceRequired;
@@ -1784,8 +1788,7 @@ Fisma.Chart = {
      * @param object
      * @return String
      */
-    getTableFromChartData : function (chartParamsObj)
-    {
+    getTableFromChartData : function (chartParamsObj) {
         if (Fisma.Chart.chartIsEmpty(chartParamsObj)) {
             return;
         }
@@ -1957,8 +1960,7 @@ Fisma.Chart = {
      * @param object
      * @return void
      */
-    removeDecFromPointLabels : function (chartParamsObj)
-    {
+    removeDecFromPointLabels : function (chartParamsObj) {
             var outlineStyle = '';
             var chartOnDOM = document.getElementById(chartParamsObj.uniqueid);
 
@@ -2031,7 +2033,6 @@ Fisma.Chart = {
      */
     removeOverlappingPointLabels : function (chartParamsObj)
     {
-
             // This function will deal with removing point labels that collie with eachother
             // There is no need for this unless this is a stacked-bar or stacked-line chart
             if (chartParamsObj.chartType !== 'stackedbar' && chartParamsObj.chartType !== 'stackedline') {
@@ -2144,8 +2145,7 @@ Fisma.Chart = {
      * @param object
      * @return void
      */
-    setChartSettingsVisibility : function (chartId, boolVisible)
-    {
+    setChartSettingsVisibility : function (chartId, boolVisible) {
         var menuHolderId = chartId + 'WidgetSpaceHolder';
         var menuObj = document.getElementById(menuHolderId);
 
@@ -2170,8 +2170,7 @@ Fisma.Chart = {
      *
      * @return void
      */
-    globalSettingUpdate : function (mouseEvent, chartUniqueId)
-    {
+    globalSettingUpdate : function (mouseEvent, chartUniqueId) {
         // get this chart's GlobSettings menue
         var settingsMenue = document.getElementById(chartUniqueId + 'GlobSettings');
 
@@ -2203,8 +2202,7 @@ Fisma.Chart = {
      * @param object
      * @return void
      */
-    globalSettingRefreshUi : function (chartParamsObj)
-    {
+    globalSettingRefreshUi : function (chartParamsObj) {
         /*
             Every input-element (setting UI) has an id equal to the cookie name 
             to which its value is stored. So wee we have to do is look for a
@@ -2234,6 +2232,28 @@ Fisma.Chart = {
         }
     },
 
+    showSetingMode : function (showBasic) {
+        var x = 0;
+        var hideThese;
+        var showThese;
+
+        if (showBasic === true) {
+            showThese = document.getElementsByName('chartSettingsBasic');
+            hideThese = document.getElementsByName('chartSettingsGlobal');
+        } else {
+            hideThese = document.getElementsByName('chartSettingsBasic');
+            showThese = document.getElementsByName('chartSettingsGlobal');
+        }
+
+        for (x = 0; x < hideThese.length; x++) {
+            hideThese[x].style.display = 'none';
+        }
+
+        for (x = 0; x < hideThese.length; x++) {
+                showThese[x].style.display = '';
+        }
+    },
+
     /**
      * Gets a setting previously saved by Fisma.Chart.setGlobalSetting()
      * If the setting being looked for has never been set, a value from Fisma.Chart.globalSettingsDefaults
@@ -2244,8 +2264,7 @@ Fisma.Chart = {
      * @param string settingName
      * @return string
      */
-    getGlobalSetting : function (settingName)
-    {
+    getGlobalSetting : function (settingName) {
 
         var rtnValue = YAHOO.util.Cookie.get('chartGlobSetting_' + settingName);
 
@@ -2283,8 +2302,7 @@ Fisma.Chart = {
      * @param object
      * @return object
      */
-    alterChartByGlobals : function (chartParamObj)
-    {
+    alterChartByGlobals : function (chartParamObj) {
 
         // Show bar shadows?
         if (Fisma.Chart.getGlobalSetting('barShadows') === 'true') {
@@ -2335,8 +2353,7 @@ Fisma.Chart = {
      * its content area, and the loading message is actully shown 
      * (and yes, this is nessesary).
      */
-    redrawAllCharts : function (doRedrawNow)
-    {
+    redrawAllCharts : function (doRedrawNow) {
         var thisParamObj;
         var uniqueid;
         
@@ -2400,15 +2417,15 @@ Fisma.Chart = {
         chartContainer.appendChild(pTag);
     },
     
+    /**
+     * Does nothing. Used to set a title on a chart, but now, nothing.
+     *
+     * @deprecated
+     * @param object
+     * @return void
+     */
     setTitle : function (chartParamsObj)
     {
-        if (chartParamsObj.title && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
-            var titleArea = document.getElementById(chartParamsObj.uniqueid + 'title');
-            var titleNode = document.createTextNode(chartParamsObj.title);
-            titleArea.innerHTML = '';
-            titleArea.appendChild(titleNode);
-            titleArea.appendChild(document.createElement('br'));
-        }
     },
     
     /**
@@ -2419,8 +2436,7 @@ Fisma.Chart = {
      * @param object
      * @return void
      */
-    showMsgOnEmptyChart : function (chartParamsObj)
-    {
+    showMsgOnEmptyChart : function (chartParamsObj) {
         if (Fisma.Chart.chartIsEmpty(chartParamsObj)) {
             var targDiv = document.getElementById(chartParamsObj.uniqueid);
 
@@ -2454,8 +2470,7 @@ Fisma.Chart = {
      * @param object
      * @return boolean
      */
-    chartIsEmpty : function (chartParamsObj)
-    {
+    chartIsEmpty : function (chartParamsObj) {
         var isChartEmpty = true;
         var x = 0; var y = 0;
 
@@ -2505,7 +2520,8 @@ Fisma.Chart = {
             function() {
                 var div;
                 var canvas = $(this);
-
+                var div;
+                
                 if (canvas.context.className == 'jqplot-yaxis-tick') {
 
                     // y-axis labels/ticks (labels for each row), must be placed to the farthest right of the parent
@@ -2564,5 +2580,4 @@ Fisma.Chart = {
 
         return this;
     }
-    
 };

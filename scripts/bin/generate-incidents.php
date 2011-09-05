@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -16,20 +17,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-// Bootstrap the application's CLI mode if it has not already been done
-require_once(realpath(dirname(__FILE__) . '/../library/Fisma.php'));
-require_once 'bootstrap.php';
+require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
-/**
- * This is the base class for all unit tests in OpenFISMA. Currently this class is just a stub. The real reason for
- * including it is to execute the application bootstrap logic contained in this same file.
- * 
- * @author     Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Test
- */
-abstract class Test_FismaUnitTest extends PHPUnit_Framework_TestCase
-{
-
-}
+$cli = new Fisma_Cli_GenerateIncidents();
+$cli->run();
