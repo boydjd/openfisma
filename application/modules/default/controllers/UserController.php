@@ -330,28 +330,34 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $user = Doctrine::getTable('User')->find($this->_me->id);
 
         if ($this->_request->isPost()) {
-            //@todo check injection
-            $user->notifyFrequency = $this->_request->getParam('notify_frequency');
+            $notifyFrequency = $this->_request->getParam('notify_frequency');
 
             $postEvents = $this->_request->getPost('existEvents');
-            try {
-                Doctrine_Manager::connection()->beginTransaction();
-                $modified = $user->getModified();
+            if (Inspekt::isInt($notifyFrequency)) {
+                try {
+                    Doctrine_Manager::connection()->beginTransaction();
+                    $modified = $user->getModified();
 
-                $user->unlink('Events');
+                    $user->unlink('Events');
 
-                if (!empty($postEvents)) {
-                    $user->link('Events', $postEvents);
+                    if (!empty($postEvents)) {
+                        $user->link('Events', $postEvents);
+                    }
+
+                    $user->notifyFrequency = $notifyFrequency;
+                    $user->save();
+                    Doctrine_Manager::connection()->commit();
+
+                    $message = "Notification events modified successfully";
+                    $model   = 'notice';
+                } catch (Doctrine_Exception $e) {
+                    Doctrine_Manager::connection()->rollback();
+                    $message = $e->getMessage();
+                    $model   = 'warning';
                 }
-
-                $user->save();
-                Doctrine_Manager::connection()->commit();
-
-                $message = "Notification events modified successfully";
-                $model   = 'notice';
-            } catch (Doctrine_Exception $e) {
-                Doctrine_Manager::connection()->rollback();
-                $message = $e->getMessage();
+            } else {
+                /** @todo English */
+                $message = "Notify Frequency: '$notifyFrequency' is not a valid value";
                 $model   = 'warning';
             }
             $this->view->priorityMessenger($message, $model);
