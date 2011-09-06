@@ -100,14 +100,16 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
             $values = $form->getValues();
             $actionName = strtolower($this->_request->getActionName());
-            if ('edit' === $actionName) {
+            if ('edit' === $actionName && 'root' !== $subject->username) {
 
                 // Check whether role is changed for audit log
                 $originalRoles = $subject->getRoles(Doctrine::HYDRATE_ARRAY);
                 $originalRoleIds = array();
-
-                foreach ($originalRoles[0]['Roles'] as $key => $value) {
-                    array_push($originalRoleIds, $value['id']);
+           
+                if (is_array($originalRoles) && count($originalRoles) > 0) { 
+                    foreach ($originalRoles[0]['Roles'] as $key => $value) {
+                        array_push($originalRoleIds, $value['id']);
+                    }
                 }
                 $roleChanged = $this->_isRoleChanged($originalRoleIds, $values['role']);
 
@@ -210,7 +212,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $mail->sendPassword($subject);
             } 
 
-            if ('edit' === $actionName && ($roleChanged || $organizationChanged)) {
+            // do not need to audit log root user's role or organization
+            if ('edit' === $actionName && ($roleChanged || $organizationChanged) && 'root' !== $subject->username) {
                 $auditLog = $roleChanged ? 'Updated Role.' : 'Updated Organization.';
                 $subject->getAuditLog()->write($auditLog);
             }
