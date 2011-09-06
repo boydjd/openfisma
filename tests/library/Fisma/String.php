@@ -256,4 +256,15 @@ class Test_Library_Fisma_String extends Test_Case_Unit
         $pdftext = "Style <b>some</b> <i>neat</i> words.";
         $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
     }
+
+    /**
+     * Test plaintextToReportText to remove html tags
+     */
+    public function testPlainTextToReportTextRemoveHtmlTag()
+    {
+        $html = "<p>Text contain html tags <script>alert('xss')</script></p>";
+        $reportText = " Text contain html tags alert('xss')";
+
+        $this->assertEquals($reportText, Fisma_String::plainTextToReportText($html));
+    }
 }
