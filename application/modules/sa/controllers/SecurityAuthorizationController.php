@@ -64,13 +64,16 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     protected $_modelName = 'SecurityAuthorization';
 
     /**
+     * Steps (tabs) that need to be completed
+     *
      * @var array
      */
-    public $_status = array('Categorize' => 0,
-                            'Implement' => 0,
-                            'Assessment' => 0,
-                            'Authorization' => 0,
-                            );
+    public $_steps = array('Categorize',
+                           'Select',
+                           'Implement',
+                           'Assessment Plan',
+                           'Assessment',
+                           'Authorization');
 
     /**
      * @return void
@@ -318,6 +321,12 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->_helper->layout()->disableLayout();
         $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
         $this->view->sa = $sa;
+
+        $completedSteps = array();
+        foreach ($this->_steps as $step) {
+            $completedSteps[$step] = ($sa->compareStatus($step)) ? 'No' : 'Yes';
+        }
+        $this->view->completedSteps = $completedSteps;
     }
 
     protected function _implementationProgress(SecurityAuthorization $sa)
@@ -743,5 +752,5 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         }
 
         $this->view->response = $response;
-    }    
+    }
 }

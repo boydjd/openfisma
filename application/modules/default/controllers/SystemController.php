@@ -40,6 +40,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      */
     protected $_aclResource = 'Organization';
 
+    /**
+     * Setup the context switch for ajax
+     * 
+     * @return void
+     */
     public function init()
     {
         parent::init();
