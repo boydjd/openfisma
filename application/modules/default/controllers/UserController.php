@@ -161,6 +161,20 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 unset($userRole);
             }
             $conn->commit();
+
+            // Just send out email when create a new account or change password by admin user,
+            // and it does not sent out email when the root user changes his own password.
+            $actionName = strtolower($this->_request->getActionName());
+            if ('create' === $actionName) {
+                $mail = new Fisma_Zend_Mail();
+                $mail->sendAccountInfo($subject);
+            } else if ('edit' === $actionName
+                       && !empty($values['password'])
+                       && ('root' !== $subject->username || $this->_me->username !== 'root')) {
+                $mail = new Fisma_Zend_Mail();
+                $mail->sendPassword($subject);
+            }
+
             return $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();

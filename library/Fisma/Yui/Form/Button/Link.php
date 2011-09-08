@@ -49,6 +49,11 @@ class Fisma_Yui_Form_Button_Link extends Fisma_Yui_Form_Button
             }
             $onClickRender .= "},\n";
         }
+        $target = $this->getAttrib('target');
+        $targetRender = '';
+        if (!empty($target)) {
+            $targetRender = 'target: "' . $target . '",';
+        }
         $render = "<span id='{$this->getName()}'></span>
                    <script type='text/javascript'>
                         YAHOO.util.Event.onDOMReady(function() {
@@ -58,6 +63,7 @@ class Fisma_Yui_Form_Button_Link extends Fisma_Yui_Form_Button
                                  href: \"{$this->getAttrib('href')}\",
                                  id: \"{$this->getName()}Button\",
                                  $onClickRender
+                                 $targetRender
                                  disabled: $disabled,
                                  container: \"{$this->getName()}\"
                             });

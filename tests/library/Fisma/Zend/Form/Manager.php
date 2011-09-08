@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../../../Case/Unit.php'));
 
 /**
  * Tests for the Fisma_Zend_Form_Manager class
@@ -27,7 +27,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
  * @package    Test
  * @subpackage Test_Fisma_Zend_Form_Element
  */
-class Test_Library_Fisma_Zend_Form_Manager extends Test_FismaUnitTest
+class Test_Library_Fisma_Zend_Form_Manager extends Test_Case_Unit
 {
     /**
      * Test that the prepareForm static method.

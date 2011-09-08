@@ -301,7 +301,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         if (is_null($system)) {
             $system = new System();
             $system->Organization = new Organization();
-            $system->Organization->orgType = 'system';
+            $systemType = Doctrine::getTable('OrganizationType')->findOneByNickname('system');
+            $system->Organization->orgTypeId = $systemType->id;
 
             /**
              * Set a flag indicating that this system needs to be added to the current user's ACL... this is used below.
@@ -346,25 +347,19 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         // Copy users and roles from another organization
         if (!empty($systemData['cloneOrganizationId'])) {
-            $usersAndRoles = Doctrine::getTable('Organization')
-                             ->getUsersAndRolesByOrganizationIdQuery($systemData['cloneOrganizationId'])
-                             ->execute();
+            $userRoles = Doctrine_Query::create()
+                 ->from('UserRole ur')
+                 ->leftJoin('ur.User u')
+                 ->leftJoin('ur.UserRoleOrganization uro')
+                 ->leftJoin('uro.Organization o')
+                 ->where('o.id = ?', $systemData['cloneOrganizationId'])
+                 ->execute();
 
-            Doctrine_Manager::connection()->beginTransaction();
-
-            foreach ($usersAndRoles as $userAndRole) {
-
-                $userRole = Doctrine_Query::create()
-                            ->from('UserRole ur')
-                            ->where('ur.userid = ?', $userAndRole['u_id'])
-                            ->andWhere('ur.roleid = ?', $userAndRole['r_id'])
-                            ->fetchOne();
-
+            foreach ($userRoles as $userRole) {
                 $userRole->Organizations[] = $system->Organization;
-                $userRole->save();
             }
 
-            Doctrine_Manager::connection()->commit();
+            $userRoles->save();
         }
 
         return $system->id;

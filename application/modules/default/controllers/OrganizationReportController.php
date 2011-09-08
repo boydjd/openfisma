@@ -60,10 +60,11 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                           ->select('r.nickname, o.nickname, u.nameLast, u.nameFirst, u.phoneOffice, u.email')
                           ->from('Organization o')
                           ->leftJoin('o.System s')
+                          ->leftJoin('o.OrganizationType orgType')
                           ->leftJoin('o.UserRole ur')
                           ->leftJoin('ur.Role r')
                           ->leftJoin('ur.User u')
-                          ->andWhere('o.orgType = ?', array('system'))
+                          ->andWhere('orgType.nickname = ?', array('system'))
                           ->andWhere('s.sdlcPhase <> ?', 'disposal')
                           ->andWhere('r.nickname LIKE ? OR r.nickname LIKE ?', array('ISO', 'ISSO'))
                           ->andWhere("u.locktype IS NULL OR u.locktype<>'manual'")
@@ -91,41 +92,67 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function privacyAction()
     {
+        $storageNamespace = 'Organization.Privacy.Report';
+        $orgTypeId = $this->_helper->OrganizationType
+                          ->getOrganizationTypeIdByStorageOrRequest($this->_me->id, $storageNamespace);
+        $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId);  
+
+        $this->view->orgTypeId = $orgTypeId;
+        $this->view->organizationTypeForm = $filterForm;
+        $this->view->namespace = $storageNamespace;
+        $this->view->url = "/organization-report/privacy/format/html";
+
         $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
-        $systemQuery = $baseQuery
-                       ->select('bureau.nickname AS name')
-                       ->addSelect('o.nickname AS name')
-                       ->addSelect('systemData.hasPii AS has_pii')
-                       ->addSelect('systemData.piaRequired AS pia_required')
-                       ->addSelect(
-                           'IF(\'YES\' = systemData.piaRequired, 
-                               IF(systemData.piaUrl IS NULL, \'NO\', \'YES\'),
-                               \'N/A\') AS pia_url'
-                       )
-                       ->addSelect('systemData.sornRequired AS sorn_required')
-                       ->addSelect(
-                           'IF(\'YES\' = systemData.sornRequired, 
-                               IF(systemData.sornUrl IS NULL, \'NO\', \'YES\'),
-                               \'N/A\') AS sorn_url'
-                       )
-                       ->innerJoin('o.System systemData')
-                       ->leftJoin('Organization bureau')
-                       ->andWhere('o.orgType = ?', array('system'))
-                       ->andWhere('systemData.sdlcPhase <> ?', 'disposal')
-                       ->andWhere('bureau.orgType = ?', array('bureau'))
-                       ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
-                       ->orderBy('bureau.nickname, o.nickname')
-                       ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        if ('none' != $orgTypeId) {
+            $systemQuery = $baseQuery->select('bureau.nickname AS name')
+                            ->addSelect('o.nickname AS name');
+        } else {
+            $systemQuery = $baseQuery->select('o.nickname AS name');
+        } 
 
+        $systemQuery
+                    ->addSelect('systemData.hasPii AS has_pii')
+                    ->addSelect('systemData.piaRequired AS pia_required')
+                    ->addSelect(
+                        'IF(\'YES\' = systemData.piaRequired, 
+                            IF(systemData.piaUrl IS NULL, \'NO\', \'YES\'),
+                            \'N/A\') AS pia_url'
+                    )
+                    ->addSelect('systemData.sornRequired AS sorn_required')
+                    ->addSelect(
+                        'IF(\'YES\' = systemData.sornRequired, 
+                            IF(systemData.sornUrl IS NULL, \'NO\', \'YES\'),
+                            \'N/A\') AS sorn_url'
+                    )
+                    ->innerJoin('o.System systemData')
+                    ->innerJoin('o.OrganizationType orgType')
+                    ->leftJoin('Organization bureau')
+                    ->andWhere('orgType.nickname = ?', array('system'))
+                    ->andWhere('systemData.sdlcPhase <> ?', 'disposal')
+                    ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
+                    ->orderBy('bureau.nickname, o.nickname')
+                    ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
+        if ('none' != $orgTypeId) {
+            $systemQuery->andWhere('bureau.orgTypeId = ?', $orgTypeId);
+        }
         $systems = $systemQuery->execute();
 
         $report = new Fisma_Report();
                 
-        $report->setTitle('Privacy Report')
-               ->addColumn(new Fisma_Report_Column('Bureau', true))
-               ->addColumn(new Fisma_Report_Column('System', true))
-               ->addColumn(new Fisma_Report_Column('Contains PII', true))
+        $report->setTitle('Privacy Report');
+         
+        $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId); 
+
+        if ('none' != $orgTypeId) {
+            $report->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true))
+                   ->addColumn(new Fisma_Report_Column('System', true));
+        } else {
+            $report->addColumn(new Fisma_Report_Column('System', true));
+        }
+
+        $report->addColumn(new Fisma_Report_Column('Contains PII', true))
                ->addColumn(new Fisma_Report_Column('PIA Required', true))
                ->addColumn(new Fisma_Report_Column('PIA Completed', true, 'Fisma.TableFormat.yesNo'))
                ->addColumn(new Fisma_Report_Column('SORN Required', true))
@@ -140,33 +167,59 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function securityAuthorizationAction()
     {
+        $storageNamespace = 'Organization.SecurityAuth.Report';
+        $orgTypeId = $this->_helper->OrganizationType
+                                   ->getOrganizationTypeIdByStorageOrRequest($this->_me->id, $storageNamespace);
+        $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId);  
+
+        $this->view->orgTypeId = $orgTypeId;
+        $this->view->organizationTypeForm = $filterForm;
+        $this->view->namespace = $storageNamespace;
+        $this->view->url = "/organization-report/security-authorization/format/html";
+
         $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
-        $systemQuery = $baseQuery
-                       ->select('bureau.nickname AS name')
-                       ->addSelect('o.nickname AS name')
-                       ->addSelect('IFNULL(systemData.fipsCategory, \'NONE\') AS fips_category')
-                       ->addSelect('IFNULL(systemData.controlledBy, \'N/A\') AS operated_by')
-                       ->addSelect('IFNULL(systemData.securityAuthorizationDt, \'N/A\') AS security_auth_dt')
-                       ->addSelect('IFNULL(systemData.controlAssessmentDt, \'N/A\') AS self_assessment_dt')
-                       ->addSelect('IFNULL(systemData.contingencyPlanTestDt, \'N/A\') AS cplan_test_dt')
-                       ->innerJoin('o.System systemData')
-                       ->leftJoin('Organization bureau')
-                       ->andWhere('o.orgType = ?', array('system'))
-                       ->andWhere('systemData.sdlcPhase <> ?', 'disposal')
-                       ->andWhere('bureau.orgType = ?', array('bureau'))
-                       ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
-                       ->orderBy('bureau.nickname, o.nickname')
-                       ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+        if ('none' != $orgTypeId) {
+            $systemQuery = $baseQuery->select('bureau.nickname AS name')
+                            ->addSelect('o.nickname AS name');
+        } else {
+            $systemQuery = $baseQuery->select('o.nickname AS name');
+        } 
+        $systemQuery 
+                    ->addSelect('IFNULL(systemData.fipsCategory, \'NONE\') AS fips_category')
+                    ->addSelect('IFNULL(systemData.controlledBy, \'N/A\') AS operated_by')
+                    ->addSelect('IFNULL(systemData.securityAuthorizationDt, \'N/A\') AS security_auth_dt')
+                    ->addSelect('IFNULL(systemData.controlAssessmentDt, \'N/A\') AS self_assessment_dt')
+                    ->addSelect('IFNULL(systemData.contingencyPlanTestDt, \'N/A\') AS cplan_test_dt')
+                    ->innerJoin('o.System systemData')
+                    ->innerJoin('o.OrganizationType orgType')
+                    ->leftJoin('Organization bureau')
+                    ->leftJoin('bureau.OrganizationType bureauType')
+                    ->andWhere('orgType.nickname = ?', array('system'))
+                    ->andWhere('systemData.sdlcPhase <> ?', 'disposal')
+                    ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
+                    ->orderBy('bureau.nickname, o.nickname')
+                    ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
+        if ('none' != $orgTypeId) {
+            $systemQuery->andWhere('bureau.orgTypeId = ?', $orgTypeId);
+        }
 
         $systems = $systemQuery->execute();
 
         $report = new Fisma_Report();
                 
-        $report->setTitle('Security Authorizations Report')
-               ->addColumn(new Fisma_Report_Column('Bureau', true))
-               ->addColumn(new Fisma_Report_Column('System', true))
-               ->addColumn(new Fisma_Report_Column('FIPS 199', true))
+        $report->setTitle('Security Authorizations Report');
+        $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId); 
+
+        if ('none' != $orgTypeId) {
+            $report->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true))
+                   ->addColumn(new Fisma_Report_Column('System', true));
+        } else {
+            $report->addColumn(new Fisma_Report_Column('System', true));
+        }
+
+        $report->addColumn(new Fisma_Report_Column('FIPS 199', true))
                ->addColumn(new Fisma_Report_Column('Operated By', true))
                ->addColumn(
                    new Fisma_Report_Column(
@@ -191,7 +244,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                )
                ->setData($systems);
 
-        $this->_helper->reportContextSwitch()->setReport($report);        
+        $this->_helper->reportContextSwitch()->setReport($report);
     }
 
     /**
@@ -199,15 +252,18 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function documentationComplianceAction()
     {
-        $systemDocuments = Doctrine::getTable('SystemDocument')->getSystemDocumentQuery()->execute();
-
+        $systemDocuments = Doctrine::getTable('SystemDocument')->getSystemDocumentReportDataQuery()->execute();
+        $allRequiredDocumentTypeName = Doctrine::getTable('DocumentType')
+                                       ->getAllRequiredDocumentTypeQuery()
+                                       ->execute()
+                                       ->toKeyValueArray('id', 'name');
         $systemData = array();
-        $documentType = Doctrine::getTable('DocumentType');
         foreach ($systemDocuments as $systemDocument) {
             $systemData[] = array(
                 $systemDocument['o_name'],
                 $systemDocument['dt_percentage'],
-                $documentType->getMissingDocumentTypeName($systemDocument['s_id'])
+                $this->_getMissingDocumentTypeName($allRequiredDocumentTypeName, 
+                                                   $systemDocument['dt_uploadedRequiredDocument'])
             );
         }
 
@@ -235,5 +291,23 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                ->setData($systemData);
 
         $this->_helper->reportContextSwitch()->setReport($report);
+    }
+
+    /**
+     * Get the missing document type name(s) by comparing $allRequiredDocumentType 
+     * and $uploadedRequiredDocumentType
+     */
+    private function _getMissingDocumentTypeName($allRequiredDocumentType, $uploadedRequiredDocumentType)
+    {
+        if ('N/A' != $uploadedRequiredDocumentType && count($allRequiredDocumentType) > 0) {
+            $uploadedRequiredDocumentTypeArray = explode(',', $uploadedRequiredDocumentType);
+            $missingDocumentTypeNames = array_diff($allRequiredDocumentType, $uploadedRequiredDocumentTypeArray);
+
+            return count($missingDocumentTypeNames) > 0 ? join(',', $missingDocumentTypeNames) : 'N/A';
+        } else if (count($allRequiredDocumentType) > 0) {
+            return join(',', $allRequiredDocumentType);
+        } else {
+            return 'N/A';
+        }
     }
 }

@@ -17,24 +17,14 @@
  */
 
 /**
- * Remove app_version and yui_version from Configuration model. 
- * 
- * @uses Doctrine_Migration_Base
- * @package Migration 
- * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
- * @license http://www.openfisma.org/content/license GPLv3
+ * An organization type represents a grouping of information system resources at various levels.
+ *
+ * @author     Mark Ma <mark.ma@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license    http://www.openfisma.org/content/license GPLv3
+ * @package    Model
  */
-class Version118 extends Doctrine_Migration_Base
+class OrganizationType extends BaseOrganizationType
 {
-    public function up()
-    {
-        $this->removeColumn('configuration', 'app_version');
-        $this->removeColumn('configuration', 'yui_version');
-    }
 
-    public function down()
-    {
-        throw new Doctrine_Migration_IrreversibleMigrationException();
-    }
 }

@@ -115,14 +115,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 // (Notice that '0' is a special value which no primary key can actually take)
                 $form->getElement('parent')->addMultiOptions(array(0 => 'None'));
             }
-
+         
             // The type menu should display all types of organization EXCEPT system
-            $orgTypeArray = Doctrine::getTable('Organization')->getEnumValues('orgType');
-            unset($orgTypeArray[array_search('system', $orgTypeArray)]);
+            $orgTypeArray = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
+            $form->getElement('orgTypeId')->addMultiOptions($orgTypeArray);
+       } 
 
-            $form->getElement('orgType')->addMultiOptions(array_combine($orgTypeArray, $orgTypeArray));
-        }
-        
         return $form;
     }
 
@@ -247,7 +245,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     {
         $organization = Doctrine::getTable('Organization')->find($this->getRequest()->getParam('id'));
 
-        if ('system' == $organization->orgType) {
+        if ('system' == $organization->OrganizationType->nickname) {
             $message = "Organization controller: expected an organization object but got a system object. Referer: "
                      . (isset($_SERVER['HTTP_REFERER']) ? $_SERVER['HTTP_REFERER'] : 'n/a');
 
@@ -356,9 +354,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function getOrganizationTree($includeDisposal = false)
     {
         $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read', $includeDisposal);
-        $userOrgQuery->select('o.name, o.nickname, o.orgType, s.type, s.sdlcPhase')
+        $userOrgQuery->select('o.name, o.nickname, ot.nickname, s.type, s.sdlcPhase')
+                     ->leftJoin('o.OrganizationType ot')
                      ->leftJoin('o.System s')
                      ->orderBy('o.lft');
+
         $orgTree = Doctrine::getTable('Organization')->getTree();
         $orgTree->setBaseQuery($userOrgQuery);
         $organizations = $orgTree->fetchTree();

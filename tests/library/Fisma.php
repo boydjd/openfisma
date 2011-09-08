@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../Case/Unit.php'));
 
 /**
  * Tests for the Fisma facade class
@@ -27,7 +27,7 @@ require_once(realpath(dirname(__FILE__) . '/../FismaUnitTest.php'));
  * @package    Test
  * @subpackage Test_Fisma
  */
-class Test_Library_Fisma extends Test_FismaUnitTest
+class Test_Library_Fisma extends Test_Case_Unit
 {
     /**
      * Test the ability to globally set the enabled state of a Fisma_Doctrine_Record_Listener.

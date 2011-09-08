@@ -1,4 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+Using this configuration will slow down the test runner as it has to collect coverage information and then write
+out a coverage report. It is not named phpunit.xml so that it will not be read in by default, saving developers the
+delay of writing a covereage report after *every* test run.
+
+To use this file, run `phpunit -c config.xml All<Foo>Tests.php`, where <Foo> is the name of the suite you want to run.
+-->     
 <phpunit colors="true">
     <filter>
         <whitelist>

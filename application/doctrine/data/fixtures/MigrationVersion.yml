@@ -1,3 +1,4 @@
 MigrationVersion:
     currentSchemaVersion:
-        version: 117
+        version: 122
+

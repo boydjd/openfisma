@@ -52,7 +52,8 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             $organizations  = CurrentUser::getInstance()
                 ->getOrganizationsQuery()
                 ->leftJoin('o.System s')
-                ->andWhere('o.orgType <> ? OR s.sdlcPhase <> ?', array('system', 'disposal'))
+                ->leftJoin('o.OrganizationType orgType ')
+                ->andWhere('orgType.nickname <> ? OR s.sdlcPhase <> ?', array('system', 'disposal'))
                 ->execute();
             $list = $this->view->treeToSelect($organizations, 'nickname');
 
@@ -72,7 +73,8 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
         } elseif ($module == 'system') {
             $systems = CurrentUser::getInstance()
                 ->getSystemsQuery()
-                ->andWhere('o.orgType <> ? OR s.sdlcPhase <> ?', array('system', 'disposal'))
+                ->leftJoin('o.OrganizationType orgType ')
+                ->andWhere('orgType.nickname <> ? OR s.sdlcPhase <> ?', array('system', 'disposal'))
                 ->orderBy('o.nickname')
                 ->execute();
 
