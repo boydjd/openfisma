@@ -12472,7 +12472,7 @@ Fisma.User = {
                                                 'title');
 
                     // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo !== null) {
+                    if (data.accountInfo.length > 0) {
                         for (var i in ldapColumns) {
                             if (!ldapColumns.hasOwnProperty(i)) {
                                 continue;
@@ -12480,7 +12480,7 @@ Fisma.User = {
 
                             var columnValue = data.accountInfo[ldapColumns[i]];
 
-                            if (columnValue !== null) {
+                            if (!YAHOO.lang.isUndefined(columnValue)) {
                                 document.getElementById(openfismaColumns[i]).value = columnValue;
                             } else {
                                 document.getElementById(openfismaColumns[i]).value = '';
