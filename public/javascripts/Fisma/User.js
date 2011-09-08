@@ -276,9 +276,11 @@ Fisma.User = {
                 },
 
                 failure : function(o) {
+                    Fisma.User.checkAccountBusy = false;
+                    checkAccountButton.className = "yui-button yui-push-button";
                     spinner.hide();
 
-                    var alertMessage = {text : 'Failed to check account password: ' + o.statusText};
+                    var alertMessage = "Failed to check account password: " + o.statusText;
                     Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
