@@ -49,8 +49,8 @@ class Test_Application_Models_OrganizationTable extends Test_Case_Unit
     public function testGetSearchIndexQuery()
     {
         $sampleQ = Doctrine_Query::create()->from('System s');
-        $q = OrganizationTable::getSearchIndexQuery($sampleQ, array('Organization' => 'document_type'));
+        $q = OrganizationTable::getSearchIndexQuery($sampleQ, array('OrganizationType' => 'organization_type'));
         $this->assertEquals('Doctrine_Query', get_class($q));
-        $this->assertEquals(" FROM System s WHERE document_type.orgType <> ?", $q->getDql());
+        $this->assertEquals(" FROM System s WHERE organization_type.nickname <> ?", $q->getDql());
     }
 }
