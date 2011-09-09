@@ -368,7 +368,7 @@ Fisma.TableFormat = {
      */
     maximumTextLength : function (elCell, oRecord, oColumn, oData) {
         var maxLength = oColumn.formatterParameters;
-        var truncatedText = $P.strip_tags(oData);
+        var truncatedText = YAHOO.lang.isValue(oData) ? $P.strip_tags(oData) : '';
 
         if (truncatedText.length > maxLength) {
             truncatedText = truncatedText.substring(0, maxLength) + "…";

@@ -41,6 +41,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                       ->addActionContext('remove-control', 'json')
                       ->addActionContext('remove-enhancement', 'json')
                       ->addActionContext('select-control-table', 'json')
+                      ->addActionContext('edit-enhancements', 'json')
                       ->initContext();
 
         $this->_helper->ajaxContext()
@@ -51,6 +52,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                       ->addActionContext('implementation', 'html')
                       ->addActionContext('select-controls', 'html')
                       ->addActionContext('show-add-control-form', 'html')
+                      ->addActionContext('select-controls-form', 'html')
                       ->initContext();
     }
 
@@ -291,11 +293,12 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     {
         $id = $this->_request->getParam('id');
         $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
+        $systemId = $sa->Organization->System->id;
 
         $tabView = new Fisma_Yui_TabView('SecurityAuthorizationView', $id);
         $tab1Name = $sa->Organization->nickname . ' Security Authorization';
         $tabView->addTab($tab1Name, "/sa/security-authorization/overview/id/$id");
-        $tabView->addTab("1. Categorize", "/system/fips/id/$id");
+        $tabView->addTab("1. Categorize", "/system/fips/id/$systemId");
         $tabView->addTab("2. Select", "/sa/security-authorization/select-controls/id/$id/format/html");
         $tabView->addTab("3. Implementation", "/sa/security-authorization/implementation/id/$id/format/html");
         $tabView->addTab("4. Assessment", "/sa/security-authorization/assessment-plan/id/$id/format/html");
@@ -322,7 +325,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $overviewSteps = Doctrine::getTable('SecurityAuthorization')->getEnumValues('status');
         array_splice($overviewSteps, 3, 1);
         array_splice($overviewSteps, -2);
-
 
         $completedTerms = array(
             -1 => 'Completed',
@@ -433,19 +435,29 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         );
 
         $dataTable = new Fisma_Yui_DataTable_Remote();
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Control', true, null, null, 'c_code'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Family', true, null, null, 'c_family'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Class', true, null, null, 'c_class'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, null, 'c_name'))
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Control', true, null, null, 'definition_code'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Family', true, null, null, 'definition_family'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Class', true, null, null, 'definition_class'))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, null, 'definition_name'))
                   ->addColumn(new Fisma_Yui_DataTable_Column('Description', 
                                                              true, 
                                                              'Fisma.TableFormat.maximumTextLength', 
                                                              150, 
-                                                             'c_control'))
+                                                             'definition_control'))
+                  ->addColumn(
+                        new Fisma_Yui_DataTable_Column(
+                            'Enhancements',
+                            true,
+                            'Fisma.SecurityAuthorization.tableFormatEnhancements',
+                            null,
+                            'definedEnhancements_enhancements'
+                        )
+                  )
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Common Control', true, null, null, 'instance_common'))
                   ->setDataUrl('/sa/security-authorization/select-control-table/id/' . $id . '/format/json')
                   ->setResultVariable('controls')
                   ->setRowCount(20)
-                  ->setInitialSortColumn('c_code')
+                  ->setInitialSortColumn('definition_code')
                   ->setSortAscending(true)
                   ->setGlobalVariableName("Fisma.SecurityAuthorization.selectControlsTable");
         $this->view->dataTable = $dataTable;
@@ -474,17 +486,32 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $sort  = $this->getRequest()->getParam('sort', 'category');
         $dir   = $this->getRequest()->getParam('dir', 'asc');
 
+        $totalEnhancementsQuery = "SUM(IF(definedEnhancements.id IS NOT NULL, 1, 0))";
+
         $controlsQuery = Doctrine_Query::create()
-            ->select("s.id, c.code, c.family, c.class, c.name, c.control")
-            ->from('SaSecurityControl s')
-            ->leftJoin('s.SecurityControl c')
-            ->where('s.securityAuthorizationId = ?', $sa->id)
-            ->orderBy("c.code")
-            ->limit($count)
+            ->select("instance.id")
+            ->addSelect('instance.securityAuthorizationId')
+            ->addSelect('definition.id')
+            ->addSelect("definition.code")
+            ->addSelect("definition.family")
+            ->addSelect("definition.class")
+            ->addSelect("definition.name")
+            ->addSelect("definition.control")
+            ->addSelect("count(definedEnhancements.id) availableEnhancements")
+            ->addSelect('count(selectedEnhancements.id) selectedEnhancements')
+            ->from('SaSecurityControl instance')
+            ->leftJoin('instance.SecurityControl definition')
+            ->leftJoin('instance.SecurityControlEnhancements selectedEnhancements')
+            ->leftJoin('definition.Enhancements definedEnhancements')
+            ->where('instance.securityAuthorizationId = ?', $sa->id)
+            ->groupBy("instance.id")
+            ->orderBy("definition.code")
             ->offset($start)
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-
         $this->view->totalRecords = $controlsQuery->count();
+        
+        // Doctrine doesn't handle count() well with a limit clause, so apply the limit() after doing count().
+        $controlsQuery->limit($count);
         $this->view->controls = $controlsQuery->execute();
     }
 
@@ -587,6 +614,16 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $form->getElement('securityControlId')->addMultiOptions($controlArray);
         $this->view->id = $id;
         $this->view->addControlForm = $form;
+    }
+
+    /**
+     * Display an empty form for viewing a single control during step 2 (select)
+     * 
+     * This is displayed on the client side in a modal dialog with the Fisma.FormDialog javascript class.
+     */
+    public function selectControlsFormAction()
+    {
+        $this->view->form = $this->getForm('select_control');
     }
 
     /**
@@ -785,5 +822,29 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $response->addPayload('controlCount', $sa->getControlsCount());
 
         $this->view->response = $response;
+    }
+
+    /**
+     * editEnhancementsAction 
+     * 
+     * @return void
+     */
+    public function editEnhancementsAction()
+    {
+        $saId = $this->getRequest()->getParam('saId');
+        $controlId = $this->getRequest()->getParam('controlId');
+
+        $enhancements = Doctrine::getTable('SecurityControlEnhancement')
+            ->findBySecurityControlId($controlId)
+            ->toArray();
+        $selectedEnhancements = Doctrine_Query::create()
+            ->from('SaSecurityControlEnhancement saSce')
+            ->innerJoin('saSce.SaSecurityControl saSc')
+            ->where('saSc.securityAuthorizationId = ?', $saId)
+            ->andWhere('saSc.securityControlId = ?', $controlId)
+            ->fetchArray();
+
+        $this->view->available = $enhancements;
+        $this->view->selected = $selectedEnhancements;
     }
 }
