@@ -4437,8 +4437,8 @@ Fisma.Chart = {
             }
         }
 
-        // bail on blank link
-        if (theLink === '') {
+        // bail on blank link or undefine link
+        if (theLink === '' || YAHOO.lang.isUndefined(theLink)) {
             return;
         }
 
