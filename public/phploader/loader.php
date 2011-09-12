@@ -366,19 +366,19 @@ class YAHOO_util_Loader
         ) {
             $jsonConfigString = file_get_contents($jsonConfigFile);
             $inf = json_decode($jsonConfigString, true);
-            $GLOBALS['yuiCurrent'] = $inf;
+            $GLOBALS['yui_current'] = $inf;
         } else {
             throw new Exception("Unable to find a suitable YUI metadata file!");
         }
         
-        global $yuiCurrent;
+        global $yui_current;
 
         $this->apcttl = 0;
         $this->curlAvail  = function_exists('curl_exec');
         $this->apcAvail   = function_exists('apc_fetch');
         $this->jsonAvail  = function_exists('json_encode');
         $this->customModulesInUse = empty($modules) ? false : true;
-        $this->base = $yuiCurrent[YUI_BASE];
+        $this->base = $yui_current[YUI_BASE];
         $this->comboDefaultVersion = $yuiVersion;
         $this->fullCacheKey = null;
         $cache = null;
@@ -402,7 +402,7 @@ class YAHOO_util_Loader
             if ($noYui) {
                 $this->modules = array();
             } else {
-                $this->modules = $yuiCurrent['moduleInfo'];
+                $this->modules = $yui_current['moduleInfo'];
             }
 
             if ($modules) {
@@ -411,7 +411,7 @@ class YAHOO_util_Loader
                 );
             }
 
-            $this->skin = $yuiCurrent[YUI_SKIN];
+            $this->skin = $yui_current[YUI_SKIN];
             $this->skin['overrides'] = array();
             $this->skin[YUI_PREFIX] = "skin-";
             $this->filters = array(
@@ -1575,6 +1575,7 @@ class YAHOO_util_Loader
         if ($this->apcAvail === true) {
             $remoteContent = apc_fetch($url);
         }        
+
         if (!$remoteContent) {
             if ($this->curlAvail === true) {
                 $ch = curl_init();
@@ -1597,14 +1598,8 @@ class YAHOO_util_Loader
                 $remoteContent = curl_exec($ch);
 
                 // save the contents of the remote url for 30 minutes
-                if ($this->apcAvail === true && $remoteContent) {
+                if ($this->apcAvail === true) {
                     apc_store($url, $remoteContent, $this->apcttl);
-                }
-
-                if (!$remoteContent) {
-                    $remoteContent = "<!--// An error occured while fetching the remote content: ";
-                    $remoteContent .= curl_error($ch);
-                    $remoteContent .= " -->";
                 }
 
                 curl_close($ch);
@@ -1613,6 +1608,7 @@ class YAHOO_util_Loader
                     . " cannot be fetched -->";
             }   
         }
+
         return $remoteContent;
     }
     

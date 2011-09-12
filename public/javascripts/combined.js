@@ -2438,8 +2438,8 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
                     engine: engineConf,
                     force: false,
                     order: [
-                        YAHOO.util.StorageEngineGears,
-                        YAHOO.util.StorageEngineHTML5,
+                        //YAHOO.util.StorageEngineGears,
+                        //YAHOO.util.StorageEngineHTML5,
                         YAHOO.util.StorageEngineSWF
                     ]
                 }
@@ -2522,8 +2522,9 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
          * @protected
          */
         _get: function(key) {
+            YAHOO.lang.JSON.useNativeParse = true;
+            YAHOO.lang.JSON.useNativeStringify = true;
             var value = FS._storageEngine.getItem(this.namespace + ":" + key);
-
             return YAHOO.lang.isNull(value) ? null : YAHOO.lang.JSON.parse(value);
         },
         /**
@@ -2535,6 +2536,8 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
          * @protected
          */
         _set: function(key, value) {
+            YAHOO.lang.JSON.useNativeParse = true;
+            YAHOO.lang.JSON.useNativeStringify = true;
             FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
         }
     };
