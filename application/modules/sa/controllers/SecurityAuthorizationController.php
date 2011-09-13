@@ -68,7 +68,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      *
      * @var array
      */
-    public $_steps = array('Categorize',
+    protected $_steps = array('Categorize',
                            'Select',
                            'Implement',
                            'Assessment Plan',
@@ -324,7 +324,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
         $completedSteps = array();
         foreach ($this->_steps as $step) {
-            $completedSteps[$step] = ($sa->compareStatus($step)) ? 'No' : 'Yes';
+            $completedSteps[$step] = ($sa->compareStatus($step) >= 0) ? 'No' : 'Yes';
         }
         $this->view->completedSteps = $completedSteps;
     }
@@ -588,7 +588,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->id = $id;
         $this->view->securityControlId = $securityControlId;
 
-        $currentControlEnhancements = Doctrine::getTable('SecurityControlEnhancement')->getSaAndControlQuery($id, $securityControlId)
+        $currentControlEnhancements = Doctrine::getTable('SecurityControlEnhancement')
+            ->getSaAndControlQuery($id, $securityControlId)
             ->execute()
             ->toKeyValueArray('id', 'id');
         $this->view->currentControlEnhancementss = $currentControlEnhancements;
