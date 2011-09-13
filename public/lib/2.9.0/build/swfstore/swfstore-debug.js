@@ -58,7 +58,7 @@ YAHOO.util.SWFStore = function(containerID, shareData, useCompression)
 					fixedAttributes:
 						{allowScriptAccess:"always", allowNetworking:"all", scale:"noScale"},
 						flashVars:
-							{shareData: shareData, browser: newValue, useCompression: useCompression}
+							{allowedDomain : document.location.hostname, shareData: shareData, browser: newValue, useCompression: useCompression}
 				 };
 	
 	

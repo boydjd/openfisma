@@ -27,14 +27,11 @@
 */
 
 require "./combo_functions.inc.php";
-
 //Web accessible path to the YUI PHP loader lib directory (Override as needed)
 define("PATH_TO_LIB", server() . "/lib/"); 
-
 //APC Configuration
 define("APC_AVAIL", function_exists('apc_fetch') ? true : false);
 define("APC_TTL", 0);
-
 $queryString = getenv('QUERY_STRING') ? urldecode(getenv('QUERY_STRING')) : '';
 if (isset($queryString) && !empty($queryString)) {
     $yuiFiles    = explode("&", $queryString);
@@ -45,7 +42,7 @@ if (isset($queryString) && !empty($queryString)) {
     if (APC_AVAIL === true) {
         $cache = apc_fetch(server(true));
     }
-    
+    //$cache = false;
     if ($cache) {
         //Set cache headers and output cache content
         header("Cache-Control: max-age=315360000");
@@ -62,12 +59,10 @@ if (isset($queryString) && !empty($queryString)) {
             $metaInfo = explode("/", $yuiFiles[0]);
             $yuiVersion = $metaInfo[0];
         }
-
         include("./loader.php");
         $loader = new YAHOO_util_Loader($yuiVersion);
         $base   = PATH_TO_LIB . $yuiVersion . "/build/";
         $loader->base = $base; 
-
         //Detect and set a filter as needed (defaults to minified version)
         if (strpos($queryString, "-debug.js") !== false) {
             $loader->filter = YUI_DEBUG;
@@ -86,7 +81,6 @@ if (isset($queryString) && !empty($queryString)) {
         ) {
             throw new Exception('Unable to locate the YUI build directory!');
         }
-
         //Detect and load the required components now
         $yuiComponents = array();
         foreach ($yuiFiles as $yuiFile) {
@@ -98,10 +92,8 @@ if (isset($queryString) && !empty($queryString)) {
                throw new Exception('Unable to determine module name!'); 
             }
         }
-
         //Load the components
         call_user_func_array(array($loader, 'load'), $yuiComponents);
-
         //Set cache headers and output raw file content
         header("Cache-Control: max-age=315360000");
         header(
@@ -128,7 +120,7 @@ if (isset($queryString) && !empty($queryString)) {
                      
                      //Handle image path corrections (order is important)
                      $crtResourceContent = preg_replace(
-                         '/((url\()([^\.\.|^http]\S+)(\)))/', '${2}'. 
+                         '/((url\()([^\.\.]\S+)(\)))/', '${2}'. 
                          $crtResourceBase . '${3}${4}', $crtResourceContent
                      ); // just filename or subdirs/filename (e.g) url(foo.png),
                         // url(foo/foo.png)
@@ -146,7 +138,6 @@ if (isset($queryString) && !empty($queryString)) {
                          $crtResourceContent
                      ); // AlphaImageLoader relative paths (e.g.) 
                         // AlphaImageLoader(src='../../foo.png')
-                     
                      $rawCss .= $crtResourceContent;
                 }
             }
@@ -156,7 +147,7 @@ if (isset($queryString) && !empty($queryString)) {
             $rawCss = str_replace("/build/build/", "/build/", $rawCss);
             
             if (APC_AVAIL === true) {
-                apc_store(server(true), $rawCss, APC_TTL);
+               apc_store(server(true), $rawCss, APC_TTL);
             }
             echo $rawCss;
         }

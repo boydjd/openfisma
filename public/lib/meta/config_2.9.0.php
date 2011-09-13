@@ -1,4 +1,4 @@
-<?php $GLOBALS['yui_current'] = array (
+<?php $GLOBALS['yuiCurrent'] = array (
   'base' => 'http://yui.yahooapis.com/2.9.0/build/',
   'skin' => 
   array (
@@ -747,4 +747,4 @@
       ),
     ),
   ),
-); ?>
+);

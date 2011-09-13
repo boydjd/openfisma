@@ -11,14 +11,13 @@
 //(modified version of full_url), license: MIT
 function server($includeRequestUri=false)
 {
-    $s = getenv('HTTPS') ? '' : (getenv('HTTPS') ==     'on') ? 's' : '';
+    $s = getenv('HTTPS') ? 's' : '';
     $protocol = substr(
         strtolower(getenv('SERVER_PROTOCOL')), 0, 
         strpos(strtolower(getenv('SERVER_PROTOCOL')), '/')
     ) .  $s;
     $port = (getenv('SERVER_PORT') == '80') ? '' : (":".getenv('SERVER_PORT'));
     $server = $protocol . "://" . getenv('HTTP_HOST') . $port;
-    
     if ($includeRequestUri === true) {
         $server .= getenv('REQUEST_URI');
     }
