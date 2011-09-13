@@ -43,7 +43,7 @@
      */
     FS._initStorageEngine = function() {
         if (YAHOO.lang.isNull(FS._storageEngine)) {
-            var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
+            var engineConf = {swfURL: "/swfstore-2.9.0.swf", containerID: "swfstoreContainer"};
             FS._storageEngine = YAHOO.util.StorageManager.get(
                 YAHOO.util.StorageEngineGears.ENGINE_NAME,
                 YAHOO.util.StorageManager.LOCATION_SESSION,
@@ -135,8 +135,6 @@
          * @protected
          */
         _get: function(key) {
-            YAHOO.lang.JSON.useNativeParse = true;
-            YAHOO.lang.JSON.useNativeStringify = true;
             var value = FS._storageEngine.getItem(this.namespace + ":" + key);
             return YAHOO.lang.isNull(value) ? null : YAHOO.lang.JSON.parse(value);
         },
@@ -149,8 +147,6 @@
          * @protected
          */
         _set: function(key, value) {
-            YAHOO.lang.JSON.useNativeParse = true;
-            YAHOO.lang.JSON.useNativeStringify = true;
             FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
         }
     };
