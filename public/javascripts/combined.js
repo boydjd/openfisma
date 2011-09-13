@@ -2438,8 +2438,8 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
                     engine: engineConf,
                     force: false,
                     order: [
-                        //YAHOO.util.StorageEngineGears,
-                        //YAHOO.util.StorageEngineHTML5,
+                        YAHOO.util.StorageEngineGears,
+                        YAHOO.util.StorageEngineHTML5,
                         YAHOO.util.StorageEngineSWF
                     ]
                 }

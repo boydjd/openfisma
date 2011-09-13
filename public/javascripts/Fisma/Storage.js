@@ -51,8 +51,8 @@
                     engine: engineConf,
                     force: false,
                     order: [
-                        //YAHOO.util.StorageEngineGears,
-                        //YAHOO.util.StorageEngineHTML5,
+                        YAHOO.util.StorageEngineGears,
+                        YAHOO.util.StorageEngineHTML5,
                         YAHOO.util.StorageEngineSWF
                     ]
                 }
