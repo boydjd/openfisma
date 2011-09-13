@@ -147,6 +147,7 @@
          * @protected
          */
         _set: function(key, value) {
+            FS._storageEngine.removeItem(this.namespace + ":" + key);
             FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
         }
     };
