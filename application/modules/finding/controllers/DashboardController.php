@@ -45,7 +45,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->initContext();
 
         $this->_visibleOrgs = $this->_me
-            ->getOrganizationsQuery()
+            ->getOrganizationsByPrivilegeQuery('finding', 'read')
             ->select('o.id')
             ->execute()
             ->toKeyValueArray('id', 'id');
