@@ -154,4 +154,57 @@ class SecurityAuthorization extends BaseSecurityAuthorization
             return 0;
         }
     }
+    
+    /**
+     * Return the number of controls attached to this SA.
+     * 
+     * @return int
+     */
+    public function getControlsCount()
+    {
+        $count = Doctrine_Query::create()
+                 ->select('COUNT(*)')
+                 ->from('SecurityAuthorization sa')
+                 ->innerJoin('sa.SecurityControls sc')
+                 ->where('sa.id = ?', $this->id)
+                 ->setHydrationMode(Doctrine::HYDRATE_SINGLE_SCALAR)
+                 ->execute();
+
+        return (int)$count;
+    }
+    
+    /**
+     * Return the number of controls attached to this SA that have an implementation statement.
+     */
+    public function getImplementedControlsCount()
+    {
+        $count = Doctrine_Query::create()
+                 ->select('COUNT(*)')
+                 ->from('SecurityAuthorization sa')
+                 ->innerJoin('sa.SaSecurityControls sc')
+                 ->innerJoin('sc.Implementation i')
+                 ->where('sa.id = ?', $this->id)
+                 ->andWhere('i.status = ?', 'Complete')
+                 ->setHydrationMode(Doctrine::HYDRATE_SINGLE_SCALAR);
+
+        return (int)$count;
+    }
+    
+    /**
+     * Return the number of controls with completed assessments
+     */
+    public function getAssessedControlsCount()
+    {
+        $count = Doctrine_Query::create()
+                 ->select('COUNT(*)')
+                 ->from('SecurityAuthorization sa')
+                 ->innerJoin('sa.SaSecurityControls sc')
+                 ->innerJoin('sc.AssessmentProcedures ap')
+                 ->where('sa.id = ?', $this->id)
+                 ->andWhere('ap.status = ?', 'Complete')
+                 ->groupBy('sc.id')
+                 ->setHydrationMode(Doctrine::HYDRATE_SINGLE_SCALAR);
+
+        return (int)$count;
+    }
 }

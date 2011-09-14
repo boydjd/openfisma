@@ -30,9 +30,15 @@
  *******************************************************************************
  */
 
-/**
- * Add a "disabled" tabview tab style
- */
-.yui-skin-sam .yui-navset .yui-nav .disabled a em {
-    color: grey;
+table.saOverview {
+    font-size: 1.2em;
+}
+
+table.saOverview th {
+    font-weight: bold;
+    padding: 5px;
+}
+
+table.saOverview td {
+    padding: 2px 5px;
 }

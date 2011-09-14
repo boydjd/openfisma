@@ -31,6 +31,23 @@ Fisma.SecurityAuthorization = {
      * Store a panel which displays the add control form
      */
     addControlPanel: null,
+ 
+    /**
+     * A dialog used for viewing a control during step 2 (select) and editing control enhancements
+     * 
+     * @var Fisma.FormDialog
+     */
+    selectControlsDialog: null,
+    
+    /**
+     * A reference to the tab view on the SA view page
+     */
+    tabView: null,
+
+    /**
+     * A reference to the overview widget
+     */
+    overview: null,
 
     /**
      * Run the import baseline controls action and update the table with the results
@@ -80,6 +97,13 @@ Fisma.SecurityAuthorization = {
                             dt.on("dataReturnEvent", function () {
                                 modalDialog.destroy();
                             });
+                            
+                            // Update overview
+                            var overview = Fisma.SecurityAuthorization.overview;
+                            if (YAHOO.lang.isValue(overview)) {
+                                overview.updateStepProgress(3, null, response.payload.controlCount);
+                                overview.updateStepProgress(4, null, response.payload.controlCount);
+                            }
                         } else {
                             Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
                             modalDialog.destroy();
@@ -178,6 +202,12 @@ Fisma.SecurityAuthorization = {
                             dt.on("dataReturnEvent", function () {
                                 modalDialog.destroy();
                             });
+
+                            // Update the overview tab
+                            if (YAHOO.lang.isValue(Fisma.SecurityAuthorization.overview)) {
+                                Fisma.SecurityAuthorization.overview.incrementStepDenominator(3);
+                                Fisma.SecurityAuthorization.overview.incrementStepDenominator(4);
+                            }
                         } else {
                             Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
                             modalDialog.destroy();
