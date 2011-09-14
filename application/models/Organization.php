@@ -366,7 +366,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
      * 
      * @return void
      */
-    public function convertToOrganization()
+    public function convertToOrganization($organizationTypeId)
     {
         
         $oldSystemId = $this->systemId;
@@ -377,7 +377,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             
             $system = $this->System;
             $this->System = null;
-            $this->orgType = 'organization';
+            $this->orgTypeId = $organizationTypeId;
             $this->save();
             $system->delete();
 
@@ -417,7 +417,8 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
 
             // create system relation        
             $this->systemId = $newSystem->id;
-            $this->orgType = 'system';
+            $systemType = Doctrine::getTable('OrganizationType')->findOneByNickname('system', Doctrine::HYDRATE_ARRAY);
+            $this->orgTypeId = $systemType['id'];
             $this->save();
             
             Doctrine_Manager::connection()->commit();

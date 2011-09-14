@@ -11328,73 +11328,20 @@ Fisma.System = {
     
     /**
      * Triggers a pop-up confirmation asking if the user truly wants to convert the current
-     * system to an organization, and if yes, redirects to the proper action.
+     * system/organization to an organization/system, and if yes, redirects to the proper action.
      * 
      * @param event $event 
      * @param config $config 
      * @access public
      * @return void
      */
-    convertToOrganization : function (event, config) {
-    
-        var dialogText = "WARNING: You are about to convert this system to an organization. " +
-                        "After this conversion all system information (FIPS-199 and FISMA Data) will be " +
-                        "permanently lost.\n\n" +
-                        "Do you want to continue?";
-        var yesButtonEvent = function () {
-                Fisma.System.showWaitPanelWhileConverting();
-                this.hide(); 
-                document.location = "/system/convert-to-org/id/" + config.id;
-            };
-        var noButtonEvent = function () {
-                this.destroy(); 
-            };
-        var dialogButtons = 
-            [
-                {
-                    text: "Yes",
-                    handler: yesButtonEvent
-                }, 
-                {
-                    text:"No",
-                    handler: noButtonEvent
-                } 
-            ];
-        var dialogConfig = {
-            width: "300px", 
-            fixedcenter: true, 
-            visible: false, 
-            draggable: false, 
-            close: true,
-            modal: true,
-            text: dialogText, 
-            icon: YAHOO.widget.SimpleDialog.ICON_WARN, 
-            constraintoviewport: true, 
-            buttons: dialogButtons
-        };
-        
-        var warningDialog = new YAHOO.widget.SimpleDialog("warningDialog",  dialogConfig);
-        warningDialog.setHeader("Are you sure?");
-        warningDialog.render(document.body);
-        warningDialog.show();
-    },
-    
-    /**
-     * Triggers a pop-up confirmation asking if the user truly wants to convert the current
-     * organization to a system, and if yes, calls Fisma.System.AskForOrgToSysInput()
-     * 
-     * @param event $event 
-     * @param config $config 
-     * @access public
-     * @return void
-     */
-    convertToSystem : function (event, config) {
+    convertToOrgOrSystem : function (event, config) {
     
         Fisma.Util.showConfirmDialog(
             event, 
             {
-                text: "Are you sure you want to convert this organization to a system?",
-                func: 'Fisma.System.askForOrgToSysInput',
+                text: config.text,
+                func: config.func,
                 args: [config.id]
             }
         );
@@ -11435,7 +11382,7 @@ Fisma.System = {
                 tooltip.style.zIndex = 5;
             }
         };
-        var panelConfig = {width : "50em", modal : true};
+        var panelConfig = {width : "40em", modal : true};
 
         panel = Fisma.UrlPanel.showPanel(
             'Convert Organization To System',
@@ -11446,7 +11393,41 @@ Fisma.System = {
         );
     },
 
-    
+    /**
+     * Shows an input dialog for the user to input the organization type
+     * After input, will redirect the user to /system/convert-to-org/~
+     *
+     * @access public
+     * @return void
+     */
+    askForSysToOrgInput : function (orgId) {
+        var panel;
+
+        var populateForm = function () {
+
+            // The form contains some scripts that need to be executed
+            var scriptNodes = panel.body.getElementsByTagName('script');
+
+            for (var i=0; i < scriptNodes.length; i++) {
+                try {
+                    eval(scriptNodes[i].text);
+                } catch (e) {
+                    var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                    Fisma.Util.showAlertDialog(message);
+                } 
+            }
+        };
+        var panelConfig = {width : "40em", modal : true};
+
+        panel = Fisma.UrlPanel.showPanel(
+            'Convert System To Organization',
+            '/system/convert-to-organization-form/format/html/id/' + orgId,
+            populateForm,
+            'convertToOrganizationPanel',
+            panelConfig
+        );
+    },
+
     /**
      * Creates and HTML input form which asks for the requiered information needed to 
      * convert an organization to a system

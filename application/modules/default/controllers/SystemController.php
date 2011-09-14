@@ -41,6 +41,19 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     protected $_aclResource = 'Organization';
     
     /**
+     * Initialize internal members.
+     *
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+        $this->_helper->ajaxContext()
+                      ->addActionContext('convert-to-organization-form', 'html')
+                      ->initContext();
+    }
+
+    /**
      * View the specified system
      *
      * @return void
@@ -91,9 +104,14 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'convertToOrg', 
                 array(
                       'label' => 'Convert To Organization',
-                      'onClickFunction' => 'Fisma.System.convertToOrganization',
+                      'onClickFunction' => 'Fisma.System.convertToOrgOrSystem',
                       'onClickArgument' => array(
-                          'id' => $id
+                          'id' => $id,
+                          'text' => "WARNING: You are about to convert this system to an organization. " 
+                                    . "After this conversion all system information (FIPS-199 and FISMA Data) will be "
+                                    . "permanently lost.\n\n" 
+                                    . "Do you want to continue?",
+                          'func' => 'Fisma.System.askForSysToOrgInput'
                     ) 
                 )
             );
@@ -133,17 +151,23 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'cannot create Organization');            
         }
     
-        $systemId = $this->getRequest()->getParam('id');
+        $systemId = Inspekt::getDigits($this->getRequest()->getParam('id'));
+
         if ($systemId) {
             $organization = Doctrine::getTable('Organization')->findOneBySystemId($systemId);         
         } else {
             throw new Fisma_Zend_Exception("Required parameter 'id' is missing.");
         }          
         
-        $organization->convertToOrganization();
+        $form = $this->getForm('system_converttoorganization');
+        if ($form->isValid($this->getRequest()->getPost())) {
+            $organization->convertToOrganization(
+                $form->getElement('orgType')->getValue()
+            );
         
-        $this->view->priorityMessenger('Converted to organization successfully', 'notice');
-        $this->_redirect("/organization/view/id/" . $organization->id);
+            $this->view->priorityMessenger('Converted to organization successfully', 'notice');
+            $this->_redirect("/organization/view/id/" . $organization->id);
+        }
     }
 
     /**
@@ -714,5 +738,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $list = array('systems' => $systems);
         
         return $this->_helper->json($list);
+    }
+
+    /**
+     * AJAX action to render the form for converting a System to an Organization.
+     *
+     * @return void
+     */
+    public function convertToOrganizationFormAction()
+    {
+        $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
+        $this->view->form = $this->getForm('system_converttoorganization');
+        $this->view->form->setAction('/system/convert-to-org/id/' . $id);
     }
 }

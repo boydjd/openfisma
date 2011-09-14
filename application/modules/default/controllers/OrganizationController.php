@@ -119,7 +119,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             // The type menu should display all types of organization EXCEPT system
             $orgTypeArray = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
             $form->getElement('orgTypeId')->addMultiOptions($orgTypeArray);
-       } 
+        } 
 
         return $form;
     }
@@ -549,9 +549,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 'convertToSys', 
                 array(
                       'label' => 'Convert To System',
-                      'onClickFunction' => 'Fisma.System.convertToSystem',
+                      'onClickFunction' => 'Fisma.System.convertToOrgOrSystem',
                       'onClickArgument' => array(
-                          'id' => $this->view->escape($id, 'url')
+                          'id' => $this->view->escape($id, 'url'),
+                          'text' => "Are you sure you want to convert this organization to a system?",
+                          'func' => 'Fisma.System.askForOrgToSysInput'
+                          
                     ) 
                 )
             );
