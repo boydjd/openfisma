@@ -52,26 +52,6 @@ elements.description.options.cols = "70%"
 elements.description.options.rows = "7"
 displayGroups.system.elements.description = "description"
 
-elements.confidentiality.type = "select"
-elements.confidentiality.options.label = "Confidentiality"
-elements.confidentiality.options.required = true
-elements.confidentiality.options.tooltip = "<p><b>Confidentiality</b></p><p>As required by the Federal Information System Processing Standard 199, all information systems should be categorized using FIPS 199. Please select the appropriate impact level if the data contained in the information system was disclosed, see examples below.</p><p><b>Choose Low if:</b> The unauthorized disclosure of information could be expected to have a <b>limited adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose Moderate if:</b> The unauthorized disclosure of information could be expected to have a <b>serious adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose High if:</b> The unauthorized disclosure of information could be expected to have a <b>severe or catastrophic adverse effect</b> on organizational operations, organizational assets, or individuals.</p>"
-displayGroups.system.elements.confidentiality = "confidentiality"
-
-elements.integrity.type = "select"
-elements.integrity.options.label = "Integrity"
-elements.integrity.options.validators.alnum.validator = "NotEmpty"
-elements.integrity.options.required = true
-elements.integrity.options.tooltip = "<p><b>Integrity</b></p><p>As required by the Federal Information System Processing Standard 199, all information systems should be categorized using FIPS 199. Please select the appropriate impact level if the data contained in the information system was modified, see examples below.</p><p><b>Choose Low if:</b> The unauthorized modification or destruction of information could be expected to have a <b>limited adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose Moderate if:</b> The unauthorized modification or destruction of information could be expected to have a <b>serious adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose High if:</b> The unauthorized modification or destruction of information could be expected to have a <b>severe or catastrophic adverse effect</b> on organizational operations, organizational assets, or individuals.</p>"
-displayGroups.system.elements.integrity = "integrity"
-
-elements.availability.type = "select"
-elements.availability.options.label = "Availability"
-elements.availability.options.validators.alnum.validator = "NotEmpty"
-elements.availability.options.required = true
-elements.availability.options.tooltip = "<p><b>Availability</b></p><p>As required by the Federal Information System Processing Standard 199, all information systems should be categorized using FIPS 199. Please select the appropriate impact level if the data contained in the information system was unavailable, see examples below.</p><p><b>Choose Low if:</b> The disruption of access to or use of information could be expected to have a <b>limited adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose Moderate if:</b> The disruption of access to or use of information could be expected to have a <b>serious adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose High if:</b> The disruption of access to or use of information could be expected to have a <b>severe or catastrophic adverse effect</b> on organizational operations, organizational assets, or individuals.</p>"
-displayGroups.system.elements.availability = "availability"
-
 elements.cloneOrganizationId.type = "select"
 elements.cloneOrganizationId.options.label = "Copy user access from"
 elements.cloneOrganizationId.options.validators.strlen.validator = "StringLength"

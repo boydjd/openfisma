@@ -53,14 +53,6 @@ class Fisma_Zend_Form_Manager_System extends Fisma_Zend_Form_Manager_Abstract
             }
         }
         
-        $systemTable = Doctrine::getTable('System');
-        
-        $enumFields = array('confidentiality', 'integrity', 'availability', 'type', 'sdlcPhase');
-        foreach ($enumFields as $field) {
-            $array = $systemTable->getEnumValues($field);
-            $form->getElement($field)->addMultiOptions(array_combine($array, $array));
-        }
-
         $this->setForm($form);
     }
 }
