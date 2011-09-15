@@ -129,6 +129,7 @@
             var newTd = this._renderStatusCellForStep(step);
             var parent = step.statusTd.parentNode;
             parent.replaceChild(newTd, step.statusTd);
+            step.statusTd = newTd;
         },
         
         /**

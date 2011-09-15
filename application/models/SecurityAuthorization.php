@@ -185,7 +185,8 @@ class SecurityAuthorization extends BaseSecurityAuthorization
                  ->innerJoin('sc.Implementation i')
                  ->where('sa.id = ?', $this->id)
                  ->andWhere('i.status = ?', 'Complete')
-                 ->setHydrationMode(Doctrine::HYDRATE_SINGLE_SCALAR);
+                 ->setHydrationMode(Doctrine::HYDRATE_SINGLE_SCALAR)
+                 ->execute();
 
         return (int)$count;
     }
@@ -203,7 +204,8 @@ class SecurityAuthorization extends BaseSecurityAuthorization
                  ->where('sa.id = ?', $this->id)
                  ->andWhere('ap.status = ?', 'Complete')
                  ->groupBy('sc.id')
-                 ->setHydrationMode(Doctrine::HYDRATE_SINGLE_SCALAR);
+                 ->setHydrationMode(Doctrine::HYDRATE_SINGLE_SCALAR)
+                 ->execute();
 
         return (int)$count;
     }
