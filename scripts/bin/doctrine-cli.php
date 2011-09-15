@@ -78,12 +78,22 @@ try {
     $sampleDataParameter = array_search('sample-data', $_SERVER['argv']);
     if ($sampleDataParameter) {
         print "Using Sample Data\n";
-        
-        // Create a build directory
+
+        // If build directory already exists (e.g. from a failed prior run), then try removing it
         $sampleDataBuildPath = Fisma::getPath('sampleDataBuild');
-        if (!mkdir($sampleDataBuildPath, 0700)) {
-            throw new Fisma_Zend_Exception('Could not create directory for sample data build. Maybe it already exists'
-                                    . " or it has the wrong permissions? ($sampleDataBuildPath)");
+        if (is_dir($sampleDataBuildPath)) {
+            $result = Fisma_FileSystem::recursiveDelete($sampleDataBuildPath);
+            
+            if (!$result) {
+                throw new Fisma_Zend_Exception("Could not remove directory for sample data build. Maybe it has bad"
+                                             . " permissions? ($sampleDataBuildPath)");
+            }
+        }
+
+        // Create a build directory
+        if (!mkdir($sampleDataBuildPath)) {
+            throw new Fisma_Zend_Exception('Could not create directory for sample data build. Maybe it has bad' 
+                                         . " permissions? ($sampleDataBuildPath)");
         }
         
         // Copy files from fixtures into build directory

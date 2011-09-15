@@ -31,6 +31,7 @@ class Fisma_FileSystem
      * Recursively delete a directory and all of its contents
      * 
      * @param dir
+     * @return TRUE if successful, FALSE otherwise
      */
     static function recursiveDelete($dir) 
     {
