@@ -71,14 +71,15 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         try {
             $this->_persist($report, $uploadId);
         } catch (Exception $e) {
-            throw new Fisma_Zend_Exception('An error occured while processing the XML file.', 0, $e);
+            $report->close();
+            throw new Fisma_Zend_Exception_InvalidFileFormat('An error occured while processing the XML file.', 0, $e);
         }
 
         $report->close();
     }
     
     /**
-     * Save assets and findings which are recorded in the report.
+     * Get and save findings, assets and products info are recorded in the report.
      *
      * @param XMLReader $oXml The full AppDetective report
      * @param int $uploadId The specific scanner file id
@@ -185,7 +186,20 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 }
             }
         }
+    
+        $this->_saveData($uploadId, $findings, $asset, $product); 
+    }
 
+    /**
+     * Save assets and findings which are recorded in the report.
+     *
+     * @param int $uploadId The specific scanner file id
+     * @param array findings info
+     * @param array asset info
+     * @param array product info
+     */
+    private function _saveData($uploadId, $findings, $asset, $product)
+    {
         foreach ($findings as $finding) {
         
             // Some "findings" are empty or other levels such as Informational. We test for emptiness by 
