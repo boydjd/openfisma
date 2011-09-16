@@ -100,8 +100,9 @@
         dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow); 
         dataTable.subscribe("rowMouseoutEvent", dataTable.onEventUnhighlightRow);
 
-        // Enable cell click event handler
-        dataTable.subscribe("cellClickEvent", function (clickEvent) {
+        <?php if (isset($this->clickEventBaseUrl)): ?>
+            // Enable cell click event handler
+            dataTable.subscribe("cellClickEvent", function (clickEvent) {
             var targetEl = clickEvent.target;
             var rowData = this.getRecord(targetEl);
 
@@ -110,21 +111,21 @@
             if (column.formatter == Fisma.TableFormat.formatCheckbox) {
                 return;
             }
-            
+
             // Reject clicks for deleted records
             if (rowData.getData('deleted_at')) {
                 var message = 'This record cannot be viewed because it was deleted.';
                 Fisma.Util.showAlertDialog(message);
                 return;
             }
-            
+
             var url = "<?php echo $this->escape($this->clickEventBaseUrl, 'javascript');?>"
                     + escape(rowData._oData['<?php echo $this->escape($this->clickEventVariableName); ?>']);
 
             // A shift+click pops up a new window for the record view
             if (clickEvent.event.shiftKey) {
                 var popup = window.open(url);
-                
+
                 // A shift+alt+click will pop under a new window for the record view
                 if (clickEvent.event.altKey) {
                     popup.blur();
@@ -132,9 +133,16 @@
                 }
             } else {
                 document.location = url;
-            }                    
+            }
         });
-        
+        <?php endif; ?>
+
+        <?php if (isset($this->clickEventHandler)): ?>
+            var clickEventHandlerName = "<?php echo $this->escape($this->clickEventHandler, 'javascript'); ?>";
+            var clickEventHandler = Fisma.Util.getObjectFromName(clickEventHandlerName);
+            dataTable.subscribe("cellClickEvent", clickEventHandler);
+        <?php endif; ?>
+
         <?php if (isset($this->renderEventFunction)): ?>
             var renderEventFunctionName = "<?php echo $this->escape($this->renderEventFunction); ?>";
             var renderEventFunction = Fisma.Util.getObjectFromName(renderEventFunctionName);

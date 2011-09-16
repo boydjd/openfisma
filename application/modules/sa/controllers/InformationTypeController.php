@@ -79,4 +79,97 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
         $informationTypesData['informationTypes'] = $informationTypes->execute()->toArray();
         $this->view->informationTypesData = $informationTypesData;
     }
+
+    /**
+     * Return all information types currently assigned to the system
+     *
+     * @return void
+     */
+    public function informationTypesAction()
+    {
+        $this->_helper->layout->setLayout('ajax');
+
+        $id    = $this->getRequest()->getParam('id');
+        $count = $this->getRequest()->getParam('count', 10);
+        $start = $this->getRequest()->getParam('start', 0);
+        $sort  = $this->getRequest()->getParam('sort', 'category');
+        $dir   = $this->getRequest()->getParam('dir', 'asc');
+
+        $system = Doctrine::getTable('System')->find($id);
+
+        $this->_acl->requirePrivilegeForObject('read', $system->Organization);
+
+        $systemId = $system->id;
+
+        $informationTypes = Doctrine_Query::create()
+                ->select("sat.*, {$system->id} as system")
+                ->from('SaInformationType sat, SaInformationTypeSystem sats')
+                ->where('sats.systemid = ?', $systemId)
+                ->andWhere('sats.sainformationtypeid = sat.id')
+                ->andWhere('sat.hidden = FALSE')
+                ->orderBy("sat.{$sort} {$dir}")
+                ->limit($count)
+                ->offset($start);
+
+        $informationTypesData = array();
+        $informationTypesData['totalRecords'] = $informationTypes->count();
+        $informationTypesData['informationTypes'] = $informationTypes->execute()->toArray();
+        $this->view->informationTypesData = $informationTypesData;
+    }
+
+    /**
+     * Add a single information type to a system
+     *
+     * @return void
+     */
+    public function addInformationTypeAction()
+    {
+        $response = new Fisma_AsyncResponse();
+        try {
+            $informationTypeId = $this->getRequest()->getParam('sitId');
+            $id = $this->getRequest()->getParam('id');
+
+            $system = Doctrine::getTable('System')->find($id);
+
+            $this->_acl->requirePrivilegeForObject('update', $system->Organization);
+
+            $systemId = $system->id;
+
+            $informationTypeSystem = new SaInformationTypeSystem();
+            $informationTypeSystem->sainformationtypeid = $informationTypeId;
+            $informationTypeSystem->systemid = $systemId;
+            $informationTypeSystem->save();
+        } catch (Exception $e) {
+        $this->getInvokeArg('bootstrap')->getResource('Log')->log($e, Zend_Log::ERR);
+            Doctrine_Manager::connection()->rollback();
+            $response->fail($e);
+        }
+        $this->view->response = $response;
+    }
+
+    /**
+     * Remove a single information type from a system
+     *
+     * @return void
+     */
+    public function removeInformationTypeAction()
+    {
+        $informationTypeId = $this->getRequest()->getParam('sitId');
+        $id = $this->getRequest()->getParam('id');
+
+        $system = Doctrine::getTable('System')->find($id);
+
+        $this->_acl->requirePrivilegeForObject('update', $system->Organization);
+
+        $informationType = Doctrine_Query::create()
+                ->from('SaInformationTypeSystem saits')
+                ->where('saits.sainformationtypeid = ?', $informationTypeId)
+                ->andWhere('saits.systemid = ?', $id)
+                ->execute();
+
+        $informationType->delete();
+
+        $this->_redirect("/system/view/id/$id");
+    }
+
 }

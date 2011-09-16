@@ -295,7 +295,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $tabView = new Fisma_Yui_TabView('SecurityAuthorizationView', $id);
         $tab1Name = $sa->Organization->nickname . ' Security Authorization';
         $tabView->addTab($tab1Name, "/sa/security-authorization/overview/id/$id");
-        $tabView->addTab("1. Categorize", "/system/fips/id/$id");
+        $tabView->addTab("1. Categorize", "/sa/security-authorization/fips/id/$id");
         $tabView->addTab("2. Select", "/sa/security-authorization/select-controls/id/$id/format/html");
         $tabView->addTab("3. Implementation", "/sa/security-authorization/implementation/id/$id/format/html");
         $tabView->addTab("4. Assessment", "/sa/security-authorization/assessment-plan/id/$id/format/html");
@@ -389,6 +389,89 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             $completionDate->toString(Zend_Date::DATE_FULL)
         );
     }
+
+    /**
+     * Display CIA criteria and FIPS-199 categorization
+     *
+     * @return void
+     */
+    public function fipsAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
+        $this->_acl->requirePrivilegeForObject('read', $organization);
+        $this->_helper->layout()->disableLayout();
+
+        $this->view->organization = $organization;
+        $this->view->system = $this->view->organization->System;
+        // BEGIN: Build the data table of information types associated with the system
+
+        $informationTypesTable = new Fisma_Yui_DataTable_Remote();
+
+        $informationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, null, 'category'))
+                ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, null, 'name'))
+                ->addColumn(
+            new Fisma_Yui_DataTable_Column('Description', false, null, null, 'description')
+        )
+                ->addColumn(
+            new Fisma_Yui_DataTable_Column('Confidentiality', true, null, null, 'confidentiality')
+        )
+                ->addColumn(new Fisma_Yui_DataTable_Column('Integrity', true, null, null, 'integrity'))
+                ->addColumn(
+            new Fisma_Yui_DataTable_Column('Availability', true, null, null, 'availability')
+        )
+                ->setResultVariable('informationTypes')
+                ->setInitialSortColumn('category')
+                ->setSortAscending(true)
+                ->setRowCount(10)
+                ->setDataUrl("/sa/information-type/information-types/id/{$id}/format/json")
+                ->setGlobalVariableName('Fisma.SecurityAuthorization.assignedInformationTypesTable');
+                 
+
+        $this->view->informationTypesTable = $informationTypesTable;
+        // END: Building of data table
+
+        // BEGIN: Build the data table of available information types to assign to the system
+
+        if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
+            $availableInformationTypesTable = clone $informationTypesTable;
+
+            $availableInformationTypesTable->addColumn(
+                new Fisma_Yui_DataTable_Column('Add', 'false', 'Fisma.System.addInformationType', null, 'id')
+            );
+
+            $availableInformationTypesTable->setDataUrl(
+                "/sa/information-type/active-types/systemId/{$id}/format/json"
+            );
+
+            $availableInformationTypesTable->setClickEventHandler(
+                'Fisma.SecurityAuthorization.handleAvailableInformationTypesTableClick'
+            );
+
+            $availableInformationTypesTable->setGlobalVariableName(
+                'Fisma.SecurityAuthorization.availableInformationTypesTable'
+            );
+
+            $this->view->availableInformationTypesTable = $availableInformationTypesTable;
+            // END: Building of the data table
+
+            $this->view->informationTypesTable->addColumn(
+                new Fisma_Yui_DataTable_Column('Remove', 'false', 'Fisma.System.removeInformationType', null, 'id')
+            );
+
+            $addInformationTypeButton = new Fisma_Yui_Form_Button(
+                'addInformationTypeButton',
+                array(
+                     'label' => 'Add Information Types',
+                     'onClickFunction' => 'Fisma.System.showInformationTypes',
+                )
+            );
+            $this->view->addInformationTypeButton = $addInformationTypeButton;
+        }
+
+        $this->render();
+    }
+
 
     /**
      * Display the step 2 (Select) user interface
