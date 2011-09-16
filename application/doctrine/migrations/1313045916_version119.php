@@ -33,7 +33,6 @@ class Version119 extends Doctrine_Migration_Base
      */
     public function up()
     {
-        $pdo = Doctrine_Manager::connection()->getDbh();
         $conn = Doctrine_Manager::connection();
 
         $columns = array('session_inactivity_period', 'session_inactivity_notice');
@@ -63,7 +62,6 @@ class Version119 extends Doctrine_Migration_Base
      */
     public function down()
     {
-        $pdo = Doctrine_Manager::connection()->getDbh();
         $conn = Doctrine_Manager::connection();
 
         $columns = array('session_inactivity_period', 'session_inactivity_notice');
