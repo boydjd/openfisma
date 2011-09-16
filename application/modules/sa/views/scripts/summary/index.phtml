@@ -1,0 +1,11 @@
+<div id="summaryContainer"></div>
+
+<script type="text/javascript">
+
+YAHOO.util.Event.onDOMReady(function () {
+    var url = '/sa/summary/data/format/json';
+    var summaryTable = new Fisma.SecurityAuthorizationSummary(url, 6);
+    summaryTable.render(document.getElementById('summaryContainer'));
+});
+
+</script>

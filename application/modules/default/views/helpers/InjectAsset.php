@@ -76,6 +76,8 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Storage.js',
                                       '/javascripts/Fisma/PersistentStorage.js',
                                       '/javascripts/Fisma/SecurityAuthorization.js',
+                                      '/javascripts/Fisma/TreeTable.js',
+                                      '/javascripts/Fisma/SecurityAuthorizationSummary.js',
                                       '/javascripts/Fisma/SecurityAuthorization/Overview.js',
                                       '/javascripts/Fisma/Search/TablePreferences.js',
                                       '/javascripts/Fisma/Search/QueryState.js',
@@ -112,7 +114,6 @@ class View_Helper_InjectAsset
                                       '/stylesheets/chart.css',
                                       '/stylesheets/Dashboard.css',
                                       '/stylesheets/Finding.css',
-                                      '/stylesheets/FindingSummary.css',
                                       '/stylesheets/Incident.css',
                                       '/stylesheets/jquery_jqplot.css',
                                       '/stylesheets/Modules.css',
@@ -120,6 +121,7 @@ class View_Helper_InjectAsset
                                       '/stylesheets/SecurityAuthorization.css',
                                       '/stylesheets/SwitchButton.css',
                                       '/stylesheets/TreeNodeDragBehavior.css',
+                                      '/stylesheets/TreeTable.css',
                                       '/stylesheets/Toolbar.css',
                                       '/stylesheets/User.css'
                                 )

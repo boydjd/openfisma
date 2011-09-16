@@ -1,0 +1,9 @@
+<?php
+
+$json = Zend_Json::encode($this->summaryData);
+
+if ($this->gzipEncode) {
+    $json = gzencode($json);
+}
+
+echo $this->escape($json, 'none');
