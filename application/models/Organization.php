@@ -39,18 +39,6 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     }
 
     /**
-     * A mapping from the physical organization types to proper English terms.
-     * Notice that for 'system' types, the label is returned from the System class instead.
-     * 
-     * @var array
-     */
-    private $_orgTypeMap = array(
-        'agency' => 'Agency',
-        'bureau' => 'Bureau',
-        'organization' => 'Organization'
-    );
-
-    /**
      * Return the type of this organization.  Unlike $this->type, this resolves
      * system organizations down to their subtype, such as gss, major or minor
      * 
@@ -58,24 +46,24 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
      */
     public function getType() 
     {
-        if ('system' == $this->orgType) {
+        if ('system' == $this->OrganizationType->nickname) {
             return $this->System->type;
         } else {
-            return $this->orgType;
+            return $this->OrganizationType->icon;
         }
     }
     
     /**
-     * Return the English version of the orgType field
+     * Return the English version of the OrganizationType field
      * 
-     * @return string The English version of the orgType field
+     * @return string The English version of the OrganizationType field
      */
     public function getOrgTypeLabel() 
     {
-        if ('system' == $this->orgType) {
+        if ('system' == $this->OrganizationType->nickname) {
             return $this->System->getTypeLabel();
         } else {
-            return $this->_orgTypeMap[$this->orgType];
+            return $this->OrganizationType->name;
         }
     }
     
@@ -92,13 +80,18 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     }
     
     /**
-     * Return a collection of bureaus for this agency
+     * Return a collection of organization
      *
-     * @return Doctrine_Collection The collection of bureau node
+     * @param orgTypeId
+     * @return Doctrine_Collection The collection of organization node
      */
-    public static function getBureaus()
+    public static function getBureaus($bureauId)
     {
-        $bureaus = Doctrine::getTable('Organization')->findByOrgType('bureau');
+        $bureaus = Doctrine_Query::Create()
+                   ->select('o.*')
+                   ->from('Organization o')
+                   ->where('o.orgtypeid = ?', $bureauId)
+                   ->execute();
 
         return $bureaus;
     }
@@ -120,9 +113,9 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     public function getFismaStatistics()
     {
         // Reject any organization which is not a bureau
-        if ('bureau' != $this->orgType) {
-            throw new Fisma_Zend_Exception('getFismaStatistics() is only valid for Bureaus, but was called on a '
-                                    . "'$this->orgType' instead.");
+        if ('system' == $this->OrganizationType->nickname) {
+            throw new Fisma_Zend_Exception('getFismaStatistics() is only valid for organization type, '
+                                    . "but was called on a 'system' instead.");
         }
         
         // Setup structure of the returned array
@@ -157,7 +150,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
         if ($children = $this->getNode()->getDescendants()) {
             $children->loadRelated();
             foreach ($children as $child) {
-                if ('system' != $child->orgType) {
+                if ('system' != $child->OrganizationType->nickname) {
                     continue;
                 }
             
@@ -315,7 +308,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     public function postInsert($event)
     {    
         // This model can generate events for organization objects AND system objects
-        if ('organization' == $this->orgType) {
+        if ('system' != $this->OrganizationType->nickname) {
             $eventName = 'ORGANIZATION_CREATED';
         } else {
             $eventName = 'SYSTEM_CREATED';
@@ -334,7 +327,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     {        
         // The system model will handle update events on its own, but we need to filter them out here
         // in case the system model somehow triggers a save() on its related organization object
-        if ('organization' == $this->orgType) {
+        if ('system' != $this->OrganizationType->nickname) {
             $eventName = 'ORGANIZATION_UPDATED';
             Notification::notify($eventName, $this, CurrentUser::getInstance());
         }
@@ -349,7 +342,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     public function postDelete($event)
     {        
         // This model can generate events for organization objects AND system objects
-        if ('organization' == $this->orgType) {
+        if ('system' != $this->OrganizationType->nickname) {
             $eventName = 'ORGANIZATION_DELETED';
         } else {
             $eventName = 'SYSTEM_DELETED';

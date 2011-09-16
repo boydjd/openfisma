@@ -2,198 +2,198 @@ Organization:
     BGA_ORG:
         name: Big Government Agency
         nickname: BGA
-        orgType: agency
+        OrganizationType: agency
         children:
             ARP_ORG:
                 nickname: ARP
                 name: Bureau of Advanced Research Projects
-                orgType: bureau
+                OrganizationType: bureau
                 children:
                     NRL_ORG:
                         nickname: NRL
                         name: Nuclear Energy Lab
-                        orgType: organization
+                        OrganizationType: office
                         children:
                             HAZMAT_ORG:
                                 nickname: HAZMAT
                                 name: Hazardous Materials Tracking System
-                                orgType: system
+                                OrganizationType: system
                                 System: HAZMAT_SYS
                             RCD_ORG:
                                 nickname: RCD
                                 name: Regulatory Compliance Database
-                                orgType: system
+                                OrganizationType: system
                                 System: RCD_SYS
                     RNI_ORG:
                         nickname: RNI
                         name: Renewable Energy Initiative
-                        orgType: organization
+                        OrganizationType: office
                         children:
                             GREEN_NRG_ORG:
                                 nickname: GREEN-NRG
                                 name: Green Energy Research Grants Database
-                                orgType: system
+                                OrganizationType: system
                                 System: GREEN_NRG_SYS
                             WIND_ORG:
                                 nickname: WIND
                                 name: Wind Farm Tax Rebate Program
-                                orgType: system
+                                OrganizationType: system
                                 System: WIND_SYS
 
             PRINT_ORG:
                 name: Bureau of Printing
                 nickname: PRINT
-                orgType: bureau
+                OrganizationType: bureau
                 children:
                     MIDWEST_ORG:
                         nickname: MIDWEST
                         name: Mid-west Office
-                        orgType: organization
+                        OrganizationType: office
                     NORTHEAST_ORG:
                         nickname: NORTHEAST
                         name: North-east Office
-                        orgType: organization
+                        OrganizationType: office
                     SOUTHEAST_ORG:
                         nickname: SOUTHEAST
                         name: South-east Office
-                        orgType: organization
+                        OrganizationType: office
                     WEST_COAST_ORG:
                         nickname: WEST-COAST
                         name: West Coast Office
-                        orgType: organization
+                        OrganizationType: office
 
             OS_ORG:
                 nickname: OS
                 name: Office of the Secretary
-                orgType: bureau
+                OrganizationType: bureau
                 children:
                     OCIO_ORG:
                         nickname: OCIO
                         name: Office of the Chief Information Officer
-                        orgType: organization
+                        OrganizationType: office
                         children:
                             OF_ORG:
                                 nickname: OF
                                 name: OpenFISMA
-                                orgType: system
+                                OrganizationType: system
                                 System: OF_SYS
                             OSC_ORG:
                                 nickname: OSC
                                 name: Online Security Center
-                                orgType: system
+                                OrganizationType: system
                                 System: OSC_SYS
                             TPP_ORG:
                                 nickname: TPP
                                 name: Technology Procurement Program
-                                orgType: system
+                                OrganizationType: system
                                 System: TPP_SYS
                     OCOO_ORG:
                         nickname: OCOO
                         name: Office of the Chief Operating Officer
-                        orgType: organization
+                        OrganizationType: office
                         children:
                             CRMS_ORG:
                                 nickname: CRMS
                                 name: Customer Relationship Management System
-                                orgType: system
+                                OrganizationType: system
                                 System: CRMS_SYS
                             SCMS_ORG:
                                 nickname: SCMS
                                 name: Supply Chain Management System
-                                orgType: system
+                                OrganizationType: system
                                 System: SCMS_SYS
                     OIG_ORG:
                         nickname: OIG
                         name: Office of the Inspector General
-                        orgType: organization
+                        OrganizationType: office
                         children:
                             CIT_ORG:
                                 nickname: CIT
                                 name: Cybersecurity Investigation Tracking
-                                orgType: system
+                                OrganizationType: system
                                 System: CIT_SYS
                             IAD_ORG:
                                 nickname: IAD
                                 name: Internal Artifacts Database
-                                orgType: system
+                                OrganizationType: system
                                 System: IAD_SYS
 
             RESMAN_ORG:
                 nickname: RESMAN
                 name: Bureau of Resource Management
-                orgType: bureau
+                OrganizationType: bureau
                 children:
                     HIWAY_ORG:
                         nickname: HIWAY
                         name: Highway Management
-                        orgType: organization
+                        OrganizationType: office
                         children:
                             HERNDON_ORG:
                                 nickname: HERNDON
                                 name: Herndon Data Center
-                                orgType: system
+                                OrganizationType: system
                                 System: HERNDON_SYS
                             RESTON_ORG:
                                 nickname: RESTON
                                 name: Reston Data Center
-                                orgType: system
+                                OrganizationType: system
                                 System: RESTON_SYS
                                 children:
                                     LINUX_ORG:
                                         nickname: LINUX
                                         name: Linux Technology Stack
-                                        orgType: system
+                                        OrganizationType: system
                                         System: LINUX_SYS
                                     MAINFRAME_ORG:
                                         nickname: MAINFRAME
                                         name: Mainframe Technology Stack
-                                        orgType: system
+                                        OrganizationType: system
                                         System: MAINFRAME_SYS
                                     ORACLE_ORG:
                                         nickname: ORACLE
                                         name: Oracle Technology Stack
-                                        orgType: system
+                                        OrganizationType: system
                                         System: ORACLE_SYS
                     RAIL_ORG:
                         nickname: RAIL
                         name: Railway Management
-                        orgType: organization
+                        OrganizationType: office
                         children:
                             RMTRP_ORG:
                                 nickname: RMTRP
                                 name: Rail Modernization Tax Rebate Program 
-                                orgType: system
+                                OrganizationType: system
                                 System: RMTRP_SYS
                             ROCP_ORG:
                                 nickname: ROCP
                                 name: Railway Operator Certification Program
-                                orgType: system
+                                OrganizationType: system
                                 System: ROCP_SYS
                     MARITIME_ORG:
                         nickname: MARITIME
                         name: Maritime and Freshwater Management
-                        orgType: organization
+                        OrganizationType: office
                         children:
                             H20_RIGHTS_ORG:
                                 nickname: H2O-RIGHTS
                                 name: Water Rights Adjudication Tracking System
-                                orgType: system
+                                OrganizationType: system
                                 System: H20_RIGHTS_SYS
                             WILDLIFE_ORG:
                                 nickname: WILDLIFE
                                 name: Fish and Wildlife
-                                orgType: system
+                                OrganizationType: system
                                 System: WILDLIFE_SYS
 
             # This system is by default not assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
             HIDDEN_ORG:
                 nickname: HIDDEN
                 name: Hidden System
-                orgType: system
+                OrganizationType: system
                 System: HIDDEN_SYS
 
             DISPOSAL_ORG:
                 nickname: DISPOSAL 
                 name: Disposal System
-                orgType: system
+                OrganizationType: system
                 System: DISPOSAL_SYS

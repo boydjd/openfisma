@@ -2874,7 +2874,7 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
      */
     FS._initStorageEngine = function() {
         if (YAHOO.lang.isNull(FS._storageEngine)) {
-            var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
+            var engineConf = {swfURL: "/swfstore-2.9.0.swf", containerID: "swfstoreContainer"};
             FS._storageEngine = YAHOO.util.StorageManager.get(
                 YAHOO.util.StorageEngineGears.ENGINE_NAME,
                 YAHOO.util.StorageManager.LOCATION_SESSION,
@@ -2967,7 +2967,6 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
          */
         _get: function(key) {
             var value = FS._storageEngine.getItem(this.namespace + ":" + key);
-
             return YAHOO.lang.isNull(value) ? null : YAHOO.lang.JSON.parse(value);
         },
         /**
@@ -2979,6 +2978,7 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
          * @protected
          */
         _set: function(key, value) {
+            FS._storageEngine.removeItem(this.namespace + ":" + key);
             FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
         }
     };
@@ -4913,8 +4913,8 @@ Fisma.Chart = {
             }
         }
 
-        // bail on blank link
-        if (theLink === '') {
+        // bail on blank link or undefine link
+        if (theLink === '' || YAHOO.lang.isUndefined(theLink)) {
             return;
         }
 
@@ -7724,6 +7724,144 @@ Fisma.FindingSummary = function() {
         }
     };
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * A form dialog is a modal dialog which displays an HTML form, where the values of each element are bound to
+     * the values of an underlying object.
+     * 
+     * @constructor
+     * @param formUrl {String} The URL to load the blank form from
+     * @param element {String|HTMLElement} The element or element ID representing the Dialog
+     * @param config {Object} YUI Dialog Configuration
+     */
+    Fisma.FormDialog = function(formUrl, element, config) {
+        // Sanitize inputs
+        var safeConfig = YAHOO.lang.isValue(config) ? config : {};
+        var safeElement = YAHOO.lang.isValue(element) ? element : YAHOO.util.Dom.generateId();
+
+        // Configuration Defaults
+        safeConfig.modal = true;
+
+        Fisma.FormDialog.superclass.constructor.call(this, safeElement, safeConfig);
+
+        this._showLoadingMessage();
+        this._requestForm(formUrl);
+    };
+
+    YAHOO.extend(Fisma.FormDialog, YAHOO.widget.Panel, {
+        /**
+         * Store bindings for the form
+         */
+        _values: {},
+        
+        /**
+         * Indicates if the form is ready to accept bindings
+         */
+        _formIsReady: false,
+
+        /**
+         * Show a loading message (while loading the form)
+         */
+        _showLoadingMessage: function() {
+            this.setBody('Loading…');
+            this.render(document.body);
+            this.center();
+            this.show();
+        },
+
+        /**
+         * Request the blank form from a specified URL
+         * 
+         * @param url {String}
+         */
+        _requestForm: function(url) {
+            YAHOO.util.Connect.asyncRequest(
+                'GET',
+                url,
+                {
+                    success: this._loadForm,
+
+                    failure: function(connectionData) {
+                        Fisma.Util.showAlertDialog('An unexpected error occurred.');
+                        this.hide();
+                    },
+                    
+                    scope: this
+                },
+                null
+            );
+
+        },
+        
+        /**
+         * Load the returned form into the dialog
+         * 
+         * @param connectionData {Object} Returned by YUI connection class
+         */
+        _loadForm: function(connectionData) {
+            try {
+                var response = connectionData.responseText;
+
+                this.setBody(response);
+                this.center();
+                this._formIsReady = true;
+                this._applyValues();
+            } catch (error) {
+                Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+                this.hide();
+            }
+        },
+
+        /**
+         * Apply binding variables to the form's DOM representation
+         */
+        _applyValues: function() {
+            var value;
+
+            for (var key in this._values) {
+                value = this._values[key];
+                
+                console.log(key);console.log(value);
+            }
+        },
+
+        /**
+         * Internal convenience method for encoding values.
+         *
+         * @param values {Object}
+         */
+        setValues: function(values) {
+            this._values = values;
+            
+            if (this._formIsReady) {
+                this._applyValues();
+            }
+        }
+    });
+})();
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -11494,6 +11632,8 @@ Fisma.SecurityAuthorization = {
     
     /**
      * Store a panel which displays the add control form
+     * 
+     * @var YAHOO.widget.Panel
      */
     addControlPanel: null,
  
@@ -11503,7 +11643,7 @@ Fisma.SecurityAuthorization = {
      * @var Fisma.FormDialog
      */
     selectControlsDialog: null,
-    
+ 
     /**
      * A reference to the tab view on the SA view page
      */
@@ -11719,8 +11859,88 @@ Fisma.SecurityAuthorization = {
 
         Fisma.SecurityAuthorization.addControlPanel = panel;
         YAHOO.util.Connect.asyncRequest('GET', url, callbacks, null);
+    },
+
+    tableFormatEnhancements: function(elem, record, column) {
+        var data = record.getData();
+        var selected = data.selectedEnhancements_selectedEnhancements;
+        var available = data.definedEnhancements_availableEnhancements;
+        if (Number(available) === 0) {
+            elem.innerHTML = "<i>N/A</i>";
+        } else {
+            elem.innerHTML = selected + " / " + available + ' ';
+            var anchor = document.createElement('a');
+            anchor.innerHTML = "Edit";
+            anchor.href = "#";
+            elem.appendChild(anchor);
+            YAHOO.util.Event.addListener(anchor, "click", Fisma.SecurityAuthorization.editEnhancements, {elem: elem, record: record, column: column}, this);
+        }
+    },
+
+    editEnhancements: function (event, args) {
+        var saId = args.record.getData().instance_securityAuthorizationId;
+        var controlId = args.record.getData().definition_id;
+        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId);
+        dialog.show();
     }
 }
+
+Fisma.SecurityAuthorization.EditEnhancementsDialog = function(saId, controlId) {
+    var formUrl = '/sa/security-authorization/edit-enhancements/id/' + saId + '/controlId/' + controlId + '/format/json';
+    YAHOO.widget.Panel.superclass.constructor.call(this, YAHOO.util.Dom.generateId(), {modal: true});
+    this._showLoadingMessage();
+    this._requestForm(formUrl);
+};
+
+YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Panel, {
+    /**
+     * Show a loading message (while loading the form)
+     */
+    _showLoadingMessage: function() {
+        this.setBody('Loading…');
+        this.render(document.body);
+        this.center();
+        this.show();
+    },
+
+    /**
+     * Request the blank form from a specified URL
+     * 
+     * @param url {String}
+     */
+    _requestForm: function(url) {
+        var callback = {
+            success: this._loadForm,
+
+            failure: function(connectionData) {
+                Fisma.Util.showAlertDialog('An unexpected error occurred.');
+                this.destroy();
+            },
+            
+            scope: this
+        };
+        YAHOO.util.Connect.asyncRequest( 'GET', url, callback, null);
+
+    },
+    
+    /**
+     * Load the returned form into the dialog
+     * 
+     * @param connectionData {Object} Returned by YUI connection class
+     */
+    _loadForm: function(connectionData) {
+        try {
+            var response = YAHOO.lang.JSON.parse(connectionData.responseText);
+            console.log(response);
+
+            this.setBody(response);
+            this.center();
+        } catch (error) {
+            Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+            this.hide();
+        }
+    }
+});
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *
@@ -12859,15 +13079,22 @@ Fisma.TableFormat = {
     },
 
     /**
-     * A formatter which converts escaped HTML into unescaped HTML
+     * A formatter which used to convert escaped HTML into unescaped HTML ...
+     * Now it uses the default formatter, for a few reasons:
+     *    1. We don't store html unescaped anymore, unless it's unsafe html
+     *    2. The javascript in data-table-local.phtml is wrong, and doesn't execute YAHOO formatters properly
+     *    3. Using this as it was resulted in an XSS vulnerability, and I don't have time to rewrite the entire
+     *       implementation so that it works properly.
      *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
      * @param oData The data stored in this cell
+     * @TODO Fix data-table-local.phtml script so that it works with YAHOO formatters
+     * @deprecated
      */
     formatHtml : function(el, oRecord, oColumn, oData) {
-        el.innerHTML = oData.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+        YAHOO.widget.DataTable.formatDefault.apply(this, arguments);
     },
 
     /**
@@ -13035,7 +13262,7 @@ Fisma.TableFormat = {
      */
     maximumTextLength : function (elCell, oRecord, oColumn, oData) {
         var maxLength = oColumn.formatterParameters;
-        var truncatedText = $P.strip_tags(oData);
+        var truncatedText = YAHOO.lang.isValue(oData) ? $P.strip_tags(oData) : '';
 
         if (truncatedText.length > maxLength) {
             truncatedText = truncatedText.substring(0, maxLength) + "…";
@@ -14033,8 +14260,30 @@ Fisma.Util = {
                 } ); 
 
         return dialog;
-    }
+    },
 
+    /*
+     * Organizaton type filter callback function
+     * It set the default organization type, store the selected organization type and refresh window with url 
+     */
+    organizationTypeHandle : function (event, config) {
+            // Set the selected organization type   
+            var organizationTypeFilter = YAHOO.util.Dom.get('orgTypeFilter');
+            var selectedType = organizationTypeFilter.options[organizationTypeFilter.selectedIndex];
+
+            // Store the selected organizationTypeId to storage table
+            var orgTypeStorage = new Fisma.PersistentStorage(config.namespace);
+            orgTypeStorage.set('orgType', selectedType.value); 
+            orgTypeStorage.sync();
+
+        Fisma.Storage.onReady(function() {
+            // Construct the url and refresh the result after a user changes organization type                
+            if (!YAHOO.lang.isUndefined(config) && config.url) {
+                var url = config.url + '?orgTypeId=' + encodeURIComponent(selectedType.value);
+                window.location.href = url;
+            }
+        });
+    }
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
