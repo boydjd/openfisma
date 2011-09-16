@@ -501,8 +501,11 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             ->addSelect('count(selectedEnhancements.id) selectedEnhancements')
             ->from('SaSecurityControl instance')
             ->leftJoin('instance.SecurityControl definition')
-            ->leftJoin('instance.SecurityControlEnhancements selectedEnhancements')
             ->leftJoin('definition.Enhancements definedEnhancements')
+            ->leftJoin(
+                'instance.SaSecurityControlEnhancements selectedEnhancements ' .
+                'WITH selectedEnhancements.securityControlEnhancementId = definedEnhancements.id'
+            )
             ->where('instance.securityAuthorizationId = ?', $sa->id)
             ->groupBy("instance.id")
             ->orderBy("definition.code")
