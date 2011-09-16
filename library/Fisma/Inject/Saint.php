@@ -38,12 +38,14 @@ class Fisma_Inject_Saint extends Fisma_Inject_Abstract
         $report  = new XMLReader();
         
         if (!$report->open($this->_file, NULL, LIBXML_PARSEHUGE)) {
+            $report->close();
             throw new Fisma_Zend_Exception_InvalidFileFormat('Cannot open the XML file.');
         }
 
         try {
             $this->_persist($report, $uploadId);
         } catch (Exception $e) {
+            $report->close();
             throw new Fisma_Zend_Exception('An error occured while processing the XML file.', 0, $e);
         }
 
@@ -120,7 +122,7 @@ class Fisma_Inject_Saint extends Fisma_Inject_Abstract
             foreach ($host as $findings) {
                 if (is_array($findings)) {
                     foreach ($findings as $finding) {
-                        if (($finding['severity'] != 'NONE')) {
+                        if ($finding['severity'] != 'NONE') {
 
                             // Prepare asset
                             $asset = array();
