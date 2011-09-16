@@ -284,7 +284,7 @@ Fisma.SecurityAuthorization = {
 
 Fisma.SecurityAuthorization.EditEnhancementsDialog = function(saId, controlId) {
     var formUrl = '/sa/security-authorization/edit-enhancements/id/' + saId + '/controlId/' + controlId + '/format/json';
-    Fisma.FormDialog.superclass.constructor.call(this, YAHOO.util.Dom.generateId(), {modal: true});
+    YAHOO.widget.Panel.superclass.constructor.call(this, YAHOO.util.Dom.generateId(), {modal: true});
     this._showLoadingMessage();
     this._requestForm(formUrl);
 };
