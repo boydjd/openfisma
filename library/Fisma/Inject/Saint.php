@@ -38,7 +38,6 @@ class Fisma_Inject_Saint extends Fisma_Inject_Abstract
         $report  = new XMLReader();
         
         if (!$report->open($this->_file, NULL, LIBXML_PARSEHUGE)) {
-            $report->close();
             throw new Fisma_Zend_Exception_InvalidFileFormat('Cannot open the XML file.');
         }
 
@@ -46,7 +45,7 @@ class Fisma_Inject_Saint extends Fisma_Inject_Abstract
             $this->_persist($report, $uploadId);
         } catch (Exception $e) {
             $report->close();
-            throw new Fisma_Zend_Exception('An error occured while processing the XML file.', 0, $e);
+            throw new Fisma_Zend_Exception_InvalidFileFormat('An error occured while processing the XML file.', 0, $e);
         }
 
         $report->close();
