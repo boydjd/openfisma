@@ -64,18 +64,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     protected $_modelName = 'SecurityAuthorization';
 
     /**
-     * Steps (tabs) that need to be completed
-     *
-     * @var array
-     */
-    protected $_steps = array('Categorize',
-                           'Select',
-                           'Implement',
-                           'Assessment Plan',
-                           'Assessment',
-                           'Authorization');
-
-    /**
      * @return void
      */
     public function indexAction()
@@ -293,6 +281,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                      ->setDefaults(array('id' => $sa->id, 'step' => $sa->status));
         return $completeForm;
     }
+
     /**
      * View the specified system
      *
@@ -315,6 +304,13 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $this->view->tabView = $tabView;
     }
 
+    /**
+     * Display an overview of the process for an SA object
+     * 
+     * NOTICE: We are currently confused about whether we are going to have distinct statuses with rigid steps
+     * or allow users to move fluidly between steps. What you see here is a mish mash of the two approaches. We'll
+     * undoubtedly need to clean this up later.
+     */
     public function overviewAction()
     {
         $id = $this->_request->getParam('id');
@@ -322,11 +318,44 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $sa = Doctrine::getTable('SecurityAuthorization')->find($id);
         $this->view->sa = $sa;
 
-        $completedSteps = array();
-        foreach ($this->_steps as $step) {
-            $completedSteps[$step] = ($sa->compareStatus($step) >= 0) ? 'No' : 'Yes';
+        // Set up the names of steps displayed on the overview tab
+        $overviewSteps = Doctrine::getTable('SecurityAuthorization')->getEnumValues('status');
+        array_splice($overviewSteps, 3, 1);
+        array_splice($overviewSteps, -2);
+
+
+        $completedTerms = array(
+            -1 => 'Completed',
+             0 => 'In Progress',
+             1 => 'Incomplete'
+        );
+
+        $steps = array();
+
+        foreach ($overviewSteps as $index => $step) {
+            $completedStatus = $sa->compareStatus($step);
+            $stepNumber = $index + 1;
+
+            // By default, step progress is binary (either 0% or 100%)
+            $steps[] = array(
+                'stepNumber' => $stepNumber,
+                'name' => $stepNumber . ". $step",
+                'completed' => $completedTerms[$completedStatus],
+                'numerator' => ($completedStatus < 0 ? 1 : 0),
+                'denominator' => 1
+            );
         }
-        $this->view->completedSteps = $completedSteps;
+
+        // Calculate progress for implement and assessment steps
+        $totalControlCount = $sa->getControlsCount();
+
+        $steps[2]['numerator'] = $sa->getImplementedControlsCount();
+        $steps[2]['denominator'] = $totalControlCount;
+
+        $steps[3]['numerator'] = $sa->getAssessedControlsCount();
+        $steps[3]['denominator'] = $totalControlCount;
+
+        $this->view->steps = $steps;
     }
 
     protected function _implementationProgress(SecurityAuthorization $sa)
@@ -751,6 +780,9 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             Doctrine_Manager::connection()->rollback();
             $response->fail($e);
         }
+
+        // Count how many controls are now on this SA
+        $response->addPayload('controlCount', $sa->getControlsCount());
 
         $this->view->response = $response;
     }

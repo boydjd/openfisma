@@ -2984,7 +2984,7 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
     };
     Fisma.Storage = FS;
 })();
-Fisma.AssessmentPlanEntry={attachArtifactCallback:function(a){window.location.href=window.location.href}};/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3016,7 +3016,7 @@ Fisma.AssessmentPlanEntry = {
         window.location.href = window.location.href;
     }
 };
-Fisma.AttachArtifacts={sampleInterval:1000,apcId:null,yuiProgressBar:null,pollingTimeoutId:null,lastAsyncRequest:null,pollingEnabled:false,config:null,yuiPanel:null,showPanel:function(d,b){Fisma.AttachArtifacts.config=b;var a=new YAHOO.widget.Panel("panel",{modal:true,close:true});a.setHeader("Upload Artifact");a.setBody("Loading...");a.render(document.body);a.center();a.show();a.hideEvent.subscribe(function(){Fisma.AttachArtifacts.cancelPanel.call(Fisma.AttachArtifacts)});Fisma.AttachArtifacts.yuiPanel=a;var c="/artifact/upload-form";if(b.form){c+="/form/"+encodeURIComponent(b.form)}YAHOO.util.Connect.asyncRequest("GET",c,{success:function(e){e.argument.setBody(e.responseText);e.argument.center()},failure:function(e){e.argument.setBody("The content for this panel could not be loaded.");e.argument.center()},argument:a},null)},trackUploadProgress:function(){var h=document.getElementById("fileUpload");if(""===h.value){var a="Please select a file.";var c={zIndex:10000};Fisma.Util.showAlertDialog(a,c);return false}var i=document.getElementById("uploadButton");i.disabled=true;var g=this;var e=document.getElementById("progress_key");if(e){this.apcId=e.value;var k=document.getElementById("progressBarContainer");var b=parseInt(YAHOO.util.Dom.getStyle(k,"width"),10);var f=parseInt(YAHOO.util.Dom.getStyle(k,"height"),10);YAHOO.util.Dom.removeClass(k,"attachArtifactsProgressBar");while(k.hasChildNodes()){k.removeChild(k.firstChild)}var j=new YAHOO.widget.ProgressBar();j.set("width",b);j.set("height",f);j.set("ariaTextTemplate","Upload is {value}% complete");j.set("anim",true);var d=j.get("anim");d.duration=2;d.method=YAHOO.util.Easing.easeNone;j.render("progressBarContainer");YAHOO.util.Dom.addClass(k,"attachArtifactsProgressBar");this.yuiProgressBar=j;this.pollingEnabled=true;setTimeout(function(){g.getProgress.call(g)},this.sampleInterval)}document.getElementById("progressBarContainer").style.display="block";document.getElementById("progressTextContainer").style.display="block";setTimeout(function(){g.postForm.call(g)},0);return false},postForm:function(){var a=this;var b="/";b+=encodeURIComponent(this.config.server.controller);b+="/";b+=encodeURIComponent(this.config.server.action);b+="/id/";b+=encodeURIComponent(this.config.id);b+="/format/json";YAHOO.util.Connect.setForm("uploadArtifactForm",true);YAHOO.util.Connect.asyncRequest("POST",b,{upload:function(c){a.handleUploadComplete.call(a,c)},failure:function(c){Fisma.Util.showAlertDialog("Document upload failed.")}},null)},getProgress:function(){var a=this;if(this.pollingEnabled){this.lastAsyncRequest=YAHOO.util.Connect.asyncRequest("GET","/artifact/upload-progress/format/json/id/"+this.apcId,{success:function(d){try{var c=YAHOO.lang.JSON.parse(d.responseText)}catch(g){if(g instanceof SyntaxError){c=new Object();c.progress=false}else{throw g}}if(!c.progress){a.yuiProgressBar.destroy();a.yuiProgressBar=null;a.pollingEnabled=false;var i=document.getElementById("progressBarContainer");YAHOO.util.Dom.addClass(i,"attachArtifactsProgressBar");var b=document.createElement("img");b.src="/images/loading_bar.gif";i.appendChild(b);a.pollingTimeoutId=null;return}var f=Math.round((c.progress.current/c.progress.total)*100);a.yuiProgressBar.set("value",f);var h=document.getElementById("progressTextContainer").firstChild;h.nodeValue=f+"%";a.pollingTimeoutId=setTimeout(function(){a.getProgress.call(a)},a.sampleInterval)}},null)}},handleUploadComplete:function(c){try{var g=YAHOO.lang.JSON.parse(c.responseText)}catch(h){if(h instanceof SyntaxError){g=new Object();g.success=false;g.message="Invalid response from server."}else{throw h}}this.pollingEnabled=false;clearTimeout(this.pollingTimeoutId);YAHOO.util.Connect.abort(this.lastAsyncRequest);if(this.yuiProgressBar){this.yuiProgressBar.get("anim").duration=0.5;this.yuiProgressBar.set("value",100)}var a=document.getElementById("progressTextContainer").firstChild;a.nodeValue="Verifying file.";if(!g.success){var b="Upload Failed: "+g.message;var d={zIndex:10000};Fisma.Util.showAlertDialog(b,d);a.nodeValue="Uploading...";document.getElementById("progressBarContainer").style.display="none";document.getElementById("progressTextContainer").style.display="none";var j=document.getElementById("uploadButton");j.disabled=false;return}var i=Fisma[this.config.callback.object];if(typeof i!="Undefined"){var f=i[this.config.callback.method];if(typeof f=="function"){f.call(i,this.yuiPanel)}}},cancelPanel:function(){if(this.pollingEnabled){this.pollingEnabled=false;clearTimeout(this.pollingTimeoutId)}if(this.lastAsyncRequest){YAHOO.util.Connect.abort(this.lastAsyncRequest)}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3434,7 +3434,7 @@ Fisma.AttachArtifacts = {
         }
     }
 };
-Fisma.AutoComplete=function(){return{requestCount:0,resultsPopulated:false,init:function(b,f,e){var d=new YAHOO.widget.DS_XHR(e.xhr,e.schema);d.responseType=YAHOO.widget.DS_XHR.TYPE_JSON;d.maxCacheEntries=500;d.queryMatchContains=true;var c=new YAHOO.widget.AutoComplete(e.fieldId,e.containerId,d);c.maxResultsDisplayed=20;c.forceSelection=true;var a=document.getElementById(e.containerId+"Spinner");c.dataRequestEvent.subscribe(function(){a.style.visibility="visible";Fisma.AutoComplete.requestCount++});c.dataReturnEvent.subscribe(function(){Fisma.AutoComplete.requestCount--;if(0===Fisma.AutoComplete.requestCount){a.style.visibility="hidden"}});c.getInputEl().onclick=function(){if(Fisma.AutoComplete.resultsPopulated){c.expandContainer()}};c.containerPopulateEvent.subscribe(function(){Fisma.AutoComplete.resultsPopulated=true});c.generateRequest=function(g){return e.queryPrepend+g};c.formatResult=function(h,j,g){var i=(g)?g:"";i=PHP_JS().htmlspecialchars(i);return i};c.itemSelectEvent.subscribe(Fisma.AutoComplete.subscribe,{hiddenFieldId:e.hiddenFieldId,callback:e.callback})},subscribe:function(e,d,c){document.getElementById(c.hiddenFieldId).value=d[2][1]["id"];$("#"+c.hiddenFieldId).trigger("change");try{var b=Fisma.Util.getObjectFromName(c.callback);if("function"==typeof b){b()}}catch(a){}}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3589,7 +3589,7 @@ Fisma.AutoComplete = function() {
         }
     };
 }();
-Fisma.Blinker=function(a,c,b,d){this.interval=a;this.cycles=c;this.cyclesRemaining=c;this.onFunction=b;this.offFunction=d;this.state=0};Fisma.Blinker.prototype.start=function(){this.cycle()};Fisma.Blinker.prototype.cycle=function(){var a=this;if(1===this.state){this.offFunction()}else{this.onFunction()}this.state=1-this.state;this.cyclesRemaining--;if(this.cyclesRemaining>0){setTimeout(function(){a.cycle.call(a)},this.interval)}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3668,7 +3668,7 @@ Fisma.Blinker.prototype.cycle = function () {
             this.interval);
     }
 };
-Fisma.Calendar=function(){return{addCalendarPopupToTextField:function(d){var b=document.createElement("div");b.style.position="absolute";b.style.zIndex=99;d.parentNode.appendChild(b);var c=YAHOO.util.Dom.getRegion(d);var f=[c.left,c.bottom+5];YAHOO.util.Dom.setXY(b,f);var e=new YAHOO.widget.Calendar(b,{close:true});e.hide();setTimeout(function(){e.render()},0);d.onfocus=function(){e.show()};var a=function(k,h,m){var j=h[0][0];var i=j[0],l=""+j[1],g=""+j[2];if(1==l.length){l="0"+l}if(1==g.length){g="0"+g}d.value=i+"-"+l+"-"+g;e.hide()};e.selectEvent.subscribe(a,e,true)}}}();/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3741,7 +3741,7 @@ Fisma.Calendar = function () {
         }
     };
 }();
-Fisma.Chart={CHART_CREATE_SUCCESS:1,CHART_CREATE_FAILURE:2,CHART_CREATE_EXTERNAL:3,globalSettingsDefaults:{fadingEnabled:false,usePatterns:false,barShadows:false,barShadowDepth:3,dropShadows:false,gridLines:false,pointLabels:false,pointLabelsOutline:false,showDataTable:false},patternURLs:["/images/pattern-horizontal.png","/images/pattern-diamonds.png","/images/pattern-backbg-whitedots.png","/images/pattern-diagonal-45degree.png","/images/pattern-bubbles.png","/images/pattern-checkers.png","/images/pattern-diagonal-135degree.png","/images/pattern-diagonal-bricks.png"],chartsOnDOM:{},isIE:(window.ActiveXObject)?true:false,hasHookedPostDrawSeries:false,createJQChart_asynchReturn:function(a,c,b){if(c){if(c.results[0]){b=Fisma.Chart.mergeExtrnIntoParamObjectByInheritance(b,c)}else{Fisma.Chart.showMsgOnEmptyChart(b);throw"Error - Chart creation failed due to data source error at "+b.lastURLpull}Fisma.Chart.showMsgOnEmptyChart(b);if(typeof b.chartData==="undefined"){Fisma.Chart.showMsgOnEmptyChart(b);var d='Chart Error - The remote data source for chart "';d+=b.uniqueid+'" located at '+b.lastURLpull;d+=" did not return data to plot on a chart";throw d}else{if(b.chartData.length===0){Fisma.Chart.showMsgOnEmptyChart(b)}}return Fisma.Chart.createJQChart(b)}else{Fisma.Chart.showMsgOnEmptyChart(b);throw"Error - Chart creation failed due to data source error at "+b.lastURLpull}},createJQChart:function(e){var d={concatXLabel:false,nobackground:true,drawGridLines:false,pointLabelStyle:"color: black; font-size: 12pt; font-weight: regular",pointLabelAdjustX:-3,pointLabelAdjustY:-7,AxisLabelX:"",AxisLabelY:"",DataTextAngle:-30};e=jQuery.extend(true,d,e);if(document.getElementById(e.uniqueid)===false){throw"createJQChart Error - The target div/uniqueid does not exists"+e.uniqueid}Fisma.Chart.setChartWidthAttribs(e);Fisma.Chart.makeElementVisible(e.uniqueid+"loader");if(e.externalSource){document.getElementById(e.uniqueid).innerHTML="Loading chart data...";var c=e.externalSource;if(!e.oldExternalSource){e.oldExternalSource=e.externalSource}e.externalSource=undefined;e=Fisma.Chart.buildExternalSourceParams(e);c+=String(e.externalSourceParams).replace(/ /g,"%20");e.lastURLpull=c;var f=new YAHOO.util.DataSource(c);f.responseType=YAHOO.util.DataSource.TYPE_JSON;f.responseSchema={resultsList:"chart"};var b={success:Fisma.Chart.createJQChart_asynchReturn,failure:Fisma.Chart.createJQChart_asynchReturn,argument:e};f.sendRequest("",b);return Fisma.Chart.CHART_CREATE_EXTERNAL}document.getElementById(e.uniqueid).innerHTML="";document.getElementById(e.uniqueid).className="";document.getElementById(e.uniqueid+"toplegend").innerHTML="";if(typeof e.barMargin!=="undefined"){e=jQuery.extend(true,e,{seriesDefaults:{rendererOptions:{barMargin:e.barMargin}}});e.barMargin=undefined}if(typeof e.legendLocation!=="undefined"){e=jQuery.extend(true,e,{legend:{location:e.legendLocation}});e.legendLocation=undefined}if(typeof e.legendRowCount!=="undefined"){e=jQuery.extend(true,e,{legend:{rendererOptions:{numberRows:e.legendRowCount}}});e.legendRowCount=undefined}e.chartData=Fisma.Chart.forceIntegerArray(e.chartData);document.getElementById(e.uniqueid+"holder").style.display="";Fisma.Chart.makeElementInvisible(e.uniqueid+"holder");document.getElementById(e.uniqueid+"loader").style.position="absolute";document.getElementById(e.uniqueid+"loader").finnishFadeCallback=new Function("Fisma.Chart.fadeIn('"+e.uniqueid+"holder', 500);");Fisma.Chart.fadeOut(e.uniqueid+"loader",500);Fisma.Chart.setChartWidthAttribs(e);Fisma.Chart.chartsOnDOM[e.uniqueid]=jQuery.extend(true,{},e);var a=Fisma.Chart.CHART_CREATE_FAILURE;if(!Fisma.Chart.chartIsEmpty(e)){switch(e.chartType){case"stackedbar":e.varyBarColor=false;if(typeof e.showlegend==="undefined"){e.showlegend=true}a=Fisma.Chart.createChartStackedBar(e);break;case"bar":if(typeof e.chartData[0]==="object"){e.varyBarColor=false;e.showlegend=true}else{e.chartData=[e.chartData];e.links=[e.links];e.varyBarColor=true;e.showlegend=false}e.stackSeries=false;a=Fisma.Chart.createChartStackedBar(e);break;case"line":a=Fisma.Chart.createChartStackedLine(e);break;case"stackedline":a=Fisma.Chart.createChartStackedLine(e);break;case"pie":e.links=[e.links];a=Fisma.Chart.createChartPie(e);break;default:throw"createJQChart Error - chartType is invalid ("+e.chartType+")"}}Fisma.Chart.removeOverlappingPointLabels(e);Fisma.Chart.applyChartBackground(e);Fisma.Chart.applyChartWidgets(e);Fisma.Chart.createChartThreatLegend(e);Fisma.Chart.applyChartBorders(e);Fisma.Chart.globalSettingRefreshUi(e);Fisma.Chart.showMsgOnEmptyChart(e);Fisma.Chart.getTableFromChartData(e);Fisma.Chart.setTitle(e);Fisma.Chart.placeCanvasesInDivs(e);return a},mergeExtrnIntoParamObjectByInheritance:function(c,a){var b={};if(a.results[0].inheritCtl){if(a.results[0].inheritCtl==="minimal"){b=a.results[0];b.width=c.width;b.height=c.height;b.uniqueid=c.uniqueid;b.externalSource=c.externalSource;b.oldExternalSource=c.oldExternalSource;b.widgets=c.widgets}else{if(a.results[0].inheritCtl==="none"){b=a.results[0]}else{throw"Error - Unknown chart inheritance mode"}}}else{b=jQuery.extend(true,c,a.results[0],true)}return b},createChartPie:function(f){var b=0;var d=[];usedLabelsPie=f.chartDataText;for(b=0;b<f.chartData.length;b++){f.chartDataText[b]+=" ("+f.chartData[b]+")";d[d.length]=[f.chartDataText[b],f.chartData[b]]}var a={seriesColors:f.colors,grid:{drawBorder:false,drawGridlines:false,shadow:false},axes:{xaxis:{tickOptions:{angle:f.DataTextAngle,fontSize:"10pt",formatString:"%.0f"}},yaxis:{tickOptions:{formatString:"%.0f"}}},seriesDefaults:{renderer:$.jqplot.PieRenderer,rendererOptions:{sliceMargin:0,showDataLabels:true,shadowAlpha:0.15,shadowOffset:0,lineLabels:true,lineLabelsLineColor:"#777",diameter:f.height*0.55,dataLabelFormatString:"%d%"}},legend:{location:"s",show:true,rendererOptions:{numberRows:2}},highlighter:{show:false}};a.seriesDefaults.renderer.prototype.startAngle=0;$("[id="+f.uniqueid+"]").css("height",f.height);a=jQuery.extend(true,a,f);a.title=null;plot1=$.jqplot(f.uniqueid,[d],a);var c=new Function("ev","seriesIndex","pointIndex","data","var thisChartParamObj = "+YAHOO.lang.JSON.stringify(f)+"; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);");$("#"+f.uniqueid).bind("jqplotDataHighlight",function(j,h,i,k){Fisma.Chart.chartHighlightEvent(f,j,h,i,k)});$("#"+f.uniqueid).bind("jqplotDataUnhighlight",function(j,h,i,k){Fisma.Chart.hideAllChartTooltips()});var g=YAHOO.util.Dom.get(f.uniqueid);var e=$(g).find("canvas").filter(function(){return $(this)[0].className==="jqplot-event-canvas"});e[0].onmousemove=function(h){Fisma.Chart.chartMouseMovePieEvent(f,h,e[0])};e[0].onmouseout=function(h){Fisma.Chart.hideAllChartTooltips()};$("#"+f.uniqueid).bind("jqplotDataClick",c);return Fisma.Chart.CHART_CREATE_SUCCESS},createChartStackedBar:function(l){var j=0;var g=0;var d=0;var h=0;var c=0;for(j=0;j<l.chartDataText.length;j++){d=0;for(g=0;g<l.chartData.length;g++){d+=l.chartData[g][j]}if(d>h){h=d}if(l.concatXLabel===true){l.chartDataText[j]+=" ("+d+")"}}var b=[];if(l.chartLayerText){for(j=0;j<l.chartLayerText.length;j++){b[j]={label:l.chartLayerText[j]}}}c=Math.ceil(h/5)*5;yAxisTicks=[];yAxisTicks[0]=0;yAxisTicks[1]=(c/5);yAxisTicks[2]=(c/5)*2;yAxisTicks[3]=(c/5)*3;yAxisTicks[4]=(c/5)*4;yAxisTicks[5]=(c/5)*5;$.jqplot.config.enablePlugins=true;var a={seriesColors:l.colors,stackSeries:true,series:b,seriesDefaults:{renderer:$.jqplot.BarRenderer,rendererOptions:{barWidth:35,showDataLabels:true,varyBarColor:l.varyBarColor,shadowAlpha:0.15,shadowOffset:0},pointLabels:{show:false,location:"s",hideZeros:true}},axesDefaults:{tickRenderer:$.jqplot.CanvasAxisTickRenderer,borderWidth:0,labelOptions:{enableFontSupport:true,fontFamily:"arial, helvetica, clean, sans-serif",fontSize:"12pt",textColor:"#000000"}},axes:{xaxis:{label:l.AxisLabelX,labelRenderer:$.jqplot.CanvasAxisLabelRenderer,renderer:$.jqplot.CategoryAxisRenderer,ticks:l.chartDataText,tickOptions:{angle:l.DataTextAngle,fontFamily:"arial, helvetica, clean, sans-serif",fontSize:"10pt",textColor:"#000000"}},yaxis:{label:l.AxisLabelY,labelRenderer:$.jqplot.CanvasAxisLabelRenderer,min:0,max:c,autoscale:true,ticks:yAxisTicks,tickOptions:{formatString:"%.0f",fontFamily:"arial, helvetica, clean, sans-serif",fontSize:"10pt",textColor:"#000000"}}},highlighter:{show:true,showMarker:false,showTooltip:true,tooltipAxes:"xy",yvalues:1,tooltipLocation:"e",formatString:"-"},grid:{gridLineWidth:0,shadow:false,borderWidth:1,gridLineColor:"#FFFFFF",background:"transparent",drawGridLines:l.drawGridLines,show:l.drawGridLines},legend:{show:l.showlegend,rendererOptions:{numberRows:2},location:"nw"}};if(Fisma.Chart.isIE){a.grid.background="#FFFFFF"}$("[id="+l.uniqueid+"]").css("height",l.height);a=jQuery.extend(true,a,l);a=Fisma.Chart.alterChartByGlobals(a);a.title=null;Fisma.Chart.hookPostDrawSeriesHooks();plot1=$.jqplot(l.uniqueid,l.chartData,a);var k=new Function("ev","seriesIndex","pointIndex","data","var thisChartParamObj = "+YAHOO.lang.JSON.stringify(l)+"; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);");$("#"+l.uniqueid).bind("jqplotDataClick",k);$("#"+l.uniqueid).bind("jqplotDataHighlight",function(o,m,n,p){Fisma.Chart.chartHighlightEvent(l,o,m,n,p)});var f=YAHOO.util.Dom.get(l.uniqueid);var i=$(f).find("canvas").filter(function(){return $(this)[0].className==="jqplot-event-canvas"});i[0].onmouseout=function(m){Fisma.Chart.hideAllChartTooltips()};var e=Fisma.Chart.getElementsByClassWithinObj("jqplot-xaxis-tick","canvas",l.uniqueid);for(j=0;j<e.length;j++){e[j].columnNumber=j;e[j].onmouseover=function(n){var m={left:this.parentNode.offsetLeft+"px",bottom:(this.parentNode.parentNode.offsetHeight+10)+"px",top:""};Fisma.Chart.chartHighlightEvent(l,n,0,this.columnNumber,null,m)};e[j].onmouseout=function(m){Fisma.Chart.hideAllChartTooltips()};e[j].style.zIndex=1}Fisma.Chart.removeDecFromPointLabels(l);return Fisma.Chart.CHART_CREATE_SUCCESS},getTooltipObjOfChart:function(a){return Fisma.Chart.getElementsByClassWithinObj("jqplot-highlighter-tooltip","div",a.uniqueid)[0]},getElementsByClassWithinObj:function(c,a,b){if(b===null||b===""){b=document.body}if(typeof b!=="object"){b=document.getElementById(b)}var d=$(b).find(a).filter(function(){return $(this)[0].className.indexOf(c)!==-1});return d},createChartStackedLine:function(c){var a=0;var d=0;var b=0;for(a=0;a<c.chartDataText.length;a++){b=0;for(d=0;d<["chartData"].length;d++){b+=["chartData"][d][a]}c.chartDataText[a]+=" ("+b+")"}plot1=$.jqplot(c.uniqueid,c.chartData,{seriesColors:["#F4FA58","#FAAC58","#FA5858"],series:[{label:"Open Findings",lineWidth:4,markerOptions:{style:"square"}},{label:"Closed Findings",lineWidth:4,markerOptions:{style:"square"}},{lineWidth:4,markerOptions:{style:"square"}}],seriesDefaults:{fill:false,showMarker:true,showLine:true},axes:{xaxis:{renderer:$.jqplot.CategoryAxisRenderer,ticks:c.chartDataText},yaxis:{min:0}},highlighter:{show:false},legend:{show:true,rendererOptions:{numberRows:2},location:"nw"}});return Fisma.Chart.CHART_CREATE_SUCCESS},hookPostDrawSeriesHooks:function(){if(Fisma.Chart.hasHookedPostDrawSeries!==false){return}Fisma.Chart.hasHookedPostDrawSeries=true;$.jqplot.postDrawSeriesHooks.push(function(c){var e=Fisma.Chart.getGlobalSetting("usePatterns");if(e==="false"){return}if(this._barPoints===undefined){return}if(this.canvas._elem.context.parentNode.id!==undefined){var g=this.canvas._elem.context.parentNode.id;chartParamsObj=Fisma.Chart.chartsOnDOM[g]}if(Fisma.Chart.chartsOnDOM[g].patternCounter===undefined){Fisma.Chart.chartsOnDOM[g].patternCounter=0}var b=Fisma.Chart.chartsOnDOM[g].patternCounter;var d=Fisma.Chart.patternURLs[b];Fisma.Chart.chartsOnDOM[g].patternCounter++;for(var f=0;f<this._barPoints.length;f++){var a=new Image();a.barRect={x:this._barPoints[f][0][0],y:this._barPoints[f][0][1],w:this._barPoints[f][2][0]-this._barPoints[f][0][0],h:this._barPoints[f][1][1]-this._barPoints[f][3][1]};a.onload=function(){var h=c.createPattern(a,"repeat");c.fillStyle=h;c.fillRect(this.barRect.x,this.barRect.y,this.barRect.w,this.barRect.h);c.restore()};a.src=d}return});return},createChartThreatLegend:function(m){if(m.showThreatLegend&&!Fisma.Chart.chartIsEmpty(m)){if(m.showThreatLegend===true){var e="100%";if(m.threatLegendWidth){e=m.threatLegendWidth}var k;var g=document.createElement("table");g.style.fontSize="12px";g.style.color="#000000";g.width=e;var d=document.createElement("tbody");var l=document.createElement("tr");k=document.createElement("td");k.style.textAlign="center";k.style.fontWeight="bold";k.width="40%";var a=document.createTextNode("");k.appendChild(a);l.appendChild(k);var b;var c;var j;for(var f in m.chartLayerText){k=document.createElement("td");k.width="20%";c=Fisma.Chart.getGlobalSetting("usePatterns");if(c==="true"){b=Fisma.Chart.patternURLs[f]}else{b=m.colors[f];b=b.replace("#","")}j=m.chartLayerText[f];k.appendChild(Fisma.Chart.createThreatLegendSingleColor(b,j));l.appendChild(k)}d.appendChild(l);g.appendChild(d);var i=m.uniqueid;var h=document.getElementById(i+"toplegend");h.appendChild(g)}}},createThreatLegendSingleColor:function(c,d){var g=document.createElement("table");var f=document.createElement("tbody");var b=document.createElement("tr");var e;e=document.createElement("td");if(c.indexOf("/")===-1){e.style.backgroundColor="#"+c}else{e.style.backgroundImage="url("+c+")"}e.width="15px";b.appendChild(e);e=document.createElement("td");e.width="3px";b.appendChild(e);e=document.createElement("td");e.style.fontSize="12px";var a=document.createTextNode("   "+d);e.appendChild(a);b.appendChild(e);f.appendChild(b);g.appendChild(f);return g},chartHighlightEvent:function(k,g,d,h,e,f){Fisma.Chart.hideAllChartTooltips();var a=Fisma.Chart.getTooltipObjOfChart(k);var c;if(typeof k.tooltip[0]!=="object"){customTooltip=k.tooltip[h]}else{customTooltip=k.tooltip[d][h]}if(typeof k.chartData[d]!=="object"){c=k.chartData[h]}else{c=k.chartData[d][h]}var b='<span class="chartToolTipText">';if(customTooltip!==""&&customTooltip!==undefined){b+=customTooltip}else{b+=c}b+="</span>";b=b.replace("#percent#",Fisma.Chart.getPercentage(k,d,h));b=b.replace("#columnName#",k.chartDataText[h]);if(e!==undefined&&e!==null){b=b.replace("#count#",e[1])}if(k.chartLayerText){b=b.replace("#layerName#",k.chartLayerText[d])}if(b.indexOf("#columnReport#")!==-1){b=b.replace("#columnReport#",Fisma.Chart.getColumnReport(k,d,h))}a.innerHTML=b;a.style.display="block";a.style.bottom="";a.style.right="";if(navigator.appVersion.indexOf("MSIE 7")!=-1){a.style.width="80px"}if(f!==undefined&&f!==null){for(var i in f){a.style[i]=f[i]}}if(k.chartType==="pie"){a.style.display="none";var j=document.getElementById(k.uniqueid+"pieTooltip");j.style.display="block";j.innerHTML=b;if(navigator.appVersion.indexOf("MSIE 7")!=-1){j.style.width="200px"}}},getColumnReport:function(f,c,d){var b="";var e=0;for(var a=0;a<f.chartLayerText.length;a++){b+=f.chartLayerText[a]+": "+f.chartData[a][d]+"<br/>";e+=f.chartData[a][d]}b+="Total: "+e;return b},getPercentage:function(f,b,e){if(typeof f.chartData[0]==="object"){return 0}else{var d=0;for(var c=0;c<f.chartData.length;c++){d+=f.chartData[c]}var a=f.chartData[e]/d;return Math.round(a*100)}},hideAllChartTooltips:function(){var b=$(document.body).find("div").filter(function(){return $(this)[0].className.indexOf("jqplot-highlighter-tooltip")!==-1});for(var a=0;a<b.length;a++){b[a].style.display="none"}},chartMouseMovePieEvent:function(c,f,b){var d=document.getElementById(c.uniqueid+"pieTooltip");var a;var g;if(window.event!==undefined){a=window.event.offsetX;g=window.event.offsetY;g+=65}else{if(f.offsetX!==undefined){a=f.offsetX;g=f.offsetY;g+=45}else{if(f.layerX!==undefined){a=f.layerX;g=f.layerY;g+=45}else{a=0;g=0}}}d.style.left=(a+b.offsetLeft)+"px";d.style.top=g+"px"},chartClickEvent:function(d,a,c,e,b){var g=false;if(b.links){if(typeof b.links==="string"){g=b.links}else{if(b.links[a]){if(typeof b.links[a]==="object"){g=b.links[a][c]}else{g=b.links[a]}}}}if(g===""){return}if(g!==false){g=String(g).replace("#ColumnLabel#",encodeURIComponent(b.chartDataText[c]))}g=escape(g);g=g.replace("%3F","?");g=g.replace("%3D","=");if(b.linksdebug===true){var f="You clicked on layer "+a+", in column "+c+", which has the data of "+e[1]+"\n";f+="The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links']["+a+"]["+c+"]\n";if(g!==false){f+="The link with this element is "+g}Fisma.Util.showAlertDialog(f)}else{if(g!==false&&g!=="false"&&String(g)!=="null"){document.location=g}}},forceIntegerArray:function(b){var a=0;for(a=0;a<b.length;a++){if(typeof b[a]==="object"){b[a]=Fisma.Chart.forceIntegerArray(b[a])}else{b[a]=parseInt(b[a],10)}}return b},applyChartBorders:function(g){var a=0;if(typeof g.borders==="undefined"){if(g.chartType==="bar"||g.chartType==="stackedbar"){g.borders="BL"}else{return}}var i=document.getElementById(g.uniqueid);var d=i.childNodes;for(a=d.length-1;a>0;a--){if(typeof d[a].nodeName!=="undefined"){if(String(d[a].nodeName).toLowerCase()==="canvas"&&d[a].className==="jqplot-series-shadowCanvas"){var f=d[a];var c=f.getContext("2d");var e=d[a].height;var b=d[a].width;c.strokeStyle="#777777";c.lineWidth=3;c.beginPath();if(g.borders.indexOf("L")!==-1){c.moveTo(0,0);c.lineTo(0,e);c.stroke()}if(g.borders.indexOf("B")!==-1){c.moveTo(0,e);c.lineTo(b,e);c.stroke()}if(g.borders.indexOf("R")!==-1){c.moveTo(b,0);c.lineTo(b,e);c.stroke()}if(g.borders.indexOf("T")!==-1){c.moveTo(0,0);c.lineTo(b,0);c.stroke()}return}}}},applyChartBackground:function(e){var g=document.getElementById(e.uniqueid);if(e.nobackground){if(e.nobackground===true){return}}if(e.background){if(e.background.nobackground){if(e.background.nobackground===true){return}}}var b="/images/logoShark.png";if(e.background){if(e.background.URL){b=e.background.URL}}var d='<img height="100%" src="'+b+'" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';if(e.background){if(e.background.overrideHTML){b=e.background.overrideHTML}}var a;var h;if(e.chartType==="pie"){a=g.childNodes[3];h=g.childNodes[4]}else{a=g.childNodes[6];h=g.childNodes[5]}var f=a.style;injectedBackgroundImg=document.createElement("span");injectedBackgroundImg.setAttribute("align","center");injectedBackgroundImg.setAttribute("style","position: absolute; left: "+f.left+"; top: "+f.top+"; width: "+a.width+"px; height: "+a.height+"px;");var c=g.insertBefore(injectedBackgroundImg,h);c.innerHTML=d},applyChartWidgets:function(d){var a=0;var f=0;var e=document.getElementById(d.uniqueid+"WidgetSpace");if(typeof d.widgets==="undefined"){e.innerHTML="<br/><i>There are no parameters for this chart.</i><br/><br/>";return}else{if(d.widgets.length===0){e.innerHTML="<br/><i>There are no parameters for this chart.</i><br/><br/>";return}}if(d.widgets){var b="";for(a=0;a<d.widgets.length;a++){var c=d.widgets[a];if(!c.uniqueid){c.uniqueid=d.uniqueid+"_widget"+a;d.widgets[a].uniqueid=c.uniqueid}b+="<tr><td nowrap align=left>"+c.label+' </td><td><td nowrap width="10"></td><td width="99%" align=left>';switch(c.type){case"combo":b+='<select id="'+c.uniqueid+'" onChange="Fisma.Chart.widgetEvent('+YAHOO.lang.JSON.stringify(d).replace(/"/g,"'")+');">';for(f=0;f<c.options.length;f++){b+='<option value="'+c.options[f]+'">'+c.options[f]+"</option><br/>"}b+="</select>";break;case"text":b+='<input onKeyDown="if(event.keyCode==13){Fisma.Chart.widgetEvent('+YAHOO.lang.JSON.stringify(d).replace(/"/g,"'")+');};" type="textbox" id="'+c.uniqueid+'" />';break;default:throw"Error - Widget "+a+"'s type ("+c.type+") is not a known widget type"}b+="</td></tr>"}e.innerHTML="<table>"+b+"</table>"}Fisma.Chart.applyChartWidgetSettings(d)},applyChartWidgetSettings:function(e){var a=0;if(e.widgets){for(a=0;a<e.widgets.length;a++){var c=e.widgets[a];var d=document.getElementById(c.uniqueid);if(c.forcevalue){d.value=c.forcevalue;d.text=c.forcevalue}else{var b=YAHOO.util.Cookie.get(e.uniqueid+"_"+c.uniqueid);if(b!==null){b=b.replace(/%20/g," ");d.value=b;d.text=b}else{if(c.defaultvalue){d.value=c.defaultvalue;d.text=c.defaultvalue}}}}}},buildExternalSourceParams:function(g){var c=0;var b="";g.externalSourceParams="";if(g.widgets){for(c=0;c<g.widgets.length;c++){var f=g.widgets[c];var a=f.uniqueid;var e=document.getElementById(a);if(e){b=e.value}else{var d=YAHOO.util.Cookie.get(g.uniqueid+"_"+f.uniqueid);if(d!==null){b=d}else{if(f.defaultvalue){b=f.defaultvalue}}}g.externalSourceParams+="/"+a+"/"+b}}return g},widgetEvent:function(d){var c=0;if(d.widgets){for(c=0;c<d.widgets.length;c++){var b=d.widgets[c].uniqueid;var a=document.getElementById(b).value;YAHOO.util.Cookie.set(d.uniqueid+"_"+b,a,{path:"/"})}}d=Fisma.Chart.buildExternalSourceParams(d);d.externalSource=d.oldExternalSource;d.oldExternalSource=undefined;d.chartData=undefined;d.chartDataText=undefined;document.getElementById(d.uniqueid+"holder").finnishFadeCallback=new Function("Fisma.Chart.makeElementVisible('"+d.uniqueid+"loader'); Fisma.Chart.createJQChart("+YAHOO.lang.JSON.stringify(d)+"); Fisma.Chart.finnishFadeCallback = '';");Fisma.Chart.fadeOut(d.uniqueid+"holder",300)},makeElementVisible:function(a){var b=document.getElementById(a);b.style.opacity="1";b.style.filter="alpha(opacity = '100')"},makeElementInvisible:function(a){var b=document.getElementById(a);b.style.opacity="0";b.style.filter="alpha(opacity = '0')"},fadeIn:function(a,d){var c=document.getElementById(a);if(c===null){return}var b=("fadingEnabled");if(b==="false"){Fisma.Chart.makeElementVisible(a);if(c.finnishFadeCallback){c.finnishFadeCallback();c.finnishFadeCallback=undefined}return}if(typeof c.isFadingNow!=="undefined"){if(c.isFadingNow===true){return}}c.isFadingNow=true;c.FadeState=null;c.FadeTimeLeft=undefined;Fisma.Chart.makeElementInvisible(a);c.style.opacity="0";c.style.filter="alpha(opacity = '0')";Fisma.Chart.fade(a,d)},fadeOut:function(a,d){var c=document.getElementById(a);if(c===null){return}var b=Fisma.Chart.getGlobalSetting("fadingEnabled");if(b==="false"){Fisma.Chart.makeElementInvisible(a);if(c.finnishFadeCallback){c.finnishFadeCallback();c.finnishFadeCallback=undefined}return}if(typeof c.isFadingNow!=="undefined"){if(c.isFadingNow===true){return}}c.isFadingNow=true;c.FadeState=null;c.FadeTimeLeft=undefined;Fisma.Chart.makeElementVisible(a);c.style.opacity="1";c.style.filter="alpha(opacity = '100')";Fisma.Chart.fade(a,d)},fade:function(a,c){var b=document.getElementById(a);if(b===null){return}if(b.FadeState===null){if(b.style.opacity===null||b.style.opacity===""||b.style.opacity==="1"){b.FadeState=2}else{b.FadeState=-2}}if(b.FadeState===1||b.FadeState===-1){b.FadeState=b.FadeState===1?-1:1;b.FadeTimeLeft=c-b.FadeTimeLeft}else{b.FadeState=b.FadeState===2?-1:1;b.FadeTimeLeft=c;setTimeout("Fisma.Chart.animateFade("+new Date().getTime()+",'"+a+"',"+c+")",33)}},animateFade:function(d,a,f){var b=new Date().getTime();var g=b-d;var c=document.getElementById(a);if(c.FadeTimeLeft<=g){if(c.FadeState===1){c.style.filter="alpha(opacity = 100)";c.style.opacity="1"}else{c.style.filter="alpha(opacity = 0)";c.style.opacity="0"}c.isFadingNow=false;c.FadeState=c.FadeState===1?2:-2;if(c.finnishFadeCallback){c.finnishFadeCallback();c.finnishFadeCallback=""}return}c.FadeTimeLeft-=g;var e=c.FadeTimeLeft/f;if(c.FadeState===1){e=1-e}c.style.opacity=e;c.style.filter='alpha(opacity = "'+(e*100)+'")';setTimeout("Fisma.Chart.animateFade("+b+",'"+a+"',"+f+")",33)},setChartWidthAttribs:function(d){var b=false;var a;if(d.chartData){if(d.chartType==="bar"||d.chartType==="stackedbar"){var c;if(d.chartType==="stackedbar"){if(typeof d.chartData[0]==="undefined"){return}else{c=d.chartData[0].length}}else{if(d.chartType==="bar"){c=d.chartData.length}}a=(c*10)+(c*35)+40;if(d.width<a){b=true}}}if(typeof d.autoWidth!=="undefined"){if(d.autoWidth===true){b=true}}if(b===true){document.getElementById(d.uniqueid+"loader").style.width="100%";document.getElementById(d.uniqueid+"holder").style.width="100%";document.getElementById(d.uniqueid+"holder").style.overflow="auto";document.getElementById(d.uniqueid).style.width=a+"px";document.getElementById(d.uniqueid+"toplegend").style.width=a+"px";if(d.align==="center"){document.getElementById(d.uniqueid).style.marginLeft="auto";document.getElementById(d.uniqueid).style.marginRight="auto";document.getElementById(d.uniqueid+"toplegend").style.marginLeft="auto";document.getElementById(d.uniqueid+"toplegend").style.marginRight="auto"}}else{document.getElementById(d.uniqueid+"loader").style.width="100%";document.getElementById(d.uniqueid+"holder").style.width=d.width+"px";document.getElementById(d.uniqueid+"holder").style.overflow="";document.getElementById(d.uniqueid).style.width=d.width+"px";document.getElementById(d.uniqueid+"toplegend").width=d.width+"px"}},getTableFromChartData:function(b){if(Fisma.Chart.chartIsEmpty(b)){return}var a=document.getElementById(b.uniqueid+"table");a.innerHTML="";if(Fisma.Chart.getGlobalSetting("showDataTable")==="true"){if(b.chartType==="pie"){Fisma.Chart.getTableFromChartPieChart(b,a)}else{Fisma.Chart.getTableFromBarChart(b,a)}a.style.display="";document.getElementById(b.uniqueid).innerHTML="";document.getElementById(b.uniqueid).style.width=0;document.getElementById(b.uniqueid).style.height=0;document.getElementById(b.uniqueid+"toplegend").style.display="none"}else{a.style.display="none"}},getTableFromChartPieChart:function(e,d){var g=document.createElement("table");var f=document.createElement("tbody");var b=0;var a;var c;var h;h=document.createElement("tr");for(b=0;b<e.chartDataText.length;b++){a=document.createElement("th");c=document.createTextNode(e.chartDataText[b]);a.setAttribute("style","font-style: bold;");a.appendChild(c);h.appendChild(a)}f.appendChild(h);h=document.createElement("tr");for(b=0;b<e.chartData.length;b++){a=document.createElement("td");c=document.createTextNode(e.chartData[b]);a.appendChild(c);h.appendChild(a)}f.appendChild(h);g.appendChild(f);g.setAttribute("border","1");g.setAttribute("width","100%");d.appendChild(g)},getTableFromBarChart:function(i,a){var f=0;var d=0;var g;var j;var b=document.createElement("table");var c=document.createElement("tbody");var h=document.createElement("tr");if(typeof i.chartLayerText!=="undefined"){g=document.createElement("td");j=document.createTextNode(" ");g.appendChild(j);h.appendChild(g)}for(f=0;f<i.chartDataText.length;f++){g=document.createElement("th");j=document.createTextNode(i.chartDataText[f]);g.setAttribute("style","font-style: bold;");g.appendChild(j);h.appendChild(g)}c.appendChild(h);for(f=0;f<i.chartData.length;f++){var e=i.chartData[f];h=document.createElement("tr");if(typeof i.chartLayerText!=="undefined"){g=document.createElement("th");j=document.createTextNode(i.chartLayerText[f]);g.setAttribute("style","font-style: bold;");g.appendChild(j);h.appendChild(g)}if(typeof(e)==="object"){for(d=0;d<e.length;d++){g=document.createElement("td");j=document.createTextNode(e[d]);g.setAttribute("style","font-style: bold;");g.appendChild(j);h.appendChild(g)}}else{g=document.createElement("td");j=document.createTextNode(e);g.appendChild(j);h.appendChild(g)}c.appendChild(h)}b.appendChild(c);b.setAttribute("border","1");b.setAttribute("width","100%");a.appendChild(b)},removeDecFromPointLabels:function(g){var f="";var b=document.getElementById(g.uniqueid);var a=0;for(a=0;a<b.childNodes.length;a++){var e=b.childNodes[a];if(typeof e.classList==="undefined"){e.classList=String(e.className).split(" ")}if(e.classList){if(e.classList[0]==="jqplot-point-label"){thisLabelValue=parseInt(e.innerHTML,10);e.innerHTML=thisLabelValue;e.value=thisLabelValue;if(parseInt(e.innerHTML,10)===0||isNaN(thisLabelValue)){e.innerHTML=""}if(Fisma.Chart.getGlobalSetting("pointLabelsOutline")==="true"){f="text-shadow: ";f+="#FFFFFF 0px -1px 0px, ";f+="#FFFFFF 0px 1px 0px, ";f+="#FFFFFF 1px 0px 0px, ";f+="#FFFFFF -1px 1px 0px, ";f+="#FFFFFF -1px -1px 0px, ";f+="#FFFFFF 1px 1px 0px; ";e.innerHTML='<span style="'+f+g.pointLabelStyle+'">'+e.innerHTML+"</span>";e.style.textShadow="text-shadow: #FFFFFF 0px -1px 0px, #FFFFFF 0px 1px 0px, #FFFFFF 1px 0px 0px, #FFFFFF -1px 1px 0px, #FFFFFF -1px -1px 0px, #FFFFFF 1px 1px 0px;"}else{e.innerHTML='<span style="'+g.pointLabelStyle+'">'+e.innerHTML+"</span>"}var d=parseInt(String(e.style.left).replace("px",""),10);var c=parseInt(String(e.style.top).replace("px",""),10);d+=g.pointLabelAdjustX;c+=g.pointLabelAdjustY;if(thisLabelValue>=100){d-=2}if(thisLabelValue>=1000){d-=3}e.style.left=d+"px";e.style.top=c+"px";e.style.color="black"}}}},removeOverlappingPointLabels:function(l){if(l.chartType!=="stackedbar"&&l.chartType!=="stackedline"){return}var m=document.getElementById(l.uniqueid);var b=[];var c;var e;var f;var i=0;var h=0;var g=0;for(i=0;i<m.childNodes.length;i++){var k=m.childNodes[i];if(typeof k.classList==="undefined"){k.classList=String(k.className).split(" ")}if(k.classList[0]==="jqplot-point-label"){var j=false;if(typeof k.isRemoved!=="undefined"){j=k.isRemoved}if(j===false){c=parseInt(String(k.style.left).replace("px",""),10);e=parseInt(String(k.style.top).replace("px",""),10);f=k.value;var a={left:c,top:e,value:f,obj:k};b.push(a)}}}$.each(b,function(n,d){$.each(b,function(r,q){var p=(d.left-q.left);p=p*p;var o=(d.top-q.top);o=o*o;var s=Math.sqrt(p+o);if(s<17&&s!==0&&!isNaN(q.value)&&!isNaN(d.value)){if(q.value<d.value){q.obj.innerHTML="";q.obj.isRemoved=true}else{d.obj.innerHTML="";d.obj.isRemoved=true}Fisma.Chart.removeOverlappingPointLabels(l);return}})})},hideButtonClick:function(a,b,c){Fisma.Chart.setChartSettingsVisibility(b,false)},setChartSettingsVisibility:function(d,c){var a=d+"WidgetSpaceHolder";var b=document.getElementById(a);if(c==="toggle"){if(b.style.display==="none"){c=true}else{c=false}}if(c===true){b.style.display=""}else{b.style.display="none"}},globalSettingUpdate:function(f,c){var b=document.getElementById(c+"GlobSettings");var e=b.childNodes;var a=0;for(a=0;a<e.length;a++){var d=e[a];if(d.nodeName==="INPUT"){if(d.type==="checkbox"){Fisma.Chart.setGlobalSetting(d.id,d.checked)}else{Fisma.Chart.setGlobalSetting(d.id,d.value)}}}Fisma.Chart.redrawAllCharts()},globalSettingRefreshUi:function(e){var b=document.getElementById(e.uniqueid+"GlobSettings");var d=b.childNodes;var a=0;for(a=0;a<d.length;a++){var c=d[a];if(c.nodeName==="INPUT"){if(c.type==="checkbox"){c.checked=(Fisma.Chart.getGlobalSetting(c.id)==="true")?true:false}else{c.value=Fisma.Chart.getGlobalSetting(c.id);c.text=c.value}}}},showSetingMode:function(c){var b=0;var a;var d;if(c===true){d=document.getElementsByName("chartSettingsBasic");a=document.getElementsByName("chartSettingsGlobal")}else{a=document.getElementsByName("chartSettingsBasic");d=document.getElementsByName("chartSettingsGlobal")}for(b=0;b<a.length;b++){a[b].style.display="none"}for(b=0;b<a.length;b++){d[b].style.display=""}},getGlobalSetting:function(b){var a=YAHOO.util.Cookie.get("chartGlobSetting_"+b);if(a!==null){return a}else{if(typeof Fisma.Chart.globalSettingsDefaults[b]==="undefined"){throw"You have referenced a global setting ("+b+"), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of Chart.js"}else{return String(Fisma.Chart.globalSettingsDefaults[b])}}},setGlobalSetting:function(a,b){YAHOO.util.Cookie.set("chartGlobSetting_"+a,b,{path:"/"})},alterChartByGlobals:function(a){if(Fisma.Chart.getGlobalSetting("barShadows")==="true"){a.seriesDefaults.rendererOptions.shadowDepth=3;a.seriesDefaults.rendererOptions.shadowOffset=3}if(Fisma.Chart.getGlobalSetting("barShadowDepth")!=="no-setting"&&Fisma.Chart.getGlobalSetting("barShadows")==="true"){a.seriesDefaults.rendererOptions.shadowDepth=Fisma.Chart.getGlobalSetting("barShadowDepth");a.seriesDefaults.rendererOptions.shadowOffset=Fisma.Chart.getGlobalSetting("barShadowDepth")}if(Fisma.Chart.getGlobalSetting("gridLines")==="true"){a.grid.gridLineWidth=1;a.grid.borderWidth=0;a.grid.gridLineColor=undefined;a.grid.drawGridLines=true;a.grid.show=true}if(Fisma.Chart.getGlobalSetting("dropShadows")!=="false"){a.grid.shadow=true}if(Fisma.Chart.getGlobalSetting("pointLabels")==="true"){a.seriesDefaults.pointLabels.show=true}return a},redrawAllCharts:function(c){var a;var b;for(b in Fisma.Chart.chartsOnDOM){a=Fisma.Chart.chartsOnDOM[b];Fisma.Chart.showChartLoadingMsg(a)}if(Fisma.Chart.isIE===true){if(c!==true||c===null){setTimeout("Fisma.Chart.redrawAllCharts(true);",300);return}}for(b in Fisma.Chart.chartsOnDOM){a=Fisma.Chart.chartsOnDOM[b];Fisma.Chart.createJQChart(a);Fisma.Chart.globalSettingRefreshUi(a)}},showChartLoadingMsg:function(d){document.getElementById(d.uniqueid+"toplegend").innerHTML="";Fisma.Chart.makeElementVisible(d.uniqueid+"loader");var b=document.getElementById(d.uniqueid);var a=document.createTextNode("\n\n\n\nLoading chart data...");var c=document.createElement("p");c.align="center";c.appendChild(a);b.innerHTML="";b.appendChild(document.createElement("br"));b.appendChild(document.createElement("br"));b.appendChild(document.createElement("br"));b.appendChild(document.createElement("br"));b.appendChild(c)},setTitle:function(a){},showMsgOnEmptyChart:function(d){if(Fisma.Chart.chartIsEmpty(d)){var e=document.getElementById(d.uniqueid);var f=e.childNodes[1];var b=document.createElement("div");b.height="100%";b.style.align="center";b.style.position="absolute";b.style.width=d.width+"px";b.style.height="100%";b.style.textAlign="center";b.style.verticalAlign="middle";b.appendChild(document.createTextNode("No data to plot. "));var a=document.createElement("a");a.href="JavaScript: Fisma.Chart.setChartSettingsVisibility('"+d.uniqueid+"', 'toggle');";a.appendChild(document.createTextNode("Change chart parameters?"));b.appendChild(a);e.appendChild(b);var c=document.getElementById(d.uniqueid+"table");c.style.display="none"}},chartIsEmpty:function(c){var b=true;var a=0;var d=0;for(a in c.chartData){if(typeof c.chartData[a]==="object"){for(d in c.chartData[a]){if(parseInt(c.chartData[a][d],10)>0){b=false}}}else{if(parseInt(c.chartData[a],10)>0){b=false}}}return b},placeCanvasesInDivs:function(b){var c=YAHOO.util.Dom.get(b.uniqueid);var a=$(c).find("canvas").filter(function(){return $(this).css("position")=="absolute"});a.wrap(function(){var e;var d=$(this);var e;if(d.context.className=="jqplot-yaxis-tick"){e=$("<div />").css({position:"absolute",top:d.css("top"),right:d.css("right")});d.css({top:0,right:0});if(Fisma.Chart.isIE===false){e.className="chart-yaxis-tick"}else{e.className="chart-yaxis-tick-InIE"}}else{if(d.context.className=="jqplot-xaxis-label"){e=$("<div />").css({position:"absolute",bottom:"0px"})}else{e=$("<div />").css({position:"absolute",top:d.css("top"),left:d.css("left")});d.css({top:0,left:0})}}return e});return this}};/**
+/**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6324,7 +6324,7 @@ Fisma.Chart = {
         return this;
     }
 };
-Fisma.CheckboxTree={handleClick:function(j,c){if(c.altKey){return}var g=j.parentNode;if(g.nextSibling===null){return}var k=g.nextSibling.childNodes[0];if(k.getAttribute("nestedLevel")>j.getAttribute("nestedLevel")){var a=j.getAttribute("nestedlevel");var d=new Array();var l=true;var b=g.nextSibling;var h=b.childNodes[0];while(h.getAttribute("nestedLevel")>a){if(!h.checked){l=false}d.push(h);if(b.nextSibling){b=b.nextSibling;h=b.childNodes[0]}else{break}}if(l){j.checked=false}else{j.checked=true}for(var e in d){var f=d[e];if(l){f.checked=false}else{f.checked=true}}}}};/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6419,7 +6419,7 @@ Fisma.CheckboxTree = {
         }
     }
 };
-Fisma.Commentable={asyncRequest:null,config:null,yuiPanel:null,showPanel:function(c,b){Fisma.Commentable.config=b;var a=new YAHOO.widget.Panel("panel",{modal:true,close:true});a.setHeader("Add Comment");a.setBody("Loading...");a.render(document.body);a.center();a.show();a.hideEvent.subscribe(function(){Fisma.Commentable.closePanel.call(Fisma.Commentable)});Fisma.Commentable.yuiPanel=a;YAHOO.util.Connect.asyncRequest("GET","/comment/form",{success:function(d){d.argument.setBody(d.responseText);d.argument.center()},failure:function(d){d.argument.setBody("The content for this panel could not be loaded.");d.argument.center()},argument:a},null);return false},postComment:function(){var a="/comment/add/id/"+encodeURIComponent(Fisma.Commentable.config.id)+"/type/"+encodeURIComponent(Fisma.Commentable.config.type)+"/format/json";YAHOO.util.Connect.setForm("addCommentForm");Fisma.Commentable.asyncRequest=YAHOO.util.Connect.asyncRequest("POST",a,{success:function(b){Fisma.Commentable.commentCallback.call(Fisma.Commentable,b)},failure:function(b){Fisma.Util.showAlertDialog("Document upload failed.")}},null);return false},commentCallback:function(d){var c;try{var b=YAHOO.lang.JSON.parse(d.responseText);c=b.response}catch(h){if(h instanceof SyntaxError){c=new Object();c.success=false;c.message="Invalid response from server."}else{throw h}}if(!c.success){var g="Error: "+c.message;Fisma.Util.showAlertDialog(g);return}var f=Fisma[this.config.callback.object];if(typeof f!="Undefined"){var a=f[this.config.callback.method];if(typeof a=="function"){a.call(f,c.comment,this.yuiPanel)}}},closePanel:function(){if(this.asyncRequest){YAHOO.util.Connect.abort(this.asyncRequest)}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6604,7 +6604,7 @@ Fisma.Commentable = {
          }
      }
 };
-Fisma.ControlTree=function(c,b,a){this.treeElem=c;this.actionUrls=b;this.readonly=a?true:false;var d=this;YAHOO.util.Connect.asyncRequest("GET",this.actionUrls.controlTreeData,{success:function(f){var e=YAHOO.lang.JSON.parse(f.responseText);d.showTree(e.treeData);d.updateContextMenus()},failure:function(e){alert("Unable to load the organization tree: "+e.statusText)}},null)};Fisma.ControlTree.prototype={treeView:null,treeElem:null,controlContextMenu:null,controlContextMenuTriggers:null,enhancementContextMenu:null,enhancementContextMenuTriggers:null,actionUrls:null,readonly:null,showTree:function(a){this.treeView=new YAHOO.widget.TreeView(this.treeElem);this.renderTreeNodes(a,this.treeView.getRoot());this.treeView.draw()},renderTreeNodes:function(c,a){for(var b in c){this.renderFamily(b,c[b],a)}},renderFamily:function(e,a,d){var c=new YAHOO.widget.TextNode({label:e,renderHidden:true},d,false);for(var b in a){this.renderControl(a[b],c)}},renderControl:function(f,e){var b="<b>"+PHP_JS().htmlspecialchars(f.code)+"</b> - <i>"+PHP_JS().htmlspecialchars(f.name)+"</i>";if(f.common){b+=" (Common)"}else{if(f.inherits!=null){b+=" (Inherits From "+f.inherits+")"}}var d={label:b,renderHidden:true,securityControlId:f.id,controlCode:PHP_JS().htmlspecialchars(f.code)};var a=new YAHOO.widget.TextNode(d,e,false);if(!this.readonly){if(this.controlContextMenuTriggers==null){this.controlContextMenuTriggers=[]}this.controlContextMenuTriggers.push(a.labelElId)}for(var c in f.enhancements){this.renderEnhancement(f.enhancements[c],a)}},renderEnhancement:function(b,d){var a=d.data.controlCode+" ("+b.number+")";var c={label:a,renderHidden:true,securityControlEnhancementId:b.id};var e=new YAHOO.widget.TextNode(c,d,false);if(!this.readonly){if(this.enhancementContextMenuTriggers==null){this.enhancementContextMenuTriggers=[]}this.enhancementContextMenuTriggers.push(e.labelElId)}},updateContextMenus:function(){if(this.readonly){return}if(this.controlContextMenu==null){var b=[{text:"Remove Control",value:"removeControl"},{text:"Add Enhancements",value:"addEnhancements"},{text:"Edit Common Control",value:"editCommonControl"}];this.controlContextMenu=new YAHOO.widget.ContextMenu("controlContextMenu",{trigger:this.controlContextMenuTriggers,lazyload:true,itemData:b});this.controlContextMenu.subscribe("click",this.onContextMenuClick,this)}else{this.controlContextMenu.cfg.setProperty("trigger",this.controlContextMenuTriggers)}if(this.enhancementContextMenu==null){var a=[{text:"Remove Enhancement",value:"removeEnhancement"}];this.enhancementContextMenu=new YAHOO.widget.ContextMenu("enhancementContextMenu",{trigger:this.enhancementContextMenuTriggers,lazyload:true,itemData:a});this.enhancementContextMenu.subscribe("click",this.onContextMenuClick,this)}else{this.enhancementContextMenu.cfg.setProperty("trigger",this.enhancementContextMenuTriggers)}},onContextMenuClick:function(b,a,f){var d=f,e=d.treeView.getNodeByElement(this.contextEventTarget),c=a[1];switch(c.value){case"removeControl":d.removeControl(e);break;case"addEnhancements":d.addEnhancements(e);break;case"removeEnhancement":d.removeEnhancement(e);break;case"editCommonControl":d.editCommonControl(e);break;default:alert("Action not yet implemented.")}},removeControl:function(e){var f=e.data.securityControlId,d=this.actionUrls.removeControl,b="securityControlId="+f,a=e.parent,g=this;var c={success:function(i){var h=YAHOO.lang.JSON.parse(i.responseText);if(h.result=="ok"){g.treeView.removeNode(e,true);g.updateContextMenus()}else{alert(h.result)}},failure:function(h){alert("Unable to remove the control tree: "+h.statusText)}};YAHOO.util.Connect.asyncRequest("POST",d,c,b)},removeEnhancement:function(d){var f=d.data.securityControlEnhancementId,c=this.actionUrls.removeEnhancement,a="securityControlEnhancementId="+f,e=this;var b={success:function(h){var g=YAHOO.lang.JSON.parse(h.responseText);if(g.result=="ok"){e.treeView.removeNode(d,true);e.updateContextMenus()}else{alert(g.result)}},failure:function(g){alert("Unable to remove the control tree: "+g.statusText)}};YAHOO.util.Connect.asyncRequest("POST",c,b,a)},addEnhancements:function(a){var f=a.data.securityControlId,b=Fisma.HtmlPanel.showPanel("Add Security Control",null,null,{modal:true}),e=this.actionUrls.addEnhancements,c=e+"/securityControlId/"+f,g=this;var d={success:function(i){var h=i.argument;h.setBody(i.responseText);h.center()},failure:function(i){var h=i.argument;h.destroy();alert('Error getting "add control" form: '+i.statusText)},argument:b};YAHOO.util.Connect.asyncRequest("GET",c,d)},editCommonControl:function(a){var f=a.data.securityControlId,b=Fisma.HtmlPanel.showPanel("Edit Common Security Control",null,null,{modal:true}),e=this.actionUrls.editCommonControl,c=e+"/securityControlId/"+f,g=this;var d={success:function(i){var h=i.argument;h.setBody(i.responseText);h.center()},failure:function(i){var h=i.argument;h.destroy();alert('Error getting "edit common control" form: '+i.statusText)},argument:b};YAHOO.util.Connect.asyncRequest("GET",c,d)}};/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -6885,7 +6885,7 @@ Fisma.ControlTree.prototype = {
     }
 
 };
-Fisma.Email=function(){return{panelElement:null,showRecipientDialog:function(){YAHOO.util.Dom.get("msgbar").style.display="none";if(Fisma.Email.panelElement!==null&&Fisma.Email.panelElement instanceof YAHOO.widget.Panel){Fisma.Email.panelElement.removeMask();Fisma.Email.panelElement.destroy();Fisma.Email.panelElement=null}var c=document.createElement("div");var g=document.createElement("p");var b=document.createTextNode("* Target E-mail Address:");g.appendChild(b);c.appendChild(g);var e=document.createElement("input");e.id="testEmailRecipient";e.name="recipient";c.appendChild(e);var f=document.createElement("div");f.style.height="10px";c.appendChild(f);var a=document.createElement("input");a.type="button";a.id="dialogRecipientSendBtn";a.style.marginLeft="10px";a.value="Send";c.appendChild(a);var d={width:"260px",modal:false};Fisma.Email.panelElement=Fisma.HtmlPanel.showPanel("Test E-mail Configuration",c.innerHTML,null,d);document.getElementById("dialogRecipientSendBtn").onclick=Fisma.Email.sendTestEmail},sendTestEmail:function(){if(document.getElementById("testEmailRecipient").value===""){var e="Recipient is required.";var a={zIndex:10000};Fisma.Util.showAlertDialog(e,a);document.getElementById("testEmailRecipient").focus();return false}var d=document.getElementById("testEmailRecipient").value;var c=document.getElementById("email_config");c.elements.recipient.value=d;var b=document.getElementById("sendTestEmail");spinner=new Fisma.Spinner(b.parentNode);spinner.show();YAHOO.util.Connect.setForm(c);YAHOO.util.Connect.asyncRequest("POST","/config/test-email-config/format/json",{success:function(g){var f=YAHOO.lang.JSON.parse(g.responseText);message(f.msg,f.type,true);spinner.hide()},failure:function(g){var f="Failed to send test mail: "+g.statusText;Fisma.Util.showAlertDialog(f);spinner.hide()}},null);if(Fisma.Email.panelElement!==null&&Fisma.Email.panelElement instanceof YAHOO.widget.Panel){Fisma.Email.panelElement.hide();Fisma.Email.panelElement.destroy();Fisma.Email.panelElement=null}return true}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -7025,7 +7025,7 @@ Fisma.Email = function() {
         }
     };
 }();
-Fisma.Finding={commentTable:null,commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("findingCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()},editEcdJustification:function(){var a=document.getElementById("currentChangeDescription");a.style.display="none";var c;if(a.firstChild){c=a.firstChild.nodeValue}else{c=""}var b=document.createElement("input");b.type="text";b.value=c;b.name="finding[ecdChangeDescription]";a.parentNode.appendChild(b)},showSecurityControlSearch:function(){var b=document.getElementById("securityControlSearchButton");b.style.display="none";var a=document.getElementById("findingSecurityControlSearch");a.style.display="block"},handleSecurityControlSelection:function(){var a=document.getElementById("securityControlContainer");a.innerHTML='<img src="/images/loading_bar.gif">';var c=document.getElementById("finding[securityControlId]");var b=escape(c.value);YAHOO.util.Connect.asyncRequest("GET","/security-control/single-control/id/"+b,{success:function(d){a.innerHTML=d.responseText},failure:function(d){Fisma.Util.showAlertDialog("Unable to load security control definition.")}})}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -7170,7 +7170,7 @@ Fisma.Finding = {
     }
 
 };
-Fisma.FindingSummary=function(){return{treeRoot:null,filterType:null,filterSource:null,defaultDisplayLevel:2,render:function(h,j,t){if(t){this.treeRoot=j}var p=document.getElementById(h);for(var f in j){var r;var l=j[f];var a=p.insertRow(p.rows.length);a.id=l.nickname+"_ontime";var e=p.insertRow(p.rows.length);e.id=l.nickname+"_overdue";var b=a.insertCell(0);l.expanded=(l.level<this.defaultDisplayLevel-1);var o=l.expanded?l.single_ontime:l.all_ontime;var k=l.expanded?l.single_overdue:l.all_overdue;l.hasOverdue=this.hasOverdue(k);var q=document.createElement("img");q.className="control";q.id=l.nickname+"Img";var g=document.createElement("a");g.appendChild(q);var n=l.children.length>0;if(n){g.nickname=l.nickname;g.findingSummary=this;g.onclick=function(){this.findingSummary.toggleNode(this.nickname);return false};q.src="/images/"+(l.expanded?"minus.png":"plus.png")}else{q.src="/images/leaf_node.png"}var d=document.createElement("div");d.className="treeTable"+l.level+(n?" link":"");d.appendChild(g);var s=document.createElement("img");s.className="icon";s.src="/images/"+l.orgType+".png";g.appendChild(s);g.appendChild(document.createTextNode(l.label));g.appendChild(document.createElement("br"));g.appendChild(document.createTextNode(l.orgTypeLabel));b.appendChild(d);var m=1;for(r in o){count=o[r];cell=a.insertCell(m);if(r=="CLOSED"||r=="TOTAL"){cell.className="noDueDate"}else{cell.className="onTime"}this.updateCellCount(cell,count,l.nickname,r,"ontime",l.expanded);m+=1}for(r in k){count=k[r];cell=e.insertCell(e.childNodes.length);cell.className="overdue";this.updateCellCount(cell,count,l.nickname,r,"overdue",l.expanded)}a.style.display="none";e.style.display="none";if(l.level<this.defaultDisplayLevel){a.style.display="";if(l.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display=""}}if(l.children.length>0){this.render(h,l.children)}}},toggleNode:function(a){node=this.findNode(a,this.treeRoot);if(node.expanded){this.collapseNode(node,true);this.hideSubtree(node.children)}else{this.expandNode(node);this.showSubtree(node.children,false)}},expandNode:function(f,b){f.ontime=f.single_ontime;f.overdue=f.single_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.nickname,c,"ontime",true);d++}var e=document.getElementById(f.nickname+"_overdue");if(f.hasOverdue){d=0;for(c in f.overdue){count=f.overdue[c];this.updateCellCount(e.childNodes[d],count,f.nickname,c,"overdue",true);d++}}else{a.childNodes[0].rowSpan="1";a.childNodes[a.childNodes.length-2].rowSpan="1";a.childNodes[a.childNodes.length-1].rowSpan="1";e.style.display="none"}if(f.children.length>0){document.getElementById(f.nickname+"Img").src="/images/minus.png"}f.expanded=true;if(b&&f.children.length>0){this.showSubtree(f.children,false);for(var g in f.children){this.expandNode(f.children[g],true)}}},collapseNode:function(f,b){f.ontime=f.all_ontime;f.overdue=f.all_overdue;f.hasOverdue=this.hasOverdue(f.overdue);var a=document.getElementById(f.nickname+"_ontime");var d=1;for(c in f.ontime){count=f.ontime[c];this.updateCellCount(a.childNodes[d],count,f.nickname,c,"ontime",false);d++}var e=document.getElementById(f.nickname+"_overdue");if(b&&f.hasOverdue){a.childNodes[0].rowSpan="2";a.childNodes[a.childNodes.length-2].rowSpan="2";a.childNodes[a.childNodes.length-1].rowSpan="2";e.style.display="";d=0;for(c in f.all_overdue){count=f.all_overdue[c];this.updateCellCount(e.childNodes[d],count,f.nickname,c,"overdue",false);d++}}if(f.children.length>0){this.hideSubtree(f.children)}document.getElementById(f.nickname+"Img").src="/images/plus.png";f.expanded=false},hideSubtree:function(a){for(nodeId in a){node=a[nodeId];ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="none";overdueRow=document.getElementById(node.nickname+"_overdue");overdueRow.style.display="none";if(node.children.length>0){this.collapseNode(node,false);this.hideSubtree(node.children)}}},showSubtree:function(b,a){for(nodeId in b){node=b[nodeId];if(a&&node.children.length>0){this.expandNode(node);this.showSubtree(node.children,true)}ontimeRow=document.getElementById(node.nickname+"_ontime");ontimeRow.style.display="";overdueRow=document.getElementById(node.nickname+"_overdue");if(node.hasOverdue){ontimeRow.childNodes[0].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-2].rowSpan="2";ontimeRow.childNodes[ontimeRow.childNodes.length-1].rowSpan="2";overdueRow.style.display=""}}},collapseAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.collapseNode(node,true);this.hideSubtree(node.children)}},expandAll:function(){for(nodeId in this.treeRoot){node=this.treeRoot[nodeId];this.expandNode(node,true)}},findNode:function(e,b){for(var d in b){node=b[d];if(node.nickname===e){return node}else{if(node.children.length>0){var a=this.findNode(e,node.children);if(a!==false){return a}}}}return false},hasOverdue:function(b){for(var a in b){if(b[a]>0){return true}}return false},updateCellCount:function(a,g,f,b,h,d){var e;if(!a.hasChildNodes()){if(g>0){e=document.createElement("a");e.href=this.makeLink(f,b,h,d);e.appendChild(document.createTextNode(g));a.appendChild(e)}else{a.appendChild(document.createTextNode("-"))}}else{if(a.firstChild.hasChildNodes()){if(g>0){a.firstChild.firstChild.nodeValue=g;a.firstChild.href=this.makeLink(f,b,h,d)}else{a.removeChild(a.firstChild);a.appendChild(document.createTextNode("-"))}}else{if(g>0){a.removeChild(a.firstChild);e=document.createElement("a");e.href=this.makeLink(f,b,h,d);e.appendChild(document.createTextNode(g));a.appendChild(e)}else{a.firstChild.nodeValue="-"}}}},makeLink:function(j,g,k,i){var f="";if(!(g=="CLOSED"||g=="TOTAL")){var b=new Date();var l=b.getFullYear()+"-"+(b.getMonth()+1)+"-"+b.getDate();if("ontime"==k){f="/nextDueDate/dateAfter/"+encodeURIComponent(l)}else{f="/nextDueDate/dateBefore/"+encodeURIComponent(l)}}var h="";if(g!==""&&g!=="TOTAL"){h="/denormalizedStatus/textExactMatch/"+encodeURIComponent(g)}var a="";if(!YAHOO.lang.isNull(this.filterType)&&this.filterType!==""){a="/type/enumIs/"+encodeURIComponent(this.filterType)}var d="";if(!YAHOO.lang.isNull(this.filterSource)&&this.filterSource!==""){d="/source/textExactMatch/"+encodeURIComponent(this.filterSource)}var e="/finding/remediation/list?q="+f+h+a+d;if(i){e+="/organization/textExactMatch/"+encodeURIComponent(j)}else{e+="/organization/organizationSubtree/"+encodeURIComponent(j)}return e},exportTable:function(b){var a="/finding/remediation/summary-data/format/"+b+this.listExpandedNodes(this.treeRoot,"");document.location=a},listExpandedNodes:function(b,a){for(var e in b){var d=b[e];if(d.expanded){a+="/e/"+d.id;a=this.listExpandedNodes(d.children,a)}else{a+="/c/"+d.id}}return a}}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -7724,7 +7724,7 @@ Fisma.FindingSummary = function() {
         }
     };
 };
-Fisma.Highlighter=function(){return{highlightDelimitedText:function(a,b){var h=Fisma.Util.escapeRegexValue(b);var j=new RegExp("^(.*?)"+h+"(.*?)"+h+"(.*?)$");for(var d in a){var e=a[d];if(!e.firstChild||!e.firstChild.firstChild){continue}var g=e.firstChild;if(g&&g.firstChild&&g.firstChild.nodeType!=3){continue}var c=g.firstChild;var k=c.nodeValue;var f=this._getDelimitedRegexMatches(k,j);this._highlightMatches(g,f)}},_getDelimitedRegexMatches:function(h,d){var f=[];var g=null;var e=h;do{g=e.match(d);if(g&&g.length==4){var c=g[1];var a=g[2];var b=g[3];f.push(c);f.push(a);e=b}else{f.push(e);break}}while(g);return f},_highlightMatches:function(a,f){if((f.length>1)&&(f.length%2==1)){a.removeChild(a.firstChild);for(var d in f){var c=f[d];var e=document.createTextNode(c);if(d%2===0){a.appendChild(e)}else{var b=document.createElement("span");b.className="highlight";b.appendChild(e);a.appendChild(b)}}}}}}();/**
+/**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -7888,7 +7888,7 @@ Fisma.Highlighter = function() {
         }
     };
 }();
-Fisma.HtmlPanel=function(){return{showPanel:function(e,c,b,d){if(typeof(b)==="undefined"||b===null){b="panel"}if(typeof(d)==="undefined"||d===null){d={width:"540px",modal:true}}var a=new YAHOO.widget.Panel(b,d);a.setHeader(e);a.setBody("Loading…");a.render(document.body);a.center();a.show();if(YAHOO.lang.isValue(c)&&c!==""){a.setBody(c);a.center()}return a}}}();/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -7956,7 +7956,7 @@ Fisma.HtmlPanel = function() {
         }
     };
 }();
-Fisma.Incident={commentTable:null,attachArtifactCallback:function(a){window.location.href=window.location.href},commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("incidentCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()},getIncidentStepParentElement:function(b){var c=b.parentNode.parentNode.parentNode;var a=1;if(!(a==c.nodeType&&"TR"==c.tagName)){throw"Cannot locate the parent element for this incident step."}return c},getIncidentStepNumber:function(e){var d=e.firstChild;var b=1;if(!(b==d.nodeType&&"TD"==d.tagName)){throw"Cannot locate the table data (td) element for this incident step."}var a=d.firstChild.nodeValue;var c=a.match(/\d+/);if(c.length!=1){throw"Not able to locate the step number in the incident step label."}return c[0]},renumberAllIncidentSteps:function(b){var c=YAHOO.util.Dom.getElementsByClassName("incidentStep","tr",b);var a=1;for(var d in c){var e=c[d];e.firstChild.firstChild.nodeValue="Step "+a+":";a++}},addIncidentStepAbove:function(c){var b=this.getIncidentStepParentElement(c);var d=this.generateTextareaId(b.parentNode);var a=this.generateIncidentStep(b,d);b.parentNode.insertBefore(a,b);tinyMCE.execCommand("mceAddControl",false,d);this.renumberAllIncidentSteps(b.parentNode);return false},addIncidentStepBelow:function(c){var b=this.getIncidentStepParentElement(c);var d=this.generateTextareaId(b.parentNode);var a=this.generateIncidentStep(b,d);if(b.nextSibling){b.parentNode.insertBefore(a,b.nextSibling)}else{b.parentNode.appendChild(a)}tinyMCE.execCommand("mceAddControl",false,d);this.renumberAllIncidentSteps(b.parentNode);return false},removeIncidentStep:function(b){var a=this.getIncidentStepParentElement(b);a.parentNode.removeChild(a);this.renumberAllIncidentSteps(a.parentNode);return false},generateIncidentStep:function(p,g){var o=p.cloneNode(false);var s=p.parentNode;var b=document.createElement("td");b.innerHTML="Step : ";o.appendChild(b);var n=document.createElement("td");o.appendChild(n);var e=YAHOO.util.Dom.getLastChild(p);var t=YAHOO.util.Dom.getFirstChild(e);var i=t.cloneNode(true);var r=YAHOO.util.Dom.getNextSibling(t);var a=r.cloneNode(true);n.appendChild(i);n.appendChild(a);var q=document.createElement("p");q.innerHTML="Description: ";var h=YAHOO.util.Dom.getNextSibling(r);var j=YAHOO.util.Dom.getFirstChild(h);var l=YAHOO.util.Dom.getAttribute(j,"rows");var m=YAHOO.util.Dom.getAttribute(j,"cols");var d=YAHOO.util.Dom.getAttribute(j,"name");var k;if(YAHOO.env.ua.ie){k=document.createElement("<textarea name='"+d+"'></textarea>")}else{k=document.createElement("textarea")}k.setAttribute("id",g);k.setAttribute("rows",l);k.setAttribute("cols",m);k.setAttribute("name",d);q.appendChild(k);n.appendChild(q);var c=YAHOO.util.Dom.getNextSibling(h);var f=c.cloneNode(true);n.appendChild(f);return o},generateTextareaId:function(c){var b=YAHOO.util.Dom.getElementsByClassName("incidentStep","tr",c);var a=1+b.length;var d="textareaid"+a;return d}};/**
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -11490,7 +11490,29 @@ Fisma.SecurityAuthorization = {
     /**
      * Store a data table used for selecting controls
      */
-    selectControlsTable : null,
+    selectControlsTable: null,
+    
+    /**
+     * Store a panel which displays the add control form
+     */
+    addControlPanel: null,
+ 
+    /**
+     * A dialog used for viewing a control during step 2 (select) and editing control enhancements
+     * 
+     * @var Fisma.FormDialog
+     */
+    selectControlsDialog: null,
+    
+    /**
+     * A reference to the tab view on the SA view page
+     */
+    tabView: null,
+
+    /**
+     * A reference to the overview widget
+     */
+    overview: null,
 
     /**
      * Run the import baseline controls action and update the table with the results
@@ -11537,14 +11559,24 @@ Fisma.SecurityAuthorization = {
                             var dt = Fisma.SecurityAuthorization.selectControlsTable;
                             dt.showTableMessage("Loading baseline controls...");
                             dt.getDataSource().sendRequest('', {success: dt.onDataReturnInitializeTable, scope: dt});
+                            dt.on("dataReturnEvent", function () {
+                                modalDialog.destroy();
+                            });
+                            
+                            // Update overview
+                            var overview = Fisma.SecurityAuthorization.overview;
+                            if (YAHOO.lang.isValue(overview)) {
+                                overview.updateStepProgress(3, null, response.payload.controlCount);
+                                overview.updateStepProgress(4, null, response.payload.controlCount);
+                            }
                         } else {
                             Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
+                            modalDialog.destroy();
                         }
                     } catch (error) {
                         Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+                        modalDialog.destroy();
                     }
-
-                    modalDialog.destroy();
                 },
 
                 failure: function(o) {
@@ -11606,13 +11638,65 @@ Fisma.SecurityAuthorization = {
     
     /**
      * Run an XHR request to add a single security control to an SA
+     * 
+     * @param HTMLElement addControlForm
      */
-    addControl: function (ev, obj) {
-        debugger;
+    addControl: function (addControlForm) {
+        var modalDialog = Fisma.SecurityAuthorization.addControlPanel;
+
+        YAHOO.util.Connect.setForm(addControlForm);
+        YAHOO.util.Connect.asyncRequest(
+            'POST',
+            '/sa/security-authorization/add-control/format/json',
+            {
+                success: function(o) {
+                    try {
+                        var response = YAHOO.lang.JSON.parse(o.responseText).response;
+                        
+                        if (response.success) {
+                            // Hide warning message
+                            var noControlsWarning = document.getElementById("no-security-controls-warning");
+                            if (noControlsWarning) {
+                                noControlsWarning.style.display = 'none';
+                            }
+
+                            // Refresh controls table
+                            var dt = Fisma.SecurityAuthorization.selectControlsTable;
+                            dt.showTableMessage("Updating list of controls…");
+                            dt.getDataSource().sendRequest('', {success: dt.onDataReturnInitializeTable, scope: dt});
+                            dt.on("dataReturnEvent", function () {
+                                modalDialog.destroy();
+                            });
+
+                            // Update the overview tab
+                            if (YAHOO.lang.isValue(Fisma.SecurityAuthorization.overview)) {
+                                Fisma.SecurityAuthorization.overview.incrementStepDenominator(3);
+                                Fisma.SecurityAuthorization.overview.incrementStepDenominator(4);
+                            }
+                        } else {
+                            Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
+                            modalDialog.destroy();
+                        }
+                    } catch (error) {
+                        Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+                        modalDialog.destroy();
+                    }
+                },
+
+                failure: function(o) {
+                    Fisma.Util.showAlertDialog('An unexpected error occurred.');
+                    modalDialog.destroy();
+                }
+            },
+            null
+        );
     },
 
     /**
      * Show the form for adding a single security control
+     * 
+     * @param YAHOO.util.Event ev
+     * @param object obj
      */
     showAddControlForm: function (ev, obj) {
         var id = obj,
@@ -11633,177 +11717,211 @@ Fisma.SecurityAuthorization = {
             argument: panel
         };
 
+        Fisma.SecurityAuthorization.addControlPanel = panel;
         YAHOO.util.Connect.asyncRequest('GET', url, callbacks, null);
     }
 }
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
 (function() {
-    var Lang = YAHOO.lang,
-        Event = YAHOO.util.Event,
-        NDT = YAHOO.widget.NestedDataTable;
-
-    var SCT = function (container, id) {
-        this._securityAuthorizationId = id;
-
-        var responseSchema = {
-            resultsList : "records",
-            metaFields : { 
-                totalRecords : "totalRecords"
-            }
-        };
-        
-        var masterDataSource = new YAHOO.util.XHRDataSource('/sa/security-authorization/control-table-master/format/json/id/' + id);
-        masterDataSource.connMethodPost = false;
-        masterDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-        masterDataSource.responseSchema = responseSchema;
-        
-        var nestedDataSource = new YAHOO.util.XHRDataSource('/sa/security-authorization/control-table-nested/format/json');
-        nestedDataSource.connMethodPost = false;
-        nestedDataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
-        nestedDataSource.responseSchema = responseSchema;
-
-        var masterColumnDefs = [
-            { key: "code", label: "Code" },
-            { key: "name", label: "Name" },
-            { key: "class", label: "Class" },
-            { key: "family", label: "Family" },
-            { key: 'addEnhancements', label: "Add Enhancements", formatter: this._actionFormatter },
-            { key: 'editCommonControl', label: "Edit Common Control", formatter: this._actionFormatter },
-            { key: 'removeControl', label: "Remove Control", formatter: this._actionFormatter }
-        ];
-        var nestedColumnDefs = [
-            { key: "number", label: "Enhancement" },
-            { key: 'removeEnhancement', label: "Remove Enhancement", formatter: this._actionFormatter }
-        ];
-        
-        var masterConfiguration = {
-            generateNestedRequest: function (record) {
-                return "/id/" + record.getData("id");
-            }
-        };
-        var nestedConfiguration = {
-            masterTable: this
-        };
-
-        SCT.superclass.constructor.call(this,
-            container,
-            masterColumnDefs, masterDataSource,
-            nestedColumnDefs, nestedDataSource,
-            masterConfiguration, nestedConfiguration);
-
-        SCT._instanceMap[container] = this;
-    };
-
-    Fisma.SecurityControlTable = SCT;
-
     /**
-     * @static
+     * Represents the progress of the steps in the RMF process
+     * 
+     * @namespace Fisma.SecurityAuthorization
+     * @class Overview
+     * @extends Object
+     * @constructor
+     * @param steps {Array} An array of step information
      */
-    SCT._instanceMap = [];
+    var Overview = function(steps) {
+        this._steps = steps;
 
-    /**
-     * @static
-     */
-    SCT.getByName = function(name) {
-        return SCT._instanceMap[name];
+        Overview.superclass.constructor.call(this);
     };
+    
+    YAHOO.lang.extend(Overview, Object, {
 
-    Lang.extend(SCT, NDT, {
         /**
-         * Security Authorization id
+         * An array of step information
+         * 
+         * @property _steps
+         * @type Array
+         * @protected
+         */        
+        _steps: null,
+
+        /**
+         * Render the overview widget
+         * 
+         * @param {HTMLElement} container
          */
-        _securityAuthorizationId: null,
+        render: function (container) {
+            var tableEl = document.createElement('table');
+            tableEl.className = "saOverview";
+            
+            // Create table headers
+            var tableHeader = document.createElement('tr');
 
-        _toggleFormatter: function (el, oRecord, oColumn, oData) {
-            if (oRecord.getData('hasEnhancements')) {
-                Fisma.SecurityControlTable.superclass._toggleFormatter.apply(this, arguments);
-            }
-        },
+            var stepTh = document.createElement('th');
+            stepTh.appendChild(document.createTextNode("Step"));
+            tableHeader.appendChild(stepTh);
 
-        _actionFormatter: function (el, oRecord, oColumn, oData) {
-            var master = this.configs.masterTable ? this.configs.masterTable : this;
-            if (oColumn.key != "addEnhancements" || oRecord.getData("hasMoreEnhancements")) {
-                el.innerHTML = oColumn.label;
-                var fn = master["_" + oColumn.key];
-                Event.addListener(el, "click", fn, oRecord, master);
-            }
-        },
+            var statusTh = document.createElement('th');
+            statusTh.appendChild(document.createTextNode("Status"));
+            tableHeader.appendChild(statusTh);
+            
+            tableEl.appendChild(tableHeader);
 
-        _addEnhancements: function(ev, obj) {
-            var id = this._securityAuthorizationId,
-                securityControlId = obj.getData("securityControlId"),
-                panel = Fisma.HtmlPanel.showPanel("Add Security Control", null, null, { modal : true }),
-                getUrl = "/sa/security-authorization/add-enhancements/format/html/id/" + id + "/securityControlId/" + securityControlId,
-                ctObj = this;
-            var callbacks = {
-                success: function(o) {
-                    var panel = o.argument;
-                    panel.setBody(o.responseText);
-                    panel.center();
-                },
-                failure: function(o) {
-                    var panel = o.argument;
-                    panel.destroy();
-                    alert('Error getting "add control" form: ' + o.statusText);
-                },
-                argument: panel
-            };
-            YAHOO.util.Connect.asyncRequest( 'GET', getUrl, callbacks);
-        },
-        _editCommonControl: function(ev, obj) {
-            var id = this._securityAuthorizationId,
-                securityControlId = obj.getData("securityControlId"),
-                panel = Fisma.HtmlPanel.showPanel("Edit Common Security Control", null, null, { modal : true }),
-                getUrl = "/sa/security-authorization/edit-common-control/format/html/id/" + id + "/securityControlId/" + securityControlId,
-                ctObj = this;
-            var callbacks = {
-                success: function(o) {
-                    var panel = o.argument;
-                    panel.setBody(o.responseText);
-                    panel.center();
-                },
-                failure: function(o) {
-                    var panel = o.argument;
-                    panel.destroy();
-                    alert('Error getting "edit common control" form: ' + o.statusText);
-                },
-                argument: panel
-            };
-            YAHOO.util.Connect.asyncRequest( 'GET', getUrl, callbacks);
-        },
+            // Create 1 row for each step
+            for (var i in this._steps) {
+                var step = this._steps[i];
+                
+                var rowEl = document.createElement('tr');
+                
+                // Create the "step" cell
+                var cellEl = document.createElement('td');
+                var anchor = document.createElement('a');
+                anchor.href = "#";
+                anchor.appendChild(document.createTextNode(step.name));
+                cellEl.appendChild(anchor);
+                rowEl.appendChild(cellEl);
 
-        _removeControl: function (ev, obj) {
-            var actionUrl = "/sa/security-authorization/remove-control/format/json" +
-                            "/id/" + this._securityAuthorizationId,
-                post = "securityControlId=" + obj.getData("securityControlId");
-            this._removeEntry(actionUrl, post);
-        },
-    
-        _removeEnhancement: function (ev, obj) {
-            var actionUrl = "/sa/security-authorization/remove-enhancement/format/json" +
-                            "/id/" + this._securityAuthorizationId,
-                post = "securityControlEnhancementId=" + obj.getData("securityControlEnhancementId");
-            this._removeEntry(actionUrl, post);
-        },
-    
-        _removeEntry: function (actionUrl, post) {
-            var callbacks = {
-                success: function(o) {
-                    var json = YAHOO.lang.JSON.parse(o.responseText);
-                    if (json.result == 'ok') {
-                        // @todo: dynamically remove the row from the table
-                        window.location = window.location;
-                    } else {
-                        alert(json.result);
+                anchor.onclick = (function (tabId) {
+                    // Creating a closure inside a loop is awkward…
+                    return function () {
+                        Fisma.tabView.selectTab(tabId);
                     }
-                },
-                failure: function(o) {
-                    alert('Error: ' + o.statusText);
-                }
-            };
-            YAHOO.util.Connect.asyncRequest( 'POST', actionUrl, callbacks, post);
-        }
+                })(step.stepNumber);
 
+                // Create the "status" cell
+                cellEl = this._renderStatusCellForStep(step);
+                rowEl.appendChild(cellEl);
+                tableEl.appendChild(rowEl);
+                
+                // Save a reference to the status element so that it's easy to find/update later
+                step.statusTd = cellEl;
+            }
+            
+            container.appendChild(tableEl);
+        },
+        
+        /**
+         * Update the status table with new progress information for a specific step
+         * 
+         * @param stepNumber {integer}
+         * @param numerator {integer} Optional. If not specified, then current value is used.
+         * @param denominator {integer} Optional. If not specified, then current value is used.
+         */
+        updateStepProgress: function (stepNumber, numerator, denominator) {
+            var step = this._steps[stepNumber - 1];
+            
+            if (YAHOO.lang.isUndefined(step)) {
+                throw "Could not find step #" + stepNumber;
+            }
+
+            if (YAHOO.lang.isValue(numerator)) {
+                step.numerator = numerator;
+            }
+
+            if (YAHOO.lang.isValue(denominator)) {
+                step.denominator = denominator;
+            }
+
+            // Create a new status td, then swap it out for the old status td
+            var newTd = this._renderStatusCellForStep(step);
+            var parent = step.statusTd.parentNode;
+            parent.replaceChild(newTd, step.statusTd);
+            step.statusTd = newTd;
+        },
+        
+        /**
+         * Increase the numerator on the progress for a particular step
+         * 
+         * @param stepNumber {integer}
+         * @param addend {integer} Defaults to 1
+         */
+        incrementStepNumerator: function (stepNumber, addend) {
+            var step = this._steps[stepNumber - 1];
+            var addend = addend || 1;
+
+            this.updateStepProgress(stepNumber, step.numerator + addend, null);
+        },
+
+        /**
+         * Increase the denominator on the progress for a particular step
+         * 
+         * @param stepNumber {integer}
+         * @param addend {integer} Defaults to 1
+         */
+        incrementStepDenominator: function (stepNumber, addend) {
+            var step = this._steps[stepNumber - 1];
+            var addend = addend || 1;
+
+            this.updateStepProgress(stepNumber, null, step.denominator + addend);
+        },
+        
+        /**
+         * Render the status cell for a particular step
+         * 
+         * @param step {Array}
+         */
+        _renderStatusCellForStep: function (step) {
+            var td = document.createElement('td');
+
+            var pieChartEl = document.createElement('span');
+
+            var pieNumerator = step.numerator;
+            var pieDenominator = step.denominator;
+            
+            // If the denominator is zero, then we want to show an empty pie chart, so pretend the ratio is actually 0/1
+            // instead of n/0.
+            if (pieDenominator == 0) {
+                pieNumerator = 0;
+                pieDenominator = 1;
+            }
+
+            pieChartEl.appendChild(document.createTextNode(pieNumerator + '/' + pieDenominator));
+            jQuery(pieChartEl).peity("pie");
+            td.appendChild(pieChartEl);
+
+            var statusText = ' ' + step.completed;
+            
+            if (step.stepNumber == 3 || step.stepNumber == 4) {
+                statusText += ' (' 
+                            + step.numerator 
+                            + ' of ' 
+                            + step.denominator
+                            + ')';
+            }
+
+            td.appendChild(document.createTextNode(statusText));
+
+            return td;
+        }
     });
+
+    Fisma.SecurityAuthorization.Overview = Overview;
 })();
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
@@ -12905,6 +13023,27 @@ Fisma.TableFormat = {
 
             elCell.appendChild(checkbox);
         }        
+    },
+    
+    /**
+     * Truncates a length of text down to a specified size.
+     * 
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    maximumTextLength : function (elCell, oRecord, oColumn, oData) {
+        var maxLength = oColumn.formatterParameters;
+        var truncatedText = $P.strip_tags(oData);
+
+        if (truncatedText.length > maxLength) {
+            truncatedText = truncatedText.substring(0, maxLength) + "…";
+        }
+        
+        var textNode = document.createTextNode(truncatedText);
+
+        elCell.appendChild(textNode);
     }
 };
 /**

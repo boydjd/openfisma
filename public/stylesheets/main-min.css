@@ -54,6 +54,8 @@ tr.over td{background:#bcd4ec;}
 .notice p{padding:0 5px;}
 .notice h1{text-align:left;padding:5px 5px;color:#44637a;background-color:#ddd;line-height:23px;font-weight:bold;margin-top:0;}
 div#msgbar{border:1px solid red;background-color:pink;margin-top:10px;text-align:center;padding:3px;display:none;}
+.warning{color:red;border:1px solid red;background-color:pink;margin-top:10px;text-align:center;padding:3px;}
+.notice{color:green;border:1px solid green;background-color:lightgreen;margin-top:10px;text-align:center;padding:3px;}
 .yui-navset div.loading div{background:url(/lib/2.8.2/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;height:8em;}
 table.systemDocuments{border:1px solid lightgrey;}
 table.systemDocuments th{font-weight:bold;padding:10px;background:lightgrey;}

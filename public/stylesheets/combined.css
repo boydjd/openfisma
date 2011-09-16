@@ -515,11 +515,17 @@ div#searchColumnsButtons div {
  *******************************************************************************
  */
 
-/**
- * Add a "disabled" tabview tab style
- */
-.yui-skin-sam .yui-navset .yui-nav .disabled a em {
-    color: grey;
+table.saOverview {
+    font-size: 1.2em;
+}
+
+table.saOverview th {
+    font-weight: bold;
+    padding: 5px;
+}
+
+table.saOverview td {
+    padding: 2px 5px;
 }
 /* @override http://openfisma_trunk/stylesheets/SwitchButton.css */
 
@@ -1475,6 +1481,26 @@ div#msgbar {
     text-align: center;
     padding: 3px;
     display: none;
+}
+
+/* Used to display a block of warning text */
+.warning {
+    color: red;
+    border: 1px solid red;
+    background-color: pink;
+    margin-top: 10px;
+    text-align: center;
+    padding: 3px;
+}
+
+/* Used to display a block of notice text */
+.notice {
+    color: green;
+    border: 1px solid green;
+    background-color: lightgreen;
+    margin-top: 10px;
+    text-align: center;
+    padding: 3px;
 }
 
 /* This style adds a loading graphic to the YUI tab view */
