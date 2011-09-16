@@ -117,16 +117,18 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
         $saveProgressBar->update(0, "Save Systems");
 
         $currentSystem = 0;
-
+        $systemType = Doctrine::getTable('OrganizationType')->findOneByNickname('system', Doctrine::HYDRATE_ARRAY);
+        
         try {
             Doctrine_Manager::connection()->beginTransaction();
-
+           
             foreach ($systems as $system) {
                 $s = new System();
                 $s->merge($system);
 
                 $s->Organization = new Organization();
-                $s->Organization->orgType = 'system';
+                
+                $s->Organization->orgTypeId = $systemType['id'];
                 $s->Organization->merge($system);
                 $s->save();
 
