@@ -4633,21 +4633,25 @@ Fisma.Chart = {
         var y = 0;
 
         var wigSpace = document.getElementById(chartParamsObj.uniqueid + 'WidgetSpace');
+        wigSpace.innerHTML = '';
 
         // Are there widgets for this chart?
+        var message = document.createElement("p");
+        message.innerHTML = '<i>There are no parameters for this chart.</i>';
         if (typeof chartParamsObj.widgets === 'undefined') {
-            wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
+            wigSpace.appendChild(message);
             return;
         } else if (chartParamsObj.widgets.length === 0) {
-            wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
+            wigSpace.appendChild(message);
             return;
         }
 
         if (chartParamsObj.widgets) {
-
-            var addHTML = '';
+            var table = document.createElement("table");
+            var tableBody = document.createElement("tbody");
 
             for (x = 0; x < chartParamsObj.widgets.length; x++) {
+                var row = document.createElement("tr");
 
                 var thisWidget = chartParamsObj.widgets[x];
 
@@ -4658,40 +4662,61 @@ Fisma.Chart = {
                 }
 
                 // print the label text to be displayed to the left of the widget if one is given
-                addHTML += '<tr><td nowrap align=left>' + thisWidget.label + ' </td><td><td nowrap width="10"></td><td width="99%" align=left>';
+                var firstCell = document.createElement("td");
+                firstCell.noWrap = true;
+                firstCell.align = "left";
+                firstCell.innerHTML = thisWidget.label;
+                row.appendChild(firstCell);
+
+                var secondCell = document.createElement("td");
+                secondCell.nowrap = "nowrap";
+                secondCell.width = "90%";
+                secondCell.align = "left";
+                secondCell.style.paddingLeft = "10px";
+                row.appendChild(secondCell);
 
                 switch(thisWidget.type) {
                     case 'combo':
+                        var select = document.createElement('select');
+                        select.id = thisWidget.uniqueid;
+                        for (var key in thisWidget.options) {
+                            var option = document.createElement('option');
+                            option.innerHTML = thisWidget.options[key].replace(/</g, '&lt;').replace(/>/g, '&gt;');
+                            option.value = thisWidget.options[key];
 
-                        addHTML += '<select id="' + thisWidget.uniqueid + '" onChange="Fisma.Chart.widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');">';
-                                            // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
-
-                        for (y = 0; y < thisWidget.options.length; y++) {
-                            addHTML += '<option value="' + thisWidget.options[y] + '">' + thisWidget.options[y] + '</option><br/>';
+                            select.appendChild(option);
                         }
+                        secondCell.appendChild(select);
 
-                        addHTML += '</select>';
-
+                        YAHOO.util.Event.addListener(thisWidget.uniqueid,
+                            "change",
+                            Fisma.Chart.widgetEvent,
+                            chartParamsObj
+                        );
+ 
                         break;
-
                     case 'text':
+                        var input = document.createElement('input');
+                        input.type = "text";
+                        input.id = thisWidget.uniqueid;
+                        secondCell.appendChild(input);
 
-                        addHTML += '<input onKeyDown="if(event.keyCode==13){Fisma.Chart.widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');};" type="textbox" id="' + thisWidget.uniqueid + '" />';
-                                            // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
+                        var keyHandle = new YAHOO.util.KeyListener(input,
+                                               {keys : YAHOO.util.KeyListener.KEY.ENTER},
+                                               function () {
+                                                   Fisma.Chart.widgetEvent(null, chartParamsObj);
+                                               });
+                        keyHandle.enable();
+
                         break;
-
                     default:
                         throw 'Error - Widget ' + x + "'s type (" + thisWidget.type + ') is not a known widget type';
                 }
-
-
-                addHTML += '</td></tr>';
-
+                tableBody.appendChild(row);
             }
 
-            // add this widget HTML to the DOM
-            wigSpace.innerHTML = '<table>' + addHTML + '</table>';
-
+            table.appendChild(tableBody);
+            wigSpace.appendChild(table);
         }
 
         Fisma.Chart.applyChartWidgetSettings(chartParamsObj);
@@ -4796,7 +4821,7 @@ Fisma.Chart = {
       * @param object
       * @return void
      */
-    widgetEvent : function (chartParamsObj) {
+    widgetEvent : function (event, chartParamsObj) {
         var x = 0;
 
         // first, save the widget values (as cookies) so they can be retained later when the widgets get redrawn
