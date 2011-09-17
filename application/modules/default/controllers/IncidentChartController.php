@@ -208,11 +208,13 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
      */
     public function bureauAction()
     {
+        $bureau = Inspekt::getAlpha($this->getRequest()->getParam('bureau'));
+
         $rtnChart = new Fisma_Chart();
         $rtnChart
             ->setChartType('bar')
             ->setColors(array('#416ed7'))
-            ->setTitle('Incidents per bureau reported in the last 90 days');
+            ->setTitle("Incidents per $bureau reported in the last 90 days");
     
         $cutoffDate = Zend_Date::now()->subDay(90)->toString(Fisma_Date::FORMAT_DATETIME);
 
@@ -221,8 +223,9 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
                        ->select('i.id, COUNT(*) AS count, bureau.nickname')
                        ->leftJoin('i.Organization o')
                        ->leftJoin('Organization bureau')
+                       ->leftJoin('bureau.OrganizationType bureauOrgType')
                        ->where('i.reportTs > ?', $cutoffDate)
-                       ->andWhere('bureau.orgType = ?', array('bureau'))
+                       ->andWhere('bureauOrgType.nickname = ?', array($bureau))
                        ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
                        ->orderBy('bureau.nickname')
                        ->groupBy('bureau.id')

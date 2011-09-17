@@ -29,6 +29,8 @@ Fisma.SecurityAuthorization = {
     
     /**
      * Store a panel which displays the add control form
+     * 
+     * @var YAHOO.widget.Panel
      */
     addControlPanel: null,
  
@@ -38,7 +40,7 @@ Fisma.SecurityAuthorization = {
      * @var Fisma.FormDialog
      */
     selectControlsDialog: null,
-    
+ 
     /**
      * A reference to the tab view on the SA view page
      */
@@ -256,15 +258,64 @@ Fisma.SecurityAuthorization = {
         YAHOO.util.Connect.asyncRequest('GET', url, callbacks, null);
     },
 
+    tableFormatEnhancements: function(elem, record, column) {
+        var data = record.getData();
+        var selected = data.selectedEnhancements_selectedEnhancements;
+        var available = data.definedEnhancements_availableEnhancements;
+        if (Number(available) === 0) {
+            elem.innerHTML = "<i>N/A</i>";
+        } else {
+            elem.innerHTML = selected + " / " + available + ' ';
+            var anchor = document.createElement('a');
+            anchor.innerHTML = "Edit";
+            anchor.href = "#";
+            elem.appendChild(anchor);
+            YAHOO.util.Event.addListener(anchor, "click", Fisma.SecurityAuthorization.editEnhancements, {elem: elem, record: record, column: column}, this);
+        }
+    },
+
+    editEnhancements: function (event, args) {
+        var saId = args.record.getData().instance_securityAuthorizationId;
+        var controlId = args.record.getData().definition_id;
+        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId);
+        dialog.show();
+    },
+
+    /**
+     * Displays the hidden block on the FIPS-199 page to add information types to a system
+     */
+    showInformationTypes : function () {
+        document.getElementById('addInformationTypes').style.display = 'block';
+    },
+
+    /**
+     * Build URL for adding information type to the system
+     */
+    addInformationType : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = "<a href='/system/add-information-type/id/"
+            + oRecord.getData('system')
+            + "/sitId/"
+            + oData
+            + "'>Add</a>";
+    },
+
+    /**
+     * Build URL for removing information types from a system
+     */
+    removeInformationType : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = "<a href='/system/remove-information-type/id/"
+            + oRecord.getData('system')
+            + "/sitId/"
+            + oData
+            + "'>Remove</a>";
+    },
+
     /**
      * Run an XHR request to add an available information type to the information types
-     *
-     * @param HTMLElement addControlForm
      */
     handleAvailableInformationTypesTableClick: function (event) {
         var targetEl = event.target;
         var selectedId = Fisma.SecurityAuthorization.availableInformationTypesTable.getRecord(targetEl).getData();
-        alert(YAHOO.util.JSON.stringify(selectedId));
 
         var postData = "csrf=" + document.getElementById('csrfToken').value;
 
@@ -318,4 +369,83 @@ Fisma.SecurityAuthorization = {
             postData
         );
     },
+
+    tableFormatEnhancements: function(elem, record, column) {
+        var data = record.getData();
+        var selected = data.selectedEnhancements_selectedEnhancements;
+        var available = data.definedEnhancements_availableEnhancements;
+        if (Number(available) === 0) {
+            elem.innerHTML = "<i>N/A</i>";
+        } else {
+            elem.innerHTML = selected + " / " + available + ' ';
+            var anchor = document.createElement('a');
+            anchor.innerHTML = "Edit";
+            anchor.href = "#";
+            elem.appendChild(anchor);
+            YAHOO.util.Event.addListener(anchor, "click", Fisma.SecurityAuthorization.editEnhancements, {elem: elem, record: record, column: column}, this);
+        }
+    },
+
+    editEnhancements: function (event, args) {
+        var saId = args.record.getData().instance_securityAuthorizationId;
+        var controlId = args.record.getData().definition_id;
+        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId);
+        dialog.show();
+    }
 }
+
+Fisma.SecurityAuthorization.EditEnhancementsDialog = function(saId, controlId) {
+    var formUrl = '/sa/security-authorization/edit-enhancements/id/' + saId + '/controlId/' + controlId + '/format/json';
+    YAHOO.widget.Panel.superclass.constructor.call(this, YAHOO.util.Dom.generateId(), {modal: true});
+    this._showLoadingMessage();
+    this._requestForm(formUrl);
+};
+YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Panel, {
+    /**
+     * Show a loading message (while loading the form)
+     */
+    _showLoadingMessage: function() {
+        this.setBody('Loading…');
+        this.render(document.body);
+        this.center();
+        this.show();
+    },
+
+    /**
+     * Request the blank form from a specified URL
+     *
+     * @param url {String}
+     */
+    _requestForm: function(url) {
+        var callback = {
+            success: this._loadForm,
+
+            failure: function(connectionData) {
+                Fisma.Util.showAlertDialog('An unexpected error occurred.');
+                this.destroy();
+            },
+
+            scope: this
+        };
+        YAHOO.util.Connect.asyncRequest( 'GET', url, callback, null);
+
+    },
+
+    /**
+     * Load the returned form into the dialog
+     *
+     * @param connectionData {Object} Returned by YUI connection class
+     */
+    _loadForm: function(connectionData) {
+        try {
+            var response = YAHOO.lang.JSON.parse(connectionData.responseText);
+            console.log(response);
+
+            this.setBody(response);
+            this.center();
+        } catch (error) {
+            Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+            this.hide();
+        }
+    }
+});

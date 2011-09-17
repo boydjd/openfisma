@@ -49,6 +49,15 @@ class Fisma_AsyncResponse
      * It's access is public so that it can be serialized to JSON in a sensible way
      */
     public $message;
+    
+    /**
+     * A payload object which is sent with the response.
+     * 
+     * It's access is public so that it can be serialized to JSON in a sensible way
+     * 
+     * @var array
+     */
+    public $payload = array();
         
     /**
      * Mark response as succeeded
@@ -81,5 +90,16 @@ class Fisma_AsyncResponse
         } else {
             $this->message = empty($error) ? null : (string)$error;
         }
+    }
+    
+    /**
+     * Add a value to the payload using the given key.
+     * 
+     * @param string $key
+     * @param mixed $value Any value that can be serialized to JSON
+     */
+    public function addPayload($key, $value)
+    {
+        $this->payload[$key] = $value;
     }
 }

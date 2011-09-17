@@ -34,7 +34,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         $this->_helper->reportContextSwitch()
                       ->addActionContext('category', array('html', 'pdf', 'xls'))
                       ->addActionContext('history', array('html', 'pdf', 'xls'))
-                      ->addActionContext('bureau', array('html', 'pdf', 'xls'))
+                      ->addActionContext('organization', array('html', 'pdf', 'xls'))
                       ->initContext();
         
         parent::init();        
@@ -246,26 +246,38 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
     }
     
     /**
-     * Show incidents by Bureau
+     * Show incidents by organization type
      */
-    public function bureauAction()
+    public function organizationAction()
     {
+        $storageNamespace = 'Incident.Organization.Report';
+        $orgTypeId = $this->_helper->OrganizationType
+                          ->getOrganizationTypeIdByStorageOrRequest($this->_me->id, $storageNamespace, false);
+
+        $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId, false);
+
+        $this->view->orgTypeId = $orgTypeId;
+        $this->view->organizationTypeForm = $filterForm;
+        $this->view->namespace = $storageNamespace;
+        $this->view->url = "/incident-report/organization/format/html";
+
         // Base query gets category names and joins to incidents
         $bureauQuery = Doctrine_Query::create()
                        ->from('Organization bureau')
                        ->select('bureau.nickname')
                        ->leftJoin('Organization child')
                        ->leftJoin('child.Incidents i')
-                       ->where('bureau.orgType = ?', 'bureau')
+                       ->where('bureau.orgTypeId = ?', $orgTypeId)
                        ->andWhere('child.lft BETWEEN bureau.lft AND bureau.rgt')
                        ->groupBy('bureau.id')
                        ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
+        $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId);
         // Create the base report object -- additional columns are added below
         $report = new Fisma_Report();
 
-        $report->setTitle('Incidents Reported Per Bureau (Previous 12 Months)')
-               ->addColumn(new Fisma_Report_Column('Bureau', true));
+        $report->setTitle('Incidents Reported Per Organization (Previous 12 Months)')
+               ->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true));
                        
         // Now add one column for each of last 12 months (including current month)
         $startDate = Zend_Date::now()->setDay(1)->subMonth(12);
@@ -304,9 +316,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         }
 
         $bureaus = $bureauQuery->execute();
-
         $report->setData($bureaus);
-
         $this->_helper->reportContextSwitch()->setReport($report);
     }
 }

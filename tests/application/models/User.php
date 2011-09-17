@@ -159,7 +159,7 @@ class Test_Application_Models_User extends Test_Case_Unit
 
         $this->assertEquals(
             "SELECT o.id AS o__id, o.createdts AS o__createdts, o.modifiedts AS o__modifiedts, o.name AS o__name, " .
-            "o.nickname AS o__nickname, o.orgtype AS o__orgtype, o.systemid AS o__systemid, o.description " .
+            "o.nickname AS o__nickname, o.orgtypeid AS o__orgtypeid, o.systemid AS o__systemid, o.description " .
             "AS o__description, o.lft AS o__lft, o.rgt AS o__rgt, o.level AS o__level, o.deleted_at AS o__deleted_at" .
             " FROM organization o LEFT JOIN user_role_organization u2 ON (o.id = u2.organizationid) LEFT JOIN " .
             "user_role u ON u.userroleid = u2.userroleid AND (u.userid  ) ORDER BY o.lft",

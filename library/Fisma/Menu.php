@@ -75,6 +75,8 @@ class Fisma_Menu
             if ($acl->hasArea('finding_admin')) {
                 $findingAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
+                $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding General', '/finding/config/general'));
+
                 if ($acl->hasPrivilegeForClass('read', 'Source')) {
                     $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding Sources', '/finding/source/list'));
                 }
@@ -139,6 +141,12 @@ class Fisma_Menu
 
                 if ($acl->hasPrivilegeForClass('read', 'Network')) {
                     $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));
+                }
+
+                if ($acl->hasPrivilegeForClass('read', 'OrganizationType')) {
+                    $systemInventoryAdminMenu->add(
+                        new Fisma_Yui_MenuItem('Organization Types', '/organization-type/list')
+                    );
                 }
 
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
@@ -231,7 +239,7 @@ class Fisma_Menu
                 $reportsSubmenu = new Fisma_Yui_Menu('Reports');
 
                 $reportsSubmenu->add(
-                    new Fisma_Yui_MenuItem('Incident Bureaus', '/incident-report/bureau/format/html')
+                    new Fisma_Yui_MenuItem('Incident Organizations', '/incident-report/organization/format/html')
                 );
 
                 $reportsSubmenu->add(

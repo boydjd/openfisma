@@ -107,7 +107,7 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             '/denormalizedStatus/textDoesNotContain/CLOSED' .
             '/securityControl/' . 
             ( $displayBy === 'Family Summary' ? 'textContains' : 'textExactMatch' ) .
-            '/#ColumnLabel#'
+            ( $displayBy === 'Family Summary' ? '/"#ColumnLabel#"' : '/#ColumnLabel#' )
         );
             
         // The context switch will convert this array to a JSON responce

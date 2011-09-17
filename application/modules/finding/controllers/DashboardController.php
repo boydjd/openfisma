@@ -45,7 +45,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->initContext();
 
         $this->_visibleOrgs = $this->_me
-            ->getOrganizationsQuery()
+            ->getOrganizationsByPrivilegeQuery('finding', 'read')
             ->select('o.id')
             ->execute()
             ->toKeyValueArray('id', 'id');
@@ -141,6 +141,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->chartNoMit = $chartNoMit->export();
 
         // Bottom-Upper chart - Open Findings By Organization
+        $orgTypes = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
+        $orgTypeOptions = array_values($orgTypes);
+        $orgTypeOptions = array_map('ucwords', $orgTypeOptions);
+        array_push($orgTypeOptions, 'System', 'GSS and Majors');
+
         $findingOrgChart = new Fisma_Chart(400, 275, 'findingOrgChart');
         $findingOrgChart
             ->setTitle('Open Findings By Organization')
@@ -149,15 +154,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'displayBy',
                     'Display By:',
                     'combo',
-                    'Organization',
-                    array(
-                        'Agency',
-                        'Bureau',
-                        'Organization',
-                        'System',
-                        'GSS and Majors'
-                        )
-                    )
+                    $orgTypeOptions[0],
+                    $orgTypeOptions 
+                )
             ->addWidget(
                     'threatLevel',
                     'Threat Level:',
@@ -562,9 +561,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             $q = Doctrine_Query::create();
             $q
-                ->addSelect('id, nickname, name')
+                ->addSelect('o.id, o.nickname, o.name')
                 ->from('Organization o')
-                ->where('orgtype = ?', $orgType)
+                ->leftJoin('o.OrganizationType ot')
+                ->where('ot.nickname = ?', $orgType)
                 ->whereIn('o.id ', $this->_visibleOrgs)
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                 ->orderBy('o.nickname');
