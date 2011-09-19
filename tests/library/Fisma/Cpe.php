@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
  * Tests for CPE (Common Platform Enumeration) class
@@ -27,7 +27,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @package    Test
  * @subpackage Test_Library
  */
-class Test_Library_Fisma_Cpe extends Test_FismaUnitTest
+class Test_Library_Fisma_Cpe extends Test_Case_Unit
 {
     /**
      * Test proper handling of URL encoded CPEs

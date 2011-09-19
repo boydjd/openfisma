@@ -16,18 +16,18 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
  * Test_Application_Models_Organization
  * 
- * @uses Test_FismaUnitTest
+ * @uses Test_Case_Unit
  * @package Test 
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Test_Application_Models_Organization extends Test_FismaUnitTest
+class Test_Application_Models_Organization extends Test_Case_Unit
 {
     /**
      * testGetRoleId 
@@ -51,47 +51,22 @@ class Test_Application_Models_Organization extends Test_FismaUnitTest
     public function testGetType()
     {
         $org = new Organization();
-        $org->orgType = 'test';
-        $this->assertEquals('test', $org->getType());
+        $org->OrganizationType->icon = 'bureau';
+        $this->assertEquals('bureau', $org->getType());
     }
 
     /**
-     * testGetOrgTypeLabelForAgency 
-     * 
+     * testGetOrgTypeLabel 
+     *
+     * The  
      * @access public
      * @return void
      */
-    public function testGetOrgTypeLabelForAgency()
+    public function testGetOrgTypeLabel()
     {
         $org = new Organization();
-        $org->orgType = 'agency';
-        $this->assertEquals('Agency', $org->getOrgTypeLabel());
-    }
-
-    /**
-     * testGetOrgTypeLabelForBureau 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testGetOrgTypeLabelForBureau()
-    {
-        $org = new Organization();
-        $org->orgType = 'bureau';
-        $this->assertEquals('Bureau', $org->getOrgTypeLabel());
-    }
-
-    /**
-     * testGetOrgTypeLabelForOrganization 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testGetOrgTypeLabelForOrganization()
-    {
-        $org = new Organization();
-        $org->orgType = 'organization';
-        $this->assertEquals('Organization', $org->getOrgTypeLabel());
+        $org->OrganizationType->name = 'test';
+        $this->assertEquals('test', $org->getOrgTypeLabel());
     }
 
     /**

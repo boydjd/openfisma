@@ -14,9 +14,8 @@ Organization:
             notblank: true
             notnull: true
             unique: true
-        orgType:
-            type: enum
-            values: [agency, bureau, organization, system]
+        orgTypeId:
+            type: integer
         systemId:
             type: integer
         description: 
@@ -29,6 +28,11 @@ Organization:
             local: systemId
             foreign: id
             foreignType: one # Forces Doctrine to make this one-to-one instead of one-to-many
+
+        OrganizationType:
+            local: orgTypeId
+            foreign: id
+            foreignAlias: Organizations
 
     actAs:
         NestedSet:

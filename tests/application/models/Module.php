@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
  * Test the module model
@@ -27,7 +27,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @package    Test
  * @subpackage Test_Application
  */
-class Test_Application_Models_Module extends Test_FismaUnitTest
+class Test_Application_Models_Module extends Test_Case_Unit
 {
     /**
      * Enable and disable a module

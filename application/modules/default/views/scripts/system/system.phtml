@@ -98,11 +98,11 @@ Fisma_Format_Section::startSection('Details');
         <td>
         <?php
             $parentOrganization = $this->organization->getNode()->getParent();
-
+            $organizationTypeNickname = $parentOrganization->OrganizationType->nickname;  
             if (isset($parentOrganization)) {
                 $parentOrganizationName = $parentOrganization->nickname . ' - ' . $parentOrganization->name;
                 if ($this->acl()->hasPrivilegeForObject('read', $parentOrganization)) {
-                    $parentOrgType = 'system' == $parentOrganization->orgType ? 'system' : 'organization';
+                    $parentOrgType = 'system' == $organizationTypeNickname ? 'system' : 'organization';
                     $parentOrganizationId = 'system' == $parentOrgType ? 
                                             $parentOrganization->systemId : $parentOrganization->id;
                     echo $this->escape('<a href="/' . $parentOrgType . '/view/id/', 'none');

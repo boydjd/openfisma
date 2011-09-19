@@ -186,3 +186,8 @@ Configuration:
             notblank: true
             comment: The ID of the default security control catalog which is used when the user does not explicitly specify a security control catalog.
             default: 4
+        default_bureau_id:
+            type: integer(1)
+            notblank: true
+            comment: The ID of the default organization type which is used when the user does not explicitly organization type.
+            default: 3

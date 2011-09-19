@@ -36,7 +36,7 @@ class UserRoleOrganization extends BaseUserRoleOrganization
      */
     public function postDelete($event)
     {
-        $this->_invalidateUserAcl($this->userRoleId);
+        $this->_invalidateUserAcl();
     }
 
     /**
@@ -48,7 +48,7 @@ class UserRoleOrganization extends BaseUserRoleOrganization
      */
     public function postSave($event)
     {
-        $this->_invalidateUserAcl($this->userRoleId);
+        $this->_invalidateUserAcl();
     }
 
     /**
@@ -60,18 +60,17 @@ class UserRoleOrganization extends BaseUserRoleOrganization
      */
     public function postUpdate($event)
     {
-        $this->_invalidateUserAcl($this->userRoleId);
+        $this->_invalidateUserAcl();
     }
 
     /**
      * _invalidateUserAcl 
      * 
-     * @param mixed $userRoleId 
      * @access private
      * @return void
      */
-    private function _invalidateUserAcl($userRoleId)
+    private function _invalidateUserAcl()
     {
-        Doctrine::getTable('User')->getUserByUserRoleIdQuery($userRoleId)->fetchOne()->invalidateAcl();
+        $this->UserRole->User->invalidateAcl();
     }
 }
