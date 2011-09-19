@@ -683,9 +683,16 @@ class Fisma_Chart
      * @param type - should be either 'text' or 'combo', to place a textbox, or drop-down/list-box below the chart
      * @param defaultvalue - the value to set the textbox or list-box to if there is no previous saved cookie-setting
      * @param cmboOpts - An array of strings supplied to show as options in a list-box
+     * @param bool $setKeyValue - If true, set key value of array to the value of dropdown options, 
+     *                            otherwise, use array value instead.
      * @return Fisma_Chart
      */
-    public function addWidget($uniqueid = null, $label = null, $type = 'text', $defaultvalue = null, $cmboOpts = null)
+    public function addWidget($uniqueid = null,
+                              $label = null,
+                              $type = 'text',
+                              $defaultvalue = null,
+                              $cmboOpts = null,
+                              $setKeyValue = false)
     {
         if ($type !== 'text' && $type !== 'combo') {
             throw new Fisma_Zend_Exception(
@@ -716,6 +723,8 @@ class Fisma_Chart
             }
             $wigData['options'] = $cmboOpts;
         }
+        
+        $wigData['setKeyValue'] = $setKeyValue;
         
         $this->chartParamArr['widgets'][] = $wigData;
         
