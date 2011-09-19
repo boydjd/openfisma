@@ -428,7 +428,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                 ->setRowCount(10)
                 ->setDataUrl("/sa/information-type/information-types/id/{$id}/format/json")
                 ->setGlobalVariableName('Fisma.SecurityAuthorization.assignedInformationTypesTable');
-                 
 
         $this->view->informationTypesTable = $informationTypesTable;
         // END: Building of data table
@@ -439,7 +438,13 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             $availableInformationTypesTable = clone $informationTypesTable;
 
             $availableInformationTypesTable->addColumn(
-                new Fisma_Yui_DataTable_Column('Add', 'false', 'Fisma.SecurityAuthorization.addInformationType', null, 'id')
+                new Fisma_Yui_DataTable_Column(
+                    'Add',
+                    'false',
+                    'Fisma.SecurityAuthorization.addInformationType',
+                    null,
+                    'id'
+                )
             );
 
             $availableInformationTypesTable->setDataUrl(
@@ -462,7 +467,13 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             // END: Building of the data table
 
             $this->view->informationTypesTable->addColumn(
-                new Fisma_Yui_DataTable_Column('Remove', 'false', 'Fisma.SecurityAuthorization.removeInformationType', null, 'id')
+                new Fisma_Yui_DataTable_Column(
+                    'Remove',
+                    'false',
+                    'Fisma.SecurityAuthorization.removeInformationType',
+                    null,
+                    'id'
+                )
             );
 
             $addInformationTypeButton = new Fisma_Yui_Form_Button(
@@ -477,7 +488,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
         $this->render();
     }
-
 
     /**
      * Display the step 2 (Select) user interface
@@ -921,20 +931,50 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      */
     public function editEnhancementsAction()
     {
-        $saId = $this->getRequest()->getParam('saId');
+        $saId = $this->getRequest()->getParam('id');
         $controlId = $this->getRequest()->getParam('controlId');
 
         $enhancements = Doctrine::getTable('SecurityControlEnhancement')
             ->findBySecurityControlId($controlId)
             ->toArray();
-        $selectedEnhancements = Doctrine_Query::create()
-            ->from('SaSecurityControlEnhancement saSce')
-            ->innerJoin('saSce.SaSecurityControl saSc')
+        $saSc = Doctrine_Query::create()
+            ->from('SaSecurityControl saSc')
+            ->leftJoin('saSc.SaSecurityControlEnhancements saSce')
             ->where('saSc.securityAuthorizationId = ?', $saId)
             ->andWhere('saSc.securityControlId = ?', $controlId)
-            ->fetchArray();
+            ->fetchOne();
+        $eIds = array();
+        foreach ($saSc->SaSecurityControlEnhancements as $saSce) {
+            $eIds[$saSce->securityControlEnhancementId] = $saSce;
+        }
+        $this->view->eids = $eIds;
 
-        $this->view->available = $enhancements;
-        $this->view->selected = $selectedEnhancements;
+        foreach ($enhancements as &$e) {
+            $e['selected'] = isset($eIds[$e['id']]);
+        }
+
+        if ($this->getRequest()->isPost()) {
+            $selected = $this->getRequest()->getPost('enhancements');
+            // insert ids not already present
+            foreach ($selected as $s) {
+                if (empty($eIds[$s])) {
+                    $saSce = new SaSecurityControlEnhancement();
+                    $saSce->securityAuthorizationId = $saId;
+                    $saSce->saSecurityControlId = $saSc->id;
+                    $saSce->securityControlEnhancementId = $s;
+                    $saSce->save();
+                    unset($saSce);
+                }
+            }
+            // delete enhancements no longer selected
+            foreach ($eIds as $saSce) {
+                if (!in_array($saSce->securityControlEnhancementId, $selected)) {
+                    $saSce->delete();
+                }
+            }
+            $this->view->result = 'success';
+        } else {
+            $this->view->enhancements = $enhancements;
+        }
     }
 }
