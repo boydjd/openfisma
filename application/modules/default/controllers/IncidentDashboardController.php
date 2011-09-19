@@ -113,7 +113,7 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
 
         $orgOptions = array_map('ucwords', $orgTypes);
 
-        $defaultValues = array_values($orgOptions);
+        $defaultValues = array_keys($orgOptions);
 
         $bureauChart = new Fisma_Chart(900, 315, 'incidentBureau', '/incident-chart/bureau/format/json');
         $bureauChart

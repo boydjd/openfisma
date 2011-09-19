@@ -211,12 +211,13 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
         $organizationTypeId = Inspekt::getInt($this->getRequest()->getParam('bureau'));
 
         $organizationType = Doctrine::getTable('OrganizationType')->findOneById($organizationTypeId);
+        $organizationTypeNickname = $organizationType ? $organizationType->nickname : '';
 
         $rtnChart = new Fisma_Chart();
         $rtnChart
             ->setChartType('bar')
             ->setColors(array('#416ed7'))
-            ->setTitle("Incidents per $organizationType->nickname reported in the last 90 days");
+            ->setTitle("Incidents per $organizationTypeNickname reported in the last 90 days");
     
         $cutoffDate = Zend_Date::now()->subDay(90)->toString(Fisma_Date::FORMAT_DATETIME);
 

@@ -145,7 +145,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $orgTypeOptions = array_map('ucwords', $orgTypes);
         $orgTypeOptions = $orgTypeOptions + array('System' => 'System') + array('GSS and Majors' => 'GSS and Majors');
 
-        $defaultValues = array_values($orgTypeOptions);
+        $defaultValues = array_keys($orgTypeOptions);
 
         $findingOrgChart = new Fisma_Chart(400, 275, 'findingOrgChart');
         $findingOrgChart
