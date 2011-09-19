@@ -1414,8 +1414,12 @@ Fisma.Chart = {
                         select.id = thisWidget.uniqueid;
                         for (var key in thisWidget.options) {
                             var option = document.createElement('option');
-                            option.innerHTML = thisWidget.options[key].replace(/</g, '&lt;').replace(/>/g, '&gt;');
-                            option.value = thisWidget.options[key];
+                            option.innerHTML = $P.htmlspecialchars(thisWidget.options[key]);
+                            if (thisWidget.setKeyValue) {
+                                option.value = key;
+                            } else {
+                                option.value = thisWidget.options[key];
+                            }
 
                             select.appendChild(option);
                         }

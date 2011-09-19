@@ -142,9 +142,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         // Bottom-Upper chart - Open Findings By Organization
         $orgTypes = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
-        $orgTypeOptions = array_values($orgTypes);
-        $orgTypeOptions = array_map('ucwords', $orgTypeOptions);
-        array_push($orgTypeOptions, 'System', 'GSS and Majors');
+        $orgTypeOptions = array_map('ucwords', $orgTypes);
+        $orgTypeOptions = $orgTypeOptions + array('System' => 'System') + array('GSS and Majors' => 'GSS and Majors');
+
+        $defaultValues = array_values($orgTypeOptions);
 
         $findingOrgChart = new Fisma_Chart(400, 275, 'findingOrgChart');
         $findingOrgChart
@@ -154,8 +155,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'displayBy',
                     'Display By:',
                     'combo',
-                    $orgTypeOptions[0],
-                    $orgTypeOptions 
+                    $defaultValues[0],
+                    $orgTypeOptions,
+                    true
                 )
             ->addWidget(
                     'threatLevel',
@@ -564,7 +566,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->addSelect('o.id, o.nickname, o.name')
                 ->from('Organization o')
                 ->leftJoin('o.OrganizationType ot')
-                ->where('ot.nickname = ?', $orgType)
+                ->where('ot.id = ?', $orgType)
                 ->whereIn('o.id ', $this->_visibleOrgs)
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                 ->orderBy('o.nickname');
