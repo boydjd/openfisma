@@ -381,6 +381,37 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             $this->save();
             $system->delete();
 
+            $countAsset = Doctrine_Query::create()
+                          ->from('Asset')
+                          ->where('orgsystemid = ?', $this->id)
+                          ->count();
+
+            // Update asset's orgsystemid to null and reindex the asset 
+            // so that the converted system is not shown on the asset list any more.
+            if ($countAsset > 0) {
+                $updateAssetQuery = Doctrine_Query::create()
+                                    ->update('Asset')
+                                    ->set('orgsystemid', 'NULL')
+                                    ->where('orgsystemid = ?', $this->id);
+            
+                $updateAssetQuery->execute();
+
+                $modelName = 'Asset';
+                $table = Doctrine::getTable($modelName);
+                $chunkSize = 1;
+
+                if ($table instanceof Fisma_Search_CustomChunkSize_Interface) {
+                    $chunkSize = $table->getIndexChunkSize();
+                }
+                $searchEngine = Zend_Registry::get('search_engine');
+                $searchEngine->deleteByType($modelName);
+
+                $indexer = new Fisma_Search_Indexer($searchEngine);
+                $allRecordsQuery = $indexer->getRecordFetchQuery($modelName);
+                $indexer->indexRecordsFromQuery($allRecordsQuery, $modelName, $chunkSize);
+                $searchEngine->commit(); 
+            }
+
             Doctrine_Manager::connection()->commit();
             
         } catch (Exception $e) {
@@ -388,6 +419,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             Doctrine_Manager::connection()->rollback();
             throw $e;
         }
+        
     }
     
     /**
@@ -421,6 +453,22 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             $this->orgTypeId = $systemType['id'];
             $this->save();
             
+            // The organizaion needs to be deleted from index after it is converted to system
+            $searchEngine = Zend_Registry::get('search_engine');
+            $searchEngine->deleteObject(get_class($this), $this->toArray());
+
+            // The system model needs to be re-index after an organization is converted to system
+            $modelName = 'System';
+            $relationAliases = array();
+
+            $indexer = new Fisma_Search_Indexer($searchEngine);
+            $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
+
+            $baseClassAlias = $relationAliases[$modelName];
+            $indexQuery->andWhere("$baseClassAlias.id = ?", $this->systemId);
+            $indexer->indexRecordsFromQuery($indexQuery, $modelName);
+            $searchEngine->commit();
+
             Doctrine_Manager::connection()->commit();
             
         } catch (Exception $e) {

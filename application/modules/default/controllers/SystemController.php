@@ -159,6 +159,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             throw new Fisma_Zend_Exception("Required parameter 'id' is missing.");
         }          
         
+        $countSystemDoc = $organization->System->Documents->count();
+        if ($countSystemDoc > 0) {
+            // @todo  English
+            $plural = $countSystemDoc == 1 ? '' : 's';
+            $msg = "Error while trying to convert: the system has uploaded system document$plural.";
+
+            $type = "warning";
+            $this->view->priorityMessenger($msg, 'warning');
+            $this->_redirect("/system/view/id/$systemId");
+        }          
+        
         $form = $this->getForm('system_converttoorganization');
         if ($form->isValid($this->getRequest()->getPost())) {
             $organization->convertToOrganization(
