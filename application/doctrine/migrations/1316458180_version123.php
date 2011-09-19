@@ -24,7 +24,7 @@
  * @author    Ben Zheng <ben.zheng@reyosoft.com>
  * @license   http://www.openfisma.org/content/license GPLv3
  */
-class Version119 extends Doctrine_Migration_Base
+class Version123 extends Doctrine_Migration_Base
 {
     /** 
      * Convert seconds to minutes
