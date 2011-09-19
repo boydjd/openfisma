@@ -8005,9 +8005,9 @@ Fisma.Module = {
                 var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
                                  + PHP_JS().htmlspecialchars(node.orgTypeLabel) + "</i>";
 
-                var yuiNode = new YAHOO.widget.TextNode(
+                var yuiNode = new YAHOO.widget.HTMLNode(
                     {
-                        label: nodeText,
+                        html: nodeText,
                         organizationId: node.id,
                         type: node.orgType,
                         systemId: node.systemId
