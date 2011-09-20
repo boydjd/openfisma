@@ -161,9 +161,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         
         $countSystemDoc = $organization->System->Documents->count();
         if ($countSystemDoc > 0) {
-            // @todo  English
-            $plural = $countSystemDoc == 1 ? '' : 's';
-            $msg = "Error while trying to convert: the system has uploaded system document$plural.";
+            $msg = "Cannot convert this system to an organization because it has documents attached to it.";
 
             $type = "warning";
             $this->view->priorityMessenger($msg, 'warning');
