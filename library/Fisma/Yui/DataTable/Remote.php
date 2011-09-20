@@ -93,6 +93,12 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
     protected $_clickEventHandler;
 
     /**
+     * The arguments to pass to the click event handler
+     *
+     * @var string
+     */
+    protected $_clickEventHandlerArgs;
+    /**
      * The name of a Javascript function which can build POST requests for this data table's data source
      * 
      * @var string
@@ -148,6 +154,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
         $data = array(
             'clickEventBaseUrl' => $this->_clickEventBaseUrl,
             'clickEventHandler' => $this->_clickEventHandler,
+            'clickEventHandlerArgs' => $this->_clickEventHandlerArgs,
             'clickEventVariableName' => $this->_clickEventVariableName,
             'columns' => $this->getColumns(),
             'columnDefinitions' => $this->_getYuiColumnDefinitions(),
@@ -355,6 +362,18 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
     {
         $this->_clickEventHandler = $clickEventHandler;
         
+        return $this;
+    }
+
+    /**
+     * clickEventHandler arguments
+     *
+     * @param string $clickEventHandlerArgs
+     */
+    public function setClickEventHandlerArgs($clickEventHandlerArgs)
+    {
+        $this->_clickEventHandlerArgs = $clickEventHandlerArgs;
+
         return $this;
     }
 }

@@ -311,17 +311,15 @@ Fisma.SecurityAuthorization = {
     },
 
     /**
-     * Run an XHR request to add an available information type to the information types
+     * Run an XHR request to add an available information type to the system information types
      */
-    handleAvailableInformationTypesTableClick: function (event) {
+    handleAvailableInformationTypesTableClick: function (event, id) {
         var targetEl = event.target;
-        var selectedId = Fisma.SecurityAuthorization.availableInformationTypesTable.getRecord(targetEl).getData();
+        var selectedId = Fisma.SecurityAuthorization.availableInformationTypesTable.getRecord(targetEl);
+        var recordId = selectedId.getData('id');
 
-        var postData = "csrf=" + document.getElementById('csrfToken').value;
+        var postData = "id=" + id + "&sitId=" + recordId;
 
-        postData += "id=" + selectedId;
-
-        YAHOO.util.Connect.setForm(addInformationTypeForm);
         YAHOO.util.Connect.asyncRequest(
             'POST',
             '/sa/information-type/add-information-type/format/json',
@@ -331,39 +329,27 @@ Fisma.SecurityAuthorization = {
                         var response = YAHOO.lang.JSON.parse(o.responseText).response;
 
                         if (response.success) {
-                            // Hide warning message
                             var addInformationTypes = document.getElementById("addInformationTypes");
                             if (addInformationTypes) {
                                 addInformationTypes.style.display = 'none';
                             }
 
-                            // Refresh controls table
-                            var dt = Fisma.SecurityAuthorization.assignedInfsormationTypesTable;
+                            var dt = Fisma.SecurityAuthorization.assignedInformationTypesTable;
                             document.getElementById('addInformationTypes').style.display = 'block';
                             dt.showTableMessage("Updating list of information types…");
                             dt.getDataSource().sendRequest('', {success: dt.onDataReturnInitializeTable, scope: dt});
                             dt.on("dataReturnEvent", function () {
-                                modalDialog.destroy();
                             });
-
-                            // Update the overview tab
-                            //if (YAHOO.lang.isValue(Fisma.SecurityAuthorization.overview)) {
-                             //   Fisma.SecurityAuthorization.overview.incrementStepDenominator(3);
-                              //  Fisma.SecurityAuthorization.overview.incrementStepDenominator(4);
-                            //}
                         } else {
                             Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
-                            modalDialog.destroy();
                         }
                     } catch (error) {
                         Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
-                        modalDialog.destroy();
                     }
                 },
 
                 failure: function(o) {
                     Fisma.Util.showAlertDialog('An unexpected error occurred.');
-                    modalDialog.destroy();
                 }
             },
             postData

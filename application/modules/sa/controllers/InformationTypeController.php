@@ -27,6 +27,20 @@
  */
 class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
 {
+
+    /**
+     * Initialize internal members.
+     *
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+        $this->_helper->contextSwitch()
+                ->addActionContext('add-information-type', 'json')
+                ->initContext();
+    }
+
     protected $_modelName = 'SaInformationType';
 
     /**
@@ -42,7 +56,7 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
     /**
      * Return types which can be assigned to a system
      * The system ID is included in the data for use on the System FIPS-199 page
-     * 
+     *
      * @return void
      */
     public function activeTypesAction()
@@ -130,18 +144,15 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
             $id = $this->getRequest()->getParam('id');
 
             $system = Doctrine::getTable('System')->find($id);
-
             $this->_acl->requirePrivilegeForObject('update', $system->Organization);
 
             $systemId = $system->id;
-
             $informationTypeSystem = new SaInformationTypeSystem();
             $informationTypeSystem->sainformationtypeid = $informationTypeId;
             $informationTypeSystem->systemid = $systemId;
             $informationTypeSystem->save();
         } catch (Exception $e) {
-        $this->getInvokeArg('bootstrap')->getResource('Log')->log($e, Zend_Log::ERR);
-            Doctrine_Manager::connection()->rollback();
+            $this->getInvokeArg('bootstrap')->getResource('Log')->log($e, Zend_Log::ERR);
             $response->fail($e);
         }
         $this->view->response = $response;
@@ -171,5 +182,4 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
 
         $this->_redirect("/system/view/id/$id");
     }
-
 }

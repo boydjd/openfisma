@@ -450,6 +450,10 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                 'Fisma.SecurityAuthorization.handleAvailableInformationTypesTableClick'
             );
 
+            $availableInformationTypesTable->setClickEventHandlerArgs(
+                $id
+            );
+
             $availableInformationTypesTable->setGlobalVariableName(
                 'Fisma.SecurityAuthorization.availableInformationTypesTable'
             );

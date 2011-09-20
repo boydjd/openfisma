@@ -139,8 +139,9 @@
         
         <?php if (isset($this->clickEventHandler)): ?>
             var clickEventHandlerName = "<?php echo $this->escape($this->clickEventHandler, 'javascript'); ?>";
+            var clickEventHandlerArgs = "<?php echo $this->escape($this->clickEventHandlerArgs, 'javascript'); ?>"
             var clickEventHandler = Fisma.Util.getObjectFromName(clickEventHandlerName);
-            dataTable.subscribe("cellClickEvent", clickEventHandler);
+            dataTable.subscribe("cellClickEvent", clickEventHandler, clickEventHandlerArgs);
         <?php endif; ?>
         
         <?php if (isset($this->renderEventFunction)): ?>
