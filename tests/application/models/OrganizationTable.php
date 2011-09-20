@@ -16,18 +16,18 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
  * Test_Application_Models_OrganizationTable 
  * 
- * @uses Test_FismaUnitTest
+ * @uses Test_Case_Unit
  * @package Test 
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Test_Application_Models_OrganizationTable extends Test_FismaUnitTest
+class Test_Application_Models_OrganizationTable extends Test_Case_Unit
 {
     /**
      * testGetAclFields 
@@ -49,8 +49,8 @@ class Test_Application_Models_OrganizationTable extends Test_FismaUnitTest
     public function testGetSearchIndexQuery()
     {
         $sampleQ = Doctrine_Query::create()->from('System s');
-        $q = OrganizationTable::getSearchIndexQuery($sampleQ, array('Organization' => 'document_type'));
+        $q = OrganizationTable::getSearchIndexQuery($sampleQ, array('OrganizationType' => 'organization_type'));
         $this->assertEquals('Doctrine_Query', get_class($q));
-        $this->assertEquals(" FROM System s WHERE document_type.orgType <> ?", $q->getDql());
+        $this->assertEquals(" FROM System s WHERE organization_type.nickname <> ?", $q->getDql());
     }
 }

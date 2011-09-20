@@ -101,13 +101,6 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $name = $element->getName();            
             $value = Fisma::configuration()->getConfig($name);
 
-            /**
-             * @todo More ugliness. Remove this.
-             */
-            if (in_array($name, array('session_inactivity_period', 'session_inactivity_notice'))) {
-                $value /= 60; // Convert from seconds to minutes
-            }
-            
             $form->setDefault($name, $value);
         }
         
@@ -430,14 +423,6 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $values = $form->getValues();
         
             foreach ($values as $item => &$value) {
-            
-                /**
-                 * @todo this needs to be cleaned up
-                 */
-                if ('session_inactivity_period' == $item || 'session_inactivity_notice' == $item) {
-                    $value *= 60; // convert minutes to seconds
-                }
-
                 Fisma::configuration()->setConfig($item, $value);
             }
 

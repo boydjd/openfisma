@@ -119,6 +119,7 @@ table.jqplot-table-legend, table.jqplot-cursor-legend {
 
 td.jqplot-table-legend {
     vertical-align:middle;
+    padding: .5em !important;
 }
 
 td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
@@ -128,6 +129,7 @@ td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
 td.jqplot-table-legend > div {
     border: 1px solid #cccccc;
     padding:1px;
+    color: #000000;
 }
 
 div.jqplot-table-legend-swatch {
@@ -141,6 +143,7 @@ div.jqplot-table-legend-swatch {
     border-bottom-style: solid;
     border-left-style: solid;
     border-right-style: solid;
+    color: #000000;
 }
 
 .jqplot-title {
@@ -153,6 +156,7 @@ div.jqplot-table-legend-swatch {
 table.jqplot-cursor-tooltip {
     border: 1px solid #cccccc;
     font-size: 0.75em;
+    color: #000000;
 }
 
 .jqplot-cursor-tooltip {
@@ -163,6 +167,7 @@ table.jqplot-cursor-tooltip {
     opacity: 0.8;
     filter: alpha(opacity = 80);
     padding: 1px;
+    color: #000000;
 }
 
 .jqplot-highlighter-tooltip {
@@ -175,7 +180,8 @@ table.jqplot-cursor-tooltip {
     padding: 1px;
     opacity: 0.8;
     filter: alpha(opacity = 80);
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
+    color: #000000;
 }
 
 .jqplot-point-label {
@@ -185,13 +191,14 @@ table.jqplot-cursor-tooltip {
 }
       
 td.jqplot-cursor-legend-swatch {
-vertical-align:middle;
-text-align:center;
+    vertical-align:middle;
+    text-align:center;
+    color: #000000;
 }
 
 div.jqplot-cursor-legend-swatch {
-width:1.2em;
-height:0.7em;
+    width:1.2em;
+    height:0.7em;
 }
 
 .jqplot-data-label {

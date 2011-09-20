@@ -329,3 +329,18 @@ Event:
         name: DOCUMENT_TYPE_DELETED
         description: Document Type Deleted
         Privilege: notification_admin
+
+    ORGANIZATION_TYPE_UPDATED:
+        name: ORGANIZATION_TYPE_UPDATED
+        description: Organization Type Modified
+        Privilege: notification_admin
+
+    ORGANIZATION_TYPE_CREATED:
+        name: ORGANIZATION_TYPE_CREATED
+        description: Organization Type Created
+        Privilege: notification_admin
+
+    ORGANIZATION_TYPE_DELETED:
+        name: ORGANIZATION_TYPE_DELETED
+        description: Organization Type Deleted
+        Privilege: notification_admin

@@ -448,3 +448,21 @@ Privilege:
         resource: document_type
         action: delete
         description: Delete Document Type
+
+    # Organization Type CRUD
+    organization_type_create:
+        resource: organization_type
+        action: create
+        description: Create Organization Type
+    organization_type_read:
+        resource: organization_type
+        action: read
+        description: View Organization Type
+    organization_type_update:
+        resource: organization_type
+        action: update
+        description: Edit Organization Type
+    organization_type_delete:
+        resource: organization_type
+        action: delete
+        description: Delete Organization Type

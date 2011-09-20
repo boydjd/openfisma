@@ -1691,6 +1691,700 @@ d,e);d={top:b.top-e.top+j,left:b.left-e.left+i};"using"in b?b.using.call(a,d):f.
 f.top,left:d.left-f.left}},offsetParent:function(){return this.map(function(){for(var a=this.offsetParent||s.body;a&&!/^body|html$/i.test(a.nodeName)&&c.css(a,"position")==="static";)a=a.offsetParent;return a})}});c.each(["Left","Top"],function(a,b){var d="scroll"+b;c.fn[d]=function(f){var e=this[0],j;if(!e)return null;if(f!==w)return this.each(function(){if(j=wa(this))j.scrollTo(!a?f:c(j).scrollLeft(),a?f:c(j).scrollTop());else this[d]=f});else return(j=wa(e))?"pageXOffset"in j?j[a?"pageYOffset":
 "pageXOffset"]:c.support.boxModel&&j.document.documentElement[d]||j.document.body[d]:e[d]}});c.each(["Height","Width"],function(a,b){var d=b.toLowerCase();c.fn["inner"+b]=function(){return this[0]?c.css(this[0],d,false,"padding"):null};c.fn["outer"+b]=function(f){return this[0]?c.css(this[0],d,false,f?"margin":"border"):null};c.fn[d]=function(f){var e=this[0];if(!e)return f==null?null:this;if(c.isFunction(f))return this.each(function(j){var i=c(this);i[d](f.call(this,j,i[d]()))});return"scrollTo"in
 e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["client"+b]||e.document.body["client"+b]:e.nodeType===9?Math.max(e.documentElement["client"+b],e.body["scroll"+b],e.documentElement["scroll"+b],e.body["offset"+b],e.documentElement["offset"+b]):f===w?c.css(e,d):this.css(d,typeof f==="string"?f:f+"px")}});A.jQuery=A.$=c})(window);
+/*
+Copyright (c) 2009, Mark Mansour. All rights reserved.
+Code licensed under the BSD License: http://developer.yahoo.net/yui/license.txt
+version: 2.8.0
+
+Note: I'm adding this into my branch of the GroupedDataTable code.  I created it from
+      Anthony Super's code with very significant reworking to make it more OO like.
+*/
+(function() {
+    /*global YAHOO, document */
+    var Dom = YAHOO.util.Dom,
+        Event = YAHOO.util.Event,
+        Util = YAHOO.util,
+        Widget = YAHOO.widget,
+        Lang = YAHOO.lang,
+        DT = YAHOO.widget.DataTable;
+
+    var GroupedDataTable = function(elContainer, aColumnDefs, oDataSource, oConfigs) {
+
+        // If there is no 'groupBy' attribute in oConfigs return a plain YUI DataTable
+        if (!oConfigs.groupBy) {
+            return new YAHOO.widget.DataTable(elContainer, aColumnDefs, oDataSource, oConfigs);
+        }
+
+        this._groupBy = oConfigs.groupBy;
+
+        // Set message for rows with no group
+        this.MSG_NOGROUP = oConfigs.MSG_NOGROUP ? oConfigs.MSG_NOGROUP : "(none)";
+
+        // If there is an existing row formatter, save it so I can call it after my own
+        this._oldFormatRow = oConfigs.formatRow;
+
+        // Now, set my own
+        oConfigs.formatRow = this.rowFormatter;
+
+        // you can use a varable before the declaration is finished?
+        GroupedDataTable.superclass.constructor.call(this, elContainer, aColumnDefs, oDataSource, oConfigs);
+
+        if(oConfigs.autoRender !== true && oConfigs.autoRender !== false) {
+            oConfigs.autoRender = true;
+        }
+
+        if(oConfigs.autoRender === true) {
+            this.initGroups(); // Not required but prevents flickering
+        }
+
+        // Re-initialise the groups when data is changed
+        this.subscribe("sortedByChange", function(e) {
+            this.initGroups(e);
+        }); // Not required but prevents flickering
+
+        // Unselect any group when a row is clicked
+        this.subscribe("rowClickEvent", function(e) {
+            this.unselectGroup(e);
+        });
+
+        // attach the DataTable object to the containing <table> element
+        var container = YAHOO.util.Dom.get(elContainer);
+        var table = YAHOO.util.Dom.getChildrenBy(container, function(el) { return el.tagName == "TABLE" ; })
+        table[0].dataTable = this;
+    };
+
+    Widget.GroupedDataTable = GroupedDataTable;
+
+    Lang.extend(GroupedDataTable, DT, {
+        /**
+        * The current group name. Used to determine when a new group starts when rowFormatter is called.
+        * @property currentGroupName
+        * @type {String}
+        * @private
+        */
+        currentGroupName: null,
+
+        /**
+        * The groups found in the current data set.
+        * @property groups
+        * @type {Array}
+        * @private
+        */
+        groups: [],
+
+        /**
+        * A flag to reset the group array. Set each time a new data set is passed.
+        * @property resetGroups
+        * @type {Boolean}
+        * @private
+        */
+        resetGroups: true,
+
+        /**
+        * Event handler for group click.
+        * @property groupClickEvent
+        * @type {Event}
+        */
+        onGroupClick: new YAHOO.util.CustomEvent("onGroupClick", this),
+
+        /**
+        * The currently selected group
+        * @property groupClickEvent
+        * @type {Event}
+        */
+        selectedGroup: null,
+
+        /**
+        * A YUI DataTable custom row formatter. The row formatter must be applied to the DataTable
+        * via the formatRow configuration property.
+        * @method rowFormatter
+        * @param tr {Object} To row to be formatted.
+        * @param record {Object} To current data record.
+        */
+        rowFormatter: function(tr, record) {
+            if (this.resetGroups) {
+                this.groups = [];
+                this.currentGroupName = null;
+                this.resetGroups = false;
+            }
+
+            var groupName = record.getData(this._groupBy);
+
+            if (groupName !== this.currentGroupName) {
+                this.groups.push({ name: groupName, row: tr, record: record, group: null });
+                Dom.addClass(tr, "group-first-row");
+            }
+
+            this.currentGroupName = groupName;
+            return true;
+        },
+
+        /**
+        * Initialises the groups for the current data set.
+        * @method initGroups
+        * @private
+        */
+        initGroups: function() {
+            if (!this.resetGroups) {
+                // Insert each group in the array
+                for (var i = 0; i < this.groups.length; i++) {
+                    this.groups[i].group = this.insertGroup(this.groups[i].name, this.groups[i].row);
+                }
+
+                this.resetGroups = true;
+            }
+        },
+
+        /**
+        * Inserts a group before the specified row.
+        * @method insertGroup
+        * @param name {String} The name of the group.
+        * @param beforeRow {Object} To row to insert the group.
+	* @return {String} Name of the group added
+        * @private
+        */
+        insertGroup: function(name, row, insertBeforeRow) {
+            var index = this.getRecordIndex(row);
+            var group = document.createElement("tr");
+            var groupCell = document.createElement("td");
+            var numberOfColumns = this.getColumnSet().keys.length;
+            var icon = document.createElement("div");
+
+            if(insertBeforeRow != true && insertBeforeRow != false) {
+                insertBeforeRow = true;
+            }
+
+            // Row is collapsed by default
+            group.className = "group group-collapsed";
+            groupCell.colSpan = numberOfColumns;  // setAttribute doesn't work in IE7
+            if (Dom.hasClass(row, "yui-dt-first")) {
+                // If this is the first row in the table, transfer the class to the group
+                Dom.removeClass(row, "yui-dt-first");
+                Dom.addClass(group, "group-first");
+            }
+
+            // Add a liner as per standard YUI cells
+            var liner = document.createElement("div");
+            liner.className = "liner";
+
+            // Add icon
+            icon.className = "icon";
+            liner.appendChild(icon);
+
+            // Add label
+            var label = document.createElement("div");
+            label.innerHTML = name ? this.visibleGroupName(name) : this.MSG_NOGROUP;
+            label.className = "label";
+            liner.appendChild(label);
+            groupCell.appendChild(liner);
+            group.appendChild(groupCell);
+
+            // Insert the group
+            if(insertBeforeRow) {
+                Dom.insertBefore(group, row);
+            } else {
+                Dom.insertAfter(group, row);
+            }
+
+            // Attach visibility toggle to group
+            Event.addListener(group, "click", this.toggleVisibility, this);
+
+            // Set up DOM events
+            if (name.length > 0) { // Only if the group has a value
+                Event.addListener(group, "mouseover", this.onGroupMouseover, this);
+                Event.addListener(group, "mouseout", this.onGroupMouseout, this);
+                Event.addListener(group, "mousedown", this.onGroupMousedown, this);
+                Event.addListener(group, "mouseup", this.onGroupMouseup, this);
+                Event.addListener(group, "click", this.onGroupClick, this);
+                Event.addListener(group, "dblclick", this.onGroupDblclick, this);
+            }
+            else {
+                // Disable the group
+                Dom.addClass(group, "group-disabled");
+            }
+
+            this.fireEvent("insertGroupEvent", { group: group });
+
+            // @TODO Make this into a separate method
+            // Hide all subsequent rows in the group
+            var row = Dom.getNextSibling(group);
+            while (row && !Dom.hasClass(row, "group") &&
+                !Dom.hasClass(row, "group-collapsed")) {
+                    row.style.display = "none";
+
+                row = Dom.getNextSibling(row);
+            }
+            return group;
+        },
+
+        /**
+        * Handles the group select event.
+        * @method onEventSelectGroup
+        * @param type {String} The type of event fired.
+        * @param e {Object} The selected group.
+        * @private
+        */
+        onEventSelectGroup: function(args) {
+            this.selectGroup(args);
+        },
+
+        /**
+        * Selects a group.
+        * @method selectGroup
+        */
+        selectGroup: function(args) {
+            var target = args.target;
+            var groupRow = this.getTrEl(target);
+
+            // Do not re-select if already selected
+            if (!this.selectedGroup || groupRow !== this.selectedGroup) {
+                // Unselect any previous group
+                this.unselectGroup(args);
+
+                // Select the new group
+                Dom.addClass(groupRow, "group-selected");
+                this.selectedGroup = groupRow;
+
+                // Unselect all rows in the data table
+                var selectedRows = this.getSelectedTrEls();
+
+                for (var i = 0; i < selectedRows.length; i++) {
+                    this.unselectRow(selectedRows[i]);
+                }
+
+                var record = this.getGroupRecord(groupRow);
+                this.fireEvent("groupSelectEvent", { record: record, el: groupRow });
+            }
+        },
+
+        /**
+        * Unselects any selected group.
+        * @method unselectGroup
+        */
+        unselectGroup: function(args) {
+            var target = args.target;
+            var row = this.getTrEl(target);
+
+            if (this.selectedGroup && row !== this.selectedGroup) {
+                Dom.removeClass(this.selectedGroup, "group-selected");
+
+                var record = this.getGroupRecord(this.selectedGroup);
+                this.fireEvent("groupUnselectEvent", { record: record, el: this.selectedGroup });
+
+                this.selectedGroup = null;
+            }
+        },
+
+        /**
+        * Toggles the visibility of the group specified in the event.
+        * @method toggleVisibility
+        * @param e {Event} The event fired from clicking the group.
+        * @private
+        */
+        toggleVisibility: function(e, self) {
+            var group = Dom.getAncestorByClassName(Event.getTarget(e), "group");
+            var visibleState;
+
+            // Change the class of the group
+            if (Dom.hasClass(group, "group-expanded")) {
+                visibleState = false;
+                Dom.replaceClass(group, "group-expanded", "group-collapsed");
+                self.fireEvent("groupCollapseEvent", { target: group, event: e });
+            }
+            else {
+                visibleState = true;
+                Dom.replaceClass(group, "group-collapsed", "group-expanded");
+                self.fireEvent("groupExpandEvent", { target: group, event: e });
+            }
+
+            // Hide all subsequent rows in the group
+            var row = Dom.getNextSibling(group);
+            while (row && !Dom.hasClass(row, "group") &&
+                !Dom.hasClass(row, "group-collapsed")) {
+                if (visibleState) {
+                    row.style.display = "";   // IE7 does not support 'table-row'
+                }
+                else {
+                    row.style.display = "none";
+                }
+
+                row = Dom.getNextSibling(row);
+            }
+        },
+
+        /**
+        * For the given group identifier, returns the associated Record instance.
+        * @method getGroupRecord
+        * @param row {Object} DOM reference to a group TR element.
+	    * @return {Object} The DataTable's record for the row
+        * @private
+        */
+        getGroupRecord: function(groupRow) {
+            for (var i = 0; i < this.groups.length; i++) {
+                if (this.groups[i].group === groupRow) {
+                    return this.groups[i].record;
+                }
+            }
+        },
+
+        /**
+        * Overridden method which skips the TRs which are groups
+        * @method getPreviousTrEl
+        * @param row {Object} DOM reference to a group TR element.
+	    * @return {HTMLElement} TR of the previous row
+        * @private
+        */
+        getPreviousTrEl: function(row) {
+            var currentRow = row;
+            var previousRow = GroupedDataTable.superclass.getPreviousTrEl.call(this, currentRow);
+            var firstRow = this.getFirstTrEl();
+
+            if (previousRow == firstRow) {
+                return null;
+            }
+
+            while (previousRow !== firstRow) {
+                if (Dom.hasClass(previousRow, "group")) {
+                    previousRow = GroupedDataTable.superclass.getPreviousTrEl.call(this, previousRow);
+                } else {
+                    return previousRow;  // skip the first row which is always a group
+                }
+            }
+
+            return currentRow;
+        },
+
+        /**
+        * Overridden method which skips the TRs which are groups
+        * @method getNextTrEl
+        * @param row {Object} DOM reference to a group TR element.
+	    * @return {HTMLElement} TR of the next row
+        * @private
+        */
+        getNextTrEl: function(row) {
+            var nextRow = GroupedDataTable.superclass.getNextTrEl.call(this, row);
+            var lastRow = this.getLastTrEl();
+
+            while (nextRow !== lastRow) {
+                if (Dom.hasClass(nextRow, "group")) {
+                    nextRow = GroupedDataTable.superclass.getNextTrEl.call(this, nextRow);
+                } else {
+                    return nextRow;
+                }
+            }
+
+            return lastRow;
+        },
+
+
+        /**
+        * Check to see if the row is a group TR
+        * @method isGroup
+        * @param row {Object} DOM reference to a group TR element.
+	    * @return {Boolean} if the row is a group
+        * @public
+        */
+        isGroup: function(row) {
+            return Dom.hasClass(row, 'group');
+        },
+
+        /**
+        * Returns the number of rows which are groups that are above the row, where
+        * the row represents a record, not a table index
+        * @method isGroup
+        * @param row {Object} DOM reference to a TR element of a record.
+    	* @return {Number} count of the TRs above the row record
+        * @public
+        */
+        groupRowsAboveRecord : function(row) {
+            // if we are given a record number then convert it to a row
+            var rowEl;
+            if(Lang.isNumber(row)) {
+                if(row >= this.getRecordSet().getLength()) {
+                    row = this.getRecordSet().getLength() - 1;
+                }
+                rowEl = this.getRecordSet().getRecords()[row].getId();   // this.getRecord with an index > length returns weird results.
+                // if the row is not visible because it has been added to the recordset and not the table,
+                // then try the previous row
+                if(Dom.get(rowEl) == null) {
+                    if(this.getRecordSet().getRecords()[row - 1]) { // are there more records?
+                        rowEl = this.getRecordSet().getRecords()[row - 1].getId();   // this.getRecord with an index > length returns weird results
+                    } else {
+                        return 0;  // there are no visible records
+                    }
+
+                }
+            } else {
+                rowEl = row;
+            }
+
+            var previousRow = GroupedDataTable.superclass.getTrEl.call(this,rowEl);
+            var i = 0;
+            while(previousRow != null) {
+                if(Dom.hasClass(previousRow, "group")) {
+                    i++;
+                }
+                previousRow = GroupedDataTable.superclass.getPreviousTrEl.call(this,previousRow);
+            }
+            return i;
+        },
+
+        /**
+        * The name of the group for the table index
+        * @method groupForTableIndex
+        * @param row {Object} DOM reference to a TR element
+    	* @return {String} name of the group for the row
+        * @public
+        */
+        groupForTableIndex : function(row) {
+            var previousRow = YAHOO.widget.GroupedDataTable.superclass.getTrEl.call(this,row);
+            while(previousRow != null) {
+                if(Dom.hasClass(previousRow, "group")) {
+                    return this.groupName(previousRow);
+                }
+                previousRow = YAHOO.widget.GroupedDataTable.superclass.getPreviousTrEl.call(this,previousRow);
+            }
+            return null;
+        },
+
+        /**
+        * The name of the group, given the actual group TR
+        * @method groupName
+        * @param row {HTMLElement} DOM reference to a TR element
+    	* @return {String} The visible group's name
+        * @private
+        */
+        groupName: function(row) {
+            var label = Dom.getElementBy(function(el) { return Dom.hasClass(el, "label"); }, null, row);
+            return label ? label.innerHTML : null;
+        },
+
+        /**
+        * Provide a user friendly string for the group
+        * @method visibleGroupName
+        * @param name {Object} they group's key from the datastore
+        * @return the user friendly version of the group name
+        * @public
+        */
+        visibleGroupName: function(name) {
+            return name;
+        },
+
+        /**
+        * Find the HTMLElement for the group
+        * @method getTRForGroup
+        * @param groupName {String} they group's key from the datastore
+        * @return {HTMLElement} representing the TR for the groupName or null if not found
+        * @public
+        */
+        getTRForGroup: function(groupName) {
+            var dt = this;
+            var elTr = Dom.getFirstChildBy(this.getTbodyEl(), function(el) {
+                return dt.isGroup(el) && dt.groupName(el) === groupName;
+            });
+            return elTr;
+        },
+
+        getDataTableFromId: function(id) {
+            var el = Dom.get(id);
+
+            // get the parent table
+            var table = Dom.getAncestorByTagName(el, "TABLE");
+
+            // return the dataTable attribute
+            return table.dataTable;
+        },
+
+
+            /*
+              Not used????
+        getLastTableRowIndex: function(row) {
+            var nextRow = YAHOO.widget.GroupedDataTable.superclass.getNextTrEl.call(this, row),
+                rowNumber = row.sectionRowIndex;
+
+            while(nextRow != null) {
+                if(this.isGroup(nextRow)) {
+                    return rowNumber;
+                }
+                rowNumber++;
+                nextRow = YAHOO.widget.GroupedDataTable.superclass.getNextTrEl.call(this, nextRow);
+            }
+
+            return rowNumber;
+        },
+
+        getGroupIndex: function(tableIndex) {
+            var previousRow = GroupedDataTable.superclass.getTrEl.call(this, tableIndex);
+            var i = 0;
+            while(previousRow != null) {
+                if(Dom.hasClass(previousRow, "group")) {
+                    i++;
+                    return i;
+                }
+                previousRow = GroupedDataTable.superclass.getPreviousTrEl.call(this,previousRow);
+            }
+            return i;   // this should never happens as there will always be a group?
+        },
+            */
+
+        onGroupMouseover: function(e, self) {
+            self.fireEvent("groupMouseoverEvent", { target: Event.getTarget(e), event: e });
+        },
+
+        onGroupMouseout: function(e, self) {
+            self.fireEvent("groupMouseoutEvent", { target: Event.getTarget(e), event: e });
+        },
+
+        onGroupMousedown: function(e, self) {
+            self.fireEvent("groupMousedownEvent", { target: Event.getTarget(e), event: e });
+        },
+
+        onGroupMouseup: function(e, self) {
+            self.fireEvent("groupMouseupEvent", { target: Event.getTarget(e), event: e });
+        },
+
+        onGroupClick: function(e, self) {
+            self.fireEvent("groupClickEvent", { target: Event.getTarget(e), event: e });
+        },
+
+        onGroupDblclick: function(e, self) {
+            self.fireEvent("groupDblclickEvent", { target: Event.getTarget(e), event: e });
+        },
+
+        onGroupSelect: function(e, self) {
+            self.fireEvent("groupSelectEvent", { target: Event.getTarget(e), event: e });
+        }
+
+        // NOTE: destroy - should remove any events we've created and call the superclass
+
+        /////////////////////////////////////////////////////////////////////////////
+        //
+        // Custom Events
+        //
+        /////////////////////////////////////////////////////////////////////////////
+
+        /**
+        * Fired when a group has a mouseover.
+        *
+        * @event groupMouseoverEvent
+        * @param oArgs.event {HTMLEvent} The event object.
+        * @param oArgs.target {HTMLElement} The TR element.
+        */
+
+        /**
+        * Fired when a group has a mouseout.
+        *
+        * @event groupMouseoutEvent
+        * @param oArgs.event {HTMLEvent} The event object.
+        * @param oArgs.target {HTMLElement} The TR element.
+        */
+
+        /**
+        * Fired when a group has a mousedown.
+        *
+        * @event groupMousedownEvent
+        * @param oArgs.event {HTMLEvent} The event object.
+        * @param oArgs.target {HTMLElement} The TR element.
+        */
+
+        /**
+        * Fired when a group has a mouseup.
+        *
+        * @event groupMouseupEvent
+        * @param oArgs.event {HTMLEvent} The event object.
+        * @param oArgs.target {HTMLElement} The TR element.
+        */
+
+        /**
+        * Fired when a group has a click.
+        *
+        * @event groupClickEvent
+        * @param oArgs.event {HTMLEvent} The event object.
+        * @param oArgs.target {HTMLElement} The TR element.
+        */
+
+        /**
+        * Fired when a group has a dblclick.
+        *
+        * @event groupDblclickEvent
+        * @param oArgs.event {HTMLEvent} The event object.
+        * @param oArgs.target {HTMLElement} The TR element.
+        */
+
+        /**
+        * Fired when a group is collapsed.
+        *
+        * @event groupCollapseEvent
+        * @param oArgs.event {HTMLEvent} The event object.
+        * @param oArgs.target {HTMLElement} The TR element.
+        */
+
+        /**
+        * Fired when a group is expanded.
+        *
+        * @event groupExpandEvent
+        * @param oArgs.event {HTMLEvent} The event object.
+        * @param oArgs.target {HTMLElement} The TR element.
+        */
+
+        /**
+        * Fired when a group is selected.
+        *
+        * @event groupSelectEvent
+        * @param oArgs.el {HTMLElement} The selected TR element, if applicable.
+        * @param oArgs.record {YAHOO.widget.Record} The selected Record.
+        */
+
+        /**
+        * Fired when a group is unselected.
+        *
+        * @event groupUnselectEvent
+        * @param oArgs.el {HTMLElement} The unselected TR element, if applicable.
+        * @param oArgs.record {YAHOO.widget.Record} The unselected Record.
+        */
+
+    });
+
+    /**
+     * Expand all groups. 
+     */
+    GroupedDataTable.expandAll = function() {
+            var group, row;
+            var groups = Dom.getElementsByClassName("group-collapsed");
+
+            Dom.replaceClass(groups, "group-collapsed", "group-expanded");
+
+            for (var i in groups) {
+                group = groups[i];
+                // Hide all subsequent rows in the group
+                row = Dom.getNextSibling(group);
+                while (row && !Dom.hasClass(row, "group")) {
+                    row.style.display = ""; 
+                    row = Dom.getNextSibling(row);
+                }
+            }
+    };
+
+    /**
+     * Collapse all groups. 
+     */
+    GroupedDataTable.collapseAll = function() {
+            var group, row;
+            var groups = Dom.getElementsByClassName("group-expanded");
+
+            Dom.replaceClass(groups, "group-expanded", "group-collapsed");
+
+            for (var i in groups) {
+                group = groups[i];
+                // Hide all subsequent rows in the group
+                row = Dom.getNextSibling(group);
+                while (row && !Dom.hasClass(row, "group")) {
+                    row.style.display = "none"; 
+                    row = Dom.getNextSibling(row);
+                }
+            }
+    };
+})();
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *
@@ -1736,7 +2430,7 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
      */
     FS._initStorageEngine = function() {
         if (YAHOO.lang.isNull(FS._storageEngine)) {
-            var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
+            var engineConf = {swfURL: "/swfstore-2.9.0.swf", containerID: "swfstoreContainer"};
             FS._storageEngine = YAHOO.util.StorageManager.get(
                 YAHOO.util.StorageEngineGears.ENGINE_NAME,
                 YAHOO.util.StorageManager.LOCATION_SESSION,
@@ -1829,7 +2523,6 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
          */
         _get: function(key) {
             var value = FS._storageEngine.getItem(this.namespace + ":" + key);
-
             return YAHOO.lang.isNull(value) ? null : YAHOO.lang.JSON.parse(value);
         },
         /**
@@ -1841,6 +2534,7 @@ e&&e.document?e.document.compatMode==="CSS1Compat"&&e.document.documentElement["
          * @protected
          */
         _set: function(key, value) {
+            FS._storageEngine.removeItem(this.namespace + ":" + key);
             FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
         }
     };
@@ -2602,7 +3296,7 @@ Fisma.Chart = {
     CHART_CREATE_EXTERNAL: 3,
 
     // Defaults for global chart settings definition:
-    globalSettingsDefaults:{
+    globalSettingsDefaults: {
         fadingEnabled:      false,
         usePatterns:        false,
         barShadows:         false,
@@ -2627,7 +3321,7 @@ Fisma.Chart = {
     ],
     
     // Remember all chart paramiter objects which are drawn on the DOM within global var chartsOnDom
-    chartsOnDOM:{},
+    chartsOnDOM: {},
 
     // Is this client-browser Internet Explorer?
     isIE: (window.ActiveXObject) ? true : false,
@@ -2644,8 +3338,7 @@ Fisma.Chart = {
      *
      * @return integer
      */
-    createJQChart_asynchReturn : function (requestNumber, value, chartParamsObj)
-    {
+    createJQChart_asynchReturn : function (requestNumber, value, chartParamsObj) {
         // If anything (json) was returned at all...
         if (value) {
 
@@ -2661,8 +3354,14 @@ Fisma.Chart = {
             
             // validate that chart plotting data (numeric information) was returned
             if (typeof chartParamsObj.chartData === 'undefined') {
-                throw 'Chart Error - The remote data source for chart "' + chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull + ' did not return data to plot on a chart';
-            } 
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+                var msg = 'Chart Error - The remote data source for chart "';
+                msg += chartParamsObj.uniqueid + '" located at ' + chartParamsObj.lastURLpull;
+                msg += ' did not return data to plot on a chart';
+                throw msg;
+            } else if (chartParamsObj.chartData.length === 0) {
+                Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
+            }
 
             // call the Fisma.Chart.createJQChart() with the chartParamsObj-object initally given to Fisma.Chart.createJQChart() and the merged responce object
             return Fisma.Chart.createJQChart(chartParamsObj);
@@ -2680,8 +3379,7 @@ Fisma.Chart = {
      *
      * @return boolean
      */
-    createJQChart : function (chartParamsObj)
-    {
+    createJQChart : function (chartParamsObj) {
 
         // load in default values for paramiters, and replace it with any given params
         var defaultParams = {
@@ -2715,12 +3413,14 @@ Fisma.Chart = {
              * If it is being loaded from an external source
              *   setup a json request
              *   have the json request return to createJQChart_asynchReturn
-             *   exit this function as createJQChart_asynchReturn will call this function again with the same chartParamsObj object with chartParamsObj.externalSource taken out
+             *   exit this function as createJQChart_asynchReturn will call this function again 
+             *   with the same chartParamsObj object with chartParamsObj.externalSource taken out
             */
 
             document.getElementById(chartParamsObj.uniqueid).innerHTML = 'Loading chart data...';
 
-            // note externalSource, and remove/relocate it from its place in chartParamsObj[] so it dosnt retain and cause us to loop 
+            // note externalSource, and remove/relocate it from its place in chartParamsObj[] so 
+            // it dosnt retain and cause us to loop 
             var externalSource = chartParamsObj.externalSource;
             if (!chartParamsObj.oldExternalSource) {
                 chartParamsObj.oldExternalSource = chartParamsObj.externalSource;
@@ -2729,7 +3429,7 @@ Fisma.Chart = {
 
             // Send data from widgets to external data source if needed7 (will load from cookies and defaults if widgets are not drawn yet)
             chartParamsObj = Fisma.Chart.buildExternalSourceParams(chartParamsObj);
-            externalSource += String(chartParamsObj.externalSourceParams).replace(/ /g,'%20');
+            externalSource += String(chartParamsObj.externalSourceParams).replace(/ /g, '%20');
             chartParamsObj.lastURLpull = externalSource;
 
             var myDataSource = new YAHOO.util.DataSource(externalSource);
@@ -2753,15 +3453,31 @@ Fisma.Chart = {
 
         // handel aliases and short-cut vars
         if (typeof chartParamsObj.barMargin !== 'undefined') {
-            chartParamsObj = jQuery.extend(true, chartParamsObj, {'seriesDefaults': {'rendererOptions': {'barMargin': chartParamsObj.barMargin}}});
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {
+                'seriesDefaults' : {
+                    'rendererOptions' : {
+                        'barMargin' : chartParamsObj.barMargin
+                    }
+                }
+            });
             chartParamsObj.barMargin = undefined;
         }
         if (typeof chartParamsObj.legendLocation !== 'undefined') {
-            chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'location': chartParamsObj.legendLocation }});
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {
+                'legend' : {
+                    'location' : chartParamsObj.legendLocation
+                }
+            });
             chartParamsObj.legendLocation = undefined;
         }
         if (typeof chartParamsObj.legendRowCount !== 'undefined') {
-            chartParamsObj = jQuery.extend(true, chartParamsObj, {'legend': {'rendererOptions': {'numberRows': chartParamsObj.legendRowCount}}});
+            chartParamsObj = jQuery.extend(true, chartParamsObj, {
+                'legend' : {
+                    'rendererOptions' : {
+                        'numberRows' : chartParamsObj.legendRowCount
+                    }
+                }
+            });
             chartParamsObj.legendRowCount = undefined;
         }
 
@@ -2786,47 +3502,46 @@ Fisma.Chart = {
         var rtn = Fisma.Chart.CHART_CREATE_FAILURE;
         if (!Fisma.Chart.chartIsEmpty(chartParamsObj)) {
 
-            switch(chartParamsObj.chartType)
-            {
-                case 'stackedbar':
+            switch (chartParamsObj.chartType) {
+            case 'stackedbar':
+                chartParamsObj.varyBarColor = false;
+                            if (typeof chartParamsObj.showlegend === 'undefined') { chartParamsObj.showlegend = true; }
+                rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
+                break;
+            case 'bar':
+
+                // Is this a simple-bar chart (not-stacked-bar) with multiple series?
+                if (typeof chartParamsObj.chartData[0] === 'object') {
+
+                    // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
+                    // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
+
                     chartParamsObj.varyBarColor = false;
-                                if (typeof chartParamsObj.showlegend === 'undefined') { chartParamsObj.showlegend = true; }
-                    rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
-                    break;
-                case 'bar':
+                    chartParamsObj.showlegend = true;
 
-                    // Is this a simple-bar chart (not-stacked-bar) with multiple series?
-                    if (typeof chartParamsObj.chartData[0] === 'object') {
-
-                        // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
-                        // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
-
-                        chartParamsObj.varyBarColor = false;
-                        chartParamsObj.showlegend = true;
-
-                    } else {
-                        chartParamsObj.chartData = [chartParamsObj.chartData];  // force to 2 dimensional array
-                        chartParamsObj.links = [chartParamsObj.links];
-                        chartParamsObj.varyBarColor = true;
-                        chartParamsObj.showlegend = false;
-                    }
-
-                    chartParamsObj.stackSeries = false;
-                    rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
-                    break;
-
-                case 'line':
-                    rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
-                    break;
-                case 'stackedline':
-                    rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
-                    break;
-                case 'pie':
+                } else {
+                    chartParamsObj.chartData = [chartParamsObj.chartData];  // force to 2 dimensional array
                     chartParamsObj.links = [chartParamsObj.links];
-                    rtn = Fisma.Chart.createChartPie(chartParamsObj);
-                    break;
-                default:
-                    throw 'createJQChart Error - chartType is invalid (' + chartParamsObj.chartType + ')';
+                    chartParamsObj.varyBarColor = true;
+                    chartParamsObj.showlegend = false;
+                }
+
+                chartParamsObj.stackSeries = false;
+                rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
+                break;
+
+            case 'line':
+                rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
+                break;
+            case 'stackedline':
+                rtn = Fisma.Chart.createChartStackedLine(chartParamsObj);
+                break;
+            case 'pie':
+                chartParamsObj.links = [chartParamsObj.links];
+                rtn = Fisma.Chart.createChartPie(chartParamsObj);
+                break;
+            default:
+                throw 'createJQChart Error - chartType is invalid (' + chartParamsObj.chartType + ')';
             }
         }
 
@@ -2855,8 +3570,7 @@ Fisma.Chart = {
      * @return void
      * 
     */
-    mergeExtrnIntoParamObjectByInheritance : function (chartParamsObj, externResponse)
-    {
+    mergeExtrnIntoParamObjectByInheritance : function (chartParamsObj, externResponse) {
         var joinedParam = {};
 
         // Is there an inheritance mode? 
@@ -2893,8 +3607,7 @@ Fisma.Chart = {
       * @param object
       * @return void
      */
-    createChartPie : function (chartParamsObj)
-    {
+    createChartPie : function (chartParamsObj) {
         var x = 0;
         var dataSet = [];
         usedLabelsPie = chartParamsObj.chartDataText;
@@ -2912,21 +3625,21 @@ Fisma.Chart = {
                 shadow: false
             },
             axes: {
-                xaxis:{
+                xaxis: {
                     tickOptions: {
                         angle: chartParamsObj.DataTextAngle,
                         fontSize: '10pt',
                         formatString: '%.0f'
                     }
                 },
-                yaxis:{
+                yaxis: {
                     tickOptions: {
                         formatString: '%.0f'
                     }
                 }
 
             },
-            seriesDefaults:{
+            seriesDefaults: {
                 renderer:$.jqplot.PieRenderer,
                 rendererOptions: {
                     sliceMargin: 0,
@@ -2943,8 +3656,11 @@ Fisma.Chart = {
                 location: 's',
                 show: true,
                 rendererOptions: {
-                    numberRows: 2
+                    numberRows: 2 
                 }
+            },
+            highlighter: {
+                show: false
             }
         };
 
@@ -3013,8 +3729,7 @@ Fisma.Chart = {
       * @param object
       * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
      */
-    createChartStackedBar : function (chartParamsObj)
-    {
+    createChartStackedBar : function (chartParamsObj) {
         var x = 0; var y = 0;
         var thisSum = 0;
         var maxSumOfAll = 0;
@@ -3061,16 +3776,16 @@ Fisma.Chart = {
             seriesColors: chartParamsObj.colors,
             stackSeries: true,
             series: seriesParam,
-            seriesDefaults:{
+            seriesDefaults: {
                 renderer: $.jqplot.BarRenderer,
-                rendererOptions:{
+                rendererOptions: {
                     barWidth: 35,
                     showDataLabels: true,
                     varyBarColor: chartParamsObj.varyBarColor,
                     shadowAlpha: 0.15,
                     shadowOffset: 0
                 },
-                pointLabels:{
+                pointLabels: {
                     show: false,
                     location: 's',
                     hideZeros: true
@@ -3083,11 +3798,11 @@ Fisma.Chart = {
                     enableFontSupport: true,
                     fontFamily: 'arial, helvetica, clean, sans-serif',
                     fontSize: '12pt',
-                    textColor: '#555555'
+                    textColor: '#000000'
                 }
             },
             axes: {
-                xaxis:{
+                xaxis: {
                     label: chartParamsObj.AxisLabelX,
                     labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                     renderer: $.jqplot.CategoryAxisRenderer,
@@ -3099,7 +3814,7 @@ Fisma.Chart = {
                         textColor: '#000000'
                     }
                 },
-                yaxis:{
+                yaxis: {
                     label: chartParamsObj.AxisLabelY,
                     labelRenderer: $.jqplot.CanvasAxisLabelRenderer,
                     min: 0,
@@ -3136,7 +3851,7 @@ Fisma.Chart = {
             legend: {
                 show: chartParamsObj.showlegend,
                 rendererOptions: {
-                    numberRows: 1
+                    numberRows: 2 
                 },
                 location: 'nw'
             }
@@ -3267,8 +3982,7 @@ Fisma.Chart = {
       * @param object
       * @return CHART_CREATE_SUCCESS|CHART_CREATE_FAILURE|CHART_CREATE_EXTERNAL
      */
-    createChartStackedLine : function (chartParamsObj)
-    {
+    createChartStackedLine : function (chartParamsObj) {
         var x = 0; var y = 0;
         var thisSum = 0;
 
@@ -3284,18 +3998,18 @@ Fisma.Chart = {
 
         plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, {
             seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
-            series: [{label: 'Open Findings', lineWidth:4, markerOptions:{style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions:{style:'square'}}, {lineWidth:4, markerOptions:{style:'square'}}],
-            seriesDefaults:{
+            series: [{label: 'Open Findings', lineWidth:4, markerOptions: {style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions: {style:'square'}}, {lineWidth:4, markerOptions: {style:'square'}}],
+            seriesDefaults: {
                 fill:false,
                 showMarker: true,
                 showLine: true
             },
             axes: {
-                xaxis:{
+                xaxis: {
                     renderer:$.jqplot.CategoryAxisRenderer,
                     ticks:chartParamsObj.chartDataText
                 },
-                yaxis:{
+                yaxis: {
                     min: 0
                 }
             },
@@ -3303,7 +4017,7 @@ Fisma.Chart = {
             legend: {
                         show: true,
                         rendererOptions: {
-                            numberRows: 1
+                            numberRows: 2 
                         },
                         location: 'nw'
                     }
@@ -3405,8 +4119,7 @@ Fisma.Chart = {
      *
      * @return boolean/integer
      */
-    createChartThreatLegend : function (chartParamsObj)
-    {
+    createChartThreatLegend : function (chartParamsObj) {
         if (chartParamsObj.showThreatLegend && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
             if (chartParamsObj.showThreatLegend === true) {
 
@@ -3421,7 +4134,7 @@ Fisma.Chart = {
                 // Tabel to hold all colored boxes and labels
                 var threatTable = document.createElement("table");
                 threatTable.style.fontSize = '12px';
-                threatTable.style.color = '#555555';
+                threatTable.style.color = '#000000';
                 threatTable.width = threatLegendWidth;
                 var tblBody = document.createElement("tbody");
                 var row = document.createElement("tr");
@@ -3430,7 +4143,7 @@ Fisma.Chart = {
                 cell.style.textAlign = 'center';
                 cell.style.fontWeight = 'bold';
                 cell.width = '40%';
-                var textLabel = document.createTextNode('Threat Level');
+                var textLabel = document.createTextNode('');
                 cell.appendChild(textLabel);
                 row.appendChild(cell);
                 
@@ -3709,7 +4422,6 @@ Fisma.Chart = {
      */
     chartClickEvent : function (ev, seriesIndex, pointIndex, data, paramObj)
     {
-
         var theLink = false;
         if (paramObj.links) {
             if (typeof paramObj.links === 'string') {
@@ -3725,8 +4437,8 @@ Fisma.Chart = {
             }
         }
 
-        // bail on blank link
-        if (theLink === '') {
+        // bail on blank link or undefine link
+        if (theLink === '' || YAHOO.lang.isUndefined(theLink)) {
             return;
         }
 
@@ -3764,8 +4476,7 @@ Fisma.Chart = {
      *
      * @return array
      */
-    forceIntegerArray : function (inptArray)
-    {
+    forceIntegerArray : function (inptArray) {
         var x = 0;
         for (x = 0; x < inptArray.length; x++) {
             if (typeof inptArray[x] === 'object') {
@@ -3787,8 +4498,7 @@ Fisma.Chart = {
      *
      * @return void
      */
-    applyChartBorders : function (chartParamsObj)
-    {
+    applyChartBorders : function (chartParamsObj) {
         var x = 0;
 
         // What borders should be drawn? (L = left, B = bottom, R = right, T = top)
@@ -3858,8 +4568,7 @@ Fisma.Chart = {
         }
     },
 
-    applyChartBackground : function (chartParamsObj)
-    {
+    applyChartBackground : function (chartParamsObj) {
 
         var targDiv = document.getElementById(chartParamsObj.uniqueid);
 
@@ -3919,27 +4628,30 @@ Fisma.Chart = {
      *
      * @return void
      */
-    applyChartWidgets : function (chartParamsObj)
-    {
+    applyChartWidgets : function (chartParamsObj) {
         var x = 0;
         var y = 0;
 
         var wigSpace = document.getElementById(chartParamsObj.uniqueid + 'WidgetSpace');
+        wigSpace.innerHTML = '';
 
         // Are there widgets for this chart?
+        var message = document.createElement("p");
+        message.innerHTML = '<i>There are no parameters for this chart.</i>';
         if (typeof chartParamsObj.widgets === 'undefined') {
-            wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
+            wigSpace.appendChild(message);
             return;
         } else if (chartParamsObj.widgets.length === 0) {
-            wigSpace.innerHTML = '<br/><i>There are no parameters for this chart.</i><br/><br/>';
+            wigSpace.appendChild(message);
             return;
         }
 
         if (chartParamsObj.widgets) {
-
-            var addHTML = '';
+            var table = document.createElement("table");
+            var tableBody = document.createElement("tbody");
 
             for (x = 0; x < chartParamsObj.widgets.length; x++) {
+                var row = document.createElement("tr");
 
                 var thisWidget = chartParamsObj.widgets[x];
 
@@ -3950,40 +4662,65 @@ Fisma.Chart = {
                 }
 
                 // print the label text to be displayed to the left of the widget if one is given
-                addHTML += '<tr><td nowrap align=left>' + thisWidget.label + ' </td><td><td nowrap width="10"></td><td width="99%" align=left>';
+                var firstCell = document.createElement("td");
+                firstCell.noWrap = true;
+                firstCell.align = "left";
+                firstCell.innerHTML = thisWidget.label;
+                row.appendChild(firstCell);
+
+                var secondCell = document.createElement("td");
+                secondCell.nowrap = "nowrap";
+                secondCell.width = "90%";
+                secondCell.align = "left";
+                secondCell.style.paddingLeft = "10px";
+                row.appendChild(secondCell);
 
                 switch(thisWidget.type) {
                     case 'combo':
+                        var select = document.createElement('select');
+                        select.id = thisWidget.uniqueid;
+                        for (var key in thisWidget.options) {
+                            var option = document.createElement('option');
+                            option.innerHTML = $P.htmlspecialchars(thisWidget.options[key]);
+                            if (thisWidget.setKeyValue) {
+                                option.value = key;
+                            } else {
+                                option.value = thisWidget.options[key];
+                            }
 
-                        addHTML += '<select id="' + thisWidget.uniqueid + '" onChange="Fisma.Chart.widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');">';
-                                            // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
-
-                        for (y = 0; y < thisWidget.options.length; y++) {
-                            addHTML += '<option value="' + thisWidget.options[y] + '">' + thisWidget.options[y] + '</option><br/>';
+                            select.appendChild(option);
                         }
+                        secondCell.appendChild(select);
 
-                        addHTML += '</select>';
-
+                        YAHOO.util.Event.addListener(thisWidget.uniqueid,
+                            "change",
+                            Fisma.Chart.widgetEvent,
+                            chartParamsObj
+                        );
+ 
                         break;
-
                     case 'text':
+                        var input = document.createElement('input');
+                        input.type = "text";
+                        input.id = thisWidget.uniqueid;
+                        secondCell.appendChild(input);
 
-                        addHTML += '<input onKeyDown="if(event.keyCode==13){Fisma.Chart.widgetEvent(' + YAHOO.lang.JSON.stringify(chartParamsObj).replace(/"/g, "'") + ');};" type="textbox" id="' + thisWidget.uniqueid + '" />';
-                                            // " // ( comment double quote to fix syntax highlight errors with /"/g on previus line )
+                        var keyHandle = new YAHOO.util.KeyListener(input,
+                                               {keys : YAHOO.util.KeyListener.KEY.ENTER},
+                                               function () {
+                                                   Fisma.Chart.widgetEvent(null, chartParamsObj);
+                                               });
+                        keyHandle.enable();
+
                         break;
-
                     default:
                         throw 'Error - Widget ' + x + "'s type (" + thisWidget.type + ') is not a known widget type';
                 }
-
-
-                addHTML += '</td></tr>';
-
+                tableBody.appendChild(row);
             }
 
-            // add this widget HTML to the DOM
-            wigSpace.innerHTML = '<table>' + addHTML + '</table>';
-
+            table.appendChild(tableBody);
+            wigSpace.appendChild(table);
         }
 
         Fisma.Chart.applyChartWidgetSettings(chartParamsObj);
@@ -3997,8 +4734,7 @@ Fisma.Chart = {
      *
      * @return void
      */
-    applyChartWidgetSettings : function (chartParamsObj)
-    {
+    applyChartWidgetSettings : function (chartParamsObj) {
         var x = 0;
 
         if (chartParamsObj.widgets) {
@@ -4040,8 +4776,7 @@ Fisma.Chart = {
      *
      * @return Array
      */
-    buildExternalSourceParams : function (chartParamsObj)
-    {
+    buildExternalSourceParams : function (chartParamsObj) {
 
         // build arguments to send to the remote data source
 
@@ -4090,8 +4825,7 @@ Fisma.Chart = {
       * @param object
       * @return void
      */
-    widgetEvent : function (chartParamsObj)
-    {
+    widgetEvent : function (event, chartParamsObj) {
         var x = 0;
 
         // first, save the widget values (as cookies) so they can be retained later when the widgets get redrawn
@@ -4118,22 +4852,19 @@ Fisma.Chart = {
         Fisma.Chart.fadeOut(chartParamsObj.uniqueid + 'holder', 300);
     },
 
-    makeElementVisible : function (eleId)
-    {
+    makeElementVisible : function (eleId) {
         var ele = document.getElementById(eleId);
         ele.style.opacity = '1';
         ele.style.filter = "alpha(opacity = '100')";
     },
 
-    makeElementInvisible : function (eleId)
-    {
+    makeElementInvisible : function (eleId) {
         var ele = document.getElementById(eleId);
         ele.style.opacity = '0';
         ele.style.filter = "alpha(opacity = '0')";
     },
 
-    fadeIn : function (eid, TimeToFade)
-    {
+    fadeIn : function (eid, TimeToFade) {
 
         var element = document.getElementById(eid);
         if (element === null) {
@@ -4167,8 +4898,7 @@ Fisma.Chart = {
         Fisma.Chart.fade(eid, TimeToFade);
     },
 
-    fadeOut : function (eid, TimeToFade)
-    {
+    fadeOut : function (eid, TimeToFade) {
 
         var element = document.getElementById(eid);
         if (element === null) { return; }
@@ -4200,8 +4930,7 @@ Fisma.Chart = {
         Fisma.Chart.fade(eid, TimeToFade);
     },
 
-    fade : function (eid, TimeToFade)
-    {
+    fade : function (eid, TimeToFade) {
 
         var element = document.getElementById(eid);
         if (element === null) { return; }
@@ -4228,8 +4957,7 @@ Fisma.Chart = {
         }  
     },
 
-    animateFade : function (lastTick, eid, TimeToFade)
-    {  
+    animateFade : function (lastTick, eid, TimeToFade) {  
         var curTick = new Date().getTime();
         var elapsedTicks = curTick - lastTick;
 
@@ -4279,8 +5007,7 @@ Fisma.Chart = {
      *
      * @return void
      */
-    setChartWidthAttribs : function (chartParamsObj)
-    {
+    setChartWidthAttribs : function (chartParamsObj) {
 
         var makeScrollable = false;
         var minSpaceRequired;
@@ -4357,8 +5084,7 @@ Fisma.Chart = {
      * @param object
      * @return String
      */
-    getTableFromChartData : function (chartParamsObj)
-    {
+    getTableFromChartData : function (chartParamsObj) {
         if (Fisma.Chart.chartIsEmpty(chartParamsObj)) {
             return;
         }
@@ -4530,8 +5256,7 @@ Fisma.Chart = {
      * @param object
      * @return void
      */
-    removeDecFromPointLabels : function (chartParamsObj)
-    {
+    removeDecFromPointLabels : function (chartParamsObj) {
             var outlineStyle = '';
             var chartOnDOM = document.getElementById(chartParamsObj.uniqueid);
 
@@ -4604,7 +5329,6 @@ Fisma.Chart = {
      */
     removeOverlappingPointLabels : function (chartParamsObj)
     {
-
             // This function will deal with removing point labels that collie with eachother
             // There is no need for this unless this is a stacked-bar or stacked-line chart
             if (chartParamsObj.chartType !== 'stackedbar' && chartParamsObj.chartType !== 'stackedline') {
@@ -4717,8 +5441,7 @@ Fisma.Chart = {
      * @param object
      * @return void
      */
-    setChartSettingsVisibility : function (chartId, boolVisible)
-    {
+    setChartSettingsVisibility : function (chartId, boolVisible) {
         var menuHolderId = chartId + 'WidgetSpaceHolder';
         var menuObj = document.getElementById(menuHolderId);
 
@@ -4743,8 +5466,7 @@ Fisma.Chart = {
      *
      * @return void
      */
-    globalSettingUpdate : function (mouseEvent, chartUniqueId)
-    {
+    globalSettingUpdate : function (mouseEvent, chartUniqueId) {
         // get this chart's GlobSettings menue
         var settingsMenue = document.getElementById(chartUniqueId + 'GlobSettings');
 
@@ -4776,8 +5498,7 @@ Fisma.Chart = {
      * @param object
      * @return void
      */
-    globalSettingRefreshUi : function (chartParamsObj)
-    {
+    globalSettingRefreshUi : function (chartParamsObj) {
         /*
             Every input-element (setting UI) has an id equal to the cookie name 
             to which its value is stored. So wee we have to do is look for a
@@ -4807,6 +5528,28 @@ Fisma.Chart = {
         }
     },
 
+    showSetingMode : function (showBasic) {
+        var x = 0;
+        var hideThese;
+        var showThese;
+
+        if (showBasic === true) {
+            showThese = document.getElementsByName('chartSettingsBasic');
+            hideThese = document.getElementsByName('chartSettingsGlobal');
+        } else {
+            hideThese = document.getElementsByName('chartSettingsBasic');
+            showThese = document.getElementsByName('chartSettingsGlobal');
+        }
+
+        for (x = 0; x < hideThese.length; x++) {
+            hideThese[x].style.display = 'none';
+        }
+
+        for (x = 0; x < hideThese.length; x++) {
+                showThese[x].style.display = '';
+        }
+    },
+
     /**
      * Gets a setting previously saved by Fisma.Chart.setGlobalSetting()
      * If the setting being looked for has never been set, a value from Fisma.Chart.globalSettingsDefaults
@@ -4817,8 +5560,7 @@ Fisma.Chart = {
      * @param string settingName
      * @return string
      */
-    getGlobalSetting : function (settingName)
-    {
+    getGlobalSetting : function (settingName) {
 
         var rtnValue = YAHOO.util.Cookie.get('chartGlobSetting_' + settingName);
 
@@ -4856,8 +5598,7 @@ Fisma.Chart = {
      * @param object
      * @return object
      */
-    alterChartByGlobals : function (chartParamObj)
-    {
+    alterChartByGlobals : function (chartParamObj) {
 
         // Show bar shadows?
         if (Fisma.Chart.getGlobalSetting('barShadows') === 'true') {
@@ -4908,8 +5649,7 @@ Fisma.Chart = {
      * its content area, and the loading message is actully shown 
      * (and yes, this is nessesary).
      */
-    redrawAllCharts : function (doRedrawNow)
-    {
+    redrawAllCharts : function (doRedrawNow) {
         var thisParamObj;
         var uniqueid;
         
@@ -4973,15 +5713,15 @@ Fisma.Chart = {
         chartContainer.appendChild(pTag);
     },
     
+    /**
+     * Does nothing. Used to set a title on a chart, but now, nothing.
+     *
+     * @deprecated
+     * @param object
+     * @return void
+     */
     setTitle : function (chartParamsObj)
     {
-        if (chartParamsObj.title && !Fisma.Chart.chartIsEmpty(chartParamsObj)) {
-            var titleArea = document.getElementById(chartParamsObj.uniqueid + 'title');
-            var titleNode = document.createTextNode(chartParamsObj.title);
-            titleArea.innerHTML = '';
-            titleArea.appendChild(titleNode);
-            titleArea.appendChild(document.createElement('br'));
-        }
     },
     
     /**
@@ -4992,8 +5732,7 @@ Fisma.Chart = {
      * @param object
      * @return void
      */
-    showMsgOnEmptyChart : function (chartParamsObj)
-    {
+    showMsgOnEmptyChart : function (chartParamsObj) {
         if (Fisma.Chart.chartIsEmpty(chartParamsObj)) {
             var targDiv = document.getElementById(chartParamsObj.uniqueid);
 
@@ -5027,8 +5766,7 @@ Fisma.Chart = {
      * @param object
      * @return boolean
      */
-    chartIsEmpty : function (chartParamsObj)
-    {
+    chartIsEmpty : function (chartParamsObj) {
         var isChartEmpty = true;
         var x = 0; var y = 0;
 
@@ -5078,7 +5816,8 @@ Fisma.Chart = {
             function() {
                 var div;
                 var canvas = $(this);
-
+                var div;
+                
                 if (canvas.context.className == 'jqplot-yaxis-tick') {
 
                     // y-axis labels/ticks (labels for each row), must be placed to the farthest right of the parent
@@ -5137,7 +5876,6 @@ Fisma.Chart = {
 
         return this;
     }
-    
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -7228,6 +7966,15 @@ Fisma.Module = {
         },
 
         /**
+         * Hide disposal checkbox and label
+         *
+         * @method OrganizationTreeView._hideDisposalCheckbox
+         */
+        _hideDisposalCheckbox: function () {
+            this._disposalCheckboxContainer.style.display = "none"; 
+        },
+
+        /**
          * Set the user preference for the include disposal system checkbox and re-render the tree view
          *
          * @method OrganizationTreeView._handleDisposalCheckboxAction
@@ -7259,22 +8006,25 @@ Fisma.Module = {
                 {
                     success: function (response) {
                         var json = YAHOO.lang.JSON.parse(response.responseText);
+                        if (json.treeData.length > 0) {
+                            // Load the tree data into a tree view
+                            this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
+                            this._buildTreeNodes(json.treeData, this._treeView.getRoot());
+                            Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                                this._treeView,
+                                this.handleDragDrop,
+                                this
+                            );
 
-                        // Load the tree data into a tree view
-                        this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
-                        this._buildTreeNodes(json.treeData, this._treeView.getRoot());
-                        Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
-                            this._treeView,
-                            this.handleDragDrop,
-                            this
-                        );
+                            // Expand the first two levels of the tree by default
+                            var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                            $.each(defaultExpandNodes, function (key, node) {node.expand();});
 
-                        // Expand the first two levels of the tree by default
-                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
-                        $.each(defaultExpandNodes, function (key, node) {node.expand();});
-
-                        this._treeView.draw();
-                        this._buildContextMenu();
+                            this._treeView.draw();
+                            this._buildContextMenu();
+                        } else {
+                            this._hideDisposalCheckbox();
+                        }
                         this._hideLoadingImage();
                     },
                     failure: function (response) {
@@ -7304,9 +8054,9 @@ Fisma.Module = {
                 var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
                                  + PHP_JS().htmlspecialchars(node.orgTypeLabel) + "</i>";
 
-                var yuiNode = new YAHOO.widget.TextNode(
+                var yuiNode = new YAHOO.widget.HTMLNode(
                     {
-                        label: nodeText,
+                        html: nodeText,
                         organizationId: node.id,
                         type: node.orgType,
                         systemId: node.systemId
@@ -7742,6 +8492,55 @@ Fisma.Remediation = {
         return true;
     }
 
+};
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
+ * 
+ * @fileoverview Provides client-side behavior for the AttachArtifacts behavior
+ * 
+ * @author    Dale Frey <dale.frey@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
+ * @license   http://www.openfisma.org/content/license
+ */
+ 
+Fisma.Role = {
+    
+    rolePrivChanges : {},
+    
+    dataTableCheckboxClick : function (oArgs) {
+    
+        var checkboxObj = oArgs.target;
+        var column = this.getColumn(checkboxObj);
+        var roleName = column.key;
+        // The 2nd column (hidden) has the privilegeId
+        var privilegeCell = this.getRow(checkboxObj).childNodes[1].childNodes[0].childNodes[0];
+        var privilegeId = $(privilegeCell).text();
+
+        // Update array of changes to apply
+        var newChange = {
+            'roleName': roleName,
+            'privilegeId': privilegeId,
+            'newValue': checkboxObj.checked
+        }
+        Fisma.Role.rolePrivChanges[roleName + privilegeId] = newChange;
+        
+        // Put change list into the form to be submitted
+        YAHOO.util.Dom.get('rolePrivChanges').value = YAHOO.lang.JSON.stringify(Fisma.Role.rolePrivChanges);
+    }
+    
 };
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
@@ -8331,6 +9130,10 @@ Fisma.Search = function() {
          doDelete : function (checkedRecords) {
             // Derive the URL for the multi-delete action
             var dataTable = Fisma.Search.yuiDataTable;
+
+            // Flushes cache so that datatable will reload data instead of use cache
+            dataTable.getDataSource().flushCache();
+
             var searchUrl = Fisma.Search.yuiDataTable.getDataSource().liveData;
             var urlPieces = searchUrl.split('/');
             
@@ -10864,15 +11667,22 @@ Fisma.TableFormat = {
     },
 
     /**
-     * A formatter which converts escaped HTML into unescaped HTML
+     * A formatter which used to convert escaped HTML into unescaped HTML ...
+     * Now it uses the default formatter, for a few reasons:
+     *    1. We don't store html unescaped anymore, unless it's unsafe html
+     *    2. The javascript in data-table-local.phtml is wrong, and doesn't execute YAHOO formatters properly
+     *    3. Using this as it was resulted in an XSS vulnerability, and I don't have time to rewrite the entire
+     *       implementation so that it works properly.
      *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
      * @param oData The data stored in this cell
+     * @TODO Fix data-table-local.phtml script so that it works with YAHOO formatters
+     * @deprecated
      */
     formatHtml : function(el, oRecord, oColumn, oData) {
-        el.innerHTML = oData.replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">");
+        YAHOO.widget.DataTable.formatDefault.apply(this, arguments);
     },
 
     /**
@@ -11703,7 +12513,7 @@ Fisma.User = {
                                                 'title');
 
                     // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo !== null) {
+                    if (data.accountInfo.length > 0) {
                         for (var i in ldapColumns) {
                             if (!ldapColumns.hasOwnProperty(i)) {
                                 continue;
@@ -11711,7 +12521,7 @@ Fisma.User = {
 
                             var columnValue = data.accountInfo[ldapColumns[i]];
 
-                            if (columnValue !== null) {
+                            if (!YAHOO.lang.isUndefined(columnValue)) {
                                 document.getElementById(openfismaColumns[i]).value = columnValue;
                             } else {
                                 document.getElementById(openfismaColumns[i]).value = '';
@@ -11725,9 +12535,11 @@ Fisma.User = {
                 },
 
                 failure : function(o) {
+                    Fisma.User.checkAccountBusy = false;
+                    checkAccountButton.className = "yui-button yui-push-button";
                     spinner.hide();
 
-                    var alertMessage = {text : 'Failed to check account password: ' + o.statusText};
+                    var alertMessage = "Failed to check account password: " + o.statusText;
                     Fisma.Util.showAlertDialog(alertMessage);
                 }
             },
@@ -12020,6 +12832,29 @@ Fisma.Util = {
                 } ); 
 
         return dialog;
+    },
+
+    /*
+     * Organizaton type filter callback function
+     * It set the default organization type, store the selected organization type and refresh window with url 
+     */
+    organizationTypeHandle : function (event, config) {
+            // Set the selected organization type   
+            var organizationTypeFilter = YAHOO.util.Dom.get('orgTypeFilter');
+            var selectedType = organizationTypeFilter.options[organizationTypeFilter.selectedIndex];
+
+            // Store the selected organizationTypeId to storage table
+            var orgTypeStorage = new Fisma.PersistentStorage(config.namespace);
+            orgTypeStorage.set('orgType', selectedType.value); 
+            orgTypeStorage.sync();
+
+        Fisma.Storage.onReady(function() {
+            // Construct the url and refresh the result after a user changes organization type                
+            if (!YAHOO.lang.isUndefined(config) && config.url) {
+                var url = config.url + '?orgTypeId=' + encodeURIComponent(selectedType.value);
+                window.location.href = url;
+            }
+        });
     },
 
     /**

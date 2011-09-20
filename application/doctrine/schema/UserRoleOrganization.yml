@@ -10,3 +10,7 @@ UserRoleOrganization:
         Organization:
             local: organizationId
             foreign: id
+        UserRole:
+            local: userRoleId
+            foreign: userRoleId
+

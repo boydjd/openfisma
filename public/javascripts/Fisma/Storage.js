@@ -43,7 +43,7 @@
      */
     FS._initStorageEngine = function() {
         if (YAHOO.lang.isNull(FS._storageEngine)) {
-            var engineConf = {swfURL: "/swfstore.swf", containerID: "swfstoreContainer"};
+            var engineConf = {swfURL: "/swfstore-2.9.0.swf", containerID: "swfstoreContainer"};
             FS._storageEngine = YAHOO.util.StorageManager.get(
                 YAHOO.util.StorageEngineGears.ENGINE_NAME,
                 YAHOO.util.StorageManager.LOCATION_SESSION,
@@ -136,7 +136,6 @@
          */
         _get: function(key) {
             var value = FS._storageEngine.getItem(this.namespace + ":" + key);
-
             return YAHOO.lang.isNull(value) ? null : YAHOO.lang.JSON.parse(value);
         },
         /**
@@ -148,6 +147,7 @@
          * @protected
          */
         _set: function(key, value) {
+            FS._storageEngine.removeItem(this.namespace + ":" + key);
             FS._storageEngine.setItem(this.namespace + ":" + key, YAHOO.lang.JSON.stringify(value));
         }
     };

@@ -16,7 +16,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
  * Unit tests for the finding model
@@ -27,7 +27,7 @@ require_once(realpath(dirname(__FILE__) . '/../../FismaUnitTest.php'));
  * @package    Test
  * @subpackage Test_Model
  */
-class Test_Application_Models_Finding extends Test_FismaUnitTest
+class Test_Application_Models_Finding extends Test_Case_Unit
 {
     /**
      * Cannot set next due date directly

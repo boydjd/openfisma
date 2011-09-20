@@ -97,7 +97,7 @@ class Fisma_String
         
         // Remove any remaining tags and decode entities
         $html = strip_tags($html);
-        $html = html_entity_decode($html);
+        $html = html_entity_decode($html, ENT_COMPAT, 'UTF-8');
         
         // Remove excess whitespace
         $html = preg_replace('/[ ]*(?>\r\n|\n|\x0b|\f|\r|\x85)[ ]*/', "\n", $html);

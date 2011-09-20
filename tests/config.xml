@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Using this configuration will slow down the test runner as it has to collect coverage information and then write
+out a coverage report. It is not named phpunit.xml so that it will not be read in by default, saving developers the
+delay of writing a covereage report after *every* test run.
+
+To use this file, run `phpunit -c config.xml All<Foo>Tests.php`, where <Foo> is the name of the suite you want to run.
+-->     
+<phpunit colors="true">
+    <filter>
+        <whitelist>
+            <directory>../application</directory>
+            <file>../library/Fisma.php</file>
+            <directory>../library/Fisma</directory>
+            <exclude>
+                <directory>../application/modules/default/controllers</directory>
+                <directory>../application/modules/finding/controllers</directory>
+                <directory>../application/modules/vm/controllers</directory>
+                <directory>../application/models/generated</directory>
+                <directory>../application/doctrine/migrations</directory>
+            </exclude>
+        </whitelist>
+        
+        <blacklist>
+            <directory>../library/Fisma/Symfony</directory>
+        </blacklist>
+    </filter>
+    
+    <logging>
+        <log type="junit" target="./junit.xml" />
+        <log type="coverage-clover" target="./clover.xml" />
+        <log type="coverage-html" target="./clover" />
+    </logging>
+</phpunit>
