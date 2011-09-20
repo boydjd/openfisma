@@ -65,17 +65,44 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
             $downloadUrl = '/system-document/download/id/' . $history->id . '/version/' . $history->version;
             $historyRows[] = array(
                 'fileName' => "<a href=$downloadUrl>" . $this->view->escape($history->fileName) . "</a>",
-                'version' => $this->view->escape($history->version),
+                'version' => $history->version,
                 'description' => $this->view->textToHtml($this->view->escape($history->description)),
             );
         }
 
         $dataTable = new Fisma_Yui_DataTable_Local();
 
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('File Name', true, null, null, 'fileName'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Version', true, null, null, 'version'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Version Notes', false, null, null, 'description'))
-                  ->setData($historyRows);
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'fileName'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Version',
+                true,
+                null,
+                null,
+                'version'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Version Notes',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'description'
+            )
+        );
+
+        $dataTable->setData($historyRows);
 
         $this->view->dataTable = $dataTable;
 

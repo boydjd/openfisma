@@ -666,7 +666,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         foreach ($logs as $log) {
             $logRows[] = array(
-                'timestamp' => $this->view->escape($log['o_createdTs']),
+                'timestamp' => $log['o_createdTs'],
                 'user' => $this->view->userInfo($log['u_username']),
                 'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
             );
@@ -674,11 +674,37 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable = new Fisma_Yui_DataTable_Local();
 
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, null, null, 'timestamp'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, null, null, 'username'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Message', false, null, null, 'message'))
-                  ->setData($logRows);
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Timestamp',
+                true,
+                null,
+                null,
+                'timestamp'
+            )
+        );
 
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'User',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Message',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'message'
+            )
+        );
+
+        $dataTable->setData($logRows);
         $this->view->dataTable = $dataTable;
     }
     
@@ -712,8 +738,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         foreach ($actors as $actor) {
             $actorUsername   = $this->view->userInfo($actor['a_username']);
-            $actorFirstName  = $this->view->escape($actor['a_nameFirst']);
-            $actorLastName   = $this->view->escape($actor['a_nameLast']);
+            $actorFirstName  = $actor['a_nameFirst'];
+            $actorLastName   = $actor['a_nameLast'];
             $actorRemoveLink = '<a href=/incident/remove-user/incidentId/' . $this->view->escape($id)
                              . '/userId/' . $actor['a_id'] . '>Remove</a>';
 
@@ -724,14 +750,41 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $actorDataTable = new Fisma_Yui_DataTable_Local();
 
-        $actorDataTable->addColumn(new Fisma_Yui_DataTable_Column('Username', true, null, null, 'username'))
-                       ->addColumn(new Fisma_Yui_DataTable_Column('First Name', true, null, null, 'firstName'))
-                       ->addColumn(new Fisma_Yui_DataTable_Column('Last Name', true, null, null, 'lastName'))
-                       ->setData($actorRows);
+        $actorDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Username',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $actorDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'First Name',
+                true,
+                null,
+                null,
+                'firstName'
+            )
+        );
+
+        $actorDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Last Name',
+                true,
+                null,
+                null,
+                'lastName'
+            )
+        );
 
         if ($updateIncidentPrivilege) {
-            $actorDataTable->addColumn(new Fisma_Yui_DataTable_Column('Remove', true));
+            $actorDataTable->addColumn(new Fisma_Yui_DataTable_Column('Remove', true, 'Fisma.TableFormat.formatHtml'));
         }
+
+        $actorDataTable->setData($actorRows);
 
         $this->view->actorDataTable = $actorDataTable;
 
@@ -750,8 +803,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         foreach ($observers as $observer) {
             $observerUsername   = $this->view->userInfo($observer['o_username']);
-            $observerFirstName  = $this->view->escape($observer['o_nameFirst']);
-            $observerLastName   = $this->view->escape($observer['o_nameLast']);
+            $observerFirstName  = $observer['o_nameFirst'];
+            $observerLastName   = $observer['o_nameLast'];
             $observerRemoveLink = '<a href=/incident/remove-user/incidentId/' . $this->view->escape($id)
                                 . '/userId/' . $observer['o_id'] . '>Remove</a>';
 
@@ -762,14 +815,47 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $observerDataTable = new Fisma_Yui_DataTable_Local();
 
-        $observerDataTable->addColumn(new Fisma_Yui_DataTable_Column('Username', true, null, null, 'username'))
-                          ->addColumn(new Fisma_Yui_DataTable_Column('First Name', true, null, null, 'firstName'))
-                          ->addColumn(new Fisma_Yui_DataTable_Column('Last Name', true, null, null, 'lastName'))
-                          ->setData($observerRows);
+        $observerDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Username',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $observerDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'First Name',
+                true,
+                null,
+                null,
+                'firstName'
+            )
+        );
+
+        $observerDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Last Name',
+                true,
+                null,
+                null,
+                'lastName'
+            )
+        );
 
         if ($updateIncidentPrivilege) {
-            $observerDataTable->addColumn(new Fisma_Yui_DataTable_Column('Remove', true));
+            $observerDataTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'Remove',
+                    true,
+                    'Fisma.TableFormat.formatHtml'
+                )
+            );
         }
+
+        $observerDataTable->setData($observerRows);
 
         $this->view->observerDataTable = $observerDataTable;
 
@@ -1168,7 +1254,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         foreach ($comments as $comment) {
             $commentRows[] = array(
-                'timestamp' => $this->view->escape($comment['createdTs']),
+                'timestamp' => $comment['createdTs'],
                 'username' => $this->view->userInfo($comment['User']['username']),
                 'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment']))
             );
@@ -1176,10 +1262,37 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable = new Fisma_Yui_DataTable_Local();
 
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, null, null, 'timestamp'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, null, null, 'username'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Comment', false, null, null, 'comment'))
-                  ->setData($commentRows);
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Timestamp',
+                true,
+                null,
+                null,
+                'timestamp'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'User',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Comment',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'comment'
+            )
+        );
+
+        $dataTable->setData($commentRows);
 
         $this->view->dataTable = $dataTable;
 
@@ -1256,24 +1369,78 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         foreach ($artifactCollection as $artifact) {
             $downloadUrl = '/incident/download-artifact/id/' . $id . '/artifactId/' . $artifact->id;
             $artifactRows[] = array(
-                'iconUrl' => "<a href=$downloadUrl><img src=" . $this->view->escape($artifact->getIconUrl()) . "></a>",
+                'iconUrl'  => "<a href=$downloadUrl><img src=" . $this->view->escape($artifact->getIconUrl()) . "></a>",
                 'fileName' => "<a href=$downloadUrl><div>" . $this->view->escape($artifact->fileName) . "</div></a>",
-                'fileSize' => $this->view->escape($artifact->getFileSize()),
-                'user' => $this->view->userInfo($artifact->User->username),
-                'date' => $this->view->escape($artifact->createdTs),
-                'comment' => $this->view->textToHtml($this->view->escape($artifact->comment))
+                'fileSize' => $artifact->getFileSize(),
+                'user'     => $this->view->userInfo($artifact->User->username),
+                'date'     => $artifact->createdTs,
+                'comment'  => $this->view->textToHtml($this->view->escape($artifact->comment))
             );
         }
 
         $dataTable = new Fisma_Yui_DataTable_Local();
 
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Icon', false, null, null, 'icon'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('File Name', true, null, null, 'fileName'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Size', true, null, null, 'size'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Uploaded By', true, null, null, 'uploadedBy'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Upload Date', true, null, null, 'uploadDate'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Comment', false, null, null, 'comment'))
-                  ->setData($artifactRows);
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Icon',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'icon'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'fileName'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Size',
+                true,
+                null,
+                null,
+                'size'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Uploaded By',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'uploadedBy'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Upload Date',
+                true,
+                null,
+                null,
+                'uploadDate'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Comment',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'comment'
+            )
+        );
+
+        $dataTable->setData($artifactRows);
 
         $this->view->dataTable = $dataTable;
     }

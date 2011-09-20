@@ -206,25 +206,88 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'fileName' => "<a href=/system-document/download/id/{$document->id}>"
                             . "<img src={$this->view->escape($document->getIconUrl())}>"
                             . "<div>{$this->view->escape($document->DocumentType->name)}</div></a>",
-                'size' => $this->view->escape($document->getSizeKb()),
-                'version' => $this->view->escape($document->version),
+                'size' => $document->getSizeKb(),
+                'version' => $document->version,
                 'description' => $this->view->textToHtml($this->view->escape($document->description)),
                 'username' => $this->view->userInfo($document->User->username),
-                'updated_at' => $this->view->escape($document->updated_at),
+                'date' => $document->updated_at,
                 'view' => "<a href=/system-document/view/id/{$document->id}>Version History</a>"
             );
         }
 
         $dataTable = new Fisma_Yui_DataTable_Local();
 
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('File Name', true, null, null, 'fileName'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Size', false, null, null, 'size'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Version', false, null, null, 'version'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Version Notes', false, null, null, 'description'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Last Modified By User', true, null, null, 'username'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Last Modified Date', true, null, null, 'updated_at'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('View History', true, null, null, 'id'))
-                  ->setData($documentRows);
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'fileName'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Size',
+                false,
+                null,
+                null,
+                'size'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Version',
+                false,
+                null,
+                null,
+                'version'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Version Notes',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'description'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Last Modified By User',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Last Modified Date',
+                true,
+                null,
+                null,
+                'date'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'View History',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'id'
+            )
+        );
+
+        $dataTable->setData($documentRows);
 
         $this->view->dataTable = $dataTable;
     }

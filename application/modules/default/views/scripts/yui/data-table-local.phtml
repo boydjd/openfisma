@@ -51,6 +51,8 @@
         dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
         dataSource.responseSchema = <?php echo $this->escape($this->responseSchema, 'json'); ?>;
 
+        Fisma.Util.setTable(dataTable, "<?php echo $this->escape($this->actionName, 'none') ?>");
+
         var dataTable = new YAHOO.widget.GroupedDataTable(
             "<?php echo $this->escape($this->containerId, 'javascript'); ?>", 
             columnDefs, 
@@ -61,9 +63,6 @@
                 <?php endif; ?>
             }
         );
-
-        // Register data table with Fisma.Util -- this allows it to be found after this scope disappears
-        Fisma.Util.setTable(dataTable);
 
         // Enable row highlighting for mouse over events
         dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow); 

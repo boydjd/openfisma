@@ -25,7 +25,7 @@ Fisma.Util = {
     /**
      * A reference to the YUI data table which is used for displaying YUI datatable results
      */
-    yuiDataTable : null,
+    yuiDataTable : [],
 
     /**
      * Escapes the specified string so that it can be included in a regex without special characters affecting
@@ -247,9 +247,26 @@ Fisma.Util = {
     /**
      * A method to add a YUI table to the "registry" that this object keeps track of
      *
-     * @var table A YUI table
+     * @param table Reference to the yui table
+     * @param actionName Set table by specify action name
      */
-    setTable : function (table) {
-        this.yuiDataTable = table;
+    setTable : function (table, actionName) {
+        var tableObj = { data : table, config : actionName };
+        this.yuiDataTable.push(tableObj);
+    },
+
+    /**
+     * Return a yui datatable by specify action name
+     * 
+     * @param actionName Get table by specify action name
+     * @returns object|null
+     */
+    getTable : function (actionName) {
+        for(var index in this.yuiDataTable) {
+            if (this.yuiDataTable[index].config === actionName) {
+                return this.yuiDataTable[index].data;
+            }
+        }
+        return null;
     }
 };

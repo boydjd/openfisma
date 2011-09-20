@@ -223,7 +223,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         foreach ($logs as $log) {
             $logRows[] = array(
-                'timestamp' => $this->view->escape($log['o_createdTs']),
+                'timestamp' => $log['o_createdTs'],
                 'user' => $this->view->userInfo($log['u_username']),
                 'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
             );
@@ -231,10 +231,37 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable = new Fisma_Yui_DataTable_Local();
 
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, null, null, 'timestamp'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, null, null, 'username'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Message', false, null, null, 'message'))
-                  ->setData($logRows);
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Timestamp',
+                true,
+                null,
+                null,
+                'timestamp'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'User',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Message',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'message'
+            )
+        );
+
+        $dataTable->setData($logRows);
 
         $this->view->dataTable = $dataTable;
     }
@@ -757,7 +784,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         foreach ($comments as $comment) {
             $commentRows[] = array(
-                'timestamp' => $this->view->escape($comment['createdTs']),
+                'timestamp' => $comment['createdTs'],
                 'username' => $this->view->userInfo($comment['User']['username']),
                 'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment']))
             );
@@ -765,10 +792,37 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable = new Fisma_Yui_DataTable_Local();
 
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Timestamp', true, null, null, 'timestamp'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('User', true, null, null, 'username'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Comment', false, null, null, 'comment'))
-                  ->setData($commentRows);
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Timestamp',
+                true,
+                null,
+                null,
+                'timestamp'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'User',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Comment',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'comment'
+            )
+        );
+
+        $dataTable->setData($commentRows);
 
         $this->view->dataTable = $dataTable;
 

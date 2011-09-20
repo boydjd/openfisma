@@ -367,16 +367,43 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
             $rows[] = array(
                 'Report' => "<a href=$url>" . $this->view->escape($reportParams['title']) . "</a>",
                 'Description' => $reportParams['description'],
-                'Roles' => $this->view->escape(implode(', ', $reportParams['roles']))
+                'Roles' => implode(', ', $reportParams['roles'])
             );
         }
 
         $dataTable = new Fisma_Yui_DataTable_Local();
 
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Report', true, null, null, 'report'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Description', true, null, null, 'description'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Roles', true, null, null, 'roles'))
-                  ->setData($rows);
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Report',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'report'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Description',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'description'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Roles',
+                true,
+                null,
+                null,
+                'roles'
+            )
+        );
+
+        $dataTable->setData($rows);
 
         $this->view->dataTable = $dataTable;
     }
