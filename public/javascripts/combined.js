@@ -757,7 +757,7 @@ tinyMCE.init({
 	mode : "textareas",
 	cleanup : false,
 	element_format : "html",
-	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen",
+	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen, table",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
 	plugin_insertdate_timeFormat : "%H:%M:%S",
 	browsers : "msie,gecko,safari,opera",
@@ -770,7 +770,7 @@ tinyMCE.init({
 	                           outdent, indent, |, \
 	                           spellchecker, search, replace, |, \
 	                           link, unlink, print, fullscreen",
-	theme_advanced_buttons2 : "",
+	theme_advanced_buttons2 : "tablecontrols",
 	theme_advanced_buttons3 : "",
 	theme_advanced_toolbar_location : "top",
 	theme_advanced_toolbar_align : "left",
@@ -778,6 +778,7 @@ tinyMCE.init({
 	theme_advanced_resizing : true,
 	spellchecker_rpc_url : '/javascripts/tiny_mce/plugins/spellchecker/rpc.php',
 	spellchecker_languages : "+English=en",
+    table_styles : "Default=tinymce_table",
     setup : function(ed) {
         ed.onClick.add(Fisma.SessionManager.onActivityEvent);
         ed.onKeyPress.add(Fisma.SessionManager.onActivityEvent);
@@ -11882,6 +11883,104 @@ Fisma.SecurityAuthorization = {
         var controlId = args.record.getData().definition_id;
         var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId);
         dialog.show();
+    },
+
+    /**
+     * Displays the hidden block on the FIPS-199 page to add information types to a system
+     */
+    showInformationTypes : function () {
+        document.getElementById('addInformationTypes').style.display = 'block';
+    },
+
+    /**
+     * Build URL for adding information type to the system
+     */
+    addInformationType : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = "<a href='/system/add-information-type/id/"
+            + oRecord.getData('system')
+            + "/sitId/"
+            + oData
+            + "'>Add</a>";
+    },
+
+    /**
+     * Build URL for removing information types from a system
+     */
+    removeInformationType : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = "<a href='/system/remove-information-type/id/"
+            + oRecord.getData('system')
+            + "/sitId/"
+            + oData
+            + "'>Remove</a>";
+    },
+
+    /**
+     * Run an XHR request to add an available information type to the system information types
+     */
+    handleAvailableInformationTypesTableClick: function (event, id) {
+        var targetEl = event.target;
+        var selectedId = Fisma.SecurityAuthorization.availableInformationTypesTable.getRecord(targetEl);
+        var recordId = selectedId.getData('id');
+
+        var postData = "id=" + id + "&sitId=" + recordId;
+
+        YAHOO.util.Connect.asyncRequest(
+            'POST',
+            '/sa/information-type/add-information-type/format/json',
+            {
+                success: function(o) {
+                    try {
+                        var response = YAHOO.lang.JSON.parse(o.responseText).response;
+
+                        if (response.success) {
+                            var addInformationTypes = document.getElementById("addInformationTypes");
+                            if (addInformationTypes) {
+                                addInformationTypes.style.display = 'none';
+                            }
+
+                            var dt = Fisma.SecurityAuthorization.assignedInformationTypesTable;
+                            document.getElementById('addInformationTypes').style.display = 'block';
+                            dt.showTableMessage("Updating list of information types…");
+                            dt.getDataSource().sendRequest('', {success: dt.onDataReturnInitializeTable, scope: dt});
+                            dt.on("dataReturnEvent", function () {
+                            });
+                        } else {
+                            Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
+                        }
+                    } catch (error) {
+                        Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+                    }
+                },
+
+                failure: function(o) {
+                    Fisma.Util.showAlertDialog('An unexpected error occurred.');
+                }
+            },
+            postData
+        );
+    },
+
+    tableFormatEnhancements: function(elem, record, column) {
+        var data = record.getData();
+        var selected = data.selectedEnhancements_selectedEnhancements;
+        var available = data.definedEnhancements_availableEnhancements;
+        if (Number(available) === 0) {
+            elem.innerHTML = "<i>N/A</i>";
+        } else {
+            elem.innerHTML = selected + " / " + available + ' ';
+            var anchor = document.createElement('a');
+            anchor.innerHTML = "Edit";
+            anchor.href = "#";
+            elem.appendChild(anchor);
+            YAHOO.util.Event.addListener(anchor, "click", Fisma.SecurityAuthorization.editEnhancements, {elem: elem, record: record, column: column}, this);
+        }
+    },
+
+    editEnhancements: function (event, args) {
+        var saId = args.record.getData().instance_securityAuthorizationId;
+        var controlId = args.record.getData().definition_id;
+        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId);
+        dialog.show();
     }
 }
 
@@ -11891,7 +11990,6 @@ Fisma.SecurityAuthorization.EditEnhancementsDialog = function(saId, controlId) {
     this._showLoadingMessage();
     this._requestForm(formUrl);
 };
-
 YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Panel, {
     /**
      * Show a loading message (while loading the form)
@@ -11905,7 +12003,7 @@ YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Pa
 
     /**
      * Request the blank form from a specified URL
-     * 
+     *
      * @param url {String}
      */
     _requestForm: function(url) {
@@ -11916,16 +12014,16 @@ YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Pa
                 Fisma.Util.showAlertDialog('An unexpected error occurred.');
                 this.destroy();
             },
-            
+
             scope: this
         };
         YAHOO.util.Connect.asyncRequest( 'GET', url, callback, null);
 
     },
-    
+
     /**
      * Load the returned form into the dialog
-     * 
+     *
      * @param connectionData {Object} Returned by YUI connection class
      */
     _loadForm: function(connectionData) {
@@ -12666,34 +12764,6 @@ Fisma.System = {
         window.location.href = window.location.href;
     },
 
-    /**
-     * Displays the hidden block on the FIPS-199 page to add information types to a system 
-     */
-    showInformationTypes : function () {
-        document.getElementById('addInformationTypes').style.display = 'block';
-    },
-
-    /**
-     * Build URL for adding information type to the system 
-     */
-    addInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/add-information-type/id/" 
-                         + oRecord.getData('system') 
-                         + "/sitId/" 
-                         + oData 
-                         + "'>Add</a>";
-    },
-
-    /**
-     * Build URL for removing information types from a system 
-     */
-    removeInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/remove-information-type/id/" 
-                         + oRecord.getData('system') 
-                         + "/sitId/" 
-                         + oData 
-                         + "'>Remove</a>";
-    },
 
     /**
      * removeSelectedUsers 

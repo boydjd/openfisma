@@ -244,6 +244,8 @@ span#removeUsers{margin-left:0;}
 .display-none{display:none;}
 div#swfstoreContainer{width:0;height:0;}
 form#transitionsForm{display:inline;}
+table.keyValues,table.fisma_crud{border-collapse:collapse;border-spacing:0;}
+table.keyValues td,table.keyValues th,table.fisma_crud td,table.fisma_crud th{border:none;}
 .yui-skin-sam .yui-dt td.__NESTED__ a{text-decoration:none;color:white;}
 .yui-skin-sam .yui-dt td.__NESTED__ div{width:14px;padding:0;margin:5px 3px;}
 .yui-skin-sam .yui-dt td.__NESTED__ div.expand{background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -350px;}

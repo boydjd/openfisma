@@ -30,7 +30,7 @@ tinyMCE.init({
 	mode : "textareas",
 	cleanup : false,
 	element_format : "html",
-	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen",
+	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen, table",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
 	plugin_insertdate_timeFormat : "%H:%M:%S",
 	browsers : "msie,gecko,safari,opera",
@@ -43,7 +43,7 @@ tinyMCE.init({
 	                           outdent, indent, |, \
 	                           spellchecker, search, replace, |, \
 	                           link, unlink, print, fullscreen",
-	theme_advanced_buttons2 : "",
+	theme_advanced_buttons2 : "tablecontrols",
 	theme_advanced_buttons3 : "",
 	theme_advanced_toolbar_location : "top",
 	theme_advanced_toolbar_align : "left",
@@ -51,6 +51,7 @@ tinyMCE.init({
 	theme_advanced_resizing : true,
 	spellchecker_rpc_url : '/javascripts/tiny_mce/plugins/spellchecker/rpc.php',
 	spellchecker_languages : "+English=en",
+    table_styles : "Default=tinymce_table",
     setup : function(ed) {
         ed.onClick.add(Fisma.SessionManager.onActivityEvent);
         ed.onKeyPress.add(Fisma.SessionManager.onActivityEvent);
