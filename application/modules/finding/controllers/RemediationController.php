@@ -752,7 +752,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable->setData($commentRows);
 
-        $this->view->dataTable = $dataTable;
+        $this->view->commentDataTable = $dataTable;
 
         $commentButton = new Fisma_Yui_Form_Button(
             'commentButton', 
@@ -1239,7 +1239,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable->setData($logRows);
 
-        $this->view->dataTable = $dataTable;
+        $this->view->auditLogDataTable = $dataTable;
     }
 
     /**
