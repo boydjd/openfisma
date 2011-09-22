@@ -27,6 +27,20 @@
  */
 class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
 {
+
+    /**
+     * Initialize internal members.
+     *
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+        $this->_helper->contextSwitch()
+                ->addActionContext('add-information-type', 'json')
+                ->initContext();
+    }
+
     protected $_modelName = 'SaInformationType';
 
     /**
@@ -42,7 +56,7 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
     /**
      * Return types which can be assigned to a system
      * The system ID is included in the data for use on the System FIPS-199 page
-     * 
+     *
      * @return void
      */
     public function activeTypesAction()
@@ -78,5 +92,94 @@ class Sa_InformationTypeController extends Fisma_Zend_Controller_Action_Object
         $informationTypesData['totalRecords'] = $informationTypes->count();
         $informationTypesData['informationTypes'] = $informationTypes->execute()->toArray();
         $this->view->informationTypesData = $informationTypesData;
+    }
+
+    /**
+     * Return all information types currently assigned to the system
+     *
+     * @return void
+     */
+    public function informationTypesAction()
+    {
+        $this->_helper->layout->setLayout('ajax');
+
+        $id    = $this->getRequest()->getParam('id');
+        $count = $this->getRequest()->getParam('count', 10);
+        $start = $this->getRequest()->getParam('start', 0);
+        $sort  = $this->getRequest()->getParam('sort', 'category');
+        $dir   = $this->getRequest()->getParam('dir', 'asc');
+
+        $system = Doctrine::getTable('System')->find($id);
+
+        $this->_acl->requirePrivilegeForObject('read', $system->Organization);
+
+        $systemId = $system->id;
+
+        $informationTypes = Doctrine_Query::create()
+                ->select("sat.*, {$system->id} as system")
+                ->from('SaInformationType sat, SaInformationTypeSystem sats')
+                ->where('sats.systemid = ?', $systemId)
+                ->andWhere('sats.sainformationtypeid = sat.id')
+                ->andWhere('sat.hidden = FALSE')
+                ->orderBy("sat.{$sort} {$dir}")
+                ->limit($count)
+                ->offset($start);
+
+        $informationTypesData = array();
+        $informationTypesData['totalRecords'] = $informationTypes->count();
+        $informationTypesData['informationTypes'] = $informationTypes->execute()->toArray();
+        $this->view->informationTypesData = $informationTypesData;
+    }
+
+    /**
+     * Add a single information type to a system
+     *
+     * @return void
+     */
+    public function addInformationTypeAction()
+    {
+        $response = new Fisma_AsyncResponse();
+        try {
+            $informationTypeId = $this->getRequest()->getParam('sitId');
+            $id = $this->getRequest()->getParam('id');
+
+            $system = Doctrine::getTable('System')->find($id);
+            $this->_acl->requirePrivilegeForObject('update', $system->Organization);
+
+            $systemId = $system->id;
+            $informationTypeSystem = new SaInformationTypeSystem();
+            $informationTypeSystem->sainformationtypeid = $informationTypeId;
+            $informationTypeSystem->systemid = $systemId;
+            $informationTypeSystem->save();
+        } catch (Exception $e) {
+            $this->getInvokeArg('bootstrap')->getResource('Log')->log($e, Zend_Log::ERR);
+            $response->fail($e);
+        }
+        $this->view->response = $response;
+    }
+
+    /**
+     * Remove a single information type from a system
+     *
+     * @return void
+     */
+    public function removeInformationTypeAction()
+    {
+        $informationTypeId = $this->getRequest()->getParam('sitId');
+        $id = $this->getRequest()->getParam('id');
+
+        $system = Doctrine::getTable('System')->find($id);
+
+        $this->_acl->requirePrivilegeForObject('update', $system->Organization);
+
+        $informationType = Doctrine_Query::create()
+                ->from('SaInformationTypeSystem saits')
+                ->where('saits.sainformationtypeid = ?', $informationTypeId)
+                ->andWhere('saits.systemid = ?', $id)
+                ->execute();
+
+        $informationType->delete();
+
+        $this->_redirect("/system/view/id/$id");
     }
 }

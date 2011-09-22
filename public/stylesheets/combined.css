@@ -1721,6 +1721,17 @@ div#swfstoreContainer {
 form#transitionsForm {
     display: inline;
 }
+
+/* Remove base formatting from selected table classes */
+table.keyValues, table.fisma_crud {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* Remove base formatting from selected td and th classes */
+table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th {
+    border: none;
+}
 .yui-skin-sam .yui-dt td.__NESTED__ a {
 	text-decoration:none;
 	color:white;
@@ -1749,4 +1760,17 @@ form#transitionsForm {
 }
 .__NESTED_TABLE__ table {
 	width:100%;
+}
+body, td, pre {
+    font: 13px/1.231 arial,helvetica,clean,sans-serif !important;
+}
+
+.mceitemtable td, .mceitemtable th, .mceitemtable caption, .mceitemvisualaid {
+    border: 1px solid black;
+    padding: .5em;
+}
+
+.mceitemtable, .mceitemtable table {
+    border: none !important;
+    padding: 0em;
 }

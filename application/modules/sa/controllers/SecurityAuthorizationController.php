@@ -298,7 +298,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $tabView = new Fisma_Yui_TabView('SecurityAuthorizationView', $id);
         $tab1Name = $sa->Organization->nickname . ' Security Authorization';
         $tabView->addTab($tab1Name, "/sa/security-authorization/overview/id/$id");
-        $tabView->addTab("1. Categorize", "/system/fips/id/$systemId");
+        $tabView->addTab("1. Categorize", "/sa/security-authorization/fips/id/$id");
         $tabView->addTab("2. Select", "/sa/security-authorization/select-controls/id/$id/format/html");
         $tabView->addTab("3. Implementation", "/sa/security-authorization/implementation/id/$id/format/html");
         $tabView->addTab("4. Assessment", "/sa/security-authorization/assessment-plan/id/$id/format/html");
@@ -390,6 +390,103 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             round($percent, 1),
             $completionDate->toString(Zend_Date::DATE_FULL)
         );
+    }
+
+    /**
+     * Display CIA criteria and FIPS-199 categorization
+     *
+     * @return void
+     */
+    public function fipsAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
+        $this->_acl->requirePrivilegeForObject('read', $organization);
+        $this->_helper->layout()->disableLayout();
+
+        $this->view->organization = $organization;
+        $this->view->system = $this->view->organization->System;
+        // BEGIN: Build the data table of information types associated with the system
+
+        $informationTypesTable = new Fisma_Yui_DataTable_Remote();
+
+        $informationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, null, 'category'))
+                ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, null, 'name'))
+                ->addColumn(
+            new Fisma_Yui_DataTable_Column('Description', false, null, null, 'description')
+        )
+                ->addColumn(
+            new Fisma_Yui_DataTable_Column('Confidentiality', true, null, null, 'confidentiality')
+        )
+                ->addColumn(new Fisma_Yui_DataTable_Column('Integrity', true, null, null, 'integrity'))
+                ->addColumn(
+            new Fisma_Yui_DataTable_Column('Availability', true, null, null, 'availability')
+        )
+                ->setResultVariable('informationTypes')
+                ->setInitialSortColumn('category')
+                ->setSortAscending(true)
+                ->setRowCount(10)
+                ->setDataUrl("/sa/information-type/information-types/id/{$id}/format/json")
+                ->setGlobalVariableName('Fisma.SecurityAuthorization.assignedInformationTypesTable');
+
+        $this->view->informationTypesTable = $informationTypesTable;
+        // END: Building of data table
+
+        // BEGIN: Build the data table of available information types to assign to the system
+
+        if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
+            $availableInformationTypesTable = clone $informationTypesTable;
+
+            $availableInformationTypesTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'Add',
+                    'false',
+                    'Fisma.SecurityAuthorization.addInformationType',
+                    null,
+                    'id'
+                )
+            );
+
+            $availableInformationTypesTable->setDataUrl(
+                "/sa/information-type/active-types/systemId/{$id}/format/json"
+            );
+
+            $availableInformationTypesTable->setClickEventHandler(
+                'Fisma.SecurityAuthorization.handleAvailableInformationTypesTableClick'
+            );
+
+            $availableInformationTypesTable->setClickEventHandlerArgs(
+                $id
+            );
+
+            $availableInformationTypesTable->setGlobalVariableName(
+                'Fisma.SecurityAuthorization.availableInformationTypesTable'
+            );
+
+            $this->view->availableInformationTypesTable = $availableInformationTypesTable;
+            // END: Building of the data table
+
+            $this->view->informationTypesTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'Remove',
+                    'false',
+                    'Fisma.SecurityAuthorization.removeInformationType',
+                    null,
+                    'id'
+                )
+            );
+
+            $addInformationTypeButton = new Fisma_Yui_Form_Button(
+                'addInformationTypeButton',
+                array(
+                     'label' => 'Add Information Types',
+                     'onClickFunction' => 'Fisma.SecurityAuthorization.showInformationTypes',
+                )
+            );
+            $this->view->addInformationTypeButton = $addInformationTypeButton;
+        }
+
+        $this->render();
     }
 
     /**
@@ -501,8 +598,11 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             ->addSelect('count(selectedEnhancements.id) selectedEnhancements')
             ->from('SaSecurityControl instance')
             ->leftJoin('instance.SecurityControl definition')
-            ->leftJoin('instance.SecurityControlEnhancements selectedEnhancements')
             ->leftJoin('definition.Enhancements definedEnhancements')
+            ->leftJoin(
+                'instance.SaSecurityControlEnhancements selectedEnhancements ' .
+                'WITH selectedEnhancements.securityControlEnhancementId = definedEnhancements.id'
+            )
             ->where('instance.securityAuthorizationId = ?', $sa->id)
             ->groupBy("instance.id")
             ->orderBy("definition.code")
@@ -831,20 +931,50 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
      */
     public function editEnhancementsAction()
     {
-        $saId = $this->getRequest()->getParam('saId');
+        $saId = $this->getRequest()->getParam('id');
         $controlId = $this->getRequest()->getParam('controlId');
 
         $enhancements = Doctrine::getTable('SecurityControlEnhancement')
             ->findBySecurityControlId($controlId)
             ->toArray();
-        $selectedEnhancements = Doctrine_Query::create()
-            ->from('SaSecurityControlEnhancement saSce')
-            ->innerJoin('saSce.SaSecurityControl saSc')
+        $saSc = Doctrine_Query::create()
+            ->from('SaSecurityControl saSc')
+            ->leftJoin('saSc.SaSecurityControlEnhancements saSce')
             ->where('saSc.securityAuthorizationId = ?', $saId)
             ->andWhere('saSc.securityControlId = ?', $controlId)
-            ->fetchArray();
+            ->fetchOne();
+        $eIds = array();
+        foreach ($saSc->SaSecurityControlEnhancements as $saSce) {
+            $eIds[$saSce->securityControlEnhancementId] = $saSce;
+        }
+        $this->view->eids = $eIds;
 
-        $this->view->available = $enhancements;
-        $this->view->selected = $selectedEnhancements;
+        foreach ($enhancements as &$e) {
+            $e['selected'] = isset($eIds[$e['id']]);
+        }
+
+        if ($this->getRequest()->isPost()) {
+            $selected = $this->getRequest()->getPost('enhancements');
+            // insert ids not already present
+            foreach ($selected as $s) {
+                if (empty($eIds[$s])) {
+                    $saSce = new SaSecurityControlEnhancement();
+                    $saSce->securityAuthorizationId = $saId;
+                    $saSce->saSecurityControlId = $saSc->id;
+                    $saSce->securityControlEnhancementId = $s;
+                    $saSce->save();
+                    unset($saSce);
+                }
+            }
+            // delete enhancements no longer selected
+            foreach ($eIds as $saSce) {
+                if (!in_array($saSce->securityControlEnhancementId, $selected)) {
+                    $saSce->delete();
+                }
+            }
+            $this->view->result = 'success';
+        } else {
+            $this->view->enhancements = $enhancements;
+        }
     }
 }
