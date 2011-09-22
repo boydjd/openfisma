@@ -779,6 +779,7 @@ tinyMCE.init({
 	spellchecker_rpc_url : '/javascripts/tiny_mce/plugins/spellchecker/rpc.php',
 	spellchecker_languages : "+English=en",
     table_styles : "Default=tinymce_table",
+    content_css : "/stylesheets/tinymce.css",
     setup : function(ed) {
         ed.onClick.add(Fisma.SessionManager.onActivityEvent);
         ed.onKeyPress.add(Fisma.SessionManager.onActivityEvent);
