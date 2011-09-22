@@ -11882,7 +11882,7 @@ Fisma.SecurityAuthorization = {
     editEnhancements: function (event, args) {
         var saId = args.record.getData().instance_securityAuthorizationId;
         var controlId = args.record.getData().definition_id;
-        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId);
+        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlIa, thisd);
         dialog.show();
     },
 
@@ -11980,16 +11980,20 @@ Fisma.SecurityAuthorization = {
     editEnhancements: function (event, args) {
         var saId = args.record.getData().instance_securityAuthorizationId;
         var controlId = args.record.getData().definition_id;
-        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId);
+        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId, this);
         dialog.show();
     }
 }
 
-Fisma.SecurityAuthorization.EditEnhancementsDialog = function(saId, controlId) {
-    var formUrl = '/sa/security-authorization/edit-enhancements/id/' + saId + '/controlId/' + controlId + '/format/json';
+Fisma.SecurityAuthorization.EditEnhancementsDialog = function(saId, controlId, controlTable) {
+    this.formUrl = "/sa/security-authorization/edit-enhancements"
+        + "/id/" + saId
+        + "/controlId/" + controlId
+        + "/format/json";
+    this.controlTable = controlTable;
     YAHOO.widget.Panel.superclass.constructor.call(this, YAHOO.util.Dom.generateId(), {modal: true});
     this._showLoadingMessage();
-    this._requestForm(formUrl);
+    this._requestForm(this.formUrl);
 };
 YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Panel, {
     /**
@@ -12030,13 +12034,75 @@ YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Pa
     _loadForm: function(connectionData) {
         try {
             var response = YAHOO.lang.JSON.parse(connectionData.responseText);
-            console.log(response);
-
-            this.setBody(response);
+            var ds = new YAHOO.util.LocalDataSource(response.enhancements);
+            var columnDefs = [
+                {key: "selected", label: "", formatter: "checkbox"},
+                {key: "number", label: "#"},
+                {key: "description", label: "Description"}
+            ];
+            var container = document.createElement("div");
+            var tableDiv = document.createElement('div');
+            container.appendChild(tableDiv);
+            this._dataTable = new YAHOO.widget.DataTable(tableDiv, columnDefs, ds);
+            var cancelButton = new YAHOO.widget.Button({
+                label: "Cancel",
+                onclick: {
+                    fn: function (e, o) { o.destroy(); },
+                    obj: this
+                }
+            });
+            cancelButton.appendTo(container);
+            var saveButton = new YAHOO.widget.Button({
+                label: "Save",
+                onclick: { fn: this._onSaveButtonClick, obj: this }
+            });
+            saveButton.appendTo(container);
+            this.setBody(container);
             this.center();
         } catch (error) {
             Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
-            this.hide();
+            this.destroy();
+        }
+    },
+
+    _onSaveButtonClick: function(e, o) {
+        try {
+            var t = o.controlTable;
+            t.showTableMessage(t.get("MSG_LOADING"), YAHOO.widget.DataTable.CLASS_LOADING);
+            var callback = {
+                success: function(connectionData) {
+                    var oCallback = {
+                        success : t.onDataReturnSetRows,
+                        failure : t.onDataReturnSetRows,
+                        scope   : t,
+                        argument: t.getState()
+                    };
+                    t._oDataSource.sendRequest( t.get("initialRequest"), oCallback);
+                },
+                failure: function(connectionData) {
+                    Fisma.Util.showAlertDialog('An unexpected error occurred.');
+                    o.destroy();
+                },
+
+                scope: this
+            };
+            var selected = [];
+            var records = o._dataTable.getRecordSet().getRecords();
+            var index, record, row, checkbox;
+            for (index in records) {
+                record = records[index];
+                row = YAHOO.util.Dom.get(record.getId());
+                checkbox = row.getElementsByTagName("input")[0];
+                if (checkbox.checked) {
+                    selected.push(record.getData().id);
+                }
+            }
+            var postData = selected.length == 0 ? "" : "enhancements[]=" + $P.implode("&enhancements[]=", selected);
+            YAHOO.util.Connect.asyncRequest( 'POST', o.formUrl, callback, postData);
+            o.destroy();
+        } catch (error) {
+            Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+            o.destroy();
         }
     }
 });
