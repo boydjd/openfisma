@@ -1,0 +1,7 @@
+--- 
+library/Zend: 
+  remote: master/braid/library/Zend
+  revision: 24449
+  squashed: true
+  type: svn
+  url: http://framework.zend.com/svn/framework/standard/tags/release-1.11.10/library/Zend
