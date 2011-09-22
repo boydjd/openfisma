@@ -1,4 +1,10 @@
 --- 
+library/Symfony/Components: 
+  remote: master/braid/library/Symfony/Components
+  revision: 24024
+  squashed: true
+  type: svn
+  url: http://svn.symfony-project.com/components/dependency_injection/branches/1.0/lib
 library/Zend: 
   remote: master/braid/library/Zend
   revision: 24449
