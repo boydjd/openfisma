@@ -123,8 +123,9 @@ class Version121 extends Doctrine_Migration_Base
               ));
 
         // Add default organization type column
-        $this->addColumn('configuration', 'default_bureau_id', 'integer', '1', array(
+        $this->addColumn('configuration', 'default_bureau_id', 'integer', '20', array(
             'notblank' => '1',
+            'default' => '3',
             'comment' => 'The ID of the default organization type which is used when the user does not explicitly organization type.',
         ));
     }
