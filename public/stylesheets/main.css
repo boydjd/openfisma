@@ -89,6 +89,7 @@ input[readonly] {
 body {
 	padding: 10px;
 	text-align: left;
+    margin: 0;
 }
 
 /* The logo is floated to the left */
@@ -117,6 +118,10 @@ div#menubar {
     background-color: #d3d3d3;
 }
 
+div#tab1 td {
+    border-style: none;
+}
+
 /* This class is used to mark elements which should only be applied when data is transferred to 
    external media, such as a print out. By default, these items are hidden. @see print.css */
 div.externalMediaMarking {
@@ -138,6 +143,15 @@ div.sectionHeader {
     border-bottom: none;
     font-weight: bold;
     text-align: left;
+}
+
+div.sectionHeader table {
+    margin-bottom: 0;
+}
+
+div.sectionHeader td {
+    border-style: none;
+    padding: 0;
 }
 
 div.sectionHeader a {
@@ -639,4 +653,32 @@ table.keyValues, table.fisma_crud {
 /* Remove base formatting from selected td and th classes */
 table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th {
     border: none;
+}
+
+/* Style for block on /user/notification page */
+.eventNotifyBlock {
+        border:1px #44637A solid;
+        padding:10px;
+}
+.eventNotifyBlock .inline {
+        float:left;
+        clear:right;
+        padding:0 20px;
+}
+.eventNotifyBlock #move {
+        padding-top:40px;
+}
+.eventNotifyBlock #actionButton { padding:10px 20px; clear:left}
+.eventNotifyBlock select {
+        width:250px;
+}
+
+/* Style for the td of table on /user/notification page */
+#event_form td {
+    border-style: none;
+}
+
+/* Style for the td of table on /role/right/id/# page */
+#assign_right td {
+    border-style: none;
 }
