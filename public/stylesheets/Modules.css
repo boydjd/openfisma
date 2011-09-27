@@ -8,6 +8,7 @@ table.modules {
 }
 
 table.modules td {
+    border-style: none;
     font-size: 1.4em;
     padding: 8px;
     vertical-align: middle;
