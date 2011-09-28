@@ -75,6 +75,12 @@ h1 {
     font-weight: bold;
 }
 
+/* This style is very finicky in IE7. Don't modify it unless you're double checking it in IE7 as you go. */
+input[readonly] {
+    color: #999 ! important;
+    background-color: #f0f0f0 ! important;
+}
+
 /* This next section contains application-specific styles. Each style should
    be named for what it *does*, and not what it *looks like*. This standard
    improves application maintenance. */

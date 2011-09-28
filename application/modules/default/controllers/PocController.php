@@ -76,9 +76,14 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     {
         $form = parent::getForm($formName);
 
-        // Remove the "Check Account" button if we're not using external authentication
-        if (Fisma::configuration()->getConfig('auth_type') == 'database') {
+        $authType = Fisma::configuration()->getConfig('auth_type');
+        if ($authType == 'database') {
+            // Remove the "Check Account" button if we're not using external authentication
             $form->removeElement('checkAccount');
+        } elseif ($authType == 'ldap') {
+            $form->getElement('nameFirst')->setAttrib("readonly", "readonly");
+            $form->getElement('nameLast')->setAttrib("readonly", "readonly");
+            $form->getElement('email')->setAttrib("readonly", "readonly");
         }
         
         // Populate <select> for responsible organization

@@ -668,11 +668,14 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $accountInfo = array();
             $account = $this->_request->getParam('account');
 
+            $msg = '';
+            $matchedAccounts = null;
+
             if (empty($account)) {
                 throw new Fisma_Zend_Exception_User('You did not specify any account name.');
+            } elseif (strlen($account) < 3) {
+                throw new Fisma_Zend_Exception_User('When searching for a user, you must type at least 3 letters.');
             }
-
-            $msg = '';
 
             foreach ($ldapServerConfigurations as $ldapServerConfiguration) {        
                 $ldapServer = new Zend_Ldap($ldapServerConfiguration);
