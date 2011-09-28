@@ -80,9 +80,9 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
             )
             ->setColors(
                 array(
-                    '#FF0000',
-                    '#FF6600',
-                    '#FFC000'
+                    '#00FF00',
+                    '#FFFF00',
+                    '#FF0000'
                 )
             )
             ->setThreatLegendVisibility(true)
@@ -193,7 +193,11 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
 
         foreach ($queryResults as $rsltElement) {
             $colLabel = $rsltElement['category'] . ' - ' . $rsltElement['name'];
-            $rtnChart->addColumn($colLabel, $rsltElement['count']);
+
+            $pieSliceTooltip = '<b>' . $colLabel . '</b><hr/>';
+            $pieSliceTooltip .= '#count# (#percent#%)';
+
+            $rtnChart->addColumn($rsltElement['category'], $rsltElement['count'], null, $pieSliceTooltip);
         }
         
         $this->view->chart = $rtnChart->export('array');
@@ -204,11 +208,16 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
      */
     public function bureauAction()
     {
+        $organizationTypeId = Inspekt::getInt($this->getRequest()->getParam('bureau'));
+
+        $organizationType = Doctrine::getTable('OrganizationType')->findOneById($organizationTypeId);
+        $organizationTypeNickname = $organizationType ? $organizationType->nickname : '';
+
         $rtnChart = new Fisma_Chart();
         $rtnChart
             ->setChartType('bar')
             ->setColors(array('#416ed7'))
-            ->setTitle('Incidents per bureau reported in the last 90 days');
+            ->setTitle("Incidents per $organizationTypeNickname reported in the last 90 days");
     
         $cutoffDate = Zend_Date::now()->subDay(90)->toString(Fisma_Date::FORMAT_DATETIME);
 
@@ -217,8 +226,9 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
                        ->select('i.id, COUNT(*) AS count, bureau.nickname')
                        ->leftJoin('i.Organization o')
                        ->leftJoin('Organization bureau')
+                       ->leftJoin('bureau.OrganizationType bureauOrgType')
                        ->where('i.reportTs > ?', $cutoffDate)
-                       ->andWhere('bureau.orgType = ?', array('bureau'))
+                       ->andWhere('bureauOrgType.id = ?', array($organizationTypeId))
                        ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
                        ->orderBy('bureau.nickname')
                        ->groupBy('bureau.id')

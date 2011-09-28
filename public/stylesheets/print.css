@@ -123,14 +123,19 @@ div.sectionHeader {
     clear: both;
     color: black;
     background: #eee;
+    margin-top: 1em;
+    padding: 1em;
+    padding-bottom: 0;
     border: 1px solid black;
     border-bottom: none;
 }
 
 div.section {
     color: black;
+    padding: 1em;
     border: 1px solid black;
     border-top: none;
+    text-align: left;
 }
 
 table.searchFilters {

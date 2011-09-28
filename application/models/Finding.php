@@ -340,7 +340,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]      = $findingEvaluation;
 
-        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . "\n\nComment:\n" . $comment . '</p>');
+        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . "\n\nComment:\n" . $comment);
 
         switch ($this->status) {
             case 'MSA':
@@ -789,7 +789,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     {
         $org = $this->Organization;
 
-        if ($org->orgType == 'system' && $org->System->sdlcPhase == 'disposal') {
+        if ($org->OrganizationType->nickname == 'system' && $org->System->sdlcPhase == 'disposal') {
             $message = 'Cannot create a finding for a System in the Disposal phase.';
             
             $this->getErrorStack()->add('Organization', $message);

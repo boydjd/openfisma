@@ -712,6 +712,119 @@ span.userInfo:active {
     cursor: pointer;
     width: 20px;
 }
+/* The group cell */
+.yui-skin-sam .yui-dt .group
+{
+    border-top: 1px solid #CBCBCB;
+    font-weight: bold;
+    color: black;
+    cursor: pointer;
+    background-color: #f1f2f2;
+}
+
+.yui-skin-sam .yui-dt .group td
+{
+    border-color: #cbcbcb;
+    border-style: solid;
+    border-width: 1px 0px 0px 0px;
+}
+
+/* Group inner style */
+.yui-skin-sam .yui-dt .group .liner
+{
+    padding: 4px 10px;
+}
+
+/* Selected group */
+.yui-skin-sam .yui-dt .group-selected
+{
+    background-image: none;
+    background-color: #426FD9;
+    color: White;
+}
+
+/* Disabled group */
+.yui-skin-foodstorm .yui-dt .group-disabled
+{
+    cursor: default;
+}
+
+/* The first group in the data table */
+.yui-skin-sam .yui-dt .group-first
+{
+    border-top: 1px solid #7f7f7f;
+}
+
+/* The first row in the group */
+.yui-skin-sam .yui-dt .group-first-row td
+{
+}
+
+/* The group when collapsed */
+.yui-skin-sam .yui-dt .group-collapsed
+{
+    margin-top: 0px; /* Makes the group cover up the first row in the group. */
+}
+
+/* The first rown in the group when collapsed */
+.yui-skin-sam .yui-dt .group-first-row-collapsed td
+{
+    padding-top: 0px; /* Makes the group cover up the first row in the group. */
+}
+
+/* Base styles for the group icon */
+.yui-skin-sam .yui-dt .group .icon
+{
+    width: 18px;
+    height: 15px;
+    position: absolute;
+    cursor: pointer;
+}
+
+/* The label within the group */
+.yui-skin-sam .yui-dt .group .label
+{
+    margin-left: 25px;
+}
+
+/* The group icon when expanded */
+.yui-skin-sam .yui-dt .group-expanded .icon
+{
+   background-image: url('/images/dt-group-arrow-down.png');
+   background-repeat: no-repeat;
+}
+
+/* The group icon when collapsed */
+.yui-skin-sam .yui-dt .group-collapsed .icon
+{
+   background-image: url('/images/dt-group-arrow-up.png');
+   background-repeat: no-repeat;
+}
+
+/* -------------------------------------------------
+ * Drag and Drop styles
+ * -------------------------------------------------
+ */
+.yui-skin-sam .yui-dt td {
+    border-top: 2px solid transparent;
+}
+
+.yui-skin-sam .yui-dt tr.dragging-over.yui-dt-odd td,
+.yui-skin-sam .yui-dt tr.dragging-over.yui-dt-even td
+{
+    border-bottom: 2px solid red;
+}
+
+.yui-skin-sam .yui-dt tr.dragging-over.group td
+{
+    background-color: #ffdddd;
+}
+
+.yui-skin-sam .yui-dt .drag-source-row td
+{
+    opacity: 0.3;
+    background-color: #eee;
+}
 /**
  * jquery.jqplot.css
  * This file, slightly altered by Endeavor is copyrighted under the MIT licence
@@ -833,6 +946,7 @@ table.jqplot-table-legend, table.jqplot-cursor-legend {
 
 td.jqplot-table-legend {
     vertical-align:middle;
+    padding: .5em !important;
 }
 
 td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
@@ -842,6 +956,7 @@ td.jqplot-seriesToggle:hover, td.jqplot-seriesToggle:active {
 td.jqplot-table-legend > div {
     border: 1px solid #cccccc;
     padding:1px;
+    color: #000000;
 }
 
 div.jqplot-table-legend-swatch {
@@ -855,6 +970,7 @@ div.jqplot-table-legend-swatch {
     border-bottom-style: solid;
     border-left-style: solid;
     border-right-style: solid;
+    color: #000000;
 }
 
 .jqplot-title {
@@ -867,6 +983,7 @@ div.jqplot-table-legend-swatch {
 table.jqplot-cursor-tooltip {
     border: 1px solid #cccccc;
     font-size: 0.75em;
+    color: #000000;
 }
 
 .jqplot-cursor-tooltip {
@@ -877,6 +994,7 @@ table.jqplot-cursor-tooltip {
     opacity: 0.8;
     filter: alpha(opacity = 80);
     padding: 1px;
+    color: #000000;
 }
 
 .jqplot-highlighter-tooltip {
@@ -889,7 +1007,8 @@ table.jqplot-cursor-tooltip {
     padding: 1px;
     opacity: 0.8;
     filter: alpha(opacity = 80);
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=80)";
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=95)";
+    color: #000000;
 }
 
 .jqplot-point-label {
@@ -899,13 +1018,14 @@ table.jqplot-cursor-tooltip {
 }
       
 td.jqplot-cursor-legend-swatch {
-vertical-align:middle;
-text-align:center;
+    vertical-align:middle;
+    text-align:center;
+    color: #000000;
 }
 
 div.jqplot-cursor-legend-swatch {
-width:1.2em;
-height:0.7em;
+    width:1.2em;
+    height:0.7em;
 }
 
 .jqplot-data-label {
@@ -933,7 +1053,8 @@ div.jqplot-bubble-label {
 
 div.jqplot-bubble-label.jqplot-bubble-label-highlight {
     background: rgba(90%, 90%, 90%, 0.7);
-}/**
+}
+/**
  * main.css
  *
  * Copyright (c) 2008 Endeavor Systems, Inc.

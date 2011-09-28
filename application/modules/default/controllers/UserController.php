@@ -165,6 +165,19 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             $this->_updatePocIndex($subject->id);
 
+            // Just send out email when create a new account or change password by admin user,
+            // and it does not sent out email when the root user changes his own password.
+            $actionName = strtolower($this->_request->getActionName());
+            if ('create' === $actionName) {
+                $mail = new Fisma_Zend_Mail();
+                $mail->sendAccountInfo($subject);
+            } else if ('edit' === $actionName
+                       && !empty($values['password'])
+                       && ('root' !== $subject->username || $this->_me->username !== 'root')) {
+                $mail = new Fisma_Zend_Mail();
+                $mail->sendPassword($subject);
+            }
+
             return $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
@@ -321,28 +334,34 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $user = Doctrine::getTable('User')->find($this->_me->id);
 
         if ($this->_request->isPost()) {
-            //@todo check injection
-            $user->notifyFrequency = $this->_request->getParam('notify_frequency');
+            $notifyFrequency = $this->_request->getParam('notify_frequency');
 
             $postEvents = $this->_request->getPost('existEvents');
-            try {
-                Doctrine_Manager::connection()->beginTransaction();
-                $modified = $user->getModified();
+            if (Inspekt::isInt($notifyFrequency)) {
+                try {
+                    Doctrine_Manager::connection()->beginTransaction();
+                    $modified = $user->getModified();
 
-                $user->unlink('Events');
+                    $user->unlink('Events');
 
-                if (!empty($postEvents)) {
-                    $user->link('Events', $postEvents);
+                    if (!empty($postEvents)) {
+                        $user->link('Events', $postEvents);
+                    }
+
+                    $user->notifyFrequency = $notifyFrequency;
+                    $user->save();
+                    Doctrine_Manager::connection()->commit();
+
+                    $message = "Notification events modified successfully";
+                    $model   = 'notice';
+                } catch (Doctrine_Exception $e) {
+                    Doctrine_Manager::connection()->rollback();
+                    $message = $e->getMessage();
+                    $model   = 'warning';
                 }
-
-                $user->save();
-                Doctrine_Manager::connection()->commit();
-
-                $message = "Notification events modified successfully";
-                $model   = 'notice';
-            } catch (Doctrine_Exception $e) {
-                Doctrine_Manager::connection()->rollback();
-                $message = $e->getMessage();
+            } else {
+                /** @todo English */
+                $message = "Notify Frequency: '$notifyFrequency' is not a valid value";
                 $model   = 'warning';
             }
             $this->view->priorityMessenger($message, $model);

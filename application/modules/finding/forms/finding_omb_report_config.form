@@ -1,0 +1,22 @@
+; This is the form for configuring the organization type map.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Ben Zheng <ben.zheng@reyosoft.com>
+; Copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[finding_omb_report_config]
+elementPrefixPath.prefix = Fisma_Zend_Form
+elementPrefixPath.path = Fisma/Zend/Form
+elementPrefixPath.type = Validate
+
+elements.default_bureau_id.type = "select"
+elements.default_bureau_id.options.label = "Map OMB Bureau To"
+elements.default_bureau_id.options.required = true
+displayGroups.omb_report_config.elements.default_bureau_ida = "default_bureau_id"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save"
+displayGroups.omb_report_config.elements.save = "save"

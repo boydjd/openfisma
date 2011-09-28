@@ -586,6 +586,10 @@ Fisma.Search = function() {
          doDelete : function (checkedRecords) {
             // Derive the URL for the multi-delete action
             var dataTable = Fisma.Search.yuiDataTable;
+
+            // Flushes cache so that datatable will reload data instead of use cache
+            dataTable.getDataSource().flushCache();
+
             var searchUrl = Fisma.Search.yuiDataTable.getDataSource().liveData;
             var urlPieces = searchUrl.split('/');
             

@@ -261,6 +261,20 @@ class Zend_Captcha_ReCaptcha extends Zend_Captcha_Base
      */
     public function render(Zend_View_Interface $view = null, $element = null)
     {
-        return $this->getService()->getHTML();
+        $name = null;
+        if ($element instanceof Zend_Form_Element) {
+            $name = $element->getBelongsTo();
+        }
+        return $this->getService()->getHTML($name);
+    }
+
+    /**
+     * Get captcha decorator
+     *
+     * @return string
+     */
+    public function getDecorator()
+    {
+        return "Captcha_ReCaptcha";
     }
 }

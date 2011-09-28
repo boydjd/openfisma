@@ -69,14 +69,18 @@ class Zend_Oauth_Client extends Zend_Http_Client
      * assist in automating OAuth parameter generation, addition and
      * cryptographioc signing of requests.
      *
-     * @param  array $oauthOptions
-     * @param  string $uri
+     * @param  array|Zend_Config $oauthOptions
+     * @param  string            $uri
      * @param  array|Zend_Config $config
      * @return void
      */
     public function __construct($oauthOptions, $uri = null, $config = null)
     {
-        if (!isset($config['rfc3986_strict'])) {
+        if ($config instanceof Zend_Config && !isset($config->rfc3986_strict)) {
+            $config                   = $config->toArray();
+            $config['rfc3986_strict'] = true;
+        } else if (null === $config ||
+                   (is_array($config) && !isset($config['rfc3986_strict']))) {
             $config['rfc3986_strict'] = true;
         }
         parent::__construct($uri, $config);
@@ -87,16 +91,6 @@ class Zend_Oauth_Client extends Zend_Http_Client
             }
             $this->_config->setOptions($oauthOptions);
         }
-    }
-
-    /**
-     * Return the current connection adapter
-     *
-     * @return Zend_Http_Client_Adapter_Interface|string $adapter
-     */
-    public function getAdapter()
-    {
-        return $this->adapter;
     }
 
    /**
@@ -246,7 +240,8 @@ class Zend_Oauth_Client extends Zend_Http_Client
             $oauthHeaderValue = $this->getToken()->toHeader(
                 $this->getUri(true),
                 $this->_config,
-                $this->_getSignableParametersAsQueryString()
+                $this->_getSignableParametersAsQueryString(),
+                $this->getRealm()
             );
             $this->setHeaders('Authorization', $oauthHeaderValue);
         } elseif ($requestScheme == Zend_Oauth::REQUEST_SCHEME_POSTBODY) {
@@ -273,7 +268,7 @@ class Zend_Oauth_Client extends Zend_Http_Client
                 foreach ($queryParts as $queryPart) {
                     $kvTuple = explode('=', $queryPart);
                     $params[urldecode($kvTuple[0])] =
-                        (array_key_exists(1, $kvTuple) ? urldecode($kvTuple[1]) : NULL);
+                        (array_key_exists(1, $kvTuple) ? urldecode($kvTuple[1]) : null);
                 }
             }
             if (!empty($this->paramsPost)) {

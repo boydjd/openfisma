@@ -169,6 +169,7 @@ class Zend_Gdata_AuthSub
         try {
             $response = $client->request('GET');
         } catch (Zend_Http_Client_Exception $e) {
+            ob_end_clean();
             // require_once 'Zend/Gdata/App/HttpException.php';
             throw new Zend_Gdata_App_HttpException($e->getMessage(), $e);
         }
@@ -210,6 +211,7 @@ class Zend_Gdata_AuthSub
         try {
             $response = $client->request('GET');
         } catch (Zend_Http_Client_Exception $e) {
+            ob_end_clean();
             // require_once 'Zend/Gdata/App/HttpException.php';
             throw new Zend_Gdata_App_HttpException($e->getMessage(), $e);
         }
@@ -229,9 +231,9 @@ class Zend_Gdata_AuthSub
         if ($client == null) {
             $client = new Zend_Gdata_HttpClient();
         }
-        if (!$client instanceof Zend_Http_Client) {
+        if (!$client instanceof Zend_Gdata_HttpClient) {
             // require_once 'Zend/Gdata/App/HttpException.php';
-            throw new Zend_Gdata_App_HttpException('Client is not an instance of Zend_Http_Client.');
+            throw new Zend_Gdata_App_HttpException('Client is not an instance of Zend_Gdata_HttpClient.');
         }
         $useragent = 'Zend_Framework_Gdata/' . Zend_Version::VERSION;
         $client->setConfig(array(

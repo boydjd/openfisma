@@ -16,9 +16,9 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../../FismaUnitTest.php'));
+require_once(realpath(dirname(__FILE__) . '/../../../../Case/Unit.php'));
 
-class Test_Library_Fisma_Zend_Exception_AccountLocked extends Test_FismaUnitTest
+class Test_Library_Fisma_Zend_Exception_AccountLocked extends Test_Case_Unit
 {
     /**
      * testAccountLocked 

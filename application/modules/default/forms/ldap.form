@@ -20,6 +20,7 @@ elements.port.options.validators.alnum.validator = "Digits"
 elements.port.options.validators.strlen.validator = "StringLength"
 elements.port.options.validators.strlen.options.min = "1"
 elements.port.options.validators.strlen.options.max = "10"
+elements.port.options.required = true
 displayGroups.general.elements.port = "port"
 
 elements.useSsl.type = "checkbox"

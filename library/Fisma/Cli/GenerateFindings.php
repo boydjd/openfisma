@@ -109,7 +109,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                               ->execute();
 
         if (0 == count($this->_sampleUsers)) {
-            throw new Fisma_Exception("Cannot generate sample data because the application has no users.");
+            throw new Fisma_Zend_Exception_User("Cannot generate sample data because the application has no users.");
         }
 
         // Get some sample POCs
@@ -200,13 +200,21 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
 
             foreach ($findings as $finding) {
                 $f = new Finding();
+
+                // Because the finding model is awful, we're setting the current evaluation early so that
+                // the mutators don't freak out.
+                if ($finding['status'] == 'MSA') {
+                    $f->CurrentEvaluation = $msaEvaluation;
+                } elseif ($finding['status'] == 'EA') {
+                    $f->CurrentEvaluation = $eaEvaluation;
+                }
+
                 $f->merge($finding);
                 $f->CreatedBy = $this->_getRandomUser();
                 $f->pocId = $this->_getRandomPoc()->id;
                 $f->save();
                 
                 if ($f->status == 'MSA') {
-                    $f->CurrentEvaluation = $msaEvaluation;
                     $f->updateDenormalizedStatus();
                     $f->save();
 
@@ -223,7 +231,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                     
                     $evidence->save();
                     
-                    $f->CurrentEvaluation = $eaEvaluation;
                     $f->updateDenormalizedStatus();
                     $f->save();
 
@@ -253,7 +260,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
      */
     private function _getRandomUser()
     {
-        return $this->_sampleUsers[rand(0, count($this->_sampleUsers))];
+        return $this->_sampleUsers[rand(0, count($this->_sampleUsers)-1)];
     }
 
     /**

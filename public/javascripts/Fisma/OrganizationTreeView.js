@@ -194,6 +194,15 @@
         },
 
         /**
+         * Hide disposal checkbox and label
+         *
+         * @method OrganizationTreeView._hideDisposalCheckbox
+         */
+        _hideDisposalCheckbox: function () {
+            this._disposalCheckboxContainer.style.display = "none"; 
+        },
+
+        /**
          * Set the user preference for the include disposal system checkbox and re-render the tree view
          *
          * @method OrganizationTreeView._handleDisposalCheckboxAction
@@ -225,22 +234,25 @@
                 {
                     success: function (response) {
                         var json = YAHOO.lang.JSON.parse(response.responseText);
+                        if (json.treeData.length > 0) {
+                            // Load the tree data into a tree view
+                            this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
+                            this._buildTreeNodes(json.treeData, this._treeView.getRoot());
+                            Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                                this._treeView,
+                                this.handleDragDrop,
+                                this
+                            );
 
-                        // Load the tree data into a tree view
-                        this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
-                        this._buildTreeNodes(json.treeData, this._treeView.getRoot());
-                        Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
-                            this._treeView,
-                            this.handleDragDrop,
-                            this
-                        );
+                            // Expand the first two levels of the tree by default
+                            var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                            $.each(defaultExpandNodes, function (key, node) {node.expand();});
 
-                        // Expand the first two levels of the tree by default
-                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
-                        $.each(defaultExpandNodes, function (key, node) {node.expand();});
-
-                        this._treeView.draw();
-                        this._buildContextMenu();
+                            this._treeView.draw();
+                            this._buildContextMenu();
+                        } else {
+                            this._hideDisposalCheckbox();
+                        }
                         this._hideLoadingImage();
                     },
                     failure: function (response) {
@@ -270,9 +282,9 @@
                 var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
                                  + PHP_JS().htmlspecialchars(node.orgTypeLabel) + "</i>";
 
-                var yuiNode = new YAHOO.widget.TextNode(
+                var yuiNode = new YAHOO.widget.HTMLNode(
                     {
-                        label: nodeText,
+                        html: nodeText,
                         organizationId: node.id,
                         type: node.orgType,
                         systemId: node.systemId

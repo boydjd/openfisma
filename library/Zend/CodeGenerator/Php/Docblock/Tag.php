@@ -21,19 +21,9 @@
  */
 
 /**
- * @see Zend_CodeGenerator_Abstract
+ * @see Zend_CodeGenerator_Php_Abstract
  */
 // require_once 'Zend/CodeGenerator/Php/Abstract.php';
-
-/**
- * @see Zend_CodeGenerator_Php_Docblock_Tag_Param
- */
-// require_once 'Zend/CodeGenerator/Php/Docblock/Tag/Param.php';
-
-/**
- * @see Zend_CodeGenerator_Php_Docblock_Tag_Return
- */
-// require_once 'Zend/CodeGenerator/Php/Docblock/Tag/Return.php';
 
 /**
  * @category   Zend

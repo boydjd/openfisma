@@ -141,6 +141,8 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function fismaQuarterlyAction()
     {
+        $bureauId = Fisma::configuration()->getConfig('default_bureau_id');
+
         // Agency Name
         $agency = Organization::getAgency();
         $this->view->agencyName = $agency->name;
@@ -149,7 +151,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         $this->view->submissionDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
         
         // Bureau Statistics
-        $bureaus = Organization::getBureaus();
+        $bureaus = Organization::getBureaus($bureauId);
         $stats = array();
         foreach ($bureaus as $bureau) {
             $bureauStats = $bureau->getFismaStatistics();
@@ -169,15 +171,17 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function fismaAnnualAction()
     {
+        $bureauId = Fisma::configuration()->getConfig('default_bureau_id');
+
         // Agency Name
         $agency = Organization::getAgency();
         $this->view->agencyName = $agency->name;
-
+         
         // Submission Date
         $this->view->submissionDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
         
         // Bureau Statistics
-        $bureaus = Organization::getBureaus();
+        $bureaus = Organization::getBureaus($bureauId);
         $stats = array();
         foreach ($bureaus as $bureau) {
             $bureauStats = $bureau->getFismaStatistics();

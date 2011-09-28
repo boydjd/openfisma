@@ -33,6 +33,27 @@ class RolePrivilege extends BaseRolePrivilege
      */
     public function postSave($event)
     {
+        $this->_invalidateAcl($event);
+    }
+
+    /**
+     * Invalidate ACL of affected users 
+     * 
+     * @param Doctrine_Event $event 
+     */
+    public function postDelete($event)
+    {
+        $this->_invalidateAcl($event);
+    }
+
+    /**
+     * Invalidate user ACL for affected users after an event
+     *
+     * @param Doctrine_Event $event
+     * @return void
+     */
+    protected function _invalidateAcl(Doctrine_Event $event)
+    {
         $invoker = $event->getInvoker();
         $role = Doctrine::getTable('Role')->find($invoker->roleId);
 

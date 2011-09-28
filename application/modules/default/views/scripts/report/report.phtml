@@ -16,7 +16,7 @@ endforeach;
         endif;
         ?>
     </div>
-    
+
     <?php if (isset($this->form)): ?>
         <div class="right">
             <?php echo $this->escape($this->form, 'none'); ?>
@@ -26,6 +26,14 @@ endforeach;
     <div class="clear"></div>        
 </div>
 
+<?php if (isset($this->orgTypeId)): ?> 
+<div  class="searchBox">
+         <?php echo $this->escape($this->organizationTypeForm, 'none'); ?>
+    <div class="clear"></div>        
+</div>
+<?php endif; ?>
+
+
 <?php
 Fisma_Format_Section::startSection($this->title);
 
@@ -33,3 +41,20 @@ echo $this->escape($this->dataTable, 'none');
 
 Fisma_Format_Section::stopSection();
 ?>
+
+<?php if (isset($this->orgTypeId)): ?>
+
+<script type="text/javascript">
+    YAHOO.util.Event.onDOMReady(function () {
+        Fisma.Storage.onReady(function() {
+            var organizationTypeElement = YAHOO.util.Dom.get('orgTypeFilter');
+            var orgTypeId = "<?php echo $this->escape($this->orgTypeId); ?>"; 
+
+            var config = {namespace : "<?php echo $this->escape($this->namespace); ?>",
+                          url : "<?php echo $this->escape($this->url); ?>"}; 
+            YAHOO.util.Event.addListener("orgTypeFilter", "change", Fisma.Util.organizationTypeHandle, config);
+        });
+    });
+</script>
+
+<?php endif; ?>

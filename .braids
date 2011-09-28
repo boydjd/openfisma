@@ -1,20 +1,20 @@
 --- 
 library/Symfony/Components: 
-  remote: braid/library/Symfony/Components
+  remote: master/braid/library/Symfony/Components
   revision: 24024
   squashed: true
   type: svn
   url: http://svn.symfony-project.com/components/dependency_injection/branches/1.0/lib
 library/ZFDebug: 
   lock: 116
-  remote: braid/library/ZFDebug
+  remote: master/braid/library/ZFDebug
   revision: 116
   squashed: true
   type: svn
   url: http://zfdebug.googlecode.com/svn/trunk/library/ZFDebug
 library/Zend: 
-  remote: braid/library/Zend
-  revision: 23790
+  remote: master/braid/library/Zend
+  revision: 24449
   squashed: true
   type: svn
-  url: http://framework.zend.com/svn/framework/standard/tags/release-1.11.4/library/Zend
+  url: http://framework.zend.com/svn/framework/standard/tags/release-1.11.10/library/Zend

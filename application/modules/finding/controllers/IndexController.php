@@ -160,8 +160,9 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
             $systems = $this->_me
                 ->getOrganizationsByPrivilegeQuery('finding', 'inject')
                 ->leftJoin('o.System s')
+                ->leftJoin('o.OrganizationType orgType')
                 ->select('o.id, o.nickname')
-                ->andWhere('o.orgType <> ? OR s.sdlcPhase <> ?', array('system', 'disposal'))
+                ->andWhere('orgType.nickname <> ? OR s.sdlcPhase <> ?', array('system', 'disposal'))
                 ->execute()
                 ->toKeyValueArray('id', 'nickname');
             if (count($systems) == 0) {

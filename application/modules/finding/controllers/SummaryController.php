@@ -525,13 +525,13 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             $summary->addSelect("COUNT(finding.id) total");
         }
 
-        $summary->addSelect("IF(parent.orgtype = 'system', system.type, parent.orgtype) orgType")
+        $summary->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.icon) orgType")
             ->addSelect('parent.lft as lft')
             ->addSelect('parent.rgt as rgt')
             ->addSelect('parent.id as id')
             ->addSelect(
-                "IF(parent.orgtype <> 'system', CONCAT(UPPER(SUBSTRING(parent.orgtype, 1, 1)), SUBSTRING"
-                . "(parent.orgtype, 2)), CASE WHEN system.type = 'gss' then 'General Support System' WHEN "
+                "IF(orgtype.nickname <> 'system', orgtype.name,"
+                . "CASE WHEN system.type = 'gss' then 'General Support System' WHEN "
                 . "system.type = 'major' THEN 'Major Application' WHEN system.type = 'minor' THEN "
                 . "'Minor Application' END) orgTypeLabel"
             )
@@ -547,8 +547,9 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             ->leftJoin('finding.CurrentEvaluation evaluation')
             ->leftJoin('Organization parent')
             ->leftJoin('parent.System system')
+            ->leftJoin('parent.OrganizationType orgtype')
             ->where('node.lft BETWEEN parent.lft and parent.rgt')
-            ->andWhere('node.orgType <> ? OR nodeSystem.sdlcPhase <> ?', array('system', 'disposal'))
+            ->andWhere('orgtype.nickname <> ? OR nodeSystem.sdlcPhase <> ?', array('system', 'disposal'))
             ->groupBy('parent.nickname')
             ->orderBy('parent.lft')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
