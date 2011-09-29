@@ -1,0 +1,20 @@
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Mark Ma <mark.ma@reyosoft.com>
+; Copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[system_converttoorganization]
+method = "post"
+elementFilters.trim = "StringTrim"
+
+elements.orgType.type = "select"
+elements.orgType.options.label = "Organization Type"
+elements.orgType.options.validators.alnum.validator = "NotEmpty"
+elements.orgType.options.required = true
+displayGroups.system.elements.orgType = "orgType"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save Changes"
+displayGroups.system.elements.save = "save"

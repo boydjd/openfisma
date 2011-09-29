@@ -1,0 +1,48 @@
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[organization_converttosystem]
+method = "post"
+elementFilters.trim = "StringTrim"
+
+elements.type.type = "select"
+elements.type.options.label = "Type"
+elements.type.options.validators.alnum.validator = "NotEmpty"
+elements.type.options.required = true
+elements.type.options.tooltip = "<p><b>GSS stands for General Support System</b></p><p>Definition: An interconnected set of information resources under the same direct management control which shares common functionality. A General Support System may be, for example, a local area network (LAN) or an agency-wide backbone, or a communications network, or a departmental data processing center including its operating system and utilities. The term General Support System is used in context of security. Individual applications supporting different business-related functions may run on a single GSS.</p><p><b>Major stands for Major Application</b></p><p>Definition: An IT system that requires special management attention because of its importance to the organization; or its significant role in the administration of the organizations programs, finances, property, or other significant resources. An adverse impact on a major system would constitute serious, severe, or catastrophic harm due to the loss of confidentiality, integrity, or availability, as determined through conducting a system risk assessment. Major systems would be classified as either moderate or high impact as defined in FIPS 199. Those systems identified as Critical Infrastructure Protection (CIP) assets would clearly fall in this category as a major system.</p><p><b>Minor stands for Minor Application</b></p><p>Definition: An IT system that does not require special attention as it mainly provides mission supportive information to the organization and usually relies on another General Support System for the majority of its security controls.</p>"
+displayGroups.system.elements.type = "type"
+
+elements.sdlcPhase.type = "select"
+elements.sdlcPhase.options.label = "SDLC Phase"
+elements.sdlcPhase.options.validators.alnum.validator = "NotEmpty"
+elements.sdlcPhase.options.required = true
+elements.sdlcPhase.options.tooltip = "<p><b>System Development Life Cycle Phase</b></p>"
+displayGroups.system.elements.sdlcPhase = "sdlcPhase"
+
+elements.confidentiality.type = "select"
+elements.confidentiality.options.label = "Confidentiality"
+elements.confidentiality.options.required = true
+elements.confidentiality.options.tooltip = "<p><b>Confidentiality</b></p><p>As required by the Federal Information System Processing Standard 199, all information systems should be categorized using FIPS 199. Please select the appropriate impact level if the data contained in the information system was disclosed, see examples below.</p><p><b>Choose Low if:</b> The unauthorized disclosure of information could be expected to have a <b>limited adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose Moderate if:</b> The unauthorized disclosure of information could be expected to have a <b>serious adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose High if:</b> The unauthorized disclosure of information could be expected to have a <b>severe or catastrophic adverse effect</b> on organizational operations, organizational assets, or individuals.</p>"
+displayGroups.system.elements.confidentiality = "confidentiality"
+
+elements.integrity.type = "select"
+elements.integrity.options.label = "Integrity"
+elements.integrity.options.validators.alnum.validator = "NotEmpty"
+elements.integrity.options.required = true
+elements.integrity.options.tooltip = "<p><b>Integrity</b></p><p>As required by the Federal Information System Processing Standard 199, all information systems should be categorized using FIPS 199. Please select the appropriate impact level if the data contained in the information system was modified, see examples below.</p><p><b>Choose Low if:</b> The unauthorized modification or destruction of information could be expected to have a <b>limited adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose Moderate if:</b> The unauthorized modification or destruction of information could be expected to have a <b>serious adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose High if:</b> The unauthorized modification or destruction of information could be expected to have a <b>severe or catastrophic adverse effect</b> on organizational operations, organizational assets, or individuals.</p>"
+displayGroups.system.elements.integrity = "integrity"
+
+elements.availability.type = "select"
+elements.availability.options.label = "Availability"
+elements.availability.options.validators.alnum.validator = "NotEmpty"
+elements.availability.options.required = true
+elements.availability.options.tooltip = "<p><b>Availability</b></p><p>As required by the Federal Information System Processing Standard 199, all information systems should be categorized using FIPS 199. Please select the appropriate impact level if the data contained in the information system was unavailable, see examples below.</p><p><b>Choose Low if:</b> The disruption of access to or use of information could be expected to have a <b>limited adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose Moderate if:</b> The disruption of access to or use of information could be expected to have a <b>serious adverse effect</b> on organizational operations, organizational assets, or individuals.</p><p><b>Choose High if:</b> The disruption of access to or use of information could be expected to have a <b>severe or catastrophic adverse effect</b> on organizational operations, organizational assets, or individuals.</p>"
+displayGroups.system.elements.availability = "availability"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save Changes"
+displayGroups.system.elements.save = "save"

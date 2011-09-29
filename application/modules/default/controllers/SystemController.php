@@ -39,6 +39,19 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      * All privileges to system objects are based on the parent 'Organization' objects
      */
     protected $_aclResource = 'Organization';
+    
+    /**
+     * Initialize internal members.
+     *
+     * @return void
+     */
+    public function init()
+    {
+        parent::init();
+        $this->_helper->ajaxContext()
+                      ->addActionContext('convert-to-organization-form', 'html')
+                      ->initContext();
+    }
 
     /**
      * View the specified system
@@ -84,6 +97,26 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'href' => $findingSearchUrl
             )
         );
+        
+        if ($this->_acl->hasPrivilegeForClass('create', 'Organization')) {
+
+            $this->view->convertToOrgButton = new Fisma_Yui_Form_Button(
+                'convertToOrg', 
+                array(
+                      'label' => 'Convert To Organization',
+                      'onClickFunction' => 'Fisma.System.convertToOrgOrSystem',
+                      'onClickArgument' => array(
+                          'id' => $id,
+                          'text' => "WARNING: You are about to convert this system to an organization. " 
+                                    . "After this conversion all system information (FIPS-199 and FISMA Data) will be "
+                                    . "permanently lost.\n\n" 
+                                    . "Do you want to continue?",
+                          'func' => 'Fisma.System.askForSysToOrgInput'
+                    ) 
+                )
+            );
+                
+        }
 
         $this->view->tabView = $tabView;
     }
@@ -109,6 +142,41 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->system = $this->view->organization->System;
 
         $this->render();
+    }
+
+    public function convertToOrgAction()
+    {
+        if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
+            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
+                'cannot create Organization');            
+        }
+    
+        $systemId = Inspekt::getDigits($this->getRequest()->getParam('id'));
+
+        if ($systemId) {
+            $organization = Doctrine::getTable('Organization')->findOneBySystemId($systemId);         
+        } else {
+            throw new Fisma_Zend_Exception("Required parameter 'id' is missing.");
+        }          
+        
+        $countSystemDoc = $organization->System->Documents->count();
+        if ($countSystemDoc > 0) {
+            $msg = "Cannot convert this system to an organization because it has documents attached to it.";
+
+            $type = "warning";
+            $this->view->priorityMessenger($msg, 'warning');
+            $this->_redirect("/system/view/id/$systemId");
+        }          
+        
+        $form = $this->getForm('system_converttoorganization');
+        if ($form->isValid($this->getRequest()->getPost())) {
+            $organization->convertToOrganization(
+                $form->getElement('orgType')->getValue()
+            );
+        
+            $this->view->priorityMessenger('Converted to organization successfully', 'notice');
+            $this->_redirect("/organization/view/id/" . $organization->id);
+        }
     }
 
     /**
@@ -679,5 +747,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $list = array('systems' => $systems);
         
         return $this->_helper->json($list);
+    }
+
+    /**
+     * AJAX action to render the form for converting a System to an Organization.
+     *
+     * @return void
+     */
+    public function convertToOrganizationFormAction()
+    {
+        $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
+        $this->view->form = $this->getForm('system_converttoorganization');
+        $this->view->form->setAction('/system/convert-to-org/id/' . $id);
     }
 }

@@ -360,4 +360,121 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     {
         return $this->id;
     }
+    
+    /**
+     * Converts the current system to an organization
+     * 
+     * @return void
+     */
+    public function convertToOrganization($organizationTypeId)
+    {
+        
+        $oldSystemId = $this->systemId;
+        
+        try {
+        
+            Doctrine_Manager::connection()->beginTransaction();
+            
+            $system = $this->System;
+            $this->System = null;
+            $this->orgTypeId = $organizationTypeId;
+            $this->save();
+            $system->delete();
+
+            $countAsset = Doctrine_Query::create()
+                          ->from('Asset')
+                          ->where('orgsystemid = ?', $this->id)
+                          ->count();
+
+            // Update asset's orgsystemid to null and reindex the asset 
+            // so that the converted system is not shown on the asset list any more.
+            if ($countAsset > 0) {
+                $updateAssetQuery = Doctrine_Query::create()
+                                    ->update('Asset')
+                                    ->set('orgsystemid', 'NULL')
+                                    ->where('orgsystemid = ?', $this->id);
+            
+                $updateAssetQuery->execute();
+
+                $modelName = 'Asset';
+                $table = Doctrine::getTable($modelName);
+                $chunkSize = 1;
+
+                if ($table instanceof Fisma_Search_CustomChunkSize_Interface) {
+                    $chunkSize = $table->getIndexChunkSize();
+                }
+                $searchEngine = Zend_Registry::get('search_engine');
+                $searchEngine->deleteByType($modelName);
+
+                $indexer = new Fisma_Search_Indexer($searchEngine);
+                $allRecordsQuery = $indexer->getRecordFetchQuery($modelName);
+                $indexer->indexRecordsFromQuery($allRecordsQuery, $modelName, $chunkSize);
+                $searchEngine->commit(); 
+            }
+
+            Doctrine_Manager::connection()->commit();
+            
+        } catch (Exception $e) {
+            // We cannot access the view script from here (for priority messenger), so rethrow after roll-back
+            Doctrine_Manager::connection()->rollback();
+            throw $e;
+        }
+        
+    }
+    
+    /**
+     * Converts the current organization to a system
+     * 
+     * @return void
+     */
+    public function convertToSystem($type, $sdlcPhase, $confidentiality, $integrity, $availability)
+    {
+        try {
+        
+            Doctrine_Manager::connection()->beginTransaction();
+            
+            // create system row
+            $newSystem = new System();
+            $newSystem->type = $type;
+            $newSystem->sdlcPhase = $sdlcPhase;
+            $newSystem->confidentiality = $confidentiality;
+            $newSystem->integrity = $integrity;
+            $newSystem->availability = $availability;
+            $newSystem->controlledBy = 'AGENCY';
+            $newSystem->hasFiif = 'NO';
+            $newSystem->hasPii = 'NO';
+            $newSystem->piaRequired = 'NO';
+            $newSystem->sornRequired = 'NO';
+            $newSystem->save();
+
+            // create system relation        
+            $this->systemId = $newSystem->id;
+            $systemType = Doctrine::getTable('OrganizationType')->findOneByNickname('system', Doctrine::HYDRATE_ARRAY);
+            $this->orgTypeId = $systemType['id'];
+            $this->save();
+            
+            // The organizaion needs to be deleted from index after it is converted to system
+            $searchEngine = Zend_Registry::get('search_engine');
+            $searchEngine->deleteObject(get_class($this), $this->toArray());
+
+            // The system model needs to be re-index after an organization is converted to system
+            $modelName = 'System';
+            $relationAliases = array();
+
+            $indexer = new Fisma_Search_Indexer($searchEngine);
+            $indexQuery = $indexer->getRecordFetchQuery($modelName, $relationAliases);
+
+            $baseClassAlias = $relationAliases[$modelName];
+            $indexQuery->andWhere("$baseClassAlias.id = ?", $this->systemId);
+            $indexer->indexRecordsFromQuery($indexQuery, $modelName);
+            $searchEngine->commit();
+
+            Doctrine_Manager::connection()->commit();
+            
+        } catch (Exception $e) {
+            // We cannot access the view script from here (for priority messenger), so rethrow after roll-back
+            Doctrine_Manager::connection()->rollback();
+            throw $e;
+        }
+    }
 }
