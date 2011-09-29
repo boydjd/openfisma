@@ -10,6 +10,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel:  level1 
 
     OSC_SYS:
         type: minor
@@ -22,6 +24,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     IAD_SYS:
         type: minor
@@ -36,6 +40,8 @@ System:
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     CIT_SYS:
         type: major
@@ -50,6 +56,8 @@ System:
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     SCMS_SYS:
         type: major
@@ -62,6 +70,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     CRMS_SYS:
         type: major
@@ -75,6 +85,8 @@ System:
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     HAZMAT_SYS:
         type: major
@@ -87,6 +99,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     RCD_SYS:
         type: major
@@ -99,6 +113,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
         
     GREEN_NRG_SYS:
         type: minor
@@ -111,6 +127,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
         
     WIND_SYS:
         type: gss
@@ -123,6 +141,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
         
     RESTON_SYS:
         type: gss
@@ -137,6 +157,8 @@ System:
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
         
     LINUX_SYS:
         type: minor
@@ -149,6 +171,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
         
     MAINFRAME_SYS:
         type: minor
@@ -161,6 +185,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
         
     ORACLE_SYS:
         type: minor
@@ -173,6 +199,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
         
     HERNDON_SYS:
         type: gss
@@ -186,6 +214,8 @@ System:
         piaUrl: http://google.com/search?q=pia
         sornRequired: "YES"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
         
     RMTRP_SYS:
         type: major
@@ -198,6 +228,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
         
     ROCP_SYS:
         type: major
@@ -210,6 +242,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     H20_RIGHTS_SYS:
         type: minor
@@ -222,6 +256,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     WILDLIFE_SYS:
         type: major
@@ -234,6 +270,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     # This one intentionally does not have a C&A date
     TPP_SYS:
@@ -246,6 +284,8 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     # This system is by default not assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
     HIDDEN_SYS:
@@ -261,6 +301,8 @@ System:
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 
 
     # The system is used to test when and how disposed systems are displayed in the UI. With this system, a tester
     # should be easily to see which screens filter out disposed systems or treat disposed systems differently. 
@@ -279,3 +321,5 @@ System:
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
+        missionCriticality: Supportive
+        eAuthLevel: level1 

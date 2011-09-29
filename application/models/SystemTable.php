@@ -206,6 +206,20 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
                     'field' => 'id'
                 ),
                 'type' => 'integer'
+            ),
+            'missionCriticality' => array(
+                'enumValues' => $this->getEnumValues('missionCriticality'),
+                'initiallyVisible' => true,
+                'label' => 'Mission Criticality',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'eAuthLevel' => array(
+                'enumValues' => $this->getEnumValues('eAuthLevel'),
+                'initiallyVisible' => true,
+                'label' => 'E-Auth Level',
+                'sortable' => true,
+                'type' => 'enum'
             )
         );
     }

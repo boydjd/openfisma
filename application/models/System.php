@@ -101,6 +101,18 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
      );
 
     /**
+     * Mapping from E-Auth Level physical IDs to English
+     *
+     * @var array
+     */
+     private static $_eAuthLevelMap = array(
+         'level1' => 'Level 1 - No Confidence',
+         'level2' => 'Level 2 - Some Confidence',
+         'level3' => 'Level 3 - High Confidence',
+         'level4' => 'Level 4 - Very High Confidence'
+     );
+
+    /**
      * Doctrine hook which is used to set up mutators
      * 
      * @return void
@@ -144,6 +156,26 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
     public static function getSdlcPhaseMap()
     {
         return self::$_sdlcPhaseMap;
+    }
+
+    /**
+     * Return English name for the E-Auth Level
+     *
+     * @return string English E-Auth Level label
+     */
+     public function getEAuthLevelLabel()
+     {
+         return  self::$_eAuthLevelMap[$this->eAuthLevel];
+     }
+
+    /**
+     * Get a mapping of E-Auth Level to their respective English names
+     *
+     * @return array Mapping from name to English
+     */
+    public static function getEAuthLevelMap()
+    {
+        return self::$_eAuthLevelMap;
     }
 
     /**

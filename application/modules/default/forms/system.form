@@ -38,6 +38,13 @@ elements.type.options.required = true
 elements.type.options.tooltip = "<p><b>GSS stands for General Support System</b></p><p>Definition: An interconnected set of information resources under the same direct management control which shares common functionality. A General Support System may be, for example, a local area network (LAN) or an agency-wide backbone, or a communications network, or a departmental data processing center including its operating system and utilities. The term General Support System is used in context of security. Individual applications supporting different business-related functions may run on a single GSS.</p><p><b>Major stands for Major Application</b></p><p>Definition: An IT system that requires special management attention because of its importance to the organization; or its significant role in the administration of the organizations programs, finances, property, or other significant resources. An adverse impact on a major system would constitute serious, severe, or catastrophic harm due to the loss of confidentiality, integrity, or availability, as determined through conducting a system risk assessment. Major systems would be classified as either moderate or high impact as defined in FIPS 199. Those systems identified as Critical Infrastructure Protection (CIP) assets would clearly fall in this category as a major system.</p><p><b>Minor stands for Minor Application</b></p><p>Definition: An IT system that does not require special attention as it mainly provides mission supportive information to the organization and usually relies on another General Support System for the majority of its security controls.</p>"
 displayGroups.system.elements.type = "type"
 
+elements.missionCriticality.type = "select"
+elements.missionCriticality.options.label = "Mission Criticality"
+elements.missionCriticality.options.validators.alnum.validator = "NotEmpty"
+elements.missionCriticality.options.required = true
+elements.missionCriticality.options.tooltip = "<p><b>The mission criticality should be one of three options: Supportive, Important, or Critical.</b></p>"
+displayGroups.system.elements.missionCriticality = "missionCriticality"
+
 elements.sdlcPhase.type = "select"
 elements.sdlcPhase.options.label = "SDLC Phase"
 elements.sdlcPhase.options.validators.alnum.validator = "NotEmpty"
@@ -45,12 +52,20 @@ elements.sdlcPhase.options.required = true
 elements.sdlcPhase.options.tooltip = "<p><b>System Development Life Cycle Phase</b></p>"
 displayGroups.system.elements.sdlcPhase = "sdlcPhase"
 
+elements.eAuthLevel.type = "select"
+elements.eAuthLevel.options.label = "E-Auth Level"
+elements.eAuthLevel.options.validators.alnum.validator = "NotEmpty"
+elements.eAuthLevel.options.required = true
+elements.eAuthLevel.options.tooltip = "<p><b>Every agency is required by the Office of Management and Budget (OMB) in Memorandum 04-04 to establish E-Authentication assurance levels and impacts.</b></p>"
+displayGroups.system.elements.eAuthLevel = "eAuthLevel"
+
 elements.description.type = "textarea"
 elements.description.options.label = "System Description"
 elements.description.options.tooltip = "<p><b>System Description</b></p><p>Prepare a brief description (one to three paragraphs) of the function and purpose of the system (e.g., economic indicator, network support for an agency, business census data analysis, crop reporting support).</p>"
 elements.description.options.cols = "70%"
 elements.description.options.rows = "7"
 displayGroups.system.elements.description = "description"
+
 
 elements.cloneOrganizationId.type = "select"
 elements.cloneOrganizationId.options.label = "Copy user access from"

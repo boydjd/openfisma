@@ -139,6 +139,15 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             $list = System::getSdlcPhaseMap();
             $selected = $this->getRequest()->getParam('value');
             $this->view->selected = $list[$selected];
+        } elseif ($module == 'missionCriticality') {
+            $missionCriticality = Doctrine::getTable('System')->getEnumValues('missionCriticality');
+            $list = array_combine($missionCriticality, $missionCriticality);
+            $selected = $this->getRequest()->getParam('value');
+            $this->view->selected = $list[$selected];
+        } elseif ($module == 'eAuthLevel') {
+            $list = System::getEAuthLevelMap();
+            $selected = $this->getRequest()->getParam('value');
+            $this->view->selected = $list[$selected];
         } elseif ($module == 'source') {
             $sources = Doctrine::getTable('Source')->getSources();
             $list = $this->view->sourceSelect($sources);

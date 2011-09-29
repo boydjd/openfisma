@@ -55,11 +55,13 @@ class Fisma_Zend_Form_Manager_System extends Fisma_Zend_Form_Manager_Abstract
         
         $systemTable = Doctrine::getTable('System');
         
-        $enumFields = array('type', 'sdlcPhase');
+        $enumFields = array('type', 'sdlcPhase', 'missionCriticality');
         foreach ($enumFields as $field) {
             $array = $systemTable->getEnumValues($field);
             $form->getElement($field)->addMultiOptions(array_combine($array, $array));
         }
+
+        $form->getElement('eAuthLevel')->addMultiOptions(System::getEAuthLevelMap());
 
         $this->setForm($form);
     }
