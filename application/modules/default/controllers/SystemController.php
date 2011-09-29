@@ -50,6 +50,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         parent::init();
         $this->_helper->ajaxContext
                       ->setActionContext('create', 'html')
+                      ->setActionContext('available-information-types', 'html')
+                      ->initContext('');
+
+        $this->_helper->contextSwitch
+                      ->addActionContext('add-information-type', 'json')
                       ->initContext('');
     }
 
@@ -122,6 +127,240 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->system = $this->view->organization->System;
 
         $this->render();
+    }
+
+    /**
+     * Display CIA criteria and FIPS-199 categorization
+     *
+     * @return void
+     */
+    public function fipsAction()
+    {
+        $said = $this->getRequest()->getParam('said');
+        $id = $this->getRequest()->getParam('id');
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
+        $this->_acl->requirePrivilegeForObject('read', $organization);
+        $this->_helper->layout()->disableLayout();
+
+        $this->view->organization = $organization;
+        $this->view->system = $this->view->organization->System;
+        // BEGIN: Build the data table of information types associated with the system
+
+        $informationTypesTable = new Fisma_Yui_DataTable_Remote();
+
+        $informationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, null, 'category'))
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, null, 'name'))
+                              ->addColumn(
+                                  new Fisma_Yui_DataTable_Column('Description', false, null, null, 'description')
+                              )
+                              ->addColumn(
+                                  new Fisma_Yui_DataTable_Column('Confidentiality', true, null, null, 'confidentiality')
+                              )
+                              ->addColumn(new Fisma_Yui_DataTable_Column('Integrity', true, null, null, 'integrity'))
+                              ->addColumn(
+                                  new Fisma_Yui_DataTable_Column('Availability', true, null, null, 'availability')
+                              )
+                              ->setResultVariable('informationTypes')
+                              ->setInitialSortColumn('category')
+                              ->setSortAscending(true)
+                              ->setRowCount(10)
+                              ->setGlobalVariableName('Fisma.System.assignedInformationTypesTable')
+                              ->setDataUrl("/system/information-types/id/{$id}/format/json");
+        
+        $this->view->informationTypesTable = $informationTypesTable;
+
+        $this->view->informationTypesTable->addColumn(
+            new Fisma_Yui_DataTable_Column('Remove', 'false', 'Fisma.System.removeInformationType', null, 'id')
+        );
+
+        $addInformationTypeButton = new Fisma_Yui_Form_Button(
+            'addInformationTypeButton',
+            array(
+                'label' => 'Add Information Types',
+                'onClickFunction' => 'Fisma.System.showInformationTypes',
+            )
+        );
+
+        $completeStepButton = new Fisma_Yui_Form_Button(
+            'completeSelection',
+            array('label' => 'Complete Step 1', 'onClickFunction' => 'Fisma.SecurityAuthorization.completeForm')
+        );
+
+        if (isset($said)) {
+            $completeForm = new Fisma_Zend_Form();
+            $completeForm->setAction('/sa/security-authorization/complete-step')
+                ->setAttrib('id', 'completeForm')
+                ->addElement(new Zend_Form_Element_Hidden('id'))
+                ->addElement(new Zend_Form_Element_Hidden('step'))
+                ->setElementDecorators(array('ViewHelper'))
+                ->setDefaults(array('id' => $said, 'step' => 'Categorize'));
+            $this->view->completeForm = $completeForm;
+            $this->view->completeStepButton = $completeStepButton;
+        }
+
+        $this->view->addInformationTypeButton = $addInformationTypeButton;
+        // END: Building of data table
+
+        $availableInformationTypesTable = new Fisma_Yui_DataTable_Remote();
+        $availableInformationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, null, 'category'))
+            ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, null, 'name'))
+            ->addColumn(
+            new Fisma_Yui_DataTable_Column('Description', false, null, null, 'description')
+        )
+            ->addColumn(
+            new Fisma_Yui_DataTable_Column('Confidentiality', true, null, null, 'confidentiality')
+        )
+            ->addColumn(new Fisma_Yui_DataTable_Column('Integrity', true, null, null, 'integrity'))
+            ->addColumn(
+            new Fisma_Yui_DataTable_Column('Availability', true, null, null, 'availability')
+        )
+            ->setResultVariable('informationTypes')
+            ->setInitialSortColumn('category')
+            ->setSortAscending(true)
+            ->setRowCount(10)
+            ->setDataUrl("/system/active-types/systemId/{$id}/format/json")
+            ->setClickEventHandler('Fisma.System.handleAvailableInformationTypesTableClick')
+            ->setClickEventHandlerArgs($id)
+            ->setGlobalVariableName('Fisma.System.availableInformationTypesTable');
+
+        $availableInformationTypesTable->addColumn(
+            new Fisma_Yui_DataTable_Column('Add', 'false', 'Fisma.System.addInformationType', null, 'id')
+        );
+
+        $this->view->availableInformationTypesTable = $availableInformationTypesTable;
+        $this->render();
+        // END: Building of the data table
+    }
+
+
+    /**
+     * Return all information types currently assigned to the system
+     *
+     * @return void
+     */
+    public function informationTypesAction()
+    {
+        $this->_helper->layout->setLayout('ajax');
+
+        $id    = $this->getRequest()->getParam('id');
+        $count = $this->getRequest()->getParam('count', 10);
+        $start = $this->getRequest()->getParam('start', 0);
+        $sort  = $this->getRequest()->getParam('sort', 'category');
+        $dir   = $this->getRequest()->getParam('dir', 'asc');
+
+        $system = Doctrine::getTable('System')->find($id);
+
+        $this->_acl->requirePrivilegeForObject('read', $system->Organization);
+
+        $systemId = $system->id;
+
+        $informationTypes = Doctrine_Query::create()
+            ->select("sat.*, {$system->id} as system")
+            ->from('SaInformationType sat, SaInformationTypeSystem sats')
+            ->where('sats.systemid = ?', $systemId)
+            ->andWhere('sats.sainformationtypeid = sat.id')
+            ->andWhere('sat.hidden = FALSE')
+            ->orderBy("sat.{$sort} {$dir}")
+            ->limit($count)
+            ->offset($start);
+
+        $informationTypesData = array();
+        $informationTypesData['totalRecords'] = $informationTypes->count();
+        $informationTypesData['informationTypes'] = $informationTypes->execute()->toArray();
+        $this->view->informationTypesData = $informationTypesData;
+    }
+
+    /**
+     * Add a single information type to a system
+     *
+     * @return void
+     */
+    public function addInformationTypeAction()
+    {
+        $response = new Fisma_AsyncResponse();
+        try {
+            $informationTypeId = $this->getRequest()->getParam('sitId');
+            $id = $this->getRequest()->getParam('id');
+
+            $system = Doctrine::getTable('System')->find($id);
+            $this->_acl->requirePrivilegeForObject('update', $system->Organization);
+
+            $systemId = $system->id;
+            $informationTypeSystem = new SaInformationTypeSystem();
+            $informationTypeSystem->sainformationtypeid = $informationTypeId;
+            $informationTypeSystem->systemid = $systemId;
+            $informationTypeSystem->save();
+        } catch (Exception $e) {
+            $this->getInvokeArg('bootstrap')->getResource('Log')->log($e, Zend_Log::ERR);
+            $response->fail($e);
+        }
+        $this->view->response = $response;
+    }
+
+    /**
+     * Remove a single information type from a system
+     *
+     * @return void
+     */
+    public function removeInformationTypeAction()
+    {
+        $informationTypeId = $this->getRequest()->getParam('sitId');
+        $id = $this->getRequest()->getParam('id');
+
+        $system = Doctrine::getTable('System')->find($id);
+
+        $this->_acl->requirePrivilegeForObject('update', $system->Organization);
+
+        $informationType = Doctrine_Query::create()
+            ->from('SaInformationTypeSystem saits')
+            ->where('saits.sainformationtypeid = ?', $informationTypeId)
+            ->andWhere('saits.systemid = ?', $id)
+            ->execute();
+
+        $informationType->delete();
+
+        $this->_redirect("/system/view/id/$id");
+    }
+
+    /**
+     * Return types which can be assigned to a system
+     * The system ID is included in the data for use on the System FIPS-199 page
+     *
+     * @return void
+     */
+    public function activeTypesAction()
+    {
+        $this->_helper->layout->setLayout('ajax');
+
+        $systemId = $this->getRequest()->getParam('systemId');
+        $count          = $this->getRequest()->getParam('count', 10);
+        $start          = $this->getRequest()->getParam('start', 0);
+        $sort           = $this->getRequest()->getParam('sort', 'category');
+        $dir            = $this->getRequest()->getParam('dir', 'asc');
+
+        $system = Doctrine::getTable('System')->find($systemId);
+        $organizationId = $system->Organization->id;
+
+        $this->_acl->requirePrivilegeForObject('read', $system->Organization);
+
+        $informationTypes = Doctrine_Query::create()
+        // TODO: Make sure not vulnerable to injection
+            ->select("*, {$systemId} as system")
+            ->from('SaInformationType sat')
+            ->where('sat.hidden = FALSE')
+            ->andWhere(
+            'sat.id NOT IN (' .
+                'SELECT s.sainformationtypeid FROM SaInformationTypeSystem s where s.systemid = ?' .
+                ')', $systemId
+        )
+            ->limit($count)
+            ->offset($start)
+            ->orderBy("sat.{$sort} {$dir}");
+
+        $informationTypesData = array();
+        $informationTypesData['totalRecords'] = $informationTypes->count();
+        $informationTypesData['informationTypes'] = $informationTypes->execute()->toArray();
+        $this->view->informationTypesData = $informationTypesData;
     }
 
     /**

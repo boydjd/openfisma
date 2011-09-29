@@ -39,6 +39,9 @@ class SecurityAuthorization extends BaseSecurityAuthorization
         }
 
         switch ($this->status) {
+            case 'Categorize':
+                $this->status = 'Select';
+                break;
             case 'Select':
                 $this->initImplementation();
                 $this->status = 'Implement';

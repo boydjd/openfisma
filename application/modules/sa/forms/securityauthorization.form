@@ -29,8 +29,3 @@ displayGroups.sa.elements.status = "status"
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Create"
 displayGroups.sa.elements.save = "save"
-
-elements.addSystem.type = "Form_Button"
-elements.addSystem.options.label = "Add System"
-elements.addSystem.options.onClickFunction = "Fisma.SecurityAuthorization.showPanel"
-displayGroups.sa.elements.addsystem = "addsystem"

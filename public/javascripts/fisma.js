@@ -35,7 +35,7 @@ String.prototype.trim = function() {
 }
 
 var readyFunc = function () {
-    YAHOO.util.Event.throwErrors = true;
+    //YAHOO.util.Event.throwErrors = true;
 
     var zfDebugYuiLoggingTab = document.getElementById('zfdebug_yui_logging_tab');
     

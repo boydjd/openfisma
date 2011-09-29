@@ -1,4 +1,9 @@
 <?php
+echo $this->escape($this->completeForm, 'none');
+echo $this->escape($this->completeStepButton, 'none');
+Fisma_Format_Section::startSection('Assigned Information Types');
+echo $this->escape($this->informationTypesTable, 'none');
+Fisma_Format_Section::stopSection();
 echo $this->escape($this->addInformationTypeButton, 'none');
 ?>
 <div id="addInformationTypes">
@@ -6,15 +11,12 @@ echo $this->escape($this->addInformationTypeButton, 'none');
         <span>Add Information Types</span>
     </div>
     <div class="section">
-<?php
-echo $this->escape($this->availableInformationTypesTable, 'none');
-?>
+        <?php
+        echo $this->escape($this->availableInformationTypesTable, 'none');
+        ?>
     </div>
 </div>
 <?php
-Fisma_Format_Section::startSection('Assigned Information Types');
-echo $this->escape($this->informationTypesTable, 'none');
-Fisma_Format_Section::stopSection();
 Fisma_Format_Section::startSection('FIPS-199 Security Categorization');
 ?>
 <table class="keyValues">
@@ -28,3 +30,4 @@ Fisma_Format_Section::startSection('FIPS-199 Security Categorization');
 <?php
 Fisma_Format_Section::stopSection();
 ?>
+

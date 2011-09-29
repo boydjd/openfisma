@@ -126,5 +126,82 @@ Fisma.System = {
                 $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
             }
         });
-    }
+    },
+
+    /**
+     * Displays the hidden block on the FIPS-199 page to add information types to a system
+     */
+
+    showInformationTypes : function () {
+        document.getElementById('addInformationTypes').style.display = 'block';
+    },
+
+
+    /**
+     * Build URL for adding information type to the system
+     */
+    addInformationType : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = "<a href='/system/add-information-type/id/"
+            + oRecord.getData('system')
+            + "/sitId/"
+            + oData
+            + "'>Add</a>";
+    },
+
+    /**
+     * Build URL for removing information types from a system
+     */
+    removeInformationType : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = "<a href='/system/remove-information-type/id/"
+            + oRecord.getData('system')
+            + "/sitId/"
+            + oData
+            + "'>Remove</a>";
+    },
+
+    /**
+     * Run an XHR request to add an available information type to the system information types
+     */
+    handleAvailableInformationTypesTableClick: function (event, id) {
+        var targetEl = event.target;
+        var selectedId = Fisma.System.availableInformationTypesTable.getRecord(targetEl);
+        var recordId = selectedId.getData('id');
+
+        var postData = "id=" + id + "&sitId=" + recordId;
+
+        YAHOO.util.Connect.asyncRequest(
+            'POST',
+            '/system/add-information-type/format/json',
+            {
+                success: function(o) {
+                    try {
+                        var response = YAHOO.lang.JSON.parse(o.responseText).response;
+
+                        if (response.success) {
+                            var addInformationTypes = document.getElementById("addInformationTypes");
+                            if (addInformationTypes) {
+                                addInformationTypes.style.display = 'none';
+                            }
+
+                            var dt = Fisma.System.assignedInformationTypesTable;
+                            document.getElementById('addInformationTypes').style.display = 'block';
+                            dt.showTableMessage("Updating list of information types…");
+                            dt.getDataSource().sendRequest('', {success: dt.onDataReturnInitializeTable, scope: dt});
+                            dt.on("dataReturnEvent", function () {
+                            });
+                        } else {
+                            Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
+                        }
+                    } catch (error) {
+                        Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
+                    }
+                },
+
+                failure: function(o) {
+                    Fisma.Util.showAlertDialog('An unexpected error occurred.');
+                }
+            },
+            postData
+        );
+    },
 };
