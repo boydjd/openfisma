@@ -62,7 +62,7 @@ class Fisma_Zend_Form_Manager_User extends Fisma_Zend_Form_Manager_Abstract
             $form->removeElement('generate_password');
 
             // root user should always show Must Reset Password
-            if ($user && 'root' != $user->username) {
+            if (empty($user) || ($user && 'root' != $user->username)) {
                 $form->removeElement('mustResetPassword');
             }
         }
