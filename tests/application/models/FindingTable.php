@@ -30,8 +30,8 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_FindingTable extends Test_Case_Unit
 {
 
-    public function testGetIndexChunkSizeIs10()
+    public function testGetIndexChunkSize()
     {
-        $this->assertEquals(10, FindingTable::getIndexChunkSize());
+        $this->assertEquals(200, FindingTable::getIndexChunkSize());
     }
 }
