@@ -10,4 +10,5 @@ body, td, pre {
 .mceitemtable, .mceitemtable table {
     border: none !important;
     padding: 0em;
+    border-collapse: collapse;
 }
