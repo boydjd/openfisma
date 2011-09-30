@@ -61,7 +61,7 @@ class Fisma_Zend_Form_Manager_System extends Fisma_Zend_Form_Manager_Abstract
             $form->getElement($field)->addMultiOptions(array_combine($array, $array));
         }
 
-        $form->getElement('eAuthLevel')->addMultiOptions(System::getEAuthLevelMap());
+        $form->getElement('eAuthLevel')->addMultiOptions(System::getEAuthLevelMap())->setValue('unassigned');
 
         $this->setForm($form);
     }
