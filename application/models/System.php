@@ -106,6 +106,7 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
      * @var array
      */
      private static $_eAuthLevelMap = array(
+         'unassigned' => 'Unassigned',
          'level1' => 'Level 1 - No Confidence',
          'level2' => 'Level 2 - Some Confidence',
          'level3' => 'Level 3 - High Confidence',

@@ -42,7 +42,7 @@ elements.missionCriticality.type = "select"
 elements.missionCriticality.options.label = "Mission Criticality"
 elements.missionCriticality.options.validators.alnum.validator = "NotEmpty"
 elements.missionCriticality.options.required = true
-elements.missionCriticality.options.tooltip = "<p><b>The mission criticality should be one of three options: Supportive, Important, or Critical.</b></p>"
+elements.missionCriticality.options.tooltip = "<p><b>Mission Criticality</b></p><p>Mission criticality, or how integral the application is to carrying out the mission of the agency will impact decisions regarding the implementation of controls and the risks posed to the agency to known vulnerabilities. Each system should be assigned a mission criticality of supportive, important, or critical.</p>"
 displayGroups.system.elements.missionCriticality = "missionCriticality"
 
 elements.sdlcPhase.type = "select"
@@ -55,8 +55,7 @@ displayGroups.system.elements.sdlcPhase = "sdlcPhase"
 elements.eAuthLevel.type = "select"
 elements.eAuthLevel.options.label = "E-Auth Level"
 elements.eAuthLevel.options.validators.alnum.validator = "NotEmpty"
-elements.eAuthLevel.options.required = true
-elements.eAuthLevel.options.tooltip = "<p><b>Every agency is required by the Office of Management and Budget (OMB) in Memorandum 04-04 to establish E-Authentication assurance levels and impacts.</b></p>"
+elements.eAuthLevel.options.tooltip = "<p><b>E-Auth Level</b></p><p>Electronic authentication (E-authentication) is the process of establishing confidence in user identities electronically presented to an information system. Every agency is required by the Office of Management and Budget (OMB) in Memorandum 04-04 to establish E-Authentication assurance levels and impacts. OMB defines four levels of authentication Levels 1 to 4, in terms of the consequences of the authentication errors and misuse of credentials. Level 1 is the lowest assurance and Level 4 is the highest. You may also refer to NIST Special Publication 800-63 for more guidance on Electronic Authentication guidelines.</p>"
 displayGroups.system.elements.eAuthLevel = "eAuthLevel"
 
 elements.description.type = "textarea"

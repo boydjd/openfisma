@@ -91,7 +91,7 @@ System:
             comment: 
         eAuthLevel:
             type: enum
-            values: ["level1", "level2", "level3", "level4"]
+            values: ["level1", "level2", "level3", "level4", "unassigned"]
             comment: Every agency is required by the Office of Management and Budget (OMB) in Memorandum 04-04 to establish E-Authentication assurance levels and impacts. 
 
     relations:
