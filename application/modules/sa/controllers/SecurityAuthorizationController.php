@@ -261,6 +261,8 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
 
         // redirect map
         $map = array(
+            'Categorize' => 'view',
+            'Select' => 'view',
             'Implement' => 'implementation',
             'Assessment Plan' => 'assessment-plan',
             'Assessment' => 'assessment-plan',
