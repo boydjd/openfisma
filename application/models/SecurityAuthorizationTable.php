@@ -55,11 +55,22 @@ class SecurityAuthorizationTable extends Fisma_Doctrine_Table implements Fisma_S
                         'query' => 'oneInput',
                     )
                 ),
-                'label' => 'System',
+                'label' => 'Organization/System',
                 'join' => array(
                     'model' => 'Organization',
                     'relation' => 'Organization', 
                     'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'organizationType' => array(
+                'initiallyVisible' => true,
+                'label' => 'Organization Type',
+                'join' => array(
+                    'model' => 'OrganizationType',
+                    'relation' => 'Organization.OrganizationType', 
+                    'field' => 'name'
                 ),
                 'sortable' => true,
                 'type' => 'text'

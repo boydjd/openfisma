@@ -36,9 +36,19 @@ class Fisma_Zend_Form_Manager_Securityauthorization extends Fisma_Zend_Form_Mana
     {
         $form = $this->getForm();
 
-        $systems = $this->_me->getSystemsByPrivilege('security_authorization', 'read');
-        $selectArray = $this->_view->systemSelect($systems);
-        $form->getElement('sysOrgId')->addMultiOptions($selectArray);
+        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
+        $q = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
+        $q->orderBy($q->getRootAlias() . '.lft');
+        $organizationTreeObject->setBaseQuery($q);
+        $organizationTree = $organizationTreeObject->fetchTree();
+
+        if (!empty($organizationTree)) {
+            foreach ($organizationTree as $organization) {
+                $value = $organization['id'];
+                $text = str_repeat('--', $organization['level']) . ' ' . $organization['name'];
+                $form->getElement('sysOrgId')->addMultiOptions(array($value => $text));
+            }
+        }
         
         $saTable = Doctrine::getTable('SecurityAuthorization');
 

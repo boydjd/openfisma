@@ -6,9 +6,7 @@
     ?>
 </div>
 
-<?php
-if ($this->controlCount == 0):
-?>
+<?php if ($this->showImportNotice): ?>
     <div id="no-security-controls-warning" class="warning">
         <p>This security plan does not contain any security controls.</p>
         <p>

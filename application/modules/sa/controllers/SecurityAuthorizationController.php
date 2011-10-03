@@ -300,11 +300,14 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $tabView = new Fisma_Yui_TabView('SecurityAuthorizationView', $id);
         $tab1Name = $sa->Organization->nickname . ' Security Authorization';
         $tabView->addTab($tab1Name, "/sa/security-authorization/overview/id/$id");
-        $tabView->addTab("1. Categorize", "/system/fips/id/$systemId/said/$id");
-        $tabView->addTab("2. Select", "/sa/security-authorization/select-controls/id/$id/format/html");
-        $tabView->addTab("3. Implementation", "/sa/security-authorization/implementation/id/$id/format/html");
-        $tabView->addTab("4. Assessment", "/sa/security-authorization/assessment-plan/id/$id/format/html");
-        $tabView->addTab("5. Authorization", "/sa/security-authorization/authorization/id/$id/format/html");
+        $i = 1;
+        if (!empty($systemId)) {
+            $tabView->addTab($i++ . ". Categorize", "/system/fips/id/$systemId/said/$id");
+        }
+        $tabView->addTab($i++ . ". Select", "/sa/security-authorization/select-controls/id/$id/format/html");
+        $tabView->addTab($i++ . ". Implementation", "/sa/security-authorization/implementation/id/$id/format/html");
+        $tabView->addTab($i++ . ". Assessment", "/sa/security-authorization/assessment-plan/id/$id/format/html");
+        $tabView->addTab($i++ . ". Authorization", "/sa/security-authorization/authorization/id/$id/format/html");
 
         $this->view->tabView = $tabView;
     }
@@ -327,6 +330,9 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $overviewSteps = Doctrine::getTable('SecurityAuthorization')->getEnumValues('status');
         array_splice($overviewSteps, 3, 1);
         array_splice($overviewSteps, -2);
+        if (empty($sa->Organization->systemId)) {
+            array_splice($overviewSteps, 0, 1);
+        }
 
         $completedTerms = array(
             -1 => 'Completed',
@@ -408,7 +414,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
             return;
         }
         
-        $this->view->controlCount = $sa->SecurityControls->count();
+        $this->view->showImportNotice = $sa->SecurityControls->count() === 0 && !empty($sa->Organization->systemId);
         $this->view->systemImpact = $sa->Organization->System->fipsCategory;
         
         $this->view->id = $id;
@@ -421,18 +427,24 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                     'onClickFunction' => 'Fisma.SecurityAuthorization.showAddControlForm',
                     'onClickArgument' => $this->view->id
                 )
-            ),
-            new Fisma_Yui_Form_Button(
+            )
+        );
+        if (!empty($sa->Organization->systemId)) {
+            $this->view->buttons[] = new Fisma_Yui_Form_Button(
                 'importBaselineControls',
                 array(
                     'label' => 'Import Baseline Controls',
                     'onClickFunction' => 'Fisma.SecurityAuthorization.confirmImportBaselineControls',
                     'onClickArgument' => $this->view->id
                 )
-            ),
-            new Fisma_Yui_Form_Button(
-                'completeSelection',
-                 array('label' => 'Complete Step 2', 'onClickFunction' => 'Fisma.SecurityAuthorization.completeForm')
+            );
+        }
+        $step = empty($sa->Organization->systemId) ? 1 : 2;
+        $this->view->buttons[] = new Fisma_Yui_Form_Button(
+            'completeSelection',
+            array(
+                'label' => 'Complete Step ' . $step,
+                'onClickFunction' => 'Fisma.SecurityAuthorization.completeForm'
             )
         );
 
@@ -881,5 +893,31 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         } else {
             $this->view->enhancements = $enhancements;
         }
+    }
+
+    /**
+     * Override to handle Organization Types
+     * Hooks for manipulating and saving the values retrieved by Forms
+     *
+     * @param Zend_Form $form The specified form
+     * @param Doctrine_Record|null $subject The specified subject model
+     * @return integer ID of the object saved.
+     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
+     */
+    protected function saveValue($form, $subject = null)
+    {
+        if (is_null($subject)) {
+            $subject = new $this->_modelName();
+        } elseif (!$subject instanceof Doctrine_Record) {
+            throw new Fisma_Zend_Exception('Expected a Doctrine_Record object');
+        }
+
+        $subject->merge($form->getValues());
+        if (empty(Doctrine::getTable('Organization')->find($subject->sysOrgId)->systemId)) {
+            $subject->status = 'Select';
+        }
+        $subject->save();
+
+        return $subject->id;
     }
 }
