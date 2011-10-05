@@ -675,7 +675,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     public function checkAccountAction()
     {
-        $this->_acl->requirePrivilegeForClass('read', 'User');
+        
+        if (! ($this->_acl->hasPrivilegeForClass('read', 'User') 
+               || $this->_acl->hasPrivilegeForClass('read', 'Poc')) ) {
+            throw new Fisma_Zend_Exception_InvalidPrivilege("User does not have privileges to check account.");
+        }
 
         try {
             $ldapServerConfigurations = LdapConfig::getConfig();
