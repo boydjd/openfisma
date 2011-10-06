@@ -130,13 +130,32 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * A protected method which holds all of the logic for the view action, but does not actually render a view
+     * Override _viewObject to work around the permission wonkiness.
+     * 
+     * A POC can also be a User. If a person has the read/poc privilege but not read/user, then the person won't be
+     * able to view a User object. So we work around that right here.
      */
     protected function _viewObject()
     {
+        $this->_acl->requirePrivilegeForClass('read', 'Poc');
+
+        $this->_enforceAcl = false;
         parent::_viewObject();
-        if ($this->view->subject->type === 'User') {
-            $this->_redirect('/user/view/id/' . $this->view->id);
-        }
+        $this->_enforceAcl = true;
+    }
+
+    /**
+     * Override _editObject to work around the permission wonkiness.
+     * 
+     * A POC can also be a User. If a person has the update/poc privilege but not update/user, then the person won't be
+     * able to modify a User object. So we work around that right here.
+     */
+    protected function _editObject()
+    {
+        $this->_acl->requirePrivilegeForClass('update', 'Poc');
+
+        $this->_enforceAcl = false;
+        parent::_editObject();
+        $this->_enforceAcl = true;
     }
 }

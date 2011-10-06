@@ -163,8 +163,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
             $conn->commit();
 
-            $this->_updatePocIndex($subject->id);
-
             // Just send out email when create a new account or change password by admin user,
             // and it does not sent out email when the root user changes his own password.
             $actionName = strtolower($this->_request->getActionName());
@@ -240,7 +238,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     $modified = $user->getModified();
                     $user->save();
                     Doctrine_Manager::connection()->commit();
-                    $this->_updatePocIndex($user->id);
                     $message = "Profile updated successfully"; 
                     $model   = 'notice';
                 } catch (Doctrine_Exception $e) {
@@ -590,29 +587,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
         parent::_createObject();
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
-    }
-
-    /**
-     * When creating or modifying User object, update the POC index.
-     * 
-     * The index listener will automatically update the index for User, but not for POC. To keep the two indices
-     * consistent, we have to manually update the POC index.
-     * 
-     * @param int $id The primary key of the User/POC object.
-     * @return void
-     */
-    private function _updatePocIndex($id)
-    {
-        $searchEngine = Zend_Registry::get('search_engine');
-        $indexer = new Fisma_Search_Indexer($searchEngine);
-        $indexQuery = $indexer->getRecordFetchQuery('Poc', $relationAliases);
-        
-        // Relation aliases are derived from doctrine table metadata and are safe to interpolate
-        $baseClassAlias = $relationAliases['Poc'];
-        $indexQuery->andWhere("$baseClassAlias.id = ?", $id);
-
-        $indexer->indexRecordsFromQuery($indexQuery, 'Poc');
-        $searchEngine->commit();
     }
 
     /**
