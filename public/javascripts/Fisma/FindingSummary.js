@@ -117,7 +117,7 @@ Fisma.FindingSummary = function() {
                 // The node icon is a graphical representation of what type of node this is: agency, bureau, etc.          
                 var nodeIcon = document.createElement('img');
                 nodeIcon.className = "icon";
-                nodeIcon.src = "/images/" + node.orgType + ".png";
+                nodeIcon.src = "/images/" + node.icon + ".png";
                 expandControl.appendChild(nodeIcon);
                 
                 // Add text to the cell

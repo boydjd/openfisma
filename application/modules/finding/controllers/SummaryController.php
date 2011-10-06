@@ -295,9 +295,10 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                     'label' => $org['o_label'],
                     'nickname' => $org['o_nickname'],
                     'id' => $org['o_id'],
-                    'orgType' => $org['o_orgType'],
-                    'orgTypeLabel' => $org['o_orgTypeLabel'],
-                    'level' => $org['o_level']
+                    'orgType' => $org['orgtype_orgType'],
+                    'orgTypeLabel' => $org['orgtype_orgTypeLabel'],
+                    'level' => $org['o_level'],
+                    'icon' => $org['orgtype_icon']
                 );
             }
             if (!empty($org['p_pocId'])) {
@@ -307,6 +308,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                     'id' => 'p' . $org['p_pocId'],
                     'orgType' => 'poc',
                     'orgTypeLabel' => 'Point of Contact',
+                    'icon' => 'poc',
                     'level' => $org['o_level'] + 1
                 );
                 foreach ($org as $key => $value) {
@@ -699,15 +701,16 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             ->select('o.id')
             ->addSelect("CONCAT_WS(' - ', o.nickname, o.name) label")
             ->addSelect('o.nickname nickname')
-            ->addSelect("IF(o.orgtype = 'system', system.type, o.orgtype) orgType")
+            ->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.nickname) orgType")
             ->addSelect('o.lft as lft')
             ->addSelect('o.rgt as rgt')
             ->addSelect(
-                "IF(o.orgtype <> 'system', CONCAT(UPPER(SUBSTRING(o.orgtype, 1, 1)), SUBSTRING"
-                . "(o.orgtype, 2)), CASE WHEN system.type = 'gss' then 'General Support System' WHEN "
+                "IF(orgtype.nickname <> 'system', orgtype.nickname, "
+                . "CASE WHEN system.type = 'gss' then 'General Support System' WHEN "
                 . "system.type = 'major' THEN 'Major Application' WHEN system.type = 'minor' THEN "
                 . "'Minor Application' END) orgTypeLabel"
             )
+            ->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.icon) icon")
             ->addSelect('o.level level')
             ->addSelect('p.id pocId')
             ->addSelect('p.username')
@@ -715,10 +718,11 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             ->addSelect('p.nameLast')
             ->from('Organization o')
             ->leftJoin('o.System system')
+            ->leftJoin('o.OrganizationType orgtype')
             ->leftJoin('o.Pocs p')
             ->leftJoin("p.Findings f WITH f.status <> 'PEND'" . $findingJoinStr, $findingJoinParams)
             ->leftJoin('f.CurrentEvaluation evaluation')
-            ->where('o.orgType <> ? OR system.sdlcPhase <> ?', array('system', 'disposal'))
+            ->where('orgtype.nickname <> ? OR system.sdlcPhase <> ?', array('system', 'disposal'))
             ->groupBy('o.id, p.id')
             ->orderBy('o.lft, p.nameLast, p.nameFirst')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
