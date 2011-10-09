@@ -286,7 +286,7 @@ class Version121 extends Doctrine_Migration_Base
 
         foreach ($organizationTypes as $organizationType) {
             $organizationIds = $this->_getOrganizationIdByType($organizationType->nickname);
-            $organizationType->link('Organization', $organizationIds);
+            $organizationType->link('Organizations', $organizationIds);
             $organizationType->save();
         }
 
