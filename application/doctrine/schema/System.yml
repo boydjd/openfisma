@@ -40,7 +40,23 @@ System:
             type: enum
             values: [LOW, MODERATE, HIGH]
             comment: The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above
-        
+
+        environment:
+            type: string
+            extra:
+                purify: html
+            comment: System Environment Field
+        architecture:
+            type: string
+            extra:
+                purify: html
+            comment: System Architecture Field
+        iis:
+            type: string
+            extra:
+                purify: html
+            comment: System Interconnection & Information Sharing Field
+
         # FISMA Report Criteria:
         controlledBy:
             type: enum

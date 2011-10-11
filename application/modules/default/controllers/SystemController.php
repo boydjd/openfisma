@@ -223,10 +223,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             ->setClickEventHandlerArgs($id)
             ->setGlobalVariableName('Fisma.System.availableInformationTypesTable');
 
-        $availableInformationTypesTable->addColumn(
-            new Fisma_Yui_DataTable_Column('Add', 'false', 'Fisma.System.addInformationType', null, 'id')
-        );
-
         $this->view->availableInformationTypesTable = $availableInformationTypesTable;
         $this->render();
         // END: Building of the data table
