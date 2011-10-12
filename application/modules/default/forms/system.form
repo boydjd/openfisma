@@ -23,7 +23,7 @@ elements.nickname.options.tooltip = "<p><b>Acronym or Nickname</b></p><p>Please 
 displayGroups.system.elements.nickname = "nickname"
 
 elements.parentOrganizationId.type = "select"
-elements.parentOrganizationId.options.label = "Organization"
+elements.parentOrganizationId.options.label = "Parent Organization/System"
 elements.parentOrganizationId.options.validators.alnum.validator = "NotEmpty"
 elements.parentOrganizationId.options.validators.strlen.validator = "StringLength"
 elements.parentOrganizationId.options.validators.strlen.options.min = "1"
