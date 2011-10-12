@@ -94,7 +94,7 @@ class Fisma_Zend_View extends Zend_View
     }
 
     /**
-     * escape unescaped single quotes
+     * Escape unescaped single quotes
      * 
      * @param string The string that needs to be escaped 
      * @return string 
@@ -105,7 +105,7 @@ class Fisma_Zend_View extends Zend_View
     }
 
     /**
-     * escape every character into hex
+     * Escape every character into hex
      * 
      * @param string The string that needs to be escaped 
      * @return string 
@@ -121,7 +121,7 @@ class Fisma_Zend_View extends Zend_View
     }
 
     /**
-     * escape every characster into hex entity
+     * Escape every characster into hex entity
      * 
      * @param string The string that needs to be escaped 
      * @return string 
@@ -137,7 +137,7 @@ class Fisma_Zend_View extends Zend_View
     }
 
     /**
-     * escape every characster into Dec entity
+     * Escape every characster into Dec entity
      * 
      * @param string The string that needs to be escaped 
      * @return string 
@@ -153,7 +153,7 @@ class Fisma_Zend_View extends Zend_View
     }
 
     /**
-     * escape quotes and backslashes, newlines, etc.
+     * Escape quotes and backslashes, newlines, etc.
      * 
      * @param string The string that needs to be escaped 
      * @return string 
@@ -195,7 +195,7 @@ class Fisma_Zend_View extends Zend_View
     }
      
     /**
-     * escape non-standard chars, such as ms document quotes
+     * Escape non-standard chars, such as ms document quotes
      * 
      * @param string The string that needs to be escaped 
      * @return string 
@@ -220,8 +220,8 @@ class Fisma_Zend_View extends Zend_View
     /**
      * Do not escape
      * 
-     * @param string The string that needs to be escaped 
-     * @return string 
+     * @param mixed
+     * @return mixed 
      */
     protected function _escapeNone($string)
     {
