@@ -4,7 +4,16 @@ Fisma_Format_Section::startSection('General Information');
 ?>
 <table class="keyValues">
     <tr>
-        <td>System Name: </td>
+        <td>
+            <?php
+                $systemNameTooltip = new Fisma_Yui_Tooltip('name', 'System Name: ',
+                    "<p><b>System Name</b></p><p>Please select a unique Information System Name."
+                  . " The Name will be the human readable identifier of the information system"
+                  . " and used throughout OpenFISMA.</p>");
+                echo $this->escape($systemNameTooltip, 'none');
+            ?>
+        </td>
+
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -24,7 +33,16 @@ Fisma_Format_Section::startSection('General Information');
         </td>
     </tr>
     <tr>
-        <td>System Nickname: </td>
+        <td>
+            <?php
+                $nicknameTooltip = new Fisma_Yui_Tooltip('nickname', 'System Nickname: ',
+                    "<p><b>Acronym or Nickname</b></p><p>Please select a short unique identifier"
+                  . " for the information system. The short nickname will be used on reports and"
+                  . " other areas of OpenFISMA to display large amounts of data in short column space.</p>");
+                echo $this->escape($nicknameTooltip, 'none');
+            ?>
+        </td>
+
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -44,7 +62,29 @@ Fisma_Format_Section::startSection('General Information');
         </td>
     </tr>
     <tr>
-        <td>System Type: </td>
+        <td>
+            <?php
+                $systemTypeTooltip = new Fisma_Yui_Tooltip('type', 'System Type: ',
+                    "<p><b>GSS stands for General Support System</b></p><p>Definition: An interconnected set of"
+                  . " information resources under the same direct management control which shares common functionality."
+                  . " A General Support System may be, for example, a local area network (LAN) or an agency-wide"
+                  . " backbone, or a communications network, or a departmental data processing center including its"
+                  . " operating system and utilities. The term General Support System is used in context of security."
+                  . " Individual applications supporting different business-related functions may run on a single GSS."
+                  . " </p><p><b>Major stands for Major Application</b></p><p>Definition: An IT system that requires"
+                  . " special management attention because of its importance to the organization; or its significant"
+                  . " role in the administration of the organizations programs, finances, property, or other"
+                  . " significant resources. An adverse impact on a major system would constitute serious, severe, or"
+                  . " catastrophic harm due to the loss of confidentiality, integrity, or availability, as determined"
+                  . " through conducting a system risk assessment. Major systems would be classified as either moderate"
+                  . " or high impact as defined in FIPS 199. Those systems identified as Critical Infrastructure"
+                  . " Protection (CIP) assets would clearly fall in this category as a major system.</p><p><b>Minor"
+                  . " stands for Minor Application</b></p><p>Definition: An IT system that does not require special"
+                  . " attention as it mainly provides mission supportive information to the organization and usually"
+                  . " relies on another General Support System for the majority of its security controls.</p>");
+                echo $this->escape($systemTypeTooltip, 'none');
+            ?>
+        </td>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -69,7 +109,16 @@ Fisma_Format_Section::startSection('General Information');
         </td>
     </tr>
     <tr>
-        <td>Mission Criticality: </td>
+        <td>
+            <?php
+                $missionCriticalityTooltip = new Fisma_Yui_Tooltip('missionCriticality', 'Mission Criticality: ',
+                    "<p><b>Mission Criticality</b></p><p>Mission criticality, or how integral the application is to"
+                  . " carrying out the mission of the agency will impact decisions regarding the implementation of"
+                  . " controls and the risks posed to the agency to known vulnerabilities. Each system should be"
+                  . " assigned a mission criticality of supportive, important, or critical.</p>");
+                echo $this->escape($missionCriticalityTooltip, 'none');
+            ?>
+        </td>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -95,7 +144,30 @@ Fisma_Format_Section::startSection('General Information');
         </td>
     </tr>
     <tr>
-        <td>SDLC Phase: </td>
+        <td>
+            <?php
+                $sdlcPhaseTooltip = new Fisma_Yui_Tooltip('sdlcPhase', 'SDLC Phase: ',
+                    "<p><b>SDLC Phase</b></p>"
+                  . " <p>A typical SDLC includes five phases: initiation, development/acquisition,"
+                  . " implementation/assessment, operations/maintenance, and disposal. Each phase includes a minimum"
+                  . " set of security tasks needed to effectively incorporate security in the system development"
+                  . " process. Note that phases may continue to be repeated throughout a system's life prior to"
+                  . " disposal.</p><p>This publication does not provide an exhaustive description of the acquisition"
+                  . " processes. Organizations should refer to the appropriate Federal Acquisition Regulations (FAR)"
+                  . " and organization-specific policies and procedures for detailed acquisition information.</p><p>"
+                  . " <ul><li>Initiation. During the initiation phase, the need for a system is expressed and the"
+                  . " purpose of the system is documented.</li><li>Development/Acquisition. During this phase,"
+                  . " the system is designed, purchased, programmed, developed, or otherwise constructed. </li><li>"
+                  . " Implementation/Assessment. After system acceptance testing, the system is installed or fielded."
+                  . " </li><li> Operation/Maintenance. During this phase, the system performs its work. The system is"
+                  . " almost always modified by the addition of hardware and software and by numerous other events."
+                  . " </li><li>Disposal. Activities conducted during this phase ensure the orderly termination of"
+                  . " the system, safeguarding vital system information, and migrating data processed by the system"
+                  . " to a new system, or preserving it in accordance with applicable records management regulations"
+                  . " and policies.</li></ul></p>");
+                echo $this->escape($sdlcPhaseTooltip, 'none');
+            ?>
+        </td>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -121,7 +193,20 @@ Fisma_Format_Section::startSection('General Information');
         </td>
     </tr>
     <tr>
-        <td>E-Auth Level: </td>
+        <td>
+            <?php
+                $eAuthLevelTooltip = new Fisma_Yui_Tooltip('eAuthLevel', 'E-Auth Level: ',
+                    "<p><b>E-Auth Level</b></p><p>Electronic authentication (E-authentication) is the process of"
+                  . " establishing confidence in user identities electronically presented to an information system."
+                  . " Every agency is required by the Office of Management and Budget (OMB) in Memorandum 04-04 to"
+                  . " establish E-Authentication assurance levels and impacts. OMB defines four levels of"
+                  . " authentication Levels 1 to 4, in terms of the consequences of the authentication errors and"
+                  . " misuse of credentials. Level 1 is the lowest assurance and Level 4 is the highest. You may also"
+                  . " refer to NIST Special Publication 800-63 for more guidance on Electronic Authentication"
+                  . " guidelines.</p>");
+                echo $this->escape($eAuthLevelTooltip, 'none');
+            ?>
+        </td>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -185,10 +270,17 @@ Fisma_Format_Section::stopSection();?>
 
 <div class="clear"></div>
 
-<?php if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
-    Fisma_Format_Section::startSection('System Description', 'system_description');
+<?php
+$systemDescriptionText = "<p><b>System Description</b></p>"
+                         . "<p>Prepare a brief description (one to three paragraphs) of the function and purpose of"
+                         . " the system (e.g., economic indicator, network support for an agency, business census"
+                         . " data analysis, crop reporting support).</p>";
+$systemDescriptionTooltip = new Fisma_Yui_Tooltip('systemDescription', 'System Description', $systemDescriptionText);
+
+if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
+    Fisma_Format_Section::startSection($systemDescriptionTooltip, 'system_description');
 } else {
-    Fisma_Format_Section::startSection('System Description');
+    Fisma_Format_Section::startSection($systemDescriptionTooltip);
 }
 ?>
 <div name="description" id="system_description" type="textarea" rows="3" cols="120"> 
