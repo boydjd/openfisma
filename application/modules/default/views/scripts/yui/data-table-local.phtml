@@ -62,12 +62,12 @@
             }
         );
 
-        Fisma.Util.setTable(dataTable, "<?php echo $this->escape($this->actionName, 'none') ?>");
+        Fisma.Registry.set("<?php echo $this->escape($this->actionName, 'none') ?>", dataTable);
 
         // Enable row highlighting for mouse over events
         dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow); 
         dataTable.subscribe("rowMouseoutEvent", dataTable.onEventUnhighlightRow);
-        
+
         // Enable other events triggered from the data-table
         var eventListeners = <?php echo $this->escape($this->eventListeners, 'json'); ?>;
         for (var eventName in eventListeners)

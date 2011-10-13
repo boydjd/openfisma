@@ -45,7 +45,7 @@ Fisma.Finding = {
             comment : comment.comment
         };
 
-        this.commentTable = Fisma.Util.getTable('comments');
+        this.commentTable = Fisma.Registry.get('comments');
 
         this.commentTable.addRow(commentRow);
         

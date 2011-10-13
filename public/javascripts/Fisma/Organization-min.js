@@ -1,0 +1,1 @@
+(function(){var a={typeHandle:function(f,d){var b=YAHOO.util.Dom.get("orgTypeFilter");var e=b.options[b.selectedIndex];var c=new Fisma.PersistentStorage(d.namespace);c.set("orgType",e.value);c.sync();Fisma.Storage.onReady(function(){if(!YAHOO.lang.isUndefined(d)&&d.url){var g=d.url+"?orgTypeId="+encodeURIComponent(e.value);window.location.href=g}})}};Fisma.Organization=a})();

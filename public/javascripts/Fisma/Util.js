@@ -23,11 +23,6 @@
  
 Fisma.Util = {
     /**
-     * A reference to the YUI data table which is used for displaying YUI datatable results
-     */
-    yuiDataTable : [],
-
-    /**
      * Escapes the specified string so that it can be included in a regex without special characters affecting
      * the regex's meaning
      * 
@@ -219,54 +214,5 @@ Fisma.Util = {
                 } ); 
 
         return dialog;
-    },
-
-    /*
-     * Organizaton type filter callback function
-     * It set the default organization type, store the selected organization type and refresh window with url 
-     */
-    organizationTypeHandle : function (event, config) {
-            // Set the selected organization type   
-            var organizationTypeFilter = YAHOO.util.Dom.get('orgTypeFilter');
-            var selectedType = organizationTypeFilter.options[organizationTypeFilter.selectedIndex];
-
-            // Store the selected organizationTypeId to storage table
-            var orgTypeStorage = new Fisma.PersistentStorage(config.namespace);
-            orgTypeStorage.set('orgType', selectedType.value); 
-            orgTypeStorage.sync();
-
-        Fisma.Storage.onReady(function() {
-            // Construct the url and refresh the result after a user changes organization type                
-            if (!YAHOO.lang.isUndefined(config) && config.url) {
-                var url = config.url + '?orgTypeId=' + encodeURIComponent(selectedType.value);
-                window.location.href = url;
-            }
-        });
-    },
-
-    /**
-     * A method to add a YUI table to the "registry" that this object keeps track of
-     *
-     * @param table Reference to the yui table
-     * @param actionName Set table by specify action name
-     */
-    setTable : function (table, actionName) {
-        var tableObj = { data : table, config : actionName };
-        this.yuiDataTable.push(tableObj);
-    },
-
-    /**
-     * Return a yui datatable by specify action name
-     * 
-     * @param actionName Get table by specify action name
-     * @returns object|null
-     */
-    getTable : function (actionName) {
-        for(var index in this.yuiDataTable) {
-            if (this.yuiDataTable[index].config === actionName) {
-                return this.yuiDataTable[index].data;
-            }
-        }
-        return null;
     }
 };
