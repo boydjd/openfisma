@@ -1,7 +1,11 @@
 <?php Fisma_Format_Section::startSection('System Inventory Dashboard'); ?>
 
 <?php foreach ($this->metrics as $name => $metric): ?>
-    <div class="dashboardCard <?php echo $this->escape($metric['color']); ?>">
+    <div class="dashboardCard <?php echo $this->escape($metric['color']) . '" ';?>
+    <?php if ($metric['id']): ?> 
+        id="<?php echo $this->escape($metric['id']); ?>" 
+    <?php endif;?>
+    >
         <div class="title"><?php echo $this->escape($metric['title']); ?></div>
     
         <div class="metric"><?php echo $this->escape($metric['value'] . $metric['suffix']); ?></div>
@@ -25,3 +29,12 @@
 <div class="clear"></div>
 
 <?php Fisma_Format_Section::stopSection(); ?>
+
+<script type="text/javascript">
+    YAHOO.util.Event.onDOMReady(function () {
+        var url = "<?php echo $this->escape($this->url); ?>";
+        var ids = <?php echo $this->escape($this->divIds, 'json'); ?>;
+        function fnCallback(e) { document.location=url; }
+        YAHOO.util.Event.addListener(ids, 'click', fnCallback);
+    });
+</script>
