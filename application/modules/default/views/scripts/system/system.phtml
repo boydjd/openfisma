@@ -196,9 +196,9 @@ Fisma_Format_Section::stopSection();?>
 </div>
 <?php Fisma_Format_Section::stopSection();
 
-$environmentText = "Provide a general description of the technical system. Include the primary hardware,"
-    . "software, and communications equipment. Include any environmental or technical factors that raise special"
-    . "security concerns, such as use of Personal Digital Assistants, wireless technology, etc.";
+$environmentText = "<b>System Environment</b><p>Provide a general description of the technical system.  Include the "
+    . "primary hardware, software, and communications equipment. Include any environmental or technical factors that "
+    . "raise special security concerns, such as use of Personal Digital Assistants, wireless technology, etc.</p>";
 $environmentTooltip = new Fisma_Yui_Tooltip('systemEnvironment', 'System Environment', $environmentText);
 
 Fisma_Format_Section::startSection($environmentTooltip, 'system_environment');?>
@@ -207,46 +207,37 @@ Fisma_Format_Section::startSection($environmentTooltip, 'system_environment');?>
 </div>
 <?php Fisma_Format_Section::stopSection();
 
-Fisma_Format_Section::startSection('System Architecture', 'system_architecture');?>
-<div name="architecture" id="system_architecture" type="textarea" rows="3" cols="120">
-    <?php echo $this->escape($this->system->architecture, 'none'); ?>
-</div>
-<?php Fisma_Format_Section::stopSection();
-
-$interconnectionText = "System interconnection is the direct connection of two or more IT systems for "
-    . "the purpose of sharing information resources. System interconnection, if not appropriately protected, "
-    . "may result in a compromise of all connected systems and the data they store, process, or transmit. It "
-    . "is important that system owners, information owners, and management obtain as much information as possible "
-    . "regarding vulnerabilities associated with system interconnections and information sharing. This is essential "
-    . "to selecting the appropriate controls required to mitigate those vulnerabilities. An Interconnection Security "
-    . "Agreement (ISA), Memorandum of Understanding (MOU), or Memorandum of Agreement (MOA) is needed between systems "
-    . "(not between workstations/desktops or publicly accessed systems) that share data that are owned or operated by "
-    . "different organizations. An ISA is not needed with internal agency systems if an agency manages and enforces "
-    . "a rigid system development life cycle, which requires approvals and sign-offs ensuring compliance with security "
-    . "requirements. For additional information on interconnections, see NIST SP 800-47, Security Guide for "
-    . "Interconnecting Information Technology Systems.<br /><br />"
-    . "In this section, for each interconnection between systems that are owned or operated by different organizations, "
-    . "provide the following information concerning the authorization for the connection to other systems or the sharing "
-    . "of information: (1) Name of system; (2) Organization; (3) Type of interconnection (Internet, Dial-Up, etc.); "
-    . "(4) Authorizations for interconnection (MOU/MOA, ISA); (5) Date of agreement; (6) FIPS 199 Category; "
-    . "(7) Certification and accreditation status of system; and (8) Name and title of authorizing official(s). For "
-    . "agencies with numerous interconnections, a table format including the above information may be a good way to "
-    . "present the information.";
+$interconnectionText = "<b>System Interconnections</b><p>Document all of the information systems interconnections "
+    . "here. A system interconnection is the direct connection of two or more IT systems for the purpose of sharing "
+    . "information resources. An Interconnection Security Agreement (ISA), Memorandum of Understanding (MOU), or "
+    . "Memorandum of Agreement (MOA) is needed between systems (not between workstations/desktops or publicly "
+    . "accessed systems) that share data that are owned or operated by different organizations. An ISA is not "
+    . "needed with internal agency systems if an agency manages and enforces a rigid system development life cycle, "
+    . "which requires approvals and sign-offs ensuring compliance with security requirements. For additional "
+    . "information on interconnections, see NIST SP 800-47, Security Guide for Interconnecting Information Technology "
+    . "Systems.</p";
 
 $interconnectionTooltip = new Fisma_Yui_Tooltip('systemInterconnection',
     'System Interconnections & Information Sharing', $interconnectionText);
-Fisma_Format_Section::startSection($interconnectionTooltip, 'iis');?>
-<div name="iis" id="iis" type="textarea" rows="3" cols="120">
-    <?php if (is_null($this->system->iis)):
-    echo '<table><tr><td>System Name</td><td>Organization</td><td>Type</td><td>Agreement</td><td>Date</td>'
+Fisma_Format_Section::startSection($interconnectionTooltip, 'interconnections');?>
+<div name="interconnections" id="interconnections" type="textarea" rows="3" cols="120">
+    <?php if (is_null($this->system->interconnections)):
+    echo '<table><tr><td><p>System</p><p>Name</p></td><td>Organization</td><td>Type</td><td>Agreement</td><td>Date</td>'
         . '<td><p>FIPS 199</p><p>Category</p></td><td><p>C&amp;A</p><p>Status</p></td><td><p>Auth.</p><p>Official</p>'
         . '</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td>'
         . '<td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td>'
         . '<td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td>'
         . '<td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>';
     else:
-        echo $this->escape($this->system->iis, 'none');
+        echo $this->escape($this->system->interconnections, 'none');
     endif;?>
 </div>
 
-<?php Fisma_Format_Section::stopSection();?>
+<?php
+Fisma_Format_Section::stopSection();
+
+Fisma_Format_Section::startSection('System Architecture', 'system_architecture'); ?>
+<div name="architecture" id="system_architecture" type="textarea" rows="3" cols="120">
+    <?php echo $this->escape($this->system->architecture, 'none'); ?>
+</div>
+<?php Fisma_Format_Section::stopSection();

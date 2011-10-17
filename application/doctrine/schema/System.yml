@@ -51,7 +51,7 @@ System:
             extra:
                 purify: html
             comment: System Architecture Field
-        iis:
+        interconnections:
             type: string
             extra:
                 purify: html
