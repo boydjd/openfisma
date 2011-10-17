@@ -240,6 +240,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     Doctrine_Manager::connection()->commit();
                     $message = "Profile updated successfully"; 
                     $model   = 'notice';
+                    if (CurrentUser::getInstance()->id === $user->id) {
+                        CurrentUser::getInstance()->refresh();
+                    }
                 } catch (Doctrine_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
                     $message = $e->getMessage();
@@ -906,7 +909,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $form->removeElement('generate_password');
 
             // root user should always show Must Reset Password
-            if ($user && 'root' != $user->username) {
+            if (empty($user) || ($user && 'root' != $user->username)) {
                 $form->removeElement('mustResetPassword');
             }
         }

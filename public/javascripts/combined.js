@@ -12620,6 +12620,7 @@ Fisma.System = {
             } else {
                 url = '/system/view/id/' + targetNode.data.systemId;                
             }
+<<<<<<< HEAD
 
             window.location = url;
         }
@@ -12628,6 +12629,222 @@ Fisma.System = {
     Fisma.SystemAggregationView = SAV;
 })();
 Fisma.TabView={};/**
+||||||| merged common ancestors
+        });
+    }
+};
+/**
+=======
+        });
+    },
+    
+    /**
+     * Triggers a pop-up confirmation asking if the user truly wants to convert the current
+     * system/organization to an organization/system, and if yes, redirects to the proper action.
+     * 
+     * @param event $event 
+     * @param config $config 
+     * @access public
+     * @return void
+     */
+    convertToOrgOrSystem : function (event, config) {
+    
+        Fisma.Util.showConfirmDialog(
+            event, 
+            {
+                text: config.text,
+                func: config.func,
+                args: [config.id]
+            }
+        );
+    },
+    
+    /**
+     * Shows an input dialog for the user to input the needed information for 
+     * a Oranization-t-o-System conversion (the system FIPS-199 and FISMA Data).
+     * After input, will redirect the user to /organization/convert-to-system/~
+     *
+     * @access public
+     * @return void
+     */
+    askForOrgToSysInput : function (sysId) {
+        var panel;
+
+        var populateForm = function () {
+
+            // The form contains some scripts that need to be executed
+            var scriptNodes = panel.body.getElementsByTagName('script');
+
+            for (var i=0; i < scriptNodes.length; i++) {
+                try {
+                    eval(scriptNodes[i].text);
+                } catch (e) {
+                    var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                    Fisma.Util.showAlertDialog(message);
+                } 
+            }
+
+            // The tool tips will display underneath the modal dialog mask, so we'll move them up to a higher layer.
+            var tooltips = YAHOO.util.Dom.getElementsByClassName('yui-tt', 'div');
+
+            for (var index in tooltips) {
+                var tooltip = tooltips[index];
+
+                // The yui panel is usually 4, so anything higher is good.
+                tooltip.style.zIndex = 5;
+            }
+        };
+        var panelConfig = {width : "40em", modal : true};
+
+        panel = Fisma.UrlPanel.showPanel(
+            'Convert Organization To System',
+            '/organization/convert-to-system-form/format/html/id/' + sysId,
+            populateForm,
+            'convertToSystemPanel',
+            panelConfig
+        );
+    },
+
+    /**
+     * Shows an input dialog for the user to input the organization type
+     * After input, will redirect the user to /system/convert-to-org/~
+     *
+     * @access public
+     * @return void
+     */
+    askForSysToOrgInput : function (orgId) {
+        var panel;
+
+        var populateForm = function () {
+
+            // The form contains some scripts that need to be executed
+            var scriptNodes = panel.body.getElementsByTagName('script');
+
+            for (var i=0; i < scriptNodes.length; i++) {
+                try {
+                    eval(scriptNodes[i].text);
+                } catch (e) {
+                    var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                    Fisma.Util.showAlertDialog(message);
+                } 
+            }
+        };
+        var panelConfig = {width : "40em", modal : true};
+
+        panel = Fisma.UrlPanel.showPanel(
+            'Convert System To Organization',
+            '/system/convert-to-organization-form/format/html/id/' + orgId,
+            populateForm,
+            'convertToOrganizationPanel',
+            panelConfig
+        );
+    },
+
+    /**
+     * Creates and HTML input form which asks for the requiered information needed to 
+     * convert an organization to a system
+     * 
+     * @access public
+     * @return void
+     */
+    getSystemConversionForm : function (sysId) {
+    
+        var addInputRowOnTable = function (addToTable, descriptionText, opts) {
+
+            var myRow = document.createElement('tr');
+
+            var cellDescr = document.createElement('td');
+            var descTextNode = document.createTextNode(descriptionText + ':');
+            cellDescr.appendChild(descTextNode);
+
+            var cellInput = document.createElement('td');
+            cellInput.align = 'right';
+            cellInput.appendChild(rtnHighModLowSelectObj(descriptionText, opts));
+
+            myRow.appendChild(cellDescr);
+            myRow.appendChild(cellInput);
+            addToTable.appendChild(myRow);
+        };
+
+        var rtnHighModLowSelectObj = function (selectObjName, states) {
+
+            var selectObj = document.createElement('select');
+            selectObj.name = selectObjName.replace(' ', '');
+
+            for (var x = 0; x < states.length; x++) {
+                var myOption = document.createElement('option');
+                myOption.value = states[x];
+                var optText = document.createTextNode(states[x]);
+                var boldOptText = document.createElement('b');
+                boldOptText.appendChild(optText);
+                myOption.appendChild(boldOptText);
+                selectObj.appendChild(myOption);
+            }
+
+            return selectObj;
+        };
+
+        var myDialogForm = document.createElement('form');
+        myDialogForm.id = 'sysConversionForm';
+        myDialogForm.method = 'post';
+        myDialogForm.action = '/organization/convert-to-system/id/' + sysId;
+        
+        var dialogHead = document.createElement('div');
+        dialogHead.className = 'hd';
+        dialogHead.appendChild(document.createTextNode('System information'));
+        var dialogBody = document.createElement('div');
+        dialogBody.className = 'bd';
+        
+        var msg = document.createTextNode("Please input the needed system information in order to complete conversion.");
+        dialogBody.appendChild(msg);
+        dialogBody.appendChild(document.createElement('br'));
+        dialogBody.appendChild(document.createElement('br'));
+
+        var tbl = document.createElement('table');
+        tbl.width = '100%';
+        addInputRowOnTable(tbl, 'Type', ['gss', 'major', 'minor']);
+        addInputRowOnTable(tbl, 'SDLC Phase', ['initiation','development','implementation','operations','disposal']);
+        addInputRowOnTable(tbl, 'Confidentiality', ['NA', 'HIGH', 'MODERATE', 'LOW']);
+        addInputRowOnTable(tbl, 'Integrity', ['HIGH', 'MODERATE', 'LOW']);
+        addInputRowOnTable(tbl, 'Availability', ['HIGH', 'MODERATE', 'LOW']);
+        dialogBody.appendChild(tbl);
+
+        myDialogForm.appendChild(dialogHead);
+        myDialogForm.appendChild(dialogBody);
+        var csrf = document.createElement('input');
+        csrf.type = 'hidden';
+        csrf.value = $('[name="csrf"]').val();
+        csrf.name = 'csrf';
+        myDialogForm.appendChild(csrf);
+        return myDialogForm;
+    },
+    
+    /**
+     * Shows YUI wait panel on the DOM. Use when navigating away from this page.
+     * 
+     * @access public
+     * @return void
+     */
+    showWaitPanelWhileConverting : function () {
+        var waitPanel = new YAHOO.widget.Panel(
+            "savePanel",
+            {
+                width: "250px",
+                fixedcenter: true,
+                close: false,
+                draggable: false,
+                modal: true,
+                visible: true
+            }
+        );
+        waitPanel.setHeader('Converting...');
+        waitPanel.setBody('<img src="/images/loading_bar.gif">');
+        waitPanel.render(document.body);
+        waitPanel.show();
+    }
+};
+/**
+>>>>>>> origin/master
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.

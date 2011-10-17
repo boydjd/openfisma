@@ -57,6 +57,9 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->contextSwitch()
                       ->addActionContext('tree-data', 'json')
                       ->initContext();
+        $this->_helper->ajaxContext()
+                      ->addActionContext('convert-to-system-form', 'html')
+                      ->initContext();
     }
 
     /**
@@ -68,37 +71,38 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      */
     public function getForm($formName = null)
     {
-        $form = parent::getForm();
+        $form = parent::getForm($formName);
 
-        // The parent menu should show all organizations and systems (irregardless of user's ACL)
-        $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
-        $organizationTree = $organizationTreeObject->fetchTree();
+        if (empty($formName)) {
+            // The parent menu should show all organizations and systems (irregardless of user's ACL)
+            $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
+            $organizationTree = $organizationTreeObject->fetchTree();
 
-        if (!empty($organizationTree)) {
-            foreach ($organizationTree as $organization) {
-                $value = $organization['id'];
-                $text = str_repeat("--", $organization['level']) 
-                      . ' '
-                      . $organization['nickname'] 
-                      . ' - '
-                      . $organization['name'];
-                      
-                $parent = $form->getElement('parent');
-                if ($parent) {
-                    $form->getElement('parent')->addMultiOptions(array($value => $text));
+            if (!empty($organizationTree)) {
+                foreach ($organizationTree as $organization) {
+                    $value = $organization['id'];
+                    $text = str_repeat("--", $organization['level']) 
+                          . ' '
+                          . $organization['nickname'] 
+                          . ' - '
+                          . $organization['name'];
+                          
+                    $parent = $form->getElement('parent');
+                    if ($parent) {
+                        $form->getElement('parent')->addMultiOptions(array($value => $text));
+                    }
                 }
+            } else {
+                // If there are no other organizations, the parent only shows the option "None"
+                // (Notice that '0' is a special value which no primary key can actually take)
+                $form->getElement('parent')->addMultiOptions(array(0 => 'None'));
             }
-        } else {
-            // If there are no other organizations, the parent only shows the option "None"
-            // (Notice that '0' is a special value which no primary key can actually take)
-            $form->getElement('parent')->addMultiOptions(array(0 => 'None'));
-        }
+         
+            // The type menu should display all types of organization EXCEPT system
+            $orgTypeArray = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
+            $form->getElement('orgTypeId')->addMultiOptions($orgTypeArray);
+        } 
 
-        // The type menu should display all types of organization EXCEPT system
-        $orgTypeArray = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
-
-        $form->getElement('orgTypeId')->addMultiOptions($orgTypeArray);
-        
         return $form;
     }
 
@@ -516,9 +520,72 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 )
             );
         }
-
+        
         $buttons = array_merge($buttons, parent::getToolbarButtons());
+    
+        $id = $this->getRequest()->getParam('id');
+        if (
+            !empty($id)
+            && $this->_acl->hasPrivilegeForClass('create', 'Organization')
+        ) {
 
+            $buttons['convertToSystem'] = new Fisma_Yui_Form_Button(
+                'convertToSys', 
+                array(
+                      'label' => 'Convert To System',
+                      'onClickFunction' => 'Fisma.System.convertToOrgOrSystem',
+                      'onClickArgument' => array(
+                          'id' => $this->view->escape($id, 'url'),
+                          'text' => "Are you sure you want to convert this organization to a system?",
+                          'func' => 'Fisma.System.askForOrgToSysInput'
+                          
+                    ) 
+                )
+            );
+            
+        }
+        
         return $buttons;
+    }
+    
+    public function convertToSystemAction()
+    {
+        if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
+            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
+                'cannot create Organization');            
+        }
+        
+        $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
+
+        $form = $this->getForm('organization_converttosystem');
+        if ($form->isValid($this->getRequest()->getPost())) {
+            $organization = Doctrine::getTable('Organization')->find($id);
+            $organization->convertToSystem(
+                $form->getElement('type')->getValue(),
+                $form->getElement('sdlcPhase')->getValue(),
+                $form->getElement('confidentiality')->getValue(),
+                $form->getElement('integrity')->getValue(),
+                $form->getElement('availability')->getValue()
+            );
+
+            $this->view->priorityMessenger('Converted to system successfully', 'notice');
+            $this->_redirect('/system/view/oid/' . $id);
+        } else {
+            $errorString = Fisma_Zend_Form_Manager::getErrors($form);
+            $this->view->priorityMessenger("Unable to convert Organization to System:<br>$errorString", 'warning');
+            $this->_redirect('/organization/view/id/' . $id);
+        }
+    }
+
+    /**
+     * AJAX action to render the form for converting an Organization to a System.
+     *
+     * @return void
+     */
+    public function convertToSystemFormAction()
+    {
+        $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
+        $this->view->form = $this->getForm('organization_converttosystem');
+        $this->view->form->setAction('/organization/convert-to-system/id/' . $id);
     }
 }
