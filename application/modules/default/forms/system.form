@@ -49,7 +49,7 @@ elements.sdlcPhase.type = "select"
 elements.sdlcPhase.options.label = "SDLC Phase"
 elements.sdlcPhase.options.validators.alnum.validator = "NotEmpty"
 elements.sdlcPhase.options.required = true
-elements.sdlcPhase.options.tooltip = "<p><b>System Development Life Cycle Phase</b></p>"
+elements.sdlcPhase.options.tooltip = "<p><b>SDLC Phase</b></p><p>Please select the correct the correct phase of the security development life cycle that the information system is currently in. OpenFISMA includes five phases based on NIST Special Publication 800-64: initiation, development/acquisition, implementation/assessment, operations/maintenance, and disposal. Below is a brief description of the SDLC phases.</p><p> <ul><li>Initiation. During the initiation phase, the need for a system is expressed and the purpose of the system is documented. </li> <li> Development/Acquisition. During this phase, the system is designed, purchased, programmed, developed, or otherwise constructed. </li> <li> Implementation/Assessment. After system acceptance testing, the system is installed or fielded. </li><li> Operation/Maintenance. During this phase, the system performs its work. The system is almost always modified by the addition of hardware and software and by numerous other events.</li> <li> Disposal. Activities conducted during this phase ensure the orderly termination of the system, safeguarding vital system information, and migrating data processed by the system to a new system, or preserving it in accordance with applicable records management regulations and policies. </li> </ul> </p>"
 displayGroups.system.elements.sdlcPhase = "sdlcPhase"
 
 elements.eAuthLevel.type = "select"

@@ -95,38 +95,52 @@ class OrganizationDashboardController extends Fisma_Zend_Controller_Action_Secur
                 'title' => 'Total Number of Systems', 
                 'value' => $metrics['s_total_systems'],
                 'color' => '',
-                'suffix' => ''
+                'suffix' => '',
+                'id'    => ''
             );
 
             $metrics['s_current_atos'] = array(
                 'title' => 'Current ATO', 
                 'value' => $metrics['s_current_atos'],
                 'color' => $this->_getColorForPercentage($metrics['s_current_atos']),
-                'suffix' => '%'
+                'suffix' => '%',
+                'id'    => 'currentATO'
             );
             
             $metrics['s_current_self_assessment'] = array(
                 'title' => 'Current 800-53 Self-Assessment', 
                 'value' => $metrics['s_current_self_assessment'],
                 'color' => $this->_getColorForPercentage($metrics['s_current_self_assessment']),
-                'suffix' => '%'
+                'suffix' => '%',
+                'id'    => 'currentSelfAssessment'
             );
 
             $metrics['s_contingency_plan_tests'] = array(
                 'title' => 'Contingency Plans Tested', 
                 'value' => $metrics['s_contingency_plan_tests'],
                 'color' => $this->_getColorForPercentage($metrics['s_contingency_plan_tests']),
-                'suffix' => '%'
+                'suffix' => '%',
+                'id'    => 'contingencyPlanTests'
             );
 
             $metrics['s_current_pias'] = array(
                 'title' => 'Completed PIA', 
                 'value' => $metrics['s_current_pias'],
                 'color' => $this->_getColorForPercentage($metrics['s_current_pias']),
-                'suffix' => '%'
+                'suffix' => '%',
+                'id'    => ''
             );
 
+            // Prepare div ids which are used for adding YUI event listener
+            $ids= array();
+            foreach ($metrics as $name => $metric) {
+                if ($metric['id']) {
+                    array_push($ids, $metric['id']);
+                }
+            }
             $this->view->metrics = $metrics;
+            $this->view->divIds = $ids; 
+            $this->view->url = '/organization-report/security-authorization/format/html';
         } else {
             $this->view->metrics = array();
         }

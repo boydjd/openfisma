@@ -92,3 +92,9 @@ div.dashboardChart {
     font-weight: bold;
 }
 
+/*
+ * The following styles are for hovoring the metrics
+ */
+#currentATO, #currentSelfAssessment, #contingencyPlanTests {
+    cursor: pointer;
+}
