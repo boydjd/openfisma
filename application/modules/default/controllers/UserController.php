@@ -239,6 +239,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     Doctrine_Manager::connection()->commit();
                     $message = "Profile updated successfully"; 
                     $model   = 'notice';
+                    if (CurrentUser::getInstance()->id === $user->id) {
+                        CurrentUser::getInstance()->refresh();
+                    }
                 } catch (Doctrine_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
                     $message = $e->getMessage();
