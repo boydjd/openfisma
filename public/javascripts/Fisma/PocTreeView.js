@@ -23,24 +23,25 @@
 
 (function() {
     /**
-     * A treeview widget that is specialized for displaying the system aggregation hierarchy
+     * A treeview widget that is specialized for displaying the POC hierarchy
      * 
      * @namespace Fisma
-     * @class SystemAggregationView
+     * @class PocTreeView
+     * @extends n/a
      * @constructor
      * @param contentDivId {String} The name of the div which will hold this widget
      */
-    var SAV = function(contentDivId) {
+    var PTV = function(contentDivId) {
         this._contentDiv = document.getElementById(contentDivId);
         
         if (YAHOO.lang.isNull(this._contentDiv)) {
             throw "Invalid contentDivId";
         }
         
-        this._storage = new Fisma.PersistentStorage("Aggregation.Tree");
+        this._storage = new Fisma.PersistentStorage("Poc.Tree");
     };
 
-    SAV.prototype = {
+    PTV.prototype = {
         /**
          * The outermost div for this widget (expected to exist on the page already and to be empty)
          * 
@@ -57,22 +58,6 @@
          */                
         _treeView: null,
 
-        /**
-         * The div containing the "include disposal systems" checkbox
-         * 
-         * @type HTMLElement
-         * @protected
-         */                
-        _disposalCheckboxContainer: null,
-
-        /**
-         * The checkbox for "include disposal systems"
-         * 
-         * @type HTMLElement
-         * @protected
-         */                
-        _disposalCheckbox: null,
-        
         /**
          * The div containing the loading spinner
          * 
@@ -116,50 +101,15 @@
         render: function () {
             var that = this;
 
-            // We need storage before we can render anything
-            Fisma.Storage.onReady(function () {
-                that._disposalCheckboxContainer = document.createElement("div");
-                that._renderDisposalCheckbox(that._disposalCheckboxContainer);
-                that._contentDiv.appendChild(that._disposalCheckboxContainer);
+            that._loadingContainer = document.createElement("div");
+            that._renderLoading(that._loadingContainer);
+            that._contentDiv.appendChild(that._loadingContainer);
 
-                that._loadingContainer = document.createElement("div");
-                that._renderLoading(that._loadingContainer);
-                that._contentDiv.appendChild(that._loadingContainer);
-
-                that._treeViewContainer = document.createElement("div");
-                that._renderTreeView(that._treeViewContainer);
-                that._contentDiv.appendChild(that._treeViewContainer);                
-            });
+            that._treeViewContainer = document.createElement("div");
+            that._renderTreeView(that._treeViewContainer);
+            that._contentDiv.appendChild(that._treeViewContainer);                
         },
 
-        /**
-         * Render the "include disposal systems" interface
-         *
-         * @method OrganizationTreeView._renderDisposalCheckbox
-         * @param container {HTMLElement} The container that the checkbox is rendered into
-         */
-        _renderDisposalCheckbox: function (container) {
-            this._disposalCheckbox = document.createElement("input");
-            this._disposalCheckbox.type = "checkbox";
-            this._disposalCheckbox.checked = this._storage.get("includeDisposalSystem");
-            YAHOO.util.Dom.generateId(this._disposalCheckbox);
-            YAHOO.util.Event.addListener(
-                this._disposalCheckbox, 
-                "click", 
-                this._handleDisposalCheckboxAction, 
-                this, 
-                true
-            );
-            container.appendChild(this._disposalCheckbox);
-            
-            var label = document.createElement("label");
-            label.setAttribute("for", this._disposalCheckbox.id);
-            label.appendChild(document.createTextNode("Display Disposed Systems"));
-            container.appendChild(label);
-            
-            container.setAttribute("class", "showDisposalSystem");
-        },
-       
         /**
          * Render the loading spinner
          *
@@ -193,17 +143,6 @@
         },
 
         /**
-         * Set the user preference for the include disposal system checkbox and re-render the tree view
-         *
-         * @method OrganizationTreeView._handleDisposalCheckboxAction
-         * @param event {YAHOO.util.Event} The mouse event
-         */
-        _handleDisposalCheckboxAction: function (event) {
-            this._storage.set("includeDisposalSystem", this._disposalCheckbox.checked);
-            this._renderTreeView();
-        },
-
-        /**
          * Render the treeview itself
          *
          * @method OrganizationTreeView._renderTreeView
@@ -212,11 +151,7 @@
         _renderTreeView: function (container) {
             this._showLoadingImage();
 
-            var url = '/system/aggregation-data/format/json';
-
-            if (this._storage.get("includeDisposalSystem") === true) {
-                url += '/displayDisposalSystem/true';
-            }
+            var url = '/poc/tree-data/format/json';
 
             YAHOO.util.Connect.asyncRequest(
                 'GET', 
@@ -224,30 +159,40 @@
                 {
                     success: function (response) {
                         var json = YAHOO.lang.JSON.parse(response.responseText);
-
-                        // Load the tree data into a tree view
-                        this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
-                        this._buildTreeNodes(json.treeData, this._treeView.getRoot());
-                        Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
-                            this._treeView,
-                            {
+                        if (json.treeData.length > 0) {
+                            // Set up callbacks for the tree drag-n-drop behavior
+                            var callbacks = {
                                 dragFinished: {
                                     fn: this.handleDragDrop,
                                     context: this
+                                },
+                                testDragTargetDelegate: {
+                                    fn: this.testDragTarget,
+                                    context: this
                                 }
-                            }
-                        );
+                            };
 
-                        // Expand the first two levels of the tree by default
-                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
-                        $.each(defaultExpandNodes, function (key, node) {node.expand();});
+                            // Load the tree data into a tree view
+                            this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
+                            this._buildTreeNodes(json.treeData, this._treeView.getRoot());
+                            Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                                this._treeView,
+                                callbacks,
+                                this
+                            );
 
-                        this._treeView.draw();
-                        this._buildContextMenu();
+                            // Expand the first two levels of the tree by default
+                            var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                            $.each(defaultExpandNodes, function (key, node) {node.expand();});
+
+                            this._treeView.draw();
+                        }
+
                         this._hideLoadingImage();
                     },
                     failure: function (response) {
-                        alert('Unable to load the organization tree: ' + response.statusText);
+                        var alertMessage = 'Unable to load the organization tree: ' + response.statusText;
+                        Fisma.Util.showAlertDialog(alertMessage);
                     },
                     scope: this
                 }, 
@@ -263,36 +208,84 @@
          *
          * @method OrganizationTreeView._buildTreeNodes
          * @param nodeList {Array} Nested array of organization/system data to load into the tree view
-         * @param nodeList {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
+         * @param parent {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
          */
         _buildTreeNodes: function (nodeList, parent) {
 
             for (var i in nodeList) {
                 var node = nodeList[i];
-                var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
-                                 + PHP_JS().htmlspecialchars(node.sysTypeLabel) + "</i>";
+                var yuiNode;
 
-                var yuiNode = new YAHOO.widget.HTMLNode(
-                    {
-                        html: nodeText,
-                        systemId: node.id
-                    }, 
-                    parent,
-                    false
-                );
-
-                // Set the label style
-                yuiNode.contentStyle = node.orgType;
-
-                if (node.sdlcPhase === 'disposal') {
-                    yuiNode.contentStyle += " disposal";
+                if (node.hasOwnProperty('id')) {
+                    yuiNode = this._buildOrgNode(node, parent);
+                } else {
+                    yuiNode = this._buildPocNode(node, parent);
                 }
 
                 // Recurse
-                if (node.children.length > 0) {
+                if (YAHOO.lang.isArray(node.children) && node.children.length > 0) {
                     this._buildTreeNodes(node.children, yuiNode);
                 }
             }
+        },
+
+        /**
+         * Create a node that represents an organization.
+         * 
+         * @param node {Object} Dictionary of node data
+         * @param parent {YAHOO.widget.Node} The tree node that is the parent to the node you want to create
+         * @return YAHOO.widget.Node
+         */
+        _buildOrgNode: function (node, parent) {
+            var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
+                             + PHP_JS().htmlspecialchars(node.orgTypeLabel) + "</i>";
+
+            var yuiNode = new YAHOO.widget.HTMLNode(
+                {
+                    html: nodeText,
+                    organizationId: node.id,
+                    type: node.orgType,
+                    systemId: node.systemId
+                }, 
+                parent,
+                false
+            );
+
+            // Set the label style
+            yuiNode.contentStyle = node.orgType;
+            
+            return yuiNode;
+        },
+
+        /**
+         * Create a node that represents a POC.
+         * 
+         * @param node {Object} Dictionary of node data
+         * @param parent {YAHOO.widget.Node} The tree node that is the parent to the node you want to create
+         * @return YAHOO.widget.Node
+         */        
+        _buildPocNode: function (node, parent) {
+            var nodeText = "<b>" 
+                         + node.p_nameFirst 
+                         + " " 
+                         + node.p_nameLast 
+                         + " (" 
+                         + node.p_username 
+                         + ")</b> - <i>Point of Contact</i>";
+
+            var yuiNode = new YAHOO.widget.HTMLNode(
+                {
+                    html: nodeText,
+                    pocId: node.p_id
+                }, 
+                parent,
+                false
+            );
+
+            // Set the label style
+            yuiNode.contentStyle = "poc";
+            
+            return yuiNode;
         },
 
         /**
@@ -326,14 +319,6 @@
          * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} The drag target relative to destNode
          */        
         handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
-            // Set up the GET query string for this operation
-            var query = '/system/move-node/format/json/src/' 
-                      + srcNode.data.systemId
-                      + '/dest/' 
-                      + destNode.data.systemId
-                      + '/dragLocation/' 
-                      + dragLocation;
-    
             // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
             // but it prevents the user from modifying the tree while an update is already pending.
             if (YAHOO.lang.isNull(this._savePanel)) {
@@ -355,7 +340,18 @@
 
             this._savePanel.setBody('<img src="/images/loading_bar.gif">');
             this._savePanel.show();
-    
+            
+            // Set up the GET query string for this operation
+            var destination = (YAHOO.lang.isValue(destNode.data.pocId))
+                            ? ('/destPoc/' + destNode.data.pocId)
+                            : ('/destOrg/' + destNode.data.organizationId);
+
+            var query = '/poc/move-node/src/' 
+                      + srcNode.data.pocId 
+                      + destination
+                      + '/dragLocation/' 
+                      + dragLocation;
+
             YAHOO.util.Connect.asyncRequest(
                 'GET', 
                 query, 
@@ -365,10 +361,6 @@
 
                         if (result.success) {
                             treeNodeDragBehavior.completeDragDrop(srcNode, destNode, dragLocation);
-                            
-                            // Moving elements in a YUI tree destroys their event listeners, so we have to re-add
-                            // the context menu listener
-                            this._buildContextMenu();
                             
                             this._savePanel.hide();
                         } else {
@@ -385,6 +377,31 @@
                 }, 
                 null
             );
+        },
+
+        /**
+         * Determines whether the source node is eligible to be drag-and-dropped onto the destination node.
+         *
+         * @param srcNode {YAHOO.widget.Node} The tree node that is being dragged
+         * @param destNode {YAHOO.widget.Node} The tree node that the source is being dropped onto
+         * @param dragLocation {Fisma.TreeNodeDragBehavior.DRAG_LOCATION}
+         * @return bool
+         */        
+        testDragTarget: function (srcNode, destNode, dragLocation) {
+
+            // Reject a drag/drop if the source is not a POC
+            if (!YAHOO.lang.isValue(srcNode.data.pocId)) {
+                return false;
+            }
+
+            // Reject a drag/drop onto a POC node (but accept above and below a POC node)
+            if (YAHOO.lang.isValue(destNode.data.pocId) 
+                && dragLocation === Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ONTO) {
+
+                return false;
+            }
+
+            return true;
         },
 
         /**
@@ -417,52 +434,8 @@
             alertDiv.appendChild(p2);
 
             this._savePanel.setBody(alertDiv);
-        },
-
-        /**
-         * Add the context menu behavior to the tree view
-         *
-         * @method OrganizationTreeView._buildContextMenu
-         */                
-        _buildContextMenu: function () {
-            var contextMenuItems = ["View"];
-
-            var treeNodeContextMenu = new YAHOO.widget.ContextMenu(
-                YAHOO.util.Dom.generateId(),
-                { 
-                    trigger: this._treeView.getEl(),
-                    itemdata: contextMenuItems,
-                    lazyload: true
-                }
-            );
-
-            treeNodeContextMenu.subscribe("click", this._contextMenuHandler, this, true);
-        },
-
-        /**
-         * A callback for context menu events
-         *
-         * @method OrganizationTreeView._contextMenuHandler
-         * @param event {String} The name of the event
-         * @param eventArgs {Array} An array of YAHOO.util.Event
-         */                
-        _contextMenuHandler: function (event, eventArgs) {
-            var targetElement = eventArgs[1].parent.contextEventTarget;
-            var targetNode = this._treeView.getNodeByElement(targetElement);
-        
-            // Create a request URL to view this object
-            var url;
-            var type = targetNode.data.type;
-
-            if (type == 'agency' || type == 'bureau' || type == 'organization') {
-                url = '/organization/view/id/' + targetNode.data.organizationId;
-            } else {
-                url = '/system/view/id/' + targetNode.data.systemId;                
-            }
-
-            window.location = url;
         }
     };
 
-    Fisma.SystemAggregationView = SAV;
+    Fisma.PocTreeView = PTV;
 })();

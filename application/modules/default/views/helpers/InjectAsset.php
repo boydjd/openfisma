@@ -59,6 +59,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Menu.js',
                                       '/javascripts/Fisma/Module.js',
                                       '/javascripts/Fisma/OrganizationTreeView.js',
+                                      '/javascripts/Fisma/PocTreeView.js',
                                       '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/Role.js',
                                       '/javascripts/Fisma/Search.js',

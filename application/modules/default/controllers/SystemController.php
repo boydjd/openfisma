@@ -26,25 +26,6 @@
  */
 class SystemController extends Fisma_Zend_Controller_Action_Object
 {
-
-    /**
-     * A type constant of drag operation of organization tree which defines the operation that move
-     * the specified organization node as previous of the target organization node among their siblings.
-     */
-    const DRAG_ABOVE = 0;
-
-    /**
-     * A type constant of drag operation of organization tree which defines the operation that move
-     * the specified organization node as child of the target organization node in organization tree.
-     */
-    const DRAG_ONTO = 1;
-
-    /**
-     * A type constant of drag operation of organization tree which defines the operation that move
-     * the specified organization node as next of the target node among their siblings.
-     */
-    const DRAG_BELOW = 2;
-
     /**
      * The main name of the model.
      *
@@ -858,12 +839,12 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $dragLocation = $this->getRequest()->getParam('dragLocation');
         try {
             switch ($dragLocation) {
-                case self::DRAG_ABOVE:
-                case self::DRAG_BELOW:
+                case Fisma_Yui_DragDrop::DRAG_ABOVE:
+                case Fisma_Yui_DragDrop::DRAG_BELOW:
                     $src->aggregateSystemId = $dest->aggregateSystemId;
                     $src->save();
                     break;
-                case self::DRAG_ONTO:
+                case Fisma_Yui_DragDrop::DRAG_ONTO:
                     $src->aggregateSystemId = $dest->id;
                     $src->save();
                     break;
