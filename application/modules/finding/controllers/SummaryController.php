@@ -527,7 +527,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             $summary->addSelect("COUNT(finding.id) total");
         }
 
-        $summary->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.icon) orgType")
+        $summary->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.icon) icon")
             ->addSelect('parent.lft as lft')
             ->addSelect('parent.rgt as rgt')
             ->addSelect('parent.id as id')
@@ -640,7 +640,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             $systemTypeSwitch .= "WHEN s.type = '$k' THEN '$v' ";
         }
         $systemTypeSwitch .= 'END';
-        $summary->addSelect("s.type orgType")
+        $summary->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.icon) icon")
             ->addSelect('s.id as id')
             ->addSelect('s.aggregateSystemId as aggregateSystemId')
             // CASE wrapped in CONCAT to not confuse doctrine
@@ -654,7 +654,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         $summary->leftJoin('o.System s')
             ->leftJoin('finding.CurrentEvaluation evaluation')
-            ->where('o.orgType = ? AND s.sdlcPhase <> ?', array('system', 'disposal'))
+            ->leftJoin('o.OrganizationType orgtype')
+            ->where('orgtype.nickname = ? AND s.sdlcPhase <> ?', array('system', 'disposal'))
             ->groupBy('o.nickname')
             ->orderBy('o.nickname')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
@@ -722,10 +723,12 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             ->leftJoin('o.Pocs p')
             ->leftJoin("p.Findings f WITH f.status <> 'PEND'" . $findingJoinStr, $findingJoinParams)
             ->leftJoin('f.CurrentEvaluation evaluation')
-            ->where('orgtype.nickname <> ? OR system.sdlcPhase <> ?', array('system', 'disposal'))
+            ->where('orgtype.nickname <> ?', array('system'))
+            ->andWhere('p.locked IS NULL OR p.locked = 0')
             ->groupBy('o.id, p.id')
             ->orderBy('o.lft, p.nameLast, p.nameFirst')
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
         if (!empty($organization)) {
             $summary->andWhereIn('o.id', $organization);
         }

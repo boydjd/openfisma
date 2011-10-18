@@ -206,7 +206,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
      */
     public function treeDataAction()
     {
-        $this->_acl->requirePrivilegeForClass('read', 'Organization');
+        $this->_acl->requirePrivilegeForClass('read', 'Poc');
         
         $this->view->treeData = $this->_getPocTree();
     }
@@ -241,7 +241,19 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         }
 
         // Get a tree of organizations
-        $organizations = Doctrine::getTable('Organization')->getTree()->fetchTree();
+        $orgBaseQuery = Doctrine_Query::create()
+                        ->from('Organization o')
+                        ->select('o.name, o.nickname, ot.nickname, s.type, s.sdlcPhase')
+                        ->leftJoin('o.OrganizationType ot')
+                        ->where('ot.nickname <> ?', 'system')
+                        ->orderBy('o.lft');
+
+        $orgTree = Doctrine::getTable('Organization')->getTree();
+        $orgTree->setBaseQuery($orgBaseQuery);
+        $organizations = $orgTree->fetchTree();
+        $orgTree->resetBaseQuery();
+
+        // Merge organizations and POCs and return.
         $organizationTree = $this->toHierarchy($organizations, $pocsByOrgId);
 
         return $organizationTree;
