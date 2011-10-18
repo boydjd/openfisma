@@ -26,7 +26,7 @@ require_once(realpath(dirname(__FILE__) . '/../Bootstrap.php'));
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  */
-abstract class Test_Case_Unit extends PHPUnit_Framework_TestCase
+abstract class Test_Case_Unit extends PHPUnit_Extensions_OutputTestCase
 {
     /**
      * The bootstrapper object for tests

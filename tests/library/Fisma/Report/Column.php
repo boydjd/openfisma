@@ -21,7 +21,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 /**
  * Test the generic report column class
  * 
- * @author     Mark E. Haase
+ * @author     Mark E. Haase, Duy K. Bui
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
@@ -38,12 +38,22 @@ class Test_Library_Fisma_Report_Column extends Test_Case_Unit
         
         $this->assertEquals('Name', $column1->getName());
         $this->assertFalse($column1->isSortable());
-        $this->assertNull($column1->getFormatter());
-        
-        $column2 = new Fisma_Report_Column('Stuff', true, 'FormatFunction');
+    	$this->assertNull($column1->getFormatter());
+    	$this->assertNull($column1->getFormatterParameters());
+    	$this->assertFalse($column1->isHidden());
+    	$this->assertEquals('string', $column1->getParser());
+
+	    $sampleFormatterParams = array(
+	        'sortByColumn' => 'id',
+	        'paginated' => false
+        );
+        $column2 = new Fisma_Report_Column('Stuff', true, 'FormatFunction', $sampleFormatterParams, true, 'xml');
         
         $this->assertEquals('Stuff', $column2->getName());
         $this->assertTrue($column2->isSortable());
-        $this->assertEquals('FormatFunction', $column2->getFormatter());
+    	$this->assertEquals('FormatFunction', $column2->getFormatter());
+	    $this->assertEquals($sampleFormatterParams, $column2->getFormatterParameters());
+    	$this->assertTrue($column2->isHidden());
+	    $this->assertEquals('xml', $column2->getParser());
     }
 }
