@@ -326,13 +326,10 @@ Fisma_Format_Section::startSection($interconnectionTooltip, 'interconnections');
 Fisma_Format_Section::stopSection();
 
 Fisma_Format_Section::startSection('System Architecture'); ?>
+<?php echo $this->escape($this->artifactUploadButton, 'none');?>
 <div name="architecture" id="system_architecture" type="textarea" rows="3" cols="120">
     <?php if ($this->architectureDiagramId): ?>
         <img src='/system-document/download/id/<?php echo $this->escape($this->architectureDiagramId) ?>'>
-    <?php else: ?>
-        <p>Upload an Architecture Diagram under the Documentation tab</p>
     <?php endif; ?>
-    
-    
 </div>
 <?php Fisma_Format_Section::stopSection();
