@@ -126,6 +126,29 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->organization = $organization;
         $this->view->system = $this->view->organization->System;
 
+        $query = Doctrine_Query::create()
+            ->from('SystemDocument sd, sd.DocumentType dt')
+            ->select('sd.filename')
+            ->where('sd.systemid = ?', $id)
+            ->andWhere('dt.name = "Architecture Diagram"')
+            ->fetchOne();
+
+        $architectureDiagramId = $query['id'];
+
+        if ($architectureDiagramId) {
+            $architectureDiagramFile = Fisma::getPath('systemDocument') . '/'
+                . $organization->id . '/' . $query['fileName'];
+
+            $imageValidator = new Zend_Validate_File_IsImage();
+
+            if ($imageValidator->isValid($architectureDiagramFile)) {
+                $this->view->architectureDiagramId = $query['id'];
+            } else {
+                $logger = $this->getInvokeArg('bootstrap')->getResource('Log');
+                $logger->log("$architectureDiagramFile is not a valid image", Zend_Log::WARN);
+            }
+        }
+
         $this->render();
     }
 

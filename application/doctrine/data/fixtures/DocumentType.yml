@@ -1,4 +1,6 @@
 DocumentType:
+    arc:
+        name: Architecture Diagram
     ato:
         name: Authority To Operate
     bia: 
