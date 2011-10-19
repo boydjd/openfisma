@@ -13,29 +13,6 @@ div.dashboardRed{border-color:#daaeb5;background-color:pink;}
 div.dashboardChart{margin:2em 0;text-align:center;font-weight:bold;}
 div#findingSecurityControlSearch{display:none;background-color:white;border:1px solid #d3d3d3;padding:10px;margin-top:10px;}
 .pocNotMatched{border:1px solid #ff982f;background-color:#f5d3c5;margin-top:5px;margin-right:10px;padding:8px;}
-table.treeTable{width:100%;}
-table.treeTable th{padding:5px;background-color:#fafafa;border:1px solid #bbb;font-weight:bold;text-align:center;}
-table.treeTable td{padding:5px;background-color:#fafafa;border:1px solid #bbb;}
-table.treeTable td a{color:black;}
-table.treeTable td:first-child a{text-decoration:none;}
-table.treeTable div.link{padding:1px;}
-table.treeTable div.link:hover{padding:0;border:1px solid #ccc;background-color:#f0f0f0;}
-table.treeTable td img.control{margin:6px 6px 6px 2px;position:relative;float:left;}
-table.treeTable td img.icon{float:left;margin-right:6px;}
-table.treeTable td img#control{padding:5px;border:1px solid grey;}
-table.treeTable td.noDueDate{text-align:center;}
-table.treeTable td.onTime{background-color:#a6eba9;text-align:center;}
-table.treeTable td.overdue{background-color:#ffcbcf;text-align:center;font-weight:bold;font-style:italic;}
-.treeTable0{margin-left:0;}
-.treeTable1{margin-left:1em;}
-.treeTable2{margin-left:2em;}
-.treeTable3{margin-left:3em;}
-.treeTable4{margin-left:4em;}
-.treeTable5{margin-left:5em;}
-.treeTable6{margin-left:6em;}
-.treeTable7{margin-left:7em;}
-.treeTable8{margin-left:8em;}
-.treeTable9{margin-left:9em;}
 span#irReportForwardsContainer{position:relative;left:245px;}
 span#irReportSaveContainer{position:relative;left:260px;}
 span#irReportBackwardsContainer{position:relative;left:-110px;}
@@ -86,6 +63,32 @@ div.showDisposalSystem input{vertical-align:middle;margin:0 5px 3px 0;}
 .draggableTreeContainer .minor{padding-left:20px;background:url(/images/minor-small.png) no-repeat;}
 .draggableTreeContainer .poc{padding-left:20px;background:url(/images/poc-small.png) no-repeat;}
 .draggableTreeContainer .disposal{padding-left:20px;background-color:pink;}
+table.treeTable{width:100%;}
+table.treeTable th{padding:5px;background-color:#fafafa;border:1px solid #bbb;font-weight:bold;text-align:center;}
+table.treeTable td{padding:5px;background-color:#fafafa;border:1px solid #bbb;}
+table.treeTable td span{color:black;}
+table.treeTable td:first-child span{text-decoration:none;}
+table.treeTable div.link{padding:1px;}
+table.treeTable div.link:hover{padding:0;border:1px solid #ccc;background-color:#f0f0f0;}
+table.treeTable td img.control{margin:6px 6px 6px 2px;position:relative;float:left;}
+table.treeTable td img.icon{float:left;margin-right:6px;}
+table.treeTable td img#control{padding:5px;border:1px solid grey;}
+table.treeTable td.noDueDate{text-align:center;}
+table.treeTable td.ontime{background-color:#a6eba9;text-align:center;}
+table.treeTable td.overdue{background-color:#ffcbcf;text-align:center;font-weight:bold;font-style:italic;}
+.treeTable0{margin-left:0;}
+.treeTable1{margin-left:1em;}
+.treeTable2{margin-left:2em;}
+.treeTable3{margin-left:3em;}
+.treeTable4{margin-left:4em;}
+.treeTable5{margin-left:5em;}
+.treeTable6{margin-left:6em;}
+.treeTable7{margin-left:7em;}
+.treeTable8{margin-left:8em;}
+.treeTable9{margin-left:9em;}
+div.treeTableButton{float:left;}
+div.treeTableFilter{padding:5px;float:right;margin-left:10px;border:1px inset #fafafa;background-color:#ebebeb;}
+div.treeTableFilter span{font-weight:bold;padding-right:10px;}
 span.userInfo{padding-left:17px;padding-right:1px;border-bottom:1px dashed black;background:url(/images/user-info.png) no-repeat 0 1px;}
 span.userInfo:hover{cursor:pointer;}
 span.userInfo:active{color:#416ed7;}

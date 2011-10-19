@@ -37,12 +37,6 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                       ->addActionContext('data', 'json')
                       ->initContext();
 
-        if (in_array($this->getRequest()->getParam('format'), array('pdf', 'xls'))) {
-            $this->_helper->reportContextSwitch()
-                          ->addActionContext('data', array('pdf', 'xls'))
-                          ->initContext();
-        }
-
         parent::init();
     }
 
@@ -55,68 +49,44 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
     public function indexAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'Finding');
-                
-        $mitigationEvaluationQuery = Doctrine_Query::create()
-                                     ->from('Evaluation e')
-                                     ->where('approvalGroup = \'action\'')
-                                     ->orderBy('e.precedence');
 
-        $mitigationEvaluations = $mitigationEvaluationQuery->execute();
-        
-        $evidenceEvaluationQuery = Doctrine_Query::create()
-                                     ->from('Evaluation e')
-                                     ->where('approvalGroup = \'evidence\'')
-                                     ->orderBy('e.precedence');
-        $evidenceEvaluations = $evidenceEvaluationQuery->execute();
-        
-        // Create a list of the columns displayed on the summary
-        $columns = array('NEW', 'DRAFT');
-
-        foreach ($mitigationEvaluations as $evaluation) {
-            $columns[] = $evaluation->nickname;
-        }
-        
-        $columns[] = 'EN';
-
-        foreach ($evidenceEvaluations as $evaluation) {
-            $columns[] = $evaluation->nickname;
-        }
-        
-        $columns[] = 'CLOSED';
-        $columns[] = 'TOTAL';
-
-        $storage = Doctrine::getTable('Storage')
-            ->getUserIdAndNamespaceQuery($this->_me->id, 'FindingSummary')
-            ->fetchOne();
-        $this->view->summaryType = 'OHV';
-        $this->view->source = null;
-        $this->view->type = null;
-        if (!empty($storage)) {
-            $this->view->summaryType = $storage->data['view'];
-            $this->view->source = $storage->data['source'];
-            $this->view->type = $storage->data['type'];
-        }
-
-        $this->view->selectAttributes = array('onchange' => 'menuHandler(this);', 'disabled' => 'true');
-        $this->view->summaryTypes = array(
-            'OHV' => 'Organization Hierarchy View',
-            'SAV' => 'System Aggregation View',
-            'POCV' => 'Point of Contact View'
-        );
+        // Create a list of mitigation types
         $this->view->mitigationTypes = array(
-            'ALL' => 'All Types',
-            'CAP' => 'CAP - Corrective Action Plan',
-            'AR' => 'AR - Accepted Risk',
-            'FP' => 'FP - False Positive'
+            'none' => '',
+            'AR' => 'Acceptance Of Risk',
+            'CAP' => 'Corrective Action Plan',
+            'FP' => 'False Positive'
         );
-        $this->view->findingSources = array('ALL_SOURCES' => 'All Sources');
-        foreach (Doctrine::getTable('Source')->findAll() as $source) {
-            $this->view->findingSources[$source->nickname] = $source->nickname . ' - ' . $source->name;
+        
+        // Get a list of approvals and split them into lists of mitigation and evidence approvals
+        $msApprovals = array();
+        $evApprovals = array();
+        $approvals = Doctrine::getTable('Evaluation')->findAll(Doctrine::HYDRATE_ARRAY);
+        
+        foreach ($approvals as $approval) {
+            if ('action' == $approval['approvalGroup']) {
+                $msApprovals[] = $approval['nickname'];
+            } else {
+                $evApprovals[] = $approval['nickname'];
+            }
         }
+        
+        $this->view->msApprovals = $msApprovals;
+        $this->view->evApprovals = $evApprovals;
 
-        $this->view->statusArray = $columns;
-        $this->view->mitigationEvaluations = $mitigationEvaluations;
-        $this->view->evidenceEvaluations = $evidenceEvaluations;
+        // Create tooltip texts
+        $tooltips = array();
+        $tooltips['viewBy'] = $this->view->partial("/summary/view-by-tooltip.phtml");
+        $tooltips['ms'] = $this->view->partial("/summary/ms-approvals-tooltip.phtml", array('approvals' => $approvals));
+        $tooltips['ev'] = $this->view->partial("/summary/ev-approvals-tooltip.phtml", array('approvals' => $approvals));
+
+        array_walk($tooltips, function (&$value) {$value = str_replace("\n", " ", $value);});
+
+        $this->view->tooltips = $tooltips;
+
+        // Create a list of finding sources with a default option
+        $findingSources = Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'nickname');
+        $this->view->findingSources = array('none' => '') + $findingSources;
     }
 
     /**
@@ -128,708 +98,442 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
     {
         $this->_acl->requirePrivilegeForClass('read', 'Finding');
 
-        $view = $this->getRequest()->getParam('view', 'OHV');
-
-        $type = $this->getRequest()->getParam('type');
-        $source = $this->getRequest()->getParam('sourceNickname');        
-        $format = $this->_request->getParam('format');
-
-        // persist most recent view settings
-        $storage = Doctrine::getTable('Storage')
-            ->getUserIdAndNamespaceQuery($this->_me->id, 'FindingSummary')
-            ->fetchOne();
-        if (empty($storage)) {
-            $storage = new Storage();
-            $storage->userId = $this->_me->id;
-            $storage->namespace = 'FindingSummary';
-        }
-        $storage->data = array(
-            'view' => $view,
-            'type' => $type,
-            'source' => $source
+        $summaryType = $this->getRequest()->getParam('summaryType');
+        
+        $findingParams = array(
+            'findingSource' => null,
+            'mitigationType' => null
         );
-        $storage->save();
-
-        // Get user organizations
-        $organizationsQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read');
-        $organizationsQuery->select('o.id');
-        $organizationsQuery->setHydrationMode(Doctrine::HYDRATE_NONE);
-        $organizations = $organizationsQuery->execute();
-
-        foreach ($organizations as $k => $v) {
-            $organizations[] = $v[0];
-            unset($organizations[$k]);
-        }
-
-        // Get finding summary counts
-        switch ($view) {
-            case 'POCV':
-                $organizations = $this->_summaryDataPocv($type, $source, $organizations);
-                break;
-            case 'OHV':
-                $organizations = $this->_summaryDataOhv($type, $source, $organizations);
-                break;
-            case 'SAV':
-                $organizations = $this->_summaryDataSav($type, $source, $organizations);
-                break;
-            default:
-                throw new Exception ('Unknown summary view requested.');
-        }
-
-        // For excel and PDF requests, return a table format. For JSON requests, return a hierarchical
-        // format
-        if ('pdf' == $format || 'xls' == $format) {
-            $report = new Fisma_Report();
-            $report->setTitle('Finding Summary')
-                   ->addColumn(new Fisma_Report_Column('Organization/Information System'));
+        
+        foreach ($findingParams as $key => &$value) {
+            $temp = $this->getRequest()->getParam($key);
             
-            $allStatuses = Finding::getAllStatuses();
-            foreach ($allStatuses as $status) {
-                $report->addColumn(new Fisma_Report_Column($status));
-            }
-
-            $report->addColumn(new Fisma_Report_Column('TOTAL'));
-
-            // Create a table of data based on the rows which need to be displayed
-            $tableData = array();
-            $expandedRows = $this->getRequest()->getParam('e');
-            if (!is_array($expandedRows)) {
-                $expandedRows = array($expandedRows);
-            }
-            $collapsedRows = $this->getRequest()->getParam('c');
-            if (!is_array($collapsedRows)) {
-                $collapsedRows = array($collapsedRows);
-            }
-
-            foreach ($organizations as $organization) {
-                /** @todo pad left string */
-                $indentAmount = $organization['level'] * 3;
-                $orgName = str_pad(
-                    $organization['label'], $indentAmount + strlen($organization['label']), ' ', STR_PAD_LEFT
-                );
-
-                // Decide whether to show rolled up counts or single row counts
-                if (in_array($organization['id'], $collapsedRows)) {
-                    // Show rolled up row counts
-                    $ontimeRow = array_merge(array($orgName), array_values($organization['all_ontime']));
-                    $tableData[] = $ontimeRow;
-
-                    // If there are overdues, then create another row for overdues
-                    if (array_sum($organization['all_overdue']) > 0) {
-                        $overdueRow = array_merge(
-                            array("$orgName (Overdue Items)"), 
-                            array_values($organization['all_overdue'])
-                        );
-
-                        // Add 2 blank columns at the end of the overdue row (for CLOSED and TOTAL)
-                        $overdueRow[] = 'n/a';
-                        $overdueRow[] = 'n/a';
-
-                        $tableData[] = $overdueRow;
-                    }
-                } elseif (in_array($organization['id'], $expandedRows)) {
-                    // Show single row counts
-                    $ontimeRow = array_merge(array($orgName), array_values($organization['single_ontime']));
-                    $tableData[] = $ontimeRow;
-
-                    // If there are overdues, then create another row for overdues
-                    if (array_sum($organization['single_overdue']) > 0) {
-                        $overdueRow = array_merge(
-                            array("$orgName (Overdue Items)"), 
-                            array_values($organization['single_overdue'])
-                        );
-                        
-                        // Add 2 blank columns at the end of the overdue row (for CLOSED and TOTAL)
-                        $overdueRow[] = 'n/a';
-                        $overdueRow[] = 'n/a';
-
-                        $tableData[] = $overdueRow;
-                    }                    
-                }
-            }
-
-            $report->setData($tableData);
-
-            $this->_helper->reportContextSwitch()->setReport($report);
-        } else {
-            $this->view->summaryData = $this->_assembleTree($organizations);
-        } 
-    }
-
-    /**
-     * Build tree from flat list
-     *
-     * @param array $organizations
-     * @return array
-     */
-    protected function _assembleTree(array $organizations)
-    {
-        $temp = array(array());
-        foreach ($organizations as $n => $a) {
-            $d = $a['level']+1;
-            $temp[$d-1]['children'][] = &$organizations[$n];
-            $temp[$d] = &$organizations[$n];
-        }
-        return $temp[0]['children'];
-    }
-
-    /**
-     * Point of Contact View
-     *
-     * @param string $type Type of findings
-     * @param int $source Finding source id
-     * @param array $organizations Array of organizations
-     * @return array
-     */
-    protected function _summaryDataPocv($type, $source, $organizations)
-    {
-        $organizations = $this->_getPocvCounts($organizations, $type, $source);
-
-        // seperate POCs from organizations
-        $lastOrgId = null;
-        $newOrgArray = array();
-        foreach ($organizations as $org) {
-            if ($org['o_id'] !== $lastOrgId) {
-                $lastOrgId = $org['o_id'];
-                $newOrgArray[] = array(
-                    'label' => $org['o_label'],
-                    'nickname' => $org['o_nickname'],
-                    'id' => $org['o_id'],
-                    'orgType' => $org['orgtype_orgType'],
-                    'orgTypeLabel' => $org['orgtype_orgTypeLabel'],
-                    'level' => $org['o_level'],
-                    'icon' => $org['orgtype_icon']
-                );
-            }
-            if (!empty($org['p_pocId'])) {
-                $pocArray = array(
-                    'label' => $org['p_nameLast'] . ', ' . $org['p_nameFirst'],
-                    'nickname' => $org['p_username'],
-                    'id' => 'p' . $org['p_pocId'],
-                    'orgType' => 'poc',
-                    'orgTypeLabel' => 'Point of Contact',
-                    'icon' => 'poc',
-                    'level' => $org['o_level'] + 1
-                );
-                foreach ($org as $key => $value) {
-                    if (substr($key, 0, 2) === 'f_' || substr($key, 0, 11) === 'evaluation_') {
-                        $pocArray[$key] = $value;
-                    }
-                }
-                $newOrgArray[] = $pocArray;
+            if ($temp !== 'none') {
+                $value = Doctrine_Manager::connection()->quote($temp);
             }
         }
+        
+        switch ($summaryType) {
+            case 'organizationHierarchy':
+                $treeNodes = $this->_getOrganizationHierarchyData($findingParams);
+                break;
 
-        $organizations = $this->_prepareSummaryData($newOrgArray);
+            case 'systemAggregation':
+                $treeNodes = $this->_getSystemAggregationData($findingParams);
+                break;
 
-        $orgTree = $this->_assembleTree($organizations);
-        foreach ($orgTree as &$tree) {
-            $this->_trickleValues($tree);
+            case 'pointOfContact':
+                $treeNodes = $this->_getPointOfContactData($findingParams);
+                break;
+                
+            default:
+                throw new Fisma_Zend_Exception("Invalid summary type ($summaryType)");
         }
-        $flatOrgTree = array();
-        foreach ($orgTree as $node) {
-            $flatOrgTree = array_merge($flatOrgTree, $this->_flattenTree($node));
-        }
-        return $flatOrgTree;
-    }
 
-    /**
-     * Trickle values up the tree
-     *
-     * @param array &$treeNode
-     * @return void
-     */
-    protected function _trickleValues(array &$treeNode)
-    {
-        $treeNode['all_ontime'] = $treeNode['single_ontime'];
-        $treeNode['all_overdue'] = $treeNode['single_overdue'];
+        // Convert "numbers" to actual numbers
+        array_walk_recursive($treeNodes, function (&$scalar) {if (is_numeric($scalar)) $scalar = (int)$scalar;});
 
-        foreach ($treeNode['children'] as &$childNode) {
-            $this->_trickleValues($childNode);
-            foreach ($treeNode['all_ontime'] as $status => &$value) {
-                $value += $childNode['all_ontime'][$status];
-            }
-            foreach ($treeNode['all_overdue'] as $status => &$value) {
-                $value += $childNode['all_overdue'][$status];
-            }
-        }
-    }
-
-    private static function _flattenTree($node)
-    {
-        $children = $node['children'];
-        $node['children'] = array();
-        $result = array($node);
-        foreach ($children as $child) {
-            $subtree = self::_flattenTree($child);
-
-            $result = array_merge($result, $subtree);
-        }
-        return $result;
-    }
-
-    /**
-     * Organization Hiararchy View
-     *
-     * @param string $type Type of findings
-     * @param int $source Finding source id
-     * @param array $organizations Array of organizations
-     * @return array
-     */
-    protected function _summaryDataOhv($type, $source, $organizations)
-    {
-        $organizations = $this->_getSummaryCounts($organizations, $type, $source);
-        $organizations = $this->_prepareSummaryData($organizations);
-
-        return $organizations;
-    }
-
-    /**
-     * System Aggregation View
-     *
-     * @param string $type Type of findings
-     * @param int $source Finding source id
-     * @param array $organizations Array of organizations
-     * @return array
-     */
-    protected function _summaryDataSav($type, $source, $organizations)
-    {
-        $organizations = $this->_getSavCounts($organizations, $type, $source);
-        $organizations = $this->_prepareSummaryData($organizations);
-
-        /*
-         * Since this data doesn't have left, right and level values, we need to compute level and reorder
-         * into tree order, instead of simply alphabetical order.
-         * First we need to make the organization array an id => org map.
+        /* 
+         * Remove the prefixed column alias that HYDRATE_SCALAR adds, and group all key-value pairs under 
+         * a new key called "nodeData".
          */
-        $orgMap = array();
-        $orgTree = array();
-        foreach ($organizations as &$org) {
-            $orgMap[$org['id']] = &$org;
-        }
-        // now build the tree:
-        foreach ($organizations as &$org) {
-            if (empty($org['aggregateSystemId'])) {
-                $orgTree[] = &$org;
-            } else {
-                $orgMap[$org['aggregateSystemId']]['children'][] = &$org;
-            }
-        }
-        // create a new flat organization list in tree order
-        $organizations = array();
-        foreach ($orgTree as $node) {
-            $organizations = array_merge($organizations, self::_flattenSystemTreeNode($node));
-        }
-
-        return $organizations;
-    }
-
-    /*
-     * Takes a system tree node and flattens it into an array including all children.
-     * Additionally it sums up the counts for the node's subtree.
-     *
-     * @param array $node The node to process
-     * @param int $depth The depth of this iteration (for recursion)
-     * @return array An array of nodes in the subtree
-     */
-    private static function _flattenSystemTreeNode($node, $depth = 0)
-    {
-        $children = $node['children'];
-        $node['level'] = $depth;
-        $node['children'] = array();
-        $result = array();
-        foreach ($children as $child) {
-            $subtree = self::_flattenSystemTreeNode($child, $depth + 1);
-            foreach (array('all_ontime', 'all_overdue') as $row) {
-                foreach ($subtree[0][$row] as $field => $value) {
-                    $node[$row][$field] += $value;
+        foreach ($treeNodes as &$treeNode) {
+            foreach ($treeNode as $k => $v) {
+                $underscoreString = strstr($k, '_');
+                if ($underscoreString !== FALSE) {
+                    $newName = substr($underscoreString, 1);
+                    $treeNode['nodeData'][$newName] = $v;                        
+                    unset($treeNode[$k]);                    
                 }
             }
 
-            $result = array_merge($result, $subtree);
+            $treeNode['children'] = array();
         }
-        return array_merge(array($node), $result);
+
+        // Create hierarchical structure from flat array
+        $temp = array(array());
+        foreach ($treeNodes as $n => $a) {
+            $d = $a['nodeData']['level'] + 1;
+            $temp[$d-1]['children'][] = &$treeNodes[$n];
+            $temp[$d] = &$treeNodes[$n];
+        }
+
+        $this->view->rootNodes = $temp[0]['children'];
     }
 
     /**
-     * Returns summary counts for organizations
-     *
-     * @param array $organization Array of organizations to get counts for
-     * @param string $type Type of findings to get counts for
-     * @param int $source Finding source ids to get counts for
-     * @return array
-     */
-    private function _getSummaryCounts($organization, $type, $sourceNickname)
-    {
-        // Doctrine won't let me paramaterize within a somewhat complex statement, so we'll just protect against
-        // injection by using sprintf.
-        if (!empty($sourceNickname)) {
-            $source = Doctrine::getTable('Source')->findOneByNickname($sourceNickname);
-            $sourceId = $source->id;            
-        }
-
-        $sourceCondition = isset($source) ? "AND finding.sourceId = $sourceId" : "";
-
-        $allStatuses = Finding::getAllStatuses();
-
-        $summary = Doctrine_Query::create()
-            ->select("CONCAT_WS(' - ', parent.nickname, parent.name) label")
-            ->addSelect('parent.nickname nickname');
-
-        foreach ($allStatuses as $status) {
-            $s = $status;
-            $status = urlencode($status);
-            // These statuses are constant, and should never change
-            if (array_search($status, array('PEND', 'NEW', 'DRAFT', 'EN', 'CLOSED'))) {
-                $summary->addSelect(
-                    "SUM(IF(finding.status = '$s' AND finding.responsibleorganizationid = parent.id"
-                    . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntime$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(finding.status = '$s' AND finding.responsibleorganizationid = parent.id"
-                    . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdue$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(finding.status = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0,"
-                    . "0, 1), 0)) ontime$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(finding.status = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0,"
-                    . "1, 0), 0)) overdue$status"
-                );
-            } else { // These are statuses relating to workflow when finding status is EA or MSA, which are dynamic
-                $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$s' AND finding.responsibleorganizationid = parent.id"
-                    . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntime$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$s' AND finding.responsibleorganizationid = parent.id"
-                    . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdue$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate)"
-                    . "> 0, 0, 1), 0)) ontime$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate)"
-                    . "> 0, 1, 0), 0)) overdue$status"
-                );
-            }
-        }
-        $summary->addSelect(
-            "SUM(IF(finding.responsibleorganizationid = parent.id $sourceCondition, 1, 0)) singleTotal"
-        );
-        $summary->addSelect("SUM(IF(finding.status = 'CLOSED' $sourceCondition, 1, 0)) closed");
-
-        if (isset($source)) {
-            $summary->addSelect("SUM(IF(finding.sourceId = $sourceId, 1, 0)) total");
-        } else {
-            $summary->addSelect("COUNT(finding.id) total");
-        }
-
-        $summary->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.icon) icon")
-            ->addSelect('parent.lft as lft')
-            ->addSelect('parent.rgt as rgt')
-            ->addSelect('parent.id as id')
-            ->addSelect(
-                "IF(orgtype.nickname <> 'system', orgtype.name,"
-                . "CASE WHEN system.type = 'gss' then 'General Support System' WHEN "
-                . "system.type = 'major' THEN 'Major Application' WHEN system.type = 'minor' THEN "
-                . "'Minor Application' END) orgTypeLabel"
-            )
-            ->addSelect('parent.level level')
-            ->from('Organization node');
-
-        if (!empty($type))
-            $summary->leftJoin("node.Findings finding WITH finding.status <> 'PEND' AND finding.type = ?", $type);
-        else
-            $summary->leftJoin("node.Findings finding WITH finding.status <> 'PEND'");
-
-        $summary->leftJoin('node.System nodeSystem')
-            ->leftJoin('finding.CurrentEvaluation evaluation')
-            ->leftJoin('Organization parent')
-            ->leftJoin('parent.System system')
-            ->leftJoin('parent.OrganizationType orgtype')
-            ->where('node.lft BETWEEN parent.lft and parent.rgt')
-            ->andWhere('orgtype.nickname <> ? OR nodeSystem.sdlcPhase <> ?', array('system', 'disposal'))
-            ->groupBy('parent.nickname')
-            ->orderBy('parent.lft')
-            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-
-        if (!empty($organization))
-            $summary->andWhereIn('node.id', $organization);
-        return $summary->execute();
-    }
-
-    /**
-     * Returns summary counts for organizations
-     *
-     * @param array $organization Array of organizations to get counts for
-     * @param string $type Type of findings to get counts for
-     * @param int $source Finding source ids to get counts for
-     * @return array
-     */
-    private function _getSavCounts($organization, $type, $sourceNickname)
-    {
-        if (!empty($sourceNickname)) {
-            $source = Doctrine::getTable('Source')->findOneByNickname($sourceNickname);
-            $sourceId = $source->id;            
-        }
-
-        $sourceCondition = isset($source) ? "AND finding.sourceId = $sourceId" : "";
-
-        $allStatuses = Finding::getAllStatuses();
-
-        $summary = Doctrine_Query::create()
-            ->select("CONCAT_WS(' - ', o.nickname, o.name) label")
-            ->addSelect('o.nickname nickname');
-
-        foreach ($allStatuses as $status) {
-            $s = $status;
-            $status = urlencode($status);
-            // These statuses are constant, and should never change
-            if (array_search($status, array('PEND', 'NEW', 'DRAFT', 'EN', 'CLOSED'))) {
-                $summary->addSelect(
-                    "SUM(IF(finding.status = '$s' AND finding.responsibleorganizationid = o.id"
-                    . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntime$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(finding.status = '$s' AND finding.responsibleorganizationid = o.id"
-                    . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdue$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(finding.status = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0,"
-                    . "0, 1), 0)) ontime$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(finding.status = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0,"
-                    . "1, 0), 0)) overdue$status"
-                );
-            } else { // These are statuses relating to workflow when finding status is EA or MSA, which are dynamic
-                $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$s' AND finding.responsibleorganizationid = o.id"
-                    . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 0, 1), 0)) singleOntime$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$s' AND finding.responsibleorganizationid = o.id"
-                    . " $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate) > 0, 1, 0), 0)) singleOverdue$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate)"
-                    . "> 0, 0, 1), 0)) ontime$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$s' $sourceCondition, IF(DATEDIFF(NOW(), finding.nextduedate)"
-                    . "> 0, 1, 0), 0)) overdue$status"
-                );
-            }
-        }
-        $summary->addSelect(
-            "SUM(IF(finding.responsibleorganizationid = o.id $sourceCondition, 1, 0)) singleTotal"
-        );
-        $summary->addSelect("SUM(IF(finding.status = 'CLOSED' $sourceCondition, 1, 0)) closed");
-
-        if (isset($source)) {
-            $summary->addSelect("SUM(IF(finding.sourceId = $sourceId, 1, 0)) total");
-        } else {
-            $summary->addSelect("COUNT(finding.id) total");
-        }
-
-        $systemTypeSwitch = 'CASE ';
-        foreach (System::getAllTypeLabels() as $k => $v) {
-            $systemTypeSwitch .= "WHEN s.type = '$k' THEN '$v' ";
-        }
-        $systemTypeSwitch .= 'END';
-        $summary->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.icon) icon")
-            ->addSelect('s.id as id')
-            ->addSelect('s.aggregateSystemId as aggregateSystemId')
-            // CASE wrapped in CONCAT to not confuse doctrine
-            ->addSelect("CONCAT('', $systemTypeSwitch) orgTypeLabel")
-            ->from('Organization o');
-
-        if (!empty($type))
-            $summary->leftJoin("o.Findings finding WITH finding.status <> 'PEND' AND finding.type = ?", $type);
-        else
-            $summary->leftJoin("o.Findings finding WITH finding.status <> 'PEND'");
-
-        $summary->leftJoin('o.System s')
-            ->leftJoin('finding.CurrentEvaluation evaluation')
-            ->leftJoin('o.OrganizationType orgtype')
-            ->where('orgtype.nickname = ? AND s.sdlcPhase <> ?', array('system', 'disposal'))
-            ->groupBy('o.nickname')
-            ->orderBy('o.nickname')
-            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-
-        if (!empty($organization))
-            $summary->andWhereIn('o.id', $organization);
-        return $summary->execute();
-    }
-
-    /**
-     * Returns summary counts of POCs
-     *
-     * @param array $organization Array of organizations to get counts for
-     * @param string $type Type of findings to get counts for
-     * @param int $source Finding source ids to get counts for
-     * @return array
-     */
-    private function _getPocvCounts($organization, $type, $sourceNickname)
-    {
-        // Doctrine won't let me paramaterize within a somewhat complex statement, so we'll just protect against
-        // injection by using sprintf.
-        if (!empty($sourceNickname)) {
-            $source = Doctrine::getTable('Source')->findOneByNickname($sourceNickname);
-            $sourceId = $source->id;            
-        }
-
-        $sourceCondition = isset($source) ? "AND f.sourceId = $sourceId" : "";
-
-        $allStatuses = Finding::getAllStatuses();
-
-        $findingJoinParams = array();
-        $findingJoinStr = '';
-        if (!empty($organization)) {
-            $findingJoinStr .= ' AND f.responsibleOrganizationId IN ('
-                . implode(',', array_fill(0, count($organization), '?')) . ')';
-            $findingJoinParams = $organization;
-        }
-        if (!empty($type)) {
-            $findingJoinStr .= ' AND f.type = ?';
-            $findingJoinParams[] = $type;
-        }
-
-        $summary = Doctrine_Query::create()
-            ->select('o.id')
-            ->addSelect("CONCAT_WS(' - ', o.nickname, o.name) label")
-            ->addSelect('o.nickname nickname')
-            ->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.nickname) orgType")
-            ->addSelect('o.lft as lft')
-            ->addSelect('o.rgt as rgt')
-            ->addSelect(
-                "IF(orgtype.nickname <> 'system', orgtype.nickname, "
-                . "CASE WHEN system.type = 'gss' then 'General Support System' WHEN "
-                . "system.type = 'major' THEN 'Major Application' WHEN system.type = 'minor' THEN "
-                . "'Minor Application' END) orgTypeLabel"
-            )
-            ->addSelect("IF(orgtype.nickname = 'system', system.type, orgtype.icon) icon")
-            ->addSelect('o.level level')
-            ->addSelect('p.id pocId')
-            ->addSelect('p.username')
-            ->addSelect('p.nameFirst')
-            ->addSelect('p.nameLast')
-            ->from('Organization o')
-            ->leftJoin('o.System system')
-            ->leftJoin('o.OrganizationType orgtype')
-            ->leftJoin('o.Pocs p')
-            ->leftJoin("p.Findings f WITH f.status <> 'PEND'" . $findingJoinStr, $findingJoinParams)
-            ->leftJoin('f.CurrentEvaluation evaluation')
-            ->where('orgtype.nickname <> ?', array('system'))
-            ->andWhere('p.locked IS NULL OR p.locked = 0')
-            ->groupBy('o.id, p.id')
-            ->orderBy('o.lft, p.nameLast, p.nameFirst')
-            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-
-        if (!empty($organization)) {
-            $summary->andWhereIn('o.id', $organization);
-        }
-
-        $ontimeExp = 'IF(DATEDIFF(NOW(), f.nextduedate) > 0, 0, 1)';
-        $overdueExp = 'IF(DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)';
-        foreach ($allStatuses as $status) {
-            $s = $status;
-            $status = urlencode($status);
-            // These statuses are constant, and should never change
-            if (array_search($status, array('PEND', 'NEW', 'DRAFT', 'EN', 'CLOSED'))) {
-                $summary->addSelect(
-                    "SUM(IF(f.status = '$s' $sourceCondition, $ontimeExp, 0)) singleOntime$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(f.status = '$s' $sourceCondition, $overdueExp, 0)) singleOverdue$status"
-                );
-            } else { // These are statuses relating to workflow when finding status is EA or MSA, which are dynamic
-                $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$s' $sourceCondition, $ontimeExp, 0)) singleOntime$status"
-                );
-                $summary->addSelect(
-                    "SUM(IF(evaluation.nickname = '$s' $sourceCondition, $overdueExp, 0)) singleOverdue$status"
-                );
-            }
-        }
-        $summary->addSelect("SUM(IF(f.status = 'CLOSED' $sourceCondition, 1, 0)) closed");
-
-        if (isset($source)) {
-            $summary->addSelect("SUM(IF(f.sourceId = $sourceId, 1, 0)) singleTotal");
-        } else {
-            $summary->addSelect("COUNT(f.id) singleTotal");
-        }
-
-        return $summary->execute();
-    }
-
-    /**
-     * Prepares the summary data array returned from Doctrine for use 
+     * Get statistics about number of findings in each status for each of this user's systems and organizations.
      * 
-     * @param array $organizations 
-     * @return array 
+     * Organizations and system are grouped together by their organizational hierarchy.
+     * 
+     * @param $findingParams Array A dictionary of parameters related to findings.
+     * @return Array Flat list of organizations and finding data
      */
-    private function _prepareSummaryData($organizations)
+    private function _getOrganizationHierarchyData($findingParams)
     {
-        // Remove model names from array keys
-        foreach ($organizations as &$organization) {
-            foreach ($organization as $k => $v) {
-                if (strstr($k, '_')) {
-                    $organization[substr($k, 1)] = $v;
-                    unset($organization[$k]);
-                }
+        $joinCondition = $this->_getFindingJoinConditions($findingParams);
+
+        // First get a list of all organizations, even one this user is not allowed to see. This is used to 
+        // fill in any "missing" nodes in tree structure.
+        $organizationsQuery = Doctrine_Query::create()
+                              ->from('Organization o')
+                              ->select('o.id, o.level, o.lft, o.rgt, o.nickname AS rowLabel')
+                              ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
+                              ->leftJoin('o.OrganizationType orgType')
+                              ->addSelect("IF(orgType.nickname = 'system', s.type, orgType.icon) icon")
+                              ->addSelect("'organization' AS searchKey")
+                              ->leftJoin('o.System s')
+                              ->addSelect(
+                                  "IF(orgType.nickname <> 'system', orgType.name,"
+                                  . " CASE WHEN s.type = 'gss' then 'General Support System'"
+                                  . " WHEN s.type = 'major' THEN 'Major Application'"
+                                  . " WHEN s.type = 'minor' THEN 'Minor Application' END) typeLabel"
+                              )
+                              ->groupBy('o.id')
+                              ->orderBy('o.lft');
+        $organizations = $organizationsQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+
+        // Now get the user's actual organization nodes.
+        $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read')
+                                  ->select('o.id, o.level, o.lft, o.rgt, o.nickname AS rowLabel')
+                                  ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
+                                  ->leftJoin('o.OrganizationType orgType')
+                                  ->addSelect("IF(orgType.nickname = 'system', s.type, orgType.icon) icon")
+                                  ->addSelect("'organization' AS searchKey")
+                                  ->leftJoin('o.System s')
+                                  ->addSelect(
+                                      "IF(orgType.nickname <> 'system', orgType.name,"
+                                      . " CASE WHEN s.type = 'gss' then 'General Support System'"
+                                      . " WHEN s.type = 'major' THEN 'Major Application'"
+                                      . " WHEN s.type = 'minor' THEN 'Minor Application' END) typeLabel"
+                                  )
+                                  ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
+                                  ->groupBy('o.id')
+                                  ->orderBy('o.lft');
+
+        $this->_addFindingStatusFields($userOrgQuery, $findingParams);
+
+        $userOrgs = $userOrgQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+        
+        // Stitch together the two organization lists.
+        $orgMax = count($organizations) - 1;
+        $previousOrg = null;
+        $currentUserOrgIndex = 0;
+        $currentUserOrg = $userOrgs[$currentUserOrgIndex];
+        $parents = array();
+
+        for ($currentOrgIndex = 0; $currentOrgIndex <= $orgMax; $currentOrgIndex++) {
+            $currentOrg = $organizations[$currentOrgIndex];
+
+            // Keep track of parents for current node
+            if (isset($previousOrg)) {
+                if ($previousOrg['o_level'] < $currentOrg['o_level']) {
+                    array_push($parents, $currentOrgIndex - 1);
+                } elseif ($previousOrg['o_level'] > $currentOrg['o_level']) {
+                    array_pop($parents);
+                }                
             }
 
-            // Store counts in arrays for YUI data table
-            $organization['children'] = array();
-            $organization['single_ontime'] = array();
-            $organization['single_overdue'] = array();
-            $organization['all_ontime'] = array();
-            $organization['all_overdue'] = array();
+            if ($currentOrg['o_id'] == $currentUserOrg['o_id']) {
+                $currentUserOrg['visited'] = true;
+                array_splice($organizations, $currentOrgIndex, 1, array($currentUserOrg));
+                $currentUserOrgIndex++;
 
-            $keys = array(
-                'all_ontime' => array(),
-                'all_overdue' => array(),
-                'single_ontime' => array(),
-                'single_overdue' => array()
-            );
+                $currentUserOrg = isset($userOrgs[$currentUserOrgIndex]) ? $userOrgs[$currentUserOrgIndex] : null;
 
-            $findingStatuses = Finding::getAllStatuses();
-
-            $reportStatuses = array(
-                'ontime' => 'all_ontime', 
-                'overdue' => 'all_overdue', 
-                'singleOntime' => 'single_ontime', 
-                'singleOverdue' => 'single_overdue'
-            );
-
-            foreach ($findingStatuses as $status) {
-                foreach ($reportStatuses as $key => $report) {
-                    $keys[$report][$status] = $key . urlencode($status);
+                foreach ($parents as $parent) {
+                    // Mark visited parents so we can prune unvisited subtrees later
+                    $organizations[$parent]['visited'] = true;
                 }
             }
+            
+            $previousOrg = $currentOrg;
+        }
 
-            $keys['all_ontime']['TOTAL'] = 'total';
-            $keys['single_ontime']['TOTAL'] = 'singleTotal';
+        // Prune unvisited subtrees
+        for ($currentOrgIndex = 0; $currentOrgIndex <= $orgMax; $currentOrgIndex++) {
+            $currentOrg = $organizations[$currentOrgIndex];
+            
+            if (!isset($currentOrg['visited'])) {
+                unset($organizations[$currentOrgIndex]);
+            }
+        }
 
-            unset($keys['all_overdue']['CLOSED']);
-            unset($keys['single_overdue']['CLOSED']);
+        return $organizations;
+    }
 
-            // Loop through the keys and rename them as defined in the array above
-            foreach ($keys as $list => $category) {
-                foreach ($category as $k => $v) {
-                    if (isset($organization[$v])) {
-                        $organization[$list][$k] = $organization[$v];
-                        unset($organization[$v]);
-                    } else {
-                        $organization[$list][$k] = 0;
-                    }
+    /**
+     * Get statistics about number of findings in each status for each of this user's systems.
+     * 
+     * Systems are grouped together by their aggregation relationship.
+     * 
+     * This uses two queries: one query to get the root level and a second query to get the nested level. (The 
+     * sysagg relationship does not use nested set, so there is no efficient way to get a deep tree in a single
+     * query.)
+     * 
+     * @param $findingParams Array A dictionary of parameters related to findings.
+     * @return Array Flat list of organizations and finding data
+     */
+    private function _getSystemAggregationData($findingParams)
+    {
+        $joinCondition = $this->_getFindingJoinConditions($findingParams);
+        
+        // One query to get the outer level and another [similar] query to get the inner level
+        $outerSystemsQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read', true)
+                                       ->select('o.id')
+                                       ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
+                                       ->addSelect('o.nickname AS rowLabel')
+                                       ->innerJoin('o.System s')
+                                       ->addSelect("s.id, s.type icon")
+                                       ->addSelect("'organization' AS searchKey")
+                                       ->addSelect(
+                                           "(CASE WHEN s.type = 'gss' then 'General Support System'"
+                                           . " WHEN s.type = 'major' THEN 'Major Application'"
+                                           . " WHEN s.type = 'minor' THEN 'Minor Application' END) typeLabel"
+                                       )
+                                       ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
+                                       ->andWhere('s.sdlcPhase <> ?', 'disposal')
+                                       ->groupBy('o.id')
+                                       ->orderBy('o.nickname');
+
+        $innerSystemsQuery = clone $outerSystemsQuery;
+
+        $outerSystemsQuery->addSelect('0 AS level')->andWhere('s.aggregateSystemId IS NULL')->orderBy('o.nickname');
+        $this->_addFindingStatusFields($outerSystemsQuery);
+        $outerSystems = $outerSystemsQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+
+        $innerSystemsQuery->addSelect('1 AS level, s.aggregateSystemId')
+                          ->innerJoin('s.AggregateSystem as')
+                          ->innerJoin('as.Organization ao')
+                          ->orderBy('ao.nickname, o.nickname');
+        $this->_addFindingStatusFields($innerSystemsQuery);
+        $innerSystems = $innerSystemsQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+
+        // If there are child systems, then try to merge them in underneath their parents
+        if (count($innerSystems) > 0) {
+             // Walk down the outer list (the for loop) and splice in children (the while loop).
+            $innerSystemsIndex = 0;
+
+            for ($outerSystemsIndex = 0; $outerSystemsIndex < count($outerSystems); $outerSystemsIndex++) {
+                $outerId = $outerSystems[$outerSystemsIndex]['s_id'];
+                $innerId = isset($innerSystems[$innerSystemsIndex]) 
+                         ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
+                         : null;
+
+                while ($outerId == $innerId) {
+                    array_splice($outerSystems, $outerSystemsIndex + 1, 0, array($innerSystems[$innerSystemsIndex]));
+                    unset($innerSystems[$innerSystemsIndex]);
+                    $innerSystemsIndex++;
+                    $outerSystemsIndex++;
+                    $innerId = isset($innerSystems[$innerSystemsIndex]) 
+                             ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
+                             : null;
+
                 }
             }
         }
+
+        // Merge in any systems not merged above (these are children without matching parents) and move to level 0.
+        if (count($innerSystems) > 0) {
+            $outerSystemsIndex = 0;
+
+            foreach ($innerSystems as $innerSystem) {
+                $innerSystem['o_level'] = 0;
+
+                // Move the outer pointer forward to the next outer system that sorts LOWER than the inner system.
+                while (isset($outerSystems[$outerSystemsIndex]) && 
+                       strcasecmp($outerSystems[$outerSystemsIndex]['o_rowLabel'], $innerSystem['o_rowLabel']) < 0) {
+
+                    $outerSystemsIndex++;
+                }
+                
+                if (isset($outerSystems[$outerSystemsIndex])) {
+                    array_splice($outerSystems, $outerSystemsIndex, 0, array($innerSystem));
+                } else {
+                    $outerSystems[] = $innerSystem;
+                }
+            }
+        }
+
+        return $outerSystems;
+    }
+
+    /**
+     * Get statistics about number of findings in each status for Point Of Contact.
+     * 
+     * Every user can see *all* points of contact across *all* organizations.
+     * 
+     * @param $findingParams Array A dictionary of parameters related to findings.
+     * @return Array Flat list of points of contact and organizations.
+     */
+    private function _getPointOfContactData($findingParams)
+    {
+        $joinCondition = $this->_getFindingJoinConditions($findingParams);
+
+        // Get the list of organizations (not including systems)
+        $organizationQuery = Doctrine_Query::create()
+                             ->from('Organization o')
+                             ->select('o.id, o.name, o.nickname, o.level, "organization" AS type')
+                             ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
+                             ->addSelect('o.nickname AS rowLabel')
+                             ->addSelect("'pocOrg' AS searchKey")
+                             ->leftJoin('o.OrganizationType orgType')
+                             ->addSelect("orgType.name typeLabel, orgType.icon icon")
+                             ->andWhere('o.systemId IS NULL')
+                             ->groupBy('o.id')
+                             ->orderBy('o.lft');
+
+        $organizations = $organizationQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+
+        $userOrgs = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read')
+                              ->select('o.id')
+                              ->execute(null, Doctrine::HYDRATE_SCALAR);
+        $userOrgIds = array();
+        foreach ($userOrgs as $userOrg) {
+            $userOrgIds[] = $userOrg['o_id'];
+        }
+
+        // Get list of point of contacts
+        $pointOfContactQuery = Doctrine_Query::create()
+                               ->from('Poc p')
+                               ->addSelect('p.id, p.reportingOrganizationId, "poc" AS type')
+                               ->addSelect("CONCAT(p.nameFirst, ' ', p.nameLast) AS label")
+                               ->addSelect("CONCAT('Point\ Of\ Contact') AS typeLabel")
+                               ->addSelect("'poc' AS icon, p.username AS rowLabel")
+                               ->addSelect("'pocUser' AS searchKey")
+                               ->where('p.reportingOrganizationId IS NOT NULL')
+                               ->andWhere('(p.lockType IS NULL OR p.lockType <> ?)', 'manual')
+                               ->groupBy('p.id')
+                               ->orderBy('p.reportingOrganizationId, p.nameFirst, p.nameLast');
+
+        $pocList = $pointOfContactQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+
+        // Create an array of points of contact grouped together by their reporting organization.
+        $pointsOfContact = array();
+
+        foreach ($pocList as $poc) {
+            $organizationId = $poc['p_reportingOrganizationId'];
+
+            if (!isset($pointsOfContact[$organizationId])) {
+                $pointsOfContact[$organizationId] = array();
+            }
+
+            $pointsOfContact[$organizationId][] = $poc;
+        }
+
+        // Get a list of finding statistics for each POC
+        $findingQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read')
+                                  ->select('o.id, f.id, poc.id')
+                                  ->innerJoin('o.Findings f')
+                                  ->innerJoin('f.PointOfContact poc')
+                                  ->groupBy('poc.id')
+                                  ->orderBy('poc.id');
+        
+        $this->_addFindingStatusFields($findingQuery);
+        $tempFindings = $findingQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+        $findings = array();
+        foreach ($tempFindings as $finding) {
+            $findings[(int)$finding['poc_id']] = $finding;
+        }
+
+        // Stitch together the organizations, POCs, and findings
+        $currentOrganization = 0;
+        while (isset($organizations[$currentOrganization])) {
+            $currentOrganizationId = $organizations[$currentOrganization]['o_id'];
+
+            if (isset($pointsOfContact[$currentOrganizationId])) {
+                $level = $organizations[$currentOrganization]['o_level'];
+
+                foreach($pointsOfContact[$currentOrganizationId] as &$poc) {
+                    if (isset($findings[$poc['p_id']])) {
+                        $poc = array_merge($poc, $findings[$poc['p_id']]);
+                    }
+                    $poc['p_level'] = $level + 1;
+                }
+
+                array_splice($organizations, $currentOrganization + 1, 0, $pointsOfContact[$currentOrganizationId]);
+                $currentOrganization += count($pointsOfContact[$currentOrganizationId]) + 1;
+            } else {                
+                $currentOrganization++;
+            }
+        }
+
         return $organizations;
+    }
+    
+    /**
+     * Returns DQL string that can be used as finding join conditions (i.e. part of "ON" clause)
+     * 
+     * @param $findingParams Array Optional parameters to join condition.
+     * @return string
+     */
+    public function _getFindingJoinConditions($findingParams)
+    {
+        $dql = '';
+        
+        // These are escaped in the dataAction method and are safe to interpolate.
+        if (isset($findingParams['mitigationType'])) {
+            $dql .= " AND f.type = " . $findingParams['mitigationType'];
+        }
+
+        if (isset($findingParams['findingSource'])) {
+            $dql .= " AND f.sourceId = " . $findingParams['findingSource'];
+        }
+
+        return $dql;
+    }
+
+    /**
+     * Add fields to a query that get the number of findings in each status for each system or organization.
+     * 
+     * This modifies the query that is passed to it, it does not return a new query.
+     * 
+     * NOTE: The query that's passed in must have a table alias called "f" and it must be an alias for the Finding
+     * table.
+     * 
+     * @param $query
+     */
+    public function _addFindingStatusFields(Doctrine_Query $query)
+    {        
+        $allStatuses = Finding::getAllStatuses();
+
+        // Get ontime and overdue statistics for each status where we track overdues
+        foreach ($allStatuses as $status) {
+
+            // CLOSED doesn't have ontime/overdue, so it's handled separately
+            if ($status === 'CLOSED') {
+                continue;
+            }
+            
+            $statusName = urlencode($status);
+
+            $query->addSelect(
+                "SUM(
+                    IF(f.denormalizedStatus LIKE '$status' AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
+                ) ontime_$statusName"
+            );
+            
+            $query->addSelect(
+                "SUM(
+                    IF(f.denormalizedStatus LIKE '$status' AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
+                ) overdue_$statusName"
+            );
+        }
+
+        // Add the last 3 columns: OPEN, CLOSED, TOTAL
+        $query->addSelect(
+            "SUM(
+                IF(f.denormalizedStatus NOT LIKE 'CLOSED' AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
+            ) ontime_OPEN"
+        );
+        
+        $query->addSelect(
+            "SUM(
+                IF(f.denormalizedStatus NOT LIKE 'CLOSED' AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
+            ) overdue_OPEN"
+        );
+
+        $query->addSelect("SUM(IF(f.denormalizedStatus LIKE 'CLOSED', 1, 0)) closed");
+        $query->addSelect("SUM(IF(f.id IS NOT NULL, 1, 0)) total");
     }
 }

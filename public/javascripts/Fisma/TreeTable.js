@@ -42,13 +42,13 @@
      * @param numberColumns {Integer} The number of columns to display in the table.
      */
     var TT = function(dataUrl, numberColumns) {
-        this._dataUrl = dataUrl;
+        this._baseUrl = dataUrl;
+
         this._numberColumns = numberColumns;
 
         this._buttons = [
             {label: "Expand All", fn: this.expandAllNodes, image: "/images/expand.png"},
-            {label: "Collapse All", fn: this.collapseAllNodes, image: "/images/collapse.png"},
-            {label: "Export PDF", fn: function () {alert("NOT IMPLEMENTED");}, image: "/images/pdf.gif"}
+            {label: "Collapse All", fn: this.collapseAllNodes, image: "/images/collapse.png"}
         ];
 
         TT.superclass.constructor.call(this);
@@ -74,21 +74,34 @@
         _buttons: null,
 
         /**
-         * The URL to load table data from.
+         * The base URL to load table data from (excluding optional parameters).
          */
-        _dataUrl: null,
-        
+        _baseUrl: null,
+
         /**
          * The number of tree levels to display during the initial render
          * 
          * E.g. 1 means display only the root, 2 means display the root and root's immediate children, etc.
          */
-        _defaultDisplayLevel: 2,
+        _defaultDisplayLevel: 3,
+
+        /**
+         * Filters that can be applied to this table.
+         * 
+         * Each "filter" is a dictionary of key => text pairs where they key is the value used internally and the
+         * text is the value displayed to the user. Each filter is rendered as a select menu.
+         */
+        _filters: {},
         
         /**
          * A TR element that contains the "loading" message that is displayed while requesting data.
          */
         _loadingBar: null,
+        
+        /**
+         * A TR element that contains an error message, if any error condition has occurred.
+         */
+        _errorBar: null,
         
         /**
          * The number of columns displayed on this table.
@@ -119,25 +132,56 @@
             buttonContainer.className = 'searchBox';
             container.appendChild(buttonContainer);
             this._renderButtons(buttonContainer);
-
+            
+            // Render the filters
+            this._renderFilters(buttonContainer);
+            
             // Create the table
             var table = document.createElement('table');
             table.className = "treeTable";
             container.appendChild(table);
             this._table = table;
-            
+
             // Render the header
-            var headerRow = document.createElement('tr');
-            this._renderHeader(headerRow);
-            table.appendChild(headerRow);
+            var rowsToCreate = this._getNumberHeaderRows();
+            
+            var headerRows = Array();
+            var headerRow;
+            while (rowsToCreate > 0) {
+                headerRow = table.insertRow(table.rows.length);
+                headerRows.push(headerRow);
+                rowsToCreate--;
+            }
+            
+            this._renderHeader(headerRows);
 
             // Render the loading bar
-            var loadingBar = document.createElement('tr');
+            var loadingBar = table.insertRow(table.rows.length);
             this._renderLoadingBar(loadingBar);
-            table.appendChild(loadingBar);
             this._loadingBar = loadingBar;
-            
+
+            // Render the error bar
+            var errorBar = table.insertRow(table.rows.length);
+            this._renderErrorBar(errorBar);
+            this._errorBar = errorBar;
+            this.hideError();
+
             // Request data
+            this._requestData();
+        },
+        
+        /**
+         * Flush current data and request new data.
+         */
+        reloadData: function () {
+            this._showLoadingBar();
+            this.hideError();
+
+            // Remove all data rows (but leave header rows, loading row, and error rows in place)
+            while (this._table.rows.length > (this._getNumberHeaderRows() + 2)) {
+                this._table.deleteRow(-1);
+            }
+
             this._requestData();
         },
 
@@ -164,7 +208,7 @@
         },
         
         /**
-         * Collapse a node an all nodes underneath it.
+         * Collapse a node and all nodes underneath it.
          * 
          * @param node {Array}
          */
@@ -221,52 +265,23 @@
         },
 
         /**
-         * Reload the data in the table.
-         */
-        reloadTable: function () {
-            alert("THIS IS OLD CODE AND DOESNT WORK");
-            return;
-            var loadingRow = document.getElementById('loadingRow');
-            loadingRow.style.display = ''; // reset to table-row, work around an IE6 bug
-            var orgTable = document.getElementById('summaryTable');
-
-            // Remove existing summary data
-            while (orgTable.rows.length > 4) {
-                orgTable.deleteRow(orgTable.rows.length - 1);
-            }
-
-            YAHOO.util.Connect.asyncRequest('GET', 
-                                            url, 
-                                            {
-                                                success: function(o) {
-                                                    var summaryData = YAHOO.lang.JSON.parse(o.responseText);
-                                                    this._hideLoadingBar();
-                                                    summary.render('summaryTable', summaryData, true);
-                                                },
-                                                failure: function(o) {
-                                                    var alertMessage = 'Unable to load finding summary: ' 
-                                                    + o.statusText;
-                                                    Fisma.Util.showAlertDialog(alertMessage);
-                                                    this._hideLoadingBar();
-                                                }
-                                            }, 
-                                            null);
-        },
-
-        /**
          * Render the buttons associated with this tree table
          * 
          * @param container {HTMLElement}
          */
-        _renderButtons: function(container) {
+        _renderButtons: function (container) {
             var button, buttonDefinition;
 
             for (var i in this._buttons) {
+                var div = document.createElement("div");
+                container.appendChild(div);
+                div.className = "treeTableButton";
+
                 buttonDefinition = this._buttons[i];
                 
                 button = new YAHOO.widget.Button({
                     type: "button",
-                    container: container,
+                    container: div,
                     label: buttonDefinition.label,
                     onclick: {
                         fn: buttonDefinition.fn,
@@ -280,16 +295,71 @@
         },
 
         /**
+         * Render the filters (if any)
+         * 
+         * @param container {HTMLElement}
+         */
+        _renderFilters: function (container) {
+            var that = this; // for closure
+
+            for (var filterName in this._filters) {
+                var filter = this._filters[filterName];
+
+                var div = document.createElement("div");
+                container.appendChild(div);
+                div.className = "treeTableFilter";
+
+                var label = document.createElement("span");
+                div.appendChild(label);
+                label.appendChild(document.createTextNode(filter.label));
+
+                var select = document.createElement("select");
+                div.appendChild(select);
+
+                // Closures inside loops are a little hacky…
+                select.onchange = (function(callback, filterName, select) {
+                    return function () {
+                        that.disableFilters();
+                        callback.call(window, filterName, select.options[select.selectedIndex].value);                            
+                        that.reloadData();
+                    };
+                })(filter.callback, filterName, select);
+
+                for (var key in filter.values) {
+                    var option = new Option(filter.values[key], key);
+                    
+                    if (key == filter.defaultValue) {
+                        option.selected = true;
+                    }
+                    
+                    // Workaround for IE7:
+                    if (YAHOO.env.ua.ie == 7) {
+                        select.add(option, select.options[null]);
+                    } else {
+                        select.add(option, null);
+                    }
+                }
+                
+                filter.select = select;
+            }
+            
+            var clear = document.createElement("div");
+            container.appendChild(clear);
+            clear.className = "clear";
+            
+            // Filters are disabled by default and re-enabled after successfully loading data.
+            this.disableFilters();
+        },
+
+        /**
          * Render the table header.
          * 
          * This method is intended to be overridden by subclasses to customize the appearance of the table.
          * 
-         * @param containerRow {HTMLElement} The parent container (a TR element) to render the header inside of.
+         * @param rows {Array} An array of TR elements to render the header inside of.
          */
-        _renderHeader: function (containerRow) {
-            var cell = document.createElement('th');
-            cell.appendChild(document.createTextNode('Override the _renderHeader method!'));
-            containerRow.appendChild(cell);
+        _renderHeader: function (rows) {
+            throw 'Override the _renderHeader method!';
         },
 
         /**
@@ -313,7 +383,7 @@
          */
         _renderLoadingBar: function (containerRow) {
             var loadingCell = document.createElement('th');
-            loadingCell.colSpan = 10;
+            loadingCell.colSpan = this._numberColumns;
             containerRow.appendChild(loadingCell);
             
             var message = document.createElement('p');
@@ -326,12 +396,67 @@
         },
 
         /**
+         * Render the error bar.
+         * 
+         * @param containerRow {HTMLElement} The parent container (a TR element) to render the error bar inside of.
+         */
+        _renderErrorBar: function (containerRow) {
+            var cell = document.createElement('th');
+            cell.colSpan = this._numberColumns;
+            containerRow.appendChild(cell);
+            
+            var message = document.createElement('p');
+            message.appendChild(document.createTextNode('An unexpected error has occurred…'));
+            cell.appendChild(message);
+        },
+
+        /**
+         * Return the URL to load data for this table.
+         * 
+         * Override this if you want to add custom parameters to the URL query string.
+         * 
+         * @return {String}
+         */
+        _getDataUrl: function() {
+            var url = this._baseUrl;
+            
+            for (var name in this._filters) {
+                var filter = this._filters[name];
+                var select = filter.select;
+                
+                url += '/' + name + '/' + select.options[select.selectedIndex].value;
+            }
+            
+            return url;
+        },
+
+        /**
+         * Display an error message in the error bar.
+         * 
+         * If errorMessage is not set, then just display the error bar.
+         */
+        showError: function (errorMessage) {
+            if (YAHOO.lang.isString(errorMessage)) {
+                this._errorBar.firstChild.firstChild.firstChild.nodeValue = errorMessage;
+            }
+            
+            this._errorBar.style.display = "";
+        },
+        
+        /**
+         * Hide the error bar.
+         */
+        hideError: function () {
+            this._errorBar.style.display = "none";
+        },
+
+        /**
          * Request data for the table.
          */
         _requestData: function () {
             YAHOO.util.Connect.asyncRequest(
                 'GET', 
-                this._dataUrl, 
+                this._getDataUrl(), 
                 {
                     success: this._handleDataRefresh,
                     failure: this._handleDataRefreshFailed,
@@ -347,17 +472,36 @@
          * @param response {Object} YUI Response object
          */
         _handleDataRefresh: function (response) {
-            this._treeData = YAHOO.lang.JSON.parse(response.responseText);
+            this._hideLoadingBar();
 
-            for (var nodeIndex = 0; nodeIndex < this._treeData.length; nodeIndex++) {
-                var rootNode = this._treeData[nodeIndex];
-
-                this._preprocessTreeData(rootNode);
-                this._renderNode(rootNode, 0);
-                this._setInitialTreeState(rootNode, 0);
+            try {
+                var response = YAHOO.lang.JSON.parse(response.responseText);                
+            } catch (error) {
+                this.showError(error.message);
+                return;
             }
 
-            this._hideLoadingBar();
+            if (!response.hasOwnProperty('rootNodes')) {
+                throw "The response does not contain the required 'rootNodes' object.";
+            }
+            
+            this._treeData = response.rootNodes;
+
+            if (YAHOO.lang.isNull(this._treeData)) {
+                // Gracefully handle a result that has no trees
+                this.showError("No data available.")
+            } else {
+                // If we have one or more trees, then render each tree (starting at the root)
+                for (var nodeIndex = 0; nodeIndex < this._treeData.length; nodeIndex++) {
+                    var rootNode = this._treeData[nodeIndex];
+
+                    this._preprocessTreeData(rootNode);
+                    this._renderNode(rootNode, 0);
+                    this._setInitialTreeState(rootNode, 0);
+                }                
+            }
+            
+            this.enableFilters();
         },
         
         /**
@@ -367,7 +511,8 @@
          */
         _handleDataRefreshFailed: function (response) {
             this._hideLoadingBar();
-            Fisma.Util.showAlertDialog('Unable to load finding summary: ' + response.statusText);
+            this.showError('Unable to load finding summary: ' + response.statusText);
+            this.enableFilters();
         },
 
         /**
@@ -395,23 +540,17 @@
          * @param level {Integer} The level of nesting, starting with 0.
          */         
         _renderNode: function (node, level) {
-            node.row = document.createElement('tr');
-            this._table.appendChild(node.row);
-
             if (YAHOO.lang.isValue(node.children) && node.children.length > 0) {
                 // The collapsed and expanded views are only rendered if the node has children                
-                node.expandedRow = document.createElement('tr');
+                node.expandedRow = this._table.insertRow(this._table.rows.length);
                 this._renderNodeState(node.expandedRow, node, level, TT.NodeState.EXPANDED);
-                this._table.appendChild(node.expandedRow);
 
-                node.collapsedRow = document.createElement('tr');
+                node.collapsedRow = this._table.insertRow(this._table.rows.length);
                 this._renderNodeState(node.collapsedRow, node, level, TT.NodeState.COLLAPSED);
-                this._table.appendChild(node.collapsedRow);
             } else {
                 // If a node doesn't have children, it's rendered in "leaf node" state
-                node.leafNodeRow = document.createElement('tr');
+                node.leafNodeRow = this._table.insertRow(this._table.rows.length);
                 this._renderNodeState(node.leafNodeRow, node, level, TT.NodeState.LEAF_NODE);
-                this._table.appendChild(node.leafNodeRow);
             }
 
             // If this node has children, then recursively render the children
@@ -468,7 +607,8 @@
                     throw "Unexpected nodeState (" + nodeState + ")";
             }
 
-            firstCellDiv.appendChild(toggleControl);                
+            firstCellDiv.appendChild(toggleControl);
+
             this._renderCell(firstCellDiv, node.nodeData, 0, nodeState);
 
             /*
@@ -629,6 +769,74 @@
          */
         _hideLoadingBar: function () {
             this._loadingBar.style.display = 'none';
+        },
+        
+        /**
+         * Show the "loading" message that is displayed while loading the table data.
+         */
+        _showLoadingBar: function () {
+            this._loadingBar.style.display = '';
+        },
+        
+        /**
+         * The number of header rows that the table will render.
+         * 
+         * Override this if you require multiple header rows.
+         * 
+         * @return {Integer}
+         */
+        _getNumberHeaderRows: function () {
+            return 1;
+        },
+        
+        /**
+         * Add a filter (select element) to this table
+         * 
+         * This simply tells the table to render a filter, it does not necessarily do any filtering.
+         * 
+         * The callback method is called when the filter value changes. It is executed in the global scope 
+         * and will be passed two parameters:
+         * 
+         * 1. The name of the newly selected filter.
+         * 2. The value of that filter.
+         * 
+         * @param name {String} The name assigned to this filter (used later for getting the filter's value).
+         * @param label {String} The text displayed to the user.
+         * @param values {Object} A dictionary of key/text pairs. The keys are used internally, text displayed to user.
+         * @param defaultValue {String} The default value to be selected (must be a key from "values" parameter).
+         * @param callback {Function} A callback function executed when the filter value changes.
+         */
+        addFilter: function (name, label, values, defaultValue, callback) {
+            if (this._filters.hasOwnProperty(name)) {
+                throw "Cannot create filter (" + name + ") because it already exists";
+            }
+            
+            this._filters[name] = {
+                label: label,
+                defaultValue: defaultValue,
+                values: values,
+                callback: callback
+            };
+        },
+        
+        /**
+         * Set all filters to disabled state.
+         */
+        disableFilters: function () {
+            for (var i in this._filters) {
+                var filter = this._filters[i];
+                filter.select.disabled = true;
+            }
+        },
+        
+        /**
+         * Set all filters to enabled state.
+         */
+        enableFilters: function () {
+            for (var i in this._filters) {
+                var filter = this._filters[i];
+                filter.select.disabled = false;
+            }            
         }
     });
 

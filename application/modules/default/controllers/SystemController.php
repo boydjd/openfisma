@@ -39,19 +39,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      * All privileges to system objects are based on the parent 'Organization' objects
      */
     protected $_aclResource = 'Organization';
-    
-    /**
-     * Initialize internal members.
-     *
-     * @return void
-     */
-    public function init()
-    {
-        parent::init();
-        $this->_helper->ajaxContext()
-                      ->addActionContext('convert-to-organization-form', 'html')
-                      ->initContext();
-    }
 
     /**
      * Initialize internal members.
@@ -61,6 +48,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function init()
     {
         parent::init();
+
+        $this->_helper->ajaxContext()
+                      ->addActionContext('convert-to-organization-form', 'html')
+                      ->initContext();
+
         $this->_helper->contextSwitch()
              ->addActionContext('aggregation-data', 'json')
              ->addActionContext('move-node', 'json')

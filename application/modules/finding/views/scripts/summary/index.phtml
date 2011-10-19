@@ -1,261 +1,64 @@
+<div id="summaryContainer"></div>
+
 <script type="text/javascript">
 
-// Holds the Fisma.FindingSummary object which is rendered on this page
-var findingSummary;
-
-function expandAll() {
-    findingSummary.expandAll();
-    return false;
-}
-
-function collapseAll() {
-    findingSummary.collapseAll();
-    return false;
-}
-
-function exportPdf() {
-    findingSummary.exportTable('pdf');
-    return false;
-}
-
-function reloadTable(url) {
-    var loadingRow = document.getElementById('loadingRow');
-    loadingRow.style.display = ''; // reset to table-row, work around an IE6 bug
-    var orgTable = document.getElementById('findingSummaryTable');
-
-    // Remove existing summary data
-    while (orgTable.rows.length > 4) {
-        orgTable.deleteRow(orgTable.rows.length - 1);
-    }
-
-    document.getElementById('summaryViews').disabled = true;
-    document.getElementById('types').disabled = true;
-    document.getElementById('sources').disabled = true;
-    
-    YAHOO.util.Connect.asyncRequest('GET', 
-                                    url, 
-                                    {
-                                        success: function(o) {
-                                            var summaryData = YAHOO.lang.JSON.parse(o.responseText).summaryData;
-                                            hideLoadingRow();
-                                            findingSummary.render('findingSummaryTable', summaryData, true);
-                                            document.getElementById('summaryViews').disabled = false;
-                                            document.getElementById('types').disabled = false;
-                                            document.getElementById('sources').disabled = false;
-                                        },
-                                        failure: function(o) {
-                                            var alertMessage = 'Unable to load finding summary: ' + o.statusText;
-                                            Fisma.Util.showAlertDialog(alertMessage);
-                                            hideLoadingRow();
-                                        }
-                                    }, 
-                                    null);
-}
-
-function hideLoadingRow() {
-    var loadingRow = document.getElementById('loadingRow');
-    loadingRow.style.display = 'none';
-}
-
-function menuHandler(source) {
-    var summaryTypeEl = document.getElementById('summaryViews');
-    var typeFilterEl = document.getElementById('types');
-    var sourceFilterEl = document.getElementById('sources');
-    var agencyTooltipEl = document.getElementById("agencyTipTooltip");
-    
-    var selectedView = summaryTypeEl.options[summaryTypeEl.selectedIndex];
-    findingSummary.summaryView = selectedView.value;
-    agencyTooltipEl.innerHTML = selectedView.innerHTML;
-    
-    var selectedType = typeFilterEl.options[typeFilterEl.selectedIndex];
-    findingSummary.filterType = (selectedType.value == 'ALL') ? '' : selectedType.value;
-    
-    var selectedSource = sourceFilterEl.options[sourceFilterEl.selectedIndex];
-    findingSummary.filterSource = (selectedSource.value == 'ALL_SOURCES') ? '' : selectedSource.value;
-
-    var viewParam = "view=" + encodeURIComponent(selectedView.value) + "&";
-    var typeParam = (selectedType.value == 'ALL') ? '' : 'type=' + encodeURIComponent(selectedType.value) + "&";
-    var sourceParam = ((selectedSource.value == 'ALL_SOURCES') 
-                    ? '' 
-                    : 'sourceNickname=' + encodeURIComponent(selectedSource.value)) + "&";
-
-    var url = '/finding/summary/data/format/json?' + viewParam + typeParam + sourceParam;
-
-    reloadTable(url);
-
-    <?php 
-    foreach ($this->statusArray as $status):
-        $statusId = 'finding_summary_search_' 
-                  . $this->escape($status, 'url');
-
-        if ('TOTAL' == $status):
-            $url = '/finding/remediation/list?q=';
-        else:
-            $url = '/finding/remediation/list?q=/denormalizedStatus/textExactMatch/'
-                 . $this->escape($status, 'url');
-        endif;
-    ?>
-        var href = "<?php echo $this->escape($url, 'none'); ?>"
-                 + ((selectedType.value == 'ALL') ? '' : '/type/enumIs/' + selectedType.value)
-                 + ((selectedSource.value == 'ALL_SOURCES') ? '' : '/source/textExactMatch/' + selectedSource.value);
-        document.getElementById('<?php echo $this->escape($statusId, 'none'); ?>').href = href;
-    <?php 
-    endforeach; 
-    ?>
-}
-
 YAHOO.util.Event.onDOMReady(function () {
-    findingSummary = new Fisma.FindingSummary();
-    // reuse menu handler functionality
-    menuHandler(null);
+    var url = '/finding/summary/data/format/json';
+    
+    var msApprovals = <?php echo $this->escape($this->msApprovals, 'json'); ?>;
+    var evApprovals = <?php echo $this->escape($this->evApprovals, 'json'); ?>;
+
+    var HARDCODED_COLUMN_COUNT = 7; // includes all columns that don't vary, i.e. everything but approvals
+    var columnCount = HARDCODED_COLUMN_COUNT + msApprovals.length + evApprovals.length;
+
+    var storage = new Fisma.PersistentStorage("Finding.Summary");
+    
+    Fisma.Storage.onReady(function () {
+        var summaryTable = new Fisma.FindingSummary(url, columnCount, msApprovals, evApprovals);
+
+        // Set tooltips
+        summaryTable.setTooltip("viewBy", "<?php echo $this->escape($this->tooltips['viewBy'], "none"); ?>");
+        summaryTable.setTooltip("mitigationStrategy", "<?php echo $this->escape($this->tooltips['ms'], "none"); ?>");
+        summaryTable.setTooltip("remediation", "<?php echo $this->escape($this->tooltips['ev'], "none"); ?>");
+
+        // Add filters
+        var defaultFindingSource = storage.get("findingSource");
+        summaryTable.addFilter(
+            "findingSource",
+            "Finding Source",
+            <?php echo $this->escape($this->findingSources, 'json'); ?>,
+            defaultFindingSource || "none",
+            function (filter, value) {
+                storage.set("findingSource", value);
+                storage.sync();
+            }
+        );
+
+        var defaultMitigationStrategy = storage.get("mitigationType");
+        summaryTable.addFilter(
+            "mitigationType",
+            "Mitigation Type",
+            <?php echo $this->escape($this->mitigationTypes, 'json'); ?>,
+            defaultMitigationStrategy || "none",
+            function (filter, value) {
+                storage.set("mitigationType", value);
+                storage.sync();
+            }
+        );
+
+        // Use storage to set the initial view type and to record the user's current view type.
+        var defaultViewType = storage.get("defaultViewType");
+        if (defaultViewType) {
+            summaryTable.setViewType(storage.get("defaultViewType"));
+        }
+
+        summaryTable.onViewTypeChange.subscribe(function (type, args) {
+            storage.set("defaultViewType", args[0]);
+            storage.sync();
+        });
+
+        summaryTable.render(document.getElementById('summaryContainer'));        
+    });
 });
+
 </script>
-
-<div class="searchBox" style="text-align: center;">
-    <b>Summary Type:&nbsp;</b>
-    <?php
-        echo $this->escape(
-            $this->formSelect(
-                'summaryViews',
-                $this->summaryType,
-                $this->selectAttributes,
-                $this->summaryTypes
-            ),
-            'none'
-        );
-    ?>
-    <b>Filter by Mitigation Type:&nbsp;</b>
-    <?php
-        echo $this->escape(
-            $this->formSelect(
-                'types',
-                $this->type,
-                $this->selectAttributes,
-                $this->mitigationTypes
-            ),
-            'none'
-        );
-    ?>
-    <b>Filter by Finding Source:&nbsp;</b>
-    <?php
-        echo $this->escape(
-            $this->formSelect(
-                'sources',
-                $this->source,
-                $this->selectAttributes,
-                $this->findingSources
-            ),
-            'none'
-        );
-    ?>
-</div>
-
-<div class="buttonBar">
-<?php
-$expandAll = new Fisma_Yui_Form_Button('expandAll', 
-                                       array('label' => 'Expand All', 
-                                             'imageSrc' => $this->serverUrl('/images/expand.png'),
-                                             'onClickFunction' => 'expandAll'));
-echo $this->escape($expandAll, 'none');
-
-$collapseAll = new Fisma_Yui_Form_Button('collapseAll', 
-                                         array('label' => 'Collapse All', 
-                                             'imageSrc' => $this->serverUrl('/images/collapse.png'),
-                                             'onClickFunction' => 'collapseAll'));
-echo $this->escape($collapseAll, 'none');
-
-$exportPdf = new Fisma_Yui_Form_Button('exportPdf', 
-                                       array('label' => 'Export to PDF', 
-                                             'imageSrc' => $this->serverUrl('/images/pdf.gif'),
-                                             'onClickFunction' => 'exportPdf'));
-echo $this->escape($exportPdf, 'none');
-?>
-</div>
-
-<div class="clear">
-
-<table id='findingSummaryTable' class="treeTable">
-    <tr>
-        <th rowspan="3">
-            <?php 
-                $agencyTooltip = "<p>Click on any item with a plus (+) to expand it and reveal the items "
-                               . "contained in it. Click any item with a minus (-) to collapse it and hide "
-                               . "the items inside.</p>"
-                               . "<p>When an item is collapsed, the summary numbers displayed "
-                               . "will roll up findings for all suborganizations and information systems "
-                               . "underneath it. When an item is expanded, the summary numbers displayed "
-                               . "only include findings against that specific organization.</p>"
-                               . "<p>Green rows represent findings which are not overdue. If any overdue "
-                               . "items exist, then a red row containing the overdue items will be displayed "
-                               . "directly under the green row.</p>";
-                $tooltip = new Fisma_Yui_Tooltip('agencyTip', 
-                                           'Organization Hierarchy View', 
-                                           $agencyTooltip);
-                echo $this->escape($tooltip, 'none');
-            ?>
-        </th>
-        <?php $colspan = 2 + count($this->mitigationEvaluations); ?>
-        <th style="border-bottom: none;" colspan="<?php echo $this->escape($colspan) ?>">
-            <?php 
-                $msaTooltip = "<p><b>NEW:</b> Findings which have just been entered into the system "
-                            . "are in NEW status.</p><p><b>DRAFT:</b> Once the mitigation strategy type is set, "
-                            . "the finding enters DRAFT status to reflect the fact that a user has reviewed "
-                            . "the finding and assigned an initial remediation strategy, but has not yet "
-                            . "submitted the mitigation strategy for approval.</p>";
-                foreach ($this->mitigationEvaluations as $evaluation) {
-                    $nickname = $this->escape($evaluation->nickname);
-                    $name = $this->escape($evaluation->name);
-                    $msaTooltip .= "<p><b>$nickname:</b> $name</p>";
-                }
-                $tooltip = new Fisma_Yui_Tooltip('msa', 'Mitigation Strategy', $msaTooltip); 
-                echo $this->escape($tooltip, 'none');
-            ?>
-        </th>
-        <?php $colspan = count($this->evidenceEvaluations) + 1; ?>
-        <th style="border-bottom: none;" colspan="<?php echo $this->escape($colspan) ?>">
-            <?php 
-                $eaTooltip = "<p><b>EN:</b> Evidence needed. Findings in this status are waiting for "
-                           . "uploaded documentation that the course of action has been completed.</p>";
-                foreach ($this->evidenceEvaluations as $evaluation) {
-                    $nickname = $this->escape($evaluation->nickname);
-                    $name = $this->escape($evaluation->name);
-                    $eaTooltip .= "<p><b>$nickname:</b> $name</p>";
-                }
-                $tooltip = new Fisma_Yui_Tooltip('ea', 'Remediation', $eaTooltip); 
-                echo $this->escape($tooltip, 'none');
-            ?>
-        </th>
-        <th colspan="2" rowspan="2">&nbsp;</th>
-    </tr>
-    <tr>
-        <th style="border-top: none;" colspan="2">&nbsp;</th>
-        <th colspan="<?php echo $this->escape(count($this->mitigationEvaluations)) ?>">Approval</th>
-        <th style="border-top: none;">&nbsp;</th>
-        <th colspan="<?php echo $this->escape(count($this->evidenceEvaluations)) ?>">Approval</th>
-    </tr>
-    <tr>
-    <?php 
-    foreach ($this->statusArray as $status):
-        if ($status == 'TOTAL'):
-            $url = Fisma_Url::customUrl('/finding/remediation/list?show=all');
-        else:
-            $url = Fisma_Url::customUrl(
-                '/finding/remediation/list?q=/denormalizedStatus/textExactMatch/' 
-                . rawurlencode($status)
-            );
-        endif;
-    ?>
-        <th>
-            <a id="finding_summary_search_<?php echo $this->escape($status, 'url'); ?>"
-               href="<?php echo $this->escape($url, 'none'); ?>">
-                <?php echo $this->escape($status); ?>
-            </a>
-        </th>
-    <?php 
-    endforeach; 
-    ?>
-    </tr>
-    <tr id='loadingRow'>
-        <th colspan="10"><p>Loading&hellip;</p><img src="/images/loading_bar.gif"></th>
-    </tr>
-</table>

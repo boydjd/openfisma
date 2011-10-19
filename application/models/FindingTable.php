@@ -34,7 +34,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
      * 
      * @var int
      */
-    const INDEX_CHUNK_SIZE = 200;
+    const INDEX_CHUNK_SIZE = 20;
 
     /**
      * Implement the interface for Searchable

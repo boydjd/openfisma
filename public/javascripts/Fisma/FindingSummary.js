@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -16,551 +16,585 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
- * @fileoverview The Finding Summary displays a tree of information systems and summary counts with expand/collapse
- * controls to navigate the tree structure of the information systems. Summary information is automatically rolled up
- * or drilled down as the user navigates the tree.
- *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
  */
- 
-Fisma.FindingSummary = function() {
-    return {
+
+(function() {
+    /**
+     * A widget that displays finding summary data in a tree table widget.
+     * 
+     * @namespace Fisma
+     * @class TreeTable
+     * @constructor
+     * @param dataUrl {String}
+     * @param numberColumns {Integer} The number of columns to display in the table.
+     * @param msApprovals {Object} An array of the mitigation strategy approval levels.
+     * @param evApprovals {Object} An array of the evidence approval levels.
+     */
+    var FS = function(dataUrl, numberColumns, msApprovals, evApprovals) {
+        FS.superclass.constructor.call(this, dataUrl, numberColumns);
+        
+        this._msApprovals = msApprovals;
+        this._evApprovals = evApprovals;
+
+        this._columnLabels = Array();
+        this._columnLabels = this._columnLabels.concat(
+            FS.MITIGATION_COLUMNS, 
+            msApprovals, 
+            FS.EVIDENCE_COLUMNS, 
+            evApprovals, 
+            FS.AGGREGATE_COLUMNS
+        );
+    };
+    
+    /**
+     * The labels for mitigation columns (not including approvals)
+     * 
+     * @static
+     */
+    FS.MITIGATION_COLUMNS = ["NEW", "DRAFT"];
+
+    /**
+     * The labels for evidence columns (not including approvals)
+     * 
+     * @static
+     */
+    FS.EVIDENCE_COLUMNS = ["EN"];
+    
+    /**
+     * The labels for aggregate columns
+     * 
+     * @static
+     */
+    FS.AGGREGATE_COLUMNS = ["OPEN", "CLOSED", "TOTAL"];
+    
+    /**
+     * The options for the summary type menu.
+     * 
+     * The key is the string that gets passed to the server. The value is the string that gets displayed to the user.
+     * 
+     * @static
+     */
+    FS.SUMMARY_TYPES = {
+        organizationHierarchy: "Organization Hierarchy",
+        pointOfContact: "Point Of Contact",
+        systemAggregation: "System Aggregation"
+    };
+    
+    /**
+     * The default view to display.
+     * 
+     * @see Fisma.FindingSummary.SUMMARY_TYPES
+     * @static
+     */
+    FS.DEFAULT_VIEW = "organizationHierarchy";
+    
+    YAHOO.lang.extend(FS, Fisma.TreeTable, {
         /**
-         * A pointer to the root node of the tree which is being displayed
+         * An array of the mitigation strategy approval levels.
          */
-        treeRoot : null,
+        _msApprovals: null,
+
+        /**
+         * An array of the mitigation strategy approval levels.
+         */
+        _evApprovals: null,
+
+        /**
+         * The columns labels (not including the first column)
+         */
+        _columnLabels: null,
         
         /**
-         * Holds the value of the type filter on the current page
-         */
-        filterType : null,
-        
-        /**
-         * Holds the value of the status filter on the current page
-         */
-        filterSource : null, 
-        
-        /**
-         * The number of tree levels to display during the initial render
-         */
-        defaultDisplayLevel : 2,
-        
-        /**
-         * Renders the finding summary view
+         * The view type currently selected.
          * 
-         * @todo this is still a monster function which is really unreadable
+         * @see Fisma.FindingSummary.SUMMARY_TYPES
+         * @param {String}
+         */
+        _currentViewType: null,
+        
+        /**
+         * An event that fires when the view type changes.
          * 
-         * @param tableId DOM ID of the table which this gets rendered into
-         * @param tree A tree structure which contains the counts which are rendered in this table
-         * @param newTree If true, then this is the root node which is being rendered
-         */         
-        render : function(tableId, tree, newTree) {
-            /**
-             * Set the tree root first.
-             */
-            if (newTree) {
-                this.treeRoot = tree;
-            }
+         * @param {YAHOO.util.CustomEvent}
+         */
+        onViewTypeChange: new YAHOO.util.CustomEvent("onViewTypeChange"),
+
+        /**
+         * Define the content of the tooltips used on this page.
+         */
+        _tooltips: {
+            viewBy: null,
+            mitigationStrategy: null,
+            remediation: null
+        },
+
+        /**
+         * Override to insert custom parameters into the query string.
+         * 
+         * @return {String}
+         */
+        _getDataUrl: function () {
+            var url = FS.superclass._getDataUrl.call(this)
+                    + '/summaryType/' 
+                    + (this._currentViewType || FS.DEFAULT_VIEW);
             
-            // Get reference to the HTML table element which this is rendering into
-            var table = document.getElementById(tableId);
+            return url;
+        },
 
-            // Render each node at this level
-            for (var nodeId in tree) {
-                var c;
-                var node = tree[nodeId];
+        /**
+         * Render a customized header for this tree table.
+         * 
+         * @param rows {Array} An array of TR elements to render the header inside of.
+         */
+        _renderHeader: function (rows) {
+            this._renderHeaderRow1(rows[0]);
+            this._renderHeaderRow2(rows[1]);
+            this._renderHeaderRow3(rows[2]);
+        },
 
-                // Append two rows ('ontime' and 'overdue') to the table for this node
-                var firstRow = table.insertRow(table.rows.length);
-                firstRow.id = node.nickname + "_ontime";
+        /**
+         * Render the first row of the header
+         * 
+         * @param row {HTMLElement} A TR element to render into.
+         */
+        _renderHeaderRow1: function(row) {
+            var that = this; // For closure
+
+            // Create top left cell
+            var firstCell = document.createElement('th');
+            row.appendChild(firstCell);
+            firstCell.style.borderBottom = "none";
+            firstCell.rowSpan = 3;
+
+            var firstCellSpan = document.createElement('span');
+            firstCell.appendChild(firstCellSpan);
+            firstCellSpan.appendChild(document.createTextNode("View By: "))
+            
+            if (YAHOO.lang.isValue(this._tooltips.viewBy)) {
+                firstCellSpan.className = "tooltip";
+
+                var viewByTooltip = new YAHOO.widget.Tooltip(
+                    "viewByTooltip",
+                    {
+                        context: firstCellSpan,
+                        showdelay: 150,
+                        hidedelay: 150,
+                        autodismissdelay: 25000,
+                        text: this._tooltips.viewBy,
+                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
+                        width: "50%"
+                    }
+                );   
+            }
+
+            var select = document.createElement("select");
+            select.onchange = function (event) {that.changeViewType.call(that, event, select);};
+
+            for (var optionKey in FS.SUMMARY_TYPES) {
+                var option = new Option(FS.SUMMARY_TYPES[optionKey], optionKey)
                 
-                var secondRow = table.insertRow(table.rows.length);
-                secondRow.id = node.nickname + "_overdue";
-
-                // The first cell of the first row is the system label
-                var firstCell = firstRow.insertCell(0);
-
-                // Determine which set of counts to show initially (single or all)
-                node.expanded = (node.level < this.defaultDisplayLevel - 1);
-                var ontime = node.expanded ? node.single_ontime : node.all_ontime;
-                var overdue = node.expanded ? node.single_overdue : node.all_overdue;
-                node.hasOverdue = this.hasOverdue(overdue);
-
-                var expandControlImage = document.createElement('img');
-                expandControlImage.className = 'control';
-                expandControlImage.id = node.nickname + "Img";
-
-                var expandControl = document.createElement('a');
-                expandControl.appendChild(expandControlImage);
-
-                // Does this node need an collapse/expand control?
-                var needsExpandControl = node.children.length > 0;                
-                if (needsExpandControl) {
-                    expandControl.nickname = node.nickname;
-                    expandControl.findingSummary = this;
-                    expandControl.onclick = function () {
-                        this.findingSummary.toggleNode(this.nickname); 
-                        return false;
-                    };
-                    expandControlImage.src = "/images/" + (node.expanded ? "minus.png" : "plus.png");
-                } else {
-                    expandControlImage.src = "/images/leaf_node.png";
+                if (option.value == this._currentViewType) {
+                    option.selected = true;
                 }
-
-                // Render the first cell on this row
-                var firstCellDiv = document.createElement("div");
-                firstCellDiv.className = "treeTable" + node.level + (needsExpandControl ? " link" : "");
-                firstCellDiv.appendChild(expandControl);
                 
+                // Workaround for IE7:
+                if (YAHOO.env.ua.ie == 7) {
+                    select.add(option, select.options[null]);
+                } else {
+                    select.add(option, null);
+                }
+            }
+            firstCell.appendChild(select);
+
+            // Create the cell that spans the mitigation strategy columns
+            var mitigationCell = document.createElement('th');
+            mitigationCell.colSpan = FS.MITIGATION_COLUMNS.length + this._msApprovals.length;
+            mitigationCell.style.borderBottom = "none";
+            row.appendChild(mitigationCell);
+            
+            var mitigationCellSpan = document.createElement('span');
+            mitigationCell.appendChild(mitigationCellSpan);
+            mitigationCellSpan.appendChild(document.createTextNode("Mitigation Strategy"));
+
+            if (YAHOO.lang.isValue(this._tooltips.mitigationStrategy)) {
+                mitigationCellSpan.className = "tooltip";
+
+                var msTooltip = new YAHOO.widget.Tooltip(
+                    "msTooltip",
+                    {
+                        context: mitigationCellSpan,
+                        showdelay: 150,
+                        hidedelay: 150,
+                        autodismissdelay: 25000,
+                        text: this._tooltips.mitigationStrategy,
+                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
+                        width: "50%"
+                    }
+                );
+            }
+
+            // Create the cell that spans the evidence columns
+            var remediationCell = document.createElement('th');
+            remediationCell.colSpan = FS.EVIDENCE_COLUMNS.length + this._evApprovals.length;
+            remediationCell.style.borderBottom = "none";
+            row.appendChild(remediationCell);
+
+            var remediationCellSpan = document.createElement('span');
+            remediationCell.appendChild(remediationCellSpan);
+            remediationCellSpan.appendChild(document.createTextNode("Remediation"));
+
+            if (YAHOO.lang.isValue(this._tooltips.remediation)) {
+                remediationCellSpan.className = "tooltip";
+
+                var remediationTooltip = new YAHOO.widget.Tooltip(
+                    "remediationTooltip",
+                    {
+                        context: remediationCellSpan,
+                        showdelay: 150,
+                        hidedelay: 150,
+                        autodismissdelay: 25000,
+                        text: this._tooltips.remediation,
+                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
+                        width: "50%"
+                    }
+                );
+            }
+
+            // Create the cell that spans the aggregate columns
+            var blankCell = document.createElement('th');
+            blankCell.colSpan = FS.AGGREGATE_COLUMNS.length;
+            blankCell.rowSpan = 2;
+            row.appendChild(blankCell);
+        },
+        
+        /**
+         * Render the second row of the header
+         * 
+         * @param row {HTMLElement} A TR element to render into.
+         */
+        _renderHeaderRow2: function(row) {
+            var blankCell1 = document.createElement('th');
+            blankCell1.colSpan = 2;
+            blankCell1.style.borderTop = "none";
+            row.appendChild(blankCell1);
+
+            var msApprovalCell = document.createElement('th');
+            msApprovalCell.appendChild(document.createTextNode("Approval"));
+            msApprovalCell.colSpan = 2;
+            row.appendChild(msApprovalCell);
+
+            var blankCell2 = document.createElement('th');
+            blankCell2.style.borderTop = "none";
+            row.appendChild(blankCell2);
+
+            var evApprovalCell = document.createElement('th');
+            evApprovalCell.appendChild(document.createTextNode("Approval"));
+            evApprovalCell.colSpan = 2;
+            row.appendChild(evApprovalCell);
+        },
+
+        /**
+         * Render the second row of the header
+         * 
+         * @param row {HTMLElement} A TR element to render into.
+         */
+        _renderHeaderRow3: function(row) {
+            var label;
+            var cell;
+            var link;
+
+            for (var index in this._columnLabels) {
+                cell = document.createElement('th');
+                cell.style.borderBottom = "none";
+                
+                label = this._columnLabels[index];
+
+                link = document.createElement('a');
+                cell.appendChild(link);
+                link.href = "/finding/remediation/list?q=/denormalizedStatus/textExactMatch/" 
+                          + encodeURIComponent(label);
+                link.appendChild(document.createTextNode(label));
+
+                row.appendChild(cell);
+            }
+        },
+
+        /**
+         * Aggregate data from leaf nodes up to root nodes.
+         * 
+         * @param node {Array}
+         */
+        _preprocessTreeData: function(node) {
+            var nodeData = node.nodeData;
+
+            // Start aggregrating at the current node
+            nodeData.aggregate = {
+                total: nodeData.total || 0,
+                closed: nodeData.closed || 0
+            };
+
+            for (var i in this._columnLabels) {
+                var column = $P.urlencode(this._columnLabels[i]);
+                
+                if (column === 'CLOSED' || column === 'TOTAL') {
+                    // These columns don't distinguish ontime from overdue (they're handled above)
+                    continue;
+                }
+                
+                nodeData.aggregate["ontime_" + column] = nodeData["ontime_" + column] || 0;
+                nodeData.aggregate["overdue_" + column] = nodeData["overdue_" + column] || 0;
+            }
+
+            // Include children's aggregate values in this node's aggregate value
+            if (YAHOO.lang.isValue(node.children) && node.children.length > 0) {
+                for (var i in node.children) {
+                    var child = node.children[i];
+                    var childData = child.nodeData;
+                    
+                    this._preprocessTreeData(child);
+                    
+                    nodeData.aggregate.total += childData.aggregate.total;
+                    nodeData.aggregate.closed += childData.aggregate.closed;
+                    
+                    for (var i in this._columnLabels) {
+                        var column = $P.urlencode(this._columnLabels[i]);
+
+                        if (column === 'CLOSED' || column === 'TOTAL') {
+                            // These columns don't distinguish ontime from overdue (they're handled above)
+                            continue;
+                        }
+
+                        nodeData.aggregate["ontime_" + column] += childData.aggregate["ontime_" + column];
+                        nodeData.aggregate["overdue_" + column] += childData.aggregate["overdue_" + column];
+                    }
+                }
+            }
+        },
+
+        /**
+         * Render cells in this finding summary table.
+         * 
+         * @param container {HTMLElement} The parent container to render cell content inside of.
+         * @param nodeData {Object} Data related to this node.
+         * @param columnNumber {Integer} The [zero-indexed] column which needs to be rendered.
+         * @param nodeState {TreeTable.NodeState}
+         */
+        _renderCell: function (container, nodeData, columnNumber, nodeState) {
+            if (columnNumber == 0) {
+                container.style.minWidth = "15em";
+                container.style.height = "2.5em";
+                container.style.overflow = "hidden";
+
                 // The node icon is a graphical representation of what type of node this is: agency, bureau, etc.          
                 var nodeIcon = document.createElement('img');
                 nodeIcon.className = "icon";
-                nodeIcon.src = "/images/" + node.icon + ".png";
-                expandControl.appendChild(nodeIcon);
-                
+                nodeIcon.src = "/images/" + nodeData.icon + ".png";
+                container.appendChild(nodeIcon);
+
                 // Add text to the cell
-                expandControl.appendChild(document.createTextNode(node.label));
-                expandControl.appendChild(document.createElement('br'));
-                expandControl.appendChild(document.createTextNode(node.orgTypeLabel));
-                
-                firstCell.appendChild(firstCellDiv);
-                
-                // Render the remaining cells on the this row (which are all summary counts)
-                var i = 1; // start at 1 because the system label is in the first cell
-                for (c in ontime) {
-                    count = ontime[c];
-                    cell = firstRow.insertCell(i);
-                    if (c == 'CLOSED' || c == 'TOTAL') {
-                        // The last two colums don't have the ontime/overdue distinction
-                        cell.className = "noDueDate";
+                container.appendChild(document.createTextNode(nodeData.label));
+                container.appendChild(document.createElement('br'));
+                container.appendChild(document.createTextNode(nodeData.typeLabel));                    
+            } else {
+                var completedCount;
+
+                container.style.textAlign = "center";
+                container.style.padding = "0px";
+
+                // Use php.js urlencode() to mimic the server-side urlencode()
+                var status = $P.urlencode(this._columnLabels[columnNumber - 1]);
+
+                var link = document.createElement("a");
+                var ontimeUrl = this._makeUrl(true, status, nodeState, nodeData.rowLabel, nodeData.searchKey);
+                var overdueUrl = this._makeUrl(false, status, nodeState, nodeData.rowLabel, nodeData.searchKey);
+
+                // If we are in a collapsed tree node, then switch single-record node data to aggregate node data
+                if (nodeState == Fisma.TreeTable.NodeState.COLLAPSED) {
+                    nodeData = nodeData.aggregate;
+                }
+
+                if (status == "CLOSED") {
+                    link.href = ontimeUrl;
+                    container.appendChild(link);
+                    link.appendChild(document.createTextNode(nodeData.closed || 0));
+                } else if (status == "TOTAL") {
+                    link.href = ontimeUrl;
+                    container.appendChild(link);
+                    link.appendChild(document.createTextNode(nodeData.total || 0));
+                } else {
+                    // Set the rendering style based on the existence or absence of ontime and overdue findings
+                    var ontime = nodeData["ontime_" + status] || 0;
+                    var overdue = nodeData["overdue_" + status] || 0;
+
+                    if (ontime == 0 && overdue == 0) {
+                        container.className = "ontime";
+                        container.appendChild(document.createTextNode('-'));                    
+                    } else if (ontime > 0 && overdue == 0) {
+                        container.className = "ontime";
+                        container.appendChild(link);
+
+                        link.href = ontimeUrl;
+                        link.appendChild(document.createTextNode(ontime || 0));
+                    } else if (ontime == 0 && overdue > 0) {
+                        container.className = "overdue";
+                        container.appendChild(link);
+
+                        link.href = overdueUrl;
+                        link.appendChild(document.createTextNode(overdue || 0));
                     } else {
-                        // The in between columns should have the ontime class
-                        cell.className = 'onTime';                
-                    }
-                    this.updateCellCount(cell, count, node.nickname, node.orgType, c, 'ontime', node.expanded);
-                    i += 1;
-                }
-
-                // Now add cells to the second row
-                for (c in overdue) {
-                    count = overdue[c];
-                    cell = secondRow.insertCell(secondRow.childNodes.length);
-                    cell.className = 'overdue';
-                    this.updateCellCount(cell, count, node.nickname, node.orgType, c, 'overdue', node.expanded);
-                }
-
-                // Hide both rows by default
-                firstRow.style.display = "none";
-                secondRow.style.display = "none";
-
-                // Selectively display one or both rows based on current level and whether it has overdues
-                if (node.level < this.defaultDisplayLevel) {
-                    // set to default instead of 'table-row' to work around an IE6 bug
-                    firstRow.style.display = '';  
-                    if (node.hasOverdue) {
-                        firstRow.childNodes[0].rowSpan = "2";
-                        firstRow.childNodes[firstRow.childNodes.length - 2].rowSpan = "2";
-                        firstRow.childNodes[firstRow.childNodes.length - 1].rowSpan = "2";
-                        // set to default instead of 'table-row' to work around an IE6 bug
-                        secondRow.style.display = '';  
+                        // This is executed when ontime > 0 && overdue > 0
+                        this._renderSplitCell(container, ontime, ontimeUrl, overdue, overdueUrl);
                     }
                 }
-
-                // If this node has children, then recursively render the children
-                if (node.children.length > 0) {
-                    this.render(tableId, node.children);
-                }
-            }            
-        },
-
-        /**
-         * A function to handle a user click to either expand or collapse a particular tree node
-         * 
-         * @param treeNode
-         */        
-        toggleNode : function (treeNode) {
-            node = this.findNode(treeNode, this.treeRoot);
-            if (node.expanded) {
-                this.collapseNode(node, true);
-                this.hideSubtree(node.children);
-            } else {
-                this.expandNode(node);
-                this.showSubtree(node.children, false);
-            }            
+            }
         },
         
         /**
-         * Expand a tree node in the finding summary table
+         * Render a cell that shows both ontime and overdue numbers.
          * 
-         * @param treeNode
-         * @param recursive Indicates whether children should be recursively expanded
+         * @param container {HTMLElement}
+         * @param ontime {Integer} The number to display in the ontime part of the split
+         * @param ontimeUrl {String}
+         * @param overdue {Integer} The number to display in the overdue part of the split
+         * @param overdueUrl {String}
          */
-        expandNode : function (treeNode, recursive) {
-            // When expanding a node, switch the counts displayed from the "all" counts to the "single"
-            treeNode.ontime = treeNode.single_ontime;
-            treeNode.overdue = treeNode.single_overdue;
-            treeNode.hasOverdue = this.hasOverdue(treeNode.overdue);
+        _renderSplitCell: function (container, ontime, ontimeUrl, overdue, overdueUrl) {
+            // No good CSS way to do this...
+            var innerTable = document.createElement("table");
+            innerTable.style.width = "100%";
+            innerTable.style.height = "100%";
+            container.appendChild(innerTable);
 
-            // Update the ontime row first
-            var ontimeRow = document.getElementById(treeNode.nickname + "_ontime");    
-            var i = 1; // start at 1 b/c the first column is the system name
-            for (c in treeNode.ontime) {
-                count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'ontime', true);
-                i++;
-            }
+            var ontimeRow = innerTable.insertRow(innerTable.rows.length);
+            
+            var ontimeCell = document.createElement('td');
+            ontimeRow.appendChild(ontimeCell);
+            ontimeCell.style.borderWidth = "0px";
+            ontimeCell.style.borderBottomWidth = "1px";
+            ontimeCell.className = "ontime";
+            
+            var ontimeLink = document.createElement("a");
+            ontimeCell.appendChild(ontimeLink);
+            ontimeLink.appendChild(document.createTextNode(ontime));
+            ontimeLink.href = ontimeUrl;
 
-            // Then update the overdue row, or hide it if there are no overdues
-            var overdueRow = document.getElementById(treeNode.nickname + "_overdue");
-            if (treeNode.hasOverdue) {
-                // Do not hide the overdue row. Instead, update the counts
-                i = 0;
-                for (c in treeNode.overdue) {
-                    count = treeNode.overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'overdue', true);
-                    i++;
-                }
+            var overdueRow = innerTable.insertRow(innerTable.rows.length);
+
+            var overdueCell = document.createElement('td');
+            overdueRow.appendChild(overdueCell);
+            overdueCell.style.border = "none";
+            overdueCell.className = "overdue";
+
+            var overdueLink = document.createElement("a");
+            overdueCell.appendChild(overdueLink);
+            overdueLink.appendChild(document.createTextNode(overdue));
+            overdueLink.href = overdueUrl;
+        },
+        
+        /**
+         * The event handler for the view type menu.
+         * 
+         * @param event {Event}
+         * @param select {HTMLElement} The select element that changed
+         */
+        changeViewType: function (event, select) {
+            this.setViewType(select.options[select.selectedIndex].value);
+            this.onViewTypeChange.fire(this._currentViewType);
+            this.reloadData();
+        },
+        
+        /**
+         * Set the view type for this object. 
+         * 
+         * (Notice that this doesn't take effect until the table is rendered).
+         * 
+         * @param viewType {FS.SUMMARY_TYPES}
+         */
+        setViewType: function (viewType) {
+            if (FS.SUMMARY_TYPES.hasOwnProperty(viewType)) {
+                this._currentViewType = viewType;
             } else {
-                // Hide the overdue row and adjust the rowspans on the ontime row to compensate
-                ontimeRow.childNodes[0].rowSpan = "1";
-                ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "1";
-                ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "1";
-                overdueRow.style.display = 'none';
+                throw "Unexpected view type: (" + viewType + ")";
             }
-
-            // Update the control image and internal status field
-            if (treeNode.children.length > 0) {
-                document.getElementById(treeNode.nickname + "Img").src = "/images/minus.png";
-            }
-            treeNode.expanded = true;
-
-            // If the function is called recursively and this node has children, then
-            // expand the children.
-            if (recursive && treeNode.children.length > 0) {
-                this.showSubtree(treeNode.children, false);
-                for (var child in treeNode.children) {
-                    this.expandNode(treeNode.children[child], true);
-                }
-            }
-        }, 
+        },
         
         /**
-         * Collapse a tree node and all of its children
+         * This summary has a 3-level header.
          * 
-         * @param treeNode
-         * @param displayOverdue ???
+         * @return {Integer}
          */
-        collapseNode : function (treeNode, displayOverdue) {
-            // When collapsing a node, switch the counts displayed from the "single" counts to the "all"
-            treeNode.ontime = treeNode.all_ontime;
-            treeNode.overdue = treeNode.all_overdue;
-            treeNode.hasOverdue = this.hasOverdue(treeNode.overdue);
-
-            // Update the ontime row first
-            var ontimeRow = document.getElementById(treeNode.nickname + "_ontime");
-            var i = 1; // start at 1 b/c the first column is the system name
-            for (c in treeNode.ontime) {
-                count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'ontime', false);
-                i++;
-            }
-
-            // Update the overdue row. Display the row first if necessary.
-            var overdueRow = document.getElementById(treeNode.nickname + "_overdue");
-            if (displayOverdue && treeNode.hasOverdue) {
-                // Show the overdue row and adjust the rowspans on the ontime row to compensate
-                ontimeRow.childNodes[0].rowSpan = "2";
-                ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "2";
-                ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
-                overdueRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
-
-                i = 0;
-                for (c in treeNode.all_overdue) {
-                    count = treeNode.all_overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, treeNode.orgType, c, 'overdue', false);
-                    i++;
-                }
-            }
-
-            // If the node has children, then hide those children
-            if (treeNode.children.length > 0) {
-                this.hideSubtree(treeNode.children);
-                document.getElementById(treeNode.nickname + "Img").src = "/images/plus.png";
-            }
-
-            treeNode.expanded = false;
-        }, 
+        _getNumberHeaderRows: function () {
+            return 3;
+        },
         
         /**
-         * Hide an entire subtree
+         * Make a URL for a cell based on ontime/overdue, finding status, node state, and organization.
          * 
-         * This differs from 'collapsing' a node because a collapsed node is still displayed, whereas a hidden subtree
-         * isn't even displayed.
+         * This function also incorporates filter state to build URLs.
          * 
-         * @param nodeArray This will generally be all of the children of a parent which is being collapsed.
+         * @param ontime {Boolean} True if ontime, false if overdue.
+         * @param status {String}
+         * @param nodeState {Fisma.TreeTable.NodeState} 
+         * @param rowLabel {String}
+         * @param searchKey {String} The search parameter to search for the rowLabel in.
+         * @return {String}
          */
-        hideSubtree : function (nodeArray) {
-            for (nodeId in nodeArray) {
-                node = nodeArray[nodeId];
+        _makeUrl: function (ontime, status, nodeState, rowLabel, searchKey) {
+            var url = "/finding/remediation/list?q=";
 
-                // Now update this node
-                ontimeRow = document.getElementById(node.nickname + "_ontime");
-                ontimeRow.style.display = 'none';
-                overdueRow = document.getElementById(node.nickname + "_overdue");
-                overdueRow.style.display = 'none';
-
-                // Recurse through children
-                if (node.children.length > 0) {
-                    this.collapseNode(node, false);
-                    this.hideSubtree(node.children);
-                }
-            }
-        }, 
-        
-        /**
-         * Make children of a node visible
-         * 
-         * @param nodeArray This will generally be all of the children of a parent node which is being expanded
-         * @param recursive If true, then this makes the entire subtree visible. If false, then just the nodeArray is 
-         * visible.
-         */
-        showSubtree : function (nodeArray, recursive) {
-            for (nodeId in nodeArray) {
-                node = nodeArray[nodeId];
-
-                // Recurse through the child nodes (if necessary)
-                if (recursive && node.children.length > 0) {
-                    this.expandNode(node);
-                    this.showSubtree(node.children, true);            
-                }
-
-                // Now update this node
-                ontimeRow = document.getElementById(node.nickname + "_ontime");
-                ontimeRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
-                overdueRow = document.getElementById(node.nickname + "_overdue");
-                if (node.hasOverdue) {
-                    ontimeRow.childNodes[0].rowSpan = "2";
-                    ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "2";
-                    ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
-                    overdueRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
-                }
-            }               
-        }, 
-        
-        /**
-         * Collapse all nodes in the tree. This results in just the root node(s) being displayed, all others hidden.
-         */
-        collapseAll : function () {
-            for (nodeId in this.treeRoot) {
-                node = this.treeRoot[nodeId];
-                this.collapseNode(node, true);
-                this.hideSubtree(node.children);
-            }            
-        }, 
-        
-        /**
-         * Expand all nodes in the tree. This results in all nodes being displayed.
-         */
-        expandAll : function () {
-            for (nodeId in this.treeRoot) {
-                node = this.treeRoot[nodeId];
-                this.expandNode(node, true);
-            } 
-        }, 
-        
-        /**
-         * Find a node by name in a given subtree
-         * 
-         * @param nodeName
-         * @param tree
-         * @return Either a node or boolean false
-         */
-        findNode : function (nodeName, tree) {
-            for (var nodeId in tree) {
-                node = tree[nodeId];
-                if (node.nickname === nodeName) {
-                    return node;
-                } else if (node.children.length > 0) {
-                    var foundNode = this.findNode(nodeName, node.children);
-                    if (foundNode !== false) {
-                        return foundNode;
-                    }
-                }
+            // Add status criterion
+            if (status != "TOTAL" && status != "OPEN") {
+                url += "/denormalizedStatus/textExactMatch/" + encodeURIComponent(status);
+            } else if (status == "OPEN"){
+                url += "/denormalizedStatus/textNotExactMatch/CLOSED";
             }
             
-            return false;            
-        }, 
-        
-        /**
-         * Returns true if the specified node has any overdue items, false otherwise
-         * 
-         * A node has overdue items if any of the counts in its overdue array is greater than 0
-         * 
-         * @param An array of overdue counts for a particular node
-         * @return boolean
-         */
-        hasOverdue : function (overdueCountArray) {
-            for (var i in overdueCountArray) {
-                if (overdueCountArray[i] > 0) {
-                    return true;
-                }
+            // Add organization/POC criterion
+            if (nodeState == Fisma.TreeTable.NodeState.COLLAPSED) {
+                url += '/' + searchKey + '/organizationSubtree/' + encodeURIComponent(rowLabel);
+            } else {
+                url += '/' + searchKey + '/textExactMatch/' + encodeURIComponent(rowLabel);
+            }
+
+            // Add ontime criteria (if applicable)
+            if (status != "TOTAL" && status != "CLOSED") {
+                var today = new Date();
+                var todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+
+                if (ontime) {
+                    url += "/nextDueDate/dateAfter/" + todayString;
+                } else {
+                    url += "/nextDueDate/dateBefore/" + todayString;                    
+                }                
             }
             
-            return false;
+            // Add filter criteria
+            msSelect = this._filters.mitigationType.select;
+            msValue = msSelect.options[msSelect.selectedIndex].value;
+            if (msValue != "none") {
+                url += "/type/enumIs/" + encodeURIComponent(msValue);
+            }
+
+            sourceSelect = this._filters.findingSource.select;
+            sourceValue = sourceSelect.options[sourceSelect.selectedIndex].value;
+            sourceLabel = sourceSelect.options[sourceSelect.selectedIndex].text;
+            if (sourceValue != "none") {
+                url += "/source/textExactMatch/" + encodeURIComponent(sourceLabel);
+            }
+
+            return url;
         },
         
         /**
-         * Update the count that is displayed inside a particular cell
-         * 
-         * @param cell An HTML table cell
-         * @param count The count to display
-         * @param orgName Used to generate link
-         * @param ontime Used to generate link
-         * @param expanded Used to generate link
+         * Set the value of a tooltip. Tooltips must be set rendering the table.
          */
-        updateCellCount : function (cell, count, orgName, orgType, status, ontime, expanded) {
-            var link;
-            if (!cell.hasChildNodes()) {
-                // Initialize this cell
-                if (count > 0) {
-                    link = document.createElement('a');
-                    link.href = this.makeLink(orgName, orgType, status, ontime, expanded);
-                    link.appendChild(document.createTextNode(count));
-                    cell.appendChild(link);
-                } else {
-                    cell.appendChild(document.createTextNode('-'));
-                }
-            } else {
-                // The cell is already initialized, so we may need to add or remove child elements
-                if (cell.firstChild.hasChildNodes()) {
-                    // The cell contains an anchor
-                    if (count > 0) {
-                        // Update the anchor text
-                        cell.firstChild.firstChild.nodeValue = count;
-                        cell.firstChild.href = this.makeLink(orgName, orgType, status, ontime, expanded);
-                    } else {
-                        // Remove the anchor
-                        cell.removeChild(cell.firstChild);
-                        cell.appendChild(document.createTextNode('-'));
-                    }
-                } else {
-                    // The cell contains just a text node
-                    if (count > 0) {
-                        // Need to add a new anchor
-                        cell.removeChild(cell.firstChild);
-                        link = document.createElement('a');
-                        link.href = this.makeLink(orgName, orgType, status, ontime, expanded);
-                        link.appendChild(document.createTextNode(count));
-                        cell.appendChild(link);
-                    } else {
-                        // Update the text node value
-                        cell.firstChild.nodeValue = '-';
-                    }
-                }
-            }
-        }, 
-        
-        /**
-         * Generate the URI that a cell will link to
-         * 
-         * These search engine uses these parameters to filter the search based on the cell that was clicked
-         * 
-         * @param orgName
-         * @param status
-         * @param ontime
-         * @param expanded
-         * @return String URI
-         */
-        makeLink : function (orgName, orgType, status, ontime, expanded) {
-            // CLOSED and TOTAL columns should not have an 'ontime' criteria in the link
-            var onTimeString = '';
-            if (!(status == 'CLOSED' || status == 'TOTAL')) {
-                var now = new Date();
-                
-                var nowStr = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
-
-                if ('ontime' == ontime) {
-                    onTimeString = '/nextDueDate/dateAfter/' + encodeURIComponent(nowStr);
-                } else {
-                    onTimeString = '/nextDueDate/dateBefore/' + encodeURIComponent(nowStr);
-                }
-            }
-
-            // Include any status
-            var statusString = '';
-            if (status !== '' && status !=='TOTAL') {
-                statusString = '/denormalizedStatus/textExactMatch/' + encodeURIComponent(status);
-            }
-
-            // Include any filters
-            var filterType = '';
-            if (!YAHOO.lang.isNull(this.filterType) && this.filterType !== '') {
-                filterType = '/type/enumIs/' + encodeURIComponent(this.filterType);
-            }
-
-            var filterSource = '';
-            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource !== '') {
-                filterSource = '/source/textExactMatch/' + encodeURIComponent(this.filterSource);
-            }
-
-            // Render the link
-            var uri = '/finding/remediation/list?q=' + onTimeString + statusString + filterType + filterSource;
-
-            var summaryView = YAHOO.lang.isValue(this.summaryView) ? this.summaryView : 'OHV';
-            if (summaryView === 'POCV') {
-                if (orgType === 'poc') {
-                    uri += "/pocUser/textExactMatch/" + encodeURIComponent(orgName);
-                } else {
-                    uri += "/pocOrg/organizationSubtree/" + encodeURIComponent(orgName);
-                }
-            } else {
-                if (expanded) {
-                    uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
-                } else if (summaryView === 'SAV') {
-                    uri += '/organization/systemAggregationSubtree/' + encodeURIComponent(orgName);
-                } else {
-                    uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
-                }
-            }
-
-            return uri;            
-        }, 
-        
-        /**
-         * Redirect to a URI which exports the summary table
-         * 
-         * @param format Only 'pdf' is valid at the moment.
-         */
-        exportTable : function (format) {
-            var view = this.summaryView || "OHV";
-            var uri = '/finding/summary/data/format/' + format + "/view/" + view + this.listExpandedNodes(this.treeRoot, '');
-
-            document.location = uri;            
-        }, 
-        
-        /**
-         * Returns a URI paramter string that represents which nodes are expanded and which nodes are collapsed
-         * 
-         * This is used during export to make the exported tree mirror what the user sees in the browser
-         * 
-         * @param nodes A subtree to render into the return string
-         * @param visibleNodes Pass a blank string. This is an accumulator which is used for recursive calls.
-         * @return String URI
-         */
-        listExpandedNodes : function (nodes, visibleNodes) {
-            for (var n in nodes) {
-                var node = nodes[n];
-                if (node.expanded) {
-                    visibleNodes += '/e/' + node.id;
-                    visibleNodes = this.listExpandedNodes(node.children, visibleNodes);
-                } else {
-                    visibleNodes += '/c/' + node.id;
-                }
-            }
-
-            return visibleNodes;
+        setTooltip: function (name, html) {
+            this._tooltips[name] = html;
         }
-    };
-};
+    });
+
+    Fisma.FindingSummary = FS;
+})();
