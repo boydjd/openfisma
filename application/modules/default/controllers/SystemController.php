@@ -247,7 +247,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         // END: Building of data table
 
         $availableInformationTypesTable = new Fisma_Yui_DataTable_Remote();
-        $availableInformationTypesTable->addColumn(new Fisma_Yui_DataTable_Column('Category', true, null, null, 'category'))
+        $availableInformationTypesTable->addColumn(
+            new Fisma_Yui_DataTable_Column('Category', true, null, null, 'category')
+        )
             ->addColumn(new Fisma_Yui_DataTable_Column('Name', true, null, null, 'name'))
             ->addColumn(
             new Fisma_Yui_DataTable_Column('Description', false, null, null, 'description')
@@ -272,7 +274,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->render();
         // END: Building of the data table
     }
-
 
     /**
      * Return all information types currently assigned to the system
@@ -466,6 +467,20 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->uploadPanelButton = $uploadPanelButton;
+
+        $generateScdButton = new Fisma_Yui_Form_Button_Link(
+            'generateScdButton',
+            array(
+                'value' => 'Generate SCD',
+                'href' => '/system/generate-scd/format/pdf/id/' . $id
+            )
+        );
+
+        if (!$this->_acl->hasPrivilegeForObject('update', $organization)) {
+            $generateScdButton->readOnly = true;
+        }
+
+        $this->view->generateScdButton = $generateScdButton;
 
         // Get all documents for current system, sorted alphabetically on the document type name
         $documentQuery = Doctrine_Query::create()
@@ -954,5 +969,13 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $list = array('systems' => $systems);
         
         return $this->_helper->json($list);
+    }
+
+    public function generateScdAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $system = Doctrine::getTable('System')->find($id);
+        $pdf = new Fisma_PDF_SCD($system);
+        $this->_helper->pdf($pdf);
     }
 }
