@@ -26,9 +26,15 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @subpackage Test_Library
+ * @require    AbstractDummy
  */
 class Test_Library_Fisma_Import_Abstract extends Test_Case_Unit
 {
+    public function setup()
+    {
+        require_once(realpath(dirname(__FILE__) . '/AbstractDummy.php'));
+    }
+
     /**
      * test constructor
      */
@@ -39,7 +45,7 @@ class Test_Library_Fisma_Import_Abstract extends Test_Case_Unit
             'networkId' => '20',
             'filePath' => 'data/uploads'
         );
-        $importDummy = new Fisma_Import_Dummy($sampleInitialValues);
+        $importDummy = new Test_Library_Fisma_Import_AbstractDummy($sampleInitialValues);
         $this->assertEquals($importDummy->_orgSystemId, $sampleInitialValues['orgSystemId']);
         $this->assertEquals($importDummy->_networkId, $sampleInitialValues['networkId']);
         $this->assertEquals($importDummy->_filePath, $sampleInitialValues['filePath']);
@@ -50,7 +56,7 @@ class Test_Library_Fisma_Import_Abstract extends Test_Case_Unit
      */
     public function testError()
     {
-        $importDummy = new Fisma_Import_Dummy();
+        $importDummy = new Test_Library_Fisma_Import_AbstractDummy();
         $this->assertEquals($importDummy->_errors, $importDummy->getErrors());
 
         $sampleErrors = array('error1');
@@ -63,7 +69,7 @@ class Test_Library_Fisma_Import_Abstract extends Test_Case_Unit
      */
     public function testGetNumSuppressed()
     {
-        $importDummy = new Fisma_Import_Dummy();
+        $importDummy = new Test_Library_Fisma_Import_AbstractDummy();
         $this->assertEquals($importDummy->_numSuppressed, $importDummy->getNumSuppressed());
     }
 
@@ -72,48 +78,7 @@ class Test_Library_Fisma_Import_Abstract extends Test_Case_Unit
      */
     public function testGetNumImported()
     {
-        $importDummy = new Fisma_Import_Dummy();
+        $importDummy = new Test_Library_Fisma_Import_AbstractDummy();
         $this->assertEquals($importDummy->_numImported, $importDummy->getNumImported());
-    }
-}
-
-/**
- * Dummy class to wrap Fisma_Import_Abstract
- * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Test
- * @subpackage Test_Library
- */
-//the require statement below is a quick-and-dirty workaround for phpunit
-require_once(realpath(dirname(__FILE__) . '/../../../../library/Fisma/Import/Abstract.php'));
-class Fisma_Import_Dummy extends Fisma_Import_Abstract
-{
-    //Publicize everything to test
-    public $_errors = array();                                                                                      
-    public $_orgSystemId;                                                                                           
-    public $_networkId;                                                                                             
-    public $_filePath;                                                                                              
-    public $_numImported = 0;                                                                                       
-    public $_numSuppressed = 0;
-    //lazy constructor
-    public function __construct($values = null)
-    {
-        if(isset($values)) {
-            parent::__construct($values);
-        }
-        else {
-            $this->_orgSystemId = 0;
-            $this->_networkId = 0;
-            $this->_filePath = '';
-        }
-    } 
-    public function _setError($err)                                                                                 
-    {                                                                                                                  
-        parent::_setError($err);                                                                                       
-    }
-    public function parse()
-    {
-        return true;
     }
 }

@@ -33,15 +33,17 @@ class Fisma_Zend_Acl extends Zend_Acl
      * @param string $area
      * @return bool
      */
-    public function hasArea($area)
+    public function hasArea($area, $user = null)
     {
-        try {
-            $user = Zend_Auth::getInstance()->getIdentity();
-        } catch (Exception $e) {
-            return false;
+        $userNotFound = false;
+        if(!isset($user)) {
+            try {
+                $user = Zend_Auth::getInstance()->getIdentity();
+            } catch (Exception $e) {
+                $userNotFound = true;
+            }
         }
-        
-        return $this->isAllowed($user, 'area', $area);
+        return ($userNotFound)?false:$this->isAllowed($user, 'area', $area);
     }
     
     /**
@@ -50,9 +52,9 @@ class Fisma_Zend_Acl extends Zend_Acl
      * @param string $area
      * @throws Fisma_Zend_Exception_InvalidPrivilege
      */
-    public function requireArea($area)
+    public function requireArea($area, $user = null)
     {
-        if (!$this->hasArea($area)) {
+        if (!$this->hasArea($area, $user)) {
             throw new Fisma_Zend_Exception_InvalidPrivilege("User does not have access to this area: '$area'");
         }
     }
@@ -72,45 +74,47 @@ class Fisma_Zend_Acl extends Zend_Acl
      * @param object $object
      * @return bool
      */
-    public function hasPrivilegeForObject($privilege, $object)
+    public function hasPrivilegeForObject($privilege, $object, $user = null)
     {
-        try {
-            $user = Zend_Auth::getInstance()->getIdentity();
-        } catch (Exception $e) {
-            return false;
+        // Safety check: make sure that $object is actually an object
+        if (!is_object($object)) {
+            throw new Fisma_Zend_Exception("\$object is not an object");
         }
-
-        $resourceName = Doctrine_Inflector::tableize(get_class($object));
+        $resourceName = Doctrine_Inflector::tableize(get_class($object));               
         $hasPrivilege = false;
-
+        
         if (!$this->_privilegeContainsWildcard($privilege)) {
-
-            // Safety check: make sure that $object is actually an object
-            if (!is_object($object)) {
-                throw new Fisma_Zend_Exception("\$object is not an object");
-            }
-
             // Handle objects with organization ACL dependency
             if ($object instanceof Fisma_Zend_Acl_OrganizationDependency) {
                 $orgId = $object->getOrganizationDependencyId();
-                $hasPrivilege = $this->hasPrivilegeForOrganizationDependency($user, $privilege, $resourceName, $orgId);
-            } else {
-                $hasPrivilege = $this->isAllowed($user, $resourceName, $privilege);
+                if (empty($orgId)) {
+                    $privilege = "unaffiliated";
+                    $resourceName = "asset";
+                } else {
+                    $resourceName = self::getResourceNameForOrganizationDependency($resourceName, $orgId);
+                }
             }
+            $hasPrivilege = $this->hasPrivilegeForClass($privilege, $resourceName, $user, true);
         } else {
 
             // Loop over all matching privileges and check them one-by-one to see if the user has any of them
             $matchedPrivileges = $this->_getPrivilegesForWildcard($resourceName, $privilege);
-            
             foreach ($matchedPrivileges as $matchedPrivilege) {
-                if ($this->hasPrivilegeForObject($matchedPrivilege, $object)) {
+                if ($this->hasPrivilegeForObject($matchedPrivilege, $object, $user)) {
                     $hasPrivilege = true;
                     break;
                 }
             }
         }
-
         return $hasPrivilege;
+    }
+
+    /**
+     * Method to format correct $resourceName for objects with an organizational dependency
+     */
+    public static function getResourceNameForOrganizationDependency($resourceName, $organizationId)
+    {
+        return $organizationId.'/'.$resourceName;
     }
     
     /**
@@ -121,7 +125,9 @@ class Fisma_Zend_Acl extends Zend_Acl
      * @param string $resourceName
      * @param string organizationId
      * @return boolean
-     */
+     *
+     * @obsoletey
+     * --code begin--
     public function hasPrivilegeForOrganizationDependency(User $user, $privilege, $resourceName, $organizationId)
     {
         if (empty($organizationId)) {
@@ -132,6 +138,8 @@ class Fisma_Zend_Acl extends Zend_Acl
         }
         return $this->isAllowed($user, $resourceName, $privilege);
     }
+     * --code end--
+     */
 
     /**
      * Require the current user to have a particular privilege on a particular object, or else throw an exception
@@ -140,9 +148,9 @@ class Fisma_Zend_Acl extends Zend_Acl
      * @param object $object
      * @throws Fisma_Zend_Exception_InvalidPrivilege
      */
-    public function requirePrivilegeForObject($privilege, $object)
+    public function requirePrivilegeForObject($privilege, $object, $user = null)
     {
-        if (!$this->hasPrivilegeForObject($privilege, $object)) {
+        if (!$this->hasPrivilegeForObject($privilege, $object, $user)) {
             $message = "User does not have privilege '$privilege' for this object.";
             throw new Fisma_Zend_Exception_InvalidPrivilege($message);
         }
@@ -158,38 +166,46 @@ class Fisma_Zend_Acl extends Zend_Acl
      * @param string $className
      * @return bool
      */
-    public function hasPrivilegeForClass($privilege, $className)
+    public function hasPrivilegeForClass($privilege, $className, $user = null, $useClassNameAsResourceName = false)
     {
-        try {
-            $user = Zend_Auth::getInstance()->getIdentity();
-        } catch (Exception $e) {
-            return false;
-        }
-
-        $resourceName = Doctrine_Inflector::tableize($className);
-        $hasPrivilege = false;
-
-        if (!$this->_privilegeContainsWildcard($privilege)) {
-
+        if ($useClassNameAsResourceName) {
+            $resourceName = $className;
+        } else {
             // Safety check: make sure that $className is an actual class
             if (!class_exists($className)) {
                 $message = "Privilege check failed for class '$className' because the class could not be found";
                 throw new Fisma_Zend_Exception($message);
             }
+            $resourceName = Doctrine_Inflector::tableize($className);
+        }
 
-            $hasPrivilege = $this->isAllowed($user, $resourceName, $privilege);
+        $userNotFound = false;
+        if(!isset($user)) {
+            try {
+                $user = Zend_Auth::getInstance()->getIdentity();
+            } catch (Exception $e) {
+                $userNotFound = true;
+            }
+        }
+        if(!$userNotFound) {
+            if (!$this->_privilegeContainsWildcard($privilege)) {
+
+                $hasPrivilege = $this->isAllowed($user, $resourceName, $privilege);
             
+            } else {
+            
+                // Loop over all matching privileges and check them one-by-one to see if the user has any of them
+                $matchedPrivileges = $this->_getPrivilegesForWildcard($resourceName, $privilege);
+            
+                foreach ($matchedPrivileges as $matchedPrivilege) {
+                    if ($this->hasPrivilegeForClass($matchedPrivilege, $className, $user, $useClassNameAsResourceName)) {
+                        $hasPrivilege = true;
+                        break;
+                    }
+                }            
+            }
         } else {
-            
-            // Loop over all matching privileges and check them one-by-one to see if the user has any of them
-            $matchedPrivileges = $this->_getPrivilegesForWildcard($resourceName, $privilege);
-            
-            foreach ($matchedPrivileges as $matchedPrivilege) {
-                if ($this->hasPrivilegeForClass($matchedPrivilege, $object)) {
-                    $hasPrivilege = true;
-                    break;
-                }
-            }            
+            $hasPrivilege = false;
         }
         
         return $hasPrivilege;
@@ -203,9 +219,9 @@ class Fisma_Zend_Acl extends Zend_Acl
      * @param string $className
      * @throws Fisma_Zend_Exception_InvalidPrivilege
      */
-    public function requirePrivilegeForClass($privilege, $className)
+    public function requirePrivilegeForClass($privilege, $className, $user = null)
     {
-        if (!$this->hasPrivilegeForClass($privilege, $className)) {
+        if (!$this->hasPrivilegeForClass($privilege, $className, $user)) {
             $message = "User does not have privilege '$privilege' for class '$className'";
             throw new Fisma_Zend_Exception_InvalidPrivilege($message);
         }
