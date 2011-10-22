@@ -258,11 +258,34 @@ EOD;
 
         $this->header2('2.4. System Architecture');
 
+        // find the system's Architecture diagram
+        $document = null;
+        foreach ($this->_system->Documents as $doc) {
+            if ($doc->DocumentType->name == 'Architecture Diagram') {
+                $document = $doc;
+                break;
+            }
+        }
+        if (!empty($document)) {
+            $this->Image( $document->getPath(), '', '', $w, 100, '', '', 'C', false, 300, '', false, false, 0, 'CM');
+            $this->Ln(100);
+        }
+
         $this->figureCaption('Figure 1: ' . $this->_system->Organization->name . ' Architecture and Interfaces');
 
         $this->header2('2.5. System Interfaces, Interconnections, and Data Flow');
 
+        $html = $this->_system->interconnections;
+        $html = str_replace('<table>', '<table border="1" cellpadding="4">', $html);
+        $this->SetFontSize(12);
+        $this->writeHTMLCell($w, '', '', '', $html, 0, 1);
+
         $this->header1('3. SYSTEM ENVIRONMENT');
+
+        $html = $this->_system->environment;
+        $html = str_replace('<table>', '<table border="1" cellpadding="4">', $html);
+        $this->SetFontSize(12);
+        $this->writeHTMLCell($w, '', '', '', $html, 0, 1);
 
         return $this->_render();
 
