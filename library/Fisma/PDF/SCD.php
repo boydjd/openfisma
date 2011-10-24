@@ -165,7 +165,7 @@ EOD;
 
         $this->header2('2.1. System Overview and Mission');
 
-        $this->paragraph($this->_system->Organization->description);
+        $this->writeHTMLCell($w, '', '', '', $this->_system->Organization->description, 0, 1);
 
         $this->header2('2.2. Security Categorization');
 
