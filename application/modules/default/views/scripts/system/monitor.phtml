@@ -1,0 +1,168 @@
+<?php
+Fisma_Format_Section::startSection('Assigned Information Types');
+?>
+<table>
+<tr>
+<th colspan="2" id='assessmentType'>Assessment Types</th>
+</tr>
+<tr>
+<td id='acm'>
+Annual Continuous Monitoring Assessment Tab
+</td>
+<td id='re-auth'>
+Re-authorization Assessment Tab
+</td>
+</tr>
+</table>
+<?php
+Fisma_Format_Section::stopSection();
+?>
+<div id="selectSystemSecurityControls">
+    <div class="sectionHeader">
+        <span>Select System Security Controls</span>
+    </div>
+
+    <div id="systemSecurityControlsData">
+        <table id="systemSecurityControlsTable">
+            <thead>
+                <tr>
+                    <th>800-53 CONTROL IDENTIFIER</th>
+                    <th>Select System Security Control for assessment this year</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>AC-2(1)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-2(2)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-2(3)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-2(4)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-6(1)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-6(2)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-17(5)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-17(7)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-17(8)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-19(1)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-19(2)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-19(3)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-20(2)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AU-2(4)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AC-7(1)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>AU-12</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>CM-2(3)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>CM-2(4)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>CM-3(2)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>CM-7(1)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>CM-9</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>CP-7(3)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>CP-10(2)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>CP-10(3)</td>
+                    <td></td>
+                </tr>
+                <tr>
+                    <td>IA-2(2)</td>
+                    <td></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<?php 
+Fisma_Format_Section::stopSection();
+?>
+<script type="text/javascript">
+    var Event = YAHOO.util.Event;
+    Event.onContentReady('systemSecurityControlsData', function() {
+        var columnDefs = [
+            { key: "control", label: "800-53<br>CONTROL<br>IDENTIFIER", sortable: false },
+            { key: "selectControl", label: "Select System<br>Security Control for<br>assessment this year", sortable: false, formatter: Fisma.TableFormat.checkboxFormatter}
+        ];
+
+        var dataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("systemSecurityControlsTable"));
+        dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+        dataSource.responseSchema = {
+            fields: [ { key: "control"},
+                      { key: "selectControl"}
+                    ]  
+        };
+
+        var dataTable = new YAHOO.widget.DataTable("systemSecurityControlsData", columnDefs, dataSource);
+    });
+
+    Event.addListener("acm", "click", function(){
+        var ssc = YAHOO.util.Dom.get('selectSystemSecurityControls');
+        if (ssc.style.display === 'block') {
+            ssc.style.display = 'none';
+        } else {
+            ssc.style.display = 'block';
+        }
+    });
+</script>

@@ -559,6 +559,10 @@ div#addInformationTypes {
     display: none;
 }
 
+div#selectSystemSecurityControls {
+    display: none;
+}
+
 /* Date inputs have a calendar icon rendered on them */
 input[type=text].date {
     background: url(/images/calendar.png) no-repeat 98%;
@@ -699,4 +703,47 @@ table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th
 /* Style for the td of table on /role/right/id/# page */
 #assign_right td {
     border-style: none;
+}
+
+/*  Style for the checkbox on monitor page */
+.custom-checkbox { position: relative; }
+
+.custom-checkbox input {
+    position: absolute;
+    left: 2px;
+    top: 3px;
+    margin: 0;
+    z-index: 0;
+}
+
+.custom-checkbox label {
+    background: url(/images/of_checkbox.png) -14px -17px no-repeat;
+    display: block;
+    position: relative;
+    z-index: 1;
+    font-size: 1.3em;
+    padding: .5em 0 1em 30px;
+    cursor: pointer;
+}
+
+.custom-checkbox label.hover {
+    background-position: -14px -117px;
+}
+
+.custom-checkbox label.checked {
+    background-position: -14px -217px;
+}
+
+.custom-checkbox label.checkedHover {
+    background-position: -14px -317px;
+}
+
+#assessmentType {
+    background-color:#ccc;
+    height: 40px'
+}
+
+#acm, #re-auth {
+    height: 25px;
+    cursor: pointer;
 }
