@@ -16,30 +16,23 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
-
 /**
- * test /library/Fisma/Import/Factory.php
- *
+ * Dummy class to wrap Fisma_Doctrine_Cli
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @subpackage Test_Library
  */
-class Test_Library_Fisma_Import_Factory extends Test_Case_Unit
-{
-    /**
-     * test method create()
-     * @return void
-     * pending on the @TODO in the Fisma_Import_Factory class
-     */
-    public function testCreate()
-    {
-        $model='asset';
-        $values=array('attribute1', 'attribute2');
-        $this->assertEquals('Fisma_Import_Asset', get_class(Fisma_Import_Factory::create($model, $values)));
-        //@TODO add testing for other models
-    }
-}
 
+class Test_Library_Fisma_Doctrine_CliDummy extends Fisma_Doctrine_Cli
+{
+
+    //lazy constructor
+    //public wrapper methods
+    public function getTaskClassFromArgs($args)
+    {
+        return parent::_getTaskClassFromArgs($args);
+    }
+
+}

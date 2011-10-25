@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * test /library/Fisma/Import/Factory.php
+ * test suite for /library/Fisma/Doctrine/Cli.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -27,19 +27,23 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  * @package    Test
  * @subpackage Test_Library
  */
-class Test_Library_Fisma_Import_Factory extends Test_Case_Unit
+class Test_Library_Fisma_Doctrine_Cli extends Test_Case_Unit
 {
     /**
-     * test method create()
+     * test getTaskClass
      * @return void
-     * pending on the @TODO in the Fisma_Import_Factory class
+     * @require CliDummy because the only method in source class is protected
      */
-    public function testCreate()
+    public function testGetTaskClass()
     {
-        $model='asset';
-        $values=array('attribute1', 'attribute2');
-        $this->assertEquals('Fisma_Import_Asset', get_class(Fisma_Import_Factory::create($model, $values)));
-        //@TODO add testing for other models
+        require_once(realpath(dirname(__FILE__) . '/CliDummy.php'));
+        $cli = new Test_Library_Fisma_Doctrine_CliDummy();
+
+        $args = array(1 => 'migrate');
+        $this->assertEquals('Fisma_Doctrine_Task_Migrate', $cli->getTaskClassFromArgs($args)); //customized classes are checked manually
+
+        $args[1] = 'Compile';
+        $this->assertEquals('Doctrine_Task_Compile', $cli->getTaskClassFromArgs($args));
     }
 }
 

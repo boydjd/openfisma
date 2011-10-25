@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * Class description
+ * test suite for /library/Fisma/Format/Section.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -32,31 +32,32 @@ class Test_Library_Fisma_Format_Section extends Test_Case_Unit
     /**
      * test function startSection()
      * recommended: extarct hard-coded html out of the library
+     * @return void
      */
     public function testStartSection()
     {
-        $anchorName='UnitTest';
-        $anchorText='Unit Testing';
-        $editableTarget='Test_Mode';
-        $openTag='<div class=\'sectionHeader\'><span ';
-        $closeTag='</span></div><div class=\'section\'>';
+        $anchorName = 'UnitTest';
+        $anchorText = 'Unit Testing';
+        $editableTarget = 'Test_Mode';
+        $openTag = '<div class=\'sectionHeader\'><span ';
+        $closeTag = '</span></div><div class=\'section\'>';
 
-        $bareReturn=$openTag.'>'.$anchorText.$closeTag;
+        $bareReturn = $openTag . '>' . $anchorText . $closeTag;
         $this->expectOutputString($bareReturn);
         Fisma_Format_Section::startSection($anchorText);
 
-        $withAnchorName=$openTag.'><a name=\''.$anchorName.'\'>'.$anchorText.'</a>'.$closeTag;
+        $withAnchorName = $openTag . '><a name=\'' . $anchorName . '\'>' . $anchorText . '</a>' . $closeTag;
         //cascading the old output
-        $this->expectOutputString($bareReturn.$withAnchorName);
+        $this->expectOutputString($bareReturn . $withAnchorName);
         Fisma_Format_Section::startSection($anchorText, null, $anchorName);
 
-        $withEditableTarget=$openTag.'class=\'editable\' target=\''.$editableTarget.'\'>'.$anchorText.$closeTag;
+        $withEditableTarget = $openTag . 'class=\'editable\' target=\'' . $editableTarget . '\'>' . $anchorText . $closeTag;
         //cascading the old outputs
-        $this->expectOutputString($bareReturn.$withAnchorName.$withEditableTarget);
+        $this->expectOutputString($bareReturn . $withAnchorName . $withEditableTarget);
         Fisma_Format_Section::startSection($anchorText, $editableTarget);
 
-        $fullReturn=$openTag.'class=\'editable\' target=\''.$editableTarget.'\'><a name=\''.$anchorName.'\'>'.$anchorText.'</a>'.$closeTag;
-        $this->expectOutputString($bareReturn.$withAnchorName.$withEditableTarget.$fullReturn);
+        $fullReturn = $openTag . 'class=\'editable\' target=\'' . $editableTarget . '\'><a name=\'' . $anchorName . '\'>' . $anchorText . '</a>' . $closeTag;
+        $this->expectOutputString($bareReturn . $withAnchorName . $withEditableTarget . $fullReturn);
         Fisma_Format_Section::startSection($anchorText, $editableTarget, $anchorName);
     }
 
@@ -64,6 +65,8 @@ class Test_Library_Fisma_Format_Section extends Test_Case_Unit
      * test function stopSection()
      * well, there's nothing to test at all
      * recommended: use a XML or any other externally editable input for HTML code
+     *
+     * @return void
      */
     public function testStopSection()
     {

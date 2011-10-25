@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
- * Class description
+ * test /library/Fisma/Hash.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -31,6 +31,8 @@ class Test_Library_Fisma_Hash extends Test_Case_Unit
 {
     /**
      * Testing the hash function with sha1, md5, sha256, and unsupported
+     *
+     * @return void
      */
     public function testHash()
     {
@@ -48,6 +50,12 @@ class Test_Library_Fisma_Hash extends Test_Case_Unit
         $unsupportedHashType = 'blowfish';
         $this->setExpectedException('Fisma_Zend_Exception', 'Unsupported hash type: '.$unsupportedHashType.'');
         Fisma_Hash::hash($originalString, $unsupportedHashType);
+    }
+
+    public function testPrivateConstructor()
+    {
+        $this->setExpectedException('Fisma_Zend_Exception', Fisma_Hash::CLASS_STATIC_ERROR);
+        new Fisma_Hash();
     }
 }
 

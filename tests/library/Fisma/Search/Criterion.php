@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * test /library/Fisma/Import/Factory.php
+ * test /library/Fisma/Search/Criterion.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -27,19 +27,31 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  * @package    Test
  * @subpackage Test_Library
  */
-class Test_Library_Fisma_Import_Factory extends Test_Case_Unit
+class Test_Library_Fisma_Search_Criterion extends Test_Case_Unit
 {
     /**
-     * test method create()
+     * test constructor and accessors
      * @return void
-     * pending on the @TODO in the Fisma_Import_Factory class
      */
-    public function testCreate()
+    public function testConstructorAndAccessors()
     {
-        $model='asset';
-        $values=array('attribute1', 'attribute2');
-        $this->assertEquals('Fisma_Import_Asset', get_class(Fisma_Import_Factory::create($model, $values)));
-        //@TODO add testing for other models
+        $field = 'id';
+        $operands = array(5, 10);
+        $operator = 'integerBetween';
+        $criterion = new Fisma_Search_Criterion($field, $operator, $operands);
+        $this->assertEquals($field, $criterion->getField());
+        $this->assertEquals($operator, $criterion->getOperator());
+        $this->assertEquals($operands, $criterion->getOperands());
+    }
+
+    /**
+     * test exception when attempting to set unsupported operator
+     * @return void
+     */
+    public function testUnsupportedOperator()
+    {
+        $this->setExpectedException('Fisma_Search_Exception', 'Invalid search criterion operator: ');
+        $criterion = new Fisma_Search_Criterion('id', 'isASolutionToBinaryEquation', array(1, 3, -4));
     }
 }
 

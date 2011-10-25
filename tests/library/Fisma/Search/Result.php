@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * test /library/Fisma/Import/Factory.php
+ * test /library/Fisma/Search/Result.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -27,19 +27,21 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  * @package    Test
  * @subpackage Test_Library
  */
-class Test_Library_Fisma_Import_Factory extends Test_Case_Unit
+class Test_Library_Fisma_Search_Result extends Test_Case_Unit
 {
     /**
-     * test method create()
+     * test constructor and accessors
      * @return void
-     * pending on the @TODO in the Fisma_Import_Factory class
      */
-    public function testCreate()
+    public function testConstructorAndAccessors()
     {
-        $model='asset';
-        $values=array('attribute1', 'attribute2');
-        $this->assertEquals('Fisma_Import_Asset', get_class(Fisma_Import_Factory::create($model, $values)));
-        //@TODO add testing for other models
+        $numberFound = 10;
+        $numberReturned = 1;
+        $tableData = array();
+        $result = new Fisma_Search_Result($numberFound, $numberReturned, $tableData);
+        $this->assertEquals($numberFound, $result->getNumberFound());
+        $this->assertEquals($numberReturned, $result->getNumberReturned());
+        $this->assertEquals($tableData, $result->getTableData());
     }
 }
 

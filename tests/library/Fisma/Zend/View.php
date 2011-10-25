@@ -31,6 +31,7 @@ class Test_Library_Fisma_Zend_View extends Test_Case_Unit
 {
     /**
      * test escaping, assuming default UTF-8 encoding
+     * @return void
      */
     public function testEscape()
     {

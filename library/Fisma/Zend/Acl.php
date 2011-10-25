@@ -43,7 +43,7 @@ class Fisma_Zend_Acl extends Zend_Acl
                 $userNotFound = true;
             }
         }
-        return ($userNotFound)?false:$this->isAllowed($user, 'area', $area);
+        return ($userNotFound) ? false : $this->isAllowed($user, 'area', $area);
     }
     
     /**

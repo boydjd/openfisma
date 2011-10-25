@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * test /library/Fisma/Import/Factory.php
+ * test /library/Fisma/Search/Criteria.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -27,19 +27,25 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  * @package    Test
  * @subpackage Test_Library
  */
-class Test_Library_Fisma_Import_Factory extends Test_Case_Unit
+class Test_Library_Fisma_Search_Criteria extends Test_Case_Unit
 {
     /**
-     * test method create()
+     * test everything
+     * wouldn't make sense to separate tests because all previous steps must be redone
+     * @require Fisma_Search_Criterion
      * @return void
-     * pending on the @TODO in the Fisma_Import_Factory class
      */
-    public function testCreate()
+    public function test()
     {
-        $model='asset';
-        $values=array('attribute1', 'attribute2');
-        $this->assertEquals('Fisma_Import_Asset', get_class(Fisma_Import_Factory::create($model, $values)));
-        //@TODO add testing for other models
+        $criterion = new Fisma_Search_Criterion('id', 'integerLessThan', array(0 => 10));
+        $criteria = new Fisma_Search_Criteria();
+        $criteria->add($criterion);
+        $criteria->rewind();
+        $this->assertEquals(0, $criteria->key());
+        $this->assertTrue($criteria->valid());
+        $this->assertEquals($criterion, $criteria->current());
+        $criteria->next();
+        $this->assertFalse($criteria->valid());
     }
 }
 

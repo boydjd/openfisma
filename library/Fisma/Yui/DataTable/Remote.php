@@ -33,6 +33,8 @@
  */
 class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
 {
+    const LAYOUT_NOT_INSTANTIATED_ERROR = 'Layout has not been instantiated.';              
+
     /**
      * The base URL from which this table fetches its data
      * 
@@ -112,11 +114,17 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
      * 
      * @return string
      */
-    public function render()
+    public function render($layout = null)
     {
         $this->_validate();
-        
-        $view = Zend_Layout::getMvcInstance()->getView();
+        if (!isset($layout)) {
+            $layout = Zend_Layout::getMvcInstance();
+        }
+        if ($layout==null) {
+            return self::LAYOUT_NOT_INSTANTIATED_ERROR;
+        } else {
+            $view = $layout->getView();
+        }        
 
         return $view->partial('yui/data-table-remote.phtml', 'default', $this->getProperties());
     }
@@ -160,13 +168,12 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
         
         foreach ($requiredFields as $requiredField) {
             if (is_null($this->$requiredField)) {
-                trigger_error("$requiredField cannot be null when rendering a remote table.", E_USER_ERROR);
-            }
+                trigger_error("$requiredField cannot be null when rendering a remote table.", E_USER_ERROR); }
+            //if phpunit saw a } on its own line after a trigger_error(), throw Exception, or return, it will generate warning
         }
         
         if (count($this->getColumns()) == 0) {
-            trigger_error("Table must contain at least one column.", E_USER_ERROR);
-        }
+            trigger_error("Table must contain at least one column.", E_USER_ERROR); } //so these two } was put up here
     }
     
     /**

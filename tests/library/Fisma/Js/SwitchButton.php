@@ -19,14 +19,13 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * Class description
+ * test /library/Fisma/Js/SwitchButton.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @subpackage Test_Library
- * @require    SwitchButtonDummy
  */
 class Test_Library_Fisma_Js_SwitchButton extends Test_Case_Unit
 {

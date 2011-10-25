@@ -17,7 +17,7 @@
  */
 
 /**
- ** Dummy class to implements Fisma_Zend_Acl_OriganizationDependency
+ ** Dummy class to wrap Zend_Reflection_Docblock
  ** @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  ** @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  ** @license    http://www.openfisma.org/content/license GPLv3
@@ -25,23 +25,18 @@
  ** @subpackage Test_Library
  **/
 
-class Test_Library_Fisma_Zend_MockOrg implements Fisma_Zend_Acl_OrganizationDependency
+class Test_Library_Fisma_Symfony_Components_ZendReflectionDocblockDummy extends Zend_Reflection_Docblock
 {
-    public $orgId; //as string
-    /*
-     * lazy constructor
-     * @param string orgId
-     * @return void
-     */
-    public function __construct($orgId = '')
+    //Publicize everything to test
+    //lazy constructor
+    public function __construct()
     {
-        $this->orgId = $orgId;
+        parent::__construct('DummyDocComment');
     }
-    /*
-     * @return string
-     */
-    public function getOrganizationDependencyId()
+    //public wrapper methods
+    //dummy wrapper methods
+    public function getTag($value)
     {
-        return $this->orgId;
+        return $value.'_tagged';
     }
 }

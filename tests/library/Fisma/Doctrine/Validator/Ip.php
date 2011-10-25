@@ -16,10 +16,10 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
+require_once(realpath(dirname(__FILE__) . '/../../../../Case/Unit.php'));
 
 /**
- * test /library/Fisma/Import/Factory.php
+ * test suite for /library/Fisma/Doctrine/Validator/Ip.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -27,19 +27,22 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  * @package    Test
  * @subpackage Test_Library
  */
-class Test_Library_Fisma_Import_Factory extends Test_Case_Unit
+class Test_Library_Fisma_Doctrine_Validator_Ip extends Test_Case_Unit
 {
     /**
-     * test method create()
+     * test validator
+     * why isn't this method static?
      * @return void
-     * pending on the @TODO in the Fisma_Import_Factory class
      */
-    public function testCreate()
+    public function testValidator()
     {
-        $model='asset';
-        $values=array('attribute1', 'attribute2');
-        $this->assertEquals('Fisma_Import_Asset', get_class(Fisma_Import_Factory::create($model, $values)));
-        //@TODO add testing for other models
+        $validator = new Fisma_Doctrine_Validator_Ip();
+        $this->assertTrue($validator->validate(null)); //not required -> true
+        $this->assertFalse($validator->validate('')); //erroneous false
+        $this->assertFalse($validator->validate('999.999.999.999')); //functional false
+        $this->assertFalse($validator->validate('aaaa:bbbb:cccc:dddd:eeee:ffff:gggg:hhhh'));
+        $this->assertTrue($validator->validate('8.8.8.8'));
+        $this->assertTrue($validator->validate('0000:aaaa:bbbb:cccc:dddd:eeee:ffff:9999'));
     }
 }
 

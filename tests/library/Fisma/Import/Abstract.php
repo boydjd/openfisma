@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * Class description
+ * test /library/Fisma/Import/Abstract.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -30,6 +30,10 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  */
 class Test_Library_Fisma_Import_Abstract extends Test_Case_Unit
 {
+    /*
+     * load the Dummy helper
+     * @return void
+     */
     public function setup()
     {
         require_once(realpath(dirname(__FILE__) . '/AbstractDummy.php'));
@@ -37,6 +41,7 @@ class Test_Library_Fisma_Import_Abstract extends Test_Case_Unit
 
     /**
      * test constructor
+     * @return void
      */
     public function testConstructor()
     {
@@ -46,39 +51,45 @@ class Test_Library_Fisma_Import_Abstract extends Test_Case_Unit
             'filePath' => 'data/uploads'
         );
         $importDummy = new Test_Library_Fisma_Import_AbstractDummy($sampleInitialValues);
-        $this->assertEquals($importDummy->_orgSystemId, $sampleInitialValues['orgSystemId']);
-        $this->assertEquals($importDummy->_networkId, $sampleInitialValues['networkId']);
-        $this->assertEquals($importDummy->_filePath, $sampleInitialValues['filePath']);
+        $this->assertEquals($sampleInitialValues['orgSystemId'], $importDummy->getOrgSystemId());
+        $this->assertEquals($sampleInitialValues['networkId'], $importDummy->getNetworkId());
+        $this->assertEquals($sampleInitialValues['filePath'], $importDummy->getFilePath());
     }
 
     /**
      * test get and set Error()
+     * @return void
      */
     public function testError()
     {
         $importDummy = new Test_Library_Fisma_Import_AbstractDummy();
-        $this->assertEquals($importDummy->_errors, $importDummy->getErrors());
-
         $sampleErrors = array('error1');
-        $importDummy->_setError('error1');
-        $this->assertEquals($sampleErrors, $importDummy->_errors);
+        //setError method is actually and addError method
+        $importDummy->setError('error1');
+        $this->assertEquals($sampleErrors, $importDummy->getErrors());
     }
 
     /**
      * test getNumSuppressed()
+     * @return void
      */
     public function testGetNumSuppressed()
     {
         $importDummy = new Test_Library_Fisma_Import_AbstractDummy();
-        $this->assertEquals($importDummy->_numSuppressed, $importDummy->getNumSuppressed());
+        $this->assertEquals(0, $importDummy->getNumSuppressed()); //default value = 0
+        $importDummy->parse(); //set _numSuppressed to 1
+        $this->assertEquals(1, $importDummy->getNumSuppressed());
     }
 
     /**
      * test getNumImported()
+     * @return void
      */
     public function testGetNumImported()
     {
         $importDummy = new Test_Library_Fisma_Import_AbstractDummy();
-        $this->assertEquals($importDummy->_numImported, $importDummy->getNumImported());
+        $this->assertEquals(0, $importDummy->getNumImported()); //default value = 0
+        $importDummy->parse(); //set _numImported to 1
+        $this->assertEquals(1, $importDummy->getNumImported());
     }
 }

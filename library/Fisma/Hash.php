@@ -27,14 +27,15 @@
  */
 class Fisma_Hash
 {
-    /**
-     * This is a static class that cannot be instantiated
-     * 
+    
+    const CLASS_STATIC_ERROR = 'This is a static class that cannot be instantiated.';
+    /*
+     * private constructor 
      * @return void
      */
-    private function __construct()
+    public function __construct()
     {
-        ;
+        throw new Fisma_Zend_Exception(self::CLASS_STATIC_ERROR);
     }
     
     /**

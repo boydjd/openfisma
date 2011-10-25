@@ -19,27 +19,32 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * test /library/Fisma/Import/Factory.php
+ * Class description
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @subpackage Test_Library
+ * @require    Fisma_Yui_Menu
  */
-class Test_Library_Fisma_Import_Factory extends Test_Case_Unit
+class Test_Library_Fisma_Yui_MenuBar extends Test_Case_Unit
 {
     /**
-     * test method create()
-     * @return void
-     * pending on the @TODO in the Fisma_Import_Factory class
+     * test add() and get() methods
      */
-    public function testCreate()
+    public function testAdd()
     {
-        $model='asset';
-        $values=array('attribute1', 'attribute2');
-        $this->assertEquals('Fisma_Import_Asset', get_class(Fisma_Import_Factory::create($model, $values)));
-        //@TODO add testing for other models
+        $dummyMenu = new Fisma_Yui_Menu(null);
+        $menuBar = new Fisma_Yui_MenuBar();
+        
+        $menuBar->add($dummyMenu);
+        $menus = $menuBar->getMenus();
+        $this->assertEquals(1, count($menus));
+        $this->assertEquals($dummyMenu, $menus[0]);
+
+        $this->setExpectedException('Fisma_Zend_Exception', 'Can only add Menus and MenuItems to this class.');
+        $menuBar->add($menuBar);
     }
 }
 

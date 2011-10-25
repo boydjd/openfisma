@@ -31,6 +31,7 @@ class Test_Library_Fisma_AsyncResponse extends Test_Case_Unit
 {
    /**
     * Test a successful async response
+    * @return void
     */
    public function testSucceed()
    {
@@ -45,6 +46,7 @@ class Test_Library_Fisma_AsyncResponse extends Test_Case_Unit
 
    /**
     * Test a failed async response
+    * @return void
     */
    public function testFail()
    {

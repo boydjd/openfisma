@@ -20,6 +20,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../../Case/Unit.php'));
 
 /**
  * Tests for YUI data table with local data source
+ * Employed to test Fisma_Yui_DataTabale_Abstract as well
  * 
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -31,6 +32,7 @@ class Test_Library_Fisma_Yui_DataTable_Local extends Test_Case_Unit
 {
     /**
      * Add columns and get columns from a data table
+     * @return void
      */
     public function testAddColumns()
     {
@@ -44,5 +46,69 @@ class Test_Library_Fisma_Yui_DataTable_Local extends Test_Case_Unit
               ->addColumn(new Fisma_Yui_DataTable_Column('Column 2', true), true);
 
         $this->assertEquals(2, count($table->getColumns()));
+    }
+
+    /**
+     * test Fisma_Yui_DataTable_Abstract
+     * test Fisma_Yui_DataTable_Local::render() via MockLayout & MockView
+     * (using MockView to return data add via Abstract class)
+     * @return void
+     */
+    public function testAbstractAndRender()
+    {
+        $table = new Fisma_Yui_DataTable_Local();
+        $column = new Fisma_Yui_DataTable_Column('Column 1', true, 'Fisma.DataTable.Html', null);
+        $table->addColumn($column, true);
+        $this->assertEquals(1, count($table->getColumns()));
+
+        $this->assertEquals(Fisma_Yui_DataTable_Local::LAYOUT_NOT_INSTANTIATED_ERROR, $table->__tostring());
+
+        $table->setGroupBy($column);
+        $table->addEventListener('mouseover', 'highlightCurrentRows');
+        $table->setData('Mock Data');
+
+        $layout = new DataTableMockLayout();
+        $this->assertEquals('this is a dummy view', $table->render($layout));
+        $this->assertEquals($column, $layout->view->data['groupBy']);
+        $this->assertEquals(1, count($layout->view->data['eventListeners']));
+        $this->assertEquals('Mock Data', $layout->view->data['data']);
+        $this->assertEquals('Fisma.DataTable.Html', $layout->view->data['columnDefinitions'][0]['formatter']);
+
+        $this->assertNull($layout->view->data['columnDefinitions'][0]['formatterParameters']);
+
+
+    }
+}
+class DataTableMockLayout
+{
+    public $view;
+
+    public function __construct()
+    {
+        $this->view = new DataTableMockView();
+    }
+
+    public function getView()
+    {
+        return $this->view;
+    }
+}
+class DataTableMockView
+{
+    public $data;
+    public $viewscript;
+    public $option;
+
+    public function __construct()
+    {
+        $this->tabs = array();
+    }   
+
+    public function partial($viewscript, $option, $data)
+    {       
+        $this->viewscript = $viewscript;
+        $this->option = $option;
+        $this->data = $data;
+        return 'this is a dummy view';
     }
 }

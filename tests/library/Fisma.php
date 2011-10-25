@@ -21,7 +21,7 @@ require_once(realpath(dirname(__FILE__) . '/../Case/Unit.php'));
 /**
  * Tests for the Fisma facade class
  * 
- * @author     Mark E. Haase, Duy K. Bui
+ * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
@@ -37,6 +37,8 @@ class Test_Library_Fisma extends Test_Case_Unit
      * This test isn't ideal because it relies on knowledge of a known Fisma_Doctrine_Record_Listener subclass in order
      * to test the logic in the Fisma class, but it's a necessary evil to get coverage of this rather important
      * function.
+     *
+     * @return void
      */
     public function testGloballySetListenerEnabledState()
     {
@@ -50,6 +52,8 @@ class Test_Library_Fisma extends Test_Case_Unit
     /**
      * Test the getListenerEnabled() wrapper
      * This test also relies on the knowledge of the IndexListener static object
+     *
+     * @return void
      */
     public function testGetListenerEnabledState()
     {
@@ -59,6 +63,8 @@ class Test_Library_Fisma extends Test_Case_Unit
     /**
      * Test set/get notification state
      * not ideal but can't get access to private member
+     *
+     * @return void
      */
     public function testNotificationEnabled()
     {
@@ -70,6 +76,8 @@ class Test_Library_Fisma extends Test_Case_Unit
 
     /**
      * Test set app config array
+     *
+     * @return void
      */
     public function testSetAppConfig()
     {
@@ -80,6 +88,8 @@ class Test_Library_Fisma extends Test_Case_Unit
 
     /**
      * Test htmlentities wrapper
+     *
+     * @return void
      */
     public function testHtmlEntities()
     {
@@ -90,6 +100,8 @@ class Test_Library_Fisma extends Test_Case_Unit
 
     /**
      * Test configuration() method
+     *
+     * @return void
      */
     public function testConfiguration()
     {
@@ -102,6 +114,8 @@ class Test_Library_Fisma extends Test_Case_Unit
 
     /**
      * Test debug() method
+     *
+     * @return void
      */
     public function testDebug()
     {
@@ -119,6 +133,8 @@ class Test_Library_Fisma extends Test_Case_Unit
      * Test getPath() method
      * with the knowledge of the private array $_applicationPath['application']='application'
      * and the structure of the array $_appConf['includePaths']
+     *
+     * @return void
      */
     public function testGetPath()
     {
@@ -143,6 +159,8 @@ class Test_Library_Fisma extends Test_Case_Unit
 
     /**
      * Test getPath() method with undefined key for exception
+     *
+     * @return void
      */
     public function testGetUnknownPath()
     {
@@ -156,6 +174,8 @@ class Test_Library_Fisma extends Test_Case_Unit
      * Test setConfiguration() method
      * use configuration() method to access private member $_configuration
      * with a knowledge on the instanciable Fisma_Configuration_Array class with implements Fisma_Configuration_Interface
+     *
+     * @return void
      */
     public function testSetConfiguration()
     {

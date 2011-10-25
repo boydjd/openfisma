@@ -16,10 +16,10 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
+require_once(realpath(dirname(__FILE__) . '/../../../../../Case/Unit.php'));
 
 /**
- * test /library/Fisma/Import/Factory.php
+ * test /library/Fisma/Yui/Form/Button/Reset.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -27,19 +27,24 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  * @package    Test
  * @subpackage Test_Library
  */
-class Test_Library_Fisma_Import_Factory extends Test_Case_Unit
+class Test_Library_Fisma_Yui_Form_Button_Reset extends Test_Case_Unit
 {
     /**
-     * test method create()
+     * test renderSelf
+     * don't mess with the spacing or tests might fail
      * @return void
-     * pending on the @TODO in the Fisma_Import_Factory class
      */
-    public function testCreate()
+    public function testRenderSelf()
     {
-        $model='asset';
-        $values=array('attribute1', 'attribute2');
-        $this->assertEquals('Fisma_Import_Asset', get_class(Fisma_Import_Factory::create($model, $values)));
-        //@TODO add testing for other models
+        $name = 'ResetButton';
+        $render = "<input id='$name' type='reset' name='$name' value='$name'>
+                    <script type='text/javascript'>
+                    YAHOO.util.Event.onDOMReady(function () {
+                        var $name = new YAHOO.widget.Button(\"$name\");
+                    });
+                    </script>";
+        $testButton = new Fisma_Yui_Form_Button_Reset($name);
+        $this->assertEquals($render, $testButton->renderSelf());
     }
 }
 

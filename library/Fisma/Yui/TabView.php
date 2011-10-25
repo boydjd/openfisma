@@ -97,6 +97,16 @@ class Fisma_Yui_TabView
         
         $this->_tabs = array();
     }
+
+    public function getTabViewId()
+    {
+        return $this->_id;
+    }
+
+    public function getObjectId()
+    {
+        return $this->_objectId;
+    }
     
     /**
      * Add a tab to this tab view
@@ -111,7 +121,8 @@ class Fisma_Yui_TabView
         $id = (empty($id)) ? $name : $id;
         $this->_tabs[] = array('id' => $id, 'name' => $name, 'url' => $url, 'active' => $active);
     }
-    
+
+    const LAYOUT_NOT_INSTANTIATED_ERROR = 'Layout has not been instantiated.';
     /**
      * Render the tabview to HTML
      * 
@@ -120,10 +131,17 @@ class Fisma_Yui_TabView
      * 
      * @return string
      */
-    public function __toString()
+    public function render($layout = null)
     {
-        $view = Zend_Layout::getMvcInstance()->getView();
-
+        if (!isset($layout))
+        {
+            $layout = Zend_Layout::getMvcInstance();
+        }
+        if($layout==null) {
+                return $this::LAYOUT_NOT_INSTANTIATED_ERROR;
+        }
+        $view = $layout->getView();
+            
         $tabs = array(
             'selectedTabCookie' => 'TabView_' . $this->_id . '_SelectedTab',
             'objectId' => $this->_objectId,
@@ -133,5 +151,11 @@ class Fisma_Yui_TabView
         );
 
         return $view->partial('yui/tab-view.phtml', 'default', $tabs);
+    }
+
+    //use render() to do what __tostring() was supposed to do because __tostring() cannot accept parameter
+    public function __tostring()
+    {
+        return $this->render();
     }
 }

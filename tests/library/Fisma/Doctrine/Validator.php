@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * test /library/Fisma/Import/Factory.php
+ * test suite for /library/Fisma/Doctrine/Validator.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -27,19 +27,18 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  * @package    Test
  * @subpackage Test_Library
  */
-class Test_Library_Fisma_Import_Factory extends Test_Case_Unit
+class Test_Library_Fisma_Doctrine_Validator extends Test_Case_Unit
 {
     /**
-     * test method create()
+     * test getValidator()
      * @return void
-     * pending on the @TODO in the Fisma_Import_Factory class
      */
-    public function testCreate()
+    public function testGetValidator()
     {
-        $model='asset';
-        $values=array('attribute1', 'attribute2');
-        $this->assertEquals('Fisma_Import_Asset', get_class(Fisma_Import_Factory::create($model, $values)));
-        //@TODO add testing for other models
+        $this->assertEquals('Doctrine_Validator_Ip', get_class(Fisma_Doctrine_Validator::getValidator('IP'))); //default
+        $this->assertEquals('Fisma_Doctrine_Validator_Ip', get_class(Fisma_Doctrine_Validator::getValidator('Fisma_Doctrine_Validator_Ip'))); //custom
+        $this->setExpectedException('Doctrine_Exception', 'Validator named \'\' not available.');
+        Fisma_Doctrine_Validator::getValidator('');
     }
 }
 

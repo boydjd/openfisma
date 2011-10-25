@@ -31,12 +31,12 @@ class Test_Library_Fisma_Zend_Form extends Test_Case_Unit
 {
     /**
      * test the readOnly overriding
+     * @return void
      */
     public function testRender()
     {
-        require_once(realpath(dirname(__FILE__) . '/ElementDummy.php'));
         $testForm = new Fisma_Zend_Form();
-        $testElement = new Test_Library_Fisma_Zend_ElementDummy();
+        $testElement = new Zend_Form_Element('sampleElement');
         $testForm->addElement($testElement);
         $testForm->setReadOnly(true);
         //bypassing Exception thrown by "Fisma_Zend_Form::parent::render()"
@@ -50,6 +50,7 @@ class Test_Library_Fisma_Zend_Form extends Test_Case_Unit
 
     /**
      * test the setter/getter of readOnly
+     * @return void
      */
     public function testReadOnly()
     {
