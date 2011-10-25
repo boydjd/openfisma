@@ -191,6 +191,10 @@ class Fisma_Menu
             $saMenu->add(new Fisma_Yui_MenuItem('Create Security Authorization', '/sa/security-authorization/create'));
             $saMenu->add(new Fisma_Yui_MenuItem('Search', '/sa/security-authorization'));
 
+            $saMenu->addSeparator();
+
+            $saMenu->add(new Fisma_Yui_MenuItem('Dashboard', '/sa/dashboard'));
+
             if ($acl->hasArea('security_authorization_admin')) {
                 $saAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
@@ -198,7 +202,6 @@ class Fisma_Menu
                     new Fisma_Yui_MenuItem('Information Types', '/sa/information-type')
                 );
 
-                $saMenu->addSeparator();
                 $saMenu->add($saAdminSubmenu);
             }
 

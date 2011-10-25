@@ -1,0 +1,20 @@
+<?php Fisma_Format_Section::startSection('Dashboard'); ?>
+
+    <?php echo $this->escape($this->dataTable, 'none'); ?>
+    <div class="clear"></div>
+
+    <div class="column left">
+        <div style='text-align: center;'>
+            <?php echo $this->escape($this->chartTotalStatus, 'none'); ?>
+        </div>
+    </div>
+
+    <div class="column right">
+        <div style='text-align: center;'>
+            <?php echo $this->escape($this->chartTotalType, 'none'); ?>
+        </div>
+    </div>
+
+<div class="clear"></div>
+
+<?php Fisma_Format_Section::stopSection(); ?>
