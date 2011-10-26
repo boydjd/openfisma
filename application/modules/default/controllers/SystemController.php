@@ -142,12 +142,12 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
             $imageValidator = new Zend_Validate_File_IsImage();
 
-            if ($imageValidator->isValid($architectureDiagramFile)) {
+            //if ($imageValidator->isValid($architectureDiagramFile)) {
                 $this->view->architectureDiagramId = $architectureDiagramId;
-            } else {
-                $logger = $this->getInvokeArg('bootstrap')->getResource('Log');
-                $logger->log("$architectureDiagramFile is not a valid image", Zend_Log::WARN);
-            }
+            //} else {
+            //    $logger = $this->getInvokeArg('bootstrap')->getResource('Log');
+            //    $logger->log("$architectureDiagramFile is not a valid image", Zend_Log::WARN);
+            //}
         }
 
         $artifactUploadButton = new Fisma_Yui_Form_Button(
