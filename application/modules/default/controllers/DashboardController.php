@@ -145,8 +145,9 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             $lastLoginDate = new Zend_Date($lastLoginInfo->lastLoginTs, Zend_Date::ISO_8601);
             $msg = 'Last successful login at ' 
                    . $lastLoginDate->toString(Fisma_Date::FORMAT_WEEKDAY_MONTH_NAME_SHORT_DAY_TIME) 
-                   . ' From IP address '
-                   . $lastLoginInfo->lastLoginIp;
+                   . ' from IP address '
+                   . $lastLoginInfo->lastLoginIp
+                   . '.';
   
             if ('database' == Fisma::configuration()->getConfig('auth_type')) {
                 if ($lastLoginInfo->failureCount > 0) {
