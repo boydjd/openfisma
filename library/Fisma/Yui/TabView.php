@@ -130,6 +130,7 @@ class Fisma_Yui_TabView
      * meaningful name. E.g. the "FindingView" tab view generates cookies like "TabView_FindingView_SelectedTab", etc.
      * 
      * @return string
+     * @throws Fisma_Zend_Exception
      */
     public function render($layout = null)
     {
@@ -138,7 +139,7 @@ class Fisma_Yui_TabView
             $layout = Zend_Layout::getMvcInstance();
         }
         if($layout==null) {
-                return $this::LAYOUT_NOT_INSTANTIATED_ERROR;
+            throw new Fisma_Zend_Exception(self::LAYOUT_NOT_INSTANTIATED_ERROR);
         }
         $view = $layout->getView();
             

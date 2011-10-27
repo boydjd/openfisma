@@ -31,6 +31,8 @@ class Test_Library_Fisma_Yui_Form_AutoComplete extends Test_Case_Unit
 {
     /**
      * test renderSelf()
+     *
+     * please maintain spacing *strictly*
      * @return void
      */
     public function testRenderSelf()

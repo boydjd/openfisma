@@ -31,6 +31,7 @@ class Test_Library_Fisma_Yui_Form_Button_Link extends Test_Case_Unit
 {
     /**
      * test renderSelf()
+     *
      * don't reindent / mess with spacing, you've been warned
      * @return void
      */

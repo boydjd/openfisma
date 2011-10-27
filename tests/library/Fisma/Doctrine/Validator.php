@@ -30,13 +30,32 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 class Test_Library_Fisma_Doctrine_Validator extends Test_Case_Unit
 {
     /**
-     * test getValidator()
+     * test getValidator() with default Doctrine's validators
+     *
      * @return void
      */
-    public function testGetValidator()
+    public function testGetDefaultValidator()
     {
-        $this->assertEquals('Doctrine_Validator_Ip', get_class(Fisma_Doctrine_Validator::getValidator('IP'))); //default
-        $this->assertEquals('Fisma_Doctrine_Validator_Ip', get_class(Fisma_Doctrine_Validator::getValidator('Fisma_Doctrine_Validator_Ip'))); //custom
+        $this->assertEquals('Doctrine_Validator_Ip', get_class(Fisma_Doctrine_Validator::getValidator('IP')));
+    }
+
+    /**
+     * test getValidator() with custom Fisma_Doctrine's validators
+     * 
+     * @return void
+     */
+    public function testGetCustomValidator()
+    {
+        $this->assertEquals('Fisma_Doctrine_Validator_Ip', get_class(Fisma_Doctrine_Validator::getValidator('Fisma_Doctrine_Validator_Ip')));
+    }
+
+    /**
+     * test getValidator() with invalid input
+     * 
+     * @return void
+     */
+    public function testGetUnsupportedValidator()
+    {
         $this->setExpectedException('Doctrine_Exception', 'Validator named \'\' not available.');
         Fisma_Doctrine_Validator::getValidator('');
     }

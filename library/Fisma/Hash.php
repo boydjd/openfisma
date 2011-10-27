@@ -32,6 +32,7 @@ class Fisma_Hash
     /*
      * private constructor 
      * @return void
+     * @throws Fisma_Zend_Exception
      */
     public function __construct()
     {

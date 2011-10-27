@@ -31,6 +31,7 @@ class Test_Library_Fisma_Yui_Tooltip extends Test_Case_Unit
 {
     /**
      * test render
+     *
      * please don't mess with spacing for your own good
      * @return void
      */

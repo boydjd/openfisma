@@ -2,4 +2,6 @@ tags
 phpcs_report
 phpcs.py
 .DS_Store
-
+log
+log-part1
+clover-part1

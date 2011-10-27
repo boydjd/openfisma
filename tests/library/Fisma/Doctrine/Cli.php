@@ -30,13 +30,22 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 class Test_Library_Fisma_Doctrine_Cli extends Test_Case_Unit
 {
     /**
-     * test getTaskClass
+     * setup before each test
+     * 
      * @return void
-     * @require CliDummy because the only method in source class is protected
+     * @requires CliDummy because the only method in source class is protected
+     */
+    public function setup()
+    { 
+        require_once(realpath(dirname(__FILE__) . '/CliDummy.php'));
+    }
+    /**
+     * test getTaskClass
+     *
+     * @return void
      */
     public function testGetTaskClass()
     {
-        require_once(realpath(dirname(__FILE__) . '/CliDummy.php'));
         $cli = new Test_Library_Fisma_Doctrine_CliDummy();
 
         $args = array(1 => 'migrate');

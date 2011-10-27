@@ -31,7 +31,8 @@ class Test_Library_Fisma_Doctrine_Validator_Ip extends Test_Case_Unit
 {
     /**
      * test validator
-     * why isn't this method static?
+     *
+     * @comment why isn't this method static?
      * @return void
      */
     public function testValidator()
@@ -45,4 +46,3 @@ class Test_Library_Fisma_Doctrine_Validator_Ip extends Test_Case_Unit
         $this->assertTrue($validator->validate('0000:aaaa:bbbb:cccc:dddd:eeee:ffff:9999'));
     }
 }
-

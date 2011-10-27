@@ -113,6 +113,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
      * Render the datatable with HTML and/or Javascript
      * 
      * @return string
+     * @throws Fisma_Zend_Exception
      */
     public function render($layout = null)
     {
@@ -121,7 +122,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
             $layout = Zend_Layout::getMvcInstance();
         }
         if ($layout==null) {
-            return self::LAYOUT_NOT_INSTANTIATED_ERROR;
+            throw new Fisma_Zend_Exception(self::LAYOUT_NOT_INSTANTIATED_ERROR);
         } else {
             $view = $layout->getView();
         }        

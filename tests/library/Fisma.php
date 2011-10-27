@@ -51,6 +51,7 @@ class Test_Library_Fisma extends Test_Case_Unit
     
     /**
      * Test the getListenerEnabled() wrapper
+     *
      * This test also relies on the knowledge of the IndexListener static object
      *
      * @return void
@@ -62,6 +63,7 @@ class Test_Library_Fisma extends Test_Case_Unit
 
     /**
      * Test set/get notification state
+     *
      * not ideal but can't get access to private member
      *
      * @return void
@@ -131,7 +133,8 @@ class Test_Library_Fisma extends Test_Case_Unit
 
     /**
      * Test getPath() method
-     * with the knowledge of the private array $_applicationPath['application']='application'
+     *
+     * knowing $_applicationPath['application']='application'
      * and the structure of the array $_appConf['includePaths']
      *
      * @return void
@@ -172,8 +175,9 @@ class Test_Library_Fisma extends Test_Case_Unit
 
     /**
      * Test setConfiguration() method
+     *
      * use configuration() method to access private member $_configuration
-     * with a knowledge on the instanciable Fisma_Configuration_Array class with implements Fisma_Configuration_Interface
+     * knowing Fisma_Configuration_Array class implement Fisma_Configuration_Interface
      *
      * @return void
      */

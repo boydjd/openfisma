@@ -61,8 +61,6 @@ class Test_Library_Fisma_Yui_DataTable_Local extends Test_Case_Unit
         $table->addColumn($column, true);
         $this->assertEquals(1, count($table->getColumns()));
 
-        $this->assertEquals(Fisma_Yui_DataTable_Local::LAYOUT_NOT_INSTANTIATED_ERROR, $table->__tostring());
-
         $table->setGroupBy($column);
         $table->addEventListener('mouseover', 'highlightCurrentRows');
         $table->setData('Mock Data');
@@ -76,7 +74,8 @@ class Test_Library_Fisma_Yui_DataTable_Local extends Test_Case_Unit
 
         $this->assertNull($layout->view->data['columnDefinitions'][0]['formatterParameters']);
 
-
+        $this->setExpectedException('Fisma_Zend_Exception', Fisma_Yui_DataTable_Local::LAYOUT_NOT_INSTANTIATED_ERROR);
+        $table->__tostring(); // render() to be called from within __tostring()
     }
 }
 class DataTableMockLayout

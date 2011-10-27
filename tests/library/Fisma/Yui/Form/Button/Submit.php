@@ -33,6 +33,7 @@ class Test_Library_Fisma_Yui_Form_Button_Submit extends Test_Case_Unit
 {
     /**
      * test renderSelf()
+     *
      * the following method require MANUAL spacing, don't mess with it, please.
      * @return void
      */

@@ -31,6 +31,7 @@ class Test_Library_Fisma_ZfDebug_Plugin_YuiLogging extends Test_Case_Unit
 {
     /**
      * test getTab method
+     *
      * @return void
      */
     public function testGetTab()
@@ -41,6 +42,7 @@ class Test_Library_Fisma_ZfDebug_Plugin_YuiLogging extends Test_Case_Unit
 
     /**
      * test getIconData method
+     *
      * @return void
      */
     public function testGetIconData()
@@ -51,6 +53,7 @@ class Test_Library_Fisma_ZfDebug_Plugin_YuiLogging extends Test_Case_Unit
 
     /**
      * test whether getIdentifier() return the classname
+     *
      * @return void
      */
     public function testGetIdentifier()
@@ -61,6 +64,7 @@ class Test_Library_Fisma_ZfDebug_Plugin_YuiLogging extends Test_Case_Unit
 
     /**
      * test whether getPanel() use the correct view script
+     *
      * @recommend: use a constant or variable to hold the path instead of hard-coding
      * @return void
      */
@@ -68,10 +72,12 @@ class Test_Library_Fisma_ZfDebug_Plugin_YuiLogging extends Test_Case_Unit
     {
         $samplePlugin = new Fisma_ZfDebug_Plugin_YuiLogging();
 
-        //test with default view
-        $this->assertEquals($samplePlugin::LAYOUT_NOT_INSTANTIATED_ERROR, $samplePlugin->getPanel());
-        //test with mock view
+        // test with mock view
         $this->assertEquals('debug/zfdebug-yui-logging-tab.phtml', $samplePlugin->getPanel(new ZfDebugPluginMockLayout()));
+
+        // test with default view
+        $this->setExpectedException('Fisma_Zend_Exception', $samplePlugin::LAYOUT_NOT_INSTANTIATED_ERROR);
+        $samplePlugin->getPanel();
     }
 }
 class ZfDebugPluginMockLayout

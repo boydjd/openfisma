@@ -53,8 +53,6 @@ class Test_Library_Fisma_Yui_DataTable_Remote extends Test_Case_Unit
               ->setClickEventBaseUrl('')
               ->setClickEventVariableName('');
 
-        $this->assertEquals(Fisma_Yui_DataTable_Remote::LAYOUT_NOT_INSTANTIATED_ERROR, $table->__tostring());
-        
         $layout = new RemoteTableMockLayout();
         $this->assertEquals('this is a dummy view', $table->render($layout));
 
@@ -70,6 +68,9 @@ class Test_Library_Fisma_Yui_DataTable_Remote extends Test_Case_Unit
         $this->assertEquals('asc', $layout->view->data['sortDirection']);
         $this->assertEquals(1, count($layout->view->data['columns']));
         $this->assertEquals(1, count($layout->view->data['columnDefinitions']));
+
+        $this->setExpectedException('Fisma_Zend_Exception', Fisma_Yui_DataTable_Remote::LAYOUT_NOT_INSTANTIATED_ERROR);
+        $table->__tostring();
     }
 
     //phpunit returns true for all assertions after setExpectedException

@@ -26,17 +26,27 @@ require_once(realpath(dirname(__FILE__) . '/../../../../Case/Unit.php'));
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @subpackage Test_Library
- * @require    ServiceContainerLoaderAnnotationAbstractAnnotationDummy
  */
 class Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotation extends Test_Case_Unit
 {
+    /**
+     * setup before each test
+     * 
+     * @return void
+     * @requires ServiceContainerLoaderAnnotationAbstractAnnotationDummy
+     * @requires ZendReflectionDocBlockDummy
+     */
+    public function setup()
+    {
+        require_once(realpath(dirname(__FILE__) . '/ServiceContainerLoaderAnnotationAbstractAnnotationDummy.php'));
+        require_once(realpath(dirname(__FILE__) . '/ZendReflectionDocblockDummy.php'));
+    }
     /**
      * test constructor
      * @return void
      */
     public function testConstructor()
     {
-        require_once(realpath(dirname(__FILE__) . '/ServiceContainerLoaderAnnotationAbstractAnnotationDummy.php'));
         $name = 'very long';
         $tooLong = new Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy($name);
         $this->assertEquals($name, $tooLong->getName());
@@ -48,7 +58,6 @@ class Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbst
      */
     public function testFilters()
     {
-        require_once(realpath(dirname(__FILE__) . '/ServiceContainerLoaderAnnotationAbstractAnnotationDummy.php'));
         $tooLong = new Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy('testObject');
         $message = 'bem bem';
         $this->assertEquals($message, $tooLong->filterUnderscore('_'.$message));
@@ -60,12 +69,9 @@ class Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbst
     /**
      * test getTag()
      * @return void
-     * @require ZendReflectionDocBlockDummy
      */
     public function testGetTag()
     {
-        require_once(realpath(dirname(__FILE__) . '/ServiceContainerLoaderAnnotationAbstractAnnotationDummy.php'));
-        require_once(realpath(dirname(__FILE__) . '/ZendReflectionDocblockDummy.php'));
         $tooLong = new Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy('testObject');
         $this->assertEquals('testObject_tagged', $tooLong->getTag(new Test_Library_Fisma_Symfony_Components_ZendReflectionDocblockDummy()));
     }

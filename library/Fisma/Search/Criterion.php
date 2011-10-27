@@ -86,6 +86,7 @@ class Fisma_Search_Criterion
      * @param string $field
      * @param string $operator
      * @param array $operands
+     * @throws  Fisma_Search_Exception
      */
     public function __construct($field, $operator, $operands)
     {
@@ -148,6 +149,7 @@ class Fisma_Search_Criterion
      * Mutator for $_operator
      * 
      * @param string $operator
+     * @throws  Fisma_Search_Exception
      */
     public function setOperator($operator)
     {

@@ -31,6 +31,7 @@ class Test_Library_Fisma_Yui_TabView extends Test_Case_Unit
 {
     /**
      * test constructors
+     *
      * @return void
      */
     public function testConstructor()
@@ -50,6 +51,7 @@ class Test_Library_Fisma_Yui_TabView extends Test_Case_Unit
 
     /**
      * test add() / toString() method
+     *
      * @return void
      */
     public function testAdd()
@@ -59,7 +61,7 @@ class Test_Library_Fisma_Yui_TabView extends Test_Case_Unit
         $url = '/tab1';
         $tabView->addTab($name, $url);
 
-        //instead of adding getter for TabView::_tabs, get it natively through MockLayout -> MockView
+        // instead of adding getter for TabView::_tabs, get it natively through MockLayout -> MockView
         $mockLayout = new TabViewMockLayout();
         $tabPage = array(
             'id' => $name,
@@ -82,15 +84,19 @@ class Test_Library_Fisma_Yui_TabView extends Test_Case_Unit
 
     /**
      * test the default __tostring()
+     *
      * @return void
      */
     public function testToString()
     {
-        $tabView = new Fisma_Yui_TabView('Test_TabView');
-        $this->assertEquals(Fisma_Yui_TabView::LAYOUT_NOT_INSTANTIATED_ERROR, $tabView->__tostring());
+        $tabView = new Fisma_Yui_TabView('Test_TabView');        
+        $this->setExpectedException('Fisma_Zend_Exception', $tabView::LAYOUT_NOT_INSTANTIATED_ERROR);
+        $tabView->__tostring();
     }
 }
 /**
+ * a mock object mimicking Zend_Layout behaviors
+ *
  * the purpose of using a mocklayout that provides a mockview (instead of providing the mockview directly)
  * is to separate the statement ZendLayout::getInstance()->getView();
  * into 2 independently testable $layout = ZendLayout::getInstance() and $view = $layout->getView();

@@ -31,6 +31,7 @@ class Test_Library_Fisma_Yui_Form_Button_Reset extends Test_Case_Unit
 {
     /**
      * test renderSelf
+     *
      * don't mess with the spacing or tests might fail
      * @return void
      */
