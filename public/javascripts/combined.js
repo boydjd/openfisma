@@ -3088,6 +3088,13 @@ Fisma.AutoComplete = function() {
                     callback : params.callback
                 }
             );
+
+            ac.selectionEnforceEvent.subscribe(function (ev, args) {
+                // if selection enforcement forces an empty field, clear the hidden id field as well
+                if (args[1] === '') {
+                    document.getElementById(params.hiddenFieldId).value = '';
+                }
+            });
         },
 
         /**
@@ -6422,7 +6429,7 @@ Fisma.Finding = {
         
         controlContainer.innerHTML = '<img src="/images/loading_bar.gif">';
         
-        var securityControlElement = document.getElementById('finding[securityControlId]');
+        var securityControlElement = document.getElementById('securityControlId');
         
         var securityControlId = escape(securityControlElement.value);
         

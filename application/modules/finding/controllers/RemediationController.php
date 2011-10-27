@@ -741,6 +741,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         
         $id = $this->_request->getParam('id');
         $findingData = $this->_request->getPost('finding', array());
+        $findingSecurityControlId = $this->getRequest()->getPost('securityControlId');
+        if (!empty($findingSecurityControlId)) {
+            $findingData['securityControlId'] = $findingSecurityControlId;
+        }
 
         $this->_forward('view', null, null, array('id' => $id));
 
@@ -1168,7 +1172,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $form = Fisma_Zend_Form_Manager::loadForm('finding_security_control');
 
         // Set up the available and default values for the form
-        $form->getElement('securityControlAutocomplete')->setValue($this->view->finding->securityControlId);
+        $scId = $this->view->finding->securityControlId;
+        if (!empty($scId)) {
+            $sc = $this->view->finding->SecurityControl;
+            $c = $sc->Catalog;
+            $name = sprintf("%s %s [%s]", $sc->code, $sc->name, $c->name);
+            $form->getElement('securityControlId')->setValue($scId);
+            $form->getElement('securityControlAutocomplete')->setValue($name);
+        }
         
         $form->setDefaults($this->getRequest()->getParams());
 

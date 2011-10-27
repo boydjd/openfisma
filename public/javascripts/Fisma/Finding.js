@@ -123,7 +123,7 @@ Fisma.Finding = {
         
         controlContainer.innerHTML = '<img src="/images/loading_bar.gif">';
         
-        var securityControlElement = document.getElementById('finding[securityControlId]');
+        var securityControlElement = document.getElementById('securityControlId');
         
         var securityControlId = escape(securityControlElement.value);
         
