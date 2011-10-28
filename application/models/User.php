@@ -297,7 +297,7 @@ class User extends BaseUser
             $suppressWarningsOriginalValue = $classLoader->suppressNotFoundWarnings();
             $classLoader->suppressNotFoundWarnings(true);
 
-            $acl = new Fisma_Zend_Acl();
+            $acl = new Fisma_Zend_Acl($this->username);
 
             // For each role, add its privileges to the ACL
             $roleArray = array();
