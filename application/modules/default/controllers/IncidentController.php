@@ -1404,9 +1404,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             new Fisma_Yui_DataTable_Column(
                 'Size',
                 true,
+                'Fisma.TableFormat.formatFileSize',
                 null,
-                null,
-                'size'
+                'size',
+                false,
+                'Fisma.TableParse.parseFileSize'
             )
         );
 
