@@ -14,8 +14,8 @@
         <echo message="Concatenating JavaScript..."/>
         <concat destfile="${location.js}/combined.js" force="no">
             <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,fisma.js,editable.js,selectallselectnone.js,jquery-min.js,nesteddatatable.js,groupeddatatable.js"/>
-            <filelist dir="${location.js}" files="Fisma/Storage.js"/>
-            <fileset dir="${location.js}/Fisma" includes="**/*.js" excludes="Storage.js"/>
+            <filelist dir="${location.js}" files="Fisma/Storage.js,Fisma/TreeTable.js"/>
+            <fileset dir="${location.js}/Fisma" includes="**/*.js" excludes="Storage.js,TreeTable.js"/>
             <fileset dir="${location.js}/jqPlot" includes="**/*.js"/>
         </concat>
         <echo message="JavaScript concatenated."/>
