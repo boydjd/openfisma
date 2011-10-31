@@ -1,8 +1,8 @@
 table.treeTable{width:100%;}
 table.treeTable th{padding:5px;background-color:#fafafa;border:1px solid #bbb;font-weight:bold;text-align:center;}
 table.treeTable td{padding:5px;background-color:#fafafa;border:1px solid #bbb;}
-table.treeTable td a{color:black;}
-table.treeTable td:first-child a{text-decoration:none;}
+table.treeTable td span{color:black;}
+table.treeTable td:first-child span{text-decoration:none;}
 table.treeTable div.link{padding:1px;}
 table.treeTable div.link:hover{padding:0;border:1px solid #ccc;background-color:#f0f0f0;}
 table.treeTable td img.control{margin:6px 6px 6px 2px;position:relative;float:left;}

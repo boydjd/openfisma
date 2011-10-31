@@ -5,3 +5,4 @@ div.dashboardGreen{border-color:#83ca8d;background-color:lightgreen;}
 div.dashboardYellow{border-color:#e2e13b;background-color:yellow;}
 div.dashboardRed{border-color:#daaeb5;background-color:pink;}
 div.dashboardChart{margin:2em 0;text-align:center;font-weight:bold;}
+#currentATO,#currentSelfAssessment,#contingencyPlanTests{cursor:pointer;}

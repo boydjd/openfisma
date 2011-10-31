@@ -119,6 +119,12 @@ div.dashboardChart {
     font-weight: bold;
 }
 
+/*
+ * The following styles are for hovoring the metrics
+ */
+#currentATO, #currentSelfAssessment, #contingencyPlanTests {
+    cursor: pointer;
+}
 /* The security control search box is initially hidden */
 div#findingSecurityControlSearch {
     display: none;
@@ -127,140 +133,7 @@ div#findingSecurityControlSearch {
     padding: 10px;
     margin-top: 10px;
 }
-/* @override http://localhost/stylesheets/TreeTable.css */
 /*******************************************************************************
- *
- * TreeTable.css
- *
- * Copyright (c) 2008 Endeavor Systems, Inc.
- *
- * This file is part of OpenFISMA.
- *
- * OpenFISMA is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- *
- * OpenFISMA is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
- *
- *******************************************************************************
- *
- * Tree tables are a graphical element which represents tree data in a table
- * view. This is a homegrown element specifically for OpenFISMA. See the
- * corresponsing TreeTable.js script.
- *
- * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
- * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
- * License:   http://www.openfisma.org/content/license
- * Version:   $Id$
- *
- *******************************************************************************
- */
- 
-table.treeTable {
-    width: 100%;
-}
-
-table.treeTable th {
-	padding: 5px;
-	background-color: #fafafa;
-    border: 1px solid #bbb;
-    font-weight: bold;
-    text-align: center;
-}
-
-table.treeTable td {
-	padding: 5px;
-	background-color: #fafafa;
-    border: 1px solid #bbb;
-}
-
-table.treeTable td a {
-    color: black;
-}
-
-table.treeTable td:first-child a {
-    text-decoration: none;
-}
-
-table.treeTable div.link {
-	padding: 1px;    
-}
-
-table.treeTable div.link:hover {
-	padding: 0px;
-	border: 1px solid #ccc;
-	background-color: #f0f0f0;
-}
-
-table.treeTable td img.control {
-	margin: 6px 6px 6px 2px;
-	position: relative;
-	float: left;
-}
-
-table.treeTable td img.icon {
-	float: left;
-	margin-right: 6px;
-}
-
-table.treeTable td img#control {
-	padding: 5px;
-    border: 1px solid grey;
-}
-
-table.treeTable td.noDueDate {
-    text-align: center;
-}
-
-table.treeTable td.onTime {
-    background-color: #a6eba9;
-    text-align: center;
-}
-
-table.treeTable td.overdue {
-    background-color: #ffcbcf;
-    text-align: center;
-    font-weight: bold;
-    font-style: italic;
-}
-
-.treeTable0 {
-    margin-left: 0em;
-}
-.treeTable1 {
-    margin-left: 1em;
-}
-.treeTable2 {
-    margin-left: 2em;
-}
-.treeTable3 {
-    margin-left: 3em;
-}
-.treeTable4 {
-    margin-left: 4em;
-}
-.treeTable5 {
-    margin-left: 5em;
-}
-.treeTable6 {
-    margin-left: 6em;
-}
-.treeTable7 {
-    margin-left: 7em;
-}
-.treeTable8 {
-    margin-left: 8em;
-}
-.treeTable9 {
-    margin-left: 9em;
-}/*******************************************************************************
  *
  * Incident.css
  *
@@ -329,7 +202,9 @@ div.incidentStep {
 }
 
 div.incidentStep td {
-	padding: 5px;
+    padding: 5px;
+    border-style: none;
+       
 }
 
 div.incidentStep td:first-child {
@@ -380,7 +255,8 @@ div.queuedIncidentStep div.incidentCardinality {
 
 tr.incidentStep {
     border-top: 1px dotted silver;
-}/**
+}
+/**
  * The module screen is used to enable/disable individual components in OpenFISMA
  */
 
@@ -390,6 +266,7 @@ table.modules {
 }
 
 table.modules td {
+    border-style: none;
     font-size: 1.4em;
     padding: 8px;
     vertical-align: middle;
@@ -645,7 +522,140 @@ div.showDisposalSystem input {
        padding-left: 20px; 
        background-color: pink;
 }
-/* Style for the UserInfo view helper */
+/*******************************************************************************
+ *
+ * TreeTable.css
+ *
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ *******************************************************************************
+ *
+ * Tree tables are a graphical element which represents tree data in a table
+ * view. This is a homegrown element specifically for OpenFISMA. See the
+ * corresponsing TreeTable.js script.
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ *
+ *******************************************************************************
+ */
+ 
+table.treeTable {
+    width: 100%;
+}
+
+table.treeTable th {
+	padding: 5px;
+	background-color: #fafafa;
+    border: 1px solid #bbb;
+    font-weight: bold;
+    text-align: center;
+}
+
+table.treeTable td {
+	padding: 5px;
+	background-color: #fafafa;
+    border: 1px solid #bbb;
+}
+
+table.treeTable td span {
+    color: black;
+}
+
+table.treeTable td:first-child span {
+    text-decoration: none;
+}
+
+table.treeTable div.link {
+	padding: 1px;    
+}
+
+table.treeTable div.link:hover {
+	padding: 0px;
+	border: 1px solid #ccc;
+	background-color: #f0f0f0;
+}
+
+table.treeTable td img.control {
+	margin: 6px 6px 6px 2px;
+	position: relative;
+	float: left;
+}
+
+table.treeTable td img.icon {
+	float: left;
+	margin-right: 6px;
+}
+
+table.treeTable td img#control {
+	padding: 5px;
+    border: 1px solid grey;
+}
+
+/* The following 3 styles are candidates to move out of this file and into a separate css file for finding summary. */
+
+table.treeTable td.noDueDate {
+    text-align: center;
+}
+
+table.treeTable td.onTime {
+    background-color: #a6eba9;
+    text-align: center;
+}
+
+table.treeTable td.overdue {
+    background-color: #ffcbcf;
+    text-align: center;
+    font-weight: bold;
+    font-style: italic;
+}
+
+.treeTable0 {
+    margin-left: 0em;
+}
+.treeTable1 {
+    margin-left: 1em;
+}
+.treeTable2 {
+    margin-left: 2em;
+}
+.treeTable3 {
+    margin-left: 3em;
+}
+.treeTable4 {
+    margin-left: 4em;
+}
+.treeTable5 {
+    margin-left: 5em;
+}
+.treeTable6 {
+    margin-left: 6em;
+}
+.treeTable7 {
+    margin-left: 7em;
+}
+.treeTable8 {
+    margin-left: 8em;
+}
+.treeTable9 {
+    margin-left: 9em;
+}/* Style for the UserInfo view helper */
 
 span.userInfo {
 	padding-left: 17px;
@@ -725,11 +735,36 @@ span.userInfo:active {
     text-align: left;
 }
 
+.widgetSpaceHolder table {
+    margin-bottom: 0;
+}
+
+.widgetSpaceHolder th, .widgetSpaceHolder td {
+    padding: 0;
+}
+
 /* the gear icon that toggles chart-options visibility */
 .chartGear {
     cursor: pointer;
     width: 20px;
 }
+
+td.jqplot-table-legend {
+    border-style: none;
+}
+
+#chartFindForecastholder table, #chartTotalStatusholder table, #incidentHistorytoplegend table,
+#incidentHistorytoplegend table, #chartOverdueFindingtoplegend table, #chartNoMitholder table,
+#findingOrgCharttoplegend table {
+    margin-bottom: 0;
+}
+
+#chartFindForecastholder td, #chartTotalStatusholder td, #incidentHistorytoplegend td, #incidentHistorytoplegend td,
+#chartOverdueFindingtoplegend td, #chartNoMitholder td, #findingOrgCharttoplegend td {
+    border-style: none;
+    padding: 0;
+}
+
 /* The group cell */
 .yui-skin-sam .yui-dt .group
 {
@@ -1157,6 +1192,7 @@ h1 {
 body {
 	padding: 10px;
 	text-align: left;
+    margin: 0;
 }
 
 /* The logo is floated to the left */
@@ -1185,6 +1221,10 @@ div#menubar {
     background-color: #d3d3d3;
 }
 
+div#tab1 td {
+    border-style: none;
+}
+
 /* This class is used to mark elements which should only be applied when data is transferred to 
    external media, such as a print out. By default, these items are hidden. @see print.css */
 div.externalMediaMarking {
@@ -1206,6 +1246,15 @@ div.sectionHeader {
     border-bottom: none;
     font-weight: bold;
     text-align: left;
+}
+
+div.sectionHeader table {
+    margin-bottom: 0;
+}
+
+div.sectionHeader td {
+    border-style: none;
+    padding: 0;
 }
 
 div.sectionHeader a {
@@ -1619,6 +1668,10 @@ div#addInformationTypes {
     display: none;
 }
 
+div#selectSystemSecurityControls {
+    display: none;
+}
+
 /* Date inputs have a calendar icon rendered on them */
 input[type=text].date {
     background: url(/images/calendar.png) no-repeat 98%;
@@ -1732,6 +1785,77 @@ table.keyValues, table.fisma_crud {
 table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th {
     border: none;
 }
+
+/* Style for block on /user/notification page */
+.eventNotifyBlock {
+        border:1px #44637A solid;
+        padding:10px;
+}
+.eventNotifyBlock .inline {
+        float:left;
+        clear:right;
+        padding:0 20px;
+}
+.eventNotifyBlock #move {
+        padding-top:40px;
+}
+.eventNotifyBlock #actionButton { padding:10px 20px; clear:left}
+.eventNotifyBlock select {
+        width:250px;
+}
+
+/* Style for the td of table on /user/notification page */
+#event_form td {
+    border-style: none;
+}
+
+/* Style for the td of table on /role/right/id/# page */
+#assign_right td {
+    border-style: none;
+}
+
+/*  Style for the checkbox on monitor page */
+.custom-checkbox { position: relative; }
+
+.custom-checkbox input {
+    position: absolute;
+    left: 2px;
+    top: 3px;
+    margin: 0;
+    z-index: 0;
+}
+
+.custom-checkbox label {
+    background: url(/images/of_checkbox.png) -14px -17px no-repeat;
+    display: block;
+    position: relative;
+    z-index: 1;
+    font-size: 1.3em;
+    padding: .5em 0 1em 30px;
+    cursor: pointer;
+}
+
+.custom-checkbox label.hover {
+    background-position: -14px -117px;
+}
+
+.custom-checkbox label.checked {
+    background-position: -14px -217px;
+}
+
+.custom-checkbox label.checkedHover {
+    background-position: -14px -317px;
+}
+
+#assessmentType {
+    background-color:#ccc;
+    height: 40px'
+}
+
+#acm, #re-auth {
+    height: 25px;
+    cursor: pointer;
+}
 .yui-skin-sam .yui-dt td.__NESTED__ a {
 	text-decoration:none;
 	color:white;
@@ -1773,4 +1897,5 @@ body, td, pre {
 .mceitemtable, .mceitemtable table {
     border: none !important;
     padding: 0em;
+    border-collapse: collapse;
 }
