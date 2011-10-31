@@ -28,7 +28,6 @@
 tinyMCE.init({
 	theme : "advanced",
 	mode : "textareas",
-	cleanup : false,
 	element_format : "html",
 	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen, table",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
@@ -42,7 +41,7 @@ tinyMCE.init({
 	                           bullist, numlist, |, \
 	                           outdent, indent, |, \
 	                           spellchecker, search, replace, |, \
-	                           link, unlink, print, fullscreen",
+	                           link, unlink, print, fullscreen, cleanup",
 	theme_advanced_buttons2 : "tablecontrols",
 	theme_advanced_buttons3 : "",
 	theme_advanced_toolbar_location : "top",
