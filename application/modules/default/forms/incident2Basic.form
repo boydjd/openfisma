@@ -42,6 +42,7 @@ elements.additionalInfo.type = "textarea"
 elements.additionalInfo.options.label = "Describe the incident"
 elements.additionalInfo.options.cols = "70%"
 elements.additionalInfo.options.rows = "7"
+elements.additionalInfo.options.validators.mce.validator = "MceNotEmpty"
 elements.additionalInfo.options.required = true
 displayGroups.incident.elements.additionalInfo = "additionalInfo"
 
