@@ -150,6 +150,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
         } elseif (!$subFormValid) {
             $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
+           
+            // Replace the general error message with the message James suggested on OFJ-1546
+            if (preg_match("/Describe the incident: can't be empty/", $errorString)) {
+                $errorString = 'You must enter a description of the incident to continue.';
+            }
             $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
         } else {
             // The user can move forwards or backwards
