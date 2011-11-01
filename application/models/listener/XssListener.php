@@ -98,6 +98,7 @@ class XssListener extends Fisma_Doctrine_Record_Listener
             $config->set(
                 'HTML.Allowed',
                 'a[href],p[style],br,b,i,strong,em,span[style],ul,li,ol,table[summary],tr,th[abbr],td[abbr]'
+                . ',h1,h2,h3,h4,h5,h6'
             );
             
             // Conform user submitted HTML to our doctype
