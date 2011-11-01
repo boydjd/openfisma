@@ -7898,22 +7898,23 @@ Fisma.Finding = {
          */
         _renderHeaderRow2: function(row) {
             var blankCell1 = document.createElement('th');
-            blankCell1.colSpan = 2;
+            blankCell1.colSpan = FS.MITIGATION_COLUMNS.length;
             blankCell1.style.borderTop = "none";
             row.appendChild(blankCell1);
 
             var msApprovalCell = document.createElement('th');
             msApprovalCell.appendChild(document.createTextNode("Approval"));
-            msApprovalCell.colSpan = 2;
+            msApprovalCell.colSpan = this._msApprovals.length;
             row.appendChild(msApprovalCell);
 
             var blankCell2 = document.createElement('th');
             blankCell2.style.borderTop = "none";
+            blankCell1.style.colSpan = FS.EVIDENCE_COLUMNS.length;
             row.appendChild(blankCell2);
 
             var evApprovalCell = document.createElement('th');
             evApprovalCell.appendChild(document.createTextNode("Approval"));
-            evApprovalCell.colSpan = 2;
+            evApprovalCell.colSpan = this._evApprovals.length;
             row.appendChild(evApprovalCell);
         },
 
