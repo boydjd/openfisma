@@ -67,7 +67,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                         'query' => 'oneInput',
                     )
                 ),
-                'label' => 'Organization',
+                'label' => 'Organization/System',
                 'join' => array(
                     'model' => 'Organization',
                     'relation' => 'Organization', 

@@ -19,9 +19,9 @@ elements.discoveredDate.options.validators.dateValidator.validator = "date"
 displayGroups.finding.elements.discoveredDate = "discoveredDate"
 
 elements.responsibleOrganizationId.type = "select"
-elements.responsibleOrganizationId.options.label = "Organization"
+elements.responsibleOrganizationId.options.label = "Organization/System"
 elements.responsibleOrganizationId.options.required = true
-elements.responsibleOrganizationId.options.tooltip = "<b>Organization</b><p>This is the organization which is the target (or subject) of this finding.</p><p>Notice that information systems are also considered organizations, so you can assign findings either to a management organization or directly to an information system.</p>"
+elements.responsibleOrganizationId.options.tooltip = "<b>Organization/System</b><p>This is the organization or system which is the target (or subject) of this finding.</p><p>Notice that you can assign findings either to a management organization or directly to an information system.</p>"
 displayGroups.finding.elements.responsibleOrganizationId = "responsibleOrganizationId"
 
 elements.pocAutocomplete.type = "Form_AutoComplete"
@@ -70,6 +70,9 @@ elements.securityControlAutocomplete.options.attribs.containerId = "securityCont
 elements.securityControlAutocomplete.options.tooltip = "<b>Security Control</b><p>This is an autocomplete field. Start typing the name of the control or related keywords, and a list will pop up with matching NIST 800-53 security controls. You must select a control from that list.</p>"
 elements.securityControlAutocomplete.options.required = true
 displayGroups.finding.elements.securityControlAutocomplete = "securityControlAutocomplete"
+elements.securityControlId.type = "hidden"
+elements.securityControlId.options.id = "securityControlId"
+displayGroups.finding.elements.securityControlId = "securityControlId"
 
 elements.threatLevel.type = "select"
 elements.threatLevel.options.label = "Threat Level"

@@ -147,7 +147,9 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
         $element = $this->getElement();
                 
         // Render the HTML 4.01 strict markup for the form and form elements.
-        if ($element instanceof Zend_Form_Element) {
+        if ($element instanceof Zend_Form_Element_Hidden) {
+            $render = $this->buildInput();
+        } else if ($element instanceof Zend_Form_Element) {
             $render = '<tr><td>'
                     . $this->buildLabel()
                     . '</td><td>'

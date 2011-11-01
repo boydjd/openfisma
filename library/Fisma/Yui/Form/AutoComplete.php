@@ -86,13 +86,10 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
                        : '';
 
         $render  = "<div>
-                    <input type='hidden' 
-                           id='{$this->getAttrib('hiddenField')}' 
-                           name='{$this->getAttrib('hiddenField')}'
-                           $hiddenValueAttrib>
                     <input type=\"text\" 
                            name=\"$name\" 
                            id=\"$name\" 
+                           value=\"{$this->getValue()}\"
                            $displayedValueAttrib
                            $disabled>
                     <img class='spinner'

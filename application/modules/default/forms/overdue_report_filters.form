@@ -11,7 +11,7 @@ method=GET
 action=/finding/report/overdue/format/html
 
 elements.organizationId.type = "select"
-elements.organizationId.options.label = "Organization"
+elements.organizationId.options.label = "Responsible Organization/System"
 elements.organizationId.options.value = "0"
 
 elements.sourceId.type = "select"

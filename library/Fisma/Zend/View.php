@@ -40,84 +40,191 @@ class Fisma_Zend_View extends Zend_View
      */
     public function escape($string, $escType = 'html')
     {
-        switch ($escType) {
-            case 'html':
-                return htmlspecialchars($string, ENT_QUOTES, $this->getEncoding());
+        $fname = '_escape' . ucfirst($escType);
 
-            case 'htmlall':
-                return htmlentities($string, ENT_QUOTES, $this->getEncoding());
-
-            case 'url':
-                return rawurlencode($string);
-
-            case 'urlpathinfo':
-                return str_replace('%2F', '/', rawurlencode($string));
-
-            case 'quotes':
-                // escape unescaped single quotes
-                return preg_replace("%(?<!\\\\)'%", "\\'", $string);
-
-            case 'hex':
-                // escape every character into hex
-                $return = '';
-                for ($x = 0; $x < strlen($string); $x++) {
-                    $return .= '%' . bin2hex($string[$x]);
-                } 
-                return $return;
-
-            case 'hexentity':
-                $return = '';
-                for ($x = 0; $x < strlen($string); $x++) {
-                    $return .= '&#x' . bin2hex($string[$x]) . ';';
-                }
-                return $return;
-
-            case 'decentity':
-                $return = '';
-                for ($x = 0; $x < strlen($string); $x++) {
-                    $return .= '&#' . ord($string[$x]) . ';';
-                }
-                return $return;
-
-            case 'javascript':
-                // escape quotes and backslashes, newlines, etc.
-                return strtr(
-                    $string, array(
-                        '\\' => '\\\\', 
-                        "'" => "\\'", 
-                        '"' => '\\"', 
-                        "\r" => '\\r', 
-                        "\n" => '\\n', 
-                        '</' => '<\/'
-                    )
-                );
-
-            case 'json':
-                return json_encode($string);
-                
-            case 'mail':
-                // safe way to display e-mail address on a web page
-                return str_replace(array('@', '.'), array(' [AT] ', ' [DOT] '), $string);
-
-            case 'nonstd':
-                // escape non-standard chars, such as ms document quotes
-                $return = '';
-                for ($x = 0, $len = strlen($string); $x < $len; $x++) {
-                    $ord = ord(substr($string, $x, 1));
-                    // non-standard char, escape it
-                    if ($ord >= 126) {
-                        $return .= '&#' . $ord . ';';
-                    } else {
-                        $return .= substr($string, $x, 1);
-                    }
-                }
-                return $return;
-
-            case 'none':
-                return $string;
-
-            default:
-                throw new Fisma_Zend_Exception('Requested escaping type is not available!');
+        if (is_callable(array($this, $fname))) {
+            return $this->$fname($string);
+        } else {
+            throw new Fisma_Zend_Exception('Requested escaping type is not available!');
         }
+    }
+
+    /**
+     *  Use htmlspecialchars to escape string
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeHtml($string)
+    {
+        return htmlspecialchars($string, ENT_QUOTES, $this->getEncoding());
+    }
+
+    /**
+     *  Use htmlentities to escape string
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeHtmlall($string)
+    {
+        return htmlentities($string, ENT_QUOTES, $this->getEncoding());
+    }
+
+    /**
+     *  Use rawurlencode to escape url
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeUrl($string)
+    {
+        return rawurlencode($string);
+    }
+
+    /**
+     *  Use rawurlencode and replace %2F with / to escape url
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeUrlpathinfo($string)
+    {
+        return str_replace('%2F', '/', rawurlencode($string));
+    }
+
+    /**
+     * Escape unescaped single quotes
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeQuotes($string)
+    {
+        return preg_replace("%(?<!\\\\)'%", "\\'", $string);
+    }
+
+    /**
+     * Escape every character into hex
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeHex($string)
+    {
+        $return = '';
+        for ($x = 0; $x < strlen($string); $x++) {
+            $return .= '%' . bin2hex($string[$x]);
+        } 
+
+        return $return;
+    }
+
+    /**
+     * Escape every characster into hex entity
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeHexentity($string)
+    {
+        $return = '';
+        for ($x = 0; $x < strlen($string); $x++) {
+            $return .= '&#x' . bin2hex($string[$x]) . ';';
+        }
+
+        return $return;
+    }
+
+    /**
+     * Escape every characster into Dec entity
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeDecentity($string)
+    {
+        $return = '';
+        for ($x = 0; $x < strlen($string); $x++) {
+            $return .= '&#' . ord($string[$x]) . ';';
+        }
+
+        return $return;
+    }
+
+    /**
+     * Escape quotes and backslashes, newlines, etc.
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeJavascript($string)
+    {
+        return strtr(
+            $string, array(
+                '\\' => '\\\\', 
+                "'" => "\\'", 
+                '"' => '\\"', 
+                "\r" => '\\r', 
+                "\n" => '\\n', 
+                '</' => '<\/'
+            )
+        );
+    }
+
+    /**
+     * Use json_encode to escape string  
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeJson($string)
+    {
+        return json_encode($string);
+    }            
+     
+    /**
+     * Safe way to display e-mail address on a web page
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeMail($string)
+    {
+        return str_replace(array('@', '.'), array(' [AT] ', ' [DOT] '), $string);
+    }
+     
+    /**
+     * Escape non-standard chars, such as ms document quotes
+     * 
+     * @param string The string that needs to be escaped 
+     * @return string 
+     */
+    protected function _escapeNonstd($string)
+    {
+        $return = '';
+        for ($x = 0, $len = strlen($string); $x < $len; $x++) {
+            $ord = ord(substr($string, $x, 1));
+
+            // non-standard char, escape it
+            if ($ord >= 126) {
+                $return .= '&#' . $ord . ';';
+            } else {
+                $return .= substr($string, $x, 1);
+            }
+        }
+ 
+        return $return;
+    }
+
+    /**
+     * Do not escape
+     * 
+     * @param mixed
+     * @return mixed 
+     */
+    protected function _escapeNone($string)
+    {
+        return $string;
     }
 }

@@ -86,6 +86,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     protected function saveValue($form, $subject=null)
     {
         $conn = Doctrine_Manager::connection();
+        $roleChanged = false;
+        $organizationChanged = false;
 
         try {
             $conn->beginTransaction();
@@ -98,6 +100,42 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 throw new Fisma_Zend_Exception('Invalid parameter, expected a Doctrine_Model');
             }
             $values = $form->getValues();
+            $actionName = strtolower($this->_request->getActionName());
+            if ('edit' === $actionName && 'root' !== $subject->username) {
+
+                // Check whether role is changed for audit log
+                $originalRoles = $subject->getRoles(Doctrine::HYDRATE_ARRAY);
+                $originalRoleIds = array();
+           
+                if (is_array($originalRoles) && count($originalRoles) > 0) { 
+                    foreach ($originalRoles[0]['Roles'] as $key => $value) {
+                        array_push($originalRoleIds, $value['id']);
+                    }
+                }
+                $roleChanged = $this->_isRoleChanged($originalRoleIds, $values['role']);
+
+                // If role is not changed, then check whether organization is changed for audit log
+                if (!$roleChanged) {
+                    $originalRoleOrganizations = Doctrine_Query::create()
+                         ->from('UserRoleOrganization uro')
+                         ->innerJoin('uro.UserRole ur')
+                         ->where('ur.userId = ?', $subject->id)
+                         ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+                         ->execute();
+
+                    $originalRolesOrganizations = array(); 
+                    if (!empty($originalRoleOrganizations)) {
+                        for ($i = 0; $i < count($originalRoleOrganizations); $i++) {
+                            $originalRolesOrganizations[$originalRoleOrganizations[$i]['ur_roleId']][] 
+                            = $originalRoleOrganizations[$i]['uro_organizationId'];
+                        }
+                    }
+                     
+                    $organizationChanged = $this->_isRolesOrganizationsChanged($originalRolesOrganizations, 
+                                                                               $rolesOrganizations);
+                }
+
+            }
 
             // If any roles were added to the user without any organizations, make sure they're added
             // to the appropriate array for saving the User Roles.
@@ -165,7 +203,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             // Just send out email when create a new account or change password by admin user,
             // and it does not sent out email when the root user changes his own password.
-            $actionName = strtolower($this->_request->getActionName());
             if ('create' === $actionName) {
                 $mail = new Fisma_Zend_Mail();
                 $mail->sendAccountInfo($subject);
@@ -174,8 +211,13 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                        && ('root' !== $subject->username || $this->_me->username !== 'root')) {
                 $mail = new Fisma_Zend_Mail();
                 $mail->sendPassword($subject);
-            }
+            } 
 
+            // do not need to audit log root user's role or organization
+            if ('edit' === $actionName && ($roleChanged || $organizationChanged) && 'root' !== $subject->username) {
+                $auditLog = $roleChanged ? 'Updated Role.' : 'Updated Organization.';
+                $subject->getAuditLog()->write($auditLog);
+            }
             return $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
@@ -931,5 +973,59 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
 
         return $form;
+    }
+
+    /**
+     * Check whether the roles have been changed by comparing the roleIds between original and postForm 
+     *
+     * @param $originalData an array of role ids generated from database
+     * @param $postData an array of role ids posted from form 
+     * @return true if two arrays are not equal, otherwise false.
+     */
+    protected function _isRoleChanged($originalData, $postData)
+    {
+        if (count($originalData) != count($postData)) {
+            return true;
+        } 
+        sort($originalData);
+        sort($postData);
+        if ($originalData != $postData) {
+            return true;
+        } 
+        return false;
+    }
+
+    /**
+     * Check whether the roles organizations have been changeds  
+     *
+     * Compare the organizations within each roleId between original data gotten from DB and post data from post form 
+     *
+     * @param $originalData an array with key of roleId and value of array of organizationIds generated from database.
+     * @param $postData an array with key of roleId and value of array of organizationIds posted from form. 
+     * @return true if two arrays are not equal, otherwise false.
+     */
+    protected function _isRolesOrganizationsChanged($originalData, $postData)
+    {
+        // $postData can be empty when admin does not assign any organization to each role.
+        if (empty($postData) && !empty($originalData)) {
+            return true;
+        } elseif (!empty($postData) && empty($originalData)) {
+            return true;
+        } elseif (empty($postData) && empty($originalData)) {
+            return false;
+        }
+
+        sort($originalData);
+        sort($postData);
+
+        // Compare two arrays of organizationIds in each role.
+        for ($i = 0; $i < count($originalData); $i++) {
+            sort($originalData[$i]);
+            sort($postData[$i]);
+            if ($originalData[$i] != $postData[$i]) {
+                return true;
+            } 
+        }
+        return false;
     }
 }
