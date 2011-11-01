@@ -32,16 +32,27 @@ class SecurityControlCatalogTable extends Fisma_Doctrine_Table
      * Zend_Form_Element_Select#addMultiOptions()
      * 
      * @return array
+     * @deprecated  pending the replacement with getCatalogsQuery()
      */
-    public function getCatalogs()
+    public function getCatalogs($catalogQuery = null)
+    {
+        $catalogQuery = (isset($catalogQuery)) ? $catalogQuery : self::getCatalogsQuery();
+        return $catalogQuery->execute();
+    }
+
+    /**
+     * Build the query for getCatalogs()
+     * 
+     * @return Doctrine_Query
+     */
+    public static function getCatalogsQuery()
     {
         // Get data for the select element. Columns are aliased as 'key' and 'value' for addMultiOptions().
         $catalogQuery = Doctrine_Query::create()
-                        ->select('id AS key, name AS value')
-                        ->from('SecurityControlCatalog')
-                        ->orderBy('name')
-                        ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-
-        return $catalogQuery->execute();
+                      ->select('id AS key, name AS value')
+                      ->from('SecurityControlCatalog')
+                      ->orderBy('name')
+                      ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        return $catalogQuery;
     }
 }

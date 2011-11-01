@@ -104,31 +104,39 @@ class Test_Library_Fisma extends Test_Case_Unit
      * Test configuration() method
      *
      * @return void
+     * @backupStaticAttributes disabled
      */
     public function testConfiguration()
     {
-        $this->setExpectedException('Fisma_Zend_Exception', 'System has no configuration object');
-        Fisma::configuration();
-
-        Fisma::initialize(3);
-        $this->assertNotNull(Fisma::configuration());
+        try {
+            Fisma::configuration();
+            $this->markTestSkipped('This test must be run alone without static backups.');
+        } catch (Fisma_Zend_Exception $e) {
+            $sampleConfig=new Fisma_Configuration_Array();
+            Fisma::setConfiguration($sampleConfig, true);
+            $this->assertEquals($sampleConfig, Fisma::configuration());
+            $this->assertNotNull(Fisma::configuration());
+        }
     }
 
     /**
      * Test debug() method
      *
      * @return void
+     * @backupStaticAttributes disabled
      */
     public function testDebug()
     {
-        $this->setExpectedException('Fisma_Zend_Exception', 'The Fisma object has not been initialized.');
-        Fisma::debug();
-
-        Fisma::initialize(3);
-        $this->assertFalse(Fisma::debug());
+        try {
+            Fisma::debug();
+            $this->markTestSkipped('This test must be run alone without static backups.');
+        } catch (Fisma_Zend_Exception $e) {
+            Fisma::initialize(3);
+            $this->assertFalse(Fisma::debug());
         
-        Fisma::setAppConfig(array('debug' => 1));
-        $this->assertTrue(Fisma::debug());
+            Fisma::setAppConfig(array('debug' => 1));
+            $this->assertTrue(Fisma::debug());
+        }
     }
 
     /**
@@ -138,26 +146,28 @@ class Test_Library_Fisma extends Test_Case_Unit
      * and the structure of the array $_appConf['includePaths']
      *
      * @return void
+     * @backupStaticAttributes disable
      */
     public function testGetPath()
     {
         $builtinKey='application';
         $builtinPath='application';
-        $this->setExpectedException('Fisma_Zend_Exception', 'The Fisma object has not been initialized.');
-        //use the builtinKey to avoid "No path found for key" exception
-        Fisma::getPath($builtinKey);
 
-        Fisma::initialize(3);
+        try {
+            //use the builtinKey to avoid "No path found for key" exception
+            Fisma::getPath($builtinKey);
+            $this->markTestSkipped('This test must be run alone without static backups.');
+        } catch(Fisma_Zend_Exception $e) {
+            Fisma::initialize(3);
 
-        //use the assertContains instead of assertEquals to cancel unknown environment root directory
-        $this->assertContains($builtinPath, Fisma::getPath($builtinKey));
+            //use the assertContains instead of assertEquals to cancel unknown environment root directory
+            $this->assertContains($builtinPath, Fisma::getPath($builtinKey));
 
-        $userdefinedKey='unittest';
-        $userdefinedPath='tests/unit';
-        Fisma::setAppConfig(array('includePaths' => array($userdefinedKey => $userdefinedPath)));
-        $this->assertEquals($userdefinedPath, Fisma::getPath($userdefinedKey));
-
-                
+            $userdefinedKey='unittest';
+            $userdefinedPath='tests/unit';
+            Fisma::setAppConfig(array('includePaths' => array($userdefinedKey => $userdefinedPath)));
+            $this->assertEquals($userdefinedPath, Fisma::getPath($userdefinedKey));
+        }
     }
 
     /**

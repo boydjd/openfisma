@@ -294,4 +294,40 @@ class Test_Application_Models_System extends Test_Case_Unit
             array('expected' => 'LOW', 'threat' => 'LOW', 'countermeasure' => 'HIGH')
         );
     }
+    
+    /**
+     * Test calcMin()
+     * 
+     * @return void
+     */
+    public function testCalcMin()
+    {
+        $system = new System();
+        $this->assertEquals('LOW', $system->calcMin('LOW', 'HIGH'));
+    }
+    
+    /**
+     * Test getName()
+     * 
+     * @return void
+     */
+    public function testGetName()
+    {
+        $system = new System();
+        $system->Organization->nickname = 'org_nick';
+        $system->Organization->name = 'org_name';
+        $this->assertEquals('org_nick - org_name', $system->getName());
+    }
+    
+    /**
+     * Test getOrganizationDependencyId()
+     * 
+     * @return void
+     */
+    public function testGetOrganizationDependencyId()
+    {
+        $system = new System();
+        $system->Organization->id = 1;
+        $this->assertEquals(1, $system->getOrganizationDependencyId());
+    }
 }

@@ -30,13 +30,29 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_SecurityControlCatalogTable extends Test_Case_Unit
 {
     /**
-     * testClassExists 
+     * test the query built by getCatalogsQuery()
      * 
-     * @access public
      * @return void
      */
-    public function testClassExists()
+    public function testGetCatalogsQuery()
     {
-        $this->assertTrue(class_exists('SecurityControlCatalogTable'));
+        $expectedQuery = 'SELECT s.id AS s__0, s.name AS s__1 FROM security_control_catalog s ORDER BY s.name';
+        $query = SecurityControlCatalogTable::getCatalogsQuery();
+        $this->assertEquals($expectedQuery, $query->getSql());
+    }
+
+    /**
+     * test the execution of getCatalogs()
+     * 
+     * @return void
+     * @deprecated pending the removal of source method
+     */
+    public function testGetCatalogs()
+    {
+        $mockQuery = $this->getMock('Doctrine_Query', array('execute'));
+        $mockQuery->expects($this->once())
+                  ->method('execute');
+        SecurityControlCatalogTable::getCatalogs($mockQuery);
     }
 }
+

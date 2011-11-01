@@ -29,14 +29,15 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  */
 class Test_Application_Models_UserRoleOrganizationTable extends Test_Case_Unit
 {
-    /**
-     * testClassExists 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testClassExists()
-    {
-        $this->assertTrue(class_exists('UserRoleOrganizationTable'));
-    }
+   /**
+    * @todo: short description.
+    * 
+    * @return @todo
+    */
+   public function testGetByOrganizationIdAndUserRoleIdQuery()
+   {
+       $query = UserRoleOrganizationTable::getByOrganizationIdAndUserRoleIdQuery(0, 0)->getSql();
+       $expectedQuery = 'FROM user_role_organization u WHERE u.organizationid = ? AND u.userroleid IN (?)';
+       $this->assertContains($expectedQuery, $query);
+   }
 }

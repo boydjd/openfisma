@@ -187,17 +187,17 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
      * 
      * @param string $levelA The specified level A
      * @param string $levelB The specified level B
-     * @return string The min level of bewteen $levelA and $levelB
+     * @return string The lower level between $levelA and $levelB
      * @see calcSecurityCategory
      */
     public function calcMin($levelA, $levelB)
     {
-        $cloumns = $this->getTable()->getEnumValues('availability');
-        assert(in_array($levelA, $cloumns));
-        assert(in_array($levelB, $cloumns));
-        $senseMap = array_flip($cloumns);
+        $columns = $this->getTable()->getEnumValues('availability');
+        assert(in_array($levelA, $columns));
+        assert(in_array($levelB, $columns));
+        $senseMap = array_flip($columns);
         $ret = min($senseMap[$levelA], $senseMap[$levelB]);
-        return $cloumns[$ret];
+        return $columns[$ret];
     }
     
     /**

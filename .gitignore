@@ -5,3 +5,5 @@ phpcs.py
 log
 log-part1
 clover-part1
+.project
+.settings

@@ -70,4 +70,16 @@ class CurrentUser
 
         return self::$_instance;
     }
+
+    /**
+     * @todo: short description.
+     * 
+     * @param mixed $user 
+     * 
+     * @return @todo
+     */
+    public static function setInstance($user)
+    {
+        self::$_instance = $user;
+    }
 }

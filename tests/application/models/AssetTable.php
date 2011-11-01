@@ -29,7 +29,7 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  */
 class Test_Application_Models_AssetTable extends Test_Case_Unit
 {
-    /**
+    /*
      * testGetSearchableFields 
      * 
      * @access public
@@ -37,9 +37,64 @@ class Test_Application_Models_AssetTable extends Test_Case_Unit
      */
     public function testGetSearchableFields()
     {
-        $searchableFields = AssetTable::getSearchableFields();
-
+        $this->assertTrue(class_exists('AssetTable'));
+        $searchableFields = Doctrine::getTable('Asset')->getSearchableFields();
         $this->assertTrue(is_array($searchableFields));
         $this->assertEquals(10, count($searchableFields));
+    }
+
+    /**
+     * test getOrganizationIds()
+     * 
+     * @return void
+     */
+    public function testGetOrganizationIds()
+    {
+        $orgArray = array(0 => array('id' => 'id'));
+        $mockOrg = $this->getMock('Doctrine_Query', array('toKeyValueArray'));
+        $mockOrg->expects($this->exactly(2))
+                ->method('toKeyValueArray')
+                ->with('id', 'id')
+                ->will($this->onConsecutiveCalls(null, $orgArray));
+        $user =  $this->getMock('User', array('getOrganizationsByPrivilege'));
+        $user->expects($this->exactly(2))
+             ->method('getOrganizationsByPrivilege')
+             ->will($this->returnValue($mockOrg));
+        CurrentUser::setInstance($user);
+
+        $orgId = AssetTable::getOrganizationIds();
+        $this->assertEquals(0, count($orgId));
+
+        $orgId = AssetTable::getOrganizationIds();
+        $this->assertEquals(1, count($orgId));
+        $this->assertEquals('id', $orgId[0]['id']);
+    }
+    /**
+     * Test getAclFields() as a static method
+     * 
+     * @return void
+     */
+    public function testGetAclFields()
+    {
+        $user = $this->getMock('User', array('acl'));
+        $user->expects($this->exactly(2))
+             ->method('acl')
+             ->will($this->onConsecutiveCalls(new Fisma_Zend_Acl('defaultUser'), new Fisma_Zend_Acl('root')));
+        CurrentUser::setInstance($user);
+        $field = AssetTable::getAclFields();
+        $this->assertEquals(1, count($field));
+
+        $field = AssetTable::getAclFields();
+        $this->assertGreaterThanOrEqual(0, count($field));
+    }
+
+    /**
+     * revert the states of Static classes to original
+     * 
+     * @return void
+     */
+    public static function tearDownAfterClass()
+    {
+        CurrentUser::setInstance(null);
     }
 }

@@ -30,13 +30,38 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_DocumentType extends Test_Case_Unit
 {
     /**
-     * testClassExists 
+     * @todo: short description.
      * 
-     * @access public
-     * @return void
+     * @return @todo
      */
-    public function testClassExists()
+    public function testPreDelete()
     {
-        $this->assertTrue(class_exists('DocumentType'));
+        $docType = new DocumentType();
+        $docType->preDelete(null);
+        
+        $docType->Uploads[] = new DocumentTypeMockUpload();
+        $this->setExpectedException('Fisma_Zend_Exception_User', 'This document type cannot be deleted because it is already associated with one or more '
+                                   .'system documents.');
+        $docType->preDelete(null);
+    }
+}
+/**
+ * A mock up of Upload to test preDelete()
+ * 
+ */
+class DocumentTypeMockUpload
+{
+    /**
+     * A dummy function called by Doctrine_Collection
+     * 
+     * @param string $field 
+     * @param Asset $value 
+     * @param bool   $lock  
+     * 
+     * @return bool
+     */
+    public function set($field, DocumentType $value, $lock)
+    {
+        return true;
     }
 }
