@@ -629,3 +629,14 @@ div#swfstoreContainer {
 form#transitionsForm {
     display: inline;
 }
+
+/* Remove base formatting from selected table classes */
+table.keyValues, table.fisma_crud {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* Remove base formatting from selected td and th classes */
+table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th {
+    border: none;
+}

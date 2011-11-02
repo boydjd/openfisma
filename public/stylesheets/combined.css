@@ -1701,3 +1701,76 @@ div#swfstoreContainer {
 form#transitionsForm {
     display: inline;
 }
+<<<<<<< HEAD
+||||||| parent of 1c64ca0... OFJ-1509 Add table controls to tinymce
+.yui-skin-sam .yui-dt td.__NESTED__ a {
+	text-decoration:none;
+	color:white;
+}
+
+.yui-skin-sam .yui-dt td.__NESTED__ div {
+	width:14px;
+	padding:0;
+	margin:5px 3px;
+}
+.yui-skin-sam .yui-dt td.__NESTED__ div.expand {
+	background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -350px;
+}
+.yui-skin-sam .yui-dt td.__NESTED__ div.collapse {
+	background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -400px;
+}
+/*
+ * .yui-skin-sam .yui-dt tr {
+ */
+.yui-skin-sam .yui-dt .__MASTER_TABLE__ tr {
+    vertical-align:top;
+}
+
+.__NESTED_TABLE__ {
+	position:absolute;
+}
+.__NESTED_TABLE__ table {
+	width:100%;
+}
+=======
+
+/* Remove base formatting from selected table classes */
+table.keyValues, table.fisma_crud {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+/* Remove base formatting from selected td and th classes */
+table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th {
+    border: none;
+}
+.yui-skin-sam .yui-dt td.__NESTED__ a {
+	text-decoration:none;
+	color:white;
+}
+
+.yui-skin-sam .yui-dt td.__NESTED__ div {
+	width:14px;
+	padding:0;
+	margin:5px 3px;
+}
+.yui-skin-sam .yui-dt td.__NESTED__ div.expand {
+	background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -350px;
+}
+.yui-skin-sam .yui-dt td.__NESTED__ div.collapse {
+	background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -400px;
+}
+/*
+ * .yui-skin-sam .yui-dt tr {
+ */
+.yui-skin-sam .yui-dt .__MASTER_TABLE__ tr {
+    vertical-align:top;
+}
+
+.__NESTED_TABLE__ {
+	position:absolute;
+}
+.__NESTED_TABLE__ table {
+	width:100%;
+}
+>>>>>>> 1c64ca0... OFJ-1509 Add table controls to tinymce

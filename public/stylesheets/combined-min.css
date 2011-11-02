@@ -246,4 +246,26 @@ span#selectAll{margin-left:0;}
 span#removeUsers{margin-left:0;}
 .display-none{display:none;}
 div#swfstoreContainer{width:0;height:0;}
+<<<<<<< HEAD
 form#transitionsForm{display:inline;}
+||||||| parent of 1c64ca0... OFJ-1509 Add table controls to tinymce
+form#transitionsForm{display:inline;}
+.yui-skin-sam .yui-dt td.__NESTED__ a{text-decoration:none;color:white;}
+.yui-skin-sam .yui-dt td.__NESTED__ div{width:14px;padding:0;margin:5px 3px;}
+.yui-skin-sam .yui-dt td.__NESTED__ div.expand{background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -350px;}
+.yui-skin-sam .yui-dt td.__NESTED__ div.collapse{background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -400px;}
+.yui-skin-sam .yui-dt .__MASTER_TABLE__ tr{vertical-align:top;}
+.__NESTED_TABLE__{position:absolute;}
+.__NESTED_TABLE__ table{width:100%;}
+=======
+form#transitionsForm{display:inline;}
+table.keyValues,table.fisma_crud{border-collapse:collapse;border-spacing:0;}
+table.keyValues td,table.keyValues th,table.fisma_crud td,table.fisma_crud th{border:none;}
+.yui-skin-sam .yui-dt td.__NESTED__ a{text-decoration:none;color:white;}
+.yui-skin-sam .yui-dt td.__NESTED__ div{width:14px;padding:0;margin:5px 3px;}
+.yui-skin-sam .yui-dt td.__NESTED__ div.expand{background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -350px;}
+.yui-skin-sam .yui-dt td.__NESTED__ div.collapse{background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -400px;}
+.yui-skin-sam .yui-dt .__MASTER_TABLE__ tr{vertical-align:top;}
+.__NESTED_TABLE__{position:absolute;}
+.__NESTED_TABLE__ table{width:100%;}
+>>>>>>> 1c64ca0... OFJ-1509 Add table controls to tinymce
