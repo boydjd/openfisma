@@ -1773,4 +1773,21 @@ table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th
 .__NESTED_TABLE__ table {
 	width:100%;
 }
+<<<<<<< HEAD
 >>>>>>> 1c64ca0... OFJ-1509 Add table controls to tinymce
+||||||| parent of 93390a8... OFJ-1509 Add table controls to tinymce
+=======
+body, td, pre {
+    font: 13px/1.231 arial,helvetica,clean,sans-serif !important;
+}
+
+.mceitemtable td, .mceitemtable th, .mceitemtable caption, .mceitemvisualaid {
+    border: 1px solid black;
+    padding: .5em;
+}
+
+.mceitemtable, .mceitemtable table {
+    border: none !important;
+    padding: 0em;
+}
+>>>>>>> 93390a8... OFJ-1509 Add table controls to tinymce
