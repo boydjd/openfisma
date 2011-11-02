@@ -106,7 +106,10 @@ class User extends BaseUser
             $message = 'Locked: ' . $this->getLockReason();
             $this->getAuditLog()->write($message);
         } else {
-            $message = 'Locked by unknown user (' . $_SERVER['REMOTE_ADDR'] . '): ' . $this->getLockReason();
+            $message = 'Locked by unknown user ('
+                    . $_SERVER['REMOTE_ADDR']
+                    . '): '
+                . $this->getLockReason();
             $this->getAuditLog()->write($message);
         }
 
@@ -143,7 +146,9 @@ class User extends BaseUser
         if (CurrentUser::getInstance()) {
             $this->getAuditLog()->write('Unlocked');
         } else {
-            $message = 'Unlocked by unknown user (' . $_SERVER['REMOTE_ADDR'] . ')';
+            $message = 'Unlocked by unknown user ('
+                    . $_SERVER['REMOTE_ADDR']
+                    . ')';
             $this->getAuditLog()->write($message);
         }
     }
@@ -184,7 +189,9 @@ class User extends BaseUser
      */
     public function getLockRemainingMinutes()
     {
-        if ($this->locked && self::LOCK_TYPE_PASSWORD == $this->lockType && Fisma::configuration()->getConfig('unlock_enabled')) {
+        if ($this->locked
+                && self::LOCK_TYPE_PASSWORD == $this->lockType
+                && Fisma::configuration()->getConfig('unlock_enabled')) {
 
             $lockTs = new Zend_Date($this->lockTs, Zend_Date::ISO_8601);
             $lockTs->addMinute(Fisma::configuration()->getConfig('unlock_duration'));
@@ -209,22 +216,29 @@ class User extends BaseUser
     public function getLockReason()
     {
         switch ($this->lockType) {
-            case self::LOCK_TYPE_MANUAL :
+            case self::LOCK_TYPE_MANUAL:
                 $reason = 'by administrator';
                 break;
-            case self::LOCK_TYPE_PASSWORD :
-                $reason = Fisma::configuration()->getConfig('failure_threshold') . ' failed login attempts';
+            case self::LOCK_TYPE_PASSWORD:
+                $reason = Fisma::configuration()->getConfig('failure_threshold')
+                    . ' failed login attempts';
                 if (Fisma::configuration()->getConfig('unlock_enabled')) {
-                    $reason .= ', will be unlocked in ' . $this->getLockRemainingMinutes() . ' minutes';
+                    $reason .= ', will be unlocked in '
+                        . $this->getLockRemainingMinutes()
+                        . ' minutes';
                 }
                 break;
-            case self::LOCK_TYPE_INACTIVE :
-                $reason = 'exceeded ' . Fisma::configuration()->getConfig('account_inactivity_period') . ' days of inactivity';
+            case self::LOCK_TYPE_INACTIVE:
+                $reason = 'exceeded '
+                    . Fisma::configuration()->getConfig('account_inactivity_period')
+                    . ' days of inactivity';
                 break;
-            case self::LOCK_TYPE_EXPIRED :
-                $reason = 'password is more than ' . Fisma::configuration()->getConfig('pass_expire') . ' days old';
+            case self::LOCK_TYPE_EXPIRED:
+                $reason = 'password is more than '
+                    . Fisma::configuration()->getConfig('pass_expire')
+                    . ' days old';
                 break;
-            default :
+            default:
                 throw new Fisma_Zend_Exception("Unexpected lock type ($this->lockType)");
                 break;
         }
@@ -303,7 +317,9 @@ class User extends BaseUser
 
                     if (class_exists($className)) {
                         $reflection = new ReflectionClass($className);
-                        $organizationDependency = $reflection->implementsInterface('Fisma_Zend_Acl_OrganizationDependency');
+                        $organizationDependency = $reflection->implementsInterface(
+                            'Fisma_Zend_Acl_OrganizationDependency'
+                        );
                     }
 
                     // If a privilege is organization-specific, then grant it as a nested resource within
@@ -410,7 +426,15 @@ class User extends BaseUser
         if ('root' == $this->username) {
             $query = Doctrine::getTable('Event')->findAll();
         } else {
-            $query = Doctrine_Query::Create()->select('e.*')->from('Event e')->innerJoin('e.Privilege p')->innerJoin('p.Roles r')->innerJoin('r.Users u')->where('u.id = ?', $this->id)->orderBy('e.name')->execute();
+            $query = Doctrine_Query::Create()
+                ->select('e.*')
+                ->from('Event e')
+                ->innerJoin('e.Privilege p')
+                ->innerJoin('p.Roles r')
+                ->innerJoin('r.Users u')
+                ->where('u.id = ?', $this->id)
+                ->orderBy('e.name')
+                ->execute();
         }
 
         foreach ($query as $event) {
@@ -485,7 +509,9 @@ class User extends BaseUser
      */
     public function getSystemsByPrivilege($resource, $action, $includeDisposal = false)
     {
-        return $this->getSystemsByPrivilegeQuery($resource, $action, $includeDisposal)->orderBy('o.nickname')->execute();
+        return $this->getSystemsByPrivilegeQuery($resource, $action, $includeDisposal)
+                    ->orderBy('o.nickname')
+                    ->execute();
     }
 
     /**
@@ -535,11 +561,16 @@ class User extends BaseUser
         // The base query grabs all organizations and sorts by 'lft', which will put the records into
         // tree order.
         if ($this->username == 'root') {
-            $query = Doctrine_Query::create()->from('Organization o')->orderBy('o.lft');
+            $query = Doctrine_Query::create()
+                ->from('Organization o')
+                ->orderBy('o.lft');
         } else {
             // For all users other than root, we want to join to the user table to limit the systems returned
             // to those which this user has been granted access to.
-            $query = Doctrine_Query::create()->select('o.*')->from("Organization o, o.UserRole ur WITH ur.userid = $this->id")->orderBy('o.lft');
+            $query = Doctrine_Query::create()
+                ->select('o.*')
+                ->from("Organization o, o.UserRole ur WITH ur.userid = $this->id")
+                ->orderBy('o.lft');
         }
 
         return $query;
@@ -558,10 +589,16 @@ class User extends BaseUser
         $query = $this->getOrganizationsQuery();
 
         if ($this->username != 'root') {
-            $query->leftJoin('ur.Role r')->leftJoin('r.Privileges p')->where('p.resource = ?', $resource)->andWhere('p.action = ?', $action)->groupBy('o.id')->orderBy('o.nickname');
+            $query->leftJoin('ur.Role r')
+                ->leftJoin('r.Privileges p')
+                ->where('p.resource = ?', $resource)
+                ->andWhere('p.action = ?', $action)
+                ->groupBy('o.id')
+                ->orderBy('o.nickname');
 
             if (!$includeDisposal) {
-                $query->leftJoin('o.System s2')->andWhere("s2.sdlcphase <> 'disposal' or s2.sdlcphase is NULL");
+                $query->leftJoin('o.System s2')
+                      ->andWhere("s2.sdlcphase <> 'disposal' or s2.sdlcphase is NULL"); 
             }
         }
 
@@ -578,7 +615,8 @@ class User extends BaseUser
      */
     public function getSystemsByPrivilegeQuery($resource, $action, $includeDisposal = false)
     {
-        $query = $this->getOrganizationsByPrivilegeQuery($resource, $action)->innerJoin('o.System s');
+        $query = $this->getOrganizationsByPrivilegeQuery($resource, $action)
+                      ->innerJoin('o.System s');
         if (!$includeDisposal) {
             $query->andWhere('s.sdlcPhase <> ?', 'disposal');
         }
@@ -592,7 +630,8 @@ class User extends BaseUser
      */
     public function getSystemsQuery()
     {
-        return $this->getOrganizationsQuery()->innerJoin('o.System s');
+        return $this->getOrganizationsQuery()
+                    ->innerJoin('o.System s');
     }
 
     /**
@@ -628,7 +667,10 @@ class User extends BaseUser
         $relations = $this->getTable()->getRelations();
         foreach ($relations as $name => $relation) {
             if (count($this->$name) > 0) {
-                throw new Fisma_Zend_Exception_User("This user can not be deleted because it is already associated with one or more " . strtolower($name));
+                throw new Fisma_Zend_Exception_User(
+                    "This user can not be deleted because it is already associated with one or more "
+                    . strtolower($name)
+                );
             }
         }
     }
@@ -676,7 +718,8 @@ class User extends BaseUser
             /**
              * @todo Throw a doctrine exception... not enough time to fix the exception handlers right now
              */
-            throw new Doctrine_Exception('Your password cannot be the same as any of your previous' . ' 3 passwords.');
+            throw new Doctrine_Exception('Your password cannot be the same as any of your previous'
+                    . ' 3 passwords.');
         }
         $this->_set('password', $password);
 
