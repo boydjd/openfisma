@@ -32,6 +32,6 @@ class Test_Application_Models_FindingTable extends Test_Case_Unit
 
     public function testGetIndexChunkSize()
     {
-        $this->assertEquals(200, FindingTable::getIndexChunkSize());
+        $this->assertEquals(20, FindingTable::getIndexChunkSize());
     }
 }
