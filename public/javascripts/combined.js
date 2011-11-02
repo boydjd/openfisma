@@ -12031,139 +12031,6 @@ Fisma.Search.Panel.prototype = {
         return query;
     },
 
-<<<<<<< HEAD
-||||||| parent of 1c64ca0... OFJ-1509 Add table controls to tinymce
-    editEnhancements: function (event, args) {
-        var saId = args.record.getData().instance_securityAuthorizationId;
-        var controlId = args.record.getData().definition_id;
-        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId);
-        dialog.show();
-    }
-}
-
-Fisma.SecurityAuthorization.EditEnhancementsDialog = function(saId, controlId) {
-    var formUrl = '/sa/security-authorization/edit-enhancements/id/' + saId + '/controlId/' + controlId + '/format/json';
-    YAHOO.widget.Panel.superclass.constructor.call(this, YAHOO.util.Dom.generateId(), {modal: true});
-    this._showLoadingMessage();
-    this._requestForm(formUrl);
-};
-
-YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Panel, {
-=======
-    editEnhancements: function (event, args) {
-        var saId = args.record.getData().instance_securityAuthorizationId;
-        var controlId = args.record.getData().definition_id;
-        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId);
-        dialog.show();
-    },
-
-    /**
-     * Displays the hidden block on the FIPS-199 page to add information types to a system
-     */
-    showInformationTypes : function () {
-        document.getElementById('addInformationTypes').style.display = 'block';
-    },
-
-    /**
-     * Build URL for adding information type to the system
-     */
-    addInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/add-information-type/id/"
-            + oRecord.getData('system')
-            + "/sitId/"
-            + oData
-            + "'>Add</a>";
-    },
-
-    /**
-     * Build URL for removing information types from a system
-     */
-    removeInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/remove-information-type/id/"
-            + oRecord.getData('system')
-            + "/sitId/"
-            + oData
-            + "'>Remove</a>";
-    },
-
-    /**
-     * Run an XHR request to add an available information type to the system information types
-     */
-    handleAvailableInformationTypesTableClick: function (event, id) {
-        var targetEl = event.target;
-        var selectedId = Fisma.SecurityAuthorization.availableInformationTypesTable.getRecord(targetEl);
-        var recordId = selectedId.getData('id');
-
-        var postData = "id=" + id + "&sitId=" + recordId;
-
-        YAHOO.util.Connect.asyncRequest(
-            'POST',
-            '/sa/information-type/add-information-type/format/json',
-            {
-                success: function(o) {
-                    try {
-                        var response = YAHOO.lang.JSON.parse(o.responseText).response;
-
-                        if (response.success) {
-                            var addInformationTypes = document.getElementById("addInformationTypes");
-                            if (addInformationTypes) {
-                                addInformationTypes.style.display = 'none';
-                            }
-
-                            var dt = Fisma.SecurityAuthorization.assignedInformationTypesTable;
-                            document.getElementById('addInformationTypes').style.display = 'block';
-                            dt.showTableMessage("Updating list of information types…");
-                            dt.getDataSource().sendRequest('', {success: dt.onDataReturnInitializeTable, scope: dt});
-                            dt.on("dataReturnEvent", function () {
-                            });
-                        } else {
-                            Fisma.Util.showAlertDialog('An error occurred: ' + response.message);
-                        }
-                    } catch (error) {
-                        Fisma.Util.showAlertDialog('An unexpected error occurred: ' + error);
-                    }
-                },
-
-                failure: function(o) {
-                    Fisma.Util.showAlertDialog('An unexpected error occurred.');
-                }
-            },
-            postData
-        );
-    },
-
-    tableFormatEnhancements: function(elem, record, column) {
-        var data = record.getData();
-        var selected = data.selectedEnhancements_selectedEnhancements;
-        var available = data.definedEnhancements_availableEnhancements;
-        if (Number(available) === 0) {
-            elem.innerHTML = "<i>N/A</i>";
-        } else {
-            elem.innerHTML = selected + " / " + available + ' ';
-            var anchor = document.createElement('a');
-            anchor.innerHTML = "Edit";
-            anchor.href = "#";
-            elem.appendChild(anchor);
-            YAHOO.util.Event.addListener(anchor, "click", Fisma.SecurityAuthorization.editEnhancements, {elem: elem, record: record, column: column}, this);
-        }
-    },
-
-    editEnhancements: function (event, args) {
-        var saId = args.record.getData().instance_securityAuthorizationId;
-        var controlId = args.record.getData().definition_id;
-        var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId);
-        dialog.show();
-    }
-}
-
-Fisma.SecurityAuthorization.EditEnhancementsDialog = function(saId, controlId) {
-    var formUrl = '/sa/security-authorization/edit-enhancements/id/' + saId + '/controlId/' + controlId + '/format/json';
-    YAHOO.widget.Panel.superclass.constructor.call(this, YAHOO.util.Dom.generateId(), {modal: true});
-    this._showLoadingMessage();
-    this._requestForm(formUrl);
-};
-YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Panel, {
->>>>>>> 1c64ca0... OFJ-1509 Add table controls to tinymce
     /**
      * Get the search panel's state
      */
@@ -12179,21 +12046,10 @@ YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Pa
     },
     
     /**
-<<<<<<< HEAD
      * Returns search metadata for a field (specified by name)
      * 
      * @param fieldName
-||||||| parent of 1c64ca0... OFJ-1509 Add table controls to tinymce
-     * Request the blank form from a specified URL
-     * 
-     * @param url {String}
-=======
-     * Request the blank form from a specified URL
-     *
-     * @param url {String}
->>>>>>> 1c64ca0... OFJ-1509 Add table controls to tinymce
      */
-<<<<<<< HEAD
     getFieldDefinition : function (fieldName) {
         for (var index in this.searchableFields) {
             if (this.searchableFields[index].name == fieldName) {
@@ -12202,53 +12058,14 @@ YAHOO.extend(Fisma.SecurityAuthorization.EditEnhancementsDialog, YAHOO.widget.Pa
         }
         
         throw "No definition for field: " + fieldName;
-||||||| parent of 1c64ca0... OFJ-1509 Add table controls to tinymce
-    _requestForm: function(url) {
-        var callback = {
-            success: this._loadForm,
-
-            failure: function(connectionData) {
-                Fisma.Util.showAlertDialog('An unexpected error occurred.');
-                this.destroy();
-            },
-            
-            scope: this
-        };
-        YAHOO.util.Connect.asyncRequest( 'GET', url, callback, null);
-
-=======
-    _requestForm: function(url) {
-        var callback = {
-            success: this._loadForm,
-
-            failure: function(connectionData) {
-                Fisma.Util.showAlertDialog('An unexpected error occurred.');
-                this.destroy();
-            },
-
-            scope: this
-        };
-        YAHOO.util.Connect.asyncRequest( 'GET', url, callback, null);
-
->>>>>>> 1c64ca0... OFJ-1509 Add table controls to tinymce
     },
-
+    
     /**
-<<<<<<< HEAD
      * Returns the number of operands required for the specified field and operator
      * 
      * @param field Definition of the field
      * @param operator The operator applied to the field
      * @param criteriaDefinition
-||||||| parent of 1c64ca0... OFJ-1509 Add table controls to tinymce
-     * Load the returned form into the dialog
-     * 
-     * @param connectionData {Object} Returned by YUI connection class
-=======
-     * Load the returned form into the dialog
-     *
-     * @param connectionData {Object} Returned by YUI connection class
->>>>>>> 1c64ca0... OFJ-1509 Add table controls to tinymce
      */
     getNumberOfOperands : function (field, operator, criteriaDefinition) {
         var criterionQueryDefinition = criteriaDefinition[operator];
@@ -13129,7 +12946,6 @@ Fisma.System = {
         window.location.href = window.location.href;
     },
 
-<<<<<<< HEAD
     /**
      * removeSelectedUsers 
      * 
@@ -13834,37 +13650,6 @@ Fisma.System = {
 
             var p1 = document.createElement("p");
             p1.appendChild(document.createTextNode(message));
-||||||| parent of 1c64ca0... OFJ-1509 Add table controls to tinymce
-    /**
-     * Displays the hidden block on the FIPS-199 page to add information types to a system 
-     */
-    showInformationTypes : function () {
-        document.getElementById('addInformationTypes').style.display = 'block';
-    },
-
-    /**
-     * Build URL for adding information type to the system 
-     */
-    addInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/add-information-type/id/" 
-                         + oRecord.getData('system') 
-                         + "/sitId/" 
-                         + oData 
-                         + "'>Add</a>";
-    },
-
-    /**
-     * Build URL for removing information types from a system 
-     */
-    removeInformationType : function (elCell, oRecord, oColumn, oData) {
-        elCell.innerHTML = "<a href='/system/remove-information-type/id/" 
-                         + oRecord.getData('system') 
-                         + "/sitId/" 
-                         + oData 
-                         + "'>Remove</a>";
-    },
-=======
->>>>>>> 1c64ca0... OFJ-1509 Add table controls to tinymce
 
             var p2 = document.createElement("p");
 

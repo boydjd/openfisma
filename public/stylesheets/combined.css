@@ -222,7 +222,9 @@ div.incidentStep {
 }
 
 div.incidentStep td {
-	padding: 5px;
+    padding: 5px;
+    border-style: none;
+       
 }
 
 div.incidentStep td:first-child {
@@ -273,7 +275,8 @@ div.queuedIncidentStep div.incidentCardinality {
 
 tr.incidentStep {
     border-top: 1px dotted silver;
-}/**
+}
+/**
  * The module screen is used to enable/disable individual components in OpenFISMA
  */
 
@@ -283,6 +286,7 @@ table.modules {
 }
 
 table.modules td {
+    border-style: none;
     font-size: 1.4em;
     padding: 8px;
     vertical-align: middle;
@@ -723,11 +727,36 @@ span.userInfo:active {
     text-align: left;
 }
 
+.widgetSpaceHolder table {
+    margin-bottom: 0;
+}
+
+.widgetSpaceHolder th, .widgetSpaceHolder td {
+    padding: 0;
+}
+
 /* the gear icon that toggles chart-options visibility */
 .chartGear {
     cursor: pointer;
     width: 20px;
 }
+
+td.jqplot-table-legend {
+    border-style: none;
+}
+
+#chartFindForecastholder table, #chartTotalStatusholder table, #incidentHistorytoplegend table,
+#incidentHistorytoplegend table, #chartOverdueFindingtoplegend table, #chartNoMitholder table,
+#findingOrgCharttoplegend table {
+    margin-bottom: 0;
+}
+
+#chartFindForecastholder td, #chartTotalStatusholder td, #incidentHistorytoplegend td, #incidentHistorytoplegend td,
+#chartOverdueFindingtoplegend td, #chartNoMitholder td, #findingOrgCharttoplegend td {
+    border-style: none;
+    padding: 0;
+}
+
 /* The group cell */
 .yui-skin-sam .yui-dt .group
 {
@@ -1161,6 +1190,7 @@ input[readonly] {
 body {
 	padding: 10px;
 	text-align: left;
+    margin: 0;
 }
 
 /* The logo is floated to the left */
@@ -1189,6 +1219,10 @@ div#menubar {
     background-color: #d3d3d3;
 }
 
+div#tab1 td {
+    border-style: none;
+}
+
 /* This class is used to mark elements which should only be applied when data is transferred to 
    external media, such as a print out. By default, these items are hidden. @see print.css */
 div.externalMediaMarking {
@@ -1210,6 +1244,15 @@ div.sectionHeader {
     border-bottom: none;
     font-weight: bold;
     text-align: left;
+}
+
+div.sectionHeader table {
+    margin-bottom: 0;
+}
+
+div.sectionHeader td {
+    border-style: none;
+    padding: 0;
 }
 
 div.sectionHeader a {
@@ -1701,38 +1744,6 @@ div#swfstoreContainer {
 form#transitionsForm {
     display: inline;
 }
-<<<<<<< HEAD
-||||||| parent of 1c64ca0... OFJ-1509 Add table controls to tinymce
-.yui-skin-sam .yui-dt td.__NESTED__ a {
-	text-decoration:none;
-	color:white;
-}
-
-.yui-skin-sam .yui-dt td.__NESTED__ div {
-	width:14px;
-	padding:0;
-	margin:5px 3px;
-}
-.yui-skin-sam .yui-dt td.__NESTED__ div.expand {
-	background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -350px;
-}
-.yui-skin-sam .yui-dt td.__NESTED__ div.collapse {
-	background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -400px;
-}
-/*
- * .yui-skin-sam .yui-dt tr {
- */
-.yui-skin-sam .yui-dt .__MASTER_TABLE__ tr {
-    vertical-align:top;
-}
-
-.__NESTED_TABLE__ {
-	position:absolute;
-}
-.__NESTED_TABLE__ table {
-	width:100%;
-}
-=======
 
 /* Remove base formatting from selected table classes */
 table.keyValues, table.fisma_crud {
@@ -1744,39 +1755,34 @@ table.keyValues, table.fisma_crud {
 table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th {
     border: none;
 }
-.yui-skin-sam .yui-dt td.__NESTED__ a {
-	text-decoration:none;
-	color:white;
+
+/* Style for block on /user/notification page */
+.eventNotifyBlock {
+        border:1px #44637A solid;
+        padding:10px;
+}
+.eventNotifyBlock .inline {
+        float:left;
+        clear:right;
+        padding:0 20px;
+}
+.eventNotifyBlock #move {
+        padding-top:40px;
+}
+.eventNotifyBlock #actionButton { padding:10px 20px; clear:left}
+.eventNotifyBlock select {
+        width:250px;
 }
 
-.yui-skin-sam .yui-dt td.__NESTED__ div {
-	width:14px;
-	padding:0;
-	margin:5px 3px;
-}
-.yui-skin-sam .yui-dt td.__NESTED__ div.expand {
-	background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -350px;
-}
-.yui-skin-sam .yui-dt td.__NESTED__ div.collapse {
-	background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -400px;
-}
-/*
- * .yui-skin-sam .yui-dt tr {
- */
-.yui-skin-sam .yui-dt .__MASTER_TABLE__ tr {
-    vertical-align:top;
+/* Style for the td of table on /user/notification page */
+#event_form td {
+    border-style: none;
 }
 
-.__NESTED_TABLE__ {
-	position:absolute;
+/* Style for the td of table on /role/right/id/# page */
+#assign_right td {
+    border-style: none;
 }
-.__NESTED_TABLE__ table {
-	width:100%;
-}
-<<<<<<< HEAD
->>>>>>> 1c64ca0... OFJ-1509 Add table controls to tinymce
-||||||| parent of 93390a8... OFJ-1509 Add table controls to tinymce
-=======
 body, td, pre {
     font: 13px/1.231 arial,helvetica,clean,sans-serif !important;
 }
@@ -1789,5 +1795,5 @@ body, td, pre {
 .mceitemtable, .mceitemtable table {
     border: none !important;
     padding: 0em;
+    border-collapse: collapse;
 }
->>>>>>> 93390a8... OFJ-1509 Add table controls to tinymce

@@ -3,7 +3,7 @@ span#irReportSaveContainer{position:relative;left:260px;}
 span#irReportBackwardsContainer{position:relative;left:-110px;}
 span#irReportCancelContainer{position:relative;left:-110px;}
 div.incidentStep{margin:10px;padding:10px 10px 10px 40px;position:relative;}
-div.incidentStep td{padding:5px;}
+div.incidentStep td{padding:5px;border-style:none;}
 div.incidentStep td:first-child{font-weight:bold;text-align:right;}
 div.incidentCardinality{position:absolute;top:-2px;left:-2px;padding:5px 10px;font-size:x-large;}
 div.completedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}

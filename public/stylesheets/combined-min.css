@@ -18,7 +18,7 @@ span#irReportSaveContainer{position:relative;left:260px;}
 span#irReportBackwardsContainer{position:relative;left:-110px;}
 span#irReportCancelContainer{position:relative;left:-110px;}
 div.incidentStep{margin:10px;padding:10px 10px 10px 40px;position:relative;}
-div.incidentStep td{padding:5px;}
+div.incidentStep td{padding:5px;border-style:none;}
 div.incidentStep td:first-child{font-weight:bold;text-align:right;}
 div.incidentCardinality{position:absolute;top:-2px;left:-2px;padding:5px 10px;font-size:x-large;}
 div.completedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
@@ -29,7 +29,7 @@ div.queuedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
 div.queuedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
 tr.incidentStep{border-top:1px dotted silver;}
 table.modules{margin-left:auto;margin-right:auto;}
-table.modules td{font-size:1.4em;padding:8px;vertical-align:middle;}
+table.modules td{border-style:none;font-size:1.4em;padding:8px;vertical-align:middle;}
 table.modules td:first-child{font-weight:bold;}
 .searchBox{background-color:#ebebeb;margin:10px auto;border:1px solid #cecece;padding:5px 10px;}
 .searchBox #keywords{width:15em;}
@@ -97,7 +97,12 @@ span.userInfo:active{color:#416ed7;}
 .chartToolTipText{font-size:14px;}
 .screenReaderTabel{width:100%;}
 .widgetSpaceHolder{width:400px;margin-left:auto;margin-right:auto;text-align:left;}
+.widgetSpaceHolder table{margin-bottom:0;}
+.widgetSpaceHolder th,.widgetSpaceHolder td{padding:0;}
 .chartGear{cursor:pointer;width:20px;}
+td.jqplot-table-legend{border-style:none;}
+#chartFindForecastholder table,#chartTotalStatusholder table,#incidentHistorytoplegend table,#incidentHistorytoplegend table,#chartOverdueFindingtoplegend table,#chartNoMitholder table,#findingOrgCharttoplegend table{margin-bottom:0;}
+#chartFindForecastholder td,#chartTotalStatusholder td,#incidentHistorytoplegend td,#incidentHistorytoplegend td,#chartOverdueFindingtoplegend td,#chartNoMitholder td,#findingOrgCharttoplegend td{border-style:none;padding:0;}
 .yui-skin-sam .yui-dt .group{border-top:1px solid #CBCBCB;font-weight:bold;color:black;cursor:pointer;background-color:#f1f2f2;}
 .yui-skin-sam .yui-dt .group td{border-color:#cbcbcb;border-style:solid;border-width:1px 0 0 0;}
 .yui-skin-sam .yui-dt .group .liner{padding:4px 10px;}
@@ -158,14 +163,17 @@ ol li{display:list-item;list-style:decimal outside;margin-left:35px;text-align:l
 p{margin:10px 0 10px 0;}
 h1{font-size:large;font-weight:bold;}
 input[readonly]{color:#999!important;background-color:#f0f0f0!important;}
-body{padding:10px;text-align:left;}
+body{padding:10px;text-align:left;margin:0;}
 div#logo{float:left;margin-bottom:10px;}
 div#logout{float:right;text-align:right;margin-top:10px;}
 div#logout p{margin-top:8px;}
 div#menubar{clear:both;font-weight:bold;min-height:25px;background-color:#d3d3d3;}
+div#tab1 td{border-style:none;}
 div.externalMediaMarking{display:none;}
 div#content{margin:10px 0;}
 div.sectionHeader{margin-top:10px;padding:3px 8px;background-color:#416ed7;color:#fff;border:1px solid #416ed7;border-bottom:none;font-weight:bold;text-align:left;}
+div.sectionHeader table{margin-bottom:0;}
+div.sectionHeader td{border-style:none;padding:0;}
 div.sectionHeader a{color:white;}
 div.section{border:1px solid #d3d3d3;background-color:#fff;border-top:none;padding:10px;position:relative;height:100%;margin-bottom:0;}
 div.panel{border:1px solid #d3d3d3;margin-bottom:10px;padding:10px;}
@@ -246,35 +254,16 @@ span#selectAll{margin-left:0;}
 span#removeUsers{margin-left:0;}
 .display-none{display:none;}
 div#swfstoreContainer{width:0;height:0;}
-<<<<<<< HEAD
-form#transitionsForm{display:inline;}
-||||||| parent of 1c64ca0... OFJ-1509 Add table controls to tinymce
-form#transitionsForm{display:inline;}
-.yui-skin-sam .yui-dt td.__NESTED__ a{text-decoration:none;color:white;}
-.yui-skin-sam .yui-dt td.__NESTED__ div{width:14px;padding:0;margin:5px 3px;}
-.yui-skin-sam .yui-dt td.__NESTED__ div.expand{background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -350px;}
-.yui-skin-sam .yui-dt td.__NESTED__ div.collapse{background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -400px;}
-.yui-skin-sam .yui-dt .__MASTER_TABLE__ tr{vertical-align:top;}
-.__NESTED_TABLE__{position:absolute;}
-.__NESTED_TABLE__ table{width:100%;}
-=======
 form#transitionsForm{display:inline;}
 table.keyValues,table.fisma_crud{border-collapse:collapse;border-spacing:0;}
 table.keyValues td,table.keyValues th,table.fisma_crud td,table.fisma_crud th{border:none;}
-.yui-skin-sam .yui-dt td.__NESTED__ a{text-decoration:none;color:white;}
-.yui-skin-sam .yui-dt td.__NESTED__ div{width:14px;padding:0;margin:5px 3px;}
-.yui-skin-sam .yui-dt td.__NESTED__ div.expand{background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -350px;}
-.yui-skin-sam .yui-dt td.__NESTED__ div.collapse{background:transparent url(http://yui.yahooapis.com/2.8.0r4/build/assets/skins/sam/sprite.png) no-repeat 0 -400px;}
-.yui-skin-sam .yui-dt .__MASTER_TABLE__ tr{vertical-align:top;}
-.__NESTED_TABLE__{position:absolute;}
-<<<<<<< HEAD
-.__NESTED_TABLE__ table{width:100%;}
->>>>>>> 1c64ca0... OFJ-1509 Add table controls to tinymce
-||||||| parent of 93390a8... OFJ-1509 Add table controls to tinymce
-.__NESTED_TABLE__ table{width:100%;}
-=======
-.__NESTED_TABLE__ table{width:100%;}
+.eventNotifyBlock{border:1px #44637A solid;padding:10px;}
+.eventNotifyBlock .inline{float:left;clear:right;padding:0 20px;}
+.eventNotifyBlock #move{padding-top:40px;}
+.eventNotifyBlock #actionButton{padding:10px 20px;clear:left;}
+.eventNotifyBlock select{width:250px;}
+#event_form td{border-style:none;}
+#assign_right td{border-style:none;}
 body,td,pre{font:13px/1.231 arial,helvetica,clean,sans-serif!important;}
 .mceitemtable td,.mceitemtable th,.mceitemtable caption,.mceitemvisualaid{border:1px solid black;padding:.5em;}
-.mceitemtable,.mceitemtable table{border:none!important;padding:0;}
->>>>>>> 93390a8... OFJ-1509 Add table controls to tinymce
+.mceitemtable,.mceitemtable table{border:none!important;padding:0;border-collapse:collapse;}
