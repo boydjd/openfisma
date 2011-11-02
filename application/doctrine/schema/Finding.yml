@@ -126,6 +126,7 @@ Finding:
         countermeasuresEffectiveness:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            notnull: true
             extra:
                 auditLog: true
                 logicalName: Effectiveness of Countermeasures
