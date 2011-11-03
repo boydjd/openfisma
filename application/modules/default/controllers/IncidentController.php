@@ -213,7 +213,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             // The value of selection option should be multiples of 5
             $minute = (int) Zend_Date::now()->get(Zend_Date::MINUTE_SHORT);
             $minute = $minute - $minute % 5;
-            $time = Zend_Date::now()->setMinute($minute)->get('HH:mm');
+            $time = Zend_Date::now()->setMinute($minute)
+                                    ->setSecond(0)
+                                    ->get(Fisma_Date::FORMAT_TIME);
 
             $incident->incidentTime = $time;
         }
