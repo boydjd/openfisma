@@ -895,6 +895,13 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             return;
         }
 
+        // Enforce 2 layer maximum on nesting
+        if ($src->AggregatedSystems->count() > 0 || isset($dest->AggregateSystem)) {
+            $this->view->success = false;
+            $this->view->message = 'An aggregated system cannot have systems aggregated underneath it.';
+            return;
+        }
+
         // Based on the dragLocation parameter, execute a corresponding tree move method
         $dragLocation = $this->getRequest()->getParam('dragLocation');
         try {
