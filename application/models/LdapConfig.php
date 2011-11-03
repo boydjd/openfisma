@@ -27,13 +27,13 @@
 class LdapConfig extends BaseLdapConfig
 {
     /**
-     *  Retrive the ldap configuration(s)
+     *  Retrieve the ldap configuration(s)
      *
      *  @return array All the configurations of LDAP servers
      */
-    public static function getConfig()
+    public static function getConfig($ldapConfigs = null)
     {
-        $ldapConfigs = Doctrine::getTable('LdapConfig')->findAll()->toArray();
+        $ldapConfigs = (isset($ldapConfigs)) ? $ldapConfigs : Doctrine::getTable('LdapConfig')->findAll()->toArray();
         
         //Remove the id field from each LDAP configuration item
         foreach ($ldapConfigs as &$ldapConfig) {

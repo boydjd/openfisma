@@ -53,4 +53,60 @@ class Test_Application_Models_OrganizationTable extends Test_Case_Unit
         $this->assertEquals('Doctrine_Query', get_class($q));
         $this->assertEquals(" FROM System s WHERE organization_type.nickname <> ?", $q->getDql());
     }
+    
+    /**
+     * test getOrganizationIds()
+     * 
+     * @return void
+     */
+    public function testGetOrganizationIds()
+    {
+        $orgArray = array(0 => array('id' => 'id'));
+        $mockOrg = $this->getMock('Doctrine_Query', array('toKeyValueArray'));
+        $mockOrg->expects($this->exactly(2))
+                ->method('toKeyValueArray')
+                ->with('id', 'id')
+                ->will($this->onConsecutiveCalls(null, $orgArray));
+        $user =  $this->getMock('User', array('getOrganizationsByPrivilege'));
+        $user->expects($this->exactly(2))
+             ->method('getOrganizationsByPrivilege')
+             ->will($this->returnValue($mockOrg));
+        CurrentUser::setInstance($user);
+
+        $orgId = OrganizationTable::getOrganizationIds();
+        $this->assertEquals(0, count($orgId));
+
+        $orgId = OrganizationTable::getOrganizationIds();
+        $this->assertEquals(1, count($orgId));
+        $this->assertEquals('id', $orgId[0]['id']);
+        CurrentUser::setInstance(null);
+    }
+    
+    /**
+     * Test the join part of the query
+     *
+     * @return void
+     */
+    public function testGetUsersAndRolesByOrganizationIdQuery()
+    {
+        $query = OrganizationTable::getUsersAndRolesByOrganizationIdQuery(0)->getSql();
+        $expectedQuery = 'FROM user u '
+                        .'LEFT JOIN user_role u2 ON u.id = u2.userid '
+                        .'LEFT JOIN user_role_organization u3 ON u2.userroleid = u3.userroleid '
+                        .'LEFT JOIN role r ON u2.roleid = r.id '
+                        .'LEFT JOIN organization o ON u3.organizationid = o.id';
+        $this->assertContains($expectedQuery, $query);
+    }
+    
+    /**
+     * Test the join and condition part of the quey
+     *
+     * @return void
+     */
+    public function testGetSystemsLikeNameQuery()
+    {
+        $query = OrganizationTable::getSystemsLikeNameQuery('test')->getSql();
+        $expectedQuery = 'FROM organization o LEFT JOIN system s ON o.systemid = s.id WHERE o.name LIKE ?';
+        $this->assertContains($expectedQuery, $query);
+    }
 }

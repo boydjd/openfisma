@@ -39,4 +39,20 @@ class Test_Application_Models_IrSubCategory extends Test_Case_Unit
     {
         $this->assertTrue(class_exists('IrSubCategory'));
     }
+    
+    /**
+     * Test implementation of ON_DELETE constraint.
+     *
+     * @return void
+     */
+    public function testPreDelete()
+    {
+        $irSubCategory = new IrSubCategory();
+        $irSubCategory->preDelete(null);
+        
+        $mockIncident = $this->getMock('BlankMock', array('set'));
+        $irSubCategory->Incident[] = $mockIncident;
+        $this->setExpectedException('Fisma_Zend_Exception_User');
+        $irSubCategory->preDelete(null);
+    }
 }

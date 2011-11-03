@@ -39,8 +39,7 @@ class Test_Application_Models_UserRoleOrganization extends Test_Case_Unit
         $userRoleOrganization = new UserRoleOrganization();
         $user = $this->getMock('User', array('invalidateAcl'));
         $userRoleOrganization->UserRole->User = $user;
-        $user->expects($this->exactly(3))
-             ->method('invalidateAcl');
+        $user->expects($this->exactly(3))->method('invalidateAcl');
         $userRoleOrganization->postDelete(null);
         $userRoleOrganization->postSave(null);
         $userRoleOrganization->postUpdate(null);

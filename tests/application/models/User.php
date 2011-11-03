@@ -271,7 +271,7 @@ class Test_Application_Models_User extends Test_Case_Unit
     public function testLockAccountFromCurrentUser()
     {
         $user = $this->getMock('User', array('save', 'invalidateAcl', 'getAuditLog'));
-        $mockAuditLog = $this->getMock('Test_Case_Unit', array('write'));
+        $mockAuditLog = $this->getMock('BlankMock', array('write'));
         $mockAuditLog->expects($this->once())->method('write');
         $user->expects($this->once())->method('save');
         $user->expects($this->once())->method('invalidateAcl');
@@ -291,7 +291,7 @@ class Test_Application_Models_User extends Test_Case_Unit
     public function testLockAccountFromUnknownUser()
     {
         $user = $this->getMock('User', array('save', 'invalidateAcl', 'getAuditLog'));
-        $mockAuditLog = $this->getMock('Test_Case_Unit', array('write'));
+        $mockAuditLog = $this->getMock('BlankMock', array('write'));
         $mockAuditLog->expects($this->once())->method('write');
         $user->expects($this->once())->method('save');
         $user->expects($this->once())->method('invalidateAcl');
@@ -337,7 +337,7 @@ class Test_Application_Models_User extends Test_Case_Unit
     public function testSetLastRob()
     {
         $user = $this->getMock('User', array('_set', 'getAuditLog'));
-        $mockAuditLog = $this->getMock('Test_Case_Unit', array('write'));
+        $mockAuditLog = $this->getMock('BlankMock', array('write'));
         $mockAuditLog->expects($this->once())->method('write');
         $user->expects($this->once())->method('_set');
         $user->expects($this->once())->method('getAuditLog')->will($this->returnValue($mockAuditLog));

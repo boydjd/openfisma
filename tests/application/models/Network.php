@@ -30,13 +30,32 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_Network extends Test_Case_Unit
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
+     * Test query for preDelete()
+     *
      * @return void
      */
-    public function testClassExists()
+    public function testActiveAssetsQuery()
     {
-        $this->assertTrue(class_exists('Network'));
+        $network = new Network();
+        $query = $network->activeAssetsQuery()->getSql();
+        $expectedQuery = 'SELECT a.id AS a__id FROM asset a WHERE a.networkid = ?';
+        $this->assertEquals($expectedQuery, $query);
+    }
+    
+    /**
+     * Test implementation of ON_DELETE constraint
+     *
+     * @return void
+     */
+    public function testPreDelete()
+    {
+        $mockQuery = $this->getMock('Doctrine_Query', array('count'));
+        $mockQuery->expects($this->exactly(2))->method('count')->will($this->onConsecutiveCalls(0, 1));
+        
+        $network = new Network();
+        $network->preDelete(null, $mockQuery);
+        
+        $this->setExpectedException('Fisma_Zend_Exception_User');
+        $network->preDelete(null, $mockQuery);
     }
 }

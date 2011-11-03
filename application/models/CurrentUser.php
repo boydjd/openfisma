@@ -72,11 +72,11 @@ class CurrentUser
     }
 
     /**
-     * @todo: short description.
+     * Set the instance of CurrentUser, used primarily for testing only
      * 
-     * @param mixed $user 
+     * @param mixed $user expects null (reset) or a User-like object 
      * 
-     * @return @todo
+     * @return void
      */
     public static function setInstance($user)
     {

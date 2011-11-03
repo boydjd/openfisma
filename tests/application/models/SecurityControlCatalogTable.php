@@ -50,8 +50,7 @@ class Test_Application_Models_SecurityControlCatalogTable extends Test_Case_Unit
     public function testGetCatalogs()
     {
         $mockQuery = $this->getMock('Doctrine_Query', array('execute'));
-        $mockQuery->expects($this->once())
-                  ->method('execute');
+        $mockQuery->expects($this->once())->method('execute');
         SecurityControlCatalogTable::getCatalogs($mockQuery);
     }
 }

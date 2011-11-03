@@ -37,7 +37,13 @@ class Test_Application_Models_SourceTable extends Test_Case_Unit
      */
     public function testGetSearchableFields()
     {
-        $searchableFields = SourceTable::getSearchableFields();
+        $this->assertTrue(class_exists('SourceTable'));
+        try {
+            $searchableFields = Doctrine::getTable('Source')->getSearchableFields();
+        } catch (Exception $e) {
+            $this->markTestSkipped('This test must be run alone due to dynamic class loading problem.');
+        }
+        
 
         $this->assertTrue(is_array($searchableFields));
         $this->assertEquals(3, count($searchableFields));
@@ -52,5 +58,30 @@ class Test_Application_Models_SourceTable extends Test_Case_Unit
     public function testGetAclFields()
     {
         $this->assertTrue(is_array(SourceTable::getAclFields()));
+    }
+    
+    /**
+     * Test the query built for getSources()
+     *
+     * @return void
+     */
+    public function testGetSourcesQuery()
+    {
+        $query = SourceTable::getSourcesQuery()->getSql();
+        $expectedQuery = 'FROM source s ORDER BY s.nickname';
+        $this->assertContains($expectedQuery, $query);
+    }
+    
+    /**
+     * Test the execution of the query from getSourcesQuery()
+     *
+     * @return void
+     * @deprecated pending on the removal of source method
+     */
+    public function testGetSources()
+    {
+        $mockQuery = $this->getMock('Doctrine_Query', array('execute'));
+        $mockQuery->expects($this->once())->method('execute');
+        SourceTable::getSources($mockQuery);
     }
 }

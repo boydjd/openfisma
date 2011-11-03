@@ -59,9 +59,9 @@ class Test_Application_Models_UserTable extends Test_Case_Unit
     }
  
     /**
-     * @todo: short description.
+     * Test the join part in the query.
      * 
-     * @return @todo
+     * @return void
      */
     public function testGetUserByUserRoleIdQuery()
     {
@@ -71,9 +71,9 @@ class Test_Application_Models_UserTable extends Test_Case_Unit
     }
 
     /**
-     * @todo: short description.
+     * Test the condition part in the query.
      * 
-     * @return @todo
+     * @return void
      */
     public function testGetUsersLikeUsernameQuery()
     {

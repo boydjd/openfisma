@@ -30,9 +30,9 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_SecurityControl extends Test_Case_Unit
 {
     /**
-     * @todo: short description.
+     * Test name formatting in getAuditLogValue()
      * 
-     * @return @todo
+     * @return void
      */
     public function testGetAuditLogValue()
     {

@@ -39,8 +39,7 @@ class Test_Application_Models_UserRole extends Test_Case_Unit
         $userRole = new UserRole();
         $user = $this->getMock('User', array('invalidateAcl'));
         $userRole->User = $user;
-        $user->expects($this->once())
-             ->method('invalidateAcl');
+        $user->expects($this->once())->method('invalidateAcl');
         $userRole->postSave(null);
     }
 }

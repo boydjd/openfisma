@@ -67,14 +67,27 @@ class SourceTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
     /**
      * Get sources
      *
+     * @param Doctrine_Query $sourceQuery Optional, default to getSourcesQuery()
      * @return Doctrine_Collection The collection of sources
+     * @deprecated pending on the removal of execution out of model classes
      */
-    public function getSources()
+    public function getSources($sourceQuery = null)
+    {
+        $sourceQuery = (isset($sourceQuery)) ? $sourceQuery : $this->getSourcesQuery();
+        return $sourceQuery->execute();
+    }
+    
+    /**
+     * Build query for getSources()
+     *
+     * @return Doctrine_Query
+     */
+    public function getSourcesQuery()
     {
         $sourceQuery = Doctrine_Query::create()
                        ->from('Source s')
                        ->orderBy('s.nickname');
 
-        return  $sourceQuery->execute();
+        return $sourceQuery;
     }
 }

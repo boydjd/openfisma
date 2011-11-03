@@ -29,9 +29,66 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  */
 class Test_Application_Models_FindingTable extends Test_Case_Unit
 {
-
+    
     public function testGetIndexChunkSizeIs10()
     {
         $this->assertEquals(10, FindingTable::getIndexChunkSize());
+    }
+    
+    /*
+     * testGetSearchableFields
+     *
+     * @access public
+     * @return void
+     */
+    public function testGetSearchableFields()
+    {
+        $this->assertTrue(class_exists('FindingTable'));
+        try {
+            $searchableFields = Doctrine::getTable('Finding')->getSearchableFields();
+        } catch (Exception $e) {
+            $this->markTestSkipped('This test must be run alone due to dynamic class loading problem.');
+        }
+        $this->assertTrue(is_array($searchableFields));
+        $this->assertEquals(24, count($searchableFields));
+    }
+    
+    /**
+     * test getOrganizationIds()
+     * 
+     * @return void
+     */
+    public function testGetOrganizationIds()
+    {
+        $orgArray = array(0 => array('id' => 'id'));
+        $mockOrg = $this->getMock('Doctrine_Query', array('toKeyValueArray'));
+        $mockOrg->expects($this->exactly(2))
+                ->method('toKeyValueArray')
+                ->with('id', 'id')
+                ->will($this->onConsecutiveCalls(null, $orgArray));
+        $user =  $this->getMock('User', array('getOrganizationsByPrivilege'));
+        $user->expects($this->exactly(2))
+             ->method('getOrganizationsByPrivilege')
+             ->will($this->returnValue($mockOrg));
+        CurrentUser::setInstance($user);
+
+        $orgId = FindingTable::getOrganizationIds();
+        $this->assertEquals(0, count($orgId));
+
+        $orgId = FindingTable::getOrganizationIds();
+        $this->assertEquals(1, count($orgId));
+        $this->assertEquals('id', $orgId[0]['id']);
+        CurrentUser::setInstance(null);
+    }
+    
+    /**
+     * testGetAclFields 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetAclFields()
+    {
+        $this->assertTrue(is_array(FindingTable::getAclFields()));
     }
 }

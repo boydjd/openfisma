@@ -30,13 +30,15 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_PrivilegeTable extends Test_Case_Unit
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
+     * Test the query built by getResourceActionQuery();
+     *
      * @return void
      */
-    public function testClassExists()
+    public function testGetResourceActionQuery()
     {
-        $this->assertTrue(class_exists('PrivilegeTable'));
+        $query = PrivilegeTable::getResourceActionQuery('test', 'drop')->getSql();
+        $expectedQuery = 'WHERE (p.resource = ? AND p.action = ?)';
+        $this->assertContains($expectedQuery, $query);
     }
+    
 }

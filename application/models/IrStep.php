@@ -14,12 +14,13 @@ class IrStep extends BaseIrStep
     /**
      * Override parent to make room for new step
      *
+     * @param Doctrine_Query $openGapQuery Optional, default to null, used primarily for testing
      * @param Doctrine_Event $event
      * @param return void
      */
-    public function preInsert($event)
+    public function preInsert($event, $openGapQuery = null)
     {
-        $this->_openGap($this->workflowId, $this->cardinality);
+        $this->_openGap($this->workflowId, $this->cardinality, $openGapQuery);
     }
 
     /**
@@ -49,12 +50,13 @@ class IrStep extends BaseIrStep
      * Override parent to close gap left by removing step
      *
      * @param Doctrine_Event $event
+     * @param Doctrine_Query $closeGapQuery Optional, default to null, used primarily for testing
      * @return void
      */
-    public function postDelete($event)
+    public function postDelete($event, $closeGapQuery = null)
     {
         $i = $event->getInvoker();
-        $this->_closeGap($i->workflowId, $i->cardinality);
+        $this->_closeGap($i->workflowId, $i->cardinality, $closeGapQuery);
     }
 
     /**
@@ -63,29 +65,57 @@ class IrStep extends BaseIrStep
      * @param int $workflowId ID of workflow within which to open the gap
      * @param int $position   Position in workflow where the gap should be created
      * @return void
+     * @deprecated pending on the removal of executions from model classes
      */
-    protected function _openGap($workflowId, $position)
+    protected function _openGap($workflowId, $position, $openGapQuery = null)
     {
-        Doctrine_Query::create()->update('IrStep irstep')
-                                ->set('irstep.cardinality', 'irstep.cardinality + 1')
-                                ->where('irstep.workflowId = ?', $workflowId)
-                                ->andWhere('irstep.cardinality >= ?', $position)
-                                ->execute();
+        $openGapQuery = (isset($openGapQuery)) ? $openGapQuery : self::openGapQuery($workflowId, $position);
+        $openGapQuery->execute(); 
     }
 
     /**
-     * Close a gap on a workflow
-     *
-     * @param int $workflowId ID of the workflow in which to perform the operation
-     * @param int $position Position of the gap to be closed.
-     * @return void
+     * Build the query for _openGap()
+     * 
+     * @param int $workflowId ID of workflow within which to open the gap
+     * @param int $position   Position in workflow where the gap should be created
+     * @return Doctrine_Query
      */
-    protected function _closeGap($workflowId, $position)
+    public static function openGapQuery($workflowId, $position)
     {
-        Doctrine_Query::create()->update('IrStep irstep')
-                                ->set('irstep.cardinality', 'irstep.cardinality - 1')
-                                ->where('irstep.workflowId = ?', $workflowId)
-                                ->andWhere('irstep.cardinality > ?', $position)
-                                ->execute();
+        $openGapQuery = Doctrine_Query::create()->update('IrStep irstep')
+                                                ->set('irstep.cardinality', 'irstep.cardinality + 1')
+                                                ->where('irstep.workflowId = ?', $workflowId)
+                                                ->andWhere('irstep.cardinality >= ?', $position);
+        return $openGapQuery;
+    }
+
+    /**
+     * Close a gap in a workflow to insert a step
+     *
+     * @param int $workflowId ID of workflow in which to perform the operation
+     * @param int $position   Position of the gap to be closed.
+     * @return void
+     * @deprecated pending on the removal of executions from model classes
+     */
+    protected function _closeGap($workflowId, $position, $closeGapQuery = null)
+    {
+        $closeGapQuery = (isset($closeGapQuery)) ? $closeGapQuery : self::closeGapQuery($workflowId, $position);
+        $closeGapQuery->execute(); 
+    }
+    
+    /**
+     * Build the query for _closeGap()
+     * 
+     * @param int $workflowId ID of workflow in which to perform the operation
+     * @param int $position   Position of the gap to be closed.
+     * @return Doctrine_Query
+     */
+    public static function closeGapQuery($workflowId, $position)
+    {
+        $closeGapQuery = Doctrine_Query::create()->update('IrStep irstep')
+                                                 ->set('irstep.cardinality', 'irstep.cardinality - 1')
+                                                 ->where('irstep.workflowId = ?', $workflowId)
+                                                 ->andWhere('irstep.cardinality >= ?', $position);
+        return $closeGapQuery;
     }
 }

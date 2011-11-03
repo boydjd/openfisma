@@ -30,13 +30,34 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_IrWorkflowDef extends Test_Case_Unit
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
+     * Test the implementation of ON_DELETE constraint on existing Step.
+     *
      * @return void
      */
-    public function testClassExists()
+    public function testPreDeleteStepExists()
     {
-        $this->assertTrue(class_exists('IrWorkflowDef'));
+        $irWorkflowDef = new IrWorkflowDef();
+        $irWorkflowDef->preDelete(null); // no exception expected
+        
+        $mockStep = $this->getMock('BlankMock', array('set'));
+        $irWorkflowDef->Steps[] = $mockStep;
+        
+        $this->setExpectedException('Fisma_Zend_Exception_User');
+        $irWorkflowDef->preDelete(null);
+    }
+    
+    /**
+     * Test the implementation of ON_DELETE constraint on existing SubCategory.
+     *
+     * @return void
+     */
+    public function testPreDeleteSubCategoryExists()
+    {
+        $irWorkflowDef = new IrWorkflowDef();        
+        $mockSubCategory = $this->getMock('BlankMock', array('set'));
+        $irWorkflowDef->SubCategories[] = $mockSubCategory;
+        
+        $this->setExpectedException('Fisma_Zend_Exception_User');
+        $irWorkflowDef->preDelete(null);
     }
 }

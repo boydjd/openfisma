@@ -30,13 +30,18 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_LdapConfig extends Test_Case_Unit
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
+     * Test the removal of all $config['id'] in $configs
+     *
      * @return void
      */
-    public function testClassExists()
+    public function testGetConfig()
     {
-        $this->assertTrue(class_exists('LdapConfig'));
+        $configs = array(
+            array('id' => 'temp1'),
+            array('id' => 'temp2')
+        );
+        $configs = LdapConfig::getConfig($configs);
+        $this->assertNull($configs[0]['id']);
+        $this->assertNull($configs[1]['id']);
     }
 }

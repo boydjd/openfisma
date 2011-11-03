@@ -30,13 +30,19 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_Source extends Test_Case_Unit
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
+     * Test the implementation of ON_DELETE constraint
+     *
      * @return void
      */
-    public function testClassExists()
+    public function testPreDelete()
     {
-        $this->assertTrue(class_exists('Source'));
+        $source = new Source();
+        $source->preDelete(null); // no exception
+        
+        $mockFinding = $this->getMock('Test_Case_Unit', array('set'));
+        $source->Findings[] = $mockFinding;
+        
+        $this->setExpectedException('Fisma_Zend_Exception_User');
+        $source->preDelete(null);
     }
 }

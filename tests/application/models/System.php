@@ -330,4 +330,21 @@ class Test_Application_Models_System extends Test_Case_Unit
         $system->Organization->id = 1;
         $this->assertEquals(1, $system->getOrganizationDependencyId());
     }
+    
+    /**
+     * Test the implementation of ON_DELETE constraint
+     *
+     * @return void
+     */
+    public function testPreDelete()
+    {
+        $system = new System();
+        $system->preDelete(null);
+        
+        $mockIncident = $this->getMock('BlankMock', array('set'));
+        $system->Organization->Incidents[] = $mockIncident;
+        
+        $this->setExpectedException('Fisma_Zend_Exception_User');
+        $system->preDelete(null);
+    }
 }

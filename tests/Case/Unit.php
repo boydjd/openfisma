@@ -47,3 +47,7 @@ abstract class Test_Case_Unit extends PHPUnit_Framework_TestCase
         }
     }
 }
+/*
+ * This is a blank class used for mocking
+ */
+class BlankMock {}
