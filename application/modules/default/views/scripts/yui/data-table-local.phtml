@@ -49,19 +49,7 @@
             YAHOO.util.Dom.get("<?php echo $this->escape($this->tableId, 'javascript'); ?>")
         );
         dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
-        var responseSchemas = <?php echo $this->escape($this->responseSchema, 'json'); ?>;
-
-        // Loop over the schemas and convert any name of 'Fisma' pasers into references to those actual objects.
-        var responseSchemaFields = responseSchemas['fields'];
-        for (var i in responseSchemaFields) {
-            var responseSchema = responseSchemaFields[i];
-
-            if (responseSchema['parser'].match(/Fisma/)) {
-                responseSchema['parser'] = Fisma.Util.getObjectFromName(responseSchema['parser']);
-            }
-        }
-
-        dataSource.responseSchema = responseSchemas;
+        dataSource.responseSchema = <?php echo $this->escape($this->responseSchema, 'json'); ?>;
 
         var dataTable = new YAHOO.widget.GroupedDataTable(
             "<?php echo $this->escape($this->containerId, 'javascript'); ?>", 

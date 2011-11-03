@@ -1,1 +1,0 @@
-(function(){var a={parseFileSize:function(f){var b=YAHOO.lang.trim(f);if(b.indexOf(" ")!==-1){var e=b.split(" ");var c=e[0];var d=e[1];switch(d){case"bytes":return c;case"KB":return c*1024;case"MB":return c*1024*1024;case"GB":return c*1024*1024*1024;default:throw"Invalid file unit"}}return null}};Fisma.TableParse=a})();

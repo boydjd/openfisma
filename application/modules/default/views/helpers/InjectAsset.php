@@ -78,7 +78,6 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/System.js',
                                       '/javascripts/Fisma/SwitchButton.js',
                                       '/javascripts/Fisma/TableFormat.js',
-                                      '/javascripts/Fisma/TableParse.js',
                                       '/javascripts/Fisma/TabView.js',
                                       '/javascripts/Fisma/TabView/Roles.js',
                                       '/javascripts/Fisma/TreeNodeDragBehavior.js',
