@@ -102,13 +102,15 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     {
         $keyword = $this->getRequest()->getParam('keyword');
 
+        $nameCondition = "(p.nameLast LIKE ? OR p.nameFirst LIKE ? OR p.username LIKE ?)";
+        $nameArgs = array("$keyword%", "$keyword%", "$keyword%");
+
         $pocQuery = Doctrine_Query::create()
                     ->from('Poc p')
                     ->select("p.id")
                     ->addSelect("CONCAT(p.username, ' [', p.nameFirst, ' ', p.nameLast, ']') AS name")
-                    ->where('p.nameLast LIKE ?', "$keyword%")
-                    ->orWhere('p.nameFirst LIKE ?', "$keyword%")
-                    ->orWhere('p.username LIKE ?', "$keyword%")
+                    ->where($nameCondition, $nameArgs)
+                    ->andWhere('(p.lockType IS NULL OR p.lockType <> ?)', 'manual')
                     ->orderBy("p.nameFirst")
                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
