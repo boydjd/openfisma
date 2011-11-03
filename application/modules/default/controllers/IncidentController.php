@@ -1371,7 +1371,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $artifactRows[] = array(
                 'iconUrl'  => "<a href=$downloadUrl><img src=" . $this->view->escape($artifact->getIconUrl()) . "></a>",
                 'fileName' => "<a href=$downloadUrl><div>" . $this->view->escape($artifact->fileName) . "</div></a>",
-                'fileSize' => $artifact->getFileSize(),
+                'fileSize' => $artifact->fileSize,
                 'user'     => $this->view->userInfo($artifact->User->username),
                 'date'     => $artifact->createdTs,
                 'comment'  => $this->view->textToHtml($this->view->escape($artifact->comment))
@@ -1404,9 +1404,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             new Fisma_Yui_DataTable_Column(
                 'Size',
                 true,
+                'Fisma.TableFormat.formatFileSize',
                 null,
-                null,
-                'size'
+                'size',
+                false,
+                'number'
             )
         );
 

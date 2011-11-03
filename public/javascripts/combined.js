@@ -11982,6 +11982,33 @@ Fisma.TableFormat = {
 
             elCell.appendChild(checkbox);
         }        
+    },
+
+    /**
+     * A formatter which displays the size of file with unit
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatFileSize : function (elCell, oRecord, oColumn, oData) {
+        // Convert to number
+        var size = oData * 1;
+
+        if(YAHOO.lang.isNumber(size)) {
+            if (size < 1024) {
+                size = size + ' bytes';
+            } else if (size < (1024 * 1024)) {
+                size = (size / 1024).toFixed(1) + ' KB';
+            } else if (size < (1024 * 1024 * 1024)) {
+                size = (size / (1024 * 1024)).toFixed(1) + ' MB';
+            } else {
+                size = (size / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+            }
+
+            elCell.innerHTML = size;
+        }
     }
 };
 /**

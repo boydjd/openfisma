@@ -88,7 +88,9 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
                 true,
                 null,
                 null,
-                'version'
+                'version',
+                false,
+                'number'
             )
         );
 
