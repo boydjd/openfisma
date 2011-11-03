@@ -206,7 +206,25 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         } else {
             $formPart->setAction("/incident/report/step/$step");
         }
-        
+
+        // Initialize incidentTime with current system time
+        if (empty($incident->incidentTime)) {
+
+            // The value of selection option should be multiples of 5
+            $minute = (int) Zend_Date::now()->get(Zend_Date::MINUTE_SHORT);
+            $minute = $minute - $minute % 5;
+            $time = Zend_Date::now()->setMinute($minute)->get('HH:mm');
+
+            $incident->incidentTime = $time;
+        }
+
+        // Initialize incidentTimezone with current system timezone
+        if (empty($incident->incidentTimezone)) {
+            $timezone = Zend_Date::now()->get(Zend_Date::TIMEZONE);
+
+            $incident->incidentTimezone = isset($this->_timezones[$timezone]) ? $timezone : null;
+        }
+
         // Use the validator to load the incident data into the form. Notice that there aren't actually any
         // validators which could fail here.
         $formPart->isValid($incident->toArray());
