@@ -46,8 +46,9 @@ class Fisma_Inject_Excel
      * v2 2010-06-28 Add metadata regarding which security control catalog was used to produce the template
      * v3 2011-02-02 Removed asset related fields
      * v4 2011-03-25 threatLevel and threatDescription are now requiered fields
+     * v5 2011-11-04 Remove contactInfo field
      */
-    const TEMPLATE_VERSION = 4;
+    const TEMPLATE_VERSION = 5;
     
     /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
@@ -70,8 +71,7 @@ class Fisma_Inject_Excel
         'threatLevel',
         'threatDescription',
         'countermeasuresEffectiveness',
-        'countermeasureDescription',
-        'contactInfo'
+        'countermeasureDescription'
     );
 
     /**
@@ -281,9 +281,7 @@ class Fisma_Inject_Excel
             }
 
             $poam['description'] = "<p>{$finding['findingDescription']}</p>";
-            if (!empty($finding['contactInfo'])) {
-                $poam['description'] .= "<p>Point of Contact: {$finding['contactInfo']}</p>";
-            }
+
             $poam['recommendation'] = $finding['findingRecommendation'];
             if (empty($finding['findingType'])) {
                 $poam['type'] = 'NONE';

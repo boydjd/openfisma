@@ -161,10 +161,10 @@ echo $this->escape($xmltag, 'none');
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="177"/>
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="126.75"/>
    <Row ss:AutoFitHeight="0" ss:Height="26.25" ss:StyleID="s27">
-    <Cell ss:MergeAcross="13" ss:StyleID="s29"><Data ss:Type="String"><?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?> - Injection Template</Data></Cell>
+    <Cell ss:MergeAcross="12" ss:StyleID="s29"><Data ss:Type="String"><?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?> - Injection Template</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="129.75" ss:StyleID="s27">
-    <Cell ss:MergeAcross="13" ss:StyleID="m43958186"><Data ss:Type="String">Security Catalog: <?php echo $this->escape($this->securityControlCatalogName); ?>&#10;Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.&#10;&#10;</Data></Cell>
+    <Cell ss:MergeAcross="12" ss:StyleID="m43958186"><Data ss:Type="String">Security Catalog: <?php echo $this->escape($this->securityControlCatalogName); ?>&#10;Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.&#10;&#10;</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="38.25">
     <Cell ss:StyleID="s39"><Data ss:Type="String">Organization/System*</Data><Comment
@@ -204,9 +204,6 @@ echo $this->escape($xmltag, 'none');
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The effectiveness of in-place countermeasures for mitigating the threat.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s41"><Data ss:Type="String">Description of Countermeasures</Data><Comment
-      ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s41"><Data ss:Type="String">Point of Contact (Name, Number, Email)</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
    </Row>
