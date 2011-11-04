@@ -51,7 +51,7 @@ echo $this->escape($xmltag, 'none');
    </Borders>
   </Style>
   <Style ss:ID="s22">
-   <Alignment ss:Horizontal="Center" ss:Vertical="Bottom" ss:WrapText="1"/>
+   <Alignment ss:Vertical="Bottom" ss:WrapText="1"/>
    <Borders>
     <Border ss:Position="Bottom" ss:LineStyle="Continuous" ss:Weight="1"/>
     <Border ss:Position="Left" ss:LineStyle="Continuous" ss:Weight="1"/>
@@ -147,48 +147,48 @@ echo $this->escape($xmltag, 'none');
  <Worksheet ss:Name="Findings">
   <Table ss:ExpandedColumnCount="21" ss:ExpandedRowCount="8" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s21">
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="49.5"/>
-   <Column ss:StyleID="s47" ss:AutoFitWidth="0" ss:Width="60.75"/>
-   <Column ss:Index="10" ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="78.75"/>
-   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="180" ss:Span="1"/>
-   <Column ss:Index="13" ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="49.5"/>
-   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="156"/>
-   <Column ss:StyleID="s47" ss:AutoFitWidth="0" ss:Width="78"/>
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="84.75"/>
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="90.75"/>
-   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="177"/>
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="90.75"/>
-   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="177"/>
-   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="126.75"/>
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="120"/><!-- Organization/System -->
+   <Column ss:StyleID="s47" ss:AutoFitWidth="0" ss:Width="75"/><!-- Date Discovered -->
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="75"/><!-- Finding Source -->
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Finding Description -->
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Finding Recommendation -->
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="75"/><!-- Course Of Action Type -->
+   <Column ss:StyleID="s47" ss:AutoFitWidth="0" ss:Width="175"/><!-- Course Of Action Description -->
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="100"/><!-- Expected Completion Date -->
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="100"/><!-- NIST 800-53 Control -->
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Threat Level -->
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="175"/><!-- Threat Description -->
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Countermeasures Effectiveness -->
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Countermeasures Description -->
    <Row ss:AutoFitHeight="0" ss:Height="26.25" ss:StyleID="s27">
     <Cell ss:MergeAcross="12" ss:StyleID="s29"><Data ss:Type="String"><?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?> - Injection Template</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="129.75" ss:StyleID="s27">
-    <Cell ss:MergeAcross="12" ss:StyleID="m43958186"><Data ss:Type="String">Security Catalog: <?php echo $this->escape($this->securityControlCatalogName); ?>&#10;Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.&#10;&#10;</Data></Cell>
+   <Row ss:AutoFitHeight="0" ss:Height="100" ss:StyleID="s27">
+    <Cell ss:MergeAcross="12" ss:StyleID="m43958186"><Data ss:Type="String">Security Catalog: <?php echo $this->escape($this->securityControlCatalogName); ?>&#10;Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.</Data></Cell>
    </Row>
-   <Row ss:AutoFitHeight="0" ss:Height="38.25">
+   <Row ss:AutoFitHeight="0" ss:Height="28">
     <Cell ss:StyleID="s39"><Data ss:Type="String">Organization/System*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The organization/system that this finding affects.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s46"><Data ss:Type="String">Date Discovered*</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Date Discovered*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date that this finding was discovered.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Finding Source*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The type of evaluation which was used to discover this finding.          </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s41"><Data ss:Type="String">Finding Description*</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Finding Description*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Description of the vulnerability or weakness.          </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s41"><Data ss:Type="String">Finding Recommendation*</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Finding Recommendation*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Auditor's recommendation to remediate the finding.          </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s41"><Data ss:Type="String">Course of Action Type</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Course of Action Type</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> AR = 'Accepted Risk', CAP = 'Corrective Action Plan', FP = 'False Positive'         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s41"><Data ss:Type="String">Course of Action&#10;Description</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Course of Action&#10;Description</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The course of action planned to address a CAP; the business case justifying an AR.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s46"><Data ss:Type="String">Expected Completion Date</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Expected Completion Date</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date by which the course of action will be completed AND evidence uploaded         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">NIST 800-53 Security Control</Data><Comment
@@ -197,13 +197,13 @@ echo $this->escape($xmltag, 'none');
     <Cell ss:StyleID="s39"><Data ss:Type="String">Threat Level*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The threat imposed by an exploit of this vulnerability.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s41"><Data ss:Type="String">Threat Description*</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Threat Description*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe the source and nature of the threat.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Countermeasures Effectiveness</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The effectiveness of in-place countermeasures for mitigating the threat.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s41"><Data ss:Type="String">Description of Countermeasures</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Countermeasures Description</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
    </Row>
