@@ -682,3 +682,12 @@ table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th
 #assign_right td {
     border-style: none;
 }
+
+/* Style for the close icon on msgbar*/
+div#closeMsg {
+    cursor: pointer;
+    margin-right: 5px;
+    float: right;
+    font-size: 20px
+}
+
