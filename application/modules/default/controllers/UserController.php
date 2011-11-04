@@ -70,6 +70,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->removeElement('lockReason');
         $form->removeElement('lockTs');
         $form->removeElement('comment');
+        $form->removeElement('reportingOrganizationId');
         $form->removeElement('mustResetPassword');
         return $form;
     }
@@ -500,7 +501,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $username = $this->getRequest()->getParam('username');
 
         if ($username) {
-            $user = Doctrine::getTable('User')->findOneByUsername($username);
+            $user = Doctrine::getTable('Poc')->findOneByUsername($username);
         } else {
             $user = null;
         }
@@ -690,57 +691,80 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      * Check if the specified LDAP distinguished name (Account) exists in the system's specified LDAP directory.
      * 
      * @return void
-     * @todo code finish this function later
      */
     public function checkAccountAction()
     {
-        $this->_acl->requirePrivilegeForClass('read', 'User');
-
-        $accountInfo = array();
-
-        $data = LdapConfig::getConfig();
-        $account = $this->_request->getParam('account');
-        $msg = '';
-        if (count($data) == 0) {
-            $type = 'warning';
-            $msg .= "No LDAP providers defined";
+        
+        if (! ($this->_acl->hasPrivilegeForClass('read', 'User') 
+               || $this->_acl->hasPrivilegeForClass('read', 'Poc')) ) {
+            throw new Fisma_Zend_Exception_InvalidPrivilege("User does not have privileges to check account.");
         }
 
-        foreach ($data as $opt) {
-            try {
-                $srv = new Zend_Ldap($opt);
+        try {
+            $ldapServerConfigurations = LdapConfig::getConfig();
 
-                $type = 'message';
-                $dn = $srv->getCanonicalAccountName($account, Zend_Ldap::ACCTNAME_FORM_DN); 
-
-                // Just get specified standard LDAP attributes.
-                $accountInfo = $srv->getEntry(
-                    $dn,
-                    array('sn',
-                          'givenname',
-                          'mail',
-                          'telephonenumber',
-                          'mobile',
-                          'title')
-                );
-                $msg = "$account exists, the dn is: $dn";
-                
-                break;
-            } catch (Zend_Ldap_Exception $e) {
-                $type = 'warning';
-                // The expected error is LDAP_NO_SUCH_OBJECT, meaning that the
-                // DN does not exist.
-                if ($e->getErrorCode() ==
-                    Zend_Ldap_Exception::LDAP_NO_SUCH_OBJECT) {
-                    $msg = "$account does NOT exist";
-                } else {
-                    $msg .= 'Error while checking account: '
-                          . $e->getMessage();
-                }
+            if (count($ldapServerConfigurations) == 0) {
+                throw new Fisma_Zend_Exception_User('No LDAP servers defined.');
             }
+
+            $accountInfo = array();
+            $account = $this->_request->getParam('account');
+
+            $msg = '';
+            $matchedAccounts = null;
+
+            if (empty($account)) {
+                throw new Fisma_Zend_Exception_User('You did not specify any account name.');
+            } elseif (strlen($account) < 3) {
+                throw new Fisma_Zend_Exception_User('When searching for a user, you must type at least 3 letters.');
+            }
+
+            foreach ($ldapServerConfigurations as $ldapServerConfiguration) {        
+                $ldapServer = new Zend_Ldap($ldapServerConfiguration);
+                $type = 'message';
+            
+                // Using Zend_Ldap_Filter instead of a string query prevents LDAP injection
+                $searchFilter = Zend_Ldap_Filter::orFilter(
+                    Zend_Ldap_Filter::begins('sAMAccountName', $account),
+                    Zend_Ldap_Filter::begins('uid', $account)
+                );
+
+                $matchedAccounts = $ldapServer->search(
+                    $searchFilter,
+                    null,
+                    Zend_Ldap::SEARCH_SCOPE_SUB,
+                    array('givenname',
+                          'mail',
+                          'mobile',
+                          'sAMAccountName',
+                          'sn',
+                          'telephonenumber',
+                          'title',
+                          'uid'),
+                    'givenname',
+                    null,
+                    10 // limit 10 results to avoid crushing ldap server
+                );
+
+                break;
+            }
+        } catch (Zend_Ldap_Exception $zle) {
+            $type = 'warning';
+            $msg .= 'Error while checking account: ' . $zle->getMessage();
+        } catch (Fisma_Zend_Exception_User $fzeu) {
+            $type = 'warning';
+            $msg .= 'Error while checking account: ' . $fzeu->getMessage();
         }
 
-        echo Zend_Json::encode(array('msg' => $msg, 'type' => $type, 'accountInfo' => $accountInfo));
+        echo Zend_Json::encode(
+            array(
+                'accounts' => is_object($matchedAccounts) ? $matchedAccounts->toArray() : null,
+                'msg' => $msg, 
+                'query' => $account,
+                'type' => $type, 
+            )
+        );
+
         $this->_helper->viewRenderer->setNoRender();
     }
 
@@ -889,6 +913,66 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     protected function _isDeletable()
     {
         return false;
+    }
+
+    /**
+     * Override to fill in option values for the select elements, etc.
+     *
+     * @param string|null $formName The name of the specified form
+     * @return Zend_Form The specified form of the subject model
+     */
+    public function getForm($formName = null)
+    {
+        $form = parent::getForm($formName);        
+        $passwordRequirements = new Fisma_Zend_Controller_Action_Helper_PasswordRequirements();
+
+        if ('create' == $this->_request->getActionName()) {
+            $form->getElement('password')->setRequired(true);
+        }
+        $roles  = Doctrine_Query::create()
+                    ->select('*')
+                    ->from('Role')
+                    ->orderBy('nickname')
+                    ->execute();
+        foreach ($roles as $role) {
+            $form->getElement('role')->addMultiOptions(array($role->id => $role->nickname . ' - ' . $role->name));
+        }
+
+        // Show lock explanation if account is locked. Hide explanation otherwise.
+        $userId = $this->_request->getParam('id');
+        $user = Doctrine::getTable('User')->find($userId);
+
+        if ('database' == Fisma::configuration()->getConfig('auth_type')) {
+            $form->removeElement('checkAccount');
+            $this->view->requirements =  $passwordRequirements->direct();
+        } else {
+            $form->removeElement('password');
+            $form->removeElement('confirmPassword');
+            $form->removeElement('generate_password');
+
+            // root user should always show Must Reset Password
+            if (empty($user) || ($user && 'root' != $user->username)) {
+                $form->removeElement('mustResetPassword');
+            }
+        }
+        
+        if ($user && $user->locked) {
+            $reason = $user->getLockReason();
+            $form->getElement('lockReason')->setValue($reason);
+
+            $lockTs = new Zend_Date($user->lockTs, Zend_Date::ISO_8601);
+            $form->getElement('lockTs')->setValue($lockTs->get(Fisma_Date::FORMAT_DATETIME));
+        } else {
+            $form->removeElement('lockReason');
+            $form->removeElement('lockTs');
+        }
+
+        // Populate <select> for responsible organization
+        $organizations = Doctrine::getTable('Organization')->getOrganizationSelectQuery()->execute();
+        $selectArray = $this->view->systemSelect($organizations);
+        $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
+
+        return $form;
     }
 
     /**

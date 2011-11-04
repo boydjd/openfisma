@@ -1,2 +1,5 @@
 .yui-ac-input{position:static!important;width:85%!important;}
+.yui-ac-container{font-weight:normal;}
+.yui-ac-content{opacity:.92;}
+.yui-ac-bd li{margin:5px;font-size:1.2em;}
 div.yui-ac img.spinner{display:inline;visibility:hidden;position:relative;top:4px;left:2px;}

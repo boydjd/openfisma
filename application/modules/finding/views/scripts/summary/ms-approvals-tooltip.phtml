@@ -1,0 +1,24 @@
+<p>
+    <b>NEW:</b>
+    Findings which have just been entered into the system are in NEW status.
+</p>
+
+<p>
+    <b>DRAFT:</b>
+    Once the mitigation strategy type is set, the finding enters DRAFT status to reflect the fact 
+    that a user has reviewed the finding and assigned an initial remediation
+    strategy, but has not yet submitted the mitigation strategy for approval.
+</p>
+
+<?php 
+foreach ($this->approvals as $approval): 
+    if ('action' == $approval['approvalGroup']):
+?>
+    <p>
+        <b><?php echo $this->escape($approval['nickname']); ?>:</b>
+        <?php echo $this->escape($approval['name']); ?>
+    </p>
+<?php 
+    endif;
+endforeach; 
+?>

@@ -81,7 +81,7 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
      * 
      * @var array
      */
-    private $_typeMap = array(
+    private static $_typeMap = array(
         'gss' => 'General Support System',
         'major' => 'Major Application',
         'minor' => 'Minor Application'
@@ -123,7 +123,12 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
      */
     public function getTypeLabel() 
     {
-        return $this->_typeMap[$this->type];
+        return self::$_typeMap[$this->type];
+    }
+
+    public static function getAllTypeLabels()
+    {
+        return self::$_typeMap;
     }
 
     /**
@@ -359,8 +364,8 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
         if (isset($modified['sdlcPhase']) && $modified['sdlcPhase'] == 'disposal') {
             $query = $this->getTable()->createQuery()
                      ->from('Finding f')
-                     ->leftJoin('f.ResponsibleOrganization ro')
-                     ->leftJoin('ro.System s')
+                     ->leftJoin('f.Organization o')
+                     ->leftJoin('o.System s')
                      ->where('f.status != ?', 'CLOSED')
                      ->andWhere('s.id = ?', $this->id);
                  
@@ -413,4 +418,37 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
         }
     }
     
+    public function toAggregationTreeNode()
+    {
+        return array (
+            'id' => $this->id,
+            'label' => $this->Organization->nickname . ' - ' . $this->Organization->name,
+            'sysTypeLabel' => $this->getTypeLabel(),
+            'orgType' => $this->type,
+            'sdlcPhase' => $this->sdlcPhase,
+            'parent' => $this->aggregateSystemId,
+            'children' => array()
+        );
+    }
+
+    public function isAggregatedBy(System $system)
+    {
+        $result = false;
+        $temp = $this;
+
+        do {
+            if ($temp == $system) {
+                $result = true;
+                break;
+            }
+            // must test before dereferencing relation, otherwise a new object is created if the relation is null
+            if (!empty($temp->aggregateSystemId)) {
+                $temp = $temp->AggregateSystem;
+            } else {
+                $temp = null;
+            }
+        } while (!empty($temp));
+
+        return $result;
+    }
 }

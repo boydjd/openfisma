@@ -94,6 +94,13 @@ elements.title.options.label = "Title"
 elements.title.options.attribs.size = 35
 displayGroups.accountInfo.elements.title = "title"
 
+; When editing this entry, make sure to make the same edits to the corresponding entry in poc.form!!!!!
+elements.reportingOrganizationId.type = "select"
+elements.reportingOrganizationId.options.label = "Reporting Organization"
+elements.reportingOrganizationId.options.required = true
+elements.reportingOrganizationId.options.tooltip = "<p><b>Reporting Organization</b></p><p>The reporting organization is the organization within the enterprise that this point of contact or user reports to. In other words, it is this person's managing organization.</p>"
+displayGroups.accountInfo.elements.reportingOrganizationId = "reportingOrganizationId"
+
 ; The values in the status menu are static so it is hardcoded here.
 ; (ie. "Active" and "Locked").
 elements.locked.type = "select"

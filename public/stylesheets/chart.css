@@ -62,8 +62,33 @@
     text-align: left;
 }
 
+.widgetSpaceHolder table {
+    margin-bottom: 0;
+}
+
+.widgetSpaceHolder th, .widgetSpaceHolder td {
+    padding: 0;
+}
+
 /* the gear icon that toggles chart-options visibility */
 .chartGear {
     cursor: pointer;
     width: 20px;
 }
+
+td.jqplot-table-legend {
+    border-style: none;
+}
+
+#chartFindForecastholder table, #chartTotalStatusholder table, #incidentHistorytoplegend table,
+#incidentHistorytoplegend table, #chartOverdueFindingtoplegend table, #chartNoMitholder table,
+#findingOrgCharttoplegend table {
+    margin-bottom: 0;
+}
+
+#chartFindForecastholder td, #chartTotalStatusholder td, #incidentHistorytoplegend td, #incidentHistorytoplegend td,
+#chartOverdueFindingtoplegend td, #chartNoMitholder td, #findingOrgCharttoplegend td {
+    border-style: none;
+    padding: 0;
+}
+

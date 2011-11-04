@@ -219,7 +219,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->select('SUBSTRING_INDEX(sc.code, "-", 1) fam')
             ->from('SecurityControl sc')
             ->innerJoin('sc.Findings f')
-            ->innerJoin('f.ResponsibleOrganization o')
+            ->innerJoin('f.Organization o')
             ->andWhere('f.status <> ?', 'CLOSED')
             ->whereIn('o.id', $this->_visibleOrgs)
             ->groupBy('fam')

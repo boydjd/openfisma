@@ -141,14 +141,36 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         $lastLoginInfo = new Zend_Session_Namespace('last_login_info');
         
         if (isset($lastLoginInfo->lastLoginTs)) {
+
             $lastLoginDate = new Zend_Date($lastLoginInfo->lastLoginTs, Zend_Date::ISO_8601);
-            $this->view->lastLoginTs = $lastLoginDate->toString(Fisma_Date::FORMAT_WEEKDAY_MONTH_NAME_SHORT_DAY_TIME);
-            $this->view->lastLoginIp = $lastLoginInfo->lastLoginIp;
-            $this->view->failureCount = $lastLoginInfo->failureCount;
+            $msg = 'Last successful login at ' 
+                   . $lastLoginDate->toString(Fisma_Date::FORMAT_WEEKDAY_MONTH_NAME_SHORT_DAY_TIME) 
+                   . ' from IP address '
+                   . $lastLoginInfo->lastLoginIp
+                   . '.';
+  
+            if ('database' == Fisma::configuration()->getConfig('auth_type')) {
+                if ($lastLoginInfo->failureCount > 0) {
+                    $attempt = (1==$lastLoginInfo->failureCount) ? 'attempt' : 'attempts';
+                    $be = (1==$lastLoginInfo->failureCount) ? 'was' : 'were';
+                    $warningMsg = "There $be " 
+                                  . $lastLoginInfo->failureCount
+                                  . " bad login $attempt since your last login.";
+ 
+                    $msgs[] = array('warning' => $warningMsg);
+                    $msgs[] = array('warning' => $msg);
+                } else {
+                    $msgs[] = array('notice' => $msg);
+                }
+            } else {
+                $msgs[] = array('notice' => $msg);
+            } 
+        
+            $this->view->priorityMessenger($msgs);
         } else {
             $this->view->applicationName = Fisma::configuration()->getConfig('system_name');
         }
-        
+
         if ($user->Notifications->count() > 0) {
             $this->view->notifications = $user->Notifications;
             $this->view->dismissUrl = "/dashboard/index/dismiss/notifications";

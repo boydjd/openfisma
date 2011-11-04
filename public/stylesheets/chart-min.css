@@ -3,4 +3,9 @@
 .chartToolTipText{font-size:14px;}
 .screenReaderTabel{width:100%;}
 .widgetSpaceHolder{width:400px;margin-left:auto;margin-right:auto;text-align:left;}
+.widgetSpaceHolder table{margin-bottom:0;}
+.widgetSpaceHolder th,.widgetSpaceHolder td{padding:0;}
 .chartGear{cursor:pointer;width:20px;}
+td.jqplot-table-legend{border-style:none;}
+#chartFindForecastholder table,#chartTotalStatusholder table,#incidentHistorytoplegend table,#incidentHistorytoplegend table,#chartOverdueFindingtoplegend table,#chartNoMitholder table,#findingOrgCharttoplegend table{margin-bottom:0;}
+#chartFindForecastholder td,#chartTotalStatusholder td,#incidentHistorytoplegend td,#incidentHistorytoplegend td,#chartOverdueFindingtoplegend td,#chartNoMitholder td,#findingOrgCharttoplegend td{border-style:none;padding:0;}

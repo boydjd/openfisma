@@ -14,9 +14,29 @@ elements.discoveredDate.type = "text"
 elements.discoveredDate.options.label = "Discovered Date"
 elements.discoveredDate.options.class = "date"
 elements.discoveredDate.options.required = true
-elements.discoveredDate.options.tooltip = "<p>If this finding was not discovered today, then enter the actual date of discovery here.</p><p>The date format is YYYY-MM-DD.</p>"
+elements.discoveredDate.options.tooltip = "<b>Discovered Date</b><p>If this finding was not discovered today, then enter the actual date of discovery here.</p><p>The date format is YYYY-MM-DD.</p>"
 elements.discoveredDate.options.validators.dateValidator.validator = "date"
 displayGroups.finding.elements.discoveredDate = "discoveredDate"
+
+elements.responsibleOrganizationId.type = "select"
+elements.responsibleOrganizationId.options.label = "Organization/System"
+elements.responsibleOrganizationId.options.required = true
+elements.responsibleOrganizationId.options.tooltip = "<b>Organization/System</b><p>This is the organization or system which is the target (or subject) of this finding.</p><p>Notice that you can assign findings either to a management organization or directly to an information system.</p>"
+displayGroups.finding.elements.responsibleOrganizationId = "responsibleOrganizationId"
+
+elements.pocAutocomplete.type = "Form_AutoComplete"
+elements.pocAutocomplete.options.label = "Point Of Contact"
+elements.pocAutocomplete.options.attribs.resultsList = "pointsOfContact"
+elements.pocAutocomplete.options.attribs.fields = "name"
+elements.pocAutocomplete.options.attribs.xhr = "/poc/autocomplete/format/json"
+elements.pocAutocomplete.options.attribs.hiddenField = "pocId"
+elements.pocAutocomplete.options.attribs.queryPrepend = "/keyword/"
+elements.pocAutocomplete.options.attribs.containerId = "pointOfContactAutocompleteContainer"
+; The callback enables a privileged user to create a POC without leaving the finding form. This is disabled for
+; non-privileged users.
+elements.pocAutocomplete.options.attribs.setupCallback = "Fisma.Finding.setupPocAutocomplete"
+elements.pocAutocomplete.options.tooltip = "<b>Point Of Contact</b><p>A point of contact is a person who is assigned responsibility for this finding. All existing users of this sytem are eligible to be points of contact. In addition, the administrator of this system can add additional points of contact as needed.</p>"
+displayGroups.finding.elements.pocAutocomplete = "pocAutocomplete"
 
 elements.sourceId.type = "select"
 elements.sourceId.options.label = "Finding Source"
@@ -47,7 +67,7 @@ elements.securityControlAutocomplete.options.attribs.xhr = "/security-control/au
 elements.securityControlAutocomplete.options.attribs.hiddenField = "securityControlId"
 elements.securityControlAutocomplete.options.attribs.queryPrepend = "/keyword/"
 elements.securityControlAutocomplete.options.attribs.containerId = "securityControlAutocompleteContainer"
-elements.securityControlAutocomplete.options.tooltip = "<p>This is an autocomplete field. Start typing the name of the control or related keywords, and a list will pop up with matching controls. You must select a control from that list.</p>"
+elements.securityControlAutocomplete.options.tooltip = "<b>Security Control</b><p>This is an autocomplete field. Start typing the name of the control or related keywords, and a list will pop up with matching NIST 800-53 security controls. You must select a control from that list.</p>"
 elements.securityControlAutocomplete.options.required = true
 displayGroups.finding.elements.securityControlAutocomplete = "securityControlAutocomplete"
 elements.securityControlId.type = "hidden"
@@ -68,12 +88,6 @@ elements.threat.options.required = true
 elements.threat.options.validators.mce.validator = "MceNotEmpty"
 displayGroups.finding.elements.threat = "threat"
 
-elements.responsibleOrganizationId.type = "select"
-elements.responsibleOrganizationId.options.label = "Responsible Organization/System"
-elements.responsibleOrganizationId.options.required = true
-displayGroups.finding.elements.responsibleOrganizationId = "responsibleOrganizationId"
-
 elements.save.type = "Form_Button_Submit"
-elements.save.options.value = "Create Finding"
+elements.save.options.label = "Create Finding"
 displayGroups.finding.elements.save = "save"
-

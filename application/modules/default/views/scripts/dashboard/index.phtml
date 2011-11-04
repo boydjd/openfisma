@@ -28,34 +28,6 @@
         </li>
     </ul>
 </div>
-<div class="panel">
-    <p><em>Last Login</em></p>
-    <?php 
-    if (!empty($this->lastLoginIp)) { 
-    ?>
-        <ul>
-            <li>Last Logged in at <b><?php echo $this->escape($this->lastLoginTs)?></b></li>
-            <li>From IP address <b><?php echo $this->escape($this->lastLoginIp)?></b></li>
-            <?php if ('database' == Fisma::configuration()->getConfig('auth_type')): ?>
-                <li>
-                    There were 
-                    <b><?php echo $this->escape($this->failureCount)?></b>
-                    bad login attempts since your last login.
-                </li>
-            <?php endif; ?>
-        </ul>
-    <?php 
-    } else { 
-    ?>
-        <p>
-            This is the first time you have logged into
-            <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'))?>. 
-            We will begin tracking your login attempts moving forward.
-        </p>
-    <?php 
-    } 
-    ?>
-</div>
 
 <?php
 if (isset($this->notifications)) {

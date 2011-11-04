@@ -240,8 +240,12 @@
                             this._buildTreeNodes(json.treeData, this._treeView.getRoot());
                             Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
                                 this._treeView,
-                                this.handleDragDrop,
-                                this
+                                {
+                                    dragFinished: {
+                                        fn: this.handleDragDrop,
+                                        context: this
+                                    }
+                                }
                             );
 
                             // Expand the first two levels of the tree by default
@@ -294,11 +298,11 @@
                 );
 
                 // Set the label style
-                yuiNode.labelStyle = node.orgType;
+                yuiNode.contentStyle = node.orgType;
 
                 var sdlcPhase = YAHOO.lang.isUndefined(node.System) ? false : node.System.sdlcPhase;
                 if (sdlcPhase === 'disposal') {
-                    yuiNode.labelStyle += " disposal";
+                    yuiNode.contentStyle += " disposal";
                 }
 
                 // Recurse

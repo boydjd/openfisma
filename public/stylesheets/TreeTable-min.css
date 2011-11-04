@@ -1,15 +1,15 @@
 table.treeTable{width:100%;}
 table.treeTable th{padding:5px;background-color:#fafafa;border:1px solid #bbb;font-weight:bold;text-align:center;}
 table.treeTable td{padding:5px;background-color:#fafafa;border:1px solid #bbb;}
-table.treeTable td a{color:black;}
-table.treeTable td:first-child a{text-decoration:none;}
+table.treeTable td span{color:black;}
+table.treeTable td:first-child span{text-decoration:none;}
 table.treeTable div.link{padding:1px;}
 table.treeTable div.link:hover{padding:0;border:1px solid #ccc;background-color:#f0f0f0;}
 table.treeTable td img.control{margin:6px 6px 6px 2px;position:relative;float:left;}
 table.treeTable td img.icon{float:left;margin-right:6px;}
 table.treeTable td img#control{padding:5px;border:1px solid grey;}
 table.treeTable td.noDueDate{text-align:center;}
-table.treeTable td.onTime{background-color:#a6eba9;text-align:center;}
+table.treeTable td.ontime{background-color:#a6eba9;text-align:center;}
 table.treeTable td.overdue{background-color:#ffcbcf;text-align:center;font-weight:bold;font-style:italic;}
 .treeTable0{margin-left:0;}
 .treeTable1{margin-left:1em;}
@@ -21,3 +21,6 @@ table.treeTable td.overdue{background-color:#ffcbcf;text-align:center;font-weigh
 .treeTable7{margin-left:7em;}
 .treeTable8{margin-left:8em;}
 .treeTable9{margin-left:9em;}
+div.treeTableButton{float:left;}
+div.treeTableFilter{padding:5px;float:right;margin-left:10px;border:1px inset #fafafa;background-color:#ebebeb;}
+div.treeTableFilter span{font-weight:bold;padding-right:10px;}

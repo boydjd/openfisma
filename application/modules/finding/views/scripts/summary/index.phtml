@@ -1,0 +1,64 @@
+<div id="summaryContainer"></div>
+
+<script type="text/javascript">
+
+YAHOO.util.Event.onDOMReady(function () {
+    var url = '/finding/summary/data/format/json';
+    
+    var msApprovals = <?php echo $this->escape($this->msApprovals, 'json'); ?>;
+    var evApprovals = <?php echo $this->escape($this->evApprovals, 'json'); ?>;
+
+    var HARDCODED_COLUMN_COUNT = 7; // includes all columns that don't vary, i.e. everything but approvals
+    var columnCount = HARDCODED_COLUMN_COUNT + msApprovals.length + evApprovals.length;
+
+    var storage = new Fisma.PersistentStorage("Finding.Summary");
+    
+    Fisma.Storage.onReady(function () {
+        var summaryTable = new Fisma.FindingSummary(url, columnCount, msApprovals, evApprovals);
+
+        // Set tooltips
+        summaryTable.setTooltip("viewBy", "<?php echo $this->escape($this->tooltips['viewBy'], "none"); ?>");
+        summaryTable.setTooltip("mitigationStrategy", "<?php echo $this->escape($this->tooltips['ms'], "none"); ?>");
+        summaryTable.setTooltip("remediation", "<?php echo $this->escape($this->tooltips['ev'], "none"); ?>");
+
+        // Add filters
+        var defaultFindingSource = storage.get("findingSource");
+        summaryTable.addFilter(
+            "findingSource",
+            "Finding Source",
+            <?php echo $this->escape($this->findingSources, 'json'); ?>,
+            defaultFindingSource || "none",
+            function (filter, value) {
+                storage.set("findingSource", value);
+                storage.sync();
+            }
+        );
+
+        var defaultMitigationStrategy = storage.get("mitigationType");
+        summaryTable.addFilter(
+            "mitigationType",
+            "Mitigation Type",
+            <?php echo $this->escape($this->mitigationTypes, 'json'); ?>,
+            defaultMitigationStrategy || "none",
+            function (filter, value) {
+                storage.set("mitigationType", value);
+                storage.sync();
+            }
+        );
+
+        // Use storage to set the initial view type and to record the user's current view type.
+        var defaultViewType = storage.get("defaultViewType");
+        if (defaultViewType) {
+            summaryTable.setViewType(storage.get("defaultViewType"));
+        }
+
+        summaryTable.onViewTypeChange.subscribe(function (type, args) {
+            storage.set("defaultViewType", args[0]);
+            storage.sync();
+        });
+
+        summaryTable.render(document.getElementById('summaryContainer'));        
+    });
+});
+
+</script>

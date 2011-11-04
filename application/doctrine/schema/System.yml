@@ -16,6 +16,7 @@ System:
             type: enum
             values: [NA, LOW, MODERATE, HIGH]
             comment: The FIPS-199 confidentiality impact
+        aggregateSystemId: integer
         confidentialityDescription:
             type: string
             extra:
@@ -82,3 +83,11 @@ System:
         uniqueProjectId:
             type: string(23)
             comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"        
+
+    relations:
+        AggregateSystem:
+            class: System
+            local: aggregateSystemId
+            foreign: id
+            foreignAlias: AggregatedSystems
+

@@ -21,3 +21,9 @@ div.section{color:black;padding:1em;border:1px solid black;border-top:none;text-
 table.searchFilters{display:none;}
 .editable{background-image:none;}
 div#footer{display:none;}
+table.treeTable{margin-top:15pt;font-size:small;}
+table.treeTable>tr>th,table.treeTable>tr>td{border:1px solid black!important;height:45pt;}
+table.treeTable>tr{page-break-inside:avoid;}
+table.treeTable>tr>th{text-align:center;}
+table.treeTable td.ontime{background-color:#a6eba9!important;}
+table.treeTable td.overdue{background-color:#fae4e6!important;}
