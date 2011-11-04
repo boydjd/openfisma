@@ -48,6 +48,9 @@ abstract class Test_Case_Unit extends PHPUnit_Framework_TestCase
     }
 }
 /*
- * This is a blank class used for mocking
+ * This is a blank class used for creating mock objects in testing
+ * 
+ * This class will be used to create mock objects in tests where the tested methods do not specify the type of argument (i.e. accepting mixed)
+ * It's declared transparent ("blank") to save memory. All necessary methods / attributes will be added (mocked) at call time.
  */
 class BlankMock {}

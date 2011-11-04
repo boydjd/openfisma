@@ -30,9 +30,9 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_UserRole extends Test_Case_Unit
 {
     /**
-     * @todo: short description.
+     * Test the invalidation of Acl after saving changes to a UserRole
      * 
-     * @return @todo
+     * @return void
      */
     public function testPostSave()
     {

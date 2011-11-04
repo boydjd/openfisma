@@ -112,7 +112,7 @@ class Test_Library_Fisma extends Test_Case_Unit
             Fisma::configuration();
             $this->markTestSkipped('This test must be run alone without static backups.');
         } catch (Fisma_Zend_Exception $e) {
-            $sampleConfig=new Fisma_Configuration_Array();
+            $sampleConfig = new Fisma_Configuration_Array();
             Fisma::setConfiguration($sampleConfig, true);
             $this->assertEquals($sampleConfig, Fisma::configuration());
             $this->assertNotNull(Fisma::configuration());

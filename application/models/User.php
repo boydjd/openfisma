@@ -759,7 +759,6 @@ class User extends BaseUser
      * Build the query for getRoles()
      *
      * @param mixed $hydrationMode Optional, defaults to Doctrine::HYDRATE_SCALAR.
-     *
      * @return Doctrine_Query
      */
     public function getRolesQuery($hydrationMode = Doctrine::HYDRATE_SCALAR)

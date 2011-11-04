@@ -30,9 +30,9 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_UserRoleOrganizationTable extends Test_Case_Unit
 {
    /**
-    * @todo: short description.
+    * Test the query built for getByOrnaizationIdAndUserRoleId
     * 
-    * @return @todo
+    * @return void
     */
    public function testGetByOrganizationIdAndUserRoleIdQuery()
    {

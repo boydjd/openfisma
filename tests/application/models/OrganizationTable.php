@@ -55,7 +55,7 @@ class Test_Application_Models_OrganizationTable extends Test_Case_Unit
     }
     
     /**
-     * test getOrganizationIds()
+     * Check if getOrganizationIds() returns correctly formatted array
      * 
      * @return void
      */
@@ -99,7 +99,7 @@ class Test_Application_Models_OrganizationTable extends Test_Case_Unit
     }
     
     /**
-     * Test the join and condition part of the quey
+     * Test the join and condition part of the query
      *
      * @return void
      */

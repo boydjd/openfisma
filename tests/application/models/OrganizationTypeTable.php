@@ -30,14 +30,15 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_OrganizationTypeTable extends Test_Case_Unit
 {
     /**
-     * Test getSearchableFields()
+     * Check if getSearchableFields() returns a not-empty array
+     * 
      * @return void
      */
     public function testGetSearchableFields()
     {
         $searchableFields = OrganizationTypeTable::getSearchableFields();
         $this->assertTrue(is_array($searchableFields));
-        $this->assertEquals(5, count($searchableFields));
+        $this->assertNotEmpty($searchableFields);
     }
     
     /**

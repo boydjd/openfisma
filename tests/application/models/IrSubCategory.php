@@ -30,17 +30,6 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_IrSubCategory extends Test_Case_Unit
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testClassExists()
-    {
-        $this->assertTrue(class_exists('IrSubCategory'));
-    }
-    
-    /**
      * Test implementation of ON_DELETE constraint.
      *
      * @return void
