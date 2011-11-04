@@ -36,7 +36,7 @@ class Test_Application_Models_Configuration extends Test_Case_Unit
      */
     public function testPreSave()
     {
-        $mockCache = $this->getMock('BlankMock', array('remove'));
+        $mockCache = $this->getMock('Mock_Blank', array('remove'));
         $mockCache->expects($this->once())->method('remove')->with('configuration_key');
 
         $config = $this->getMock('Configuration', array('isModified', 'getModified', '_getCache'));

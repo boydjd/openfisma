@@ -16,34 +16,19 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../Bootstrap.php'));
-
 /**
- * This is the base class for all unit tests in OpenFISMA. This class bootstraps the runtime for unit tests.
+ * This is a blank class used for creating mock objects in testing
  * 
- * @author     Mark E. Haase <mhaase@endeavorsystems.com>
+ * This class will be used to create mock objects in tests where the tested methods do not specify the type of argument (i.e. accepting mixed)
+ * It's declared transparent ("blank") to save memory. All necessary methods / attributes will be added (mocked) at call time.
+ *
+ * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
+ * 
  */
-abstract class Test_Case_Unit extends PHPUnit_Framework_TestCase
+class Mock_Blank
 {
-    /**
-     * The bootstrapper object for tests
-     */
-    static private $_bootstrap;
-
-    /**
-     * Override the parent constructor in order to ensure the bootstrap runs once
-     */
-    public function __construct($name = NULL, array $data = array(), $dataName = '')
-    {
-        parent::__construct($name, $data, $dataName);
-
-        if (!self::$_bootstrap) {
-            self::$_bootstrap = new Test_Bootstrap;
-
-            self::$_bootstrap->bootstrapUnitTest();
-        }
-    }
+    
 }

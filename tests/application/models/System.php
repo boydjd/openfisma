@@ -341,7 +341,7 @@ class Test_Application_Models_System extends Test_Case_Unit
         $system = new System();
         $system->preDelete(null);
         
-        $mockIncident = $this->getMock('BlankMock', array('set'));
+        $mockIncident = $this->getMock('Mock_Blank', array('set'));
         $system->Organization->Incidents[] = $mockIncident;
         
         $this->setExpectedException('Fisma_Zend_Exception_User');

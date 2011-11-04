@@ -39,7 +39,7 @@ class Test_Application_Models_IrSubCategory extends Test_Case_Unit
         $irSubCategory = new IrSubCategory();
         $irSubCategory->preDelete(null);
         
-        $mockIncident = $this->getMock('BlankMock', array('set'));
+        $mockIncident = $this->getMock('Mock_Blank', array('set'));
         $irSubCategory->Incident[] = $mockIncident;
         $this->setExpectedException('Fisma_Zend_Exception_User');
         $irSubCategory->preDelete(null);

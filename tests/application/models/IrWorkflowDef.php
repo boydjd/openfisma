@@ -39,7 +39,7 @@ class Test_Application_Models_IrWorkflowDef extends Test_Case_Unit
         $irWorkflowDef = new IrWorkflowDef();
         $irWorkflowDef->preDelete(null); // no exception expected
         
-        $mockStep = $this->getMock('BlankMock', array('set'));
+        $mockStep = $this->getMock('Mock_Blank', array('set'));
         $irWorkflowDef->Steps[] = $mockStep;
         
         $this->setExpectedException('Fisma_Zend_Exception_User');
@@ -54,7 +54,7 @@ class Test_Application_Models_IrWorkflowDef extends Test_Case_Unit
     public function testPreDeleteSubCategoryExists()
     {
         $irWorkflowDef = new IrWorkflowDef();        
-        $mockSubCategory = $this->getMock('BlankMock', array('set'));
+        $mockSubCategory = $this->getMock('Mock_Blank', array('set'));
         $irWorkflowDef->SubCategories[] = $mockSubCategory;
         
         $this->setExpectedException('Fisma_Zend_Exception_User');

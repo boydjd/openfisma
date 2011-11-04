@@ -61,11 +61,11 @@ class Test_Application_Models_IrStep extends Test_Case_Unit
         $irStep = $this->getMock('IrStep', array('_closeGap'));
         $irStep->expects($this->once())->method('_closeGap')->with($workflowId, $cardinality);
         
-        $mockInvoker = new BlankMock();
+        $mockInvoker = new Mock_Blank();
         $mockInvoker->workflowId = $workflowId;
         $mockInvoker->cardinality = $cardinality;
         
-        $mockEvent = $this->getMock('BlankMock', array('getInvoker'));
+        $mockEvent = $this->getMock('Mock_Blank', array('getInvoker'));
         $mockEvent->expects($this->once())->method('getInvoker')->will($this->returnValue($mockInvoker));
 
         $irStep->postDelete($mockEvent);
@@ -90,7 +90,7 @@ class Test_Application_Models_IrStep extends Test_Case_Unit
      */
     public function testOpenGap()
     {
-        $mockQuery = $this->getMock('BlankMock', array('execute'));
+        $mockQuery = $this->getMock('Mock_Blank', array('execute'));
         $mockQuery->expects($this->once())->method('execute');
         
         $irStep = new IrStep();
@@ -116,14 +116,14 @@ class Test_Application_Models_IrStep extends Test_Case_Unit
      */
     public function testCloseGap()
     {
-        $mockQuery = $this->getMock('BlankMock', array('execute'));
+        $mockQuery = $this->getMock('Mock_Blank', array('execute'));
         $mockQuery->expects($this->once())->method('execute');
         
-        $mockInvoker = new BlankMock();
+        $mockInvoker = new Mock_Blank();
         $mockInvoker->workflowId = $workflowId;
         $mockInvoker->cardinality = $cardinality;
         
-        $mockEvent = $this->getMock('BlankMock', array('getInvoker'));
+        $mockEvent = $this->getMock('Mock_Blank', array('getInvoker'));
         $mockEvent->expects($this->once())->method('getInvoker')->will($this->returnValue($mockInvoker));
 
         $irStep = new IrStep();

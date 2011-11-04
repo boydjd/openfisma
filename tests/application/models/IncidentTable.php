@@ -72,7 +72,7 @@ class Test_Application_Models_IncidentTable extends Test_Case_Unit
      */
     public function testAclFields()
     {
-        $user = $this->getMock('BlankMock', array('acl'));
+        $user = $this->getMock('Mock_Blank', array('acl'));
         $user->expects($this->exactly(2))->method('acl')
              ->will($this->onConsecutiveCalls(
                  new Fisma_Zend_Acl('sample'),
