@@ -1,6 +1,6 @@
 <?php 
     $finding = $this->finding;
-    $orgId = $finding->ResponsibleOrganization->nickname;
+    $orgId = $finding->Organization->nickname;
     $status  = $finding->getStatus();
 ?>
 
@@ -44,6 +44,38 @@
             <tr>
                 <td>Opened By:</td>
                 <td><?php echo $this->escape($this->userInfo($finding->CreatedBy->username), 'none'); ?></td>
+            </tr>
+            <tr>
+                <td>Point Of Contact:</td>
+                <td>
+                <span id="pointOfContact" 
+                      type="autocomplete" 
+                      xhr="/poc/autocomplete/format/json"
+                      queryPrepend="/keyword/"
+                      schemaObject="pointsOfContact"
+                      schemaField="name"
+                      name="finding[pocId]"
+                      <?php
+                      if ($this->acl()->hasPrivilegeForClass('create', 'Poc')):
+                      ?>
+                          setupCallback="Fisma.Finding.setupPocAutocomplete"
+                      <?php
+                      endif;
+                      ?>
+                      value="<?php echo $this->escape($finding->pocId); ?>"
+                      defaultValue="<?php echo $this->escape($finding->PointOfContact->username); ?>">
+
+                     <?php echo $this->escape($this->userInfo($finding->PointOfContact->username), 'none');?> 
+                </span>
+
+                <?php
+                if (!$this->finding->isDeleted() 
+                    && $this->acl()->hasPrivilegeForObject('update_poc', $finding)):
+                ?>
+                    <span class="editable" target="pointOfContact">&nbsp;</span>
+                <?php 
+                endif; 
+                ?>
             </tr>
             <tr>
                 <td>Date Closed:</td>
@@ -118,7 +150,7 @@
             <tr>
                 <td>
                     <div>
-                        Responsible Organization/System:
+                        Organization/System:
                     </div>
                 </td>
                 <td>
@@ -128,8 +160,8 @@
                           href="/metainfo/list/o/system/format/html/"
                           value="<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
                     <a href="<?php echo $this->escape($this->organizationViewUrl); ?>">
-                         <?php echo $this->escape($finding->ResponsibleOrganization->nickname);?> 
-                         - <?php echo $this->escape($finding->ResponsibleOrganization->name);?>
+                         <?php echo $this->escape($finding->Organization->nickname);?> 
+                         - <?php echo $this->escape($finding->Organization->name);?>
                     </a>
                     </span>
 

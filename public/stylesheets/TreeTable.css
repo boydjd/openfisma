@@ -1,9 +1,8 @@
-/* @override http://localhost/stylesheets/TreeTable.css */
 /*******************************************************************************
  *
  * TreeTable.css
  *
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -27,9 +26,8 @@
  * corresponsing TreeTable.js script.
  *
  * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
- * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * Copyright: (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
  * License:   http://www.openfisma.org/content/license
- * Version:   $Id$
  *
  *******************************************************************************
  */
@@ -47,16 +45,16 @@ table.treeTable th {
 }
 
 table.treeTable td {
-	padding: 5px;
+    padding: 5px;
 	background-color: #fafafa;
     border: 1px solid #bbb;
 }
 
-table.treeTable td a {
+table.treeTable td span {
     color: black;
 }
 
-table.treeTable td:first-child a {
+table.treeTable td:first-child span {
     text-decoration: none;
 }
 
@@ -86,11 +84,13 @@ table.treeTable td img#control {
     border: 1px solid grey;
 }
 
+/* The following 3 styles are candidates to move out of this file and into a separate css file for finding summary. */
+
 table.treeTable td.noDueDate {
     text-align: center;
 }
 
-table.treeTable td.onTime {
+table.treeTable td.ontime {
     background-color: #a6eba9;
     text-align: center;
 }
@@ -131,4 +131,21 @@ table.treeTable td.overdue {
 }
 .treeTable9 {
     margin-left: 9em;
+}
+
+div.treeTableButton {
+    float: left;
+}
+
+div.treeTableFilter {
+	padding: 5px;
+	float: right;
+	margin-left: 10px;
+	border: 1px inset #fafafa;
+	background-color: #ebebeb;
+}
+
+div.treeTableFilter span {
+	font-weight: bold;
+    padding-right: 10px;
 }

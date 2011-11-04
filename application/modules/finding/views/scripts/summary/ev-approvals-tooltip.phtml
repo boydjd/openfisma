@@ -1,0 +1,18 @@
+<p>
+    <b>EN:</b>
+    Evidence needed. Findings in this status are waiting for uploaded documentation that the
+    course of action has been completed.
+</p>
+
+<?php 
+foreach ($this->approvals as $approval): 
+    if ('evidence' == $approval['approvalGroup']):
+?>
+    <p>
+        <b><?php echo $this->escape($approval['nickname']); ?>:</b>
+        <?php echo $this->escape($approval['name']); ?>
+    </p>
+<?php 
+    endif;
+endforeach; 
+?>

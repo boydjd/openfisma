@@ -47,7 +47,7 @@ class Fisma_Menu
             $findings = new Fisma_Yui_Menu('Findings');
             
             if ($acl->hasPrivilegeForClass('read', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Summary', '/finding/remediation/summary'));
+                $findings->add(new Fisma_Yui_MenuItem('Summary', '/finding/summary'));
                 $findings->add(new Fisma_Yui_MenuItem('Search', '/finding/remediation/list'));
                 $findings->add(new Fisma_Yui_MenuItem_GoTo('Go To...', 'Finding', '/finding/remediation'));
             }
@@ -250,6 +250,10 @@ class Fisma_Menu
             $admin->add(new Fisma_Yui_MenuItem('Modules', '/config/modules'));
 
             $admin->add(new Fisma_Yui_MenuItem('Password Policy', '/config/password'));
+
+            if ($acl->hasPrivilegeForClass('read', 'Poc')) {
+                $admin->add(new Fisma_Yui_MenuItem('Points of Contact', '/poc/list'));                
+            }
 
             $admin->add(new Fisma_Yui_MenuItem('Privacy Policy', '/config/privacy'));
 

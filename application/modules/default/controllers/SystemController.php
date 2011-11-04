@@ -39,7 +39,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      * All privileges to system objects are based on the parent 'Organization' objects
      */
     protected $_aclResource = 'Organization';
-    
+
     /**
      * Initialize internal members.
      *
@@ -48,9 +48,15 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function init()
     {
         parent::init();
+
         $this->_helper->ajaxContext()
                       ->addActionContext('convert-to-organization-form', 'html')
                       ->initContext();
+
+        $this->_helper->contextSwitch()
+             ->addActionContext('aggregation-data', 'json')
+             ->addActionContext('move-node', 'json')
+             ->initContext();
     }
 
     /**
@@ -138,8 +144,13 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
 
+        $system = $organization->System;
+        $system->loadReference('AggregateSystem');
+        $aggregateSystem = empty($system->aggregateSystemId) ? null : $system->AggregateSystem;
+
         $this->view->organization = $organization;
-        $this->view->system = $this->view->organization->System;
+        $this->view->system = $system;
+        $this->view->aggregateSystem = $aggregateSystem;
 
         $this->render();
     }
@@ -747,6 +758,164 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $list = array('systems' => $systems);
         
         return $this->_helper->json($list);
+    }
+
+    /**
+     * Display system aggregation tree.
+     *
+     * @return void
+     */
+    public function aggregationAction()
+    {
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
+
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+    }
+
+    /**
+     * Returns a JSON object that describes the system aggregation tree.
+     *
+     * @return void
+     */
+    public function aggregationDataAction()
+    {
+        $this->_acl->requirePrivilegeForClass('read', 'Organization');
+
+        $includeDisposalSystem = ('true' === $this->getRequest()->getParam('displayDisposalSystem'));
+        
+        // Save preferences for this screen
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'System.Aggregation';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        if (empty($storage)) {
+            $storage = new Storage();
+            $storage->userId = $userId;
+            $storage->namespace = $namespace;
+            $storage->data = array();
+        }
+        $data = $storage->data;
+        $data['includeDisposalSystem'] = $includeDisposalSystem;
+        $storage->data = $data;
+        $storage->save();
+
+        $this->view->treeData = $this->getAggregationTree($includeDisposalSystem);
+    }
+
+    /**
+     * Gets the system aggregation tree data
+     *
+     * @param boolean $includeDisposal Whether display disposal system or not
+     *
+     * @return array The array representation of aggregation tree
+     */
+    public function getAggregationTree($includeDisposal = false)
+    {
+        $orgIds = $this->_me->getOrganizationsByPrivilege('organization', 'read', $includeDisposal)
+                       ->toKeyValueArray('id', 'id');
+        $systemObjects = Doctrine_Query::create()
+            ->from ('System s, s.Organization o')
+            ->whereIn ('o.id', $orgIds)
+            ->orderBy('o.nickname')
+            ->execute();
+        // convert to arrays
+        $systems = array();
+        foreach ($systemObjects as $s) {
+            $systems[$s->id] = $s->toAggregationTreeNode();
+        }
+        // build up tree
+        foreach ($systems as $k => $v) {
+            if (!empty($v['parent'])) {
+                $systems[$v['parent']]['children'][] =& $systems[$k];
+            }
+        }
+        // remove non-top-level nodes from set
+        foreach ($systems as $k => $v) {
+            if (!empty($v['parent'])) {
+                unset($systems[$k]);
+            }
+        }
+
+        return array_values($systems);
+    }
+
+    /**
+     * Override from FZCAO.
+     *
+     * @return array Array of Fisma_Yui_Form_Button
+     */
+    public function getToolbarButtons()
+    {
+        $buttons = parent::getToolbarButtons();
+
+        $isList = $this->getRequest()->getActionName() === 'list';
+        $resourceName = $this->getAclResourceName();
+        $hasReadPrivilege = $this->_acl->hasPrivilegeForClass('read', $resourceName);
+
+        if ($hasReadPrivilege && $this->getRequest()->getActionName() !== 'aggregation') {
+            $buttons['aggregation'] = new Fisma_Yui_Form_Button_Link(
+                'toolbarAggregationButton',
+                array(
+                    'value' => 'View System Aggregation',
+                    'href' => $this->getBaseUrl() . '/aggregation'
+                )
+            );
+        }
+
+        return $buttons;
+    }
+
+    /**
+     * Moves a tree node relative to another tree node. This is used by the YUI tree node to handle drag and drops
+     * of system nodes. It replies with a JSON object.
+     *
+     * @return void
+     */
+    public function moveNodeAction()
+    {
+        $this->view->success = true;
+        $this->view->message = null;
+
+        // Find the source and destination objects from the tree
+        $srcId = $this->getRequest()->getParam('src');
+        $src = Doctrine::getTable('System')->find($srcId);
+
+        $destId = $this->getRequest()->getParam('dest');
+        $dest = Doctrine::getTable('System')->find($destId);
+
+        if (!$src || !$dest) {
+            $this->view->success = false;
+            $this->view->message = sprintf("Invalid src or dest parameter (%d, %d)", $srcId, $destId);
+            return;
+        }
+
+        // Make sure that $dest is not in the subtree under $src... this leads to unpredictable results
+        if ($dest->isAggregatedBy($src)) {
+            $this->view->success = false;
+            $this->view->message = 'Cannot move an organization or system into itself.';
+            return;
+        }
+
+        // Based on the dragLocation parameter, execute a corresponding tree move method
+        $dragLocation = $this->getRequest()->getParam('dragLocation');
+        try {
+            switch ($dragLocation) {
+                case Fisma_Yui_DragDrop::DRAG_ABOVE:
+                case Fisma_Yui_DragDrop::DRAG_BELOW:
+                    $src->aggregateSystemId = $dest->aggregateSystemId;
+                    $src->save();
+                    break;
+                case Fisma_Yui_DragDrop::DRAG_ONTO:
+                    $src->aggregateSystemId = $dest->id;
+                    $src->save();
+                    break;
+                default:
+                    $this->view->success = false;
+                    $this->view->message = "Invalid dragLocation parameter ($dragLocation)";
+            }
+        } catch (Exception $e) {
+            $this->view->success = false;
+            $this->view->message = (string)$e;
+        }
     }
 
     /**

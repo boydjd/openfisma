@@ -159,6 +159,55 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     }
 
     /**
+     * A callback for solr searches that involve searching system aggregation subtree
+     *
+     * Known implementers: FindingTable
+     *
+     * @param string $parentOrganization The nickname of the root node of the subtree to return
+     * @return array An array of organization IDs in the subtree
+     */
+    static function getSystemAggregationSubtreeIds($parentOrganization)
+    {
+        $organization = Doctrine::getTable('Organization')->findOneByNickname($parentOrganization);
+
+        /*
+         * If the parent node isn't found or isn't a system, then return an impossible condition to prevent matching
+         * any objects
+         */
+        if (!$organization || is_null($organization->System)) {
+            return array(0);
+        }
+
+        /*
+         * Since the system aggregation tree is not a nested set, we'll have to traverse it the hard way.
+         * We do a breadth-first traversal, pulling each level of the subtree starting with the root node in the first
+         * pass.
+         * WARNING: The data structure is assumed to be a tree- if it is, instead a graph (containing cycles) this will
+         * be an infinite loop.
+         */
+        $systemIds = array($organization->systemId);
+        $currentLevel = $systemIds;
+        while (!empty($currentLevel)) {
+            $sids = Doctrine_Query::create()
+                   ->select('id')
+                   ->from('System')
+                   ->whereIn('aggregateSystemId', $currentLevel)
+                   ->execute()
+                   ->toKeyValueArray('id', 'id');
+            $systemIds = array_merge($systemIds, $sids);
+            $currentLevel = $sids;
+        }
+
+        // we need to return the organization ids, not the system ids
+        return Doctrine_Query::create()
+            ->select('id')
+            ->from('Organization')
+            ->whereIn('systemId', $systemIds)
+            ->execute()
+            ->toKeyValueArray('id', 'id');
+    }
+
+    /**
      * getUsersAndRolesByOrganizationIdQuery 
      * 
      * @param mixed $organizationId 
@@ -192,5 +241,19 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
             ->from('Organization o')
             ->leftJoin('o.System s')
             ->where('o.name LIKE ?', $query . '%');
+    }
+    
+    /**
+     * Get the basic items needed for an organization select UI: id, nickname and name
+     * 
+     * @return Doctrine_Query
+     */
+    public function getOrganizationSelectQuery()
+    {
+        return Doctrine_Query::create()
+            ->select('o.id, o.nickname, o.name')
+            ->from('Organization o')
+            ->leftJoin('o.System s')
+            ->orderBy('o.nickname');
     }
 }

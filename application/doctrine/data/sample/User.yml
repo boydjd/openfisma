@@ -7,6 +7,7 @@ User:
         nameLast: User
         phoneOffice: (202) 555-7261
         hashType: sha1
+        ReportingOrganization: RNI_ORG
     mike_green:
         username: mike.green
         password: Sample1
@@ -14,6 +15,7 @@ User:
         nameFirst: Mike
         nameLast: Green
         phoneOffice: (202) 555-9271
+        ReportingOrganization: MIDWEST_ORG
     alexander_ovechkin:
         username: alex.ovechkin
         password: Sample1
@@ -21,6 +23,7 @@ User:
         nameFirst: Alexander
         nameLast: Ovechkin
         phoneOffice: (202) 555-9627
+        ReportingOrganization: NORTHEAST_ORG
     alexander_semin:
         username: alexander.semin
         password: Sample1
@@ -28,6 +31,7 @@ User:
         nameFirst: Alexander
         nameLast: Semin
         phoneOffice: (301) 555-1462
+        ReportingOrganization: SOUTHEAST_ORG
     mike_knuble:
         username: mike.knuble
         password: Sample1
@@ -35,6 +39,7 @@ User:
         nameFirst: Mike
         nameLast: Knuble
         phoneOffice: (571) 555-5821
+        ReportingOrganization: WEST_COAST_ORG
     nicklas_backstrom:
         username: nicklas.backstrom
         password: Sample1
@@ -42,6 +47,7 @@ User:
         nameFirst: Nicklas
         nameLast: Bäckström
         phoneOffice: (301) 555-7751
+        ReportingOrganization: OCIO_ORG
     michael_neuvirth:
         username: michael.neuvirth
         password: Sample1
@@ -49,6 +55,7 @@ User:
         nameFirst: Michael
         nameLast: Neuvirth
         phoneOffice: (571) 555-8129
+        ReportingOrganization: OCOO_ORG
     bruce_boudreau:
         username: bruce.boudreau
         password: Sample1
@@ -56,6 +63,7 @@ User:
         nameFirst: Bruce
         nameLast: Boudreau
         phoneOffice: (571) 555-8130
+        ReportingOrganization: OIG_ORG
     george_mcphee:
         username: george.mcphee
         password: Sample1
@@ -63,6 +71,7 @@ User:
         nameFirst: George
         nameLast: McPhee
         phoneOffice: (571) 555-8231
+        ReportingOrganization: ARP_ORG
     semyon_varlamov:
         username: semyon.varlamov
         password: Sample1
@@ -70,6 +79,7 @@ User:
         nameFirst: Semyon
         nameLast: Varlamov
         phoneOffice: (571) 555-8132
+        ReportingOrganization: PRINT_ORG
     braden_holtby:
         username: braden.holtby
         password: Sample1
@@ -77,6 +87,7 @@ User:
         nameFirst: Braden
         nameLast: Holtby
         phoneOffice: (571) 555-8233
+        ReportingOrganization: HIWAY_ORG
     john_erskine:
         username: john.erskine
         password: Sample1
@@ -84,6 +95,7 @@ User:
         nameFirst: John
         nameLast: Erskine
         phoneOffice: (571) 555-8134
+        ReportingOrganization: RAIL_ORG
     matt_hendricks:
         username: matt.hendricks
         password: Sample1
@@ -91,6 +103,7 @@ User:
         nameFirst: Matt
         nameLast: Hendricks
         phoneOffice: (571) 555-8235
+        ReportingOrganization: MARITIME_ORG
     matt_bradley:
         username: matt.bradley
         password: Sample1
@@ -98,6 +111,7 @@ User:
         nameFirst: Matt
         nameLast: Bradley
         phoneOffice: (571) 555-8136
+        ReportingOrganization: OS_ORG
     john_carlson:
         username: john.carlson
         password: Sample1
@@ -105,6 +119,7 @@ User:
         nameFirst: John
         nameLast: Carlson
         phoneOffice: (571) 555-8237
+        ReportingOrganization: OCIO_ORG
     jeff_schultz:
         username: jeff.schultz
         password: Sample1
@@ -112,6 +127,7 @@ User:
         nameFirst: Jeff
         nameLast: Schultz
         phoneOffice: (571) 555-8138
+        ReportingOrganization: OCIO_ORG
     karl_alzner:
         username: karl.alzner
         password: Sample1
@@ -119,6 +135,7 @@ User:
         nameFirst: Karl
         nameLast: Alzner
         phoneOffice: (571) 555-8239
+        ReportingOrganization: OCOO_ORG
     jason_chimera:
         username: jason.chimera
         password: Sample1
@@ -126,6 +143,7 @@ User:
         nameFirst: Jason
         nameLast: Chimera
         phoneOffice: (571) 555-8401
+        ReportingOrganization: OCOO_ORG
     boyd_gordon:
         username: boyd.gordon
         password: Sample1
@@ -133,6 +151,7 @@ User:
         nameFirst: Boyd
         nameLast: Gordon
         phoneOffice: (571) 555-8502
+        ReportingOrganization: NRL_ORG
     marcus_johansson:
         username: marcus.johansson
         password: Sample1
@@ -140,6 +159,7 @@ User:
         nameFirst: Marcus
         nameLast: Johansson
         phoneOffice: (571) 555-8403
+        ReportingOrganization: ARP_ORG
     mathieu_perreault:
         username: mathieu.perreault
         password: Sample1
@@ -147,6 +167,7 @@ User:
         nameFirst: Mathieu
         nameLast: Perreault
         phoneOffice: (571) 555-8504
+        ReportingOrganization: RNI_ORG
     brooks_laich:
         username: brooks.laich
         password: Sample1
@@ -154,6 +175,7 @@ User:
         nameFirst: Brooks
         nameLast: Laich
         phoneOffice: (571) 555-8405
+        ReportingOrganization: PRINT_ORG
     marco_sturm:
         username: marco.sturm
         password: Sample1
@@ -161,6 +183,7 @@ User:
         nameFirst: Marco
         nameLast: Sturm
         phoneOffice: (571) 555-8506
+        ReportingOrganization: OIG_ORG
     jason_chimera:
         username: jason.chimera
         password: Sample1
@@ -168,6 +191,7 @@ User:
         nameFirst: Jason
         nameLast: Chimera
         phoneOffice: (571) 555-8407
+        ReportingOrganization: NRL_ORG
     dennis_wideman:
         username: dennis.wideman
         password: Sample1
@@ -175,6 +199,7 @@ User:
         nameFirst: Dennis
         nameLast: Wideman
         phoneOffice: (571) 555-8508
+        ReportingOrganization: OCIO_ORG
     tom_poti:
         username: tom.poti
         password: Sample1
@@ -182,6 +207,7 @@ User:
         nameFirst: Tom
         nameLast: Poti
         phoneOffice: (571) 555-8409
+        ReportingOrganization: HIWAY_ORG
     sean_collins:
         username: sean.collins
         password: Sample1
@@ -189,3 +215,4 @@ User:
         nameFirst: Sean
         nameLast: Collins
         phoneOffice: (571) 555-8510
+        ReportingOrganization: MARITIME_ORG

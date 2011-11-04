@@ -652,6 +652,28 @@ class User extends BaseUser
     }
 
     /**
+     * After saving a user object, update the associated poc index.
+     *
+     * @param Doctrine_Event $event
+     * @return void
+     */
+    public function postSave($event)
+    {
+        if (Fisma::mode() == Fisma::RUN_MODE_WEB_APP) {
+            $searchEngine = Zend_Registry::get('search_engine');
+            $indexer = new Fisma_Search_Indexer($searchEngine);
+            $indexQuery = $indexer->getRecordFetchQuery('Poc', $relationAliases);
+        
+            // Relation aliases are derived from doctrine table metadata and are safe to interpolate
+            $baseClassAlias = $relationAliases['Poc'];
+            $indexQuery->andWhere("$baseClassAlias.id = ?", $this->id);
+
+            $indexer->indexRecordsFromQuery($indexQuery, 'Poc');
+            $searchEngine->commit();
+        }
+    }
+
+    /**
      * Prevent the root user from being deleted
      *
      * @param Doctrine_Event $event

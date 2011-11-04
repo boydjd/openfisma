@@ -757,7 +757,7 @@ tinyMCE.init({
 	mode : "textareas",
 	cleanup : false,
 	element_format : "html",
-	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen",
+	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen, table",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
 	plugin_insertdate_timeFormat : "%H:%M:%S",
 	browsers : "msie,gecko,safari,opera",
@@ -770,7 +770,7 @@ tinyMCE.init({
 	                           outdent, indent, |, \
 	                           spellchecker, search, replace, |, \
 	                           link, unlink, print, fullscreen",
-	theme_advanced_buttons2 : "",
+	theme_advanced_buttons2 : "tablecontrols",
 	theme_advanced_buttons3 : "",
 	theme_advanced_toolbar_location : "top",
 	theme_advanced_toolbar_align : "left",
@@ -778,6 +778,8 @@ tinyMCE.init({
 	theme_advanced_resizing : true,
 	spellchecker_rpc_url : '/javascripts/tiny_mce/plugins/spellchecker/rpc.php',
 	spellchecker_languages : "+English=en",
+    table_styles : "Default=tinymce_table",
+    content_css : "/stylesheets/tinymce.css",
     setup : function(ed) {
         ed.onClick.add(Fisma.SessionManager.onActivityEvent);
         ed.onKeyPress.add(Fisma.SessionManager.onActivityEvent);
@@ -820,6 +822,8 @@ String.prototype.trim = function() {
 }
 
 var readyFunc = function () {
+    YAHOO.util.Event.throwErrors = true;
+
     var zfDebugYuiLoggingTab = document.getElementById('zfdebug_yui_logging_tab');
     
     if (zfDebugYuiLoggingTab) {
@@ -1388,6 +1392,9 @@ function setupEditFields() {
                  textareaEl.style.width = oldWidth + "px";
                  textareaEl.style.height = oldHeight + "px";
                  tinyMCE.execCommand("mceAddControl", true, name);
+             } else if (type == 'autocomplete') {
+                 this.parentNode.removeChild(this);
+                 Fisma.Editable.makeAutocomplete(target);
              } else {
                  if (val = target.getAttribute('value')) {
                      cur_val = val;
@@ -1463,6 +1470,65 @@ if (window.HTMLElement) {
         return true;
      });
 }
+
+// Slowly trying to make the editable behavior more maintainable. Added for OFJ-792 but needs a general cleanup 
+// later on.
+(function() {
+    var FE = new Object();
+    
+    /**
+     * Convert an element into an autocomplete text field
+     */
+    FE.makeAutocomplete = function (element) {
+
+        // Create an autocomplete form control
+        var container = document.createElement('div');
+        container.className = "yui-ac";
+        YAHOO.util.Dom.generateId(container);
+        
+        var hiddenTextField = document.createElement('input');
+        hiddenTextField.type = "hidden";
+        hiddenTextField.name = element.getAttribute("name");
+        hiddenTextField.value = element.getAttribute("value");
+        YAHOO.util.Dom.generateId(hiddenTextField);
+        container.appendChild(hiddenTextField);
+        
+        var autocompleteTextField = document.createElement('input');
+        autocompleteTextField.type = "text";
+        autocompleteTextField.name = "autocomplete_" + element.id;
+        autocompleteTextField.value = element.getAttribute("defaultValue");
+        YAHOO.util.Dom.generateId(autocompleteTextField);
+        container.appendChild(autocompleteTextField);
+
+        var autocompleteResultsDiv = document.createElement('div');
+        YAHOO.util.Dom.generateId(autocompleteResultsDiv);
+        container.appendChild(autocompleteResultsDiv);
+
+        var spinner = document.createElement('img');
+        spinner.src = "/images/spinners/small.gif";
+        spinner.className = "spinner";
+        spinner.id = autocompleteResultsDiv.id + "Spinner"; // required by AC API
+        container.appendChild(spinner);
+
+        element.parentNode.replaceChild(container, element);
+
+        // Set up the autocomplete hooks on the new form control
+        YAHOO.util.Event.onDOMReady(
+            Fisma.AutoComplete.init,
+            {
+                schema: [element.getAttribute("schemaObject"), element.getAttribute("schemaField")],
+                xhr : element.getAttribute("xhr"),
+                fieldId : autocompleteTextField.id,
+                containerId: autocompleteResultsDiv.id,
+                hiddenFieldId: hiddenTextField.id,
+                queryPrepend: element.getAttribute("queryPrepend"),
+                setupCallback: element.getAttribute('setupCallback')
+            }
+        );        
+    };
+    
+    Fisma.Editable = FE;
+})();    
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -2541,6 +2607,850 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
     Fisma.Storage = FS;
 })();
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @fileoverview The Finding Summary displays a tree of information systems and summary counts with expand/collapse
+ * controls to navigate the tree structure of the information systems. Summary information is automatically rolled up
+ * or drilled down as the user navigates the tree.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * A widget that combines a table layout with the nesting and expand/collapse behavior of a tree widget.
+     * 
+     * Data loaded into this widget should be a nested array. Each level of nesting represents a level of nesting
+     * in the tree. Each element in the array must have at least the following two elements:
+     * 
+     *     1. nodeData - a hash of key/values that will be passed to your custom rendering functions.
+     *     2. children - an array of nodes that are nested underneath the current node.
+     * 
+     * @namespace Fisma
+     * @class TreeTable
+     * @constructor
+     * @param dataUrl {String} The URL to load table data from.
+     * @param numberColumns {Integer} The number of columns to display in the table.
+     */
+    var TT = function(dataUrl, numberColumns) {
+        this._baseUrl = dataUrl;
+
+        this._numberColumns = numberColumns;
+
+        this._buttons = [
+            {label: "Expand All", fn: this.expandAllNodes, image: "/images/expand.png"},
+            {label: "Collapse All", fn: this.collapseAllNodes, image: "/images/collapse.png"}
+        ];
+
+        TT.superclass.constructor.call(this);
+    };
+
+    /**
+     * Node state indicates if a node is collapsed or expanded.
+     * 
+     * Used an enumeration.
+     * 
+     * @static
+     */
+    TT.NodeState = {
+        EXPANDED: "EXPANDED",
+        COLLAPSED: "COLLAPSED",
+        LEAF_NODE: "LEAF_NODE"
+    };
+
+    YAHOO.lang.extend(TT, Object, {
+        /**
+         * A list of buttons displayed in the toolbar above the table.
+         */
+        _buttons: null,
+
+        /**
+         * The base URL to load table data from (excluding optional parameters).
+         */
+        _baseUrl: null,
+
+        /**
+         * The number of tree levels to display during the initial render
+         * 
+         * E.g. 1 means display only the root, 2 means display the root and root's immediate children, etc.
+         */
+        _defaultDisplayLevel: 3,
+
+        /**
+         * Filters that can be applied to this table.
+         * 
+         * Each "filter" is a dictionary of key => text pairs where they key is the value used internally and the
+         * text is the value displayed to the user. Each filter is rendered as a select menu.
+         */
+        _filters: {},
+        
+        /**
+         * A TR element that contains the "loading" message that is displayed while requesting data.
+         */
+        _loadingBar: null,
+        
+        /**
+         * A TR element that contains an error message, if any error condition has occurred.
+         */
+        _errorBar: null,
+        
+        /**
+         * The number of columns displayed on this table.
+         */
+        _numberColumns: null,
+        
+        /**
+         * A reference to the table element.
+         */
+        _table: null,
+
+        /**
+         * Object representing the hierarchical data for this table. See class doc for description.
+         */
+        _treeData: null,
+
+        /**
+         * Renders the widget.
+         * 
+         * This doesn't really do much because the widget relies on an XHR to get data. This method just creates the 
+         * static parts of the table and then requests data.
+         * 
+         * @param container {HTMLElement} The parent container to render this widget into.
+         */
+        render: function (container) {
+            // Render the buttons
+            var buttonContainer = document.createElement('div');
+            buttonContainer.className = 'searchBox';
+            container.appendChild(buttonContainer);
+            this._renderButtons(buttonContainer);
+            
+            // Render the filters
+            this._renderFilters(buttonContainer);
+            
+            // Create the table
+            var table = document.createElement('table');
+            table.className = "treeTable";
+            container.appendChild(table);
+            this._table = table;
+
+            // Render the header
+            var rowsToCreate = this._getNumberHeaderRows();
+            
+            var headerRows = Array();
+            var headerRow;
+            while (rowsToCreate > 0) {
+                headerRow = table.insertRow(table.rows.length);
+                headerRows.push(headerRow);
+                rowsToCreate--;
+            }
+            
+            this._renderHeader(headerRows);
+
+            // Render the loading bar
+            var loadingBar = table.insertRow(table.rows.length);
+            this._renderLoadingBar(loadingBar);
+            this._loadingBar = loadingBar;
+
+            // Render the error bar
+            var errorBar = table.insertRow(table.rows.length);
+            this._renderErrorBar(errorBar);
+            this._errorBar = errorBar;
+            this.hideError();
+
+            // Request data
+            this._requestData();
+        },
+        
+        /**
+         * Flush current data and request new data.
+         */
+        reloadData: function () {
+            this._showLoadingBar();
+            this.hideError();
+
+            // Remove all data rows (but leave header rows, loading row, and error rows in place)
+            while (this._table.rows.length > (this._getNumberHeaderRows() + 2)) {
+                this._table.deleteRow(-1);
+            }
+
+            this._requestData();
+        },
+
+        /**
+         * Expands a collapsed node or collapses an expanded node.
+         * 
+         * @param event {YAHOO.util.Event}
+         * @param node {Object}
+         */        
+        toggleNode: function (event, node) {
+            switch (node.state) {
+                case TT.NodeState.EXPANDED:
+                    this._setNodeState(node, TT.NodeState.COLLAPSED);
+                    break;
+                case TT.NodeState.COLLAPSED:
+                    this._setNodeState(node, TT.NodeState.EXPANDED);
+                    break;
+                case TT.NodeState.LEAF_NODE:
+                    throw "Cannot toggle a leaf node's state";
+                    break;
+                default:
+                    throw "Unexpected node state (" + node.state + ")";
+            }
+        },
+        
+        /**
+         * Collapse a node and all nodes underneath it.
+         * 
+         * @param node {Array}
+         */
+        collapseSubtree: function(node) {
+            if (node.state == TT.NodeState.EXPANDED) {
+                this._setNodeState(node, TT.NodeState.COLLAPSED);                
+            }
+            
+            if (YAHOO.lang.isValue(node.children) && node.children.length > 0) {
+                for (var i in node.children) {
+                    this.collapseSubtree(node.children[i]);
+                }
+            }
+        }, 
+        
+        /**
+         * Collapse all nodes.
+         */
+        collapseAllNodes: function() {
+            for (var i in this._treeData) {
+                var rootNode = this._treeData[i];
+                
+                this.collapseSubtree(rootNode);
+                this._hideChildren(rootNode);
+            }
+        },
+        
+        /**
+         * Expand a node and all nodes underneath it.
+         * 
+         * @param node {Array}
+         */
+        expandSubtree: function(node) {
+            if (node.state == TT.NodeState.COLLAPSED) {
+                this._setNodeState(node, TT.NodeState.EXPANDED);                
+            }
+            
+            if (YAHOO.lang.isValue(node.children) && node.children.length > 0) {
+                for (var i in node.children) {
+                    this.expandSubtree(node.children[i]);
+                }
+            }
+        },
+        
+        /**
+         * Expand all nodes.
+         */
+        expandAllNodes: function() {
+            for (var i in this._treeData) {
+                var rootNode = this._treeData[i];
+                
+                this.expandSubtree(rootNode);
+            }
+        },
+
+        /**
+         * Render the buttons associated with this tree table
+         * 
+         * @param container {HTMLElement}
+         */
+        _renderButtons: function (container) {
+            var button, buttonDefinition;
+
+            for (var i in this._buttons) {
+                var div = document.createElement("div");
+                container.appendChild(div);
+                div.className = "treeTableButton";
+
+                buttonDefinition = this._buttons[i];
+                
+                button = new YAHOO.widget.Button({
+                    type: "button",
+                    container: div,
+                    label: buttonDefinition.label,
+                    onclick: {
+                        fn: buttonDefinition.fn,
+                        scope: this
+                    }
+                });
+
+                button._button.style.background = 'url(' + buttonDefinition.image + ') 10% 50% no-repeat';
+                button._button.style.paddingLeft = '3em';
+            }
+        },
+
+        /**
+         * Render the filters (if any)
+         * 
+         * @param container {HTMLElement}
+         */
+        _renderFilters: function (container) {
+            var that = this; // for closure
+
+            for (var filterName in this._filters) {
+                var filter = this._filters[filterName];
+
+                var div = document.createElement("div");
+                container.appendChild(div);
+                div.className = "treeTableFilter";
+
+                var label = document.createElement("span");
+                div.appendChild(label);
+                label.appendChild(document.createTextNode(filter.label));
+
+                var select = document.createElement("select");
+                div.appendChild(select);
+
+                // Closures inside loops are a little hacky…
+                select.onchange = (function(callback, filterName, select) {
+                    return function () {
+                        that.disableFilters();
+                        callback.call(window, filterName, select.options[select.selectedIndex].value);                            
+                        that.reloadData();
+                    };
+                })(filter.callback, filterName, select);
+
+                for (var key in filter.values) {
+                    var option = new Option(filter.values[key], key);
+                    
+                    if (key == filter.defaultValue) {
+                        option.selected = true;
+                    }
+                    
+                    // Workaround for IE7:
+                    if (YAHOO.env.ua.ie == 7) {
+                        select.add(option, select.options[null]);
+                    } else {
+                        select.add(option, null);
+                    }
+                }
+                
+                filter.select = select;
+            }
+            
+            var clear = document.createElement("div");
+            container.appendChild(clear);
+            clear.className = "clear";
+            
+            // Filters are disabled by default and re-enabled after successfully loading data.
+            this.disableFilters();
+        },
+
+        /**
+         * Render the table header.
+         * 
+         * This method is intended to be overridden by subclasses to customize the appearance of the table.
+         * 
+         * @param rows {Array} An array of TR elements to render the header inside of.
+         */
+        _renderHeader: function (rows) {
+            throw 'Override the _renderHeader method!';
+        },
+
+        /**
+         * Render cells in this tree table.
+         * 
+         * This method is intended to be overridden by subclasses to customize the appearance of the table.
+         * 
+         * @param container {HTMLElement} The parent container to render cell content inside of.
+         * @param nodeData {Object} Data related to this node.
+         * @param columnNumber {Integer} The [zero-indexed] column which needs to be rendered.
+         * @param nodeState {TreeTable.NodeState}
+         */
+        _renderCell: function (container, nodeData, columnNumber, nodeState) {
+            container.appendChild(document.createTextNode('Override the _renderCell method!'));
+        },
+
+        /**
+         * Render the loading bar.
+         * 
+         * @param containerRow {HTMLElement} The parent container (a TR element) to render the loading bar inside of.
+         */
+        _renderLoadingBar: function (containerRow) {
+            var loadingCell = document.createElement('th');
+            loadingCell.colSpan = this._numberColumns;
+            containerRow.appendChild(loadingCell);
+            
+            var message = document.createElement('p');
+            message.appendChild(document.createTextNode('Loading…'));
+            loadingCell.appendChild(message);
+            
+            var spinnerImage = document.createElement('img');
+            spinnerImage.src = '/images/loading_bar.gif';
+            loadingCell.appendChild(spinnerImage);
+        },
+
+        /**
+         * Render the error bar.
+         * 
+         * @param containerRow {HTMLElement} The parent container (a TR element) to render the error bar inside of.
+         */
+        _renderErrorBar: function (containerRow) {
+            var cell = document.createElement('th');
+            cell.colSpan = this._numberColumns;
+            containerRow.appendChild(cell);
+            
+            var message = document.createElement('p');
+            message.appendChild(document.createTextNode('An unexpected error has occurred…'));
+            cell.appendChild(message);
+        },
+
+        /**
+         * Return the URL to load data for this table.
+         * 
+         * Override this if you want to add custom parameters to the URL query string.
+         * 
+         * @return {String}
+         */
+        _getDataUrl: function() {
+            var url = this._baseUrl;
+            
+            for (var name in this._filters) {
+                var filter = this._filters[name];
+                var select = filter.select;
+                
+                url += '/' + name + '/' + select.options[select.selectedIndex].value;
+            }
+            
+            return url;
+        },
+
+        /**
+         * Display an error message in the error bar.
+         * 
+         * If errorMessage is not set, then just display the error bar.
+         */
+        showError: function (errorMessage) {
+            if (YAHOO.lang.isString(errorMessage)) {
+                this._errorBar.firstChild.firstChild.firstChild.nodeValue = errorMessage;
+            }
+            
+            this._errorBar.style.display = "";
+        },
+        
+        /**
+         * Hide the error bar.
+         */
+        hideError: function () {
+            this._errorBar.style.display = "none";
+        },
+
+        /**
+         * Request data for the table.
+         */
+        _requestData: function () {
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                this._getDataUrl(), 
+                {
+                    success: this._handleDataRefresh,
+                    failure: this._handleDataRefreshFailed,
+                    scope: this
+                }, 
+                null
+            );            
+        },
+        
+        /**
+         * Handle a data refresh event.
+         * 
+         * @param response {Object} YUI Response object
+         */
+        _handleDataRefresh: function (response) {
+            this._hideLoadingBar();
+
+            try {
+                var response = YAHOO.lang.JSON.parse(response.responseText);                
+            } catch (error) {
+                this.showError(error.message);
+                return;
+            }
+
+            if (!response.hasOwnProperty('rootNodes')) {
+                throw "The response does not contain the required 'rootNodes' object.";
+            }
+            
+            this._treeData = response.rootNodes;
+
+            if (YAHOO.lang.isNull(this._treeData)) {
+                // Gracefully handle a result that has no trees
+                this.showError("No data available.")
+            } else {
+                // If we have one or more trees, then render each tree (starting at the root)
+                for (var nodeIndex = 0; nodeIndex < this._treeData.length; nodeIndex++) {
+                    var rootNode = this._treeData[nodeIndex];
+
+                    this._preprocessTreeData(rootNode);
+                    this._renderNode(rootNode, 0);
+                    this._setInitialTreeState(rootNode, 0);
+                }                
+            }
+            
+            this.enableFilters();
+        },
+        
+        /**
+         * Handle a failed data refresh event.
+         * 
+         * @param response {Object} YUI Response object
+         */
+        _handleDataRefreshFailed: function (response) {
+            this._hideLoadingBar();
+            this.showError('Unable to load finding summary: ' + response.statusText);
+            this.enableFilters();
+        },
+
+        /**
+         * A stub function. Subclasses can implement this in order to do any pre-procesing necessary (such as 
+         * aggregation).
+         * 
+         * Notice the rendering abstractions (particularly _renderCell) only provide node data, not the full 
+         * node object. Therefore, any processing which requires knowing the tree structure cannot be done
+         * at render time and must be done in this step.
+         * 
+         * @param node {Array}
+         */
+        _preprocessTreeData: function(node) {
+            // Customize by overriding in a subclass
+        },
+
+        /**
+         * Recursively renders the data rows starting from a root node.
+         * 
+         * Rows with children are actually rendered TWICE, once in their expanded state and once in their collapsed 
+         * state. This makes it easy to render changes to the tree by simply hiding and showing certain rows -- nothing
+         * actually needs to be rendered again.
+         * 
+         * @param node {Object} The node object to render.
+         * @param level {Integer} The level of nesting, starting with 0.
+         */         
+        _renderNode: function (node, level) {
+            if (YAHOO.lang.isValue(node.children) && node.children.length > 0) {
+                // The collapsed and expanded views are only rendered if the node has children                
+                node.expandedRow = this._table.insertRow(this._table.rows.length);
+                this._renderNodeState(node.expandedRow, node, level, TT.NodeState.EXPANDED);
+
+                node.collapsedRow = this._table.insertRow(this._table.rows.length);
+                this._renderNodeState(node.collapsedRow, node, level, TT.NodeState.COLLAPSED);
+            } else {
+                // If a node doesn't have children, it's rendered in "leaf node" state
+                node.leafNodeRow = this._table.insertRow(this._table.rows.length);
+                this._renderNodeState(node.leafNodeRow, node, level, TT.NodeState.LEAF_NODE);
+            }
+
+            // If this node has children, then recursively render the children
+            for (var childIndex = 0; childIndex < node.children.length; childIndex++) {
+                var childNode = node.children[childIndex];
+                this._renderNode(childNode, level + 1);
+            }
+        },
+
+        /**
+         * Render a node with the specified NodeState.
+         * 
+         * @param container {HTMLElement} The tr that contains this node state.
+         * @param node {Object} The node object to render.
+         * @param level {Integer} The level of nesting, starting with 0.
+         * @param nodeState {TreeTable.NodeState} The object state to render.
+         */
+        _renderNodeState: function(container, node, level, nodeState) {
+            /*
+             *  Render the first cell on this row
+             */
+            var cell = document.createElement('td');
+            container.appendChild(cell);
+
+            var firstCellDiv = document.createElement("div");
+            firstCellDiv.className = "treeTable" + level;
+            cell.appendChild(firstCellDiv);
+
+            // Add a hover effect for clickable nodes
+            if (nodeState != TT.NodeState.LEAF_NODE) {
+                firstCellDiv.className += " link";
+            }
+
+            var toggleControlImage = document.createElement('img');
+            toggleControlImage.className = 'control';
+
+            var toggleControl = document.createElement('span');
+            toggleControl.appendChild(toggleControlImage);
+
+            switch (nodeState) {
+                case TT.NodeState.EXPANDED:
+                    YAHOO.util.Event.addListener(firstCellDiv, "click", this.toggleNode, node, this);
+                    toggleControlImage.src = "/images/minus.png";
+                    break;
+                case TT.NodeState.COLLAPSED:
+                    YAHOO.util.Event.addListener(firstCellDiv, "click", this.toggleNode, node, this);
+                    toggleControlImage.src = "/images/plus.png";
+                    break;
+                case TT.NodeState.LEAF_NODE:
+                    // This state uses an invisible PNG and has no click event.
+                    toggleControlImage.src = "/images/leaf_node.png";
+                    break;
+                default:
+                    throw "Unexpected nodeState (" + nodeState + ")";
+            }
+
+            firstCellDiv.appendChild(toggleControl);
+
+            this._renderCell(firstCellDiv, node.nodeData, 0, nodeState);
+
+            /*
+             *  Render the remaining cells on the this row
+             */
+            for (var i = 1; i < this._numberColumns; i++) {
+                cell = document.createElement('td');
+                this._renderCell(cell, node.nodeData, i, nodeState);
+                container.appendChild(cell);
+            }
+        },
+
+        /**
+         * Initially the table is rendered with all nodes (and node states) displayed. This sets the tree to a sensible
+         * default.
+         * 
+         * @param node {Object} The node object to render.
+         * @param level {Integer} The level of nesting, starting with 0.
+         */
+        _setInitialTreeState: function(node, level) {        
+            if (YAHOO.lang.isValue(node.children) && node.children.length > 0) {
+                // Set the initial states on children first (so we work from the bottom of the tree upwards)
+                for (var i in node.children) {
+                    var child = node.children[i];
+
+                    this._setInitialTreeState(child, level + 1);
+                }
+
+                // Set the node itself to a default expanded/collapsed state based on its depth
+                if (level < this._defaultDisplayLevel - 1) {
+                    this._setNodeState(node, TT.NodeState.EXPANDED);                
+                } else {
+                    this._setNodeState(node, TT.NodeState.COLLAPSED);
+                }
+            } else {
+                // If the node does not have children, then set it's initial state to "leaf node"
+                this._setNodeState(node, TT.NodeState.LEAF_NODE);
+            }
+        },
+
+        /**
+         * Set a node to the specified state
+         * 
+         * @param node {Array}
+         * @param newState {TreeTable.NodeState}
+         */
+        _setNodeState: function(node, newState) {
+            if (node.state != TT.NodeState.LEAF_NODE) {
+                switch (newState) {
+                    case TT.NodeState.EXPANDED:
+                        node.collapsedRow.style.display = 'none';
+                        node.expandedRow.style.display = ''; // Set to '' instead of 'table-row' due to a bug in IE
+                        this._showChildren(node);
+                        break;
+                    case TT.NodeState.COLLAPSED:
+                        node.collapsedRow.style.display = '';
+                        node.expandedRow.style.display = 'none';
+                        this._hideChildren(node);
+                        break;
+                    case TT.NodeState.LEAF_NODE:
+                        // Leaf node state can be set once but can't be changed after setting.
+                        break;
+                    default:
+                        throw "Unexpected node state (" + newState + ")";
+                }
+
+                node.state = newState;
+            } else {
+                throw "Cannot change state on a leaf node";
+            }
+        },
+
+        /**
+         * Hide a row for a particular node
+         * 
+         * This is a simple operation, just look for any rows that have been rendered for this node 
+         * and hide everything you find.
+         * 
+         * @param node {Array}
+         */
+        _hideRow: function(node) {
+            if (YAHOO.lang.isValue(node.collapsedRow)) {
+                node.collapsedRow.style.display = 'none';
+            }
+
+            if (YAHOO.lang.isValue(node.expandedRow)) {
+                node.expandedRow.style.display = 'none';
+            }
+
+            if (YAHOO.lang.isValue(node.leafNodeRow)) {
+                node.leafNodeRow.style.display = 'none';
+            }
+        },
+
+        /**
+         * Show (i.e. unhide) a row for a particular node.
+         * 
+         * Display the rendering for this row that matches it's state.
+         * 
+         * @param node {Array}
+         */
+        _showRow: function(node) {
+            switch (node.state) {
+                case TT.NodeState.EXPANDED:
+                    node.expandedRow.style.display = ''; // Set to '' instead of 'table-row' due to a bug in IE
+                    break;
+                case TT.NodeState.COLLAPSED:
+                    node.collapsedRow.style.display = ''; // Set to '' instead of 'table-row' due to a bug in IE
+                    break;
+                case TT.NodeState.LEAF_NODE:
+                    node.leafNodeRow.style.display = '';
+                    break;
+                default:
+                    throw "Unexpected node state (" + node.state + ")";
+            }
+        },
+
+        /**
+         * Recursively hide all children of a given node.
+         * 
+         * @param node {Array}
+         */
+        _hideChildren: function(node) {
+            if (YAHOO.lang.isValue(node.children) && node.children.length > 0) {
+                for (var i in node.children) {
+                    var child = node.children[i];
+                    
+                    this._hideRow(child);
+                    this._hideChildren(child);
+                }
+            }
+        },
+        
+        /**
+         * Show children of a given node.
+         * 
+         * This shows all immediate children, plus recursively shows the children of any subtrees that are in the
+         * expanded state.
+         * 
+         * @param node {Array}
+         */
+        _showChildren: function(node) {
+            if (YAHOO.lang.isValue(node.children) && node.children.length > 0) {
+                for (var i in node.children) {
+                    var child = node.children[i];
+                    
+                    this._showRow(child);
+                    
+                    if (child.state === TT.NodeState.EXPANDED) {
+                        this._showChildren(child);                        
+                    }
+                }
+            }
+        },
+
+        /**
+         * Hide the "loading" message that is displayed while loading the table data.
+         */
+        _hideLoadingBar: function () {
+            this._loadingBar.style.display = 'none';
+        },
+        
+        /**
+         * Show the "loading" message that is displayed while loading the table data.
+         */
+        _showLoadingBar: function () {
+            this._loadingBar.style.display = '';
+        },
+        
+        /**
+         * The number of header rows that the table will render.
+         * 
+         * Override this if you require multiple header rows.
+         * 
+         * @return {Integer}
+         */
+        _getNumberHeaderRows: function () {
+            return 1;
+        },
+        
+        /**
+         * Add a filter (select element) to this table
+         * 
+         * This simply tells the table to render a filter, it does not necessarily do any filtering.
+         * 
+         * The callback method is called when the filter value changes. It is executed in the global scope 
+         * and will be passed two parameters:
+         * 
+         * 1. The name of the newly selected filter.
+         * 2. The value of that filter.
+         * 
+         * @param name {String} The name assigned to this filter (used later for getting the filter's value).
+         * @param label {String} The text displayed to the user.
+         * @param values {Object} A dictionary of key/text pairs. The keys are used internally, text displayed to user.
+         * @param defaultValue {String} The default value to be selected (must be a key from "values" parameter).
+         * @param callback {Function} A callback function executed when the filter value changes.
+         */
+        addFilter: function (name, label, values, defaultValue, callback) {
+            if (this._filters.hasOwnProperty(name)) {
+                throw "Cannot create filter (" + name + ") because it already exists";
+            }
+            
+            this._filters[name] = {
+                label: label,
+                defaultValue: defaultValue,
+                values: values,
+                callback: callback
+            };
+        },
+        
+        /**
+         * Set all filters to disabled state.
+         */
+        disableFilters: function () {
+            for (var i in this._filters) {
+                var filter = this._filters[i];
+                filter.select.disabled = true;
+            }
+        },
+        
+        /**
+         * Set all filters to enabled state.
+         */
+        enableFilters: function () {
+            for (var i in this._filters) {
+                var filter = this._filters[i];
+                filter.select.disabled = false;
+            }            
+        }
+    });
+
+    Fisma.TreeTable = TT;
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -3054,7 +3964,7 @@ Fisma.AutoComplete = function() {
             ac.containerPopulateEvent.subscribe(function () {
                 Fisma.AutoComplete.resultsPopulated = true;
             });
-            
+
             /**
              * Override generateRequest method of YAHOO.widget.AutoComplete
              *
@@ -3076,47 +3986,55 @@ Fisma.AutoComplete = function() {
              * @return {String} HTML markup of formatted result data.
              */
             ac.formatResult = function(oResultData, sQuery, sResultMatch) {
-                var sMarkup = (sResultMatch) ? sResultMatch : "";
-                sMarkup = PHP_JS().htmlspecialchars(sMarkup);
-                return sMarkup;
+                var sMarkup = (sResultMatch) ? PHP_JS().htmlspecialchars(sResultMatch) : "";
+                
+                // Create a regex to match the query case insensitively
+                var regex = new RegExp('\\b(' + sQuery + ')', 'i');
+                sResultMatch = sResultMatch.replace(regex, "<em>$1</em>");
+
+                return sResultMatch;
             };
 
             ac.itemSelectEvent.subscribe(
-                Fisma.AutoComplete.subscribe, 
-                {
-                    hiddenFieldId : params.hiddenFieldId,
-                    callback : params.callback
-                }
+                Fisma.AutoComplete.updateHiddenField, 
+                params.hiddenFieldId
             );
 
-            ac.selectionEnforceEvent.subscribe(function (ev, args) {
-                // if selection enforcement forces an empty field, clear the hidden id field as well
-                if (args[1] === '') {
-                    document.getElementById(params.hiddenFieldId).value = '';
-                }
-            });
+            ac.selectionEnforceEvent.subscribe(
+                Fisma.AutoComplete.clearHiddenField, 
+                params.hiddenFieldId
+            );
+            
+            // Call the setup callback, if it is defined. This allows an implementer to tweak the autocomplete object.
+            if (YAHOO.lang.isValue(params.setupCallback)) {
+                var setupCallback = Fisma.Util.getObjectFromName(params.setupCallback);
+
+                setupCallback(ac, params);
+            }
         },
 
         /**
          * Sets value of hiddenField to item selected
          *
-         * @param sType
-         * @param aArgs
-         * @param {Array} params
+         * @param sType {String} The event name
+         * @param aArgs {Array} YUI event arguments
+         * @param hiddenFieldId {String} The ID of the hidden field
          */
-        subscribe : function(sType, aArgs, params) {
-            document.getElementById(params.hiddenFieldId).value = aArgs[2][1]['id'];
-            $('#' + params.hiddenFieldId).trigger('change');
-            // If a valid callback is specified, then call it
-            try {
-                var callbackFunction = Fisma.Util.getObjectFromName(params.callback);
-
-                if ('function' == typeof callbackFunction) {
-                    callbackFunction();
-                }
-            } catch (error) {
-                // do nothing
-            }
+        updateHiddenField : function(sType, aArgs, hiddenFieldId) {
+            document.getElementById(hiddenFieldId).value = aArgs[2][1]['id'];
+            $('#' + hiddenFieldId).trigger('change');
+        },
+        
+        /**
+         * Clears the value of the hidden field
+         *
+         * @param sType {String} The event name
+         * @param aArgs {Array} YUI event arguments
+         * @param hiddenFieldId {String} The ID of the hidden field
+         */
+        clearHiddenField : function (sType, aArgs, hiddenFieldId) {
+            document.getElementById(hiddenFieldId).value = null;
+            $('#' + hiddenFieldId).trigger('change');            
         }
     };
 }();
@@ -6334,7 +7252,32 @@ Fisma.Finding = {
      * This reference will be set when the page loads by the script which initializes the table
      */
     commentTable : null,
+
+    /**
+     * The ID of the container that displays the "POC not found" message
+     */
+    POC_MESSAGE_CONTAINER_ID : "findingPocNotMatched",
+
+    /**
+     * A static reference to the POC create form panel
+     */
+    createPocPanel : null,
     
+    /**
+     * A static reference to the username that should prepopulate the POC create panel
+     */
+    createPocDefaultUsername : null,
+    
+    /**
+     * A static reference to the autocomplete which is used for matching a POC
+     */
+    pocAutocomplete : null,
+    
+    /**
+     * A static reference to the hidden input element that stores the POC id
+     */
+    pocHiddenEl : null,
+
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
      * 
@@ -6446,11 +7389,240 @@ Fisma.Finding = {
                 }
             }
         );
-    }
+    },
 
+    /**
+     * Configure the autocomplete that is used for selecting a POC
+     * 
+     * @param autocomplete {YAHOO.widget.AutoComplete}
+     * @param params {Array} The arguments passed to the autocomplete constructor
+     */
+    setupPocAutocomplete : function (autocomplete, params) {
+        Fisma.Finding.pocAutocomplete = autocomplete;
+        Fisma.Finding.pocHiddenEl = document.getElementById(params.hiddenFieldId);
+
+        // Set up the events to display the POC not found message
+        autocomplete.dataReturnEvent.subscribe(Fisma.Finding.displayPocNotFoundMessage);
+        autocomplete.containerCollapseEvent.subscribe(Fisma.Finding.displayPocNotFoundMessage);
+
+        // Set up the events to hide the POC not found message
+        autocomplete.itemSelectEvent.subscribe(Fisma.Finding.hidePocNotFoundMessage);
+        autocomplete.containerExpandEvent.subscribe(Fisma.Finding.hidePocNotFoundMessage);
+    },
+
+    /**
+     * Display a message to let the user know that the POC they were looking for could not be found
+     * 
+     * This is registered as the event handler for both the data return event and the container collapse event, so it
+     * has some conditional logic based on what "type" and what arguments it receives.
+     * 
+     * @param type {String} Name of the event.
+     * @param args {Array} Event arguments.
+     */   
+    displayPocNotFoundMessage : function (type, args) {
+        var autocomplete = Fisma.Finding.pocAutocomplete;
+
+        // This event handler handles 2 events, only 1 of which has a results array, so this setter is conditional.
+        var results = args.length >= 2 ? args[2] : null;
+
+        // Don't show the POC message if there are autocomplete results available
+        if (YAHOO.lang.isValue(results) && results.length !== 0) {
+            Fisma.Finding.hidePocNotFoundMessage();
+            return;
+        }
+
+        /* Don't show the POC message if the user selected an item.
+         * 
+         * There's no way to do this without using autocomplete's private member _bItemSelected.
+         */
+        if (type == "containerCollapse" && autocomplete._bItemSelected) {
+            return;
+        }
+
+        // Don't display the POC not found message if the autocomplete list is visible
+        if (autocomplete.isContainerOpen()) {
+            return;
+        }
+
+        var unmatchedQuery = autocomplete.getInputEl().value;
+
+        // Don't show the POC not found message if the 
+        if (unmatchedQuery.match(/^\s*$/)) {
+            return;
+        }
+
+        // Otherwise, display the POC not found message
+        var container = document.getElementById(Fisma.Finding.POC_MESSAGE_CONTAINER_ID);
+
+        if (YAHOO.lang.isNull(container)) {
+            container = Fisma.Finding._createPocNotFoundContainer(
+                Fisma.Finding.POC_MESSAGE_CONTAINER_ID, 
+                autocomplete.getInputEl().parentNode
+            );
+        }
+
+        container.firstChild.nodeValue = "No point of contact named \"" 
+                                       + unmatchedQuery
+                                       + "\" was found. Click here to create one.";
+        container.style.display = 'block';
+
+        Fisma.Finding.createPocDefaultUsername = unmatchedQuery;
+    },
+
+    /**
+     * Create the container for the POC not found message
+     * 
+     * @param id {String} The ID to set on the container
+     * @param parent {HTMLElement} The autocomplete that this container belongs to
+     */
+    _createPocNotFoundContainer : function (id, parent) {
+        var container = document.createElement('div');
+
+        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm);
+        container.className = 'pocNotMatched';
+        container.id = id;
+        container.appendChild(document.createTextNode(""));
+
+        parent.appendChild(container);
+        
+        return container;
+    },
+
+    /**
+     * Hide the POC not found message
+     */
+    hidePocNotFoundMessage : function () {
+        var container = document.getElementById(Fisma.Finding.POC_MESSAGE_CONTAINER_ID);
+
+        if (YAHOO.lang.isValue(container)) {
+            container.style.display = 'none';
+        }
+    },
+
+    /**
+     * Display a POC creation form inside a modal dialog.
+     * 
+     * When setting a finding POC, if the user doesn't select from the autocomplete list, then prompt them to see if
+     * they want to create a new POC instead.
+     */
+    displayCreatePocForm : function () {
+        var panelConfig = {width : "50em", modal : true};
+
+        Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
+            'Create New Point Of Contact',
+            '/poc/form',
+            Fisma.Finding.populatePocForm,
+            'createPocPanel',
+            panelConfig
+        );
+    },
+    
+    /**
+     * Populate the POC create form with some default values
+     */
+    populatePocForm : function () {
+        /* The message() API is so tacky... in order to display "message" feedback in this dialog, I have to
+         * temporarily hijack the message() output. It gets set back in the Fisma.Finding.createPoc() method.
+         */
+        document.getElementById('msgbar').id = 'oldMessageBar';
+        document.getElementById('pocMessageBar').id = 'msgbar';
+        
+        // Fill in the username
+        var usernameEl = document.getElementById('username');
+        usernameEl.value = Fisma.Finding.createPocDefaultUsername;
+
+        // The form contains some scripts that need to be executed
+        var scriptNodes = Fisma.Finding.createPocPanel.body.getElementsByTagName('script');
+
+        for (var i=0; i < scriptNodes.length; i++) {
+            try {
+                eval(scriptNodes[i].text);
+            } catch (e) {
+                var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                Fisma.Util.showAlertDialog(message);
+            } 
+        }
+        
+        // The tool tips will display underneath the modal dialog mask, so we'll move them up to a higher layer.
+        var tooltips = YAHOO.util.Dom.getElementsByClassName('yui-tt', 'div');
+        
+        for (var index in tooltips) {
+            var tooltip = tooltips[index];
+
+            // The yui panel is usually 4, so anything higher is good.
+            tooltip.style.zIndex = 5;
+        }
+    },
+    
+    /**
+     * Submit an XHR to create a POC object
+     */
+    createPoc : function () {
+        // The scope is the button that was clicked, so save it for closures
+        var button = this;
+        var form = Fisma.Finding.createPocPanel.body.getElementsByTagName('form')[0];
+
+        // Disable the submit button
+        button.set("disabled", true);
+
+        // Save the username so we can populate it back on the create finding form
+        var username = document.getElementById("username").value;
+
+        YAHOO.util.Connect.setForm(form);
+        YAHOO.util.Connect.asyncRequest('POST', '/poc/create/format/json', {
+            success : function(o) {
+                var result;
+
+                try {
+                    result = YAHOO.lang.JSON.parse(o.responseText).result;
+                } catch (e) {
+                    result = {success : false, message : e};
+                }
+
+                if (result.success) {
+                    Fisma.Finding.createPocPanel.hide();
+                    Fisma.Finding.hidePocNotFoundMessage();
+
+                    /* Trick the autocomplete into think it has selected an item. This violates it's abstraction (by
+                     * accessing a private member) but there is no public api to do this. Otherwise, if the user clicks
+                     * on the field, YUI will clear it out due to the "enforce selection" feature. 
+                     */
+                    Fisma.Finding.pocAutocomplete._bItemSelected = true;
+
+                    // Populate the autocomplete with the values corresponding to this new POC
+                    var pocId = parseInt(result.message, 10);
+                    Fisma.Finding.pocHiddenEl.value = pocId;
+                    Fisma.Finding.pocAutocomplete.getInputEl().value = username;
+
+                    // Undo the message bar hack from Fisma.Finding.populatePocForm()
+                    document.getElementById('msgbar').id = 'pocMessageBar';
+                    document.getElementById('oldMessageBar').id = 'msgbar';
+
+                    message('A point of contact has been created.', 'info', true);
+                } else {
+                    message(result.message, 'warning', true);
+                    button.set("disabled", false);
+                }
+            },
+            failure : function(o) {
+                var alertMessage = 'Failed to create new point of contact: ' + o.statusText;
+                Fisma.Finding.createPocPanel.setBody(alertMessage);
+            }
+        }, null);
+    },
+
+    /**
+     * Configure the autocomplete that is used for selecting a security control
+     * 
+     * @param autocomplete {YAHOO.widget.AutoComplete}
+     * @param params {Array} The arguments passed to the autocomplete constructor
+     */
+    setupSecurityControlAutocomplete : function (autocomplete, params) {
+        autocomplete.itemSelectEvent.subscribe(Fisma.AutoComplete.handleSecurityControlSelection);
+    }
 };
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -6467,542 +7639,589 @@ Fisma.Finding = {
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
- * @fileoverview The Finding Summary displays a tree of information systems and summary counts with expand/collapse
- * controls to navigate the tree structure of the information systems. Summary information is automatically rolled up
- * or drilled down as the user navigates the tree.
- *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
  */
- 
-Fisma.FindingSummary = function() {
-    return {
+
+(function() {
+    /**
+     * A widget that displays finding summary data in a tree table widget.
+     * 
+     * @namespace Fisma
+     * @class TreeTable
+     * @constructor
+     * @param dataUrl {String}
+     * @param numberColumns {Integer} The number of columns to display in the table.
+     * @param msApprovals {Object} An array of the mitigation strategy approval levels.
+     * @param evApprovals {Object} An array of the evidence approval levels.
+     */
+    var FS = function(dataUrl, numberColumns, msApprovals, evApprovals) {
+        FS.superclass.constructor.call(this, dataUrl, numberColumns);
+        
+        this._msApprovals = msApprovals;
+        this._evApprovals = evApprovals;
+
+        this._columnLabels = Array();
+        this._columnLabels = this._columnLabels.concat(
+            FS.MITIGATION_COLUMNS, 
+            msApprovals, 
+            FS.EVIDENCE_COLUMNS, 
+            evApprovals, 
+            FS.AGGREGATE_COLUMNS
+        );
+    };
+    
+    /**
+     * The labels for mitigation columns (not including approvals)
+     * 
+     * @static
+     */
+    FS.MITIGATION_COLUMNS = ["NEW", "DRAFT"];
+
+    /**
+     * The labels for evidence columns (not including approvals)
+     * 
+     * @static
+     */
+    FS.EVIDENCE_COLUMNS = ["EN"];
+    
+    /**
+     * The labels for aggregate columns
+     * 
+     * @static
+     */
+    FS.AGGREGATE_COLUMNS = ["OPEN", "CLOSED", "TOTAL"];
+    
+    /**
+     * The options for the summary type menu.
+     * 
+     * The key is the string that gets passed to the server. The value is the string that gets displayed to the user.
+     * 
+     * @static
+     */
+    FS.SUMMARY_TYPES = {
+        organizationHierarchy: "Organization Hierarchy",
+        pointOfContact: "Point Of Contact",
+        systemAggregation: "System Aggregation"
+    };
+    
+    /**
+     * The default view to display.
+     * 
+     * @see Fisma.FindingSummary.SUMMARY_TYPES
+     * @static
+     */
+    FS.DEFAULT_VIEW = "organizationHierarchy";
+    
+    YAHOO.lang.extend(FS, Fisma.TreeTable, {
         /**
-         * A pointer to the root node of the tree which is being displayed
+         * An array of the mitigation strategy approval levels.
          */
-        treeRoot : null,
+        _msApprovals: null,
+
+        /**
+         * An array of the mitigation strategy approval levels.
+         */
+        _evApprovals: null,
+
+        /**
+         * The columns labels (not including the first column)
+         */
+        _columnLabels: null,
         
         /**
-         * Holds the value of the type filter on the current page
-         */
-        filterType : null,
-        
-        /**
-         * Holds the value of the status filter on the current page
-         */
-        filterSource : null, 
-        
-        /**
-         * The number of tree levels to display during the initial render
-         */
-        defaultDisplayLevel : 2,
-        
-        /**
-         * Renders the finding summary view
+         * The view type currently selected.
          * 
-         * @todo this is still a monster function which is really unreadable
+         * @see Fisma.FindingSummary.SUMMARY_TYPES
+         * @param {String}
+         */
+        _currentViewType: null,
+        
+        /**
+         * An event that fires when the view type changes.
          * 
-         * @param tableId DOM ID of the table which this gets rendered into
-         * @param tree A tree structure which contains the counts which are rendered in this table
-         * @param newTree If true, then this is the root node which is being rendered
-         */         
-        render : function(tableId, tree, newTree) {
-            /**
-             * Set the tree root first.
-             */
-            if (newTree) {
-                this.treeRoot = tree;
-            }
+         * @param {YAHOO.util.CustomEvent}
+         */
+        onViewTypeChange: new YAHOO.util.CustomEvent("onViewTypeChange"),
+
+        /**
+         * Define the content of the tooltips used on this page.
+         */
+        _tooltips: {
+            viewBy: null,
+            mitigationStrategy: null,
+            remediation: null
+        },
+
+        /**
+         * Override to insert custom parameters into the query string.
+         * 
+         * @return {String}
+         */
+        _getDataUrl: function () {
+            var url = FS.superclass._getDataUrl.call(this)
+                    + '/summaryType/' 
+                    + (this._currentViewType || FS.DEFAULT_VIEW);
             
-            // Get reference to the HTML table element which this is rendering into
-            var table = document.getElementById(tableId);
+            return url;
+        },
 
-            // Render each node at this level
-            for (var nodeId in tree) {
-                var c;
-                var node = tree[nodeId];
+        /**
+         * Render a customized header for this tree table.
+         * 
+         * @param rows {Array} An array of TR elements to render the header inside of.
+         */
+        _renderHeader: function (rows) {
+            this._renderHeaderRow1(rows[0]);
+            this._renderHeaderRow2(rows[1]);
+            this._renderHeaderRow3(rows[2]);
+        },
 
-                // Append two rows ('ontime' and 'overdue') to the table for this node
-                var firstRow = table.insertRow(table.rows.length);
-                firstRow.id = node.nickname + "_ontime";
+        /**
+         * Render the first row of the header
+         * 
+         * @param row {HTMLElement} A TR element to render into.
+         */
+        _renderHeaderRow1: function(row) {
+            var that = this; // For closure
+
+            // Create top left cell
+            var firstCell = document.createElement('th');
+            row.appendChild(firstCell);
+            firstCell.style.borderBottom = "none";
+            firstCell.rowSpan = 3;
+
+            var firstCellSpan = document.createElement('span');
+            firstCell.appendChild(firstCellSpan);
+            firstCellSpan.appendChild(document.createTextNode("View By: "))
+            
+            if (YAHOO.lang.isValue(this._tooltips.viewBy)) {
+                firstCellSpan.className = "tooltip";
+
+                var viewByTooltip = new YAHOO.widget.Tooltip(
+                    "viewByTooltip",
+                    {
+                        context: firstCellSpan,
+                        showdelay: 150,
+                        hidedelay: 150,
+                        autodismissdelay: 25000,
+                        text: this._tooltips.viewBy,
+                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
+                        width: "50%"
+                    }
+                );   
+            }
+
+            var select = document.createElement("select");
+            select.onchange = function (event) {that.changeViewType.call(that, event, select);};
+
+            for (var optionKey in FS.SUMMARY_TYPES) {
+                var option = new Option(FS.SUMMARY_TYPES[optionKey], optionKey)
                 
-                var secondRow = table.insertRow(table.rows.length);
-                secondRow.id = node.nickname + "_overdue";
-
-                // The first cell of the first row is the system label
-                var firstCell = firstRow.insertCell(0);
-
-                // Determine which set of counts to show initially (single or all)
-                node.expanded = (node.level < this.defaultDisplayLevel - 1);
-                var ontime = node.expanded ? node.single_ontime : node.all_ontime;
-                var overdue = node.expanded ? node.single_overdue : node.all_overdue;
-                node.hasOverdue = this.hasOverdue(overdue);
-
-                var expandControlImage = document.createElement('img');
-                expandControlImage.className = 'control';
-                expandControlImage.id = node.nickname + "Img";
-
-                var expandControl = document.createElement('a');
-                expandControl.appendChild(expandControlImage);
-
-                // Does this node need an collapse/expand control?
-                var needsExpandControl = node.children.length > 0;                
-                if (needsExpandControl) {
-                    expandControl.nickname = node.nickname;
-                    expandControl.findingSummary = this;
-                    expandControl.onclick = function () {
-                        this.findingSummary.toggleNode(this.nickname); 
-                        return false;
-                    };
-                    expandControlImage.src = "/images/" + (node.expanded ? "minus.png" : "plus.png");
-                } else {
-                    expandControlImage.src = "/images/leaf_node.png";
+                if (option.value == this._currentViewType) {
+                    option.selected = true;
                 }
-
-                // Render the first cell on this row
-                var firstCellDiv = document.createElement("div");
-                firstCellDiv.className = "treeTable" + node.level + (needsExpandControl ? " link" : "");
-                firstCellDiv.appendChild(expandControl);
                 
+                // Workaround for IE7:
+                if (YAHOO.env.ua.ie == 7) {
+                    select.add(option, select.options[null]);
+                } else {
+                    select.add(option, null);
+                }
+            }
+            firstCell.appendChild(select);
+
+            // Create the cell that spans the mitigation strategy columns
+            var mitigationCell = document.createElement('th');
+            mitigationCell.colSpan = FS.MITIGATION_COLUMNS.length + this._msApprovals.length;
+            mitigationCell.style.borderBottom = "none";
+            row.appendChild(mitigationCell);
+            
+            var mitigationCellSpan = document.createElement('span');
+            mitigationCell.appendChild(mitigationCellSpan);
+            mitigationCellSpan.appendChild(document.createTextNode("Mitigation Strategy"));
+
+            if (YAHOO.lang.isValue(this._tooltips.mitigationStrategy)) {
+                mitigationCellSpan.className = "tooltip";
+
+                var msTooltip = new YAHOO.widget.Tooltip(
+                    "msTooltip",
+                    {
+                        context: mitigationCellSpan,
+                        showdelay: 150,
+                        hidedelay: 150,
+                        autodismissdelay: 25000,
+                        text: this._tooltips.mitigationStrategy,
+                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
+                        width: "50%"
+                    }
+                );
+            }
+
+            // Create the cell that spans the evidence columns
+            var remediationCell = document.createElement('th');
+            remediationCell.colSpan = FS.EVIDENCE_COLUMNS.length + this._evApprovals.length;
+            remediationCell.style.borderBottom = "none";
+            row.appendChild(remediationCell);
+
+            var remediationCellSpan = document.createElement('span');
+            remediationCell.appendChild(remediationCellSpan);
+            remediationCellSpan.appendChild(document.createTextNode("Remediation"));
+
+            if (YAHOO.lang.isValue(this._tooltips.remediation)) {
+                remediationCellSpan.className = "tooltip";
+
+                var remediationTooltip = new YAHOO.widget.Tooltip(
+                    "remediationTooltip",
+                    {
+                        context: remediationCellSpan,
+                        showdelay: 150,
+                        hidedelay: 150,
+                        autodismissdelay: 25000,
+                        text: this._tooltips.remediation,
+                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
+                        width: "50%"
+                    }
+                );
+            }
+
+            // Create the cell that spans the aggregate columns
+            var blankCell = document.createElement('th');
+            blankCell.colSpan = FS.AGGREGATE_COLUMNS.length;
+            blankCell.rowSpan = 2;
+            row.appendChild(blankCell);
+        },
+        
+        /**
+         * Render the second row of the header
+         * 
+         * @param row {HTMLElement} A TR element to render into.
+         */
+        _renderHeaderRow2: function(row) {
+            var blankCell1 = document.createElement('th');
+            blankCell1.colSpan = FS.MITIGATION_COLUMNS.length;
+            blankCell1.style.borderTop = "none";
+            row.appendChild(blankCell1);
+
+            var msApprovalCell = document.createElement('th');
+            msApprovalCell.appendChild(document.createTextNode("Approval"));
+            msApprovalCell.colSpan = this._msApprovals.length;
+            row.appendChild(msApprovalCell);
+
+            var blankCell2 = document.createElement('th');
+            blankCell2.style.borderTop = "none";
+            blankCell1.style.colSpan = FS.EVIDENCE_COLUMNS.length;
+            row.appendChild(blankCell2);
+
+            var evApprovalCell = document.createElement('th');
+            evApprovalCell.appendChild(document.createTextNode("Approval"));
+            evApprovalCell.colSpan = this._evApprovals.length;
+            row.appendChild(evApprovalCell);
+        },
+
+        /**
+         * Render the second row of the header
+         * 
+         * @param row {HTMLElement} A TR element to render into.
+         */
+        _renderHeaderRow3: function(row) {
+            var label;
+            var cell;
+            var link;
+
+            for (var index in this._columnLabels) {
+                cell = document.createElement('th');
+                cell.style.borderBottom = "none";
+                
+                label = this._columnLabels[index];
+
+                link = document.createElement('a');
+                cell.appendChild(link);
+                link.href = "/finding/remediation/list?q=/denormalizedStatus/textExactMatch/" 
+                          + encodeURIComponent(label);
+                link.appendChild(document.createTextNode(label));
+
+                row.appendChild(cell);
+            }
+        },
+
+        /**
+         * Aggregate data from leaf nodes up to root nodes.
+         * 
+         * @param node {Array}
+         */
+        _preprocessTreeData: function(node) {
+            var nodeData = node.nodeData;
+
+            // Start aggregrating at the current node
+            nodeData.aggregate = {
+                total: nodeData.total || 0,
+                closed: nodeData.closed || 0
+            };
+
+            for (var i in this._columnLabels) {
+                var column = $P.urlencode(this._columnLabels[i]);
+                
+                if (column === 'CLOSED' || column === 'TOTAL') {
+                    // These columns don't distinguish ontime from overdue (they're handled above)
+                    continue;
+                }
+                
+                nodeData.aggregate["ontime_" + column] = nodeData["ontime_" + column] || 0;
+                nodeData.aggregate["overdue_" + column] = nodeData["overdue_" + column] || 0;
+            }
+
+            // Include children's aggregate values in this node's aggregate value
+            if (YAHOO.lang.isValue(node.children) && node.children.length > 0) {
+                for (var i in node.children) {
+                    var child = node.children[i];
+                    var childData = child.nodeData;
+                    
+                    this._preprocessTreeData(child);
+                    
+                    nodeData.aggregate.total += childData.aggregate.total;
+                    nodeData.aggregate.closed += childData.aggregate.closed;
+                    
+                    for (var i in this._columnLabels) {
+                        var column = $P.urlencode(this._columnLabels[i]);
+
+                        if (column === 'CLOSED' || column === 'TOTAL') {
+                            // These columns don't distinguish ontime from overdue (they're handled above)
+                            continue;
+                        }
+
+                        nodeData.aggregate["ontime_" + column] += childData.aggregate["ontime_" + column];
+                        nodeData.aggregate["overdue_" + column] += childData.aggregate["overdue_" + column];
+                    }
+                }
+            }
+        },
+
+        /**
+         * Render cells in this finding summary table.
+         * 
+         * @param container {HTMLElement} The parent container to render cell content inside of.
+         * @param nodeData {Object} Data related to this node.
+         * @param columnNumber {Integer} The [zero-indexed] column which needs to be rendered.
+         * @param nodeState {TreeTable.NodeState}
+         */
+        _renderCell: function (container, nodeData, columnNumber, nodeState) {
+            if (columnNumber == 0) {
+                container.style.minWidth = "15em";
+                container.style.height = "2.5em";
+                container.style.overflow = "hidden";
+
                 // The node icon is a graphical representation of what type of node this is: agency, bureau, etc.          
                 var nodeIcon = document.createElement('img');
                 nodeIcon.className = "icon";
-                nodeIcon.src = "/images/" + node.orgType + ".png";
-                expandControl.appendChild(nodeIcon);
-                
+                nodeIcon.src = "/images/" + nodeData.icon + ".png";
+                container.appendChild(nodeIcon);
+
                 // Add text to the cell
-                expandControl.appendChild(document.createTextNode(node.label));
-                expandControl.appendChild(document.createElement('br'));
-                expandControl.appendChild(document.createTextNode(node.orgTypeLabel));
-                
-                firstCell.appendChild(firstCellDiv);
-                
-                // Render the remaining cells on the this row (which are all summary counts)
-                var i = 1; // start at 1 because the system label is in the first cell
-                for (c in ontime) {
-                    count = ontime[c];
-                    cell = firstRow.insertCell(i);
-                    if (c == 'CLOSED' || c == 'TOTAL') {
-                        // The last two colums don't have the ontime/overdue distinction
-                        cell.className = "noDueDate";
+                container.appendChild(document.createTextNode(nodeData.label));
+                container.appendChild(document.createElement('br'));
+                container.appendChild(document.createTextNode(nodeData.typeLabel));                    
+            } else {
+                var completedCount;
+
+                container.style.textAlign = "center";
+                container.style.padding = "0px";
+
+                // Use php.js urlencode() to mimic the server-side urlencode()
+                var status = $P.urlencode(this._columnLabels[columnNumber - 1]);
+
+                var link = document.createElement("a");
+                var ontimeUrl = this._makeUrl(true, status, nodeState, nodeData.rowLabel, nodeData.searchKey);
+                var overdueUrl = this._makeUrl(false, status, nodeState, nodeData.rowLabel, nodeData.searchKey);
+
+                // If we are in a collapsed tree node, then switch single-record node data to aggregate node data
+                if (nodeState == Fisma.TreeTable.NodeState.COLLAPSED) {
+                    nodeData = nodeData.aggregate;
+                }
+
+                if (status == "CLOSED") {
+                    link.href = ontimeUrl;
+                    container.appendChild(link);
+                    link.appendChild(document.createTextNode(nodeData.closed || 0));
+                } else if (status == "TOTAL") {
+                    link.href = ontimeUrl;
+                    container.appendChild(link);
+                    link.appendChild(document.createTextNode(nodeData.total || 0));
+                } else {
+                    // Set the rendering style based on the existence or absence of ontime and overdue findings
+                    var ontime = nodeData["ontime_" + status] || 0;
+                    var overdue = nodeData["overdue_" + status] || 0;
+
+                    if (ontime == 0 && overdue == 0) {
+                        container.className = "ontime";
+                        container.appendChild(document.createTextNode('-'));                    
+                    } else if (ontime > 0 && overdue == 0) {
+                        container.className = "ontime";
+                        container.appendChild(link);
+
+                        link.href = ontimeUrl;
+                        link.appendChild(document.createTextNode(ontime || 0));
+                    } else if (ontime == 0 && overdue > 0) {
+                        container.className = "overdue";
+                        container.appendChild(link);
+
+                        link.href = overdueUrl;
+                        link.appendChild(document.createTextNode(overdue || 0));
                     } else {
-                        // The in between columns should have the ontime class
-                        cell.className = 'onTime';                
-                    }
-                    this.updateCellCount(cell, count, node.nickname, c, 'ontime', node.expanded);
-                    i += 1;
-                }
-
-                // Now add cells to the second row
-                for (c in overdue) {
-                    count = overdue[c];
-                    cell = secondRow.insertCell(secondRow.childNodes.length);
-                    cell.className = 'overdue';
-                    this.updateCellCount(cell, count, node.nickname, c, 'overdue', node.expanded);
-                }
-
-                // Hide both rows by default
-                firstRow.style.display = "none";
-                secondRow.style.display = "none";
-
-                // Selectively display one or both rows based on current level and whether it has overdues
-                if (node.level < this.defaultDisplayLevel) {
-                    // set to default instead of 'table-row' to work around an IE6 bug
-                    firstRow.style.display = '';  
-                    if (node.hasOverdue) {
-                        firstRow.childNodes[0].rowSpan = "2";
-                        firstRow.childNodes[firstRow.childNodes.length - 2].rowSpan = "2";
-                        firstRow.childNodes[firstRow.childNodes.length - 1].rowSpan = "2";
-                        // set to default instead of 'table-row' to work around an IE6 bug
-                        secondRow.style.display = '';  
+                        // This is executed when ontime > 0 && overdue > 0
+                        this._renderSplitCell(container, ontime, ontimeUrl, overdue, overdueUrl);
                     }
                 }
-
-                // If this node has children, then recursively render the children
-                if (node.children.length > 0) {
-                    this.render(tableId, node.children);
-                }
-            }            
-        },
-
-        /**
-         * A function to handle a user click to either expand or collapse a particular tree node
-         * 
-         * @param treeNode
-         */        
-        toggleNode : function (treeNode) {
-            node = this.findNode(treeNode, this.treeRoot);
-            if (node.expanded) {
-                this.collapseNode(node, true);
-                this.hideSubtree(node.children);
-            } else {
-                this.expandNode(node);
-                this.showSubtree(node.children, false);
-            }            
+            }
         },
         
         /**
-         * Expand a tree node in the finding summary table
+         * Render a cell that shows both ontime and overdue numbers.
          * 
-         * @param treeNode
-         * @param recursive Indicates whether children should be recursively expanded
+         * @param container {HTMLElement}
+         * @param ontime {Integer} The number to display in the ontime part of the split
+         * @param ontimeUrl {String}
+         * @param overdue {Integer} The number to display in the overdue part of the split
+         * @param overdueUrl {String}
          */
-        expandNode : function (treeNode, recursive) {
-            // When expanding a node, switch the counts displayed from the "all" counts to the "single"
-            treeNode.ontime = treeNode.single_ontime;
-            treeNode.overdue = treeNode.single_overdue;
-            treeNode.hasOverdue = this.hasOverdue(treeNode.overdue);
+        _renderSplitCell: function (container, ontime, ontimeUrl, overdue, overdueUrl) {
+            // No good CSS way to do this...
+            var innerTable = document.createElement("table");
+            innerTable.style.width = "100%";
+            innerTable.style.height = "100%";
+            container.appendChild(innerTable);
 
-            // Update the ontime row first
-            var ontimeRow = document.getElementById(treeNode.nickname + "_ontime");    
-            var i = 1; // start at 1 b/c the first column is the system name
-            for (c in treeNode.ontime) {
-                count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', true);
-                i++;
-            }
+            var ontimeRow = innerTable.insertRow(innerTable.rows.length);
+            
+            var ontimeCell = document.createElement('td');
+            ontimeRow.appendChild(ontimeCell);
+            ontimeCell.style.borderWidth = "0px";
+            ontimeCell.style.borderBottomWidth = "1px";
+            ontimeCell.className = "ontime";
+            
+            var ontimeLink = document.createElement("a");
+            ontimeCell.appendChild(ontimeLink);
+            ontimeLink.appendChild(document.createTextNode(ontime));
+            ontimeLink.href = ontimeUrl;
 
-            // Then update the overdue row, or hide it if there are no overdues
-            var overdueRow = document.getElementById(treeNode.nickname + "_overdue");
-            if (treeNode.hasOverdue) {
-                // Do not hide the overdue row. Instead, update the counts
-                i = 0;
-                for (c in treeNode.overdue) {
-                    count = treeNode.overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', true);
-                    i++;
-                }
+            var overdueRow = innerTable.insertRow(innerTable.rows.length);
+
+            var overdueCell = document.createElement('td');
+            overdueRow.appendChild(overdueCell);
+            overdueCell.style.border = "none";
+            overdueCell.className = "overdue";
+
+            var overdueLink = document.createElement("a");
+            overdueCell.appendChild(overdueLink);
+            overdueLink.appendChild(document.createTextNode(overdue));
+            overdueLink.href = overdueUrl;
+        },
+        
+        /**
+         * The event handler for the view type menu.
+         * 
+         * @param event {Event}
+         * @param select {HTMLElement} The select element that changed
+         */
+        changeViewType: function (event, select) {
+            this.setViewType(select.options[select.selectedIndex].value);
+            this.onViewTypeChange.fire(this._currentViewType);
+            this.reloadData();
+        },
+        
+        /**
+         * Set the view type for this object. 
+         * 
+         * (Notice that this doesn't take effect until the table is rendered).
+         * 
+         * @param viewType {FS.SUMMARY_TYPES}
+         */
+        setViewType: function (viewType) {
+            if (FS.SUMMARY_TYPES.hasOwnProperty(viewType)) {
+                this._currentViewType = viewType;
             } else {
-                // Hide the overdue row and adjust the rowspans on the ontime row to compensate
-                ontimeRow.childNodes[0].rowSpan = "1";
-                ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "1";
-                ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "1";
-                overdueRow.style.display = 'none';
+                throw "Unexpected view type: (" + viewType + ")";
             }
-
-            // Update the control image and internal status field
-            if (treeNode.children.length > 0) {
-                document.getElementById(treeNode.nickname + "Img").src = "/images/minus.png";
-            }
-            treeNode.expanded = true;
-
-            // If the function is called recursively and this node has children, then
-            // expand the children.
-            if (recursive && treeNode.children.length > 0) {
-                this.showSubtree(treeNode.children, false);
-                for (var child in treeNode.children) {
-                    this.expandNode(treeNode.children[child], true);
-                }
-            }
-        }, 
+        },
         
         /**
-         * Collapse a tree node and all of its children
+         * This summary has a 3-level header.
          * 
-         * @param treeNode
-         * @param displayOverdue ???
+         * @return {Integer}
          */
-        collapseNode : function (treeNode, displayOverdue) {
-            // When collapsing a node, switch the counts displayed from the "single" counts to the "all"
-            treeNode.ontime = treeNode.all_ontime;
-            treeNode.overdue = treeNode.all_overdue;
-            treeNode.hasOverdue = this.hasOverdue(treeNode.overdue);
-
-            // Update the ontime row first
-            var ontimeRow = document.getElementById(treeNode.nickname + "_ontime");
-            var i = 1; // start at 1 b/c the first column is the system name
-            for (c in treeNode.ontime) {
-                count = treeNode.ontime[c];
-                this.updateCellCount(ontimeRow.childNodes[i], count, treeNode.nickname, c, 'ontime', false);
-                i++;
-            }
-
-            // Update the overdue row. Display the row first if necessary.
-            var overdueRow = document.getElementById(treeNode.nickname + "_overdue");
-            if (displayOverdue && treeNode.hasOverdue) {
-                // Show the overdue row and adjust the rowspans on the ontime row to compensate
-                ontimeRow.childNodes[0].rowSpan = "2";
-                ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "2";
-                ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
-                overdueRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
-
-                i = 0;
-                for (c in treeNode.all_overdue) {
-                    count = treeNode.all_overdue[c];
-                    this.updateCellCount(overdueRow.childNodes[i], count, treeNode.nickname, c, 'overdue', false);
-                    i++;
-                }
-            }
-
-            // If the node has children, then hide those children
-            if (treeNode.children.length > 0) {
-                this.hideSubtree(treeNode.children);
-            }
-
-            document.getElementById(treeNode.nickname + "Img").src = "/images/plus.png";
-            treeNode.expanded = false;
-        }, 
+        _getNumberHeaderRows: function () {
+            return 3;
+        },
         
         /**
-         * Hide an entire subtree
+         * Make a URL for a cell based on ontime/overdue, finding status, node state, and organization.
          * 
-         * This differs from 'collapsing' a node because a collapsed node is still displayed, whereas a hidden subtree
-         * isn't even displayed.
+         * This function also incorporates filter state to build URLs.
          * 
-         * @param nodeArray This will generally be all of the children of a parent which is being collapsed.
+         * @param ontime {Boolean} True if ontime, false if overdue.
+         * @param status {String}
+         * @param nodeState {Fisma.TreeTable.NodeState} 
+         * @param rowLabel {String}
+         * @param searchKey {String} The search parameter to search for the rowLabel in.
+         * @return {String}
          */
-        hideSubtree : function (nodeArray) {
-            for (nodeId in nodeArray) {
-                node = nodeArray[nodeId];
+        _makeUrl: function (ontime, status, nodeState, rowLabel, searchKey) {
+            var url = "/finding/remediation/list?q=";
 
-                // Now update this node
-                ontimeRow = document.getElementById(node.nickname + "_ontime");
-                ontimeRow.style.display = 'none';
-                overdueRow = document.getElementById(node.nickname + "_overdue");
-                overdueRow.style.display = 'none';
-
-                // Recurse through children
-                if (node.children.length > 0) {
-                    this.collapseNode(node, false);
-                    this.hideSubtree(node.children);
-                }
-            }
-        }, 
-        
-        /**
-         * Make children of a node visible
-         * 
-         * @param nodeArray This will generally be all of the children of a parent node which is being expanded
-         * @param recursive If true, then this makes the entire subtree visible. If false, then just the nodeArray is 
-         * visible.
-         */
-        showSubtree : function (nodeArray, recursive) {
-            for (nodeId in nodeArray) {
-                node = nodeArray[nodeId];
-
-                // Recurse through the child nodes (if necessary)
-                if (recursive && node.children.length > 0) {
-                    this.expandNode(node);
-                    this.showSubtree(node.children, true);            
-                }
-
-                // Now update this node
-                ontimeRow = document.getElementById(node.nickname + "_ontime");
-                ontimeRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
-                overdueRow = document.getElementById(node.nickname + "_overdue");
-                if (node.hasOverdue) {
-                    ontimeRow.childNodes[0].rowSpan = "2";
-                    ontimeRow.childNodes[ontimeRow.childNodes.length - 2].rowSpan = "2";
-                    ontimeRow.childNodes[ontimeRow.childNodes.length - 1].rowSpan = "2";
-                    overdueRow.style.display = '';  // set to default instead of 'table-row' to work around an IE6 bug
-                }
-            }               
-        }, 
-        
-        /**
-         * Collapse all nodes in the tree. This results in just the root node(s) being displayed, all others hidden.
-         */
-        collapseAll : function () {
-            for (nodeId in this.treeRoot) {
-                node = this.treeRoot[nodeId];
-                this.collapseNode(node, true);
-                this.hideSubtree(node.children);
-            }            
-        }, 
-        
-        /**
-         * Expand all nodes in the tree. This results in all nodes being displayed.
-         */
-        expandAll : function () {
-            for (nodeId in this.treeRoot) {
-                node = this.treeRoot[nodeId];
-                this.expandNode(node, true);
-            } 
-        }, 
-        
-        /**
-         * Find a node by name in a given subtree
-         * 
-         * @param nodeName
-         * @param tree
-         * @return Either a node or boolean false
-         */
-        findNode : function (nodeName, tree) {
-            for (var nodeId in tree) {
-                node = tree[nodeId];
-                if (node.nickname === nodeName) {
-                    return node;
-                } else if (node.children.length > 0) {
-                    var foundNode = this.findNode(nodeName, node.children);
-                    if (foundNode !== false) {
-                        return foundNode;
-                    }
-                }
+            // Add status criterion
+            if (status != "TOTAL" && status != "OPEN") {
+                url += "/denormalizedStatus/textExactMatch/" + encodeURIComponent(status);
+            } else if (status == "OPEN"){
+                url += "/denormalizedStatus/textNotExactMatch/CLOSED";
             }
             
-            return false;            
-        }, 
-        
-        /**
-         * Returns true if the specified node has any overdue items, false otherwise
-         * 
-         * A node has overdue items if any of the counts in its overdue array is greater than 0
-         * 
-         * @param An array of overdue counts for a particular node
-         * @return boolean
-         */
-        hasOverdue : function (overdueCountArray) {
-            for (var i in overdueCountArray) {
-                if (overdueCountArray[i] > 0) {
-                    return true;
-                }
+            // Add organization/POC criterion
+            if (nodeState == Fisma.TreeTable.NodeState.COLLAPSED) {
+                url += '/' + searchKey + '/organizationSubtree/' + encodeURIComponent(rowLabel);
+            } else {
+                url += '/' + searchKey + '/textExactMatch/' + encodeURIComponent(rowLabel);
+            }
+
+            // Add ontime criteria (if applicable)
+            if (status != "TOTAL" && status != "CLOSED") {
+                var today = new Date();
+                var todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+
+                if (ontime) {
+                    url += "/nextDueDate/dateAfter/" + todayString;
+                } else {
+                    url += "/nextDueDate/dateBefore/" + todayString;                    
+                }                
             }
             
-            return false;
+            // Add filter criteria
+            msSelect = this._filters.mitigationType.select;
+            msValue = msSelect.options[msSelect.selectedIndex].value;
+            if (msValue != "none") {
+                url += "/type/enumIs/" + encodeURIComponent(msValue);
+            }
+
+            sourceSelect = this._filters.findingSource.select;
+            sourceValue = sourceSelect.options[sourceSelect.selectedIndex].value;
+            sourceLabel = sourceSelect.options[sourceSelect.selectedIndex].text;
+            if (sourceValue != "none") {
+                url += "/source/textExactMatch/" + encodeURIComponent(sourceLabel);
+            }
+
+            return url;
         },
         
         /**
-         * Update the count that is displayed inside a particular cell
-         * 
-         * @param cell An HTML table cell
-         * @param count The count to display
-         * @param orgName Used to generate link
-         * @param ontime Used to generate link
-         * @param expanded Used to generate link
+         * Set the value of a tooltip. Tooltips must be set rendering the table.
          */
-        updateCellCount : function (cell, count, orgName, status, ontime, expanded) {
-            var link;
-            if (!cell.hasChildNodes()) {
-                // Initialize this cell
-                if (count > 0) {
-                    link = document.createElement('a');
-                    link.href = this.makeLink(orgName, status, ontime, expanded);
-                    link.appendChild(document.createTextNode(count));
-                    cell.appendChild(link);
-                } else {
-                    cell.appendChild(document.createTextNode('-'));
-                }
-            } else {
-                // The cell is already initialized, so we may need to add or remove child elements
-                if (cell.firstChild.hasChildNodes()) {
-                    // The cell contains an anchor
-                    if (count > 0) {
-                        // Update the anchor text
-                        cell.firstChild.firstChild.nodeValue = count;
-                        cell.firstChild.href = this.makeLink(orgName, status, ontime, expanded);
-                    } else {
-                        // Remove the anchor
-                        cell.removeChild(cell.firstChild);
-                        cell.appendChild(document.createTextNode('-'));
-                    }
-                } else {
-                    // The cell contains just a text node
-                    if (count > 0) {
-                        // Need to add a new anchor
-                        cell.removeChild(cell.firstChild);
-                        link = document.createElement('a');
-                        link.href = this.makeLink(orgName, status, ontime, expanded);
-                        link.appendChild(document.createTextNode(count));
-                        cell.appendChild(link);
-                    } else {
-                        // Update the text node value
-                        cell.firstChild.nodeValue = '-';
-                    }
-                }
-            }
-        }, 
-        
-        /**
-         * Generate the URI that a cell will link to
-         * 
-         * These search engine uses these parameters to filter the search based on the cell that was clicked
-         * 
-         * @param orgName
-         * @param status
-         * @param ontime
-         * @param expanded
-         * @return String URI
-         */
-        makeLink : function (orgName, status, ontime, expanded) {
-            // CLOSED and TOTAL columns should not have an 'ontime' criteria in the link
-            var onTimeString = '';
-            if (!(status == 'CLOSED' || status == 'TOTAL')) {
-                var now = new Date();
-                
-                var nowStr = now.getFullYear() + "-" + (now.getMonth() + 1) + "-" + now.getDate();
-
-                if ('ontime' == ontime) {
-                    onTimeString = '/nextDueDate/dateAfter/' + encodeURIComponent(nowStr);
-                } else {
-                    onTimeString = '/nextDueDate/dateBefore/' + encodeURIComponent(nowStr);
-                }
-            }
-
-            // Include any status
-            var statusString = '';
-            if (status !== '' && status !=='TOTAL') {
-                statusString = '/denormalizedStatus/textExactMatch/' + encodeURIComponent(status);
-            }
-
-            // Include any filters
-            var filterType = '';
-            if (!YAHOO.lang.isNull(this.filterType) && this.filterType !== '') {
-                filterType = '/type/enumIs/' + encodeURIComponent(this.filterType);
-            }
-
-            var filterSource = '';
-            if (!YAHOO.lang.isNull(this.filterSource) && this.filterSource !== '') {
-                filterSource = '/source/textExactMatch/' + encodeURIComponent(this.filterSource);
-            }
-
-            // Render the link
-            var uri = '/finding/remediation/list?q=' + onTimeString + statusString + filterType + filterSource;
-
-            if (expanded) {
-                uri += '/organization/textExactMatch/' + encodeURIComponent(orgName);
-            } else {
-                uri += '/organization/organizationSubtree/' + encodeURIComponent(orgName);
-            }
-
-            return uri;            
-        }, 
-        
-        /**
-         * Redirect to a URI which exports the summary table
-         * 
-         * @param format Only 'pdf' is valid at the moment.
-         */
-        exportTable : function (format) {
-            var uri = '/finding/remediation/summary-data/format/' + format + this.listExpandedNodes(this.treeRoot, '');
-
-            document.location = uri;            
-        }, 
-        
-        /**
-         * Returns a URI paramter string that represents which nodes are expanded and which nodes are collapsed
-         * 
-         * This is used during export to make the exported tree mirror what the user sees in the browser
-         * 
-         * @param nodes A subtree to render into the return string
-         * @param visibleNodes Pass a blank string. This is an accumulator which is used for recursive calls.
-         * @return String URI
-         */
-        listExpandedNodes : function (nodes, visibleNodes) {
-            for (var n in nodes) {
-                var node = nodes[n];
-                if (node.expanded) {
-                    visibleNodes += '/e/' + node.id;
-                    visibleNodes = this.listExpandedNodes(node.children, visibleNodes);
-                } else {
-                    visibleNodes += '/c/' + node.id;
-                }
-            }
-
-            return visibleNodes;
+        setTooltip: function (name, html) {
+            this._tooltips[name] = html;
         }
-    };
-};
+    });
+
+    Fisma.FindingSummary = FS;
+})();
 /**
  * Copyright (c) 2010 Endeavor Systems, Inc.
  *
@@ -8011,8 +9230,12 @@ Fisma.Module = {
                             this._buildTreeNodes(json.treeData, this._treeView.getRoot());
                             Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
                                 this._treeView,
-                                this.handleDragDrop,
-                                this
+                                {
+                                    dragFinished: {
+                                        fn: this.handleDragDrop,
+                                        context: this
+                                    }
+                                }
                             );
 
                             // Expand the first two levels of the tree by default
@@ -8065,11 +9288,11 @@ Fisma.Module = {
                 );
 
                 // Set the label style
-                yuiNode.labelStyle = node.orgType;
+                yuiNode.contentStyle = node.orgType;
 
                 var sdlcPhase = YAHOO.lang.isUndefined(node.System) ? false : node.System.sdlcPhase;
                 if (sdlcPhase === 'disposal') {
-                    yuiNode.labelStyle += " disposal";
+                    yuiNode.contentStyle += " disposal";
                 }
 
                 // Recurse
@@ -8375,6 +9598,447 @@ Fisma.Module = {
             }, this, true);
         }
     });
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * A treeview widget that is specialized for displaying the POC hierarchy
+     * 
+     * @namespace Fisma
+     * @class PocTreeView
+     * @extends n/a
+     * @constructor
+     * @param contentDivId {String} The name of the div which will hold this widget
+     */
+    var PTV = function(contentDivId) {
+        this._contentDiv = document.getElementById(contentDivId);
+        
+        if (YAHOO.lang.isNull(this._contentDiv)) {
+            throw "Invalid contentDivId";
+        }
+        
+        this._storage = new Fisma.PersistentStorage("Poc.Tree");
+    };
+
+    PTV.prototype = {
+        /**
+         * The outermost div for this widget (expected to exist on the page already and to be empty)
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _contentDiv: null,
+
+        /**
+         * A YUI tree view widget
+         * 
+         * @type YAHOO.widget.TreeView
+         * @protected
+         */                
+        _treeView: null,
+
+        /**
+         * The div containing the loading spinner
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _loadingContainer: null,        
+
+        /**
+         * The container div that YUI renders the tree view into
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _treeViewContainer: null,
+
+        /**
+         * A modal dialog used to keep the user from modifying the tree while it's changes are being sychronized to 
+         * the server.
+         * 
+         * Also used to display errors if a save operation fails.
+         * 
+         * @type YAHOO.widget.Panel
+         * @protected
+         */                        
+        _savePanel: null,
+
+        /**
+         * Persistent storage for some of the features in this widget
+         * 
+         * @type Fisma.PersistentStorage
+         * @protected
+         */                
+        _storage: null,
+
+        /**
+         * Render the entire widget
+         *
+         * @method OrganizationTreeView.render
+         */
+        render: function () {
+            var that = this;
+
+            that._loadingContainer = document.createElement("div");
+            that._renderLoading(that._loadingContainer);
+            that._contentDiv.appendChild(that._loadingContainer);
+
+            that._treeViewContainer = document.createElement("div");
+            that._renderTreeView(that._treeViewContainer);
+            that._contentDiv.appendChild(that._treeViewContainer);                
+        },
+
+        /**
+         * Render the loading spinner
+         *
+         * @method OrganizationTreeView._renderLoading
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderLoading: function (container) {
+            var loadingImage = document.createElement("img");
+            loadingImage.src = "/images/spinners/small.gif";
+
+            container.style.display = "none";
+            container.appendChild(loadingImage);
+        },
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._showLoadingImage
+         */
+        _showLoadingImage: function () {
+            this._loadingContainer.style.display = "block";
+        },
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._hideLoadingImage
+         */        
+        _hideLoadingImage: function () {
+            this._loadingContainer.style.display = "none";    
+        },
+
+        /**
+         * Render the treeview itself
+         *
+         * @method OrganizationTreeView._renderTreeView
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderTreeView: function (container) {
+            this._showLoadingImage();
+
+            var url = '/poc/tree-data/format/json';
+
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                url, 
+                {
+                    success: function (response) {
+                        var json = YAHOO.lang.JSON.parse(response.responseText);
+                        if (json.treeData.length > 0) {
+                            // Set up callbacks for the tree drag-n-drop behavior
+                            var callbacks = {
+                                dragFinished: {
+                                    fn: this.handleDragDrop,
+                                    context: this
+                                },
+                                testDragTargetDelegate: {
+                                    fn: this.testDragTarget,
+                                    context: this
+                                }
+                            };
+
+                            // Load the tree data into a tree view
+                            this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
+                            this._buildTreeNodes(json.treeData, this._treeView.getRoot());
+                            Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                                this._treeView,
+                                callbacks,
+                                this
+                            );
+
+                            // Expand the first two levels of the tree by default
+                            var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                            $.each(defaultExpandNodes, function (key, node) {node.expand();});
+
+                            this._treeView.draw();
+                        }
+
+                        this._hideLoadingImage();
+                    },
+                    failure: function (response) {
+                        var alertMessage = 'Unable to load the organization tree: ' + response.statusText;
+                        Fisma.Util.showAlertDialog(alertMessage);
+                    },
+                    scope: this
+                }, 
+                null
+            );
+        },
+
+        /**
+         * Load the given nodes into a treeView.
+         * 
+         * This function is recursive, so the first time it's called, you need to pass in the root node of the tree
+         * view.
+         *
+         * @method OrganizationTreeView._buildTreeNodes
+         * @param nodeList {Array} Nested array of organization/system data to load into the tree view
+         * @param parent {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
+         */
+        _buildTreeNodes: function (nodeList, parent) {
+
+            for (var i in nodeList) {
+                var node = nodeList[i];
+                var yuiNode;
+
+                if (node.hasOwnProperty('id')) {
+                    yuiNode = this._buildOrgNode(node, parent);
+                } else {
+                    yuiNode = this._buildPocNode(node, parent);
+                }
+
+                // Recurse
+                if (YAHOO.lang.isArray(node.children) && node.children.length > 0) {
+                    this._buildTreeNodes(node.children, yuiNode);
+                }
+            }
+        },
+
+        /**
+         * Create a node that represents an organization.
+         * 
+         * @param node {Object} Dictionary of node data
+         * @param parent {YAHOO.widget.Node} The tree node that is the parent to the node you want to create
+         * @return YAHOO.widget.Node
+         */
+        _buildOrgNode: function (node, parent) {
+            var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
+                             + PHP_JS().htmlspecialchars(node.orgTypeLabel) + "</i>";
+
+            var yuiNode = new YAHOO.widget.HTMLNode(
+                {
+                    html: nodeText,
+                    organizationId: node.id,
+                    type: node.orgType,
+                    systemId: node.systemId
+                }, 
+                parent,
+                false
+            );
+
+            // Set the label style
+            yuiNode.contentStyle = node.orgType;
+            
+            return yuiNode;
+        },
+
+        /**
+         * Create a node that represents a POC.
+         * 
+         * @param node {Object} Dictionary of node data
+         * @param parent {YAHOO.widget.Node} The tree node that is the parent to the node you want to create
+         * @return YAHOO.widget.Node
+         */        
+        _buildPocNode: function (node, parent) {
+            var nodeText = "<b>" 
+                         + node.p_nameFirst 
+                         + " " 
+                         + node.p_nameLast 
+                         + " (" 
+                         + node.p_username 
+                         + ")</b> - <i>Point of Contact</i>";
+
+            var yuiNode = new YAHOO.widget.HTMLNode(
+                {
+                    html: nodeText,
+                    pocId: node.p_id
+                }, 
+                parent,
+                false
+            );
+
+            // Set the label style
+            yuiNode.contentStyle = "poc";
+            
+            return yuiNode;
+        },
+
+        /**
+         * Expand all nodes in the tree
+         *
+         * @method OrganizationTreeView.expandAll
+         */        
+        expandAll: function () {
+            this._treeView.getRoot().expandAll();
+        },
+
+        /**
+         * Collapse all nodes in the tree
+         *
+         * @method OrganizationTreeView.collapseAll
+         */                
+        collapseAll: function () {
+            this._treeView.getRoot().collapseAll();
+        },
+
+        /**
+         * A callback that handles the drag/drop operation by synchronized the user's action with the server.
+         * 
+         * A modal dialog is used to prevent the user from performing more drag/drops while the current one is still
+         * being synchronized.
+         *
+         * @method OrganizationTreeView.handleDragDrop
+         * @param treeNodeDragBehavior {TreeNodeDragBehavior} A reference to the caller
+         * @param srcNode {YAHOO.widget.Node} The tree node that is being dragged
+         * @param destNode {YAHOO.widget.Node} The tree node that the source is being dropped onto
+         * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} The drag target relative to destNode
+         */        
+        handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
+            // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
+            // but it prevents the user from modifying the tree while an update is already pending.
+            if (YAHOO.lang.isNull(this._savePanel)) {
+                this._savePanel = new YAHOO.widget.Panel(
+                    "savePanel",
+                    {
+                        width: "250px",
+                        fixedcenter: true,
+                        close: false,
+                        draggable: false,
+                        modal: true,
+                        visible: true
+                    }
+                );                
+
+                this._savePanel.setHeader('Saving...');
+                this._savePanel.render(document.body);
+            }
+
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">');
+            this._savePanel.show();
+            
+            // Set up the GET query string for this operation
+            var destination = (YAHOO.lang.isValue(destNode.data.pocId))
+                            ? ('/destPoc/' + destNode.data.pocId)
+                            : ('/destOrg/' + destNode.data.organizationId);
+
+            var query = '/poc/move-node/src/' 
+                      + srcNode.data.pocId 
+                      + destination
+                      + '/dragLocation/' 
+                      + dragLocation;
+
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                query, 
+                {
+                    success: function (event) {
+                        var result = YAHOO.lang.JSON.parse(event.responseText);
+
+                        if (result.success) {
+                            treeNodeDragBehavior.completeDragDrop(srcNode, destNode, dragLocation);
+                            
+                            this._savePanel.hide();
+                        } else {
+                            this._displayDragDropError("Error: " + result.message);
+                        }
+                    },
+                    failure: function (event) {
+                        this._displayDragDropError(
+                            'Unable to reach the server to save your changes: ' + event.statusText
+                        );
+                        this._savePanel.hide();
+                    },
+                    scope: this
+                }, 
+                null
+            );
+        },
+
+        /**
+         * Determines whether the source node is eligible to be drag-and-dropped onto the destination node.
+         *
+         * @param srcNode {YAHOO.widget.Node} The tree node that is being dragged
+         * @param destNode {YAHOO.widget.Node} The tree node that the source is being dropped onto
+         * @param dragLocation {Fisma.TreeNodeDragBehavior.DRAG_LOCATION}
+         * @return bool
+         */        
+        testDragTarget: function (srcNode, destNode, dragLocation) {
+
+            // Reject a drag/drop if the source is not a POC
+            if (!YAHOO.lang.isValue(srcNode.data.pocId)) {
+                return false;
+            }
+
+            // Reject a drag/drop onto a POC node (but accept above and below a POC node)
+            if (YAHOO.lang.isValue(destNode.data.pocId) 
+                && dragLocation === Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ONTO) {
+
+                return false;
+            }
+
+            return true;
+        },
+
+        /**
+         * Display an error message using the save panel.
+         * 
+         * Notice that this assumes the save panel is already displayed (because it's usually used to display
+         * error messages related to saving).
+         *
+         * @method OrganizationTreeView._displayDragDropError
+         * @param message {String} The error message to display
+         */        
+        _displayDragDropError: function (message) {
+            var alertDiv = document.createElement("div");
+
+            var p1 = document.createElement("p");
+            p1.appendChild(document.createTextNode(message));
+
+            var p2 = document.createElement("p");
+
+            var that = this;
+            var button = new YAHOO.widget.Button({
+                label: "OK",
+                container: p2,
+                onclick: {
+                    fn: function () {that._savePanel.hide();}
+                }
+            });
+            
+            alertDiv.appendChild(p1);
+            alertDiv.appendChild(p2);
+
+            this._savePanel.setBody(alertDiv);
+        }
+    };
+
+    Fisma.PocTreeView = PTV;
 })();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -11584,6 +13248,474 @@ Fisma.System = {
     }
 };
 /**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * A treeview widget that is specialized for displaying the system aggregation hierarchy
+     * 
+     * @namespace Fisma
+     * @class SystemAggregationView
+     * @constructor
+     * @param contentDivId {String} The name of the div which will hold this widget
+     */
+    var SAV = function(contentDivId) {
+        this._contentDiv = document.getElementById(contentDivId);
+        
+        if (YAHOO.lang.isNull(this._contentDiv)) {
+            throw "Invalid contentDivId";
+        }
+        
+        this._storage = new Fisma.PersistentStorage("Aggregation.Tree");
+    };
+
+    SAV.prototype = {
+        /**
+         * The outermost div for this widget (expected to exist on the page already and to be empty)
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _contentDiv: null,
+
+        /**
+         * A YUI tree view widget
+         * 
+         * @type YAHOO.widget.TreeView
+         * @protected
+         */                
+        _treeView: null,
+
+        /**
+         * The div containing the "include disposal systems" checkbox
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _disposalCheckboxContainer: null,
+
+        /**
+         * The checkbox for "include disposal systems"
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _disposalCheckbox: null,
+        
+        /**
+         * The div containing the loading spinner
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _loadingContainer: null,        
+
+        /**
+         * The container div that YUI renders the tree view into
+         * 
+         * @type HTMLElement
+         * @protected
+         */                
+        _treeViewContainer: null,
+
+        /**
+         * A modal dialog used to keep the user from modifying the tree while it's changes are being sychronized to 
+         * the server.
+         * 
+         * Also used to display errors if a save operation fails.
+         * 
+         * @type YAHOO.widget.Panel
+         * @protected
+         */                        
+        _savePanel: null,
+
+        /**
+         * Persistent storage for some of the features in this widget
+         * 
+         * @type Fisma.PersistentStorage
+         * @protected
+         */                
+        _storage: null,
+
+        /**
+         * Render the entire widget
+         *
+         * @method OrganizationTreeView.render
+         */
+        render: function () {
+            var that = this;
+
+            // We need storage before we can render anything
+            Fisma.Storage.onReady(function () {
+                that._disposalCheckboxContainer = document.createElement("div");
+                that._renderDisposalCheckbox(that._disposalCheckboxContainer);
+                that._contentDiv.appendChild(that._disposalCheckboxContainer);
+
+                that._loadingContainer = document.createElement("div");
+                that._renderLoading(that._loadingContainer);
+                that._contentDiv.appendChild(that._loadingContainer);
+
+                that._treeViewContainer = document.createElement("div");
+                that._renderTreeView(that._treeViewContainer);
+                that._contentDiv.appendChild(that._treeViewContainer);                
+            });
+        },
+
+        /**
+         * Render the "include disposal systems" interface
+         *
+         * @method OrganizationTreeView._renderDisposalCheckbox
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderDisposalCheckbox: function (container) {
+            this._disposalCheckbox = document.createElement("input");
+            this._disposalCheckbox.type = "checkbox";
+            this._disposalCheckbox.checked = this._storage.get("includeDisposalSystem");
+            YAHOO.util.Dom.generateId(this._disposalCheckbox);
+            YAHOO.util.Event.addListener(
+                this._disposalCheckbox, 
+                "click", 
+                this._handleDisposalCheckboxAction, 
+                this, 
+                true
+            );
+            container.appendChild(this._disposalCheckbox);
+            
+            var label = document.createElement("label");
+            label.setAttribute("for", this._disposalCheckbox.id);
+            label.appendChild(document.createTextNode("Display Disposed Systems"));
+            container.appendChild(label);
+            
+            container.setAttribute("class", "showDisposalSystem");
+        },
+       
+        /**
+         * Render the loading spinner
+         *
+         * @method OrganizationTreeView._renderLoading
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderLoading: function (container) {
+            var loadingImage = document.createElement("img");
+            loadingImage.src = "/images/spinners/small.gif";
+
+            container.style.display = "none";
+            container.appendChild(loadingImage);
+        },
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._showLoadingImage
+         */
+        _showLoadingImage: function () {
+            this._loadingContainer.style.display = "block";
+        },
+
+        /**
+         * Show the loading spinner
+         *
+         * @method OrganizationTreeView._hideLoadingImage
+         */        
+        _hideLoadingImage: function () {
+            this._loadingContainer.style.display = "none";    
+        },
+
+        /**
+         * Set the user preference for the include disposal system checkbox and re-render the tree view
+         *
+         * @method OrganizationTreeView._handleDisposalCheckboxAction
+         * @param event {YAHOO.util.Event} The mouse event
+         */
+        _handleDisposalCheckboxAction: function (event) {
+            this._storage.set("includeDisposalSystem", this._disposalCheckbox.checked);
+            this._renderTreeView();
+        },
+
+        /**
+         * Render the treeview itself
+         *
+         * @method OrganizationTreeView._renderTreeView
+         * @param container {HTMLElement} The container that the checkbox is rendered into
+         */
+        _renderTreeView: function (container) {
+            this._showLoadingImage();
+
+            var url = '/system/aggregation-data/format/json';
+
+            if (this._storage.get("includeDisposalSystem") === true) {
+                url += '/displayDisposalSystem/true';
+            }
+
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                url, 
+                {
+                    success: function (response) {
+                        var json = YAHOO.lang.JSON.parse(response.responseText);
+
+                        // Load the tree data into a tree view
+                        this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
+                        this._buildTreeNodes(json.treeData, this._treeView.getRoot());
+                        Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
+                            this._treeView,
+                            {
+                                dragFinished: {
+                                    fn: this.handleDragDrop,
+                                    context: this
+                                }
+                            }
+                        );
+
+                        // Expand the first two levels of the tree by default
+                        var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                        $.each(defaultExpandNodes, function (key, node) {node.expand();});
+
+                        this._treeView.draw();
+                        this._buildContextMenu();
+                        this._hideLoadingImage();
+                    },
+                    failure: function (response) {
+                        alert('Unable to load the organization tree: ' + response.statusText);
+                    },
+                    scope: this
+                }, 
+                null
+            );
+        },
+
+        /**
+         * Load the given nodes into a treeView.
+         * 
+         * This function is recursive, so the first time it's called, you need to pass in the root node of the tree
+         * view.
+         *
+         * @method OrganizationTreeView._buildTreeNodes
+         * @param nodeList {Array} Nested array of organization/system data to load into the tree view
+         * @param nodeList {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
+         */
+        _buildTreeNodes: function (nodeList, parent) {
+
+            for (var i in nodeList) {
+                var node = nodeList[i];
+                var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
+                                 + PHP_JS().htmlspecialchars(node.sysTypeLabel) + "</i>";
+
+                var yuiNode = new YAHOO.widget.HTMLNode(
+                    {
+                        html: nodeText,
+                        systemId: node.id
+                    }, 
+                    parent,
+                    false
+                );
+
+                // Set the label style
+                yuiNode.contentStyle = node.orgType;
+
+                if (node.sdlcPhase === 'disposal') {
+                    yuiNode.contentStyle += " disposal";
+                }
+
+                // Recurse
+                if (node.children.length > 0) {
+                    this._buildTreeNodes(node.children, yuiNode);
+                }
+            }
+        },
+
+        /**
+         * Expand all nodes in the tree
+         *
+         * @method OrganizationTreeView.expandAll
+         */        
+        expandAll: function () {
+            this._treeView.getRoot().expandAll();
+        },
+
+        /**
+         * Collapse all nodes in the tree
+         *
+         * @method OrganizationTreeView.collapseAll
+         */                
+        collapseAll: function () {
+            this._treeView.getRoot().collapseAll();
+        },
+
+        /**
+         * A callback that handles the drag/drop operation by synchronized the user's action with the server.
+         * 
+         * A modal dialog is used to prevent the user from performing more drag/drops while the current one is still
+         * being synchronized.
+         *
+         * @method OrganizationTreeView.handleDragDrop
+         * @param treeNodeDragBehavior {TreeNodeDragBehavior} A reference to the caller
+         * @param srcNode {YAHOO.widget.Node} The tree node that is being dragged
+         * @param destNode {YAHOO.widget.Node} The tree node that the source is being dropped onto
+         * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} The drag target relative to destNode
+         */        
+        handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
+            // Set up the GET query string for this operation
+            var query = '/system/move-node/format/json/src/' 
+                      + srcNode.data.systemId
+                      + '/dest/' 
+                      + destNode.data.systemId
+                      + '/dragLocation/' 
+                      + dragLocation;
+    
+            // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
+            // but it prevents the user from modifying the tree while an update is already pending.
+            if (YAHOO.lang.isNull(this._savePanel)) {
+                this._savePanel = new YAHOO.widget.Panel(
+                    "savePanel",
+                    {
+                        width: "250px",
+                        fixedcenter: true,
+                        close: false,
+                        draggable: false,
+                        modal: true,
+                        visible: true
+                    }
+                );                
+
+                this._savePanel.setHeader('Saving...');
+                this._savePanel.render(document.body);
+            }
+
+            this._savePanel.setBody('<img src="/images/loading_bar.gif">');
+            this._savePanel.show();
+    
+            YAHOO.util.Connect.asyncRequest(
+                'GET', 
+                query, 
+                {
+                    success: function (event) {
+                        var result = YAHOO.lang.JSON.parse(event.responseText);
+
+                        if (result.success) {
+                            treeNodeDragBehavior.completeDragDrop(srcNode, destNode, dragLocation);
+                            
+                            // Moving elements in a YUI tree destroys their event listeners, so we have to re-add
+                            // the context menu listener
+                            this._buildContextMenu();
+                            
+                            this._savePanel.hide();
+                        } else {
+                            this._displayDragDropError("Error: " + result.message);
+                        }
+                    },
+                    failure: function (event) {
+                        this._displayDragDropError(
+                            'Unable to reach the server to save your changes: ' + event.statusText
+                        );
+                        this._savePanel.hide();
+                    },
+                    scope: this
+                }, 
+                null
+            );
+        },
+
+        /**
+         * Display an error message using the save panel.
+         * 
+         * Notice that this assumes the save panel is already displayed (because it's usually used to display
+         * error messages related to saving).
+         *
+         * @method OrganizationTreeView._displayDragDropError
+         * @param message {String} The error message to display
+         */        
+        _displayDragDropError: function (message) {
+            var alertDiv = document.createElement("div");
+
+            var p1 = document.createElement("p");
+            p1.appendChild(document.createTextNode(message));
+
+            var p2 = document.createElement("p");
+
+            var that = this;
+            var button = new YAHOO.widget.Button({
+                label: "OK",
+                container: p2,
+                onclick: {
+                    fn: function () {that._savePanel.hide();}
+                }
+            });
+            
+            alertDiv.appendChild(p1);
+            alertDiv.appendChild(p2);
+
+            this._savePanel.setBody(alertDiv);
+        },
+
+        /**
+         * Add the context menu behavior to the tree view
+         *
+         * @method OrganizationTreeView._buildContextMenu
+         */                
+        _buildContextMenu: function () {
+            var contextMenuItems = ["View"];
+
+            var treeNodeContextMenu = new YAHOO.widget.ContextMenu(
+                YAHOO.util.Dom.generateId(),
+                { 
+                    trigger: this._treeView.getEl(),
+                    itemdata: contextMenuItems,
+                    lazyload: true
+                }
+            );
+
+            treeNodeContextMenu.subscribe("click", this._contextMenuHandler, this, true);
+        },
+
+        /**
+         * A callback for context menu events
+         *
+         * @method OrganizationTreeView._contextMenuHandler
+         * @param event {String} The name of the event
+         * @param eventArgs {Array} An array of YAHOO.util.Event
+         */                
+        _contextMenuHandler: function (event, eventArgs) {
+            var targetElement = eventArgs[1].parent.contextEventTarget;
+            var targetNode = this._treeView.getNodeByElement(targetElement);
+        
+            // Create a request URL to view this object
+            var url;
+            var type = targetNode.data.type;
+
+            if (type == 'agency' || type == 'bureau' || type == 'organization') {
+                url = '/organization/view/id/' + targetNode.data.organizationId;
+            } else {
+                url = '/system/view/id/' + targetNode.data.systemId;                
+            }
+
+            window.location = url;
+        }
+    };
+
+    Fisma.SystemAggregationView = SAV;
+})();
+/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -12076,19 +14208,24 @@ Fisma.TableFormat = {
      * @extends n/a
      * @constructor
      * @param treeView {YAHOO.widget.TreeView} A tree view widget containing the "element"
-     * @param callback {function} This is called when a drag and drop is attempted by the user
-     * @param callbackContext {object} The scope that the callback is called from
+     * @param callbacks {object} A dictionary of callbacks. See constructor implementation for details.
      * @param element {YAHOO.widget.TreeView} A reference to a tree node that is made draggable 
      */
-    var TNDB = function(treeView, callback, callbackContext, element) {
-        if (typeof(callback) != "function") {
-            throw "The callback parameter must be a function";
+    var TNDB = function(treeView, callbacks, element) {
+        this._callbacks = callbacks;
+        
+        // Validate required callback
+        var dragFinishedCallbackValid = callbacks.dragFinished 
+                                        && YAHOO.lang.isFunction(callbacks.dragFinished.fn) 
+                                        && YAHOO.lang.isValue(callbacks.dragFinished.context);
+
+        if (!dragFinishedCallbackValid) {
+            throw "Required callback 'dragFinished' is not specified or is not valid.";
         }
 
+        // Initialize instance variables
         this._dragDropGroup = YAHOO.util.Dom.generateId;
         this._treeView = treeView;
-        this._dragFinishedCallback = callback;
-        this._dragFinishedCallbackContext = callbackContext;
 
         TNDB.superclass.constructor.call(this, element, this._dragDropGroup, null);
 
@@ -12135,22 +14272,12 @@ Fisma.TableFormat = {
         _dragDropGroup: null,
 
         /**
-         * A callback when the user attempts to move a tree node
+         * Stores a dictionary of callbacks used by this class
          * 
-         * @property _dragFinishedCallback
-         * @type string
+         * @type object
          * @protected
-         */                        
-        _dragFinishedCallback: null,
-
-        /**
-         * The scope for the callback function
-         * 
-         * @property _dragFinishedCallbackContext
-         * @type string
-         * @protected
-         */                
-        _dragFinishedCallbackContext: null,
+         */
+        _callbacks: null,
         
         /**
          * Override DDProxy to handle the start of a drag/drop event
@@ -12213,7 +14340,7 @@ Fisma.TableFormat = {
          */
         onDragOver: function (event, id) {
             var dragLocation = this._getDragLocation(id, event);
-            
+
             /* If the drag is near the top of the element, then we set the top border. 
              * If its near the middle, we highlight the entire element. If its near the
              * bottom, we set the bottom border.
@@ -12224,6 +14351,24 @@ Fisma.TableFormat = {
             YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
             YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
 
+            // If a delegate exists, ask the delegate to tell us if this is a valid drag over event
+            var srcNode = this._treeView.getNodeByElement(this.getEl());
+            var destNode = this._treeView.getNodeByElement(document.getElementById(id));
+
+            if (this._callbacks.testDragTargetDelegate) {
+                var validDragTarget = this._callbacks.testDragTargetDelegate.fn.call(
+                    this._callbacks.testDragTargetDelegate.context, 
+                    srcNode, 
+                    destNode,
+                    dragLocation
+                );
+
+                if (validDragTarget === false) {
+                    return;
+                }
+            }
+
+            // If this drag is valid, then highlight the current drag-drop target.
             if (dragLocation == TNDB.DRAG_LOCATION.ABOVE) {
                 YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragAbove');
             } else if (dragLocation == TNDB.DRAG_LOCATION.ONTO) {
@@ -12258,9 +14403,24 @@ Fisma.TableFormat = {
             var srcNode = this._treeView.getNodeByElement(this.getEl());
             var destNode = this._treeView.getNodeByElement(document.getElementById(id));
             var dragLocation = this._getDragLocation(id, event);
-    
-            var success = this._dragFinishedCallback.call(
-                this._dragFinishedCallbackContext, 
+
+            // If a delegate exists, ask the delegate to tell us if this is a valid drag over event
+            if (this._callbacks.testDragTargetDelegate) {
+                var validDragTarget = this._callbacks.testDragTargetDelegate.fn.call(
+                    this._testDragTargetDelegateContext, 
+                    srcNode, 
+                    destNode,
+                    dragLocation
+                );
+
+                if (validDragTarget === false) {
+                    return;
+                }
+            }
+
+
+            var success = this._callbacks.dragFinished.fn.call(
+                this._callbacks.dragFinished.context,
                 this, 
                 srcNode, 
                 destNode, 
@@ -12304,8 +14464,7 @@ Fisma.TableFormat = {
             // draggable all over again.
             Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
                 this._treeView,
-                this._dragFinishedCallback,
-                this._dragFinishedCallbackContext
+                this._callbacks
             );            
         },
 
@@ -12342,11 +14501,10 @@ Fisma.TableFormat = {
      *
      * @method TreeNodeDragBehavior.onReady
      * @param treeView {YAHOO.widget.TreeView} A tree view widget containing the "element"
-     * @param callback {function} This is called when a drag and drop is attempted by the user
-     * @param callbackContext {object} The scope that the callback is called from
+     * @param callbacks {object} A dictionary of callbacks. See constructor implementation for details.
      * @static
      */
-    TNDB.makeTreeViewDraggable = function (treeView, callback, callbackContext) {
+    TNDB.makeTreeViewDraggable = function (treeView, callbacks) {
 
         // Get a list of all nodes in the tree
         var nodes = treeView.getNodesBy(function (node) {return true;});
@@ -12354,7 +14512,7 @@ Fisma.TableFormat = {
         for (var nodeIndex in nodes) {
             var node = nodes[nodeIndex];
 
-            var yuiNodeDrag = new TNDB(treeView, callback, callbackContext, node.contentElId, this._dragDropGroup);
+            var yuiNodeDrag = new TNDB(treeView, callbacks, node.contentElId, this._dragDropGroup);
         }
     };
     
@@ -12428,7 +14586,6 @@ Fisma.UrlPanel = function() {
             // Instantiate YUI panel for rendering
             var panel = new YAHOO.widget.Panel(element, userConfig);
             panel.setHeader(title);
-            /** @todo english */
             panel.setBody("Loading...");
             panel.render(document.body);
             panel.center();
@@ -12505,6 +14662,22 @@ Fisma.User = {
      * This reference will be set when the page loads by the script which initializes the table
      */
     commentTable : null,
+
+    /**
+     * Map LDAP column names onto names of fields in this form
+     * 
+     * ldap name => field name
+     */
+    ldapColumnMap : {
+        'givenname' : 'nameFirst',
+        'mail' : 'email',
+        'mobile' : 'phoneMobile',
+        'samaccountname' : 'username',
+        'sn' : 'nameLast',
+        'telephonenumber' : 'phoneOffice',
+        'title' : 'title',
+        'uid' : 'username'
+    },
 
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
@@ -12693,39 +14866,29 @@ Fisma.User = {
             url,
             {
                 success : function (o) {
-                    var data = YAHOO.lang.JSON.parse(o.responseText);
-                    message(data.msg, data.type, true);
+                    try {
+                        var data = YAHOO.lang.JSON.parse(o.responseText);
 
-                    // Openfisma column's name is corresponding to LDAP account column's name
-                    var openfismaColumns = new Array('nameFirst',
-                                                     'nameLast',
-                                                     'phoneOffice',
-                                                     'phoneMobile',
-                                                     'email',
-                                                     'title');
+                        // Query comes originally from the user. Escape it just to be safe.
+                        data.query = escape(data.query);
 
-                    // LDAP account column's name
-                    var ldapColumns = new Array('givenname',
-                                                'sn',
-                                                'telephonenumber',
-                                                'mobile',
-                                                'mail',
-                                                'title');
-
-                    // Make sure each column value is not null in LDAP account, then populate to related elements.
-                    if (data.accountInfo.length > 0) {
-                        for (var i in ldapColumns) {
-                            if (!ldapColumns.hasOwnProperty(i)) {
-                                continue;
-                            }
-
-                            var columnValue = data.accountInfo[ldapColumns[i]];
-
-                            if (!YAHOO.lang.isUndefined(columnValue)) {
-                                document.getElementById(openfismaColumns[i]).value = columnValue;
+                        // Make sure each column value is not null in LDAP account, then populate to related elements.
+                        if (YAHOO.lang.isValue(data.accounts)) {
+                            if (data.accounts.length == 0) {
+                                message('No account matches your query: ' + escape(data.query) + '.', 'warning', true);
+                            } else if (data.accounts.length == 1) {
+                                Fisma.User.populateAccountForm(data.accounts[0]);
                             } else {
-                                document.getElementById(openfismaColumns[i]).value = '';
+                                Fisma.User.showMultipleAccounts(data.accounts);
                             }
+                        } else {
+                            message(data.msg, data.type, true);
+                        }
+                    } catch (e) {
+                        if (YAHOO.lang.isValue(e.message)) {
+                            message('Error: ' + e.message, 'warning', true);
+                        } else {
+                            message('An unknown error occurred.', 'warning', true);
                         }
                     }
 
@@ -12744,6 +14907,62 @@ Fisma.User = {
                 }
             },
             null);
+    },
+
+    /**
+     * Fill in the account info for one user and display a success message
+     * 
+     * @param account {Object} A dictionary of LDAP data for an account.
+     */
+    populateAccountForm : function (account) {
+        message('Your search matched one user: ' + account.dn, 'info', true);
+
+        for (var ldapColumn in Fisma.User.ldapColumnMap) {
+            if (!Fisma.User.ldapColumnMap.hasOwnProperty(ldapColumn)) {
+                continue;
+            }
+
+            var fieldName = Fisma.User.ldapColumnMap[ldapColumn];
+            var fieldValue = account[ldapColumn];
+        
+            if (YAHOO.lang.isValue(fieldValue)) {
+                document.getElementById(fieldName).value = fieldValue;
+            }
+        }
+    },
+
+    /**
+     * Display a list of accounts that a user can select from
+     * 
+     * @param accounts {Object} An array of LDAP account dictionaries.
+     */
+    showMultipleAccounts : function (accounts) {
+        message('<p>Multiple accounts match your query. Click a name to select it.</p>', 'info', 'true');
+        var msgBar = document.getElementById('msgbar');
+
+        var accountsContainer = document.createElement('p');
+
+        for (var index in accounts) {
+            var account = accounts[index];
+            
+            var accountLink = document.createElement('a');
+            accountLink.setAttribute('href', '#');
+            accountLink.account = account;
+            accountLink.onclick = function () {Fisma.User.populateAccountForm(this.account);};
+
+            var accountText = account.givenname
+                            + ' '
+                            + account.sn
+                            + ' ['
+                            + (YAHOO.lang.isValue(account.samaccountname) ? account.samaccountname : account.uid)
+                            + ']';
+            accountLink.appendChild(document.createTextNode(accountText));
+            accountLink.appendChild(document.createElement('br'));
+
+            accountsContainer.appendChild(accountLink);
+        }
+        
+        msgBar.appendChild(accountsContainer);
     },
 
     /**

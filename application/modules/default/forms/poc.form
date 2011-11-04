@@ -1,0 +1,72 @@
+; This is the form for creating, updating, and reading POCs
+;
+; Author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[poc]
+elementPrefixPath.prefix = Fisma_Zend_Form
+elementPrefixPath.path = Fisma/Zend/Form
+elementPrefixPath.type = Validate
+
+elements.username.type = "text"
+elements.username.options.label = "POC Name"
+elements.username.options.required = true
+elements.username.options.attribs.size = 35
+elements.username.options.tooltip = "<p><b>POC Name</b></p><p>This is similar to a username, except that points of contact are not allowed to log in. If you are using directory-based authentication, then this username must exist in one of the directories that you are authenticating against.</p>"
+displayGroups.poc.elements.username = "username"
+
+elements.checkAccount.type = "Form_Button"
+elements.checkAccount.options.label = "Check Account"
+elements.checkAccount.options.onClickFunction = "Fisma.User.checkAccount"
+displayGroups.poc.elements.checkAccount = "checkAccount"
+
+elements.nameFirst.type = "text"
+elements.nameFirst.options.label = "First Name"
+elements.nameFirst.options.required = true
+elements.nameFirst.options.attribs.size = 35
+displayGroups.poc.elements.nameFirst = "nameFirst"
+
+elements.nameLast.type = "text"
+elements.nameLast.options.label = "Last Name"
+elements.nameLast.options.required = true
+elements.nameLast.options.attribs.size = 35
+displayGroups.poc.elements.nameLast = "nameLast"
+
+elements.phoneOffice.type = "Element_Phone"
+elements.phoneOffice.options.label = "Office Phone"
+elements.phoneOffice.options.attribs.size = 35
+displayGroups.poc.elements.phoneOffice = "phoneOffice"
+
+elements.phoneMobile.type = "Element_Phone"
+elements.phoneMobile.options.label = "Mobile Phone"
+elements.phoneMobile.options.attribs.size = 35
+displayGroups.poc.elements.phoneMobile = "phoneMobile"
+
+elements.email.type = "text"
+elements.email.options.label = "E-Mail"
+elements.email.options.required = true
+elements.email.options.attribs.size = 35
+elements.email.options.validators.email.validator = "EmailAddress"
+displayGroups.poc.elements.email = "email"
+
+elements.title.type = "text"
+elements.title.options.label = "Title"
+elements.title.options.attribs.size = 35
+displayGroups.poc.elements.title = "title"
+
+elements.comment.type = "hidden"
+elements.comment.options.hideLabel = true
+elements.comment.options.filters.stringtrim.filter = "StringTrim"
+displayGroups.poc.elements.comment = "comment"
+
+elements.reportingOrganizationId.type = "select"
+elements.reportingOrganizationId.options.label = "Reporting Organization"
+elements.reportingOrganizationId.options.required = true
+elements.reportingOrganizationId.options.tooltip = "<p><b>Reporting Organization</b></p><p>The reporting organization is the organization within the enterprise that this point of contact or user reports to. In other words, it is this person's managing organization.</p>"
+displayGroups.poc.elements.reportingOrganizationId = "reportingOrganizationId"
+
+elements.save.type = "Form_Button"
+elements.save.options.label = "Save"
+elements.save.options.onClickFunction = "Fisma.User.showCommentPanel"
+displayGroups.poc.elements.save = "save"

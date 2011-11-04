@@ -94,7 +94,7 @@ Fisma.AutoComplete = function() {
             ac.containerPopulateEvent.subscribe(function () {
                 Fisma.AutoComplete.resultsPopulated = true;
             });
-            
+
             /**
              * Override generateRequest method of YAHOO.widget.AutoComplete
              *
@@ -116,47 +116,55 @@ Fisma.AutoComplete = function() {
              * @return {String} HTML markup of formatted result data.
              */
             ac.formatResult = function(oResultData, sQuery, sResultMatch) {
-                var sMarkup = (sResultMatch) ? sResultMatch : "";
-                sMarkup = PHP_JS().htmlspecialchars(sMarkup);
-                return sMarkup;
+                var sMarkup = (sResultMatch) ? PHP_JS().htmlspecialchars(sResultMatch) : "";
+                
+                // Create a regex to match the query case insensitively
+                var regex = new RegExp('\\b(' + sQuery + ')', 'i');
+                sResultMatch = sResultMatch.replace(regex, "<em>$1</em>");
+
+                return sResultMatch;
             };
 
             ac.itemSelectEvent.subscribe(
-                Fisma.AutoComplete.subscribe, 
-                {
-                    hiddenFieldId : params.hiddenFieldId,
-                    callback : params.callback
-                }
+                Fisma.AutoComplete.updateHiddenField, 
+                params.hiddenFieldId
             );
 
-            ac.selectionEnforceEvent.subscribe(function (ev, args) {
-                // if selection enforcement forces an empty field, clear the hidden id field as well
-                if (args[1] === '') {
-                    document.getElementById(params.hiddenFieldId).value = '';
-                }
-            });
+            ac.selectionEnforceEvent.subscribe(
+                Fisma.AutoComplete.clearHiddenField, 
+                params.hiddenFieldId
+            );
+            
+            // Call the setup callback, if it is defined. This allows an implementer to tweak the autocomplete object.
+            if (YAHOO.lang.isValue(params.setupCallback)) {
+                var setupCallback = Fisma.Util.getObjectFromName(params.setupCallback);
+
+                setupCallback(ac, params);
+            }
         },
 
         /**
          * Sets value of hiddenField to item selected
          *
-         * @param sType
-         * @param aArgs
-         * @param {Array} params
+         * @param sType {String} The event name
+         * @param aArgs {Array} YUI event arguments
+         * @param hiddenFieldId {String} The ID of the hidden field
          */
-        subscribe : function(sType, aArgs, params) {
-            document.getElementById(params.hiddenFieldId).value = aArgs[2][1]['id'];
-            $('#' + params.hiddenFieldId).trigger('change');
-            // If a valid callback is specified, then call it
-            try {
-                var callbackFunction = Fisma.Util.getObjectFromName(params.callback);
-
-                if ('function' == typeof callbackFunction) {
-                    callbackFunction();
-                }
-            } catch (error) {
-                // do nothing
-            }
+        updateHiddenField : function(sType, aArgs, hiddenFieldId) {
+            document.getElementById(hiddenFieldId).value = aArgs[2][1]['id'];
+            $('#' + hiddenFieldId).trigger('change');
+        },
+        
+        /**
+         * Clears the value of the hidden field
+         *
+         * @param sType {String} The event name
+         * @param aArgs {Array} YUI event arguments
+         * @param hiddenFieldId {String} The ID of the hidden field
+         */
+        clearHiddenField : function (sType, aArgs, hiddenFieldId) {
+            document.getElementById(hiddenFieldId).value = null;
+            $('#' + hiddenFieldId).trigger('change');            
         }
     };
 }();

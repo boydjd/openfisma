@@ -67,7 +67,9 @@ div.incidentStep {
 }
 
 div.incidentStep td {
-	padding: 5px;
+    padding: 5px;
+    border-style: none;
+       
 }
 
 div.incidentStep td:first-child {

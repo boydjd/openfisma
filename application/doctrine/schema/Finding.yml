@@ -161,10 +161,10 @@ Finding:
             comment: If this finding is a duplicate of an existing finding, then this is a foreign key to that finding; otherwise its null
         responsibleOrganizationId:
             type: integer
-            comment: Foreign key to the organization which is responsible for addressing this finding
+            comment: Foreign key to the organization which is targeted by this finding
             extra:
                 auditLog: true
-                logicalName: Responsible Organization  
+                logicalName: Organization
         sourceId:
             type: integer
             comment: Foreign key to the source of this finding. For example, was it certification and accreditation? Continous monitoring?
@@ -180,9 +180,12 @@ Finding:
         createdByUserId:
             type: integer
             comment: Foreign key to the user who created this finding
-        assignedToUserId:
+        pocId:
             type: integer
-            comment: Foreign key to the user who is assigned to this finding
+            extra:
+                auditLog: true
+                logicalName: Point Of Contact
+            comment: Foreign key to the point of contact for this finding
         uploadId:
             type: integer
             comment: Foreign key to the upload log
@@ -198,7 +201,7 @@ Finding:
             class: Finding
             local: duplicateFindingId
             foreign: id
-        ResponsibleOrganization:
+        Organization:
             class: Organization
             local: responsibleOrganizationId
             foreign: id
@@ -216,9 +219,9 @@ Finding:
             local: createdByUserId
             foreign: id
             foreignAlias: Findings
-        AssignedTo:
-            class: User
-            local: assignedToUserId
+        PointOfContact:
+            class: Poc
+            local: pocId
             foreign: id
             foreignAlias: Findings
         CurrentEvaluation:

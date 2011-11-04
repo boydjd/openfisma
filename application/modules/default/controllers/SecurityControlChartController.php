@@ -63,7 +63,7 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             ->select('COUNT(*) AS count, sc.code, SUBSTRING_INDEX(sc.code, "-", 1) fam')
             ->from('SecurityControl sc')
             ->innerJoin('sc.Findings f')
-            ->innerJoin('f.ResponsibleOrganization o')
+            ->innerJoin('f.Organization o')
             ->where('f.status <> ?', 'CLOSED')
             ->whereIn('o.id', FindingTable::getOrganizationIds())
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);

@@ -96,7 +96,7 @@ Privilege:
     findings_update_findings_assignment:
         resource: finding
         action: update_assignment
-        description: Edit Responsible System
+        description: Edit Finding Organization
     findings_update_control_assignment:
         resource: finding
         action: update_control_assignment
@@ -149,6 +149,10 @@ Privilege:
         resource: finding
         action: update_finding_source
         description: Update Finding Source
+    findings_update_poc:
+        resource: finding
+        action: update_poc
+        description: Update Finding Point Of Contact
 
     # Default Finding Approval Privileges
     finding_mitigation_isso:
@@ -253,6 +257,24 @@ Privilege:
         action: delete
         description: Delete Organizations/Systems
 
+    # Pocs CRUD
+    poc_create:
+        resource: poc
+        action: create
+        description: Create Points of Contact
+    poc_read:
+        resource: poc
+        action: read
+        description: View Points of Contact
+    poc_update:
+        resource: poc
+        action: update
+        description: Edit Points of Contact
+    poc_delete:
+        resource: poc
+        action: delete
+        description: Delete Points of Contact
+ 
     # Products CRUD
     product_create:
         resource: product

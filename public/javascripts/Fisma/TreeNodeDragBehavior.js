@@ -30,19 +30,24 @@
      * @extends n/a
      * @constructor
      * @param treeView {YAHOO.widget.TreeView} A tree view widget containing the "element"
-     * @param callback {function} This is called when a drag and drop is attempted by the user
-     * @param callbackContext {object} The scope that the callback is called from
+     * @param callbacks {object} A dictionary of callbacks. See constructor implementation for details.
      * @param element {YAHOO.widget.TreeView} A reference to a tree node that is made draggable 
      */
-    var TNDB = function(treeView, callback, callbackContext, element) {
-        if (typeof(callback) != "function") {
-            throw "The callback parameter must be a function";
+    var TNDB = function(treeView, callbacks, element) {
+        this._callbacks = callbacks;
+        
+        // Validate required callback
+        var dragFinishedCallbackValid = callbacks.dragFinished 
+                                        && YAHOO.lang.isFunction(callbacks.dragFinished.fn) 
+                                        && YAHOO.lang.isValue(callbacks.dragFinished.context);
+
+        if (!dragFinishedCallbackValid) {
+            throw "Required callback 'dragFinished' is not specified or is not valid.";
         }
 
+        // Initialize instance variables
         this._dragDropGroup = YAHOO.util.Dom.generateId;
         this._treeView = treeView;
-        this._dragFinishedCallback = callback;
-        this._dragFinishedCallbackContext = callbackContext;
 
         TNDB.superclass.constructor.call(this, element, this._dragDropGroup, null);
 
@@ -89,22 +94,12 @@
         _dragDropGroup: null,
 
         /**
-         * A callback when the user attempts to move a tree node
+         * Stores a dictionary of callbacks used by this class
          * 
-         * @property _dragFinishedCallback
-         * @type string
+         * @type object
          * @protected
-         */                        
-        _dragFinishedCallback: null,
-
-        /**
-         * The scope for the callback function
-         * 
-         * @property _dragFinishedCallbackContext
-         * @type string
-         * @protected
-         */                
-        _dragFinishedCallbackContext: null,
+         */
+        _callbacks: null,
         
         /**
          * Override DDProxy to handle the start of a drag/drop event
@@ -167,7 +162,7 @@
          */
         onDragOver: function (event, id) {
             var dragLocation = this._getDragLocation(id, event);
-            
+
             /* If the drag is near the top of the element, then we set the top border. 
              * If its near the middle, we highlight the entire element. If its near the
              * bottom, we set the bottom border.
@@ -178,6 +173,24 @@
             YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
             YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
 
+            // If a delegate exists, ask the delegate to tell us if this is a valid drag over event
+            var srcNode = this._treeView.getNodeByElement(this.getEl());
+            var destNode = this._treeView.getNodeByElement(document.getElementById(id));
+
+            if (this._callbacks.testDragTargetDelegate) {
+                var validDragTarget = this._callbacks.testDragTargetDelegate.fn.call(
+                    this._callbacks.testDragTargetDelegate.context, 
+                    srcNode, 
+                    destNode,
+                    dragLocation
+                );
+
+                if (validDragTarget === false) {
+                    return;
+                }
+            }
+
+            // If this drag is valid, then highlight the current drag-drop target.
             if (dragLocation == TNDB.DRAG_LOCATION.ABOVE) {
                 YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragAbove');
             } else if (dragLocation == TNDB.DRAG_LOCATION.ONTO) {
@@ -212,9 +225,24 @@
             var srcNode = this._treeView.getNodeByElement(this.getEl());
             var destNode = this._treeView.getNodeByElement(document.getElementById(id));
             var dragLocation = this._getDragLocation(id, event);
-    
-            var success = this._dragFinishedCallback.call(
-                this._dragFinishedCallbackContext, 
+
+            // If a delegate exists, ask the delegate to tell us if this is a valid drag over event
+            if (this._callbacks.testDragTargetDelegate) {
+                var validDragTarget = this._callbacks.testDragTargetDelegate.fn.call(
+                    this._testDragTargetDelegateContext, 
+                    srcNode, 
+                    destNode,
+                    dragLocation
+                );
+
+                if (validDragTarget === false) {
+                    return;
+                }
+            }
+
+
+            var success = this._callbacks.dragFinished.fn.call(
+                this._callbacks.dragFinished.context,
                 this, 
                 srcNode, 
                 destNode, 
@@ -258,8 +286,7 @@
             // draggable all over again.
             Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
                 this._treeView,
-                this._dragFinishedCallback,
-                this._dragFinishedCallbackContext
+                this._callbacks
             );            
         },
 
@@ -296,11 +323,10 @@
      *
      * @method TreeNodeDragBehavior.onReady
      * @param treeView {YAHOO.widget.TreeView} A tree view widget containing the "element"
-     * @param callback {function} This is called when a drag and drop is attempted by the user
-     * @param callbackContext {object} The scope that the callback is called from
+     * @param callbacks {object} A dictionary of callbacks. See constructor implementation for details.
      * @static
      */
-    TNDB.makeTreeViewDraggable = function (treeView, callback, callbackContext) {
+    TNDB.makeTreeViewDraggable = function (treeView, callbacks) {
 
         // Get a list of all nodes in the tree
         var nodes = treeView.getNodesBy(function (node) {return true;});
@@ -308,7 +334,7 @@
         for (var nodeIndex in nodes) {
             var node = nodes[nodeIndex];
 
-            var yuiNodeDrag = new TNDB(treeView, callback, callbackContext, node.contentElId, this._dragDropGroup);
+            var yuiNodeDrag = new TNDB(treeView, callbacks, node.contentElId, this._dragDropGroup);
         }
     };
     

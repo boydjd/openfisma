@@ -36,24 +36,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     protected $_modelName = 'Organization';
 
     /**
-     * A type constant of drag operation of organization tree which defines the operation that move
-     * the specified organization node as previous of the target organization node among their siblings.
-     */
-    const DRAG_ABOVE = 0;
-
-    /**
-     * A type constant of drag operation of organization tree which defines the operation that move
-     * the specified organization node as child of the target organization node in organization tree.
-     */
-    const DRAG_ONTO = 1;
-
-    /**
-     * A type constant of drag operation of organization tree which defines the operation that move
-     * the specified organization node as next of the target node among their siblings.
-     */
-    const DRAG_BELOW = 2;
-
-    /**
      * Invoked before each Action
      *
      * @return void
@@ -492,13 +474,13 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 // Based on the dragLocation parameter, execute a corresponding tree move method
                 $dragLocation = $this->getRequest()->getParam('dragLocation');
                 switch ($dragLocation) {
-                    case self::DRAG_ABOVE:
+                    case Fisma_Yui_DragDrop::DRAG_ABOVE:
                         $src->getNode()->moveAsPrevSiblingOf($dest);
                         break;
-                    case self::DRAG_ONTO:
+                    case Fisma_Yui_DragDrop::DRAG_ONTO:
                         $src->getNode()->moveAsLastChildOf($dest);
                         break;
-                    case self::DRAG_BELOW:
+                    case Fisma_Yui_DragDrop::DRAG_BELOW:
                         $src->getNode()->moveAsNextSiblingOf($dest);
                         break;
                     default:

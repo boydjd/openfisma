@@ -80,7 +80,11 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
         $hiddenValueAttrib = empty($hiddenValue) ? '' : "value=\"$hiddenValue\"";
 
         $displayedValueAttrib = empty($this->_displayText) ? '' : "value=\"$this->_displayText\"";
-                
+
+        $setupCallback = $this->getAttrib('setupCallback')
+                       ? "setupCallback : '{$this->getAttrib('setupCallback')}',"
+                       : '';
+
         $render  = "<div>
                     <input type=\"text\" 
                            name=\"$name\" 
@@ -100,8 +104,8 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
                             fieldId : \"$name\",
                             containerId: \"{$this->getAttrib('containerId')}\",
                             hiddenFieldId: \"$hiddenField\",
-                            queryPrepend: \"{$this->getAttrib('queryPrepend')}\",
-                            callback : '{$this->getAttrib('callback')}'
+                            $setupCallback
+                            queryPrepend: \"{$this->getAttrib('queryPrepend')}\"
                           } );
                     </script>";
 

@@ -1,0 +1,86 @@
+Poc:
+    listeners: [IndexListener, NotificationListener]
+
+    columns:
+        createdTs: timestamp
+        modifiedTs: timestamp
+
+        username:
+            type: string(255)
+            unique: true
+            extra:
+                logicalName: User Name
+                notify: true
+            comment: This users unique authentication credential
+        title:
+            type: string(255)
+            extra:
+                logicalName: Title
+                notify: true
+            comment: The users position or title within the agency
+        nameFirst:
+            type: string(255)
+            extra:
+                logicalName: First Name
+                notify: true
+            comment: The users first name
+        nameLast:
+            type: string(255)
+            extra:
+                logicalName: Last Name
+                notify: true
+            comment: The users last name
+        email:
+            type: string(255)
+            extra:
+                logicalName: E-mail Address
+                notify: true
+            email:
+                check_mx: false
+            comment: The users primary e-mail address
+        phoneOffice:
+            type: string(15)
+            fixed: true
+            extra:
+                logicalName: Office Phone
+                notify: true
+            Fisma_Doctrine_Validator_Phone: true
+            comment: U.S. 10 digit phone number; stored without punctuation
+        phoneMobile:
+            type: string(15)
+            fixed: true
+            extra:
+                logicalName: Mobile Phone
+                notify: true
+            Fisma_Doctrine_Validator_Phone: true
+            comment: U.S. 10 digit phone number, stored as 10 digits without punctuation
+
+        reportingOrganizationId:
+            type: integer
+            comment: Foreign key to the point of contact\'s reporting organization.
+            extra:
+                auditLog: true
+                logicalName: Reporting Organization  
+
+    relations:
+        # Each POC can have 1 reporting organization, but each organization can have 0-n reporting POCs
+        ReportingOrganization:
+            class: Organization
+            local: reportingOrganizationId
+            foreign: id
+            foreignAlias: Pocs
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp
+        Fisma_Doctrine_Behavior_AuditLoggable:
+            logCreateObject: true
+            logUpdateObject: true
+            logDeleteObject: true
+
+        Fisma_Doctrine_Behavior_Commentable: true

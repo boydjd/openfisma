@@ -10,6 +10,23 @@
     width: 85% ! important;
 }
 
+.yui-ac-container {
+    font-weight: normal;
+}
+
+.yui-ac-content {
+    opacity: 0.92;
+}
+
+.yui-ac-bd li {
+    margin: 5px;
+    font-size: 1.2em;
+}
+
+.yui-ac-bd li:nth-child(even) {
+    /*background-color: red;*/
+}
+
 div.yui-ac img.spinner {
 	display: inline;
 	visibility: hidden;

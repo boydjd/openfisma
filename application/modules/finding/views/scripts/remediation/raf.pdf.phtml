@@ -30,7 +30,7 @@ $tableOptions = array('showHeadings'=>0,
 $bodyTextOptions = array('left' => 25, // The left and right margin will align the body text with the headers
                          'right' => 25);
 
-$system = $finding->ResponsibleOrganization->System;
+$system = $finding->Organization->System;
 
 $columns = $system->getTable()->getEnumValues('availability');
 $columnsCols = array_reverse($columns);

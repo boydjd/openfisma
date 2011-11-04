@@ -149,6 +149,21 @@ Event:
         description: Account Deleted
         Privilege: notification_admin
 
+    POC_CREATED:
+        name: POC_CREATED
+        description: POC Created
+        Privilege: notification_admin
+
+    POC_UPDATED:
+        name: POC_UPDATED
+        description: POC Modified
+        Privilege: notification_admin
+
+    POC_DELETED:
+        name: POC_DELETED
+        description: POC Deleted
+        Privilege: notification_admin
+
     ORGANIZATION_CREATED:
         name: ORGANIZATION_CREATED
         description: Organization Created

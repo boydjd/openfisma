@@ -34,7 +34,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
      * 
      * @var int
      */
-    const INDEX_CHUNK_SIZE = 10;
+    const INDEX_CHUNK_SIZE = 20;
 
     /**
      * Implement the interface for Searchable
@@ -58,12 +58,19 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                         'label' => 'Organizational Unit',
                         'renderer' => 'text',
                         'query' => 'oneInput',
+                    ),
+                    'systemAggregationSubtree' => array(
+                        'idField' => 'responsibleOrganizationId',
+                        'idProvider' => 'OrganizationTable::getSystemAggregationSubtreeIds',
+                        'label' => 'System',
+                        'renderer' => 'text',
+                        'query' => 'oneInput',
                     )
                 ),
-                'label' => 'Responsible Organization/System',
+                'label' => 'Organization/System',
                 'join' => array(
                     'model' => 'Organization',
-                    'relation' => 'ResponsibleOrganization', 
+                    'relation' => 'Organization', 
                     'field' => 'nickname'
                 ),
                 'sortable' => true,
@@ -208,12 +215,52 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'pocUser' => array(
+                'initiallyVisible' => false,
+                'label' => 'Point Of Contact',
+                'join' => array(
+                    'model' => 'Poc',
+                    'relation' => 'PointOfContact', 
+                    'field' => 'username'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'pocOrg' => array(
+                'initiallyVisible' => false,
+                'extraCriteria' => array(
+                    'organizationSubtree' => array(
+                        'idField' => 'pocOrgId',
+                        'idProvider' => 'OrganizationTable::getOrganizationSubtreeIds',
+                        'label' => 'Organizational Unit',
+                        'renderer' => 'text',
+                        'query' => 'oneInput',
+                    )
+                ),
+                'label' => 'POC Organization',
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'PointOfContact.ReportingOrganization', 
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
             'deleted_at' => array(
                 'hidden' => true,
                 'type' => 'datetime'
             ),
             'responsibleOrganizationId' => array(
                 'hidden' => true,
+                'type' => 'integer'
+            ),
+            'pocOrgId' => array(
+                'hidden' => true,
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'PointOfContact.ReportingOrganization', 
+                    'field' => 'id'
+                ),
                 'type' => 'integer'
             )
         );
