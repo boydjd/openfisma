@@ -597,9 +597,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
+        $addUserId = new Zend_Form_Element_Hidden('addUserId'); 
         $addUserAccessForm->addElement($userAutoComplete);
         $addUserAccessForm->addElement($select);
         $addUserAccessForm->addElement($addButton);
+        $addUserAccessForm->addElement($addUserId);
         $addUserAccessForm->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
 
         $copyUserAccessForm = new Zend_Form_SubForm();
@@ -640,9 +642,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
+        $copySystemId = new Zend_Form_Element_Hidden('copySystemId'); 
         $copyUserAccessForm->addElement($systemAutoComplete);
         $copyUserAccessForm->addElement($selectAllButton);
         $copyUserAccessForm->addElement($addSelectedButton);
+        $copyUserAccessForm->addElement($copySystemId);
         $copyUserAccessForm->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
 
         $this->view->currentUserAccessForm = $currentUserAccessForm;
