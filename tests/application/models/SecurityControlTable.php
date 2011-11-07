@@ -37,7 +37,7 @@ class Test_Application_Models_SecurityControlTable extends Test_Case_Unit
      */
     public function testGetAclFields()
     {
-        $this->assertTrue(is_array(SecurityControlTable::getAclFields()));
+        $this->assertTrue(is_array(Doctrine::getTable('SecurityControl')->getAclFields()));
     }
     
     /**
@@ -48,12 +48,7 @@ class Test_Application_Models_SecurityControlTable extends Test_Case_Unit
      */
     public function testGetSearchableFields()
     {
-        $this->assertTrue(class_exists('SecurityControlTable'));
-        try {
-            $searchableFields = Doctrine::getTable('SecurityControl')->getSearchableFields();
-        } catch (Exception $e) {
-            $this->markTestSkipped('This test must be run alone due to dynamic class loading problem.');
-        }
+        $searchableFields = Doctrine::getTable('SecurityControl')->getSearchableFields();
         $this->assertTrue(is_array($searchableFields));
         $this->assertNotEmpty($searchableFields);
     }

@@ -36,8 +36,8 @@ class Test_Application_Models_UserRoleOrganizationTable extends Test_Case_Unit
     */
    public function testGetByOrganizationIdAndUserRoleIdQuery()
    {
-       $query = UserRoleOrganizationTable::getByOrganizationIdAndUserRoleIdQuery(0, 0)->getSql();
-       $expectedQuery = 'FROM user_role_organization u WHERE u.organizationid = ? AND u.userroleid IN (?)';
+       $query = UserRoleOrganizationTable::getByOrganizationIdAndUserRoleIdQuery(0, 0)->getDql();
+       $expectedQuery = 'FROM UserRoleOrganization uro WHERE uro.organizationid = ? AND uro.userroleid IN (?)';
        $this->assertContains($expectedQuery, $query);
    }
 }

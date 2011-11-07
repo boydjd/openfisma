@@ -24,7 +24,7 @@ require_once (realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * @uses Test_Case_Unit
  * @package Test 
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
+ * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Test_Application_Models_SystemTable extends Test_Case_Unit
@@ -37,12 +37,7 @@ class Test_Application_Models_SystemTable extends Test_Case_Unit
      */
     public function testGetSearchableFields()
     {
-        $this->assertTrue(class_exists('SystemTable'));
-        try {
-            $searchableFields = Doctrine::getTable('System')->getSearchableFields();
-        } catch (Exception $e) {
-            $this->markTestSkipped('This test must be run alone due to dynamic class loading problem.');
-        }
+        $searchableFields = Doctrine::getTable('System')->getSearchableFields();
         $this->assertTrue(is_array($searchableFields));
         $this->assertNotEmpty($searchableFields);
     }
@@ -51,13 +46,14 @@ class Test_Application_Models_SystemTable extends Test_Case_Unit
      * test getSystemIds()
      *
      * @return void
+     * @todo reduce the amount of faking
      */
     public function testGetSystemIds()
     {
         $orgArray = array('key' => 'value');
-        $mockOrg = $this->getMock('Doctrine_Query', array('toKeyValueArray'));
+        $mockOrg = $this->getMock('Mock_Blank', array('toKeyValueArray'));
         $mockOrg->expects($this->once())->method('toKeyValueArray')->with('systemId', 'systemId')->will($this->returnValue($orgArray));
-        $user = $this->getMock('User', array('getSystemsByPrivilege'));
+        $user = $this->getMock('Mock_Blank', array('getSystemsByPrivilege'));
         $user->expects($this->once())->method('getSystemsByPrivilege')->will($this->returnValue($mockOrg));
         CurrentUser::setInstance($user);
 
@@ -67,14 +63,15 @@ class Test_Application_Models_SystemTable extends Test_Case_Unit
     }
 
     /**
-     * Test getAclFields() as a static method
+     * Test getAclFields() return type
      *
      * @return void
      */
     public function testGetAclFields()
     {
-        $field = SystemTable::getAclFields();
-        $this->assertGreaterThanOrEqual(1, count($field));
+        $field = Doctrine::getTable('System')->getAclFields();
+        $this->assertTrue(is_array($field));
+        $this->assertNotEmpty($field);
     }
 
     /**

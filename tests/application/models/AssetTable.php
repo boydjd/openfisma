@@ -24,12 +24,12 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * @uses Test_Case_Unit
  * @package Test 
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Test_Application_Models_AssetTable extends Test_Case_Unit
 {
-    /*
+    /**
      * Check if getSearchableFields() returns a not-empty array 
      * 
      * @access public
@@ -37,7 +37,6 @@ class Test_Application_Models_AssetTable extends Test_Case_Unit
      */
     public function testGetSearchableFields()
     {
-        $this->assertTrue(class_exists('AssetTable'));
         $searchableFields = Doctrine::getTable('Asset')->getSearchableFields();
         $this->assertTrue(is_array($searchableFields));
         $this->assertNotEmpty($searchableFields);
@@ -47,16 +46,17 @@ class Test_Application_Models_AssetTable extends Test_Case_Unit
      * test getOrganizationIds()
      * 
      * @return void
+     * @todo reduce the amount of faking
      */
     public function testGetOrganizationIds()
     {
         $orgArray = array(0 => array('id' => 'id'));
-        $mockOrg = $this->getMock('Doctrine_Query', array('toKeyValueArray'));
+        $mockOrg = $this->getMock('Mock_Blank', array('toKeyValueArray'));
         $mockOrg->expects($this->exactly(2))
                 ->method('toKeyValueArray')
                 ->with('id', 'id')
                 ->will($this->onConsecutiveCalls(null, $orgArray));
-        $user =  $this->getMock('User', array('getOrganizationsByPrivilege'));
+        $user =  $this->getMock('Mock_Blank', array('getOrganizationsByPrivilege'));
         $user->expects($this->exactly(2))
              ->method('getOrganizationsByPrivilege')
              ->will($this->returnValue($mockOrg));
@@ -70,21 +70,22 @@ class Test_Application_Models_AssetTable extends Test_Case_Unit
         $this->assertEquals('id', $orgId[0]['id']);
     }
     /**
-     * Test getAclFields() as a static method
+     * Test getAclFields()
      * 
      * @return void
      */
     public function testGetAclFields()
     {
-        $user = $this->getMock('User', array('acl'));
+        $user = $this->getMock('Mock_Blank', array('acl'));
         $user->expects($this->exactly(2))
              ->method('acl')
              ->will($this->onConsecutiveCalls(new Fisma_Zend_Acl('defaultUser'), new Fisma_Zend_Acl('root')));
         CurrentUser::setInstance($user);
-        $field = AssetTable::getAclFields();
+        $assetTable = Doctrine::getTable('Asset');
+        $field = $assetTable->getAclFields();
         $this->assertEquals(1, count($field));
 
-        $field = AssetTable::getAclFields();
+        $field = $assetTable->getAclFields();
         $this->assertGreaterThanOrEqual(0, count($field));
     }
 

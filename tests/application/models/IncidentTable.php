@@ -24,7 +24,7 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * @uses Test_Case_Unit
  * @package Test 
  * @copyright (c) Endeavor Incidents, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Test_Application_Models_IncidentTable extends Test_Case_Unit
@@ -37,12 +37,7 @@ class Test_Application_Models_IncidentTable extends Test_Case_Unit
      */
     public function testGetSearchableFields()
     {
-        $this->assertTrue(class_exists('IncidentTable'));
-        try {
-            $searchableFields = Doctrine::getTable('Incident')->getSearchableFields();
-        } catch (Exception $e) {
-            $this->markTestSkipped('This test must be run alone due to dynamic class loading problem.');
-        }
+        $searchableFields = Doctrine::getTable('Incident')->getSearchableFields();
         $this->assertTrue(is_array($searchableFields));
         $this->assertNotEmpty($searchableFields);
     }
@@ -57,11 +52,11 @@ class Test_Application_Models_IncidentTable extends Test_Case_Unit
         $user = new User();
         
         $acl = new Fisma_Zend_Acl('root');
-        $elevatedQuery = IncidentTable::getUserIncidentQuery($user, $acl)->getSql();
-        $this->assertContains('FROM incident i', $elevatedQuery);
+        $elevatedQuery = IncidentTable::getUserIncidentQuery($user, $acl)->getDql();
+        $this->assertContains('FROM Incident i', $elevatedQuery);
         
         $acl = new Fisma_Zend_Acl('mple');
-        $limitedQuery = IncidentTable::getUserIncidentQuery($user, $acl)->getSql();
+        $limitedQuery = IncidentTable::getUserIncidentQuery($user, $acl)->getDql();
         $this->assertContains('LEFT JOIN', $limitedQuery);
     }
     
@@ -80,10 +75,11 @@ class Test_Application_Models_IncidentTable extends Test_Case_Unit
              ));
         CurrentUser::setInstance($user);        
         
-        $limitedAclFields = IncidentTable::getAclFields();
+        $incidentTable = Doctrine::getTable('Incident');
+        $limitedAclFields = $incidentTable->getAclFields();
         $this->assertGreaterThanOrEqual(1, count($limitedAclFields));
         
-        $elevatedAclFields = IncidentTable::getAclFields();
+        $elevatedAclFields = $incidentTable->getAclFields();
         $this->assertEquals(0, count($elevatedAclFields));
         CurrentUser::setInstance(null);
     }
@@ -96,8 +92,8 @@ class Test_Application_Models_IncidentTable extends Test_Case_Unit
     public function testGetIncidentIdsQuery()
     {
         $user = new User();
-        $query = IncidentTable::getIncidentIdsQuery()->getSql();
-        $expectedQuery = 'FROM ir_incident_user i WHERE i.userid = ?';
+        $query = Doctrine::getTable('Incident')->getIncidentIdsQuery()->getDql();
+        $expectedQuery = 'FROM IrIncidentUser INDEXBY incidentId WHERE userId = ?';
         $this->assertContains($expectedQuery, $query);
     }
     
@@ -109,7 +105,7 @@ class Test_Application_Models_IncidentTable extends Test_Case_Unit
      */
     public function testGetIncidentIds()
     {
-        $mockQuery = $this->getMock('Doctrine_Query', array('execute'));
+        $mockQuery = $this->getMock('Mock_Blank', array('execute'));
         $mockQuery->expects($this->once())->method('execute')
                   ->will($this->returnValue(array(
                       '13' => 'Incident 13 Resultset',

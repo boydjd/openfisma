@@ -24,18 +24,24 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * @uses Test_Case_Unit
  * @package Test 
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Test_Application_Models_FindingTable extends Test_Case_Unit
 {
-    
+    /**
+     * Make sure Index Chunk Size = 10
+     * 
+     * @access public
+     * @return void
+     * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
+     */
     public function testGetIndexChunkSizeIs10()
     {
         $this->assertEquals(10, FindingTable::getIndexChunkSize());
     }
     
-    /*
+    /**
      * Check if getSearchableFields() returns a not-empty array
      *
      * @access public
@@ -43,12 +49,7 @@ class Test_Application_Models_FindingTable extends Test_Case_Unit
      */
     public function testGetSearchableFields()
     {
-        $this->assertTrue(class_exists('FindingTable'));
-        try {
-            $searchableFields = Doctrine::getTable('Finding')->getSearchableFields();
-        } catch (Exception $e) {
-            $this->markTestSkipped('This test must be run alone due to dynamic class loading problem.');
-        }
+        $searchableFields = Doctrine::getTable('Finding')->getSearchableFields();
         $this->assertTrue(is_array($searchableFields));
         $this->assertNotEmpty($searchableFields);
     }
@@ -57,16 +58,17 @@ class Test_Application_Models_FindingTable extends Test_Case_Unit
      * test getOrganizationIds()
      * 
      * @return void
+     * @todo reduce the amount of faking
      */
     public function testGetOrganizationIds()
     {
         $orgArray = array(0 => array('id' => 'id'));
-        $mockOrg = $this->getMock('Doctrine_Query', array('toKeyValueArray'));
+        $mockOrg = $this->getMock('Mock_Blank', array('toKeyValueArray'));
         $mockOrg->expects($this->exactly(2))
                 ->method('toKeyValueArray')
                 ->with('id', 'id')
                 ->will($this->onConsecutiveCalls(null, $orgArray));
-        $user =  $this->getMock('User', array('getOrganizationsByPrivilege'));
+        $user =  $this->getMock('Mock_Blank', array('getOrganizationsByPrivilege'));
         $user->expects($this->exactly(2))
              ->method('getOrganizationsByPrivilege')
              ->will($this->returnValue($mockOrg));
@@ -89,6 +91,6 @@ class Test_Application_Models_FindingTable extends Test_Case_Unit
      */
     public function testGetAclFields()
     {
-        $this->assertTrue(is_array(FindingTable::getAclFields()));
+        $this->assertTrue(is_array(Doctrine::getTable('Finding')->getAclFields()));
     }
 }

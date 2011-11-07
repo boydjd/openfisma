@@ -39,7 +39,7 @@ class Test_Application_Models_Configuration extends Test_Case_Unit
         $mockCache = $this->getMock('Mock_Blank', array('remove'));
         $mockCache->expects($this->once())->method('remove')->with('configuration_key');
 
-        $config = $this->getMock('Configuration', array('isModified', 'getModified', '_getCache'));
+        @$config = $this->getMock('Configuration', array('isModified', 'getModified', '_getCache'));
         $config->expects($this->exactly(2))->method('isModified')->will($this->onConsecutiveCalls(false, true));
         $config->expects($this->once())->method('_getCache')->will($this->returnValue($mockCache));
         $config->expects($this->once())->method('getModified')->will($this->returnValue(array('key' => 'value')));

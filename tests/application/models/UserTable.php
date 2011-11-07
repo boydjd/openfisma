@@ -24,7 +24,7 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * @uses Test_Case_Unit
  * @package Test 
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Test_Application_Models_UserTable extends Test_Case_Unit
@@ -37,12 +37,7 @@ class Test_Application_Models_UserTable extends Test_Case_Unit
      */
     public function testGetSearchableFields()
     {
-        $this->assertTrue(class_exists('UserTable'));
-        try {
-            $searchableFields = Doctrine::getTable('User')->getSearchableFields();
-        } catch (Exception $e) {
-            $this->markTestSkipped('This test must be run alone due to dynamic class loading problem.');
-        }
+        $searchableFields = Doctrine::getTable('User')->getSearchableFields();
         $this->assertTrue(is_array($searchableFields));
         $this->assertNotEmpty($searchableFields);
     }
@@ -55,7 +50,7 @@ class Test_Application_Models_UserTable extends Test_Case_Unit
      */
     public function testGetAclFields()
     {
-        $this->assertTrue(is_array(UserTable::getAclFields()));
+        $this->assertTrue(is_array(Doctrine::getTable('User')->getAclFields()));
     }
  
     /**
@@ -65,8 +60,8 @@ class Test_Application_Models_UserTable extends Test_Case_Unit
      */
     public function testGetUserByUserRoleIdQuery()
     {
-        $query = UserTable::getUserByUserRoleIdQuery(1)->getSql();
-        $expectedQuery = 'FROM user u INNER JOIN user_role u2 ON u.id = u2.userid WHERE u2.userroleid = ?';
+        $query = Doctrine::getTable('User')->getUserByUserRoleIdQuery(1)->getDql();
+        $expectedQuery = 'FROM User u INNER JOIN u.UserRole ur WHERE ur.userroleid = ?';
         $this->assertContains($expectedQuery, $query);
     }
 
@@ -77,9 +72,22 @@ class Test_Application_Models_UserTable extends Test_Case_Unit
      */
     public function testGetUsersLikeUsernameQuery()
     {
-        $query = UserTable::getUsersLikeUsernameQuery('root')->getSql();
-        $expectedQuery = 'FROM user u WHERE u.username LIKE ?';
+        $query = Doctrine::getTable('User')->getUsersLikeUsernameQuery('root')->getDql();
+        $expectedQuery = 'FROM User u WHERE u.username LIKE ?';
         $this->assertContains($expectedQuery, $query);
         $this->assertContains('u.locktype is null', $query);
     }
+    
+    /**
+     * Test the query for getRoles()
+     *
+     * @return void
+     */
+    public function testGetRolesQuery()
+    {
+        $userTable = Doctrine::getTable('User');
+        $query = $userTable->getRolesQuery()->getDql();
+        $expectedQuery = 'FROM User u INNER JOIN u.Roles r WHERE u.id = ?';
+        $this->assertContains($expectedQuery, $query);
+    }    
 }

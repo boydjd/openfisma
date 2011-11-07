@@ -37,9 +37,9 @@ class Test_Application_Models_Network extends Test_Case_Unit
     public function testActiveAssetsQuery()
     {
         $network = new Network();
-        $query = $network->activeAssetsQuery()->getSql();
-        $expectedQuery = 'SELECT a.id AS a__id FROM asset a WHERE a.networkid = ?';
-        $this->assertEquals($expectedQuery, $query);
+        $query = $network->activeAssetsQuery()->getDql();
+        $expectedQuery = 'FROM Asset a WHERE a.networkId = ?';
+        $this->assertContains($expectedQuery, $query);
     }
     
     /**
@@ -49,7 +49,7 @@ class Test_Application_Models_Network extends Test_Case_Unit
      */
     public function testPreDelete()
     {
-        $mockQuery = $this->getMock('Doctrine_Query', array('count'));
+        $mockQuery = $this->getMock('Mock_Blank', array('count'));
         $mockQuery->expects($this->exactly(2))->method('count')->will($this->onConsecutiveCalls(0, 1));
         
         $network = new Network();

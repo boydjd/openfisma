@@ -39,7 +39,7 @@ class Test_Application_Models_IrStep extends Test_Case_Unit
         $workflowId = 1;
         $cardinality = 1;
         
-        $irStep = $this->getMock('IrStep', array('_openGap'));
+        @$irStep = $this->getMock('IrStep', array('_openGap'));
         $irStep->expects($this->once())->method('_openGap')->with($workflowId, $cardinality);
         
         $irStep->workflowId = $workflowId;
@@ -58,7 +58,7 @@ class Test_Application_Models_IrStep extends Test_Case_Unit
         $workflowId = 1;
         $cardinality = 1;
         
-        $irStep = $this->getMock('IrStep', array('_closeGap'));
+        @$irStep = $this->getMock('IrStep', array('_closeGap'));
         $irStep->expects($this->once())->method('_closeGap')->with($workflowId, $cardinality);
         
         $mockInvoker = new Mock_Blank();
@@ -71,19 +71,7 @@ class Test_Application_Models_IrStep extends Test_Case_Unit
         $irStep->postDelete($mockEvent);
     }
     
-    /**
-     * Test the query built for _openGap()
-     *
-     * @return void
-     */
-    public function testOpenGapQuery()
-    {
-        $query = IrStep::openGapQuery(1, 1)->getSql();
-        $expectedQuery = 'UPDATE ir_step SET cardinality = cardinality + 1 WHERE workflowid = ? AND cardinality >= ?';
-        $this->assertEquals($expectedQuery, $query);
-    }
-
-    /**
+     /**
      * Test the execution in _openGap() via preInsert()
      *
      * @return void
@@ -95,18 +83,6 @@ class Test_Application_Models_IrStep extends Test_Case_Unit
         
         $irStep = new IrStep();
         $irStep->preInsert($null, $mockQuery);
-    }
-    
-    /**
-     * Test the query built for _closeGap()
-     *
-     * @return void
-     */
-    public function testCloseGapQuery()
-    {
-        $query = IrStep::closeGapQuery(1, 1)->getSql();
-        $expectedQuery = 'UPDATE ir_step SET cardinality = cardinality - 1 WHERE workflowid = ? AND cardinality >= ?';
-        $this->assertEquals($expectedQuery, $query);
     }
     
     /**
@@ -143,7 +119,7 @@ class Test_Application_Models_IrStep extends Test_Case_Unit
         $workflowId = 2;
         $cardinality = 2;
         
-        $irStep = $this->getMock('IrStep', array('getModified', '_openGap', '_closeGap'));
+        @$irStep = $this->getMock('IrStep', array('getModified', '_openGap', '_closeGap'));
         $irStep->expects($this->exactly(2))->method('getModified')->with(true)
                ->will($this->onConsecutiveCalls(
                    array(),

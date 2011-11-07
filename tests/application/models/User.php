@@ -157,15 +157,11 @@ class Test_Application_Models_User extends Test_Case_Unit
         $user = new User();
 
         $user->username = 'testuser';
+        $user->id = 0;
 
-        $this->assertEquals(
-            "SELECT o.id AS o__id, o.createdts AS o__createdts, o.modifiedts AS o__modifiedts, o.name AS o__name, " .
-            "o.nickname AS o__nickname, o.orgtypeid AS o__orgtypeid, o.systemid AS o__systemid, o.description " .
-            "AS o__description, o.lft AS o__lft, o.rgt AS o__rgt, o.level AS o__level, o.deleted_at AS o__deleted_at" .
-            " FROM organization o LEFT JOIN user_role_organization u2 ON (o.id = u2.organizationid) LEFT JOIN " .
-            "user_role u ON u.userroleid = u2.userroleid AND (u.userid  ) ORDER BY o.lft",
-            $user->getOrganizationsQuery()->getSql()
-        );
+        $expectedQuery = 'FROM Organization o, o.UserRole ur WITH ur.userid = 0 ORDER BY o.lft';
+        $query = $user->getOrganizationsQuery()->getDql();
+        $this->assertContains($expectedQuery, $query);
     }
 
     /**
@@ -180,8 +176,8 @@ class Test_Application_Models_User extends Test_Case_Unit
 
         $user->username = 'root';
 
-        $this->assertEquals(
-            " FROM Organization o ORDER BY o.lft",
+        $this->assertContains(
+            "FROM Organization o ORDER BY o.lft",
             $user->getOrganizationsByPrivilegeQuery('finding', 'view')->getDql()
         );
     }
@@ -197,20 +193,26 @@ class Test_Application_Models_User extends Test_Case_Unit
         $user = new User();
 
         $user->username = 'testuser';
+        $user->id = 0;
 
         // include disposal system 
-        $this->assertEquals(
-            "SELECT o.* FROM Organization o, o.UserRole ur WITH ur.userid =  LEFT JOIN ur.Role r LEFT JOIN " .
-            "r.Privileges p WHERE p.resource = ? AND p.action = ? GROUP BY o.id ORDER BY o.nickname",
+        $this->assertContains(
+            'FROM Organization o, o.UserRole ur WITH ur.userid = 0 '
+           .'LEFT JOIN ur.Role r '
+           .'LEFT JOIN r.Privileges p '
+           .'WHERE p.resource = ? AND p.action = ? '
+           .'GROUP BY o.id ORDER BY o.nickname',
             $user->getOrganizationsByPrivilegeQuery('finding', 'view', true)->getDql()
         );
 
         // do not include disposal system
-        $this->assertEquals(
-            "SELECT o.* FROM Organization o, o.UserRole ur WITH ur.userid =  LEFT JOIN ur.Role r LEFT JOIN " .
-            "r.Privileges p LEFT JOIN o.System s2 WHERE p.resource = ? AND p.action = ? " . 
-            "AND s2.sdlcphase <> 'disposal' or s2.sdlcphase is NULL " .
-            "GROUP BY o.id ORDER BY o.nickname",
+        $this->assertContains(
+            'FROM Organization o, o.UserRole ur WITH ur.userid = 0 '
+            .'LEFT JOIN ur.Role r '
+            .'LEFT JOIN r.Privileges p '
+            .'LEFT JOIN o.System s2 '
+            .'WHERE p.resource = ? AND p.action = ? AND s2.sdlcphase <> \'disposal\' or s2.sdlcphase is NULL '
+            .'GROUP BY o.id ORDER BY o.nickname',
             $user->getOrganizationsByPrivilegeQuery('finding', 'view')->getDql()
         );
     }
@@ -270,7 +272,7 @@ class Test_Application_Models_User extends Test_Case_Unit
      */
     public function testLockAccountFromCurrentUser()
     {
-        $user = $this->getMock('User', array('save', 'invalidateAcl', 'getAuditLog'));
+        @$user = $this->getMock('User', array('save', 'invalidateAcl', 'getAuditLog'));
         $mockAuditLog = $this->getMock('Mock_Blank', array('write'));
         $mockAuditLog->expects($this->once())->method('write');
         $user->expects($this->once())->method('save');
@@ -290,7 +292,7 @@ class Test_Application_Models_User extends Test_Case_Unit
      */
     public function testLockAccountFromUnknownUser()
     {
-        $user = $this->getMock('User', array('save', 'invalidateAcl', 'getAuditLog'));
+        @$user = $this->getMock('User', array('save', 'invalidateAcl', 'getAuditLog'));
         $mockAuditLog = $this->getMock('Mock_Blank', array('write'));
         $mockAuditLog->expects($this->once())->method('write');
         $user->expects($this->once())->method('save');
@@ -303,19 +305,6 @@ class Test_Application_Models_User extends Test_Case_Unit
     }
 
     /**
-     * Test the query for getRoles()
-     *
-     * @return void
-     */
-    public function testGetRolesQuery()
-    {
-        $user = new User();
-        $query = $user->getRolesQuery()->getSql();
-        $expectedQuery = 'FROM user u INNER JOIN user_role u2 ON (u.id = u2.userid) INNER JOIN role r ON r.id = u2.roleid WHERE u.id = ?';
-        $this->assertContains($expectedQuery, $query);
-    }
-
-    /**
      * Test the execution of the query built by getRolesQuery()
      *
      * @return void
@@ -324,7 +313,7 @@ class Test_Application_Models_User extends Test_Case_Unit
     public function testGetRoles()
     {
         $user = new User();
-        $mockQuery = $this->getMock('Doctrine_Query', array('execute'));
+        $mockQuery = $this->getMock('Mock_Blank', array('execute'));
         $mockQuery->expects($this->once())->method('execute');
         $user->getRoles(null, $mockQuery);
     }
@@ -336,7 +325,7 @@ class Test_Application_Models_User extends Test_Case_Unit
      */
     public function testSetLastRob()
     {
-        $user = $this->getMock('User', array('_set', 'getAuditLog'));
+        @$user = $this->getMock('User', array('_set', 'getAuditLog'));
         $mockAuditLog = $this->getMock('Mock_Blank', array('write'));
         $mockAuditLog->expects($this->once())->method('write');
         $user->expects($this->once())->method('_set');

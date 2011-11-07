@@ -36,9 +36,9 @@ class Test_Application_Models_SecurityControlCatalogTable extends Test_Case_Unit
      */
     public function testGetCatalogsQuery()
     {
-        $expectedQuery = 'SELECT s.id AS s__0, s.name AS s__1 FROM security_control_catalog s ORDER BY s.name';
-        $query = SecurityControlCatalogTable::getCatalogsQuery();
-        $this->assertEquals($expectedQuery, $query->getSql());
+        $expectedQuery = 'FROM SecurityControlCatalog ORDER BY name';
+        $query = Doctrine::getTable('SecurityControlCatalog')->getCatalogsQuery();
+        $this->assertContains($expectedQuery, $query->getDql());
     }
 
     /**
@@ -49,9 +49,9 @@ class Test_Application_Models_SecurityControlCatalogTable extends Test_Case_Unit
      */
     public function testGetCatalogs()
     {
-        $mockQuery = $this->getMock('Doctrine_Query', array('execute'));
+        $mockQuery = $this->getMock('Mock_Blank', array('execute'));
         $mockQuery->expects($this->once())->method('execute');
-        SecurityControlCatalogTable::getCatalogs($mockQuery);
+        Doctrine::getTable('SecurityControlCatalog')->getCatalogs($mockQuery);
     }
 }
 

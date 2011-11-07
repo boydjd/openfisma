@@ -749,22 +749,9 @@ class User extends BaseUser
      */
     public function getRoles($hydrationMode = Doctrine::HYDRATE_SCALAR, $userRolesQuery = null)
     {
-        $userRolesQuery = (isset($userRolesQuery)) ? $userRolesQuery : $this->getRolesQuery($hydrationMode);
+        $userRolesQuery = (isset($userRolesQuery)) ? $userRolesQuery : Doctrine::getTable('User')->getRolesQuery($hydrationMode);
         $userRolesResult = $userRolesQuery->execute();
 
         return $userRolesResult;
     }
-
-    /**
-     * Build the query for getRoles()
-     *
-     * @param mixed $hydrationMode Optional, defaults to Doctrine::HYDRATE_SCALAR.
-     * @return Doctrine_Query
-     */
-    public function getRolesQuery($hydrationMode = Doctrine::HYDRATE_SCALAR)
-    {
-        $userRolesQuery = Doctrine_Query::create()->select('u.id, r.*')->from('User u')->innerJoin('u.Roles r')->where('u.id = ?', $this->id)->setHydrationMode($hydrationMode);
-        return $userRolesQuery;
-    }
-
 }

@@ -45,7 +45,7 @@ class SecurityControlCatalogTable extends Fisma_Doctrine_Table
      * 
      * @return Doctrine_Query
      */
-    public static function getCatalogsQuery()
+    public function getCatalogsQuery()
     {
         // Get data for the select element. Columns are aliased as 'key' and 'value' for addMultiOptions().
         $catalogQuery = Doctrine_Query::create()

@@ -30,17 +30,6 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_StorageTable extends Test_Case_Unit
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testClassExists()
-    {
-        $this->assertTrue(class_exists('StorageTable'));
-    }
-
-    /**
      * testGetUserIdAndNamespaceQuery
      *
      * @access public
@@ -48,12 +37,12 @@ class Test_Application_Models_StorageTable extends Test_Case_Unit
      */
      public function testGetUserIdAndNamespaceQuery()
      {
-         $table = Doctrine::getTable('storage');
+         $table = Doctrine::getTable('Storage');
          $userId = 42;
          $namespace = 'Sample.Namespace';
          $q = $table->getUserIdAndNamespaceQuery($userId, $namespace);
          $this->assertTrue($q instanceof Doctrine_Query);
-         $this->assertEquals(' FROM storage WHERE userId = ? AND namespace = ?', $q->getDql());
+         $this->assertEquals(' FROM Storage WHERE userId = ? AND namespace = ?', $q->getDql());
          $this->assertEquals(array($userId, $namespace), $q->getFlattenedParams());
      }
 }

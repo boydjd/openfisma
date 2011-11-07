@@ -36,12 +36,12 @@ class Test_Application_Models_UserRoleTable extends Test_Case_Unit
      */
     public function testGetRolesAndUsersByOrganizationIdQuery()
     {
-        $query = UserRoleTable::getRolesAndUsersByOrganizationIdQuery(0)->getSql();
-        $expectedQuery = 'FROM role r '
-                        .'INNER JOIN user_role u ON r.id = u.roleid '
-                        .'INNER JOIN user_role_organization u2 ON (u.userroleid = u2.userroleid) '
-                        .'INNER JOIN organization o ON o.id = u2.organizationid AND (o.id = ?) '
-                        .'INNER JOIN user u3 ON u.userid = u3.id';
+        $query = UserRoleTable::getRolesAndUsersByOrganizationIdQuery(0)->getDql();
+        $expectedQuery = 'FROM Role r '
+                        .'INNER JOIN r.UserRole ur '
+                        .'INNER JOIN ur.Organizations o WITH o.id = ? '
+                        .'INNER JOIN ur.User u '
+                        .'WHERE (u.locktype is null or u.locktype != ?)';
         $this->assertContains($expectedQuery, $query);
         $this->assertContains('locktype is null', $query);
     }
@@ -53,8 +53,8 @@ class Test_Application_Models_UserRoleTable extends Test_Case_Unit
      */
     public function testGetByUserIdAndRoleIdQuery()
     {
-        $query = UserRoleTable::getByUserIdAndRoleIdQuery(0, 0)->getSql();
-        $expectedQuery = 'FROM user_role u WHERE u.userid = ? AND u.roleid = ?';
+        $query = UserRoleTable::getByUserIdAndRoleIdQuery(0, 0)->getDql();
+        $expectedQuery = 'FROM UserRole ur WHERE ur.userId = ? AND ur.roleId = ?';
         $this->assertContains($expectedQuery, $query);
     }
 }

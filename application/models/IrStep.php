@@ -69,24 +69,8 @@ class IrStep extends BaseIrStep
      */
     protected function _openGap($workflowId, $position, $openGapQuery = null)
     {
-        $openGapQuery = (isset($openGapQuery)) ? $openGapQuery : self::openGapQuery($workflowId, $position);
+        $openGapQuery = (isset($openGapQuery)) ? $openGapQuery : Doctrine::getTable('IrStep')->openGapQuery($workflowId, $position);
         $openGapQuery->execute(); 
-    }
-
-    /**
-     * Build the query for _openGap()
-     * 
-     * @param int $workflowId ID of workflow within which to open the gap
-     * @param int $position   Position in workflow where the gap should be created
-     * @return Doctrine_Query
-     */
-    public static function openGapQuery($workflowId, $position)
-    {
-        $openGapQuery = Doctrine_Query::create()->update('IrStep irstep')
-                                                ->set('irstep.cardinality', 'irstep.cardinality + 1')
-                                                ->where('irstep.workflowId = ?', $workflowId)
-                                                ->andWhere('irstep.cardinality >= ?', $position);
-        return $openGapQuery;
     }
 
     /**
@@ -99,23 +83,7 @@ class IrStep extends BaseIrStep
      */
     protected function _closeGap($workflowId, $position, $closeGapQuery = null)
     {
-        $closeGapQuery = (isset($closeGapQuery)) ? $closeGapQuery : self::closeGapQuery($workflowId, $position);
+        $closeGapQuery = (isset($closeGapQuery)) ? $closeGapQuery : Doctrine::getTable('IrStep')->closeGapQuery($workflowId, $position);
         $closeGapQuery->execute(); 
-    }
-    
-    /**
-     * Build the query for _closeGap()
-     * 
-     * @param int $workflowId ID of workflow in which to perform the operation
-     * @param int $position   Position of the gap to be closed.
-     * @return Doctrine_Query
-     */
-    public static function closeGapQuery($workflowId, $position)
-    {
-        $closeGapQuery = Doctrine_Query::create()->update('IrStep irstep')
-                                                 ->set('irstep.cardinality', 'irstep.cardinality - 1')
-                                                 ->where('irstep.workflowId = ?', $workflowId)
-                                                 ->andWhere('irstep.cardinality >= ?', $position);
-        return $closeGapQuery;
     }
 }

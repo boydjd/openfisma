@@ -37,9 +37,9 @@ class Test_Application_Models_Product extends Test_Case_Unit
     public function testActiveAssetsQuery()
     {
         $product = new Product();
-        $query = $product->activeAssetsQuery()->getSql();
-        $expectedQuery = 'SELECT a.id AS a__id FROM asset a WHERE a.productid = ?';
-        $this->assertEquals($expectedQuery, $query);
+        $query = $product->activeAssetsQuery()->getDql();
+        $expectedQuery = ' FROM Asset a WHERE a.productId = ?';
+        $this->assertContains($expectedQuery, $query);
     }
     
     /**
@@ -49,7 +49,7 @@ class Test_Application_Models_Product extends Test_Case_Unit
      */
     public function testPreDelete()
     {
-        $mockQuery = $this->getMock('Doctrine_Query', array('count'));
+        $mockQuery = $this->getMock('Mock_Blank', array('count'));
         $mockQuery->expects($this->exactly(2))->method('count')->will($this->onConsecutiveCalls(0, 1));
         
         $product = new Product();

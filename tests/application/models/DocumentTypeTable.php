@@ -80,8 +80,8 @@ class Test_Application_Models_DocumentTypeTable extends Test_Case_Unit
     public function testGetAllRequiredDocumentTypeQuery()
     {
         $query = DocumentTypeTable::getAllRequiredDocumentTypeQuery();
-        $query = $query->getSql();
-        $expectedQuery = 'SELECT d.id AS d__id, d.name AS d__name, d.required AS d__required FROM document_type d WHERE d.required = ?';
-        $this->assertEquals($expectedQuery, $query);
+        $query = $query->getDql();
+        $expectedQuery = 'FROM DocumentType dt WHERE dt.required = ?';
+        $this->assertContains($expectedQuery, $query);
     }
 }

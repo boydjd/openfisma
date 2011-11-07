@@ -27,5 +27,35 @@
  */
 class IrStepTable extends Fisma_Doctrine_Table
 {
-
+    /**
+     * Build the query for _openGap()
+     * 
+     * @param int $workflowId ID of workflow within which to open the gap
+     * @param int $position   Position in workflow where the gap should be created
+     * @return Doctrine_Query
+     */
+    public function openGapQuery($workflowId, $position)
+    {
+        $openGapQuery = Doctrine_Query::create()->update('IrStep irstep')
+                                                ->set('irstep.cardinality', 'irstep.cardinality + 1')
+                                                ->where('irstep.workflowId = ?', $workflowId)
+                                                ->andWhere('irstep.cardinality >= ?', $position);
+        return $openGapQuery;
+    }
+    
+    /**
+     * Build the query for _closeGap()
+     * 
+     * @param int $workflowId ID of workflow in which to perform the operation
+     * @param int $position   Position of the gap to be closed.
+     * @return Doctrine_Query
+     */
+    public static function closeGapQuery($workflowId, $position)
+    {
+        $closeGapQuery = Doctrine_Query::create()->update('IrStep irstep')
+                                                 ->set('irstep.cardinality', 'irstep.cardinality - 1')
+                                                 ->where('irstep.workflowId = ?', $workflowId)
+                                                 ->andWhere('irstep.cardinality >= ?', $position);
+        return $closeGapQuery;
+    }
 }

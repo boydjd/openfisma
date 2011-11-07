@@ -36,8 +36,8 @@ class Test_Application_Models_PrivilegeTable extends Test_Case_Unit
      */
     public function testGetResourceActionQuery()
     {
-        $query = PrivilegeTable::getResourceActionQuery('test', 'drop')->getSql();
-        $expectedQuery = 'WHERE (p.resource = ? AND p.action = ?)';
+        $query = PrivilegeTable::getResourceActionQuery('test', 'drop')->getDql();
+        $expectedQuery = 'WHERE p.resource = ? AND p.action = ?';
         $this->assertContains($expectedQuery, $query);
     }
     
