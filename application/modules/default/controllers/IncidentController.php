@@ -135,6 +135,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         if ($this->_request->isPost()) {
             if (!is_null($step) && $step != 0 && $step < 8) {
                 $subForm = $this->getFormPart($step);
+                
+                // Add a customerized error message to the "Describe the incident" field 
+                $descIncidentValidator = new Fisma_Zend_Form_Validate_MceNotEmpty();
+                $descIncidentValidator->setMessage('You must enter a description of the incident to continue.');
+                $descIncidentElement = $subForm->getElement('additionalInfo');
+                if (!empty($descIncidentElement)) {
+                    $descIncidentElement->removeValidator('MceNotEmpty');
+                    $descIncidentElement->addValidator($descIncidentValidator);
+                }
+
                 $subFormValid = $subForm->isValid($this->_request->getPost());
                 $incident->merge($subForm->getValues());
                 $session->irDraft = serialize($incident);
@@ -151,10 +161,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         } elseif (!$subFormValid) {
             $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
            
-            // Replace the general error message with the message James suggested on OFJ-1546
-            if (preg_match("/Describe the incident: can't be empty/", $errorString)) {
-                $errorString = 'You must enter a description of the incident to continue.';
-            }
             $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
         } else {
             // The user can move forwards or backwards
