@@ -76,8 +76,7 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
                                       ->select('o.id')
                                       ->from('Organization o')
                                       ->leftJoin('o.System s')
-                                      ->limit(30)
-                                      ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                                      ->limit(50)
                                       ->execute();
  
         if (0 == count($this->_sampleOrganizations)) {
@@ -158,8 +157,7 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
      */
     private function _getRandomOrganization()
     {
-        $orgId = $this->_sampleOrganizations[array_rand($this->_sampleOrganizations)]['id'];
-        return Doctrine::getTable('Organization')->find($orgId);
+        return $this->_sampleOrganizations[rand(0, count($this->_sampleOrganizations)-1)];
     }
 
     /**
