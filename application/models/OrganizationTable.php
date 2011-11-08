@@ -132,6 +132,9 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
      */
     static function getOrganizationSubtreeIds($parentOrganization)
     {
+        // Since it addes the slashes at searchByCriteria(), so, it needs to remove slashes here.
+        $parentOrganization = stripslashes($parentOrganization);
+
         $organization = Doctrine::getTable('Organization')->findOneByNickname($parentOrganization);
 
         // If the parent node isn't found, then return an impossible condition to prevent matching any objects
@@ -168,6 +171,9 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
      */
     static function getSystemAggregationSubtreeIds($parentOrganization)
     {
+        // Since it addes the slashes at searchByCriteria(), so, it needs to remove slashes here.
+        $parentOrganization = stripslashes($parentOrganization);
+
         $organization = Doctrine::getTable('Organization')->findOneByNickname($parentOrganization);
 
         /*
