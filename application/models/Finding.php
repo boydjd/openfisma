@@ -87,7 +87,9 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         // Set default status for new objects (i.e. objects with transient state)
         $state = $this->state();
         if ($state == Doctrine_Record::STATE_TCLEAN || $state == Doctrine_Record::STATE_TDIRTY) {
-            $this->status = 'NEW';            
+            $this->status = 'NEW';
+            $this->countermeasuresEffectiveness = 'LOW';
+            $this->countermeasures = 'N/A';
         }
     }
     
@@ -596,6 +598,10 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
      */
     public function setCountermeasuresEffectiveness($value)
     {
+        if (empty($value)) {
+            throw new Fisma_Zend_Exception('Countermeasures cannot be null or blank.');
+        }
+
         $this->_set('countermeasuresEffectiveness', $value);
 
         $this->residualRisk = $this->calculateResidualRisk($this->threatLevel, $this->countermeasuresEffectiveness);
