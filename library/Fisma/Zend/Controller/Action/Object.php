@@ -1018,7 +1018,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $links = array();
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('read', $subject)) {
+        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('update', $subject)) {
             $links['Edit'] = "{$this->_moduleName}/{$this->_controllerName}/edit/id/{$subject->id}";
         }
 
