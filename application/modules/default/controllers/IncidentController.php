@@ -223,6 +223,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $incident->incidentDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
         }
 
+        // Initialize the default selection of piiInvolved with 'NO' option.
+        if (empty($incident->piiInvolved)) {
+            $incident->piiInvolved = 'NO';
+        }
+
         // Use the validator to load the incident data into the form. Notice that there aren't actually any
         // validators which could fail here.
         $formPart->isValid($incident->toArray());
@@ -312,6 +317,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 break;
             case 4:
                 $this->_createBoolean($formPart, array('piiInvolved'));
+
+                // Remove '--select--' option
+                $formPart->getElement('piiInvolved')->removeMultiOption('');
                 break;
             case 5:
                 $this->_createBoolean(
