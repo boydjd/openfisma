@@ -66,7 +66,6 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
         $organizations = Doctrine_Query::create()
                             ->select('o.id')
                             ->from('Organization o')
-                            ->leftJoin('o.OrganizationType ot')
                             ->leftJoin('o.System s')
                             ->where("s.sdlcphase <> 'disposal' OR s.sdlcphase IS NULL")
                             ->execute();
@@ -91,7 +90,7 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
             $reportingOrganizationId = -1;
             do {
                 $reportingOrganizationId = rand(0, $organizationsCount)->id;
-                $reportingOrganizationId = ($organizations[$reportingOrganizationId]['OrganizationType']['nickname']=='System') ? -1 : $reportingOrganizationId; 
+                $reportingOrganizationId = (isset($organizations[$reportingOrganizationId]->systemId)) ? -1 : $reportingOrganizationId; 
             } while ($reportingOrganization < 0);
             $user['reportingOrganizationId'] = $reportingOrganizationId;
             $user['roleId'] = $roleIds[rand(0, $roleIdsCount)][0];

@@ -256,8 +256,7 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
             ->select('o.id, o.nickname, o.name')
             ->from('Organization o');
         if ($excludeSystem) {
-            $organizationSelectQuery->leftJoin('o.OrganizationType ot')
-                                    ->where('ot.nickname <> ?', 'system');
+            $organizationSelectQuery->where('o.systemId IS Null');
         }
         $organizationSelectQuery->orderBy('o.nickname');
         return $organizationSelectQuery;
