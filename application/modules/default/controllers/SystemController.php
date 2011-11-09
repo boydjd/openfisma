@@ -899,23 +899,34 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             return;
         }
 
-        // Based on the dragLocation parameter, execute a corresponding tree move method
+        // Find the new parent (null by default in case there is no parent).
         $dragLocation = $this->getRequest()->getParam('dragLocation');
+        $parent = null;
+
+        if (Fisma_Yui_DragDrop::DRAG_ONTO == $dragLocation) {
+            // If we drag onto, then the parent is the drag destination.
+            $parent = $dest;
+        } elseif ($dest->aggregateSystemId) {
+            // If we drag above or below, then the parent is the parent of the destination.
+            $parent = $dest->AggregateSystem;
+        }
+
+        // Enforce 2 layer maximum on nesting
+        if ($parent && ($parent->aggregateSystemId || $src->AggregatedSystems->count() > 0)) {
+            $this->view->success = false;
+            $this->view->message = 'An aggregated system cannot have systems aggregated underneath it.';
+            return;
+        }
+
+        // Make changes and persist.
         try {
-            switch ($dragLocation) {
-                case Fisma_Yui_DragDrop::DRAG_ABOVE:
-                case Fisma_Yui_DragDrop::DRAG_BELOW:
-                    $src->aggregateSystemId = $dest->aggregateSystemId;
-                    $src->save();
-                    break;
-                case Fisma_Yui_DragDrop::DRAG_ONTO:
-                    $src->aggregateSystemId = $dest->id;
-                    $src->save();
-                    break;
-                default:
-                    $this->view->success = false;
-                    $this->view->message = "Invalid dragLocation parameter ($dragLocation)";
+            if (isset($parent)) {
+                $src->aggregateSystemId = $parent->id;
+            } else {
+                $src->aggregateSystemId = $dest->aggregateSystemId;
             }
+
+            $src->save();
         } catch (Exception $e) {
             $this->view->success = false;
             $this->view->message = (string)$e;
