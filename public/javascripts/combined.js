@@ -7295,6 +7295,8 @@ Fisma.Finding = {
             comment : comment.comment
         };
 
+        this.commentTable = Fisma.Registry.get('comments');
+
         this.commentTable.addRow(commentRow);
         
         /*
@@ -8519,7 +8521,9 @@ Fisma.Incident = {
             username : comment.username,
             comment : comment.comment
         };
-        
+
+        this.commentTable = Fisma.Registry.get('comments');
+
         this.commentTable.addRow(commentRow);
         
         /*
@@ -8996,6 +9000,67 @@ Fisma.Module = {
         switchButton.setBusy(false);
     }
 };
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Ben Zheng <ben.zheng@reyosoft.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Provides organization related functionality
+     *
+     * @namespace Fisma
+     * @class Organization
+     */
+    var Organization = {
+        /**
+         * Organization type filter callback function
+         * It set the default organization type, store the selected organization type and refresh window with url 
+         *
+         * @method Organization.typeHandle
+         * @param event {String} The name of the event
+         * @param config {Array} An array of YAHOO.util.Event
+         */
+        typeHandle : function (event, config) {
+            // Set the selected organization type
+            var organizationTypeFilter = YAHOO.util.Dom.get('orgTypeFilter');
+            var selectedType = organizationTypeFilter.options[organizationTypeFilter.selectedIndex];
+
+            // Store the selected organizationTypeId to storage table
+            var orgTypeStorage = new Fisma.PersistentStorage(config.namespace);
+            orgTypeStorage.set('orgType', selectedType.value); 
+            orgTypeStorage.sync();
+
+            Fisma.Storage.onReady(function() {
+                // Construct the url and refresh the result after a user changes organization type
+                if (!YAHOO.lang.isUndefined(config) && config.url) {
+                    var url = config.url + '?orgTypeId=' + encodeURIComponent(selectedType.value);
+                    window.location.href = url;
+                }
+            });
+        }
+    };
+
+    Fisma.Organization = Organization;
+})();
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *
@@ -10047,6 +10112,93 @@ Fisma.Module = {
     };
 
     Fisma.PocTreeView = PTV;
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Ben Zheng <ben.zheng@reyosoft.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Generic storage class helps to manage global data.
+     * 
+     * @namespace Fisma
+     * @class Registry
+     */
+    var Registry = {
+        /**
+         * Registry object provides storage for shared objects.
+         */
+        _registry: {},
+
+        /**
+         * Get value for name
+         *
+         * @method Registry.get
+         * @param name {String}
+         * @return {String|Array|Object}
+         */
+        get: function(name) {
+            if (!YAHOO.lang.isString(name) || name === ""){
+                throw new TypeError("Registry.get(): Registry name must be a non-empty string.");
+            }
+
+            return this._registry[name];
+        },
+
+        /**
+         * Sets a registry with a given name and value.
+         *
+         * @method Registry.set
+         * @param name {String}
+         * @param value {String|Array|Object}
+         */
+        set: function(name, value) {
+            if (!YAHOO.lang.isString(name)){
+                throw new TypeError("Registry.set(): Registry name must be a string.");
+            }
+
+            if (YAHOO.lang.isUndefined(value)){
+                throw new TypeError("Registry.set(): Registry Value cannot be undefined.");
+            }
+
+            this._registry[name] = value;
+        },
+
+        /**
+         * Returns TRUE if the name is a named value in the registry,
+         * or FALSE if name was not found in the registry.
+         * 
+         * @param name {String}
+         */
+        isRegistered: function(name) {
+            if (!YAHOO.lang.isString(name) || name === ""){
+                throw new TypeError("Registry.isRegistered(): Registry name must be a non-empty string.");
+            }
+
+            return !YAHOO.lang.isUndefined(this._registry[name]) ? true : false;
+        }
+    };
+
+    Fisma.Registry = Registry;
 })();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
@@ -14182,6 +14334,33 @@ Fisma.TableFormat = {
 
             elCell.appendChild(checkbox);
         }        
+    },
+
+    /**
+     * A formatter which displays the size of file with unit
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatFileSize : function (elCell, oRecord, oColumn, oData) {
+        // Convert to number
+        var size = oData * 1;
+
+        if(YAHOO.lang.isNumber(size)) {
+            if (size < 1024) {
+                size = size + ' bytes';
+            } else if (size < (1024 * 1024)) {
+                size = (size / 1024).toFixed(1) + ' KB';
+            } else if (size < (1024 * 1024 * 1024)) {
+                size = (size / (1024 * 1024)).toFixed(1) + ' MB';
+            } else {
+                size = (size / (1024 * 1024 * 1024)).toFixed(1) + ' GB';
+            }
+
+            elCell.innerHTML = size;
+        }
     }
 };
 /**
@@ -14702,6 +14881,8 @@ Fisma.User = {
             comment : comment.comment
         };
 
+        this.commentTable = Fisma.Registry.get('comments');
+
         this.commentTable.addRow(commentRow);
 
         /*
@@ -15062,7 +15243,6 @@ Fisma.User = {
  */
  
 Fisma.Util = {
-    
     /**
      * Escapes the specified string so that it can be included in a regex without special characters affecting
      * the regex's meaning
@@ -15255,29 +15435,6 @@ Fisma.Util = {
                 } ); 
 
         return dialog;
-    },
-
-    /*
-     * Organizaton type filter callback function
-     * It set the default organization type, store the selected organization type and refresh window with url 
-     */
-    organizationTypeHandle : function (event, config) {
-            // Set the selected organization type   
-            var organizationTypeFilter = YAHOO.util.Dom.get('orgTypeFilter');
-            var selectedType = organizationTypeFilter.options[organizationTypeFilter.selectedIndex];
-
-            // Store the selected organizationTypeId to storage table
-            var orgTypeStorage = new Fisma.PersistentStorage(config.namespace);
-            orgTypeStorage.set('orgType', selectedType.value); 
-            orgTypeStorage.sync();
-
-        Fisma.Storage.onReady(function() {
-            // Construct the url and refresh the result after a user changes organization type                
-            if (!YAHOO.lang.isUndefined(config) && config.url) {
-                var url = config.url + '?orgTypeId=' + encodeURIComponent(selectedType.value);
-                window.location.href = url;
-            }
-        });
     }
 };
 /**
@@ -15326,6 +15483,8 @@ Fisma.Vulnerability = {
             username : comment.username,
             comment : comment.comment
         };
+
+        this.commentTable = Fisma.Registry.get('comments');
 
         this.commentTable.addRow(commentRow);
         

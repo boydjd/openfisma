@@ -52,7 +52,7 @@ Fisma_Format_Section::stopSection();
 
             var config = {namespace : "<?php echo $this->escape($this->namespace); ?>",
                           url : "<?php echo $this->escape($this->url); ?>"}; 
-            YAHOO.util.Event.addListener("orgTypeFilter", "change", Fisma.Util.organizationTypeHandle, config);
+            YAHOO.util.Event.addListener("orgTypeFilter", "change", Fisma.Organization.typeHandle, config);
         });
     });
 </script>
