@@ -66,6 +66,7 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
         $organizations = Doctrine_Query::create()
                             ->select('o.id')
                             ->from('Organization o')
+                            ->leftJoin('o.OrganizationType ot')
                             ->leftJoin('o.System s')
                             ->where("s.sdlcphase <> 'disposal' OR s.sdlcphase IS NULL")
                             ->execute();
@@ -74,7 +75,7 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
             ->from('Role r')
             ->setHydrationMode(Doctrine::HYDRATE_NONE)
             ->execute();
-
+        
         $organizationsCount = count($organizations)-1;
         $roleIdsCount = count($roleIds)-1;
 
@@ -87,7 +88,12 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
 
         for ($i = 1; $i <= $numUsers; $i++) {
             $user = array();
-            $user['reportingOrganizationId'] = $organizations[rand(0, $organizationsCount)]->id;
+            $reportingOrganizationId = -1;
+            do {
+                $reportingOrganizationId = rand(0, $organizationsCount)->id;
+                $reportingOrganizationId = ($organizations[$reportingOrganizationId]['OrganizationType']['nickname']=='System') ? -1 : $reportingOrganizationId; 
+            } while ($reportingOrganization < 0);
+            $user['reportingOrganizationId'] = $reportingOrganizationId;
             $user['roleId'] = $roleIds[rand(0, $roleIdsCount)][0];
             $user['username'] = 'generated' . $timestamp . '.' . $i;
             $user['email'] = 'openfisma-default-install@googlegroups.com';
