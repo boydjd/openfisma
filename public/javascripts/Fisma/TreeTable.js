@@ -290,7 +290,10 @@
                 });
             
                 // To fix the IE popup insecure warning window problem 
-                buttonDefinition.image = 'https://' + window.location.host + buttonDefinition.image;
+                if ( window.location.protocol == 'https:') {
+                    buttonDefinition.image = 'https://' + window.location.host + buttonDefinition.image;
+                }
+
                 button._button.style.background = 'url(' + buttonDefinition.image + ') 10% 50% no-repeat';
                 button._button.style.paddingLeft = '3em';
             }
