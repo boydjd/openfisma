@@ -145,6 +145,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         $this->_enforceAcl = false;
         parent::_viewObject();
         $this->_enforceAcl = true;
+        $this->view->links = parent::getViewLinks($this->view->subject);
     }
 
     /**
