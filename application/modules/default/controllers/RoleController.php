@@ -69,10 +69,10 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $screenName = $req->getParam('screen_name');
         
         $role = Doctrine::getTable('Role')->find($roleId);
-        $this->_acl->requirePrivilegeForObject('assignPrivileges', $role);
                 
         $existFunctions = $role->Privileges->toArray();
         if ('availableFunctions' == $do) {
+            $this->_acl->requirePrivilegeForObject('assignPrivileges', $role);
             $existFunctionIds = explode(',', $req->getParam('existFunctions'));
             $q = Doctrine_Query::create()
                  ->from('Privilege');
@@ -90,10 +90,12 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             $this->view->assign('functions', $availableFunctions);
             $this->render('funcoptions');
         } elseif ('existFunctions' == $do) {
+            $this->_acl->requirePrivilegeForObject('assignPrivileges', $role);
             $this->_helper->layout->setLayout('ajax');
             $this->view->assign('functions', $existFunctions);
             $this->render('funcoptions');
         } elseif ('update' == $do) {
+            $this->_acl->requirePrivilegeForObject('assignPrivileges', $role);
             $functionIds = $req->getParam('existFunctions');
             $errno = 0;
             if (!Doctrine::getTable('RolePrivilege')->findByRoleId($roleId)->delete()) {
@@ -129,6 +131,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             $this->view->assign('role', $role);
             $this->view->assign('screenList', $screenList);
             $this->view->assign('existFunctions', $existFunctions);
+            $this->view->assign('assignPrivilege', $this->_acl->hasPrivilegeForClass('assignPrivileges', 'Role'));
             $this->render('right');
         }
     }
@@ -140,7 +143,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
      */
      public function viewMatrixAction()
      {
-        $this->_acl->requirePrivilegeForClass('update', 'Role');
+        $this->_acl->requirePrivilegeForClass('read', 'Role');
 
         // Add button to save changes (submit form)
         $this->view->toolbarButtons = array();
@@ -157,14 +160,16 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->toolbarButtons[] = $expandAll;
         $this->view->toolbarButtons[] = $collapseAll;
-
-        $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Submit(
-            'saveChanges',
-            'Save Changes',
-            array(
-                'label' => 'Save Changes'
-            )
-        );
+        
+        if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
+            $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Submit(
+                'saveChanges',
+                'Save Changes',
+                array(
+                    'label' => 'Save Changes'
+                )
+            );
+        }
 
         // YUI data-table to show user
         $dataTable = new Fisma_Yui_DataTable_Local();

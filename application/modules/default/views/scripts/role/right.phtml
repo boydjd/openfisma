@@ -60,12 +60,18 @@ Fisma_Format_Section::startSection("Edit Privileges For Role&nbsp;&nbsp;$link");
     </table>
 </fieldset>
 <br>
-<table border="0" width="300" align="center">
-    <tr align="center">
-        <td><input type="submit" value="Update"></td>
-        <td><input type="reset" onClick="document.assign_right.reset();" value="Reset"></td>
-    </tr>
-</table>
+<?php
+if($this->assignPrivilege == true) {
+?>
+    <table border="0" width="300" align="center">
+        <tr align="center">
+            <td><input type="submit" value="Update"></td>
+            <td><input type="reset" onClick="document.assign_right.reset();" value="Reset"></td>
+            </tr>
+    </table>
+<?php
+}
+?>
 </form>
 
 <?php Fisma_Format_Section::stopSection(); ?>
