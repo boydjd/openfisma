@@ -74,7 +74,7 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
             ->from('Role r')
             ->setHydrationMode(Doctrine::HYDRATE_NONE)
             ->execute();
-        
+
         $organizationsCount = count($organizations)-1;
         $roleIdsCount = count($roleIds)-1;
 
@@ -91,7 +91,7 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
             do {
                 $reportingOrganizationId = rand(0, $organizationsCount)->id;
                 $reportingOrganizationId = (isset($organizations[$reportingOrganizationId]->systemId)) ? -1 : $reportingOrganizationId; 
-            } while ($reportingOrganization < 0);
+            } while ($reportingOrganizationId < 0);
             $user['reportingOrganizationId'] = $reportingOrganizationId;
             $user['roleId'] = $roleIds[rand(0, $roleIdsCount)][0];
             $user['username'] = 'generated' . $timestamp . '.' . $i;

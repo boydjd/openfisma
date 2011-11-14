@@ -971,7 +971,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $organizations = Doctrine::getTable('Organization')->getOrganizationSelectQuery(true)->execute();
         $selectArray = $this->view->systemSelect($organizations);
         $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
-        
+
         return $form;
     }
 
