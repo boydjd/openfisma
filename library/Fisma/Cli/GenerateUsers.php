@@ -89,8 +89,8 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
             $user = array();
             $reportingOrganizationId = -1;
             do {
-                $reportingOrganizationId = rand(0, $organizationsCount)->id;
-                $reportingOrganizationId = (isset($organizations[$reportingOrganizationId]->systemId)) ? -1 : $reportingOrganizationId; 
+                $reportingOrganizationId = rand(0, $organizationsCount);
+                $reportingOrganizationId = (empty($organizations[$reportingOrganizationId]->systemId)) ? $reportingOrganizationId : -1;
             } while ($reportingOrganizationId < 0);
             $user['reportingOrganizationId'] = $reportingOrganizationId;
             $user['roleId'] = $roleIds[rand(0, $roleIdsCount)][0];
