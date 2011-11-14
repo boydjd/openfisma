@@ -317,9 +317,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ),
                     array(
                         '',
-                        $basicLink . $orgName . '/threatLevel/enumIs/HIGH',
-                        $basicLink . $orgName . '/threatLevel/enumIs/MODERATE',
-                        $basicLink . $orgName . '/threatLevel/enumIs/LOW'
+                        $basicLink . '#ColumnLabel#/threatLevel/enumIs/HIGH',
+                        $basicLink . '#ColumnLabel#/threatLevel/enumIs/MODERATE',
+                        $basicLink . '#ColumnLabel#/threatLevel/enumIs/LOW'
                     ),
                     $systemCountInfo['parent_name'] . '<hr/>#columnReport#'
                 );
@@ -342,9 +342,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $childrenTotaled,
                         array(
                             '',
-                            $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/HIGH',
-                            $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/MODERATE',
-                            $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/LOW'
+                            $basicLink . '#ColumnLabel#/threatLevel/enumIs/HIGH',
+                            $basicLink . '#ColumnLabel#/threatLevel/enumIs/MODERATE',
+                            $basicLink . '#ColumnLabel#/threatLevel/enumIs/LOW'
                             ),
                         $thisParentOrg['name'] . '<hr/>#columnReport#'
                         );
