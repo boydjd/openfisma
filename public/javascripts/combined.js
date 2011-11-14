@@ -2897,7 +2897,9 @@ Note: I'm adding this into my branch of the GroupedDataTable code.  I created it
                         scope: this
                     }
                 });
-
+            
+                // To fix the IE popup insecure warning window problem 
+                buttonDefinition.image = window.location.protocol + '//' + window.location.host + buttonDefinition.image;
                 button._button.style.background = 'url(' + buttonDefinition.image + ') 10% 50% no-repeat';
                 button._button.style.paddingLeft = '3em';
             }
