@@ -211,9 +211,6 @@ class Fisma_String
      */
     static function plainTextToReportText($text)
     {
-        // Remove html tags
-        $text = preg_replace('/<.*?>/', ' ', $text);
-
         // Remove excess whitespace
         $text = preg_replace('/[ ]*(?>\r\n|\n|\x0b|\f|\r|\x85)[ ]*/', "\n", $text);
         $text = preg_replace('/\s+$/', '', $text);

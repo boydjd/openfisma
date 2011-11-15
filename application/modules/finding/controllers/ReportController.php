@@ -483,11 +483,27 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         // The ##ORGANIZATIONS## token should be replaced with the IDs of this users organizations
         $reportScript = str_replace('##ORGANIZATIONS##', implode(',', $myOrganizations), $reportScript);
 
+        if (!empty($reportConfig->htmlcolumns)) {
+            $htmlColumns = $reportConfig->htmlcolumns->toArray();
+        } else {
+            $htmlColumns = array();
+        }
+
         $dbh = Doctrine_Manager::connection()->getDbh();
         $rawResults = $dbh->query($reportScript, PDO::FETCH_ASSOC);
         $reportData = array();
 
         foreach ($rawResults as $rawResult) {
+
+            // Filter out html tag when the column is a htmlColumn
+            if (!empty($htmlColumns)) {
+                foreach ($rawResult as $columnName => $columnValue) {
+                    if (in_array($columnName, $htmlColumns)) {
+                        $rawResult[$columnName] = Fisma_String::htmlToPlainText($columnValue);
+                    }
+                }
+            }
+
             $reportData[] = $rawResult;
         }
 
@@ -510,17 +526,8 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         $report->setTitle($reportConfig->title)
                ->setData($reportData);
 
-        // Add each column, and check whether an HTML formatter is required
-        if (!empty($reportConfig->htmlcolumns)) {
-            $htmlColumns = $reportConfig->htmlcolumns->toArray();
-        } else {
-            $htmlColumns = array();
-        }
-
         foreach ($columns as $column) {
-            $htmlFormat = in_array($column, $htmlColumns) ? 'Fisma.TableFormat.formatHtml' : null;
-
-            $report->addColumn(new Fisma_Report_Column($column, true, $htmlFormat));
+            $report->addColumn(new Fisma_Report_Column($column, true));
         }
 
         $this->_helper->reportContextSwitch()->setReport($report);
