@@ -245,9 +245,9 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     
     /**
      * Get the basic items needed for an organization select UI: id, nickname and name
-     * Systems can be optionally excluded.
+	 *  (systems can be optionally excluded).
      * 
-     * $param bool @excludeSystem Optional, default to FALSE
+     * @param bool $excludeSystem Optional, default to FALSE
      * @return Doctrine_Query
      */
     public function getOrganizationSelectQuery($excludeSystem = false)
