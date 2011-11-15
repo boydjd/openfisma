@@ -424,7 +424,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         // Get a list of finding statistics for each POC
         $findingQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read')
                                   ->select('o.id, f.id, poc.id')
-                                  ->innerJoin('o.Findings f')
+                                  ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
                                   ->innerJoin('f.PointOfContact poc')
                                   ->groupBy('poc.id')
                                   ->orderBy('poc.id');
