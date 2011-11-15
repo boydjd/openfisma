@@ -14,49 +14,9 @@
         </form>
     <?php
     endif;
-    ?>
-    <div id="actors">
-        <table id="actorsTable">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <?php 
-                    if ($this->updateIncidentPrivilege): 
-                    ?>
-                        <th>Remove</th>
-                    <?php
-                    endif;
-                    ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                foreach ($this->actors as $actor):
-                ?>
-                    <tr>
-                        <td><?php echo $this->escape($this->userInfo($actor['a_username']), 'none'); ?></td>
-                        <td><?php echo $this->escape($actor['a_nameFirst']); ?></td>
-                        <td><?php echo $this->escape($actor['a_nameLast']); ?></td>
-                        <?php 
-                        if ($this->updateIncidentPrivilege): 
-                            $removeLink  = '/incident/remove-user'
-                                         . '/incidentId/' . $this->id
-                                         . '/userId/' . $actor['a_id'];
-                        ?>
-                        <td><a href="<?php echo $this->escape($removeLink, 'none')?>">Remove</a></td>
-                        <?php
-                        endif;
-                        ?>
-                    </tr>                
-                <?php
-                endforeach;
-                ?>
-            </tbody>
-        </table>
-    </div>
-    <?php
+
+    echo $this->escape($this->actorDataTable, 'none');
+
     Fisma_Format_Section::stopSection();
     ?>
 </div>
@@ -77,106 +37,9 @@
     </form>
     <?php
     endif;
-    ?>
-    <div id="observers">
-        <table id="observersTable">
-            <thead>
-                <tr>
-                    <th>Username</th>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <?php 
-                    if ($this->updateIncidentPrivilege): 
-                    ?>
-                        <th>Remove</th>
-                    <?php
-                    endif;
-                    ?>
-                </tr>
-            </thead>
-            <tbody>
-                <?php
-                foreach ($this->observers as $observer):
-                ?>
-                    <tr>
-                        <td><?php echo $this->escape($this->userInfo($observer['o_username']), 'none'); ?></td>
-                        <td><?php echo $this->escape($observer['o_nameFirst']); ?></td>
-                        <td><?php echo $this->escape($observer['o_nameLast']); ?></td>
-                        <?php 
-                        if ($this->updateIncidentPrivilege): 
-                            $removeLink = '/incident/remove-user'
-                                        . '/incidentId/' . $this->id
-                                        . '/userId/' . $observer['o_id'];
-                        ?>
-                             <td><a href="<?php echo $this->escape($removeLink, 'none')?>">Remove</a></td>
-                        <?php
-                        endif;
-                        ?>
-                    </tr>                
-                <?php
-                endforeach;
-                ?>
-            </tbody>
-        </table>
-    </div>
-    <?php
+
+    echo $this->escape($this->observerDataTable, 'none');
+
     Fisma_Format_Section::stopSection();
     ?>    
 </div>
-
-<script type="text/javascript">
-// Convert actors table to YUI table
-YAHOO.util.Event.onContentReady('actors', function() {
-    var myColumnDefs = [
-        {key:'username', label:'Username', formatter: 'html', sortable:true},
-        {key:'nameFirst', label:'First Name', sortable:true},
-        {key:'nameLast', label:'Last Name', sortable:true}
-<?php if ($this->updateIncidentPrivilege): ?>
-        ,{key:'remove', label:'Remove', sortable:false}
-<?php endif; ?>
-    ];
-
-    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("actorsTable"));
-    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
-    this.myDataSource.responseSchema = {
-        fields: [
-            {key:'username'},
-            {key:'nameFirst'},
-            {key:'nameLast'}
-<?php if ($this->updateIncidentPrivilege): ?>
-            ,{key: 'remove'}
-<?php endif; ?>
-        ]
-    };
-
-    this.myDataTable = new YAHOO.widget.DataTable("actors", myColumnDefs, this.myDataSource, {});
-});
-
-// Convert observers table to YUI table
-YAHOO.util.Event.onContentReady('observers', function() {
-    var myColumnDefs = [
-        {key:'username', label:'Username', formatter:'html', sortable:true},
-        {key:'nameFirst', label:'First Name', sortable:true},
-        {key:'nameLast', label:'Last Name', sortable:true}
-        <?php if ($this->updateIncidentPrivilege): ?>
-            ,{key:'remove', label:'Remove', sortable:false}
-        <?php endif; ?>        
-    ];
-
-    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("observersTable"));
-    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
-    this.myDataSource.responseSchema = {
-        fields: [
-            {key:'username'},
-            {key:'nameFirst'},
-            {key:'nameLast'}
-            <?php if ($this->updateIncidentPrivilege): ?>
-                ,{key: 'remove'}
-            <?php endif; ?>
-        ]
-    };
-
-    this.myDataTable = new YAHOO.widget.DataTable("observers", myColumnDefs, this.myDataSource, {});
-});
-
-</script>

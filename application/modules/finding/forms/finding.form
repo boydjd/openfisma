@@ -38,6 +38,10 @@ elements.pocAutocomplete.options.attribs.setupCallback = "Fisma.Finding.setupPoc
 elements.pocAutocomplete.options.tooltip = "<b>Point Of Contact</b><p>A point of contact is a person who is assigned responsibility for this finding. All existing users of this sytem are eligible to be points of contact. In addition, the administrator of this system can add additional points of contact as needed.</p>"
 displayGroups.finding.elements.pocAutocomplete = "pocAutocomplete"
 
+elements.pocId.type = "hidden"
+elements.pocId.options.id = "pocId"
+displayGroups.finding.elements.pocId = "pocId"
+
 elements.sourceId.type = "select"
 elements.sourceId.options.label = "Finding Source"
 elements.sourceId.options.required = true

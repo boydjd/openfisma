@@ -4,79 +4,8 @@
 
 <?php
 Fisma_Format_Section::startSection('Artifacts');
-?>
 
-<div id='artifacts'>
-    <table id='artifactsTable'>
-        <?php
-        foreach ($this->artifacts as $artifact):
-            $downloadUrl = '/incident/download-artifact/id/'
-                         . $this->id
-                         . '/artifactId/'
-                         . $artifact['id'];
-        ?>
-            <tr>
-                <td>
-                    <a href='<?php echo $this->escape($downloadUrl, 'none'); ?>'>
-                        <img src='<?php echo $this->escape($artifact['iconUrl']) ?>'>
-                    </a>
-                </td>
-                <td>
-                    <a href='<?php echo $this->escape($downloadUrl) ?>'>
-                        <div>
-                            <?php echo $this->escape($artifact['fileName']); ?>
-                        </div>
-                    </a>
-                </td>
-                <td>
-                    <?php echo $this->escape($artifact['fileSize']); ?>
-                </td>
-                <td>
-                    <?php echo $this->escape($this->userInfo($artifact['User']['username']), 'none'); ?>
-                </td>
-                <td>
-                    <?php echo $this->escape($artifact['createdTs']); ?>
-                </td>
-                <td>
-                    <?php echo $this->escape($this->textToHtml($this->escape($artifact['comment'])), 'none'); ?>
-                </td>
-            </tr>
-        <?php
-        endforeach;
-        ?>
+echo $this->escape($this->dataTable, 'none');
 
-    </table>
-</div>
-
-<?php
 Fisma_Format_Section::stopSection();
 ?>
-
-<script type="text/javascript">
-// Convert the HTML table above into a YUI table
-YAHOO.util.Event.onContentReady('artifacts', function() {
-    var myColumnDefs = [
-        {key:'icon', label:'', sortable:false},
-        {key:'fileName', label:'File Name', sortable:true},
-        {key:'size', label:'Size', sortable:true},
-        {key:'uploadedBy', label:'Uploaded By', formatter:'html', sortable:true},
-        {key:'uploadDate', label:'Upload Date', sortable:true},
-        {key:'comment', label:'Comment', sortable:false}        
-    ];
-
-    this.myDataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("artifactsTable"));
-    this.myDataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
-    this.myDataSource.responseSchema = {
-        fields: [
-            {key:'icon'},
-            {key:'fileName'},
-            {key:'size'},
-            {key:'uploadedBy'},
-            {key:'uploadDate'},
-            {key:'comment'}
-        ]
-    };
-
-    this.myDataTable = new YAHOO.widget.DataTable("artifacts", myColumnDefs, this.myDataSource, {});
-});
-</script>

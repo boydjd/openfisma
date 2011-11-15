@@ -77,8 +77,9 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
                                       ->from('Organization o')
                                       ->leftJoin('o.System s')
                                       ->limit(50)
+                                      ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                                       ->execute();
-
+ 
         if (0 == count($this->_sampleOrganizations)) {
             throw new Fisma_Exception("Cannot generate sample data because the application has no organizations.");
         }
@@ -117,22 +118,25 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
         $saveProgressBar->update(0, "Save Systems");
 
         $currentSystem = 0;
-
+        $systemType = Doctrine::getTable('OrganizationType')->findOneByNickname('system', Doctrine::HYDRATE_ARRAY);
+        
         try {
             Doctrine_Manager::connection()->beginTransaction();
-
+           
             foreach ($systems as $system) {
                 $s = new System();
                 $s->merge($system);
 
                 $s->Organization = new Organization();
-                $s->Organization->orgType = 'system';
+                
+                $s->Organization->orgTypeId = $systemType['id'];
                 $s->Organization->merge($system);
                 $s->save();
-
+ 
                 $s->Organization->getNode()->insertAsLastChildOf($this->_getRandomOrganization());
                 $s->Organization->save();
 
+                $this->_setRoleOrganization($s->Organization->id);
                 $s->free();
                 unset($s);
 
@@ -154,6 +158,29 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
      */
     private function _getRandomOrganization()
     {
-        return $this->_sampleOrganizations[array_rand($this->_sampleOrganizations)];
+        $orgId = $this->_sampleOrganizations[array_rand($this->_sampleOrganizations)]['id'];
+        return Doctrine::getTable('Organization')->find($orgId);    
+    }
+
+    /**
+     * Assign the generated organzation to an admin user if it exists
+     * 
+     * @return void
+     */
+    private function _setRoleOrganization($organizationId)
+    {
+        $adminRole = Doctrine::getTable('Role')->findOneByNickName('ADMIN', Doctrine::HYDRATE_ARRAY);
+        $userRole =  Doctrine::getTable('UserRole')->findOneByRoleId($adminRole['id'], Doctrine::HYDRATE_ARRAY);
+        if (empty($adminRole) || empty($userRole)) {
+            return;
+        }
+        
+        $userRoleOrganization = New UserRoleOrganization();
+        $userRoleOrganization->userRoleId = $userRole['userRoleId'];
+        $userRoleOrganization->organizationId = $organizationId;
+        
+        $userRoleOrganization->Save();
+        $userRoleOrganization->free();
+        unset($userRoleOrganization); 
     }
 }

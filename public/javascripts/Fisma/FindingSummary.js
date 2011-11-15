@@ -315,8 +315,15 @@
 
                 link = document.createElement('a');
                 cell.appendChild(link);
-                link.href = "/finding/remediation/list?q=/denormalizedStatus/textExactMatch/" 
-                          + encodeURIComponent(label);
+                if ("OPEN" == label) {
+                    link.href = "/finding/remediation/list?q=/denormalizedStatus/textNotExactMatch/CLOSED";
+                } else if ("TOTAL" == label) {
+                    // Pass a blank query, otherwise the saved settings of previous search will be used
+                    link.href = "/finding/remediation/list?q=/denormalizedStatus/textContains/";
+                } else {
+                    link.href = "/finding/remediation/list?q=/denormalizedStatus/textExactMatch/" 
+                              + encodeURIComponent(label);
+                }
                 link.appendChild(document.createTextNode(label));
 
                 row.appendChild(cell);

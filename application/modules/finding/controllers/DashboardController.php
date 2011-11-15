@@ -317,9 +317,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ),
                     array(
                         '',
-                        $basicLink . $orgName . '/threatLevel/enumIs/HIGH',
-                        $basicLink . $orgName . '/threatLevel/enumIs/MODERATE',
-                        $basicLink . $orgName . '/threatLevel/enumIs/LOW'
+                        $basicLink . '#ColumnLabel#/threatLevel/enumIs/HIGH',
+                        $basicLink . '#ColumnLabel#/threatLevel/enumIs/MODERATE',
+                        $basicLink . '#ColumnLabel#/threatLevel/enumIs/LOW'
                     ),
                     $systemCountInfo['parent_name'] . '<hr/>#columnReport#'
                 );
@@ -342,9 +342,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $childrenTotaled,
                         array(
                             '',
-                            $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/HIGH',
-                            $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/MODERATE',
-                            $basicLink . $thisParentOrg['nickname'] . '/threatLevel/enumIs/LOW'
+                            $basicLink . '#ColumnLabel#/threatLevel/enumIs/HIGH',
+                            $basicLink . '#ColumnLabel#/threatLevel/enumIs/MODERATE',
+                            $basicLink . '#ColumnLabel#/threatLevel/enumIs/LOW'
                             ),
                         $thisParentOrg['name'] . '<hr/>#columnReport#'
                         );
@@ -621,12 +621,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $toDayDiff = $dayRanges[$x];
             $toDay = new Zend_Date();
             $toDay->subDay($toDayDiff);
-            $toDayStr = $toDay->toString('YYY-MM-dd');
+            $toDayStr = $toDay->toString(Fisma_Date::FORMAT_DATE);
 
             $fromDayDiff = $dayRanges[$x+1] - 1;
             $fromDay = new Zend_Date();
             $fromDay->subDay($fromDayDiff);
-            $fromDayStr = $fromDay->toString('YYY-MM-dd');
+            $fromDayStr = $fromDay->toString(Fisma_Date::FORMAT_DATE);
 
             $q = Doctrine_Query::create();
             $q
@@ -968,16 +968,16 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $fromDayInt = $dayRange[$x+1];
             $fromDay = new Zend_Date();
             $fromDay = $fromDay->addDay(-$fromDayInt);
-            $fromDayStr = $fromDay->toString('YYY-MM-dd');
+            $fromDayStr = $fromDay->toString(Fisma_Date::FORMAT_DATE);
 
             $toDayInt = $dayRange[$x];
             $toDay = new Zend_Date();
             $toDay = $toDay->addDay(-$toDayInt);
-            $toDayStr = $toDay->toString('YYY-MM-dd');
+            $toDayStr = $toDay->toString(Fisma_Date::FORMAT_DATE);
 
             if ($x !== count($dayRange) - 2) {
                 $fromDay->addday(-1);
-                $fromDayStr = $fromDay->toString('YYY-MM-dd');
+                $fromDayStr = $fromDay->toString(Fisma_Date::FORMAT_DATE);
                 $fromDayInt--;
             }
             $thisColumnLabel = $toDayInt . '-' . $fromDayInt;
@@ -1175,7 +1175,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             $fromDay = new Zend_Date();
             $fromDay = $fromDay->addDay($dayRange[$x]);
-            $fromDayStr = $fromDay->toString('YYY-MM-dd');
+            $fromDayStr = $fromDay->toString(Fisma_Date::FORMAT_DATE);
 
             $toDay = new Zend_Date();
             $toDay = $toDay->addDay($dayRange[$x+1]);
@@ -1187,7 +1187,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisColumnLabel = $dayRange[$x] . '-' . ( $dayRange[$x + 1] - 1 );
             }
 
-            $toDayStr = $toDay->toString('YYY-MM-dd');
+            $toDayStr = $toDay->toString(Fisma_Date::FORMAT_DATE);
 
             // Get the count of High,Mod,Low findings
             $q = Doctrine_Query::create()
@@ -1237,17 +1237,17 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                             '/finding/remediation/list?q=' .
                             '/denormalizedStatus/textDoesNotContain/CLOSED' .
                             '/currentEcd/dateBetween/' . 
-                            $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
+                            $fromDay->toString(Fisma_Date::FORMAT_DATE).'/'.$toDay->toString(Fisma_Date::FORMAT_DATE) .
                             '/threatLevel/enumIs/HIGH',
                             '/finding/remediation/list?q=' .
                             '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                             '/currentEcd/dateBetween/' . 
-                            $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
+                            $fromDay->toString(Fisma_Date::FORMAT_DATE).'/'.$toDay->toString(Fisma_Date::FORMAT_DATE) .
                             '/threatLevel/enumIs/MODERATE',
                             '/finding/remediation/list?q=' . 
                             '/denormalizedStatus/textDoesNotContain/CLOSED' . 
                             '/currentEcd/dateBetween/' . 
-                            $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd') .
+                            $fromDay->toString(Fisma_Date::FORMAT_DATE).'/'.$toDay->toString(Fisma_Date::FORMAT_DATE) .
                             '/threatLevel/enumIs/LOW'
                             )
                             );
@@ -1255,7 +1255,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             // Note the links to set in the even this is a totals (basic-bar) chart
             $totalChartLinks[] = '/finding/remediation/list?q=' .
                 '/denormalizedStatus/textDoesNotContain/CLOSED' . 
-                '/currentEcd/dateBetween/' . $fromDay->toString('YYYY-MM-dd').'/'.$toDay->toString('YYYY-MM-dd');
+                '/currentEcd/dateBetween/' . $fromDay->toString(Fisma_Date::FORMAT_DATE) . '/'
+                . $toDay->toString(Fisma_Date::FORMAT_DATE);
         }
 
         // Show, hide and filter chart data as requested
