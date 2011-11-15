@@ -136,13 +136,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             if (!is_null($step) && $step != 0 && $step < 8) {
                 $subForm = $this->getFormPart($step);
                 
-                // Add a customerized error message to the "Describe the incident" field 
-                $descIncidentValidator = new Fisma_Zend_Form_Validate_MceNotEmpty();
-                $descIncidentValidator->setMessage('You must enter a description of the incident to continue.');
+                // Add a customized error message to the "Describe the incident" field 
                 $descIncidentElement = $subForm->getElement('additionalInfo');
                 if (!empty($descIncidentElement)) {
-                    $descIncidentElement->removeValidator('MceNotEmpty');
-                    $descIncidentElement->addValidator($descIncidentValidator);
+                    $descIncidentValidator = $descIncidentElement->getValidator('MceNotEmpty');
+                    $descIncidentValidator->setMessage('You must enter a description of the incident to continue.');
                 }
 
                 $subFormValid = $subForm->isValid($this->_request->getPost());
