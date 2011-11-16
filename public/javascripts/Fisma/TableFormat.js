@@ -416,9 +416,11 @@ Fisma.TableFormat = {
                 Dom.addClass(label, "checked");
             }
 
-            input.checked = (!input.checked);
+            if (!input.checked) {
+                input.click();
+            }
         });
-
+        
         Event.addListener(label, "mouseover", function(){
             Dom.addClass(label, "hover");
             if (input.checked) {
@@ -429,8 +431,7 @@ Fisma.TableFormat = {
         Event.addListener(label, "mouseout", function(e) {
             Dom.removeClass(label, "hover");
             Dom.removeClass(label, 'checkedHover');
-        });
-
+        }); 
         elCell.appendChild(container);
     }
 };

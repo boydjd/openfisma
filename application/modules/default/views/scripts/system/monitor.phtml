@@ -1,19 +1,26 @@
 <?php
 Fisma_Format_Section::startSection('Assigned Information Types');
 ?>
+<div class="column left">
 <table>
 <tr>
 <th colspan="2" id='assessmentType'>Assessment Types</th>
 </tr>
 <tr>
 <td id='acm'>
-Annual Continuous Monitoring Assessment Tab
+Annual Continuous Monitoring Assessment
 </td>
 <td id='re-auth'>
-Re-authorization Assessment Tab
+Re-authorization Assessment
 </td>
 </tr>
 </table>
+</div>
+
+<div class="column right" id="monitor_submit_div" style="display: none;"> 
+    <button id="monitor_submit" type="button"> Submit Tests </button>
+</div>
+
 <?php
 Fisma_Format_Section::stopSection();
 ?>
@@ -140,10 +147,12 @@ Fisma_Format_Section::stopSection();
 ?>
 <script type="text/javascript">
     var Event = YAHOO.util.Event;
+    var controlDataTable;
     Event.onContentReady('systemSecurityControlsData', function() {
         var columnDefs = [
             { key: "control", label: "800-53<br>CONTROL<br>IDENTIFIER", sortable: false },
-            { key: "selectControl", label: "Select System<br>Security Control for<br>assessment this year", sortable: false, formatter: Fisma.TableFormat.checkboxFormatter}
+            { key: "selectControl", label: "Select System<br>Security Control for<br>assessment this year", 
+              sortable: false, formatter: Fisma.TableFormat.checkboxFormatter}
         ];
 
         var dataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("systemSecurityControlsTable"));
@@ -154,15 +163,44 @@ Fisma_Format_Section::stopSection();
                     ]  
         };
 
-        var dataTable = new YAHOO.widget.DataTable("systemSecurityControlsData", columnDefs, dataSource);
+        controlDataTable = new YAHOO.widget.DataTable("systemSecurityControlsData", columnDefs, dataSource);
+        var submitButton = new YAHOO.widget.Button("monitor_submit");
+        
+        // Highlight/unhighlight rows in response to checkbox clicks
+        controlDataTable.subscribe("checkboxClickEvent", function (clickEvent) {
+            var target = clickEvent.target;
+            var checked = target.checked;
+            var record = this.getRecord(target);
+                
+            this.getRecordSet().updateRecordValue(record, 'checked', checked);
+                
+            if (checked) {
+                this.selectRow(record);
+            } else {
+                this.unselectRow(record);
+            }
+        });
     });
-
+    
     Event.addListener("acm", "click", function(){
         var ssc = YAHOO.util.Dom.get('selectSystemSecurityControls');
+        var submitButton = YAHOO.util.Dom.get('monitor_submit_div');
+
         if (ssc.style.display === 'block') {
             ssc.style.display = 'none';
+            submitButton.style.display = 'none';
         } else {
-            ssc.style.display = 'block';
+           ssc.style.display = 'block';
+           submitButton.style.display = 'block';
         }
+    });
+
+    Event.addListener("monitor_submit-button", "click", function(){
+        var selectedRows = controlDataTable.getSelectedRows();
+
+        for (var i = 0; i < selectedRows.length; i++) {
+            controlDataTable.deleteRow(selectedRows[i]);
+         }
+
     });
 </script>
