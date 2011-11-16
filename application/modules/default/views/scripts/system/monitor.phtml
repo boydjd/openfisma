@@ -1,7 +1,7 @@
 <?php
 Fisma_Format_Section::startSection('Assigned Information Types');
 ?>
-<div class="column left">
+<div class="left">
 <table>
 <tr>
 <th colspan="2" id='assessmentType'>Assessment Types</th>
@@ -17,7 +17,7 @@ Re-authorization Assessment
 </table>
 </div>
 
-<div class="column right" id="monitor_submit_div" style="display: none;"> 
+<div id="monitor_submit_div" style="display: none;"> 
     <button id="monitor_submit" type="button"> Submit Tests </button>
 </div>
 
@@ -152,7 +152,7 @@ Fisma_Format_Section::stopSection();
         var columnDefs = [
             { key: "control", label: "800-53<br>CONTROL<br>IDENTIFIER", sortable: false },
             { key: "selectControl", label: "Select System<br>Security Control for<br>assessment this year", 
-              sortable: false, formatter: Fisma.TableFormat.checkboxFormatter}
+              sortable: false, formatter: Fisma.TableFormat.formatCheckbox}
         ];
 
         var dataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("systemSecurityControlsTable"));

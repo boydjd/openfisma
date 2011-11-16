@@ -706,44 +706,17 @@ table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th
 }
 
 /*  Style for the checkbox on monitor page */
-.custom-checkbox { position: relative; }
-
-.custom-checkbox input {
-    position: absolute;
-    left: 2px;
-    top: 3px;
-    margin: 0;
-    z-index: 0;
-}
-
-.custom-checkbox label {
-    background: url(/images/of_checkbox.png) -14px -17px no-repeat;
-    display: block;
-    position: relative;
-    z-index: 1;
-    font-size: 1.3em;
-    padding: .5em 0 1em 30px;
-    cursor: pointer;
-}
-
-.custom-checkbox label.hover {
-    background-position: -14px -117px;
-}
-
-.custom-checkbox label.checked {
-    background-position: -14px -217px;
-}
-
-.custom-checkbox label.checkedHover {
-    background-position: -14px -317px;
-}
-
 #assessmentType {
     background-color:#ccc;
-    height: 40px'
+    height: 30px;
 }
 
 #acm, #re-auth {
     height: 25px;
     cursor: pointer;
+}
+
+#monitor_submit_div {
+    float: left;
+    margin: 20px 0 0 20px;
 }
