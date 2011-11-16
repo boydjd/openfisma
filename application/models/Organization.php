@@ -379,9 +379,9 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
 
             // It needs to delete the child system's aggregateSystemId before converting it to an organization
             $updateSystemQuery = Doctrine_Query::create()
-                                ->update('System')
-                                ->set('aggregateSystemId', 'NULL')
-                                ->where('aggregateSystemId = ?', $system->id);
+                                 ->update('System')
+                                 ->set('aggregateSystemId', 'NULL')
+                                 ->where('aggregateSystemId = ?', $system->id);
 
             $updateSystemQuery->execute();
 
