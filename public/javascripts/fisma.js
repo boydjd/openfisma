@@ -167,6 +167,13 @@ var readyFunc = function () {
     asset_detail();
     //
     getProdId();
+
+    // Add listener to close message bar
+    YAHOO.util.Event.on('closeMsg', 'click', function() {
+        var msgbar = document.getElementById('msgbar'); 
+        msgbar.style.display = 'none';
+        return false;
+    });
 }
 
 function search_function() {
@@ -285,7 +292,7 @@ function message(msg, model, clear) {
     }
 
     msgbar.style.fontWeight = 'bold';
-    
+ 
     if( model == 'warning')  {
         msgbar.style.color = 'red';
         msgbar.style.borderColor = 'red';
@@ -295,6 +302,7 @@ function message(msg, model, clear) {
         msgbar.style.borderColor = 'green';
         msgbar.style.backgroundColor = 'lightgreen';
     }
+
     msgbar.style.display = 'block';
 }
 

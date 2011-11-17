@@ -264,6 +264,7 @@ table.keyValues td,table.keyValues th,table.fisma_crud td,table.fisma_crud th{bo
 .eventNotifyBlock select{width:250px;}
 #event_form td{border-style:none;}
 #assign_right td{border-style:none;}
+div#closeMsg{cursor:pointer;margin-right:5px;float:right;font-size:20px;}
 body,td,pre{font:13px/1.231 arial,helvetica,clean,sans-serif!important;}
 .mceItemTable td,.mceItemTable th,.mceItemTable caption,.mceItemVisualAid{border:1px solid black;padding:.5em;}
 .mceItemTable,.mceItemTable table{border:none!important;padding:0;border-collapse:collapse;}
