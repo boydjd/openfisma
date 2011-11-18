@@ -918,13 +918,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }
         // build up tree
         foreach ($systems as $k => $v) {
-            if (!empty($v['parent'])) {
+            if (!empty($v['parent']) && !empty($systems[$v['parent']])) {
                 $systems[$v['parent']]['children'][] =& $systems[$k];
-            }
-        }
-        // remove non-top-level nodes from set
-        foreach ($systems as $k => $v) {
-            if (!empty($v['parent'])) {
                 unset($systems[$k]);
             }
         }
