@@ -21,7 +21,7 @@ try {
     $notify->processNotificationQueue();
     print ("Notify finished at " . Fisma::now() . "\n");
 } catch (Exception $e) {
-    print "Attempt to send notifications failed with the following error: {" . $e->getMessage() . "}\n";
+    print("Sending notifications failed at " . Fisma::now() . " with the following error: {" . $e->getMessage() . "}\n");
 }
 
 /**
