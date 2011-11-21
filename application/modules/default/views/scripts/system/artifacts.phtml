@@ -2,6 +2,18 @@
 echo $this->escape($this->uploadPanelButton, 'none');
 echo $this->escape($this->generateScdButton, 'none');
 
+$additionalDocuments = array('SSP', 'RAR', 'ICSP', 'SAR', 'Executive Summary', 'ASSR');
+foreach ($additionalDocuments as $additionalDocument) {
+    $generateButton = new Fisma_Yui_Form_Button_Link(
+        "generate{$additionalDocument}Button",
+        array(
+            'value' => "Generate {$additionalDocument}",
+            'href' => '#'
+        ));
+
+    echo $this->escape($generateButton, 'none');
+}
+
 Fisma_Format_Section::startSection('System Documentation');
 ?>
 <div id="systemDocumentArtifacts">
