@@ -780,4 +780,15 @@ class User extends BaseUser
 
         return $userRolesResult;
     }
+
+    /**
+     * Update the notification timestamp to control how frequently emails should be sent
+     *
+     * @return void
+     */
+    public function updateNotificationTs()
+    {
+        $this->mostRecentNotifyTs = Fisma::now();
+        $this->save();
+    }
 }
