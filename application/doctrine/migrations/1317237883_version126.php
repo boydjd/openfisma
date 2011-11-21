@@ -85,7 +85,11 @@ class Version126 extends Doctrine_Migration_Base
         $this->createForeignKey(
             'system',
             'system_aggregatesystemid_system_id',
-            array('local' => 'aggregatesystemid', 'foreign' => 'id', 'foreignTable' => 'system')
+            array('local' => 'aggregatesystemid',
+                'foreign' => 'id',
+                'foreignTable' => 'system',
+                'onDelete' => 'SET NULL'
+            )
         );
         $this->createForeignKey(
             'poc',
