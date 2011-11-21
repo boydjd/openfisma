@@ -17,18 +17,6 @@
  */
 
 /**
- * Indicates that we're running a command line tool, not responding to an http
- * request. This prevents the interface from being rendered.
- */
-try {
-    $ecdNotifier = new ECDNotifier();
-    $ecdNotifier->run();
-    print ("ECDNotifier finished at " . Fisma::now() . "\n");
-} catch (Exception $e) {
-    print $e->getMessage();
-}
-
-/**
  * This class scans for any findings which have ECDs expiring today, in 7 days,
  * 14 days, or 21 days, and creates notifications for each of these events.
  *
@@ -40,44 +28,8 @@ try {
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Cron_Job
  */
-class ECDNotifier
+class Fisma_Cli_ECDNotifier
 {
-    /**
-     * Default constructor
-     * 
-     * @return void
-     */
-    public function __construct()
-    {
-        defined('APPLICATION_ENV')
-            || define(
-                'APPLICATION_ENV',
-                (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
-            );
-        defined('APPLICATION_PATH') || define(
-            'APPLICATION_PATH',
-            realpath(dirname(__FILE__) . '/../../application')
-        );
-
-        set_include_path(
-            APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR .
-            APPLICATION_PATH . '/../library' .  PATH_SEPARATOR .
-            get_include_path()
-        );
-
-        require_once 'Fisma.php';
-        require_once 'Zend/Application.php';
-
-        $application = new Zend_Application(
-            APPLICATION_ENV,
-            APPLICATION_PATH . '/config/application.ini'
-        );
-        Fisma::setAppConfig($application->getOptions());
-        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-        Fisma::setConfiguration(new Fisma_Configuration_Database());
-        $application->bootstrap('Db');
-    }
-
     /**
      * Iterate through all findings in the system and create
      * notifications for those which have ECDs expiring today,

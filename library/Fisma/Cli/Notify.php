@@ -16,14 +16,6 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-try {
-    $notify = new Notify();
-    $notify->processNotificationQueue();
-    print ("Notify finished at " . Fisma::now() . "\n");
-} catch (Exception $e) {
-    print $e->getMessage();
-}
-
 /**
  * This static class is responsible for scanning for notifications which need to
  * be delivered, delivering the notifications, and then removing the sent
@@ -37,45 +29,8 @@ try {
  * @todo       Needs cleanup
  * @todo       Needs to be adjusted for timezone difference between DB and application when displaying timestamps
  */
-class Notify
+class Fisma_Cli_Notify
 {
-    /**
-     * Default constructor
-     * 
-     * @return void
-     */
-    public function __construct()
-    {
-        defined('APPLICATION_ENV')
-            || define(
-                'APPLICATION_ENV',
-                (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
-            );
-        defined('APPLICATION_PATH') || define(
-            'APPLICATION_PATH',
-            realpath(dirname(__FILE__) . '/../../application')
-        );
-
-        set_include_path(
-            APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR .
-            APPLICATION_PATH . '/../library' .  PATH_SEPARATOR .
-            get_include_path()
-        );
-
-        require_once 'Fisma.php';
-        require_once 'Zend/Application.php';
-
-        $application = new Zend_Application(
-            APPLICATION_ENV,
-            APPLICATION_PATH . '/config/application.ini'
-        );
-        Fisma::setAppConfig($application->getOptions());
-        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-        Fisma::setConfiguration(new Fisma_Configuration_Database());
-        $application->bootstrap('Db');
-        $application->bootstrap('SearchEngine');
-    }
-    
     /**
      * Iterate through the users and check who has notifications pending.
      * 
@@ -101,8 +56,9 @@ class Notify
         $query->select('{n.eventtext}, {n.createdts}, {u.email}, {u.nameFirst}, {u.nameLast}')
               ->addComponent('n', 'Notification n')
               ->addComponent('u', 'n.User u')
-              ->from('user u INNER JOIN notification n on u.id = n.userid')
-              ->where(
+              ->from('poc u INNER JOIN notification n on u.id = n.userid')
+              ->where('u.type = "User"')
+              ->andWhere(
                   '(u.mostrecentnotifyts IS NULL OR u.mostrecentnotifyts <= DATE_SUB(NOW(), 
                   INTERVAL u.notifyFrequency HOUR))'
               )
@@ -126,14 +82,13 @@ class Notify
                 || ($notifications[$i]->userId !=
                     $notifications[$i+1]->userId)) {
 
-                Notify::sendNotificationEmail($currentNotifications);
-                Notify::purgeNotifications($currentNotifications);
-                Notify::updateUserNotificationTimestamp($notifications[$i]->userId);
+                self::sendNotificationEmail($currentNotifications);
+                self::purgeNotifications($currentNotifications);
+                self::updateUserNotificationTimestamp($notifications[$i]->userId);
 
                 // Move onto the next user
                 $currentNotifications = array();
             }
-
         }
     }
 
