@@ -44,7 +44,9 @@ class Sa_DashboardController extends Fisma_Zend_Controller_Action_Security
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Open Findings', true));
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('ATO Expiration', true));
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Annual Due', true));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Id', false, null, null, 'Id', true));
         $dataTable->setData($this->_getTableData());
+        $dataTable->addEventListener('cellClickEvent', 'Fisma.SecurityAuthorization.linkToSystem');
         $this->view->dataTable = $dataTable;
 
         // left-side chart (bar) - Finding Status chart
@@ -117,7 +119,8 @@ class Sa_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $system->fipsCategory,
                 $openFindingsByOrgQuery->count($system->Organization->id),
                 $atoExpiration,
-                $annualDue
+                $annualDue,
+                $system->id
             );
         }
 

@@ -302,6 +302,33 @@ Fisma.SecurityAuthorization = {
         var controlId = args.record.getData().definition_id;
         var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId, this);
         dialog.show();
+    },
+
+    /**
+     * The click event on datatable row which links to a system
+     * 
+     * @param event
+     * @return void
+     */
+    linkToSystem: function (clickEvent) {
+        var targetEl = clickEvent.target;
+        var rowData = this.getRecord(targetEl);
+
+        var url = "/system/view/id/"
+                + escape(rowData._oData['Id']);
+
+        // A shift+click pops up a new window for the record view
+        if (clickEvent.event.shiftKey) {
+            var popup = window.open(url);
+
+            // A shift+alt+click will pop under a new window for the record view
+            if (clickEvent.event.altKey) {
+                popup.blur();
+                window.focus();
+            }
+        } else {
+            document.location = url;
+        }
     }
 }
 

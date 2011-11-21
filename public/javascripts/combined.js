@@ -755,7 +755,6 @@ return r.join("\n");}};this.PHP_JS=PHP_JS;}());/**
 tinyMCE.init({
 	theme : "advanced",
 	mode : "textareas",
-	cleanup : false,
 	element_format : "html",
 	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen, table",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",
@@ -769,7 +768,7 @@ tinyMCE.init({
 	                           bullist, numlist, |, \
 	                           outdent, indent, |, \
 	                           spellchecker, search, replace, |, \
-	                           link, unlink, print, fullscreen",
+	                           link, unlink, print, fullscreen, cleanup",
 	theme_advanced_buttons2 : "tablecontrols",
 	theme_advanced_buttons3 : "",
 	theme_advanced_toolbar_location : "top",
@@ -12545,6 +12544,33 @@ Fisma.SecurityAuthorization = {
         var controlId = args.record.getData().definition_id;
         var dialog = new Fisma.SecurityAuthorization.EditEnhancementsDialog(saId, controlId, this);
         dialog.show();
+    },
+
+    /**
+     * The click event on datatable row which links to a system
+     * 
+     * @param event
+     * @return void
+     */
+    linkToSystem: function (clickEvent) {
+        var targetEl = clickEvent.target;
+        var rowData = this.getRecord(targetEl);
+
+        var url = "/system/view/id/"
+                + escape(rowData._oData['Id']);
+
+        // A shift+click pops up a new window for the record view
+        if (clickEvent.event.shiftKey) {
+            var popup = window.open(url);
+
+            // A shift+alt+click will pop under a new window for the record view
+            if (clickEvent.event.altKey) {
+                popup.blur();
+                window.focus();
+            }
+        } else {
+            document.location = url;
+        }
     }
 }
 
@@ -14241,54 +14267,6 @@ Fisma.TableFormat = {
         var textNode = document.createTextNode(truncatedText);
 
         elCell.appendChild(textNode);
-    },
-
-    /**
-     * Custom designed checkbox inputs styled with CSS.
-     * 
-     * @param elCell Reference to a container inside the <td> element
-     * @param oRecord Reference to the YUI row object
-     * @param oColumn Reference to the YUI column object
-     * @param oData The data stored in this cell
-     */
-    checkboxFormatter: function (elCell, oRecord, oColumn, oData) {
-        var Event = YAHOO.util.Event, 
-            Dom = YAHOO.util.Dom;
-
-        var container = document.createElement('div');
-        container.className = "custom-checkbox";
-
-        var input = document.createElement('input');
-        input.type = "checkbox";
-        container.appendChild(input);
-
-        var label = document.createElement('label');
-        container.appendChild(label);
-
-        Event.addListener(label, "click", function(){
-            if (Dom.hasClass(label, "checked")) {
-                Dom.removeClass(label, "checked");
-                Dom.removeClass(label, 'checkedHover');
-            } else {
-                Dom.addClass(label, "checked");
-            }
-
-            input.checked = (!input.checked);
-        });
-
-        Event.addListener(label, "mouseover", function(){
-            Dom.addClass(label, "hover");
-            if (input.checked) {
-                Dom.addClass(label, 'checkedHover'); 
-            }
-        });
-
-        Event.addListener(label, "mouseout", function(e) {
-            Dom.removeClass(label, "hover");
-            Dom.removeClass(label, 'checkedHover');
-        });
-
-        elCell.appendChild(container);
     }
 };
 /**
