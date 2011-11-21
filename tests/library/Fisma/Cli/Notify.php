@@ -59,14 +59,16 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
             array(
                 'sendNotificationEmail',
                 'purgeNotifications',
+                'getNotificationQuery'
             )
         );
 
         //Expect 2 e-mails for 3 jobs as the $job1 and $job2 are for the same user
         $notify->expects($this->exactly(2))->method('sendNotificationEmail');
         $notify->expects($this->exactly(2))->method('purgeNotifications');
+        $notify->expects($this->once())->method('getNotificationQuery')->will($this->returnValue($query));
 
-        $notify->processNotificationQueue($query);
+        $notify->processNotificationQueue();
     }
 
     /**

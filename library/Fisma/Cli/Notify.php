@@ -65,13 +65,12 @@ class Fisma_Cli_Notify
     /**
      * Iterate through the users and check who has notifications pending.
      * 
-     * @param Doctrine_Query $query Optional, currently expecting Doctrine_RawSql
      * @return void
      * @todo log the email send results
      */
-    function processNotificationQueue($query = null) 
+    function processNotificationQueue() 
     {
-        $query = (isset($query)) ? $query : $this->getNotificationQuery();
+        $query = $this->getNotificationQuery();
         $notifications = $query->execute();
 
         // Loop through the groups of notifications, concatenate all messages

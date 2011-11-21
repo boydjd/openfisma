@@ -31,12 +31,11 @@
 class Fisma_Cli_ECDNotifier
 {
     /**
-     * Iterate through all findings in the system and create
-     * notifications for those which have ECDs expiring today,
+     * Build the query
      * 
-     * @return void
+     * @return Doctrine_Query
      */
-    static function run() 
+    public function getQuery()
     {
         $expirationDates = array(
             Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE),
@@ -52,6 +51,18 @@ class Fisma_Cli_ECDNotifier
                     ->where('f.status != ?', 'CLOSED')
                     ->andWhereIn('f.currentEcd', $expirationDates);
 
+        return $query;
+    }
+
+    /**
+     * Iterate through all findings in the system and create
+     * notifications for those which have ECDs expiring today,
+     * 
+     * @return void
+     */
+    function run()
+    {
+        $query = $this->getQuery();
         $expiringFindings = $query->execute();
         // Now iterate through the findings and create the appropriate
         // notifications
@@ -74,9 +85,22 @@ class Fisma_Cli_ECDNotifier
                 default:
                     // This should never happen, because the query is written
                     // to exclude it.
-                    throw new Exception("ECD Notifier has an internal error.");
+                    throw new Fisma_Zend_Exception("ECD Notifier has an internal error.");
             }
-            Notification::notify($notificationType, $finding, null);
+            $this->notify($notificationType, $finding);
         }
+    }
+
+    /**
+     * A wrapper for Notification::notify, extracted to make run() testable
+     * 
+     * @param String $notificationType 
+     * @param Doctrine_Record $finding          
+     * 
+     * @return void
+     */
+    function notify($notificationType, $finding)
+    {
+        Notification::notify($notificationType, $finding, null);
     }
 }
