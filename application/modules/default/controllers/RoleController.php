@@ -45,9 +45,6 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $links = array();
         
         if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
-            $links['Privileges'] = "{$this->_moduleName}/{$this->_controllerName}"
-                                 . "/right/id/{$subject->id}";
-            
             $links['Edit Privilege Matrix'] = '/role/view-matrix';
         }
         
@@ -56,86 +53,6 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         return $links;
     }
     
-    /**
-     * Assign privileges to a single role
-     * 
-     * @return void
-     */
-    public function rightAction()
-    {   
-        $req = $this->getRequest();
-        $do = $req->getParam('do');
-        $roleId = $req->getParam('id');
-        $screenName = $req->getParam('screen_name');
-        
-        $role = Doctrine::getTable('Role')->find($roleId);
-                
-        $existFunctions = $role->Privileges->toArray();
-        if ('availableFunctions' == $do) {
-            $this->_acl->requirePrivilegeForObject('assignPrivileges', $role);
-            $existFunctionIds = explode(',', $req->getParam('existFunctions'));
-            $q = Doctrine_Query::create()
-                 ->from('Privilege');
-            if (!empty($screenName)) {
-                $q->where('resource = ?', $screenName);
-            }
-            $allFunctions = $q->execute()->toArray();
-            $availableFunctions = array();
-            foreach ($allFunctions as $v) {
-                if (!in_array($v['id'], $existFunctionIds)) {
-                    $availableFunctions[] = $v;
-                }
-            }
-            $this->_helper->layout->setLayout('ajax');
-            $this->view->assign('functions', $availableFunctions);
-            $this->render('funcoptions');
-        } elseif ('existFunctions' == $do) {
-            $this->_acl->requirePrivilegeForObject('assignPrivileges', $role);
-            $this->_helper->layout->setLayout('ajax');
-            $this->view->assign('functions', $existFunctions);
-            $this->render('funcoptions');
-        } elseif ('update' == $do) {
-            $this->_acl->requirePrivilegeForObject('assignPrivileges', $role);
-            $functionIds = $req->getParam('existFunctions');
-            $errno = 0;
-            if (!Doctrine::getTable('RolePrivilege')->findByRoleId($roleId)->delete()) {
-                $errno++;
-            }
-
-            if ($functionIds) {
-                foreach ($functionIds as $fid) {
-                    $rolePrivilege = new RolePrivilege();
-                    $rolePrivilege->roleId = $roleId;
-                    $rolePrivilege->privilegeId = $fid;
-                    if (!$rolePrivilege->trySave()) {
-                        $errno++;
-                    }
-                }
-            }
-
-            if ($errno > 0) {
-                $msg = "Set right for role failed.";
-                $model = 'warning';
-            } else {
-                $msg = "Successfully set right for role.";
-                $model = 'notice';
-            }
-            $this->view->priorityMessenger($msg, $model);
-            $this->_redirect('role/right/id/' . $roleId);
-        } else {
-            $role = Doctrine::getTable('Role')->find($roleId)->toArray();
-            $q = Doctrine_Query::create()
-                          ->from('Privilege')
-                          ->groupBy('resource');
-            $screenList = $q->execute()->toArray();
-            $this->view->assign('role', $role);
-            $this->view->assign('screenList', $screenList);
-            $this->view->assign('existFunctions', $existFunctions);
-            $this->view->assign('assignPrivilege', $this->_acl->hasPrivilegeForClass('assignPrivileges', 'Role'));
-            $this->render('right');
-        }
-    }
-
     /**
      * Displays a (checkbox-)table of privileges associated with each role
      * 
