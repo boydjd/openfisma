@@ -325,27 +325,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Add a comment to a specified finding
-     */
-    public function addCommentAction()
-    {
-        $id = $this->getRequest()->getParam('id');
-        $finding = Doctrine::getTable('Finding')->find($id);
-
-        $this->_acl->requirePrivilegeForObject('comment', $finding);
-        
-        $comment = $this->getRequest()->getParam('comment');
-        
-        if ('' != trim(strip_tags($comment))) {
-            $finding->getComments()->addComment($comment);
-        } else {
-            $this->view->priorityMessenger('Comment field is blank', 'warning');
-        }
-        
-        $this->_redirect("/finding/remediation/view/id/$id");
-    }
-
-    /**
      * Display comments for this finding
      */
     public function commentsAction()
