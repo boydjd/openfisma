@@ -34,8 +34,8 @@ class IndexController extends Fisma_Zend_Controller_Action_Security
      */
     public function indexAction()
     {
-        if ($this->_acl->hasArea('dashboard')) {
-            $this->_forward('index', 'dashboard');
+        if ($this->_acl->hasArea('security_authorization')) {
+            $this->_forward('index', 'dashboard', 'sa');
         } elseif ($this->_acl->hasArea('incident')) {
             $this->_forward('index', 'incident-dashboard');
         } else {
