@@ -78,6 +78,8 @@ Fisma.User = {
             comment : comment.comment
         };
 
+        this.commentTable = Fisma.Registry.get('comments');
+
         this.commentTable.addRow(commentRow);
 
         /*

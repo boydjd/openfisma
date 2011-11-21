@@ -54,7 +54,9 @@ Fisma.Incident = {
             username : comment.username,
             comment : comment.comment
         };
-        
+
+        this.commentTable = Fisma.Registry.get('comments');
+
         this.commentTable.addRow(commentRow);
         
         /*

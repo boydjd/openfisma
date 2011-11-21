@@ -132,6 +132,9 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
      */
     static function getOrganizationSubtreeIds($parentOrganization)
     {
+        // Since it addes the slashes at searchByCriteria(), so, it needs to remove slashes here.
+        $parentOrganization = stripslashes($parentOrganization);
+
         $organization = Doctrine::getTable('Organization')->findOneByNickname($parentOrganization);
 
         // If the parent node isn't found, then return an impossible condition to prevent matching any objects
@@ -168,6 +171,9 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
      */
     static function getSystemAggregationSubtreeIds($parentOrganization)
     {
+        // Since it addes the slashes at searchByCriteria(), so, it needs to remove slashes here.
+        $parentOrganization = stripslashes($parentOrganization);
+
         $organization = Doctrine::getTable('Organization')->findOneByNickname($parentOrganization);
 
         /*
@@ -245,15 +251,20 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     
     /**
      * Get the basic items needed for an organization select UI: id, nickname and name
+     *  (systems can be optionally excluded).
      * 
+     * @param bool $excludeSystem Optional, default to FALSE
      * @return Doctrine_Query
      */
-    public function getOrganizationSelectQuery()
+    public function getOrganizationSelectQuery($excludeSystem = false)
     {
-        return Doctrine_Query::create()
+        $organizationSelectQuery = Doctrine_Query::create()
             ->select('o.id, o.nickname, o.name')
-            ->from('Organization o')
-            ->leftJoin('o.System s')
-            ->orderBy('o.nickname');
+            ->from('Organization o');
+        if ($excludeSystem) {
+            $organizationSelectQuery->where('o.systemId IS Null');
+        }
+        $organizationSelectQuery->orderBy('o.nickname');
+        return $organizationSelectQuery;
     }
 }

@@ -310,7 +310,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
             // Make each area of the chart link
             $basicLink = '/finding/remediation/list?q=' .
-                '/denormalizedStatus/textExactMatch/' . strtoupper($thisStatus);
+                '/denormalizedStatus/textExactMatch/#ColumnLabel#';
             $nonStackedLinks[] = $basicLink;
             $stackedLinks = array(
                 '',

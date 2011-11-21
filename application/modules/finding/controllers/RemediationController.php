@@ -241,7 +241,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("Risk Analysis", "/finding/remediation/risk-analysis/id/$id/format/html");
         $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id/format/html");
         $tabView->addTab("Comments ($commentCount)", "/finding/remediation/comments/id/$id/format/html");
-        $tabView->addTab("Artifacts (" . $finding->Evidence->count() . ")", "/finding/remediation/artifacts/id/$id/format/html");
+        $tabView->addTab(
+            "Artifacts (" . $finding->Evidence->count() . ")",
+            "/finding/remediation/artifacts/id/$id/format/html"
+        );
         $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id/format/html");
 
         $this->view->tabView = $tabView;
@@ -322,27 +325,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Add a comment to a specified finding
-     */
-    public function addCommentAction()
-    {
-        $id = $this->getRequest()->getParam('id');
-        $finding = Doctrine::getTable('Finding')->find($id);
-
-        $this->_acl->requirePrivilegeForObject('comment', $finding);
-        
-        $comment = $this->getRequest()->getParam('comment');
-        
-        if ('' != trim(strip_tags($comment))) {
-            $finding->getComments()->addComment($comment);
-        } else {
-            $this->view->priorityMessenger('Comment field is blank', 'warning');
-        }
-        
-        $this->_redirect("/finding/remediation/view/id/$id");
-    }
-
-    /**
      * Display comments for this finding
      */
     public function commentsAction()
@@ -354,6 +336,52 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
         $comments = $finding->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
+
+        $commentRows = array();
+
+        foreach ($comments as $comment) {
+            $commentRows[] = array(
+                'timestamp' => $comment['createdTs'],
+                'username' => $this->view->userInfo($comment['User']['username']),
+                'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment']))
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Timestamp',
+                true,
+                null,
+                null,
+                'timestamp'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'User',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Comment',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'comment'
+            )
+        );
+
+        $dataTable->setData($commentRows);
+
+        $this->view->commentDataTable = $dataTable;
 
         $commentButton = new Fisma_Yui_Form_Button(
             'commentButton', 
@@ -376,7 +404,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->commentButton = $commentButton;
-        $this->view->comments = $comments;
     }
     
     /**
@@ -800,14 +827,52 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->_viewFinding();
         
         $logs = $this->view->finding->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
-        
-        // Convert log messages from plain text to HTML
-        foreach ($logs as &$log) {
-            $log['o_message'] = $this->view->textToHtml($this->view->escape($log['o_message']));
+
+        $logRows = array();
+
+        foreach ($logs as $log) {
+            $logRows[] = array(
+                'timestamp' => $log['o_createdTs'],
+                'user' => $this->view->userInfo($log['u_username']),
+                'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
+            );
         }
 
-        $this->view->columns = array('Timestamp', 'User', 'Message');
-        $this->view->rows = $logs;
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Timestamp',
+                true,
+                null,
+                null,
+                'timestamp'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'User',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Message',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'message'
+            )
+        );
+
+        $dataTable->setData($logRows);
+
+        $this->view->auditLogDataTable = $dataTable;
     }
 
     /**

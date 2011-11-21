@@ -22,7 +22,6 @@
  */
  
 Fisma.Util = {
-    
     /**
      * Escapes the specified string so that it can be included in a regex without special characters affecting
      * the regex's meaning
@@ -215,28 +214,5 @@ Fisma.Util = {
                 } ); 
 
         return dialog;
-    },
-
-    /*
-     * Organizaton type filter callback function
-     * It set the default organization type, store the selected organization type and refresh window with url 
-     */
-    organizationTypeHandle : function (event, config) {
-            // Set the selected organization type   
-            var organizationTypeFilter = YAHOO.util.Dom.get('orgTypeFilter');
-            var selectedType = organizationTypeFilter.options[organizationTypeFilter.selectedIndex];
-
-            // Store the selected organizationTypeId to storage table
-            var orgTypeStorage = new Fisma.PersistentStorage(config.namespace);
-            orgTypeStorage.set('orgType', selectedType.value); 
-            orgTypeStorage.sync();
-
-        Fisma.Storage.onReady(function() {
-            // Construct the url and refresh the result after a user changes organization type                
-            if (!YAHOO.lang.isUndefined(config) && config.url) {
-                var url = config.url + '?orgTypeId=' + encodeURIComponent(selectedType.value);
-                window.location.href = url;
-            }
-        });
     }
 };

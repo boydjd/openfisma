@@ -253,7 +253,9 @@
             dataTable.get("paginator").subscribe("pageChange", function (event, prefs) {
                 // Make sure that the header checkbox is unchecked on page changes
                 var checkbox = YAHOO.util.Dom.get('dt-checkbox');
-                checkbox.checked = false;
+                if (checkbox) {
+                    checkbox.checked = false;
+                }
     
                 // save the new page number
                 prefs.setPage(event.newValue);

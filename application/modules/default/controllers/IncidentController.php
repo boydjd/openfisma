@@ -135,6 +135,14 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         if ($this->_request->isPost()) {
             if (!is_null($step) && $step != 0 && $step < 8) {
                 $subForm = $this->getFormPart($step);
+                
+                // Add a customized error message to the "Describe the incident" field 
+                $descIncidentElement = $subForm->getElement('additionalInfo');
+                if (!empty($descIncidentElement)) {
+                    $descIncidentValidator = $descIncidentElement->getValidator('MceNotEmpty');
+                    $descIncidentValidator->setMessage('You must enter a description of the incident to continue.');
+                }
+
                 $subFormValid = $subForm->isValid($this->_request->getPost());
                 $incident->merge($subForm->getValues());
                 $session->irDraft = serialize($incident);
@@ -150,6 +158,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
         } elseif (!$subFormValid) {
             $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
+           
             $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
         } else {
             // The user can move forwards or backwards
@@ -206,7 +215,37 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         } else {
             $formPart->setAction("/incident/report/step/$step");
         }
-        
+
+        // Initialize incidentDate with current system date
+        if (empty($incident->incidentDate)) {
+            $incident->incidentDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
+        }
+
+        // Initialize the default selection of piiInvolved with 'NO' option.
+        if (empty($incident->piiInvolved)) {
+            $incident->piiInvolved = 'NO';
+        }
+
+        // Initialize incidentTime with current system time
+        if (empty($incident->incidentTime)) {
+
+            // The value of selection option should be multiples of 5
+            $minute = (int) Zend_Date::now()->get(Zend_Date::MINUTE_SHORT);
+            $minute = $minute - $minute % 5;
+            $time = Zend_Date::now()->setMinute($minute)
+                                    ->setSecond(0)
+                                    ->get(Fisma_Date::FORMAT_TIME);
+
+            $incident->incidentTime = $time;
+        }
+
+        // Initialize incidentTimezone with current system timezone
+        if (empty($incident->incidentTimezone)) {
+            $timezone = Zend_Date::now()->get(Zend_Date::TIMEZONE);
+
+            $incident->incidentTimezone = isset($this->_timezones[$timezone]) ? $timezone : null;
+        }
+
         // Use the validator to load the incident data into the form. Notice that there aren't actually any
         // validators which could fail here.
         $formPart->isValid($incident->toArray());
@@ -296,6 +335,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 break;
             case 4:
                 $this->_createBoolean($formPart, array('piiInvolved'));
+
+                // Remove '--select--' option
+                $formPart->getElement('piiInvolved')->removeMultiOption('');
                 break;
             case 5:
                 $this->_createBoolean(
@@ -661,13 +703,51 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incident = Doctrine::getTable('Incident')->find($id);
         
         $logs = $incident->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
-        
-        // Convert log messages from plain text to HTML
-        foreach ($logs as &$log) {
-            $log['o_message'] = $this->view->textToHtml($this->view->escape($log['o_message']));
+
+        $logRows = array();
+
+        foreach ($logs as $log) {
+            $logRows[] = array(
+                'timestamp' => $log['o_createdTs'],
+                'user' => $this->view->userInfo($log['u_username']),
+                'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
+            );
         }
 
-        $this->view->logs = $logs;
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Timestamp',
+                true,
+                null,
+                null,
+                'timestamp'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'User',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Message',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'message'
+            )
+        );
+
+        $dataTable->setData($logRows);
+        $this->view->dataTable = $dataTable;
     }
     
     /**
@@ -681,7 +761,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->view->assign('id', $id);
 
         $this->_assertCurrentUserCanViewIncident($id);
-        
+
+        $updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
+        $this->view->updateIncidentPrivilege = $updateIncidentPrivilege;
+
         // Get list of actors
         $actorQuery = Doctrine_Query::create()
                       ->select('i.id, a.id, a.username, a.nameFirst, a.nameLast')
@@ -693,7 +776,59 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                       ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         $actors = $actorQuery->execute();
 
-        $this->view->assign('actors', $actors);
+        $actorRows = array();
+
+        foreach ($actors as $actor) {
+            $actorUsername   = $this->view->userInfo($actor['a_username']);
+            $actorFirstName  = $actor['a_nameFirst'];
+            $actorLastName   = $actor['a_nameLast'];
+            $actorRemoveLink = '<a href=/incident/remove-user/incidentId/' . $this->view->escape($id)
+                             . '/userId/' . $actor['a_id'] . '>Remove</a>';
+
+            $actorColumns = array($actorUsername, $actorFirstName, $actorLastName, $actorRemoveLink);
+
+            $actorRows[] = $updateIncidentPrivilege ? $actorColumns : array_pop($actorColumns);
+        }
+
+        $actorDataTable = new Fisma_Yui_DataTable_Local();
+
+        $actorDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Username',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $actorDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'First Name',
+                true,
+                null,
+                null,
+                'firstName'
+            )
+        );
+
+        $actorDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Last Name',
+                true,
+                null,
+                null,
+                'lastName'
+            )
+        );
+
+        if ($updateIncidentPrivilege) {
+            $actorDataTable->addColumn(new Fisma_Yui_DataTable_Column('Remove', true, 'Fisma.TableFormat.formatHtml'));
+        }
+
+        $actorDataTable->setData($actorRows);
+
+        $this->view->actorDataTable = $actorDataTable;
 
         // Get list of observers
         $observerQuery = Doctrine_Query::create()
@@ -706,9 +841,66 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         $observers = $observerQuery->execute();
 
-        $this->view->assign('observers', $observers);
-        $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
-        
+        $observerRows = array();
+
+        foreach ($observers as $observer) {
+            $observerUsername   = $this->view->userInfo($observer['o_username']);
+            $observerFirstName  = $observer['o_nameFirst'];
+            $observerLastName   = $observer['o_nameLast'];
+            $observerRemoveLink = '<a href=/incident/remove-user/incidentId/' . $this->view->escape($id)
+                                . '/userId/' . $observer['o_id'] . '>Remove</a>';
+
+            $observerColumns = array($observerUsername, $observerFirstName, $observerLastName, $observerRemoveLink);
+
+            $observerRows[] = $updateIncidentPrivilege ? $observerColumns : array_pop($observerColumns);
+        }
+
+        $observerDataTable = new Fisma_Yui_DataTable_Local();
+
+        $observerDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Username',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $observerDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'First Name',
+                true,
+                null,
+                null,
+                'firstName'
+            )
+        );
+
+        $observerDataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Last Name',
+                true,
+                null,
+                null,
+                'lastName'
+            )
+        );
+
+        if ($updateIncidentPrivilege) {
+            $observerDataTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'Remove',
+                    true,
+                    'Fisma.TableFormat.formatHtml'
+                )
+            );
+        }
+
+        $observerDataTable->setData($observerRows);
+
+        $this->view->observerDataTable = $observerDataTable;
+
         // Create autocomplete for actors
         $this->view->actorAutocomplete = new Fisma_Yui_Form_AutoComplete(
             'actorAutocomplete',
@@ -1100,6 +1292,52 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $comments = $incident->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
 
+        $commentRows = array();
+
+        foreach ($comments as $comment) {
+            $commentRows[] = array(
+                'timestamp' => $comment['createdTs'],
+                'username' => $this->view->userInfo($comment['User']['username']),
+                'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment']))
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Timestamp',
+                true,
+                null,
+                null,
+                'timestamp'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'User',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Comment',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'comment'
+            )
+        );
+
+        $dataTable->setData($commentRows);
+
+        $this->view->dataTable = $dataTable;
+
         $commentButton = new Fisma_Yui_Form_Button(
             'commentButton', 
             array(
@@ -1121,7 +1359,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->commentButton = $commentButton;
-        $this->view->comments = $comments;
     }
     
     /**
@@ -1169,20 +1406,87 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
          * for view binding.
          */
         $artifactCollection = $incident->getArtifacts()->fetch(Doctrine::HYDRATE_RECORD);;
-        $artifacts = array();
-        
+        $artifactRows = array();
+
         foreach ($artifactCollection as $artifact) {
-            $artifactArray = $artifact->toArray();
-            $artifactArray['iconUrl'] = $artifact->getIconUrl();
-            $artifactArray['fileSize'] = $artifact->getFileSize();
-            
-            $artifacts[] = $artifactArray;
+            $downloadUrl = '/incident/download-artifact/id/' . $id . '/artifactId/' . $artifact->id;
+            $artifactRows[] = array(
+                'iconUrl'  => "<a href=$downloadUrl><img src=" . $this->view->escape($artifact->getIconUrl()) . "></a>",
+                'fileName' => "<a href=$downloadUrl><div>" . $this->view->escape($artifact->fileName) . "</div></a>",
+                'fileSize' => $artifact->fileSize,
+                'user'     => $this->view->userInfo($artifact->User->username),
+                'date'     => $artifact->createdTs,
+                'comment'  => $this->view->textToHtml($this->view->escape($artifact->comment))
+            );
         }
 
-        $this->view->artifacts = $artifacts;
-        
-        $this->view->form = Fisma_Zend_Form_Manager::loadForm('upload_artifact');
-        
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Icon',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'icon'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'fileName'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Size',
+                true,
+                'Fisma.TableFormat.formatFileSize',
+                null,
+                'size',
+                false,
+                'number'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Uploaded By',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'uploadedBy'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Upload Date',
+                true,
+                null,
+                null,
+                'uploadDate'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Comment',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'comment'
+            )
+        );
+
+        $dataTable->setData($artifactRows);
+
+        $this->view->dataTable = $dataTable;
     }
     
     /**

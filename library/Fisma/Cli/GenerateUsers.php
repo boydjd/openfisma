@@ -87,7 +87,13 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
 
         for ($i = 1; $i <= $numUsers; $i++) {
             $user = array();
-            $user['reportingOrganizationId'] = $organizations[rand(0, $organizationsCount)]->id;
+            $reportingOrganizationId = -1;
+            do {
+                $randIndex = rand(0, $organizationsCount);
+                $reportingOrganizationId = $organizations[$randIndex]->id;
+                $reportingOrganizationId = (empty($organizations[$randIndex]->systemId)) ? $reportingOrganizationId : -1;
+            } while ($reportingOrganizationId < 0);
+            $user['reportingOrganizationId'] = $reportingOrganizationId;
             $user['roleId'] = $roleIds[rand(0, $roleIdsCount)][0];
             $user['username'] = 'generated' . $timestamp . '.' . $i;
             $user['email'] = 'openfisma-default-install@googlegroups.com';

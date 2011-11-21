@@ -999,7 +999,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $links['View'] = "{$this->_moduleName}/{$this->_controllerName}/view/id/{$subject->id}";
         }
 
-        if (!$this->_enforceAcl || ($this->_isDeletable() && $this->_acl->hasPrivilegeForObject('delete', $subject))) {
+        if ($this->_isDeletable() && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
         }
 
@@ -1022,7 +1022,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $links['Edit'] = "{$this->_moduleName}/{$this->_controllerName}/edit/id/{$subject->id}";
         }
 
-        if (!$this->_enforceAcl || ($this->_isDeletable() && $this->_acl->hasPrivilegeForObject('delete', $subject))) {
+        if ($this->_isDeletable() && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
         }
 

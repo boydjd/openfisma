@@ -76,7 +76,7 @@ class CommentController extends Fisma_Zend_Controller_Action_Security
             // Add comment and include comment details (including username) in response object
             $commentRecord = $object->getComments()->addComment($trimmedComment);
             $commentArray = $commentRecord->toArray();
-            $commentArray['username'] = htmlspecialchars($commentRecord->User->username);
+            $commentArray['username'] = $this->view->userInfo(htmlspecialchars($commentRecord->User->username));
             $commentArray['comment'] = Fisma_String::textToHtml(htmlspecialchars($commentArray['comment']));
             
             $response->comment = $commentArray;

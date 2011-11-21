@@ -276,9 +276,99 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                          ->from('SystemDocument d INNER JOIN d.DocumentType t')
                          ->where('d.systemId = ?', $system->id)
                          ->orderBy('t.name');
-        $this->view->documents = $documentQuery->execute();
+        $documents = $documentQuery->execute();
 
-        $this->render();
+        $documentRows = array();
+
+        foreach ($documents as $document) {
+            $documentRows[] = array(
+                'fileName' => "<a href=/system-document/download/id/{$document->id}>"
+                            . "<img src={$this->view->escape($document->getIconUrl())}>"
+                            . "<div>{$this->view->escape($document->DocumentType->name)}</div></a>",
+                'size' => $document->getSizeKb(),
+                'version' => $document->version,
+                'description' => $this->view->textToHtml($this->view->escape($document->description)),
+                'username' => $this->view->userInfo($document->User->username),
+                'date' => $document->updated_at,
+                'view' => "<a href=/system-document/view/id/{$document->id}>Version History</a>"
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'fileName'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Size',
+                false,
+                null,
+                null,
+                'size'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Version',
+                false,
+                null,
+                null,
+                'version'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Version Notes',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'description'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Last Modified By User',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'username'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Last Modified Date',
+                true,
+                null,
+                null,
+                'date'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'View History',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'id'
+            )
+        );
+
+        $dataTable->setData($documentRows);
+
+        $this->view->dataTable = $dataTable;
     }
 
     /**
@@ -597,9 +687,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
+        $addUserId = new Zend_Form_Element_Hidden('addUserId'); 
         $addUserAccessForm->addElement($userAutoComplete);
         $addUserAccessForm->addElement($select);
         $addUserAccessForm->addElement($addButton);
+        $addUserAccessForm->addElement($addUserId);
         $addUserAccessForm->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
 
         $copyUserAccessForm = new Zend_Form_SubForm();
@@ -640,9 +732,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
+        $copySystemId = new Zend_Form_Element_Hidden('copySystemId'); 
         $copyUserAccessForm->addElement($systemAutoComplete);
         $copyUserAccessForm->addElement($selectAllButton);
         $copyUserAccessForm->addElement($addSelectedButton);
+        $copyUserAccessForm->addElement($copySystemId);
         $copyUserAccessForm->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
 
         $this->view->currentUserAccessForm = $currentUserAccessForm;
@@ -895,23 +989,34 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             return;
         }
 
-        // Based on the dragLocation parameter, execute a corresponding tree move method
+        // Find the new parent (null by default in case there is no parent).
         $dragLocation = $this->getRequest()->getParam('dragLocation');
+        $parent = null;
+
+        if (Fisma_Yui_DragDrop::DRAG_ONTO == $dragLocation) {
+            // If we drag onto, then the parent is the drag destination.
+            $parent = $dest;
+        } elseif ($dest->aggregateSystemId) {
+            // If we drag above or below, then the parent is the parent of the destination.
+            $parent = $dest->AggregateSystem;
+        }
+
+        // Enforce 2 layer maximum on nesting
+        if ($parent && ($parent->aggregateSystemId || $src->AggregatedSystems->count() > 0)) {
+            $this->view->success = false;
+            $this->view->message = 'An aggregated system cannot have systems aggregated underneath it.';
+            return;
+        }
+
+        // Make changes and persist.
         try {
-            switch ($dragLocation) {
-                case Fisma_Yui_DragDrop::DRAG_ABOVE:
-                case Fisma_Yui_DragDrop::DRAG_BELOW:
-                    $src->aggregateSystemId = $dest->aggregateSystemId;
-                    $src->save();
-                    break;
-                case Fisma_Yui_DragDrop::DRAG_ONTO:
-                    $src->aggregateSystemId = $dest->id;
-                    $src->save();
-                    break;
-                default:
-                    $this->view->success = false;
-                    $this->view->message = "Invalid dragLocation parameter ($dragLocation)";
+            if (isset($parent)) {
+                $src->aggregateSystemId = $parent->id;
+            } else {
+                $src->aggregateSystemId = $dest->aggregateSystemId;
             }
+
+            $src->save();
         } catch (Exception $e) {
             $this->view->success = false;
             $this->view->message = (string)$e;
