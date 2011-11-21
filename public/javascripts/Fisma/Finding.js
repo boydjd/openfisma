@@ -53,6 +53,11 @@ Fisma.Finding = {
      * A static reference to the hidden input element that stores the POC id
      */
     pocHiddenEl : null,
+    
+    /**
+     * A message box for the POC modal dialog
+     */
+    pocMessageBox: null,
 
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
@@ -299,12 +304,11 @@ Fisma.Finding = {
      * Populate the POC create form with some default values
      */
     populatePocForm : function () {
-        /* The message() API is so tacky... in order to display "message" feedback in this dialog, I have to
-         * temporarily hijack the message() output. It gets set back in the Fisma.Finding.createPoc() method.
-         */
-        document.getElementById('msgbar').id = 'oldMessageBar';
-        document.getElementById('pocMessageBar').id = 'msgbar';
-        
+        if (YAHOO.lang.isNull(Fisma.Finding.pocMessageBox)) {
+            Fisma.Finding.pocMessageBox = new Fisma.MessageBox(document.getElementById("pocMessageBar"));
+            Fisma.Registry.get("messageBoxStack").push(Fisma.Finding.pocMessageBox);
+        }
+
         // Fill in the username
         var usernameEl = document.getElementById('username');
         usernameEl.value = Fisma.Finding.createPocDefaultUsername;
@@ -371,10 +375,6 @@ Fisma.Finding = {
                     var pocId = parseInt(result.message, 10);
                     Fisma.Finding.pocHiddenEl.value = pocId;
                     Fisma.Finding.pocAutocomplete.getInputEl().value = username;
-
-                    // Undo the message bar hack from Fisma.Finding.populatePocForm()
-                    document.getElementById('msgbar').id = 'pocMessageBar';
-                    document.getElementById('oldMessageBar').id = 'msgbar';
 
                     message('A point of contact has been created.', 'info', true);
                 } else {

@@ -167,13 +167,6 @@ var readyFunc = function () {
     asset_detail();
     //
     getProdId();
-
-    // Add listener to close message bar
-    YAHOO.util.Event.on('closeMsg', 'click', function() {
-        var msgbar = document.getElementById('msgbar'); 
-        msgbar.style.display = 'none';
-        return false;
-    });
 }
 
 function search_function() {
@@ -276,34 +269,40 @@ function asset_detail() {
     });
 }
 
+/**
+ * Legacy code. This should be removed in a future release.
+ * 
+ * I've refactored this slightly by moving most of the logic into MessageBox.js and MessageBoxStack.js, and moving the
+ * styles into MessageBox.css. I've kept this global method in place to avoid breaking the API right before a release
+ * (which would require diff'ing a lot of lines of code.)
+ * 
+ * @param msg {String} the message to display
+ * @param model {String} either "info" or "warning" -- this affects the color scheme used to display the message
+ * @param clear {Boolean} If true, new message will replace existing message. If false, new message will be appended.
+ */
 function message(msg, model, clear) {
     clear = clear || false;
 
     msg = $P.stripslashes(msg);
-    if (document.getElementById('msgbar')) {
-        var msgbar = document.getElementById('msgbar'); 
-    } else {
-        return;
-    }
-    if (msgbar.innerHTML && !clear) {
-        msgbar.innerHTML = msgbar.innerHTML + msg;
-    } else {
-        msgbar.innerHTML = msg;
-    }
 
-    msgbar.style.fontWeight = 'bold';
- 
-    if( model == 'warning')  {
-        msgbar.style.color = 'red';
-        msgbar.style.borderColor = 'red';
-        msgbar.style.backgroundColor = 'pink';
-    } else {
-        msgbar.style.color = 'green';
-        msgbar.style.borderColor = 'green';
-        msgbar.style.backgroundColor = 'lightgreen';
-    }
+    var messageBoxStack = Fisma.Registry.get("messageBoxStack");
+    var messageBox = messageBoxStack.peek();
 
-    msgbar.style.display = 'block';
+    if (messageBox) {
+        if (clear) {
+            messageBox.setMessage(msg);
+        } else {
+            messageBox.addMessage(msg);
+        }
+        
+        if (model == 'warning') {
+            messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN);
+        } else {
+            messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO);
+        }
+
+        messageBox.show();
+    }
 }
 
 function toggleSearchOptions(obj) {
