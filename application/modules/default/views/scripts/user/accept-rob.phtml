@@ -7,7 +7,8 @@
     </i>
 </div>
 
-<?php Fisma_Format_Section::startSection(Fisma::configuration()->getConfig('system_name') . ' Rules of Behavior'); ?>
+<?php Fisma_Format_Section::startSection($this->escape(Fisma::configuration()->getConfig('system_name')) 
+    . ' Rules of Behavior'); ?>
 <div>
     <?php echo $this->escape($this->behaviorRule, 'none'); ?>
 </div>
