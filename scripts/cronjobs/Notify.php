@@ -21,7 +21,7 @@ try {
     $notify->processNotificationQueue();
     print ("Notify finished at " . Fisma::now() . "\n");
 } catch (Exception $e) {
-    print $e->getMessage();
+    print("Sending notifications failed at " . Fisma::now() . " with the following error: {" . $e->getMessage() . "}\n");
 }
 
 /**
@@ -101,8 +101,9 @@ class Notify
         $query->select('{n.eventtext}, {n.createdts}, {u.email}, {u.nameFirst}, {u.nameLast}')
               ->addComponent('n', 'Notification n')
               ->addComponent('u', 'n.User u')
-              ->from('user u INNER JOIN notification n on u.id = n.userid')
-              ->where(
+              ->from('poc u INNER JOIN notification n on u.id = n.userid')
+              ->where('u.type = "User"')
+              ->andWhere(
                   '(u.mostrecentnotifyts IS NULL OR u.mostrecentnotifyts <= DATE_SUB(NOW(), 
                   INTERVAL u.notifyFrequency HOUR))'
               )
