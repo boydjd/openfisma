@@ -8184,6 +8184,9 @@ Fisma.Finding = {
         _makeUrl: function (ontime, status, nodeState, rowLabel, searchKey) {
             var url = "/finding/remediation/list?q=";
 
+            // The status contains plus symbols ('+') which is encoded before, so it should be decoded here.
+            status = $P.urldecode(status);
+
             // Add status criterion
             if (status != "TOTAL" && status != "OPEN") {
                 url += "/denormalizedStatus/textExactMatch/" + encodeURIComponent(status);
