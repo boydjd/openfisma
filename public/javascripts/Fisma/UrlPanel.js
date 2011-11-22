@@ -40,7 +40,7 @@ Fisma.UrlPanel = function() {
             // Initialize element or its id representing the panel with default value if necessary
             if (typeof(element) === 'undefined' || element === null)
             {
-                element = "panel";
+                element = YAHOO.util.Dom.generateId();
             }
             // Initialize user config with default config object if the user config is not specified or null
             if (typeof(userConfig) === 'undefined' || userConfig === null)

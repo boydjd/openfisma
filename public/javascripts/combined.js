@@ -3548,7 +3548,7 @@ Fisma.AttachArtifacts = {
         Fisma.AttachArtifacts.config = config;
 
         // Create a new panel
-        var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : true});
+        var newPanel = new YAHOO.widget.Panel(YAHOO.util.Dom.generateId(), {modal : true, close : true});
         newPanel.setHeader('Upload Artifact');
         newPanel.setBody("Loading...");
         newPanel.render(document.body);
@@ -6956,7 +6956,7 @@ Fisma.Commentable = {
          Fisma.Commentable.config = config;
 
          // Create a new panel
-         var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : true});
+         var newPanel = new YAHOO.widget.Panel(YAHOO.util.Dom.generateId(), {modal : true, close : true});
          newPanel.setHeader('Add Comment');
          newPanel.setBody("Loading...");
          newPanel.render(document.body);
@@ -8443,7 +8443,7 @@ Fisma.HtmlPanel = function() {
             // Initialize element or its id representing the panel with default value conditionally
             if (typeof(element) === 'undefined' || element === null)
             {
-                element = "panel";
+                element = YAHOO.util.Dom.generateId();
             }
             // Initialize user config with default config object if the user config is not specified or null
             if (typeof(userConfig) === 'undefined' || userConfig === null)
@@ -8457,7 +8457,6 @@ Fisma.HtmlPanel = function() {
             // Instantiate YUI panel for rendering
             var panel = new YAHOO.widget.Panel(element, userConfig);
             panel.setHeader(title);
-            /** @todo english */
             panel.setBody("Loading...");
             panel.render(document.body);
             panel.center();
@@ -9426,7 +9425,7 @@ Fisma.Module = {
             // but it prevents the user from modifying the tree while an update is already pending.
             if (YAHOO.lang.isNull(this._savePanel)) {
                 this._savePanel = new YAHOO.widget.Panel(
-                    "savePanel",
+                    YAHOO.util.Dom.generateId(),
                     {
                         width: "250px",
                         fixedcenter: true,
@@ -10005,7 +10004,7 @@ Fisma.Module = {
             // but it prevents the user from modifying the tree while an update is already pending.
             if (YAHOO.lang.isNull(this._savePanel)) {
                 this._savePanel = new YAHOO.widget.Panel(
-                    "savePanel",
+                    YAHOO.util.Dom.generateId(),
                     {
                         width: "250px",
                         fixedcenter: true,
@@ -12747,7 +12746,7 @@ Fisma.Search.Panel.prototype = {
                 });
                 content.appendChild(buttonDiv);
                 var panel = new YAHOO.widget.Panel(
-                    "inactivity-notice",
+                    YAHOO.util.Dom.generateId(),
                     {width: "320px", fixedcenter: true, draggable: false, modal: true, close: false}
                 );
                 panel.setHeader("Your Session Will Expire");
@@ -13399,7 +13398,7 @@ Fisma.System = {
      */
     showWaitPanelWhileConverting : function () {
         var waitPanel = new YAHOO.widget.Panel(
-            "savePanel",
+            YAHOO.util.Dom.generateId(),
             {
                 width: "250px",
                 fixedcenter: true,
@@ -13755,7 +13754,7 @@ Fisma.System = {
             // but it prevents the user from modifying the tree while an update is already pending.
             if (YAHOO.lang.isNull(this._savePanel)) {
                 this._savePanel = new YAHOO.widget.Panel(
-                    "savePanel",
+                    YAHOO.util.Dom.generateId(),
                     {
                         width: "250px",
                         fixedcenter: true,
@@ -14767,7 +14766,7 @@ Fisma.UrlPanel = function() {
             // Initialize element or its id representing the panel with default value if necessary
             if (typeof(element) === 'undefined' || element === null)
             {
-                element = "panel";
+                element = YAHOO.util.Dom.generateId();
             }
             // Initialize user config with default config object if the user config is not specified or null
             if (typeof(userConfig) === 'undefined' || userConfig === null)
@@ -14961,13 +14960,8 @@ Fisma.User = {
     createUserInfoPanel : function (referenceElement, username) {
         
         var PANEL_WIDTH = 350; // in pixels
-        var panelName, panel;
-        
-        // Create the new panel object
-        panelName = username + 'InfoPanel';
-        
-        panel = new YAHOO.widget.Panel(
-            panelName, 
+        var panel = new YAHOO.widget.Panel(
+            YAHOO.util.Dom.generateId(), 
             {
                 width: PANEL_WIDTH + 'px', 
                 modal : false, 

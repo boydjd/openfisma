@@ -51,7 +51,7 @@ Fisma.Commentable = {
          Fisma.Commentable.config = config;
 
          // Create a new panel
-         var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : true});
+         var newPanel = new YAHOO.widget.Panel(YAHOO.util.Dom.generateId(), {modal : true, close : true});
          newPanel.setHeader('Add Comment');
          newPanel.setBody("Loading...");
          newPanel.render(document.body);
