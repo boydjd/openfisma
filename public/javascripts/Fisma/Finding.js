@@ -53,11 +53,6 @@ Fisma.Finding = {
      * A static reference to the hidden input element that stores the POC id
      */
     pocHiddenEl : null,
-    
-    /**
-     * A message box for the POC modal dialog
-     */
-    pocMessageBox: null,
 
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
@@ -261,7 +256,7 @@ Fisma.Finding = {
     _createPocNotFoundContainer : function (id, parent) {
         var container = document.createElement('div');
 
-        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm);
+        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm, this, true);
         container.className = 'pocNotMatched';
         container.id = id;
         container.appendChild(document.createTextNode(""));
@@ -289,25 +284,54 @@ Fisma.Finding = {
      * they want to create a new POC instead.
      */
     displayCreatePocForm : function () {
-        var panelConfig = {width : "50em", modal : true};
+        if (YAHOO.lang.isNull(Fisma.Finding.createPocPanel)) {
+            var panelConfig = {width : "50em", modal : true};
 
-        Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
-            'Create New Point Of Contact',
-            '/poc/form',
-            Fisma.Finding.populatePocForm,
-            'createPocPanel',
-            panelConfig
-        );
+            Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
+                'Create New Point Of Contact',
+                '/poc/form',
+                Fisma.Finding.populatePocForm,
+                'createPocPanel',
+                panelConfig
+            );
+
+            Fisma.Finding.createPocPanel.subscribe("hide", this.removePocMessageBox, this, true);            
+        } else {
+            Fisma.Finding.createPocPanel.show();
+            Fisma.Finding.createPocMessageBox();
+        }
     },
-    
+
+    /**
+     * Create POC modal dialog's custom message box
+     */
+    createPocMessageBox: function () {
+        var messageBarContainer = document.getElementById("pocMessageBar");
+
+        if (YAHOO.lang.isNull(messageBarContainer)) {
+            throw "No message bar container found.";
+        }
+
+        var pocMessageBox = new Fisma.MessageBox(messageBarContainer);
+        Fisma.Registry.get("messageBoxStack").push(pocMessageBox);
+    },
+
+    /**
+     * Remove the POC modal dialog's custom message box
+     * 
+     * @param event {YAHOO.util.Event} The YUI event subscriber signature.
+     */
+    removePocMessageBox: function (event) {
+        Fisma.Registry.get("messageBoxStack").pop();
+        return true;
+    },
+
     /**
      * Populate the POC create form with some default values
      */
     populatePocForm : function () {
-        if (YAHOO.lang.isNull(Fisma.Finding.pocMessageBox)) {
-            Fisma.Finding.pocMessageBox = new Fisma.MessageBox(document.getElementById("pocMessageBar"));
-            Fisma.Registry.get("messageBoxStack").push(Fisma.Finding.pocMessageBox);
-        }
+        // this method is called in the wrong scope :(
+        Fisma.Finding.createPocMessageBox();
 
         // Fill in the username
         var usernameEl = document.getElementById('username');

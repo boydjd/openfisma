@@ -28,6 +28,11 @@ div.currentIncidentStep div.incidentCardinality{border:2px solid #416ed7;border-
 div.queuedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
 div.queuedIncidentStep div.incidentCardinality{border:2px solid gray;border-bottom:none;color:gray;}
 tr.incidentStep{border-top:1px dotted silver;}
+.messageBox{border:1px solid black;margin-top:10px;text-align:center;font-weight:bold;position:relative;padding:.5em;}
+.messageBox.warn{color:red;background-color:pink;border-color:red;}
+.messageBox.info{color:green;background-color:lightgreen;border-color:green;}
+.messageBox.hide{display:none;}
+.messageBox .closeControl{position:absolute;top:-6px;right:0;font-size:2em;font-weight:normal;cursor:pointer;}
 table.modules{margin-left:auto;margin-right:auto;}
 table.modules td{border-style:none;font-size:1.4em;padding:8px;vertical-align:middle;}
 table.modules td:first-child{font-weight:bold;}
@@ -213,7 +218,6 @@ tr.over td{background:#bcd4ec;}
 .notice{font-size:12px;width:60%;margin:2em auto;border:1px solid #bebebe;padding-bottom:5px;text-align:center;}
 .notice p{padding:0 5px;}
 .notice h1{text-align:left;padding:5px 5px;color:#44637a;background-color:#ddd;line-height:23px;font-weight:bold;margin-top:0;}
-div#msgbar{border:1px solid red;background-color:pink;margin-top:10px;text-align:center;padding:3px;display:none;}
 .yui-navset div.loading div{background:url(/lib/2.8.2/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;height:8em;}
 table.systemDocuments{border:1px solid lightgrey;}
 table.systemDocuments th{font-weight:bold;padding:10px;background:lightgrey;}
@@ -264,7 +268,6 @@ table.keyValues td,table.keyValues th,table.fisma_crud td,table.fisma_crud th{bo
 .eventNotifyBlock select{width:250px;}
 #event_form td{border-style:none;}
 #assign_right td{border-style:none;}
-div#closeMsg{cursor:pointer;margin-right:5px;float:right;font-size:20px;}
 body,td,pre{font:13px/1.231 arial,helvetica,clean,sans-serif!important;}
 .mceItemTable td,.mceItemTable th,.mceItemTable caption,.mceItemVisualAid{border:1px solid black;padding:.5em;}
 .mceItemTable,.mceItemTable table{border:none!important;padding:0;border-collapse:collapse;}

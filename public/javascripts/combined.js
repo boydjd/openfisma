@@ -955,13 +955,6 @@ var readyFunc = function () {
     asset_detail();
     //
     getProdId();
-
-    // Add listener to close message bar
-    YAHOO.util.Event.on('closeMsg', 'click', function() {
-        var msgbar = document.getElementById('msgbar'); 
-        msgbar.style.display = 'none';
-        return false;
-    });
 }
 
 function search_function() {
@@ -1064,34 +1057,40 @@ function asset_detail() {
     });
 }
 
+/**
+ * Legacy code. This should be removed in a future release.
+ * 
+ * I've refactored this slightly by moving most of the logic into MessageBox.js and MessageBoxStack.js, and moving the
+ * styles into MessageBox.css. I've kept this global method in place to avoid breaking the API right before a release
+ * (which would require diff'ing a lot of lines of code.)
+ * 
+ * @param msg {String} the message to display
+ * @param model {String} either "info" or "warning" -- this affects the color scheme used to display the message
+ * @param clear {Boolean} If true, new message will replace existing message. If false, new message will be appended.
+ */
 function message(msg, model, clear) {
     clear = clear || false;
 
     msg = $P.stripslashes(msg);
-    if (document.getElementById('msgbar')) {
-        var msgbar = document.getElementById('msgbar'); 
-    } else {
-        return;
-    }
-    if (msgbar.innerHTML && !clear) {
-        msgbar.innerHTML = msgbar.innerHTML + msg;
-    } else {
-        msgbar.innerHTML = msg;
-    }
 
-    msgbar.style.fontWeight = 'bold';
- 
-    if( model == 'warning')  {
-        msgbar.style.color = 'red';
-        msgbar.style.borderColor = 'red';
-        msgbar.style.backgroundColor = 'pink';
-    } else {
-        msgbar.style.color = 'green';
-        msgbar.style.borderColor = 'green';
-        msgbar.style.backgroundColor = 'lightgreen';
-    }
+    var messageBoxStack = Fisma.Registry.get("messageBoxStack");
+    var messageBox = messageBoxStack.peek();
 
-    msgbar.style.display = 'block';
+    if (messageBox) {
+        if (clear) {
+            messageBox.setMessage(msg);
+        } else {
+            messageBox.addMessage(msg);
+        }
+        
+        if (model == 'warning') {
+            messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN);
+        } else {
+            messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO);
+        }
+
+        messageBox.show();
+    }
 }
 
 function toggleSearchOptions(obj) {
@@ -7486,7 +7485,7 @@ Fisma.Finding = {
     _createPocNotFoundContainer : function (id, parent) {
         var container = document.createElement('div');
 
-        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm);
+        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm, this, true);
         container.className = 'pocNotMatched';
         container.id = id;
         container.appendChild(document.createTextNode(""));
@@ -7514,27 +7513,55 @@ Fisma.Finding = {
      * they want to create a new POC instead.
      */
     displayCreatePocForm : function () {
-        var panelConfig = {width : "50em", modal : true};
+        if (YAHOO.lang.isNull(Fisma.Finding.createPocPanel)) {
+            var panelConfig = {width : "50em", modal : true};
 
-        Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
-            'Create New Point Of Contact',
-            '/poc/form',
-            Fisma.Finding.populatePocForm,
-            'createPocPanel',
-            panelConfig
-        );
+            Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
+                'Create New Point Of Contact',
+                '/poc/form',
+                Fisma.Finding.populatePocForm,
+                'createPocPanel',
+                panelConfig
+            );
+
+            Fisma.Finding.createPocPanel.subscribe("hide", this.removePocMessageBox, this, true);            
+        } else {
+            Fisma.Finding.createPocPanel.show();
+            Fisma.Finding.createPocMessageBox();
+        }
     },
-    
+
+    /**
+     * Create POC modal dialog's custom message box
+     */
+    createPocMessageBox: function () {
+        var messageBarContainer = document.getElementById("pocMessageBar");
+
+        if (YAHOO.lang.isNull(messageBarContainer)) {
+            throw "No message bar container found.";
+        }
+
+        var pocMessageBox = new Fisma.MessageBox(messageBarContainer);
+        Fisma.Registry.get("messageBoxStack").push(pocMessageBox);
+    },
+
+    /**
+     * Remove the POC modal dialog's custom message box
+     * 
+     * @param event {YAHOO.util.Event} The YUI event subscriber signature.
+     */
+    removePocMessageBox: function (event) {
+        Fisma.Registry.get("messageBoxStack").pop();
+        return true;
+    },
+
     /**
      * Populate the POC create form with some default values
      */
     populatePocForm : function () {
-        /* The message() API is so tacky... in order to display "message" feedback in this dialog, I have to
-         * temporarily hijack the message() output. It gets set back in the Fisma.Finding.createPoc() method.
-         */
-        document.getElementById('msgbar').id = 'oldMessageBar';
-        document.getElementById('pocMessageBar').id = 'msgbar';
-        
+        // this method is called in the wrong scope :(
+        Fisma.Finding.createPocMessageBox();
+
         // Fill in the username
         var usernameEl = document.getElementById('username');
         usernameEl.value = Fisma.Finding.createPocDefaultUsername;
@@ -7601,10 +7628,6 @@ Fisma.Finding = {
                     var pocId = parseInt(result.message, 10);
                     Fisma.Finding.pocHiddenEl.value = pocId;
                     Fisma.Finding.pocAutocomplete.getInputEl().value = username;
-
-                    // Undo the message bar hack from Fisma.Finding.populatePocForm()
-                    document.getElementById('msgbar').id = 'pocMessageBar';
-                    document.getElementById('oldMessageBar').id = 'msgbar';
 
                     message('A point of contact has been created.', 'info', true);
                 } else {
@@ -8933,6 +8956,233 @@ Fisma.Ldap = {
             textField.focus();
         }
     };
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * A box that is used to display error or success messages to the user.
+     * 
+     * @namespace Fisma
+     * @class MessageBox
+     * @extends n/a
+     * @constructor
+     * @param container {HTMLElement} The container to render messages inside of.
+     */
+    var MB = function(container) {
+        var that = this;
+
+        if (!YAHOO.lang.isValue(container)) {
+            throw "Container must be an HTML element object.";
+        }
+
+        this._container = container;
+        
+        // Default error level is "warn" for legacy compatibility
+        this.setErrorLevel(MB.ERROR_LEVEL.WARN);
+        this.hide();
+
+        // Add a control to allow a user to dismiss the message
+        var closeControl = document.createElement('div');
+        closeControl.className = "closeControl";
+        closeControl.appendChild(document.createTextNode("☒"));
+        this._container.appendChild(closeControl);
+
+        YAHOO.util.Event.addListener(closeControl, "click", function () {this.hide();}, this, true);
+        
+        // Add the subcontainer
+        this._subcontainer = document.createElement('div');
+        this._container.appendChild(this._subcontainer);
+    };
+
+    /**
+     * An enumeration of error levels
+     * 
+     * @static
+     */
+    MB.ERROR_LEVEL = {
+        WARN: 0,
+        INFO: 1
+    };
+
+    MB.prototype = {
+        /**
+         * A reference to the HTML container that this is rendered inside of.
+         * 
+         * @param HTMLElement
+         */
+        _container: null,
+
+        /**
+         * A subcontainer that is used to hold the message (since the main container also has a "close" control)
+         * 
+         * @param HTMLElement
+         */
+        _subcontainer: null,
+        
+        /**
+         * The criticality or error level for this message
+         */
+        _errorLevel: null,
+        
+        /**
+         * Append new message text to the existing message box
+         * 
+         * @param message {String}
+         */
+        addMessage: function (message) {
+            this._subcontainer.innerHTML += message;
+        },
+        
+        /**
+         * Set the message text (overwriting what was previously there)
+         * 
+         * @param message {String}
+         */        
+        setMessage: function (message) {
+            this._subcontainer.innerHTML = message;
+        },
+        
+        /**
+         * Set the error level for this box.
+         * 
+         * This affects appearance but in the future may also affect behavior.
+         * 
+         * @param level {MessageBar.ERROR_LEVEL}
+         */
+        setErrorLevel: function (level) {
+            switch (level) {
+                case MB.ERROR_LEVEL.WARN:
+                    this._container.className = "messageBox warn";
+                    break;
+                case MB.ERROR_LEVEL.INFO:
+                    this._container.className = "messageBox info";
+                    break;
+                default:
+                    throw "Invalid error level specified (" + level + ").";
+            }
+
+            this._errorLevel = level;
+        },
+
+        /**
+         * Return the current error level.
+         * 
+         * @return {MessageBar.ERROR_LEVEL}
+         */
+        getErrorLevel: function () {
+            return this._errorLevel;
+        },
+
+        /**
+         * Show the message box
+         */
+        show: function () {
+            YAHOO.util.Dom.removeClass(this._container, "hide");
+        },
+        
+        /**
+         * Hide the message box
+         */
+        hide: function () {
+            YAHOO.util.Dom.addClass(this._container, "hide");
+        }
+    };
+
+    Fisma.MessageBox = MB;
+})();
+/**
+ * Copyright (c) 2011 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Instantiate a global message box stack, and install a default message box if the layout has a container for it.
+     */
+    YAHOO.util.Event.onDOMReady(function () {
+        var messageBoxStack = new Fisma.MessageBoxStack();
+        Fisma.Registry.set("messageBoxStack", messageBoxStack);
+
+        var messageBoxContainer = document.getElementById('msgbar');
+
+        if (messageBoxContainer) {            
+            var mainMessageBox = new Fisma.MessageBox(messageBoxContainer);
+            
+            messageBoxStack.push(mainMessageBox);
+        }
+    });
+
+    /**
+     * A stack structure for message boxes.
+     * 
+     * Messages can be routed to a different message box by pushing that message box onto a stack.
+     * 
+     * @namespace Fisma
+     * @class MessageBoxManager
+     * @extends n/a
+     * @constructor
+     */
+    var MBS = function(container) {
+        this._messageBoxes = new Array();
+    };
+
+    MBS.prototype = {
+        _messageBoxes: null,
+
+        peek: function () {
+            return this._messageBoxes[this._messageBoxes.length - 1];
+        },
+
+        push: function (messageBox) {
+            this._messageBoxes.push(messageBox);
+        },
+        
+        pop: function () {
+            return this._messageBoxes.pop();
+        }
+    };
+
+    Fisma.MessageBoxStack = MBS;
 })();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.

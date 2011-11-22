@@ -1,0 +1,5 @@
+.messageBox{border:1px solid black;margin-top:10px;text-align:center;font-weight:bold;position:relative;padding:.5em;}
+.messageBox.warn{color:red;background-color:pink;border-color:red;}
+.messageBox.info{color:green;background-color:lightgreen;border-color:green;}
+.messageBox.hide{display:none;}
+.messageBox .closeControl{position:absolute;top:-6px;right:0;font-size:2em;font-weight:normal;cursor:pointer;}
