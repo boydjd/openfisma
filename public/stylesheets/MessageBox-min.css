@@ -2,4 +2,4 @@
 .messageBox.warn{color:red;background-color:pink;border-color:red;}
 .messageBox.info{color:green;background-color:lightgreen;border-color:green;}
 .messageBox.hide{display:none;}
-.messageBox .closeControl{position:absolute;top:-6px;right:0;font-size:2em;font-weight:normal;cursor:pointer;}
+.messageBox .closeControl{position:absolute;top:-6px;right:0;padding:3px;font-size:1.5em;font-weight:normal;cursor:pointer;}

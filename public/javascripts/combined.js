@@ -7526,7 +7526,13 @@ Fisma.Finding = {
 
             Fisma.Finding.createPocPanel.subscribe("hide", this.removePocMessageBox, this, true);            
         } else {
+            // Handle OFJ-1579 IE7 bug.
+            if (YAHOO.env.ua.ie === 7) {
+                Fisma.Finding.createPocPanel.center();
+            }
+
             Fisma.Finding.createPocPanel.show();
+            document.getElementById("username").value = Fisma.Finding.createPocDefaultUsername;
             Fisma.Finding.createPocMessageBox();
         }
     },
@@ -7552,7 +7558,11 @@ Fisma.Finding = {
      */
     removePocMessageBox: function (event) {
         Fisma.Registry.get("messageBoxStack").pop();
-        return true;
+
+        // Handle OFJ-1579 IE7 bug.
+        if (YAHOO.env.ua.ie === 7) {
+            this.createPocPanel.moveTo(5000,0);
+        }
     },
 
     /**
@@ -8997,6 +9007,10 @@ Fisma.Ldap = {
             throw "Container must be an HTML element object.";
         }
 
+        while (container.childNodes.length > 0) {
+            container.removeChild(container.firstChild);
+        }
+
         this._container = container;
         
         // Default error level is "warn" for legacy compatibility
@@ -9004,9 +9018,15 @@ Fisma.Ldap = {
         this.hide();
 
         // Add a control to allow a user to dismiss the message
+        var closeCharacter = "✗";
+        if (YAHOO.env.ua.ie === 7) {
+            // IE7 has bad font rendering. Use a simpler character.
+            closeCharacter = "x";
+        }
+
         var closeControl = document.createElement('div');
         closeControl.className = "closeControl";
-        closeControl.appendChild(document.createTextNode("☒"));
+        closeControl.appendChild(document.createTextNode(closeCharacter));
         this._container.appendChild(closeControl);
 
         YAHOO.util.Event.addListener(closeControl, "click", function () {this.hide();}, this, true);

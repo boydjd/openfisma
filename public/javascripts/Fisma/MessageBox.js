@@ -38,6 +38,10 @@
             throw "Container must be an HTML element object.";
         }
 
+        while (container.childNodes.length > 0) {
+            container.removeChild(container.firstChild);
+        }
+
         this._container = container;
         
         // Default error level is "warn" for legacy compatibility
@@ -45,9 +49,15 @@
         this.hide();
 
         // Add a control to allow a user to dismiss the message
+        var closeCharacter = "✗";
+        if (YAHOO.env.ua.ie === 7) {
+            // IE7 has bad font rendering. Use a simpler character.
+            closeCharacter = "x";
+        }
+
         var closeControl = document.createElement('div');
         closeControl.className = "closeControl";
-        closeControl.appendChild(document.createTextNode("☒"));
+        closeControl.appendChild(document.createTextNode(closeCharacter));
         this._container.appendChild(closeControl);
 
         YAHOO.util.Event.addListener(closeControl, "click", function () {this.hide();}, this, true);

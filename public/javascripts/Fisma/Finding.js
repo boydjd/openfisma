@@ -297,7 +297,13 @@ Fisma.Finding = {
 
             Fisma.Finding.createPocPanel.subscribe("hide", this.removePocMessageBox, this, true);            
         } else {
+            // Handle OFJ-1579 IE7 bug.
+            if (YAHOO.env.ua.ie === 7) {
+                Fisma.Finding.createPocPanel.center();
+            }
+
             Fisma.Finding.createPocPanel.show();
+            document.getElementById("username").value = Fisma.Finding.createPocDefaultUsername;
             Fisma.Finding.createPocMessageBox();
         }
     },
@@ -323,7 +329,11 @@ Fisma.Finding = {
      */
     removePocMessageBox: function (event) {
         Fisma.Registry.get("messageBoxStack").pop();
-        return true;
+
+        // Handle OFJ-1579 IE7 bug.
+        if (YAHOO.env.ua.ie === 7) {
+            this.createPocPanel.moveTo(5000,0);
+        }
     },
 
     /**

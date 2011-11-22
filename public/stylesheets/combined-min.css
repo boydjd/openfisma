@@ -32,7 +32,7 @@ tr.incidentStep{border-top:1px dotted silver;}
 .messageBox.warn{color:red;background-color:pink;border-color:red;}
 .messageBox.info{color:green;background-color:lightgreen;border-color:green;}
 .messageBox.hide{display:none;}
-.messageBox .closeControl{position:absolute;top:-6px;right:0;font-size:2em;font-weight:normal;cursor:pointer;}
+.messageBox .closeControl{position:absolute;top:-6px;right:0;padding:3px;font-size:1.5em;font-weight:normal;cursor:pointer;}
 table.modules{margin-left:auto;margin-right:auto;}
 table.modules td{border-style:none;font-size:1.4em;padding:8px;vertical-align:middle;}
 table.modules td:first-child{font-weight:bold;}
