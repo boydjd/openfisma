@@ -203,5 +203,5 @@ Fisma.System = {
             },
             postData
         );
-    },
+    }
 };
