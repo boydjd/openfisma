@@ -91,7 +91,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab("Documentation", "/system/artifacts/id/$id");
         $tabView->addTab("Users", "/system/user/id/$id");
-        $tabView->addTab("Step 6 - Monitor", "/system/monitor/id/$id");
 
         $findingSearchUrl = '/finding/remediation/list?q=/organization/textExactMatch/'
                           . $this->view->escape($organization->nickname, 'url');
@@ -980,13 +979,4 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->pdf($pdf);
     }
 
-    /**
-     * Display step 6 - monintor tab view 
-     *
-     * @return void
-     */
-    public function monitorAction()
-    {
-        $this->_helper->layout()->disableLayout();
-    }
 }

@@ -53,6 +53,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
                       ->addActionContext('select-controls', 'html')
                       ->addActionContext('show-add-control-form', 'html')
                       ->addActionContext('select-controls-form', 'html')
+                      ->addActionContext('monitor', 'html')
                       ->initContext();
     }
 
@@ -218,6 +219,14 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
     }
 
     /**
+     * Show the step 6 (monitor) user interface
+     */
+    public function monitorAction()
+    {
+        
+    }
+
+    /**
      * @return Fisma_Yui_DataTable_Abstract
      */
     protected function _baseAssessmentPlanDataTable()
@@ -308,6 +317,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Ob
         $tabView->addTab($i++ . ". Implementation", "/sa/security-authorization/implementation/id/$id/format/html");
         $tabView->addTab($i++ . ". Assessment", "/sa/security-authorization/assessment-plan/id/$id/format/html");
         $tabView->addTab($i++ . ". Authorization", "/sa/security-authorization/authorization/id/$id/format/html");
+        $tabView->addTab($i++ . ". Monitor", "/sa/security-authorization/monitor/id/$id/format/html");
 
         $this->view->tabView = $tabView;
     }
