@@ -3,6 +3,7 @@ body{margin:5px 5px 5px 5px;}
 span#logoutButton{visibility:hidden;}
 div#menubar{display:none;}
 div#skip{display:none;}
+div#closeControl{display:none;}
 div#logo{float:left;}
 div#logout{float:right;}
 .searchBox{display:none;}
