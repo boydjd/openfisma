@@ -41,6 +41,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      * @var Doctrine_Collection
      */
     protected $_organizations = null;
+
+    /**
+     * Override to return the model name 'POA&M'
+     */
+    public function getSingularModelName()
+    {
+        return 'POA&M';
+    }
     
     /**
      * The preDispatch hook is used to split off poam modify actions, mitigation approval actions, and evidence
@@ -300,7 +308,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         // format
         if ('pdf' == $format || 'xls' == $format) {
             $report = new Fisma_Report();
-            $report->setTitle('Finding Summary')
+            $report->setTitle('POA&M Summary')
                    ->addColumn(new Fisma_Report_Column('Organization/Information System'));
             
             $allStatuses = Finding::getAllStatuses();
@@ -586,7 +594,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $tabView = new Fisma_Yui_TabView('FindingView', $id);
 
-        $tabView->addTab("Finding $id", "/finding/remediation/finding/id/$id/format/html");
+        $tabView->addTab("POA&M $id", "/finding/remediation/finding/id/$id/format/html");
         $tabView->addTab("Mitigation Strategy", "/finding/remediation/mitigation-strategy/id/$id/format/html");
         $tabView->addTab("Risk Analysis", "/finding/remediation/risk-analysis/id/$id/format/html");
         $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id/format/html");
@@ -612,11 +620,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 $buttons['delete'] = new Fisma_Yui_Form_Button(
                     'deleteFinding', 
                     array(
-                          'label' => 'Delete Finding',
+                          'label' => 'Delete POA&M',
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
                               'url' => "/finding/remediation/delete/id/$id",
-                              'text' => "WARNING: You are about to delete the finding record. This action cannot be " 
+                              'text' => "WARNING: You are about to delete the POA&M record. This action cannot be " 
                                         . "undone. Do you want to continue?",
                               'isLink' => false
                         ) 
@@ -755,7 +763,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     $this->view->priorityMessenger($error, 'notice');
                 }
             } else {
-                $error = 'Expected completion date provided is not a valid date. Unable to update finding.';
+                $error = 'Expected completion date provided is not a valid date. Unable to update POA&M.';
                 $this->view->priorityMessenger($error, 'warning');
                 return;
             }
@@ -869,7 +877,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $finding = $this->_getSubject($id);
 
         if ($finding->isDeleted()) {
-            $message = "Evidence cannot be uploaded to a deleted finding.";
+            $message = "Evidence cannot be uploaded to a deleted POA&M.";
             throw new Fisma_Zend_Exception($message);
         }
 

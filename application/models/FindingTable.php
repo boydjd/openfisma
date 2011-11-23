@@ -106,7 +106,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ), 
             'legacyFindingKey' => array(
                 'initiallyVisible' => false,
-                'label' => 'Legacy Finding Key',
+                'label' => 'Legacy POA&M Key',
                 'sortable' => true,
                 'type' => 'text'
             ),

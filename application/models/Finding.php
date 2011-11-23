@@ -512,7 +512,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                                 $this,
                                 CurrentUser::getInstance()
                             );
-                            $this->getAuditLog()->write('Finding closed');
+                            $this->getAuditLog()->write('POA&M closed');
                         }
                         break;
                     case 'currentEvaluationId':

@@ -48,7 +48,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
                    . "integrity, or availability. The threat level allows the organization to prioritize "
                    . "security weaknesses based on their level of threat to the information system. Usually, "
                    . "the security level and description are pre-populated from vulnerability scan data, "
-                   . "however, manual findings need an assigned threat level and description.</p>";
+                   . "however, manual POA&Ms need an assigned threat level and description.</p>";
     $threatTooltip = new Fisma_Yui_Tooltip('threats', 'Threats', $threatText);
     Fisma_Format_Section::startSection($threatTooltip);
 ?>

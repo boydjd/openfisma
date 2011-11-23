@@ -1,17 +1,17 @@
 Event:
     FINDING_CREATED:
         name: FINDING_CREATED
-        description: Finding Created
+        description: POA&M Created
         Privilege: notification_finding
 
     FINDING_DELETED:
         name: FINDING_DELETED
-        description: Finding Deleted
+        description: POA&M Deleted
         Privilege: notification_finding
         
     FINDING_INJECTED:
         name: FINDING_INJECTED
-        description: Security Scanner Finding Injected
+        description: Security Scanner POA&M Injected
         Privilege: notification_finding
 
     VULNERABILITY_CREATED:
@@ -41,52 +41,52 @@ Event:
 
     UPDATE_MITIGATION_TYPE:
         name: UPDATE_MITIGATION_TYPE
-        description: Mitigation Type For Finding Updated
+        description: Mitigation Type For POA&M Updated
         Privilege: notification_finding
         
     UPDATE_COURSE_OF_ACTION:
         name: UPDATE_COURSE_OF_ACTION
-        description: Mitigation Strategy Description For Finding Updated
+        description: Mitigation Strategy Description For POA&M Updated
         Privilege: notification_finding
 
     UPDATE_RESPONSIBLE_SYSTEM:
         name: UPDATE_RESPONSIBLE_SYSTEM
-        description: Responsible System For Finding Re-assigned
+        description: Responsible System For POA&M Re-assigned
         Privilege: notification_finding
 
     UPDATE_DESCRIPTION:
         name: UPDATE_DESCRIPTION
-        description: Finding Description Updated
+        description: POA&M Description Updated
         Privilege: notification_finding
         
     UPDATE_SECURITY_CONTROL:
         name: UPDATE_SECURITY_CONTROL
-        description: Security Control For Finding Updated
+        description: Security Control For POA&M Updated
         Privilege: notification_finding
 
     UPDATE_COUNTERMEASURES:
         name: UPDATE_COUNTERMEASURES
-        description: Countermeasures Assessment For Finding Updated
+        description: Countermeasures Assessment For POA&M Updated
         Privilege: notification_finding
 
     UPDATE_THREAT:
         name: UPDATE_THREAT
-        description: Threat Assessment For Finding Updated
+        description: Threat Assessment For POA&M Updated
         Privilege: notification_finding
 
     UPDATE_RECOMMENDATION:
         name: UPDATE_RECOMMENDATION
-        description: Recommendation For Finding Updated
+        description: Recommendation For POA&M Updated
         Privilege: notification_finding
 
     UPDATE_RESOURCES_REQUIRED:
         name: UPDATE_RESOURCES_REQUIRED
-        description: Resources Required For Finding Updated
+        description: Resources Required For POA&M Updated
         Privilege: notification_finding
 
     UPDATE_ECD:
         name: UPDATE_ECD
-        description: ECD For Finding Updated
+        description: ECD For POA&M Updated
         Privilege: notification_finding
 
     UPDATE_LOCKED_ECD:
@@ -96,22 +96,22 @@ Event:
 
     UPDATE_LEGACY_FINDING_KEY:
         name: UPDATE_LEGACY_FINDING_KEY
-        description: Legacy Finding Key For Finding Updated
+        description: Legacy POA&M Key For POA&M Updated
         Privilege: notification_finding
 
     UPDATE_FINDING_SOURCE:
         name: UPDATE_FINDING_SOURCE
-        description: Source For Finding Updated
+        description: Source For POA&M Updated
         Privilege: notification_finding
 
     FINDING_CLOSED:
         name: FINDING_CLOSED
-        description: Finding Was Closed
+        description: POA&M Was Closed
         Privilege: notification_finding
 
     EVIDENCE_UPLOADED:
         name: EVIDENCE_UPLOADED
-        description: Evidence Uploaded For Finding
+        description: Evidence Uploaded For POA&M
         Privilege: notification_finding
 
     MITIGATION_ISSO:
@@ -211,17 +211,17 @@ Event:
 
     SOURCE_CREATED:
         name: SOURCE_CREATED
-        description: Finding Source Created
+        description: POA&M Source Created
         Privilege: notification_admin
 
     SOURCE_UPDATED:
         name: SOURCE_UPDATED
-        description: Finding Source Modified
+        description: POA&M Source Modified
         Privilege: notification_admin
 
     SOURCE_DELETED:
         name: SOURCE_DELETED
-        description: Finding Source Deleted
+        description: POA&M Source Deleted
         Privilege: notification_admin
 
     NETWORK_UPDATED:
@@ -281,7 +281,7 @@ Event:
 
     APPROVAL_DENIED:
         name: APPROVAL_DENIED
-        description: Approval Denied For Finding
+        description: Approval Denied For POA&M
         Privilege: notification_finding
 
     USER_LOCKED:

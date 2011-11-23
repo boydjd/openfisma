@@ -11,8 +11,8 @@ echo $this->escape($xmltag, 'none');
  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:html="http://www.w3.org/TR/REC-html40">
  <DocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
-  <Title>Finding Injection Template</Title>
-  <Subject>Finding Injection Template</Subject>
+  <Title>POA&M Injection Template</Title>
+  <Subject>POA&M Injection Template</Subject>
   <Company>Endeavor Systems, Inc.</Company>
   <Version>11.9999</Version>
  </DocumentProperties>
@@ -144,7 +144,7 @@ echo $this->escape($xmltag, 'none');
   <NamedRange ss:Name="sources"  ss:RefersTo="=Sources!C1"/>
   <NamedRange ss:Name="networks" ss:RefersTo="=Networks!C1"/>
  </Names>
- <Worksheet ss:Name="Findings">
+ <Worksheet ss:Name="POA&Ms">
   <Table ss:ExpandedColumnCount="21" ss:ExpandedRowCount="8" x:FullColumns="1"
    x:FullRows="1" ss:StyleID="s21">
    <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="49.5"/>
@@ -164,7 +164,7 @@ echo $this->escape($xmltag, 'none');
     <Cell ss:MergeAcross="13" ss:StyleID="s29"><Data ss:Type="String"><?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?> - Injection Template</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="129.75" ss:StyleID="s27">
-    <Cell ss:MergeAcross="13" ss:StyleID="m43958186"><Data ss:Type="String">Security Catalog: <?php echo $this->escape($this->securityControlCatalogName); ?>&#10;Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.&#10;&#10;</Data></Cell>
+    <Cell ss:MergeAcross="13" ss:StyleID="m43958186"><Data ss:Type="String">Security Catalog: <?php echo $this->escape($this->securityControlCatalogName); ?>&#10;Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a POA&M, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.&#10;&#10;</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="38.25">
     <Cell ss:StyleID="s39"><Data ss:Type="String">System*</Data><Comment
@@ -173,13 +173,13 @@ echo $this->escape($xmltag, 'none');
     <Cell ss:StyleID="s46"><Data ss:Type="String">Date Discovered*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date that this finding was discovered.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">Finding Source*</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">POA&M Source*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> The type of evaluation which was used to discover this finding.          </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s41"><Data ss:Type="String">Finding Description*</Data><Comment
+    <Cell ss:StyleID="s41"><Data ss:Type="String">POA&M Description*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Description of the vulnerability or weakness.          </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s41"><Data ss:Type="String">Finding Recommendation*</Data><Comment
+    <Cell ss:StyleID="s41"><Data ss:Type="String">POA&M Recommendation*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="宋体" x:Family="Swiss" html:Size="9" html:Color="#000000"> Auditor's recommendation to remediate the finding.          </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s41"><Data ss:Type="String">Course of Action Type</Data><Comment

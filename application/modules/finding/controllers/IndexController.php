@@ -124,7 +124,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 move_uploaded_file($file['tmp_name'], $path . $newName);
                 
                 Doctrine_Manager::connection()->commit();
-                $error = "$rowsProcessed findings were created.";
+                $error = "$rowsProcessed POA&Ms were created.";
                 $type  = 'notice';
             } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
                 Doctrine_Manager::connection()->rollback();

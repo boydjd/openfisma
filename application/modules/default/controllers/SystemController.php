@@ -98,7 +98,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->showFindingsButton = new Fisma_Yui_Form_Button_Link(
             'showFindings',
             array(
-                'value' => 'Show Findings',
+                'value' => 'Show Show POA&Ms',
                 'href' => $findingSearchUrl
             )
         );

@@ -11,15 +11,15 @@ Privilege:
     finding_area:
         resource: area
         action: finding
-        description: Finding Module
+        description: POA&M Module
     finding_admin_area:
         resource: area
         action: finding_admin
-        description: Finding Module Administration
+        description: POA&M Module Administration
     finding_report_area:
         resource: area
         action: finding_report
-        description: Finding Module Reports
+        description: POA&M Module Reports
 
     vulnerability_area:
         resource: area
@@ -86,23 +86,23 @@ Privilege:
     findings_create:
         resource: finding
         action: create
-        description: Create Findings
+        description: Create POA&Ms
     findings_read:
         resource: finding
         action: read
-        description: View Findings
+        description: View POA&Ms
     # findings_update: 
         # ACL for findings is more fine-grained than for other objects, so there is no "update" action. See below.
     findings_delete:
         resource: finding
         action: delete
-        description: Delete Findings
+        description: Delete POA&Ms
                     
     # Granular finding privileges
     findings_inject:
         resource: finding
         action: inject
-        description: Inject Findings
+        description: Inject POA&Ms
     findings_update_type:
         resource: finding
         action: update_type
@@ -110,7 +110,7 @@ Privilege:
     findings_update_description:
         resource: finding
         action: update_description
-        description: Update Finding Description
+        description: Update POA&M Description
     findings_update_course_of_action:
         resource: finding
         action: update_course_of_action
@@ -134,7 +134,7 @@ Privilege:
     findings_update_finding_recommendation:
         resource: finding
         action: update_recommendation
-        description: Edit Finding Recommendation
+        description: Edit POA&M Recommendation
     findings_update_finding_resources:
         resource: finding
         action: update_resources
@@ -162,15 +162,15 @@ Privilege:
     findings_comment:
         resource: finding
         action: comment
-        description: Comment on Finding
+        description: Comment on POA&M
     findings_update_legacy_finding_key:
         resource: finding
         action: update_legacy_finding_key
-        description: Update Legacy Finding Key
+        description: Update Legacy POA&M Key
     findings_update_finding_source:
         resource: finding
         action: update_finding_source
-        description: Update Finding Source
+        description: Update POA&M Source
 
     # Default Finding Approval Privileges
     finding_mitigation_isso:
@@ -297,19 +297,19 @@ Privilege:
     source_create:
         resource: source
         action: create
-        description: Create Finding Sources
+        description: Create POA&M Sources
     source_read:
         resource: source
         action: read
-        description: View Finding Sources
+        description: View POA&M Sources
     source_update:
         resource: source
         action: update
-        description: Edit Finding Sources
+        description: Edit POA&M Sources
     source_delete:
         resource: source
         action: delete
-        description: Delete Finding Sources
+        description: Delete POA&M Sources
     
     # Roles CRUD
     roles_create:
@@ -381,7 +381,7 @@ Privilege:
     notification_finding:
         resource: notification
         action: finding
-        description: Finding Notifications
+        description: POA&M Notifications
     notification_vulnerability:
         resource: notification
         action: vulnerability

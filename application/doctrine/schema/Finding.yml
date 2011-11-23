@@ -26,7 +26,7 @@ Finding:
             unique: true
             extra:
                 auditLog: true
-                logicalName: Legacy Finding ID
+                logicalName: Legacy POA&M ID
             comment: This field can be used by end clients to track findings under a legacy tracking system
 
         type:
@@ -54,7 +54,7 @@ Finding:
             extra:
                 purify: html
                 auditLog: true
-                logicalName: Finding Description
+                logicalName: POA&M Description
             comment: Description of the finding
         recommendation:
             type: string
@@ -139,13 +139,13 @@ Finding:
             comment: The risk that remains after combining the threat level with countermeasures effectiveness
         cvssBaseScore:
            type: float
-           comment: The CVSS Base Score of the finding
+           comment: The CVSS Base Score of the POA&M
            extra:
                 auditLog: true
                 logicalName: CVSS Base Score
         cvssVector:
             type: string(255)
-            comment: The CVSS Vector of the finding
+            comment: The CVSS Vector of the POA&M
             extra:
                 auditLog: true
                 logicalName: CVSS Vector

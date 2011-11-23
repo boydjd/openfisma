@@ -2,7 +2,7 @@
 Fisma_Format_Section::startSection('Artifacts (' . $this->artifacts->count() . ')');
 
 if (count($this->artifacts) == 0):
-    echo $this->escape('<p><i>There are no artifacts for this finding.</i></p>', 'none');
+    echo $this->escape('<p><i>There are no artifacts for this POA&M.</i></p>', 'none');
 else:
     // Each artifact block is rendered in a partial view.
     foreach ($this->artifacts as $index => $artifact):
@@ -58,7 +58,7 @@ if (
 endif;
 ?>
 
-<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
+<p>Evidence can only be uploaded if the POA&M is in 'EN' status and if you have the required role.</p>
 
 <div class='buttonBar'>
     <?php echo $this->escape($uploadEvidenceButton, 'none');?>

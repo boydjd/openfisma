@@ -181,7 +181,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $chartTotalStatus = new Fisma_Chart(380, 275, 'chartTotalStatus', $extSrcUrl);
         $chartTotalStatus
-            ->setTitle('Finding Status Distribution')
+            ->setTitle('POA&M Status Distribution')
             ->addWidget(
                 'findingType',
                 'Threat Level:',
@@ -434,8 +434,8 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                 
                 // Formate the tooltip
                 $pieSliceTooltip = '<b>' . $pieSliceTooltip . '</b><hr/>';
-                $pieSliceTooltip .= '#count# total findings<br/>';
-                $pieSliceTooltip .= '#percent#% of all findings are ' . $result['type'];
+                $pieSliceTooltip .= '#count# total POA&Ms<br/>';
+                $pieSliceTooltip .= '#percent#% of all POA&Ms are ' . $result['type'];
                 
                 $thisChart->addColumn(
                     $result['type'],

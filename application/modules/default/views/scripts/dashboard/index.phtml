@@ -6,25 +6,25 @@
             There are <b>
             <a href="<?php echo $this->escape($this->newFindingUrl, 'none'); ?>">
                 <?php echo $this->escape($this->alert['NEW'])?></a>
-            </b> NEW findings (findings that do not have a mitigation strategy).
+            </b> NEW POA&Ms (POA&Ms that do not have a mitigation strategy).
         </li>
         <li>
             There are <b>
             <a href="<?php echo $this->escape($this->draftFindingUrl, 'none'); ?>">
                 <?php echo $this->escape($this->alert['DRAFT'])?></a>
-            </b> DRAFT findings (findings that have a mitigation strategy but have not been submitted for approval).
+            </b> DRAFT POA&Ms (POA&Ms that have a mitigation strategy but have not been submitted for approval).
         </li>
         <li>
             There are <b>
             <a href="<?php echo $this->escape($this->evidenceNeededOntimeUrl); ?>">
                 <?php echo $this->escape($this->alert['EN']); ?></a>
-            </b> findings awaiting evidence.
+            </b> POA&Ms awaiting evidence.
         </li>
         <li>
             There are <b>
             <a href="<?php echo $this->escape($this->evidenceNeededOverdueUrl); ?>">
                 <?php echo $this->escape($this->alert['EO']); ?></a>
-            </b> overdue findings awaiting evidence.    
+            </b> overdue POA&Ms awaiting evidence.    
         </li>
     </ul>
 </div>

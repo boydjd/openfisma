@@ -14,18 +14,18 @@ elements.discoveredDate.type = "text"
 elements.discoveredDate.options.label = "Discovered Date"
 elements.discoveredDate.options.class = "date"
 elements.discoveredDate.options.required = true
-elements.discoveredDate.options.tooltip = "<p>If this finding was not discovered today, then enter the actual date of discovery here.</p><p>The date format is YYYY-MM-DD.</p>"
+elements.discoveredDate.options.tooltip = "<p>If this POA&M was not discovered today, then enter the actual date of discovery here.</p><p>The date format is YYYY-MM-DD.</p>"
 elements.discoveredDate.options.validators.dateValidator.validator = "date"
 displayGroups.finding.elements.discoveredDate = "discoveredDate"
 
 elements.sourceId.type = "select"
-elements.sourceId.options.label = "Finding Source"
+elements.sourceId.options.label = "POA&M Source"
 elements.sourceId.options.required = true
 displayGroups.finding.elements.sourceId = "sourceId"
 
 elements.description.type = "textarea"
 elements.description.options.validators.mce.validator = "MceNotEmpty"
-elements.description.options.label = "Enter Description of Finding"
+elements.description.options.label = "Enter Description of POA&M"
 elements.description.options.cols = "100"
 elements.description.options.rows = "8"
 elements.description.options.required = true

@@ -67,18 +67,18 @@ $pdf->ezText('Risk Analysis Form (RAF)', TITLE_TEXT_SIZE, array('justification'=
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center')); //vertical blank
 
 // Finding information section
-$data = array(array('<b>Finding Information</b>'));
+$data = array(array('<b>POA&M Information</b>'));
 $pdf->ezTable($data, null, null, $headerOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 
-$data = array(array("<b>Finding Number:</b>",    $finding->id,
-                    "<b>Finding Source:</b>",    Fisma_String::htmlToPdfText($finding->Source->name, false)),
+$data = array(array("<b>POA&M Number:</b>",    $finding->id,
+                    "<b>POA&M Source:</b>",    Fisma_String::htmlToPdfText($finding->Source->name, false)),
               array("<b>Date Opened:</b>",       $finding->createdTs,
                     "<b>Date Discovered:</b>",   $finding->discoveredDate),
               array("<b>Organization:</b>",      Fisma_String::htmlToPdfText($system->Organization->name, false),"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
-$data = array(array("<b>Finding Description:</b>", Fisma_String::htmlToPdfText($finding->description),"",""),
+$data = array(array("<b>POA&M Description:</b>", Fisma_String::htmlToPdfText($finding->description),"",""),
               array("<b>Recommendation:</b>",  Fisma_String::htmlToPdfText($finding->recommendation),"",""));
 $pdf->ezTable($data, null, null, $labelOptions);
 
@@ -177,14 +177,14 @@ foreach (array_reverse($columns) as $threat_likelihood) {
 }
 
 $pdf->ezTable($data, null, null, $tableOptions);
-$data = array(array("Based on the threat likelihood and security categorization of the information system, the finding presents a <b>".$overall_risk."</b> level of risk. "));
+$data = array(array("Based on the threat likelihood and security categorization of the information system, the POA&M presents a <b>".$overall_risk."</b> level of risk. "));
 $pdf->ezTable($data, null, null, $labelOptions);
 $pdf->ezText('', BODY_TEXT_SIZE, array('justification'=>'center'));
 
 $data = array(array("Agency Recommendations based on Risk Levels:"));
 $pdf->ezTable($data, null, null, $labelOptions);
 $data = array(array('<b>Risk Level</b>', '<b>Risk Description and Necessary Actions</b>'),
-              array('<b>'.$columns[2].'</b>', 'If an observation or finding is evaluated as a high risk, there is a strong need for corrective measures. An existing system may continue to operate, but a corrective action plan must be put in place as soon as possible.'),
+              array('<b>'.$columns[2].'</b>', 'If an observation or POA&M is evaluated as a high risk, there is a strong need for corrective measures. An existing system may continue to operate, but a corrective action plan must be put in place as soon as possible.'),
               array('<b>'.$columns[1].'</b>', 'If an observation is rated as medium risk, corrective actions are needed and a plan must be developed to incorporate these actions within a reasonable period of time.'),
               array('<b>'.$columns[0].'</b>', 'If an observation is described as low risk, the system\'s AO must determine whether corrective actions are still required or decide to accept the risk.'));
 

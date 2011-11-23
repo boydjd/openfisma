@@ -50,7 +50,7 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             ->setColors(array('#3366FF'))
             ->setChartType('bar')
             ->setConcatColumnLabels(false)
-            ->setAxisLabelY('Number of Findings');
+            ->setAxisLabelY('Number of POA&Ms');
         
         // Dont query if there are no organizations this user can see
         $visibleOrgs = FindingTable::getOrganizationIds();

@@ -41,7 +41,7 @@ class Sa_DashboardController extends Fisma_Zend_Controller_Action_Security
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Type', true));
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('SDLC Phase', true));
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('FIPS 199 Category', true));
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Open Findings', true));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Open POA&Ms', true));
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('ATO Expiration', true));
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Annual Due', true));
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Id', false, null, null, 'Id', true));
@@ -54,7 +54,7 @@ class Sa_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $chartTotalStatus = new Fisma_Chart(380, 275, 'chartTotalStatus', $extSrcUrl);
         $chartTotalStatus
-            ->setTitle('Finding Status Distribution')
+            ->setTitle('POA&M Status Distribution')
             ->addWidget(
                 'findingType',
                 'Threat Level:',

@@ -58,11 +58,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             new Fisma_Chart(380, 275, 'chartFindForecast', 
                     '/finding/dashboard/findingforecast/format/json');
         $chartFindForecast
-            ->setTitle('Finding Forecast')
+            ->setTitle('POA&M Forecast')
             ->addWidget('dayRangesStatChart', 'Day Ranges:', 'text', '0, 15, 30, 60, 90')
             ->addWidget(
                     'forcastThreatLvl',
-                    'Finding Type:',
+                    'POA&M Type:',
                     'combo',
                     'High, Moderate, and Low',
                     array(
@@ -80,11 +80,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $chartOverdueFinding = 
             new Fisma_Chart(380, 275, 'chartOverdueFinding', '/finding/dashboard/chartoverdue/format/json');
         $chartOverdueFinding
-            ->setTitle('Findings Past Due')
+            ->setTitle('POA&Ms Past Due')
             ->addWidget('dayRanges', 'Day Ranges:', 'text', '1, 30, 60, 90, 120')
             ->addWidget(
                     'pastThreatLvl',
-                    'Finding Type:',
+                    'POA&M Type:',
                     'combo',
                     'High, Moderate, and Low',
                     array(
@@ -101,10 +101,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $chartTotalStatus 
             = new Fisma_Chart(420, 275, 'chartTotalStatus', '/dashboard/chart-finding/format/json');
         $chartTotalStatus
-            ->setTitle('Findings by Workflow Process')
+            ->setTitle('POA&Ms by Workflow Process')
             ->addWidget(
                     'findingType',
-                    'Finding Type:',
+                    'POA&M Type:',
                     'combo',
                     'High, Moderate, and Low',
                     array(
@@ -121,13 +121,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         // Mid-right chart - Findings Without Corrective Actions
         $chartNoMit = new Fisma_Chart(380, 275);
         $chartNoMit
-            ->setTitle('Findings Without Corrective Actions')
+            ->setTitle('POA&Ms Without Corrective Actions')
             ->setUniqueid('chartNoMit')
             ->setExternalSource('/finding/dashboard/chartfindnomitstrat/format/json')
             ->addWidget('dayRangesMitChart', 'Day Ranges:', 'text', '1, 30, 60, 90, 120')
             ->addWidget(
                     'noMitThreatLvl',
-                    'Finding Type:',
+                    'POA&M Type:',
                     'combo',
                     'High, Moderate, and Low',
                     array(
@@ -148,7 +148,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $findingOrgChart = new Fisma_Chart(400, 275, 'findingOrgChart');
         $findingOrgChart
-            ->setTitle('Open Findings By Organization')
+            ->setTitle('Open POA&Ms By Organization')
             ->setExternalSource('/finding/dashboard/chartfindingbyorgdetail/format/json')
             ->addWidget(
                     'displayBy',
@@ -252,7 +252,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $rtnChart
             ->setThreatLegendVisibility(true)
             ->setThreatLegendWidth(450)
-            ->setAxisLabelY('Number of Findings')
+            ->setAxisLabelY('Number of POA&Ms')
             ->setChartType('stackedbar')
             ->setColors(
                     array(
@@ -586,7 +586,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setChartType('stackedbar')
             ->setConcatColumnLabels(false)
             ->setAxisLabelX('Number of Days Past Due')
-            ->setAxisLabelY('Number of Findings')
+            ->setAxisLabelY('Number of POA&Ms')
             ->setColumnLabelAngle(0)
             ->setThreatLegendVisibility(true)
             ->setColors(
@@ -757,7 +757,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $thisChart
                 ->setChartType('bar')
                 ->setConcatColumnLabels(false)
-                ->setAxisLabelY('Number of Findings')
+                ->setAxisLabelY('Number of POA&Ms')
                 ->setColors(array('#3366FF'));
 
             $q = Doctrine_Query::create()
@@ -792,7 +792,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->setThreatLegendVisibility(true)
                 ->setThreatLegendWidth(450)
                 ->setConcatColumnLabels(true)
-                ->setAxisLabelY('Number of Findings')
+                ->setAxisLabelY('Number of POA&Ms')
                 ->setColors(
                         array(
                             "#FF0000",
@@ -874,7 +874,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $thisChart
                 ->setChartType('bar')
                 ->setConcatColumnLabels(false)
-                ->setAxisLabelY('Number of Findings');
+                ->setAxisLabelY('Number of POA&Ms');
 
             // Decide color of every bar based on High/Mod/Low
             switch (strtoupper($findingType)) {
@@ -932,7 +932,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $noMitChart = new Fisma_Chart();
         $noMitChart
             ->setAxisLabelX('Number of Days Without Mitigation Strategy')
-            ->setAxisLabelY('Number of Findings')
+            ->setAxisLabelY('Number of POA&Ms')
             ->setChartType('stackedbar')
             ->setThreatLegendVisibility(true)
             ->setColumnLabelAngle(0)
@@ -1146,7 +1146,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setColumnLabelAngle(0)
             ->setThreatLegendVisibility(true)
             ->setAxisLabelX('Number of Days Until Overdue')
-            ->setAxisLabelY('Number of Findings')
+            ->setAxisLabelY('Number of POA&Ms')
             ->setLayerLabels(
                     array(
                         'Null',

@@ -34,7 +34,7 @@ class Fisma_Inject_Excel
     /**
      * The name of the template file which gets sent to the client
      */
-    const TEMPLATE_NAME = 'Finding_Upload_Template.xls';
+    const TEMPLATE_NAME = 'POA&M_Upload_Template.xls';
     
     /**
      * The template version is used to make sure that we don't try to process a template which was produced by a
@@ -46,8 +46,9 @@ class Fisma_Inject_Excel
      * v2 2010-06-28 Add metadata regarding which security control catalog was used to produce the template
      * v3 2011-02-02 Removed asset related fields
      * v4 2011-03-25 threatLevel and threatDescription are now requiered fields
+     * v5 2011-11-23 Change 'Finding' to 'POA&M'
      */
-    const TEMPLATE_VERSION = 4;
+    const TEMPLATE_VERSION = 5;
     
     /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
@@ -83,9 +84,9 @@ class Fisma_Inject_Excel
     private $_requiredExcelTemplateColumns = array (
         'systemNickname' => 'System',
         'discoveredDate' => 'Date Discovered',
-        'findingSource' => 'Finding Source',
-        'findingDescription' => 'Finding Description',
-        'findingRecommendation' => 'Finding Recommendation',
+        'findingSource' => 'POA&M Source',
+        'findingDescription' => 'POA&M Description',
+        'findingRecommendation' => 'POA&M Recommendation',
         'threatLevel' => 'Threat Level',
         'threatDescription' => 'Threat Description'
     );
@@ -255,7 +256,7 @@ class Fisma_Inject_Excel
             $sourceTable = Doctrine::getTable('Source')->findOneByNickname($finding['findingSource']);
             if (!$sourceTable) {
                 throw new Fisma_Zend_Exception_InvalidFileFormat(
-                    "Row $currentExcelRowNumber: Invalid finding source selected. Your template may"
+                    "Row $currentExcelRowNumber: Invalid POA&M source selected. Your template may"
                     . " be out of date. Please try downloading it again."
                 );
             }
