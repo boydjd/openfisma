@@ -61,6 +61,18 @@ System:
             extra:
                 purify: html
             comment: System Hardware and Software
+        pocSystemOwner:
+            type: string(255)
+            comment: System Owner
+        pocISSO:
+            type: string(255)
+            comment: Information System Security Officer (ISSO)
+        pocISSM:
+            type: string(255)
+            comment: Information System Security Manger (ISSM)
+        pocAO:
+            type: string(255)
+            comment: Authorizing Official (AO)
 
         # FISMA Report Criteria:
         controlledBy:

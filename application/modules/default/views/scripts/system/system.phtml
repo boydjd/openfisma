@@ -261,8 +261,66 @@ Fisma_Format_Section::startSection('General Information');
 Fisma_Format_Section::stopSection();?>
 
 <div class="column right">
-    <?php Fisma_Format_Section::startSection('Points of Contact'); ?>
-    <?php Fisma_Format_Section::stopSection();?>
+<?php Fisma_Format_Section::startSection('Points of Contact'); ?>
+    <table class="keyValues">
+        <tr>
+            <td>
+                <?php
+                    $systemOwnerTooltip = new Fisma_Yui_Tooltip('systemOwner', 'System Owner: ',
+                        "<p><b>System Owner</b></p>");
+                    echo $this->escape($systemOwnerTooltip, 'none');
+                ?>
+            </td>
+            <td>
+                <span id="pocSystemOwner" class="editable" target="pocSystemOwner" name="pocSystemOwner" type="text">
+                    <?php echo $this->escape($this->system->pocSystemOwner); ?>&nbsp;
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <?php
+                    $pocIssoTooltip = new Fisma_Yui_Tooltip('pocISSO', 'Information System Security Officer (ISSO): ',
+                        "<p><b>Information System Security Officer (ISSO)</b></p>");
+                    echo $this->escape($pocIssoTooltip, 'none');
+                ?>
+            </td>
+            <td>
+                <span id="pocISSO" class="editable" target="pocISSO" name="pocISSO" type="text">
+                    <?php echo $this->escape($this->system->pocISSO); ?>&nbsp;
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <?php
+                    $pocIssmTooltip = new Fisma_Yui_Tooltip('pocISSM', 'Information System Security Manger (ISSM): ',
+                        "<p><b>Information System Security Manger (ISSM)</b></p>");
+                    echo $this->escape($pocIssmTooltip, 'none');
+                ?>
+            </td>
+            <td>
+                <span id="pocISSM" class="editable" target="pocISSM" name="pocISSM" type="text">
+                    <?php echo $this->escape($this->system->pocISSM); ?>&nbsp;
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <?php
+                    $pocAoTooltip = new Fisma_Yui_Tooltip('pocAO', 'Authorizing Official (AO): ',
+                        "<p><b>Authorizing Official (AO)</b></p>");
+                    echo $this->escape($pocAoTooltip, 'none');
+                ?>
+            </td>
+            <td>
+                <span id="pocAO" class="editable" target="pocAO" name="pocAO" type="text">
+                    <?php echo $this->escape($this->system->pocAO); ?>&nbsp;
+                </span>
+            </td>
+        </tr>
+    </table>
+<?php Fisma_Format_Section::stopSection();?>
 </div>
 
 <div class="clear"></div>
