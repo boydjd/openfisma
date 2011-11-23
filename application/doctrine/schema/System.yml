@@ -56,6 +56,11 @@ System:
             extra:
                 purify: html
             comment: System Interconnection & Information Sharing Field
+        hardwareAndSoftware:
+            type: string
+            extra:
+                purify: html
+            comment: System Hardware and Software
 
         # FISMA Report Criteria:
         controlledBy:

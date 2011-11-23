@@ -311,12 +311,13 @@ $interconnectionTooltip = new Fisma_Yui_Tooltip('systemInterconnection',
 Fisma_Format_Section::startSection($interconnectionTooltip, 'interconnections');?>
 <div name="interconnections" id="interconnections" type="textarea" rows="3" cols="120">
     <?php if (is_null($this->system->interconnections)):
-    echo '<table><tr><td><p>System</p><p>Name</p></td><td>Organization</td><td>Type</td><td>Agreement</td><td>Date</td>'
-        . '<td><p>FIPS 199</p><p>Category</p></td><td><p>C&amp;A</p><p>Status</p></td><td><p>Auth.</p><p>Official</p>'
-        . '</td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td>'
+    echo $this->escape('<table><tr><td><p>System</p><p>Name</p></td><td>Organization</td><td>Type</td>'
+        . '<td>Agreement</td><td>Date</td><td><p>FIPS 199</p><p>Category</p></td><td><p>C&amp;A</p><p>Status</p></td>'
+        . '<td><p>Auth.</p><p>Official</p></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td>'
+        . '<td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td>'
         . '<td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td>'
-        . '<td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td>'
-        . '<td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>';
+        . '<td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td>'
+        . '</td><td></td></tr></table>', 'none');
     else:
         echo $this->escape($this->system->interconnections, 'none');
     endif;?>
@@ -333,3 +334,22 @@ Fisma_Format_Section::startSection('System Architecture'); ?>
     <?php endif; ?>
 </div>
 <?php Fisma_Format_Section::stopSection();
+
+Fisma_Format_Section::startSection('System Hardware and Software', 'hardwareAndSoftware');?>
+<div name="hardwareAndSoftware" id="hardwareAndSoftware" type="textarea" rows="3" cols="120">
+    <?php if (is_null($this->system->hardwareAndSoftware)):
+    echo $this->escape('<table><tr><td><center>Item<br>(Manufacturer<br>and Model)</center></td>'
+        . '<td><center>Item<br>Function</center></td>'
+        . '<td><center>Item<br>Physical<br>Location</center></td>'
+        . '<td><center>Machine/Host<br>Name</center></td>'
+        . '<td><center>IP Address</center></td>'
+        . '<td><center>Operating<br>System and<br>Version</center></td>'
+        . '<td><center>Application(s)<br>and Version</center></td>'
+        . '</tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></td>'
+        . '<td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td>'
+        . '<td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td>'
+        . '<td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>', 'none');
+    else:
+        echo $this->escape($this->system->hardwareAndSoftware, 'none');
+    endif;?>
+</div>
