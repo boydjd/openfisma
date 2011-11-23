@@ -403,9 +403,11 @@ Fisma_Format_Section::startSection('System Hardware and Software', 'hardwareAndS
         . '<td><center>IP Address</center></td>'
         . '<td><center>Operating<br>System and<br>Version</center></td>'
         . '<td><center>Application(s)<br>and Version</center></td>'
-        . '</tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></td>'
-        . '<td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td>'
-        . '<td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td>'
+        . '</tr><tr><td>Dell 6750</td><td>Server</td><td>MMAC</td><td>AAAFAAB058</td><td>192.168.0.1</td>'
+        . '<td>Window 2003 Server</td><td>Oracle 10g R10.2.0<br>McAfee Antivirus 8.7</td></tr>'
+        . '<td>Dell 760</td><td>Workstation</td><td>HQ</td><td>AAAFAAC058</td><td>192.168.0.2</td>'
+        . '<td>Windows XP SP3</td><td>McAfee Antivirus 8.7<br>Adobe Flash Player 9</td></tr><tr><td></td><td></td>'
+        . '<td></td><td></td><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td>'
         . '<td></td></tr><tr><td></td><td></td><td></td><td></td><td></td><td></td><td></td></tr></table>', 'none');
     else:
         echo $this->escape($this->system->hardwareAndSoftware, 'none');
