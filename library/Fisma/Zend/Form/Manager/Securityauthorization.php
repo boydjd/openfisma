@@ -54,9 +54,11 @@ class Fisma_Zend_Form_Manager_Securityauthorization extends Fisma_Zend_Form_Mana
 
         $impactDef = $saTable->getColumnDefinition('impact');
         $impactKeys = $impactDef['values'];
-        $impactNames = array_map('ucfirst', array_map('strtolower', $impactKeys));
-        $impacts = array_combine($impactKeys, $impactNames);
-        $form->getElement('impact')->addMultiOptions($impacts);
+        if (!empty($impactKeys)) {
+            $impactNames = array_map('ucfirst', array_map('strtolower', $impactKeys));
+            $impacts = array_combine($impactKeys, $impactNames);
+            $form->getElement('impact')->addMultiOptions($impacts);
+        }
 
         $statusDef = $saTable->getColumnDefinition('status');
         $statusKeys = $statusDef['values'];
