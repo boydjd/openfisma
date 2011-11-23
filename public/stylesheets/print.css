@@ -53,6 +53,10 @@ div#skip{
     display: none;
 }
 
+div#closeMsg{
+    display: none;
+}
+
 div#logo {
     float: left;
 }
