@@ -44,12 +44,12 @@ class Fisma_Menu
         }
 
         if ($acl->hasArea('finding')) {
-            $findings = new Fisma_Yui_Menu('POA&Ms');
+            $findings = new Fisma_Yui_Menu('POA&amp;Ms');
             
             if ($acl->hasPrivilegeForClass('read', 'Finding')) {
                 $findings->add(new Fisma_Yui_MenuItem('Summary', '/finding/remediation/summary'));
                 $findings->add(new Fisma_Yui_MenuItem('Search', '/finding/remediation/list'));
-                $findings->add(new Fisma_Yui_MenuItem_GoTo('Go To...', 'POA&M', '/finding/remediation'));
+                $findings->add(new Fisma_Yui_MenuItem_GoTo('Go To...', 'POA&amp;M', '/finding/remediation'));
             }
 
             if ($acl->hasPrivilegeForClass('read', 'Finding')
@@ -60,7 +60,7 @@ class Fisma_Menu
             }
 
             if ($acl->hasPrivilegeForClass('create', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Create New POA&M', '/finding/remediation/create'));
+                $findings->add(new Fisma_Yui_MenuItem('Create New POA&amp;M', '/finding/remediation/create'));
             }
             
             if ($acl->hasPrivilegeForClass('inject', 'Finding')) {
@@ -75,10 +75,10 @@ class Fisma_Menu
             if ($acl->hasArea('finding_admin')) {
                 $findingAdminSubmenu = new Fisma_Yui_Menu('Administration');
 
-                $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('POA&M General', '/finding/config/general'));
+                $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('POA&amp;M General', '/finding/config/general'));
 
                 if ($acl->hasPrivilegeForClass('read', 'Source')) {
-                    $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('POA&M Sources', '/finding/source/list'));
+                    $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('POA&amp;M Sources', '/finding/source/list'));
                 }
 
                 $findings->add($findingAdminSubmenu);
@@ -91,7 +91,7 @@ class Fisma_Menu
                 $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('OMB FISMA', '/finding/report/fisma'));
 
                 $findingReportsSubmenu->add(
-                    new Fisma_Yui_MenuItem('Overdue POA&Ms', '/finding/report/overdue/format/html')
+                    new Fisma_Yui_MenuItem('Overdue POA&amp;Ms', '/finding/report/overdue/format/html')
                 );
 
                 /**

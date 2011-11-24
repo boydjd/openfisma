@@ -58,7 +58,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             new Fisma_Chart(380, 275, 'chartFindForecast', 
                     '/finding/dashboard/findingforecast/format/json');
         $chartFindForecast
-            ->setTitle('POA&M Forecast')
+            ->setTitle('POA&Ms Forecast')
             ->addWidget('dayRangesStatChart', 'Day Ranges:', 'text', '0, 15, 30, 60, 90')
             ->addWidget(
                     'forcastThreatLvl',

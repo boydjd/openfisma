@@ -251,7 +251,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             ->orderBy('p.resource, p.description')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $privileges = $privilegeQuery->execute();
-
+//print_r($privileges);die();
         // Add a row for each privilege
         $dataTableRows = array();
         foreach ($privileges as $privilege) {
@@ -261,7 +261,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             
             $newRow['privilegeDescription'] = $privilege['description'];
             $newRow['privilegeId'] = $privilege['id'];
-            $newRow['privilegeResource'] = ucfirst($privilege['resource']);
+
+            $resource = $privilege['resource'];
+            $newRow['privilegeResource'] = ('finding' == $resource) ? 'POA&M' : ucfirst($resource);
 
             // Update (set true) any cell of this privilege row, that has this role
             foreach ($privilege['Roles'] as $role) {

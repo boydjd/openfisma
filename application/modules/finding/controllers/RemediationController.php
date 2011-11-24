@@ -47,7 +47,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      */
     public function getSingularModelName()
     {
-        return 'POA&M';
+        return 'POA&amp;M';
     }
     
     /**
@@ -620,7 +620,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 $buttons['delete'] = new Fisma_Yui_Form_Button(
                     'deleteFinding', 
                     array(
-                          'label' => 'Delete POA&M',
+                          'label' => "Delete POA&amp;M",
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
                               'url' => "/finding/remediation/delete/id/$id",
