@@ -309,6 +309,12 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $this->_addFindingStatusFields($innerSystemsQuery);
         $innerSystems = $innerSystemsQuery->execute(null, Doctrine::HYDRATE_SCALAR);
 
+        $disposalSystemIds = Doctrine_Query::create()
+                             ->from('System')
+                             ->where('sdlcphase = ?', 'disposal')
+                             ->execute()
+                             ->toKeyValueArray('id', 'id');
+
         // If there are child systems, then try to merge them in underneath their parents
         if (count($innerSystems) > 0) {
              // Walk down the outer list (the for loop) and splice in children (the while loop).
@@ -319,6 +325,14 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                 $innerId = isset($innerSystems[$innerSystemsIndex]) 
                          ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
                          : null;
+
+                // Skip all the child systems of a disposal system
+                while (in_array($innerId, $disposalSystemIds)){
+                    $innerSystemsIndex++;
+                    $innerId = isset($innerSystems[$innerSystemsIndex]) 
+                             ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
+                             : null;
+                }
 
                 while ($outerId == $innerId) {
                     array_splice($outerSystems, $outerSystemsIndex + 1, 0, array($innerSystems[$innerSystemsIndex]));
@@ -335,20 +349,33 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         // Merge in any systems not merged above (these are children without matching parents) and move to level 0.
         if (count($innerSystems) > 0) {
-            $outerSystemsIndex = 0;
 
             foreach ($innerSystems as $innerSystem) {
                 $innerSystem['o_level'] = 0;
+                $outerSystemsIndex = 0;
 
                 // Move the outer pointer forward to the next outer system that sorts LOWER than the inner system.
-                while (isset($outerSystems[$outerSystemsIndex]) && 
-                       strcasecmp($outerSystems[$outerSystemsIndex]['o_rowLabel'], $innerSystem['o_rowLabel']) < 0) {
+                foreach ($outerSystems as $key => $outerSystem) {
+                    if ($outerSystem['o_level'] == 0 &&
+                        strcasecmp($outerSystem['o_rowLabel'], $innerSystem['o_rowLabel']) < 0) {
 
-                    $outerSystemsIndex++;
+                        $outerSystemsIndex = $key;
+                        $outerSystemsIndex ++;
+                    }
                 }
-                
+
                 if (isset($outerSystems[$outerSystemsIndex])) {
-                    array_splice($outerSystems, $outerSystemsIndex, 0, array($innerSystem));
+
+                     // Skip all the child systems of a parent system
+                    for ($i = $outerSystemsIndex, $j = 0; $i < count($outerSystems); $i++) {
+                        if (isset($outerSystems[$i]) && $outerSystems[$i]['o_level'] == 1) {
+                            $j++;
+                        } else {
+                            break;
+                        }
+                    }
+
+                    array_splice($outerSystems, $outerSystemsIndex + $j, 0, array($innerSystem));
                 } else {
                     $outerSystems[] = $innerSystem;
                 }
