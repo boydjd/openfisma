@@ -1,15 +1,19 @@
 <?php if (count($this->messages)): ?>
-<script type="text/javascript">
-<?php foreach ($this->messages as $severity=>$messages):
-        if (count($messages)) :
-            foreach ($messages as $message) :
-                echo $this->escape('message("', 'none');
-                echo $this->escape($message, 'javascript');
-                echo $this->escape('", "', 'none');
-                echo $this->escape($severity, 'javascript');
-                echo $this->escape("\");\n", 'none');
-            endforeach;
-        endif;
-    endforeach;?>
-</script>
+    <script type="text/javascript">
+    YAHOO.util.Event.onDOMReady(function () {
+        <?php
+        foreach ($this->messages as $severity => $messages):
+            if (count($messages)):
+                foreach ($messages as $message):
+                    echo $this->escape('message("', 'none');
+                    echo $this->escape($message, 'javascript');
+                    echo $this->escape('", "', 'none');
+                    echo $this->escape($severity, 'javascript');
+                    echo $this->escape("\");\n", 'none');
+                endforeach;
+            endif;
+        endforeach;
+        ?>
+    });
+    </script>
 <?php endif; ?>

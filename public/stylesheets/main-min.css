@@ -57,7 +57,6 @@ tr.over td{background:#bcd4ec;}
 .notice{font-size:12px;width:60%;margin:2em auto;border:1px solid #bebebe;padding-bottom:5px;text-align:center;}
 .notice p{padding:0 5px;}
 .notice h1{text-align:left;padding:5px 5px;color:#44637a;background-color:#ddd;line-height:23px;font-weight:bold;margin-top:0;}
-div#msgbar{border:1px solid red;background-color:pink;margin-top:10px;text-align:center;padding:3px;display:none;}
 .yui-navset div.loading div{background:url(/lib/2.8.2/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;height:8em;}
 table.systemDocuments{border:1px solid lightgrey;}
 table.systemDocuments th{font-weight:bold;padding:10px;background:lightgrey;}
@@ -108,4 +107,3 @@ table.keyValues td,table.keyValues th,table.fisma_crud td,table.fisma_crud th{bo
 .eventNotifyBlock select{width:250px;}
 #event_form td{border-style:none;}
 #assign_right td{border-style:none;}
-div#closeMsg{cursor:pointer;margin-right:5px;float:right;font-size:20px;}

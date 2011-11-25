@@ -417,18 +417,6 @@ tr.over td {
     margin-top: 0;
 }
 
-/* The message bar is used to present feedback on user actions, such as indications
- * of success or failure. 
- */
-div#msgbar {
-    border: 1px solid red;
-    background-color: pink;
-    margin-top: 10px;
-    text-align: center;
-    padding: 3px;
-    display: none;
-}
-
 /* This style adds a loading graphic to the YUI tab view */
 .yui-navset div.loading div {
     background:url(/lib/2.8.2/build/assets/skins/sam/ajax-loader.gif) no-repeat center center;
@@ -682,12 +670,3 @@ table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th
 #assign_right td {
     border-style: none;
 }
-
-/* Style for the close icon on msgbar*/
-div#closeMsg {
-    cursor: pointer;
-    margin-right: 5px;
-    float: right;
-    font-size: 20px
-}
-

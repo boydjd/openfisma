@@ -256,7 +256,7 @@ Fisma.Finding = {
     _createPocNotFoundContainer : function (id, parent) {
         var container = document.createElement('div');
 
-        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm);
+        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm, this, true);
         container.className = 'pocNotMatched';
         container.id = id;
         container.appendChild(document.createTextNode(""));
@@ -284,27 +284,65 @@ Fisma.Finding = {
      * they want to create a new POC instead.
      */
     displayCreatePocForm : function () {
-        var panelConfig = {width : "50em", modal : true};
+        if (YAHOO.lang.isNull(Fisma.Finding.createPocPanel)) {
+            var panelConfig = {width : "50em", modal : true};
 
-        Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
-            'Create New Point Of Contact',
-            '/poc/form',
-            Fisma.Finding.populatePocForm,
-            'createPocPanel',
-            panelConfig
-        );
+            Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
+                'Create New Point Of Contact',
+                '/poc/form',
+                Fisma.Finding.populatePocForm,
+                'createPocPanel',
+                panelConfig
+            );
+
+            Fisma.Finding.createPocPanel.subscribe("hide", this.removePocMessageBox, this, true);            
+        } else {
+            // Handle OFJ-1579 IE7 bug.
+            if (YAHOO.env.ua.ie === 7) {
+                Fisma.Finding.createPocPanel.center();
+            }
+
+            Fisma.Finding.createPocPanel.show();
+            document.getElementById("username").value = Fisma.Finding.createPocDefaultUsername;
+            Fisma.Finding.createPocMessageBox();
+        }
     },
-    
+
+    /**
+     * Create POC modal dialog's custom message box
+     */
+    createPocMessageBox: function () {
+        var messageBarContainer = document.getElementById("pocMessageBar");
+
+        if (YAHOO.lang.isNull(messageBarContainer)) {
+            throw "No message bar container found.";
+        }
+
+        var pocMessageBox = new Fisma.MessageBox(messageBarContainer);
+        Fisma.Registry.get("messageBoxStack").push(pocMessageBox);
+    },
+
+    /**
+     * Remove the POC modal dialog's custom message box
+     * 
+     * @param event {YAHOO.util.Event} The YUI event subscriber signature.
+     */
+    removePocMessageBox: function (event) {
+        Fisma.Registry.get("messageBoxStack").pop();
+
+        // Handle OFJ-1579 IE7 bug.
+        if (YAHOO.env.ua.ie === 7) {
+            this.createPocPanel.moveTo(5000,0);
+        }
+    },
+
     /**
      * Populate the POC create form with some default values
      */
     populatePocForm : function () {
-        /* The message() API is so tacky... in order to display "message" feedback in this dialog, I have to
-         * temporarily hijack the message() output. It gets set back in the Fisma.Finding.createPoc() method.
-         */
-        document.getElementById('msgbar').id = 'oldMessageBar';
-        document.getElementById('pocMessageBar').id = 'msgbar';
-        
+        // this method is called in the wrong scope :(
+        Fisma.Finding.createPocMessageBox();
+
         // Fill in the username
         var usernameEl = document.getElementById('username');
         usernameEl.value = Fisma.Finding.createPocDefaultUsername;
@@ -371,10 +409,6 @@ Fisma.Finding = {
                     var pocId = parseInt(result.message, 10);
                     Fisma.Finding.pocHiddenEl.value = pocId;
                     Fisma.Finding.pocAutocomplete.getInputEl().value = username;
-
-                    // Undo the message bar hack from Fisma.Finding.populatePocForm()
-                    document.getElementById('msgbar').id = 'pocMessageBar';
-                    document.getElementById('oldMessageBar').id = 'msgbar';
 
                     message('A point of contact has been created.', 'info', true);
                 } else {
