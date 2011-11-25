@@ -443,7 +443,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         // Use the attach artifacts uploader, even though we're not using the behavior
         $uploadPanelButton = new Fisma_Yui_Form_Button(
-            'uploadPanelButton',
+            'uploadPanelButton1',
             array(
                 'label' => 'Upload Document',
                 'onClickFunction' => 'Fisma.AttachArtifacts.showPanel',
