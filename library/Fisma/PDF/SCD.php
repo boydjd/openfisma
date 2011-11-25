@@ -288,6 +288,13 @@ EOD;
         $this->SetFontSize(12);
         $this->writeHTMLCell($w, '', '', '', $html, 0, 1);
 
+        $this->header1('4. System Hardware and Software');
+
+        $html = $this->_system->hardwareAndSoftware;
+        $html = str_replace('<table>', '<table border="1" cellpadding="4">', $html);
+        $this->SetFontSize(12);
+        $this->writeHTMLCell($w, '', '', '', $html, 0, 1);
+
         return $this->_render();
 
     }
