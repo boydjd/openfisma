@@ -316,7 +316,7 @@ Fisma.System = {
      */
     showWaitPanelWhileConverting : function () {
         var waitPanel = new YAHOO.widget.Panel(
-            "savePanel",
+            YAHOO.util.Dom.generateId(),
             {
                 width: "250px",
                 fixedcenter: true,

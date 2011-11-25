@@ -85,7 +85,7 @@ Fisma.AttachArtifacts = {
         Fisma.AttachArtifacts.config = config;
 
         // Create a new panel
-        var newPanel = new YAHOO.widget.Panel('panel', {modal : true, close : true});
+        var newPanel = new YAHOO.widget.Panel(YAHOO.util.Dom.generateId(), {modal : true, close : true});
         newPanel.setHeader('Upload Artifact');
         newPanel.setBody("Loading...");
         newPanel.render(document.body);

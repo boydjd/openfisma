@@ -355,7 +355,7 @@
             // but it prevents the user from modifying the tree while an update is already pending.
             if (YAHOO.lang.isNull(this._savePanel)) {
                 this._savePanel = new YAHOO.widget.Panel(
-                    "savePanel",
+                    YAHOO.util.Dom.generateId(),
                     {
                         width: "250px",
                         fixedcenter: true,

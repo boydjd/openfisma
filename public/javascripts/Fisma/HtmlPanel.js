@@ -37,7 +37,7 @@ Fisma.HtmlPanel = function() {
             // Initialize element or its id representing the panel with default value conditionally
             if (typeof(element) === 'undefined' || element === null)
             {
-                element = "panel";
+                element = YAHOO.util.Dom.generateId();
             }
             // Initialize user config with default config object if the user config is not specified or null
             if (typeof(userConfig) === 'undefined' || userConfig === null)
@@ -51,7 +51,6 @@ Fisma.HtmlPanel = function() {
             // Instantiate YUI panel for rendering
             var panel = new YAHOO.widget.Panel(element, userConfig);
             panel.setHeader(title);
-            /** @todo english */
             panel.setBody("Loading...");
             panel.render(document.body);
             panel.center();

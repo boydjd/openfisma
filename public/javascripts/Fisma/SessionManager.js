@@ -154,7 +154,7 @@
                 });
                 content.appendChild(buttonDiv);
                 var panel = new YAHOO.widget.Panel(
-                    "inactivity-notice",
+                    YAHOO.util.Dom.generateId(),
                     {width: "320px", fixedcenter: true, draggable: false, modal: true, close: false}
                 );
                 panel.setHeader("Your Session Will Expire");

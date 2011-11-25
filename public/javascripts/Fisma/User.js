@@ -150,13 +150,8 @@ Fisma.User = {
     createUserInfoPanel : function (referenceElement, username) {
         
         var PANEL_WIDTH = 350; // in pixels
-        var panelName, panel;
-        
-        // Create the new panel object
-        panelName = username + 'InfoPanel';
-        
-        panel = new YAHOO.widget.Panel(
-            panelName, 
+        var panel = new YAHOO.widget.Panel(
+            YAHOO.util.Dom.generateId(), 
             {
                 width: PANEL_WIDTH + 'px', 
                 modal : false, 
