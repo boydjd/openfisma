@@ -24,7 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    SA
  */
-class SystemAuthorizationWorkflowController extends Fisma_Zend_Controller_Action_Security
+class Sa_SystemAuthorizationWorkflowController extends Fisma_Zend_Controller_Action_Security
 {
     public function listAction()
     {

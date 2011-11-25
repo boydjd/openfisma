@@ -149,10 +149,6 @@ class Fisma_Menu
                     );
                 }
 
-                $systemInventoryAdminMenu->add(
-                    new Fisma_Yui_MenuItem('System Authorization Workflow', '/system-authorization-workflow/list')
-                );
-
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
             }
 
@@ -204,6 +200,10 @@ class Fisma_Menu
 
                 $saAdminSubmenu->add(
                     new Fisma_Yui_MenuItem('Information Types', '/sa/information-type')
+                );
+
+                $saAdminSubmenu->add(
+                    new Fisma_Yui_MenuItem('System Authorization Workflow', '/sa/system-authorization-workflow/list')
                 );
 
                 $saMenu->add($saAdminSubmenu);
