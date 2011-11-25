@@ -309,7 +309,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $this->_addFindingStatusFields($innerSystemsQuery);
         $innerSystems = $innerSystemsQuery->execute(null, Doctrine::HYDRATE_SCALAR);
 
-        $disposalSystemIds = Doctrine_Query::CREATE()
+        $disposalSystemIds = Doctrine_Query::create()
                              ->from('System')
                              ->where('sdlcphase = ?', 'disposal')
                              ->execute()
