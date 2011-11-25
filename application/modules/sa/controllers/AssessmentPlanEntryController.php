@@ -278,7 +278,7 @@ class Sa_AssessmentPlanEntryController extends Fisma_Zend_Controller_Action_Obje
             $finding->save();
             $subject->Finding = $finding;
             $subject->save();
-            $this->view->priorityMessenger('Created Finding for Other Than Satisfied Assessment.', 'info');
+            $this->view->priorityMessenger('Created POA&M for Other Than Satisfied Assessment.', 'info');
         }
 
         return $id;

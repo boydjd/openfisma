@@ -1249,7 +1249,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $systemCount = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')->count(); 
         if (0 === $systemCount) {
-            $message = "There are no organizations or systems to create findings for. "
+            $message = "There are no organizations or systems to create POA&Ms for. "
                      . "Please create an organization or system first.";
             $this->view->priorityMessenger($message, 'warning');
         }

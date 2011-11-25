@@ -37,7 +37,7 @@ class Source extends BaseSource
     {
         if (count($this->Findings) > 0) {
             throw new Fisma_Zend_Exception_User('This source cannot be deleted because it is already associated with' .
-                ' one or more findings.');
+                ' one or more POA&Ms.');
         }
     }
 }

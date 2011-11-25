@@ -400,7 +400,7 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
             if ($query->count() > 0) {
                 $this->getErrorStack()->add(
                     'sdlcPhase', 
-                    'Systems with open findings cannot be moved into disposal phase.'
+                    'Systems with open POA&Ms cannot be moved into disposal phase.'
                 );
             }
         }
