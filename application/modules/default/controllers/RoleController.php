@@ -60,7 +60,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
      */
      public function viewMatrixAction()
      {
-        $this->_acl->requirePrivilegeForClass('update', 'Role');
+        $this->_acl->requirePrivilegeForClass('read', 'Role');
 
         // Add button to save changes (submit form)
         $this->view->toolbarButtons = array();
@@ -77,14 +77,16 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->toolbarButtons[] = $expandAll;
         $this->view->toolbarButtons[] = $collapseAll;
-
-        $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Submit(
-            'saveChanges',
-            'Save Changes',
-            array(
-                'label' => 'Save Changes'
-            )
-        );
+        
+        if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
+            $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Submit(
+                'saveChanges',
+                'Save Changes',
+                array(
+                    'label' => 'Save Changes'
+                )
+            );
+        }
 
         // YUI data-table to show user
         $dataTable = new Fisma_Yui_DataTable_Local();

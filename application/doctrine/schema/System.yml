@@ -90,4 +90,4 @@ System:
             local: aggregateSystemId
             foreign: id
             foreignAlias: AggregatedSystems
-
+            onDelete: SET NULL
