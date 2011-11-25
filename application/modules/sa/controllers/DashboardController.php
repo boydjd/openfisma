@@ -35,18 +35,24 @@ class Sa_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function indexAction()
     {
-        $dataTable = new Fisma_Yui_DataTable_Local();
+        $dataTable = new Fisma_Yui_DataTable_Remote();
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Nickname', true));
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Name', true));
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Type', true));
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('SDLC Phase', true));
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('FIPS 199 Category', true));
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Open POA&Ms', true));
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('ATO Expiration', true));
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Annual Due', true));
-        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Id', false, null, null, 'Id', true));
-        $dataTable->setData($this->_getTableData());
-        $dataTable->addEventListener('cellClickEvent', 'Fisma.SecurityAuthorization.linkToSystem');
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Type', false));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('SDLC Phase', false));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('FIPS 199 Category', false));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Open POA&Ms', false));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('ATO Expiration', false));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Annual Due', false));
+        $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Id', false, null, null, 'id', true));
+        $dataTable->setDataUrl('/sa/dashboard/system')
+                  ->setResultVariable('records')
+                  ->setRowCount(5)
+                  ->setInitialSortColumn('Nickname')
+                  ->setSortAscending(true)
+                  ->setClickEventBaseUrl('/system/view/id/')
+                  ->setClickEventVariableName('id');
+
         $this->view->dataTable = $dataTable;
 
         // left-side chart (bar) - Finding Status chart
@@ -84,14 +90,30 @@ class Sa_DashboardController extends Fisma_Zend_Controller_Action_Security
      * 
      * @return void
      */
-    protected function _getTableData()
+    public function systemAction()
     {
+        $count = $this->getRequest()->getParam('count');
+        $start = $this->getRequest()->getParam('start', 0);
+        $sort  = $this->getRequest()->getParam('sort');
+        $dir  = $this->getRequest()->getParam('dir');
+
         $records = array();
+
+        $userOrganizations = $this->_me->getOrganizationsByPrivilege('organization', 'read')
+                             ->toKeyValueArray('id', 'id');
 
         // these queries should be combined for better performance
         $systems = Doctrine_Query::create()
-            ->from('System s, s.Organization o, o.SecurityAuthorizations sas')
-            ->execute();
+            ->from('System s')
+            ->leftJoin('s.Organization o')
+            ->leftJoin('o.SecurityAuthorizations sas')
+            ->whereIn('o.id', $userOrganizations)
+            ->orderBy("o.{$sort} {$dir}")
+            ->offset($start);
+
+        $total = $systems->count();
+        $systems = $systems->execute();
+
         $openFindingsByOrgQuery = Doctrine_Query::create()
             ->from('Finding f')
             ->where('f.status <> ?', 'CLOSED')
@@ -110,20 +132,30 @@ class Sa_DashboardController extends Fisma_Zend_Controller_Action_Security
                     $atoExpiration = $dt->toString(Zend_Date::DATES);
                 }
             }
+
             $records[] = array(
-                $system->Organization->nickname,
-                
-                $system->Organization->name,
-                $system->type,
-                $system->sdlcPhase,
-                $system->fipsCategory,
-                $openFindingsByOrgQuery->count($system->Organization->id),
-                $atoExpiration,
-                $annualDue,
-                $system->id
+                'Nickname' => $system->Organization->nickname,
+                'Name' => $system->Organization->name,
+                'Type' => $system->type,
+                'SDLC_Phase' => $system->sdlcPhase,
+                'FIPS_199_Category' => $system->fipsCategory,
+                'Open_POA_Ms' => $openFindingsByOrgQuery->count($system->Organization->id),
+                'ATO_Expiration' => $atoExpiration,
+                'Annual_Due' => $annualDue,
+                'id' => $system->id
             );
         }
 
-        return $records;
+       $tableData = array(
+                        'startIndex'      => $start,
+                        'sort'            => $sort,
+                        'dir'             => $dir,
+                        'pageSize'        => $count,
+                        'records'         => array()
+                    );
+        $tableData['totalRecords'] = $total;
+        $tableData['records'] = $records;
+
+        return $this->_helper->json($tableData);
     }
 }
