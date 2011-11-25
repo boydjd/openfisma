@@ -19,13 +19,6 @@
 
 require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
-//$cli = new Fisma_Cli_GenerateUsers();
-//$cli->run();
+$cli = new Fisma_Cli_Notify();
+$cli->run();
 
-try {
-    $notify = new Fisma_Cli_Notify();
-    $notify->processNotificationQueue();
-    print ("Notify finished at " . Fisma::now() . "\n");
-} catch (Exception $e) {
-    print("Sending notifications failed at " . Fisma::now() . " with the following error: {" . $e->getMessage() . "}\n");
-}

@@ -19,10 +19,5 @@
 
 require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
-try {
-    $ecdNotifier = new Fisma_Cli_ECDNotifier();
-    $ecdNotifier->run();
-    print ("ECDNotifier finished at " . Fisma::now() . "\n");
-} catch (Exception $e) {
-    print("ECD notifications failed at " . Fisma::now() . " with the following error: {" . $e->getMessage() . "}\n");
-}
+$cli = new Fisma_Cli_EcdNotifier();
+$cli->run();

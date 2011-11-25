@@ -19,7 +19,8 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * test suite for /library/Fisma/Cookie.php
+ * Test suite for /library/Fisma/Cli/Notify.php. Due to the use of Zend_Console_Getopt, this test must be run 
+ * without any options for phpunit.
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -30,7 +31,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
 {
     /**
-     * test the main function
+     * Test the main function
      * @return void
      */
     public function testProcessNotificationQueue()
@@ -68,7 +69,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
         $notify->expects($this->exactly(2))->method('purgeNotifications');
         $notify->expects($this->once())->method('getNotificationQuery')->will($this->returnValue($query));
 
-        $notify->processNotificationQueue();
+        $notify->run();
     }
 
     /**

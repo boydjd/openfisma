@@ -19,7 +19,8 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * Test suite for /library/Fisma/Cli/ECDNotifier.php
+ * Test suite for /library/Fisma/Cli/EcdNotifier.php. Due to the use of Zend_Console_Getopt, this test must be run 
+ *  without any options for phpunit.
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -27,10 +28,10 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  * @package    Test
  * @subpackage Test_Library
  */
-class Test_Library_Fisma_Cli_ECDNotifier extends Test_Case_Unit
+class Test_Library_Fisma_Cli_EcdNotifier extends Test_Case_Unit
 {
     /**
-     * test the main function
+     * Test the main function
      * @return void
      */
     public function testRun()
@@ -49,7 +50,7 @@ class Test_Library_Fisma_Cli_ECDNotifier extends Test_Case_Unit
         $query = $this->getMock('Mock_Blank', array('execute'));
         $query->expects($this->once())->method('execute')->will($this->returnValue($findings));
 
-        $notify = $this->getMock('Fisma_Cli_ECDNotifier', array('getQuery', 'notify'));
+        $notify = $this->getMock('Fisma_Cli_EcdNotifier', array('getQuery', 'notify'));
         $notify->expects($this->once())->method('getQuery')->will($this->returnValue($query));
         $notify->expects($this->exactly(4))->method('notify');
 
@@ -64,7 +65,7 @@ class Test_Library_Fisma_Cli_ECDNotifier extends Test_Case_Unit
      */
     public function testQuery()
     {
-        $notify = new Fisma_Cli_ECDNotifier();
+        $notify = new Fisma_Cli_EcdNotifier();
         $query = $notify->getQuery()->getDql();
         $conditions = 'WHERE f.status != ? AND f.currentEcd IN (?, ?, ?, ?)';
         $this->assertContains($conditions, $query);

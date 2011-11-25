@@ -28,7 +28,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Cron_Job
  */
-class Fisma_Cli_ECDNotifier
+class Fisma_Cli_EcdNotifier extends Fisma_Cli_Abstract
 {
     /**
      * Build the query
@@ -60,7 +60,7 @@ class Fisma_Cli_ECDNotifier
      * 
      * @return void
      */
-    function run()
+    protected function _run()
     {
         $query = $this->getQuery();
         $expiringFindings = $query->execute();

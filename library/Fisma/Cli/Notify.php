@@ -26,10 +26,9 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Cron_Job
  * 
- * @todo       Needs cleanup
  * @todo       Needs to be adjusted for timezone difference between DB and application when displaying timestamps
  */
-class Fisma_Cli_Notify
+class Fisma_Cli_Notify extends Fisma_Cli_Abstract
 {
     /**
      * Get all notifications grouped by user_id
@@ -68,7 +67,7 @@ class Fisma_Cli_Notify
      * @return void
      * @todo log the email send results
      */
-    function processNotificationQueue() 
+    protected function _run() 
     {
         $query = $this->getNotificationQuery();
         $notifications = $query->execute();
