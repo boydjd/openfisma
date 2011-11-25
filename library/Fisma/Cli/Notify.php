@@ -16,14 +16,6 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-try {
-    $notify = new Notify();
-    $notify->processNotificationQueue();
-    print ("Notify finished at " . Fisma::now() . "\n");
-} catch (Exception $e) {
-    print("Sending notifications failed at " . Fisma::now() . " with the following error: {" . $e->getMessage() . "}\n");
-}
-
 /**
  * This static class is responsible for scanning for notifications which need to
  * be delivered, delivering the notifications, and then removing the sent
@@ -34,69 +26,26 @@ try {
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Cron_Job
  * 
- * @todo       Needs cleanup
  * @todo       Needs to be adjusted for timezone difference between DB and application when displaying timestamps
  */
-class Notify
+class Fisma_Cli_Notify extends Fisma_Cli_Abstract
 {
     /**
-     * Default constructor
-     * 
-     * @return void
+     * Get all notifications grouped by user_id
+     *
+     * @todo can't find a way to do this in DQL... substituting a mysql raw connection for now.
+     * @return Doctrine_RawSql
      */
-    public function __construct()
+    function getNotificationQuery()
     {
-        defined('APPLICATION_ENV')
-            || define(
-                'APPLICATION_ENV',
-                (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
-            );
-        defined('APPLICATION_PATH') || define(
-            'APPLICATION_PATH',
-            realpath(dirname(__FILE__) . '/../../application')
-        );
-
-        set_include_path(
-            APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR .
-            APPLICATION_PATH . '/../library' .  PATH_SEPARATOR .
-            get_include_path()
-        );
-
-        require_once 'Fisma.php';
-        require_once 'Zend/Application.php';
-
-        $application = new Zend_Application(
-            APPLICATION_ENV,
-            APPLICATION_PATH . '/config/application.ini'
-        );
-        Fisma::setAppConfig($application->getOptions());
-        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-        Fisma::setConfiguration(new Fisma_Configuration_Database());
-        $application->bootstrap('Db');
-        $application->bootstrap('SearchEngine');
-    }
-    
-    /**
-     * Iterate through the users and check who has notifications pending.
-     * 
-     * @return void
-     * @todo log the email send results
-     */
-    function processNotificationQueue() 
-    {
-        // Get all notifications grouped by user_id
-        /**
-         * @todo can't find a way to do this in DQL... substituting a mysql raw connection for now.
-         */
-        /*$query = Doctrine_Query::create()
+         /*$query = Doctrine_Query::create()
                     ->select('n.*, u.email, u.notifyFrequency')
                     ->from('Notification n')
                     ->innerJoin('n.User u')
                     ->where('u.emailValidate = 1')
                     ->addWhere('u.mostRecentNotifyTs is NULL OR u.mostRecentNotifyTs <= ?'. 
                                new Doctrine_Expression("DATE_SUB(NOW(), INTERVAL u.notifyFrequency HOUR)"))
-                    ->orderBy('n.userId');
-        $notifications = $query->execute();*/
+                    ->orderBy('n.userId');*/
         $query = new Doctrine_RawSql();
         $query->select('{n.eventtext}, {n.createdts}, {u.email}, {u.nameFirst}, {u.nameLast}')
               ->addComponent('n', 'Notification n')
@@ -104,12 +53,23 @@ class Notify
               ->from('poc u INNER JOIN notification n on u.id = n.userid')
               ->where('u.type = "User"')
               ->andWhere(
-                  '(u.mostrecentnotifyts IS NULL OR u.mostrecentnotifyts <= DATE_SUB(NOW(), 
-                  INTERVAL u.notifyFrequency HOUR))'
+                  '(u.mostrecentnotifyts IS NULL '
+                 .'OR u.mostrecentnotifyts <= DATE_SUB(NOW(), INTERVAL u.notifyFrequency HOUR))'
               )
               ->andWhere('(u.locked = FALSE OR (u.locked = TRUE AND u.locktype = "manual"))')
               ->orderBy('u.id, n.createdts');
+        return $query;
+    }
 
+    /**
+     * Iterate through the users and check who has notifications pending.
+     * 
+     * @return void
+     * @todo log the email send results
+     */
+    protected function _run() 
+    {
+        $query = $this->getNotificationQuery();
         $notifications = $query->execute();
 
         // Loop through the groups of notifications, concatenate all messages
@@ -127,14 +87,12 @@ class Notify
                 || ($notifications[$i]->userId !=
                     $notifications[$i+1]->userId)) {
 
-                Notify::sendNotificationEmail($currentNotifications);
-                Notify::purgeNotifications($currentNotifications);
-                Notify::updateUserNotificationTimestamp($notifications[$i]->userId);
-
+                $this->sendNotificationEmail($currentNotifications);
+                $this->purgeNotifications($currentNotifications);
+                $notifications[$i]->User->updateNotificationTs();
                 // Move onto the next user
                 $currentNotifications = array();
             }
-
         }
     }
 
@@ -145,11 +103,12 @@ class Notify
      * stored in the 0 row of $notifications.
      * 
      * @param array $notifications A group of rows from the notification table
+     * @param Fisma_Zend_Mail $mailEngine
      * @return void
      */
-    static function sendNotificationEmail($notifications) 
+    function sendNotificationEmail($notifications, $mailEngine = null) 
     {
-        $mail = new Fisma_Zend_Mail();
+        $mail = (isset($mailEngine)) ? $mailEngine : new Fisma_Zend_Mail();
         // Send the e-mail
         $mail->sendNotification($notifications);
     }
@@ -160,33 +119,13 @@ class Notify
      * @param array $notifications A group of rows from the notifications table
      * @return void
      */
-    static function purgeNotifications($notifications) 
+    function purgeNotifications($notifications) 
     {
         $notificationIds = array();
         foreach ($notifications as $notification) {
-            $notificationIds[] = $notification['id'];
+            $notification->delete();
         }
 
-        Doctrine_Query::create()
-            ->delete()
-            ->from('Notification')
-            ->whereIn('id', $notificationIds)
-            ->execute();
-    }
-
-    /**
-     * Update the timestamp for the specified user so that he will not receieve too many e-mail in too 
-     * short of a time period.
-     *
-     * @param integer $userId The Id of the user to update
-     * @return void
-     */
-    static function updateUserNotificationTimestamp($userId) 
-    {
-        $user = new User();
-        $user = $user->getTable()->find($userId);
-        $user->mostRecentNotifyTs = Fisma::now();
-        $user->save();
     }
 }
 

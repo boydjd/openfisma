@@ -67,6 +67,7 @@ class Test_Bootstrap
             set_include_path(
                 APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR .
                 APPLICATION_PATH . '/../library' .  PATH_SEPARATOR .
+                APPLICATION_PATH . '/../tests' . PATH_SEPARATOR .
                 get_include_path()
             );
 
@@ -80,6 +81,8 @@ class Test_Bootstrap
 
             Fisma::setAppConfig($this->_application->getOptions());
             Fisma::initialize(Fisma::RUN_MODE_TEST);
+            
+            Doctrine_Manager::getInstance()->setAttribute(Doctrine::ATTR_AUTOLOAD_TABLE_CLASSES, true);
 
             $frontController = Zend_Controller_Front::getInstance();
             $frontController->setControllerDirectory(Fisma::getPath('controller'));

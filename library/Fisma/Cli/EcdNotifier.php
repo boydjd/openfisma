@@ -17,18 +17,6 @@
  */
 
 /**
- * Indicates that we're running a command line tool, not responding to an http
- * request. This prevents the interface from being rendered.
- */
-try {
-    $ecdNotifier = new ECDNotifier();
-    $ecdNotifier->run();
-    print ("ECDNotifier finished at " . Fisma::now() . "\n");
-} catch (Exception $e) {
-    print $e->getMessage();
-}
-
-/**
  * This class scans for any findings which have ECDs expiring today, in 7 days,
  * 14 days, or 21 days, and creates notifications for each of these events.
  *
@@ -40,51 +28,14 @@ try {
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Cron_Job
  */
-class ECDNotifier
+class Fisma_Cli_EcdNotifier extends Fisma_Cli_Abstract
 {
     /**
-     * Default constructor
+     * Build the query
      * 
-     * @return void
+     * @return Doctrine_Query
      */
-    public function __construct()
-    {
-        defined('APPLICATION_ENV')
-            || define(
-                'APPLICATION_ENV',
-                (getenv('APPLICATION_ENV') ? getenv('APPLICATION_ENV') : 'production')
-            );
-        defined('APPLICATION_PATH') || define(
-            'APPLICATION_PATH',
-            realpath(dirname(__FILE__) . '/../../application')
-        );
-
-        set_include_path(
-            APPLICATION_PATH . '/../library/Symfony/Components' . PATH_SEPARATOR .
-            APPLICATION_PATH . '/../library' .  PATH_SEPARATOR .
-            get_include_path()
-        );
-
-        require_once 'Fisma.php';
-        require_once 'Zend/Application.php';
-
-        $application = new Zend_Application(
-            APPLICATION_ENV,
-            APPLICATION_PATH . '/config/application.ini'
-        );
-        Fisma::setAppConfig($application->getOptions());
-        Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-        Fisma::setConfiguration(new Fisma_Configuration_Database());
-        $application->bootstrap('Db');
-    }
-
-    /**
-     * Iterate through all findings in the system and create
-     * notifications for those which have ECDs expiring today,
-     * 
-     * @return void
-     */
-    static function run() 
+    public function getQuery()
     {
         $expirationDates = array(
             Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE),
@@ -100,6 +51,18 @@ class ECDNotifier
                     ->where('f.status != ?', 'CLOSED')
                     ->andWhereIn('f.currentEcd', $expirationDates);
 
+        return $query;
+    }
+
+    /**
+     * Iterate through all findings in the system and create
+     * notifications for those which have ECDs expiring today,
+     * 
+     * @return void
+     */
+    protected function _run()
+    {
+        $query = $this->getQuery();
         $expiringFindings = $query->execute();
         // Now iterate through the findings and create the appropriate
         // notifications
@@ -122,9 +85,22 @@ class ECDNotifier
                 default:
                     // This should never happen, because the query is written
                     // to exclude it.
-                    throw new Exception("ECD Notifier has an internal error.");
+                    throw new Fisma_Zend_Exception("ECD Notifier has an internal error.");
             }
-            Notification::notify($notificationType, $finding, null);
+            $this->notify($notificationType, $finding);
         }
+    }
+
+    /**
+     * A wrapper for Notification::notify, extracted to make run() testable
+     * 
+     * @param String $notificationType 
+     * @param Doctrine_Record $finding          
+     * 
+     * @return void
+     */
+    function notify($notificationType, $finding)
+    {
+        Notification::notify($notificationType, $finding, null);
     }
 }
