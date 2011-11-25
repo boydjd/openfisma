@@ -474,6 +474,7 @@
             var innerTable = document.createElement("table");
             innerTable.style.width = "100%";
             innerTable.style.height = "100%";
+            innerTable.style.marginBottom = "0px";
             container.appendChild(innerTable);
 
             var ontimeRow = innerTable.insertRow(innerTable.rows.length);
