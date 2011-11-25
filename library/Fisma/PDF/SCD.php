@@ -83,10 +83,11 @@ class Fisma_PDF_SCD extends Fisma_PDF
               . '<td>' . $this->_system->Organization->nickname . '</td>'
               . '</tr><tr>'
               . '<td>System owner and telephone number</td>'
-              . '<td>????<br>????</td>'
+              . '<td>' . ($this->_system->pocSystemOwner ? $this->_system->pocSystemOwner : 'N/A') . '</td>'
               . '</tr><tr>'
               . '<td>Organization responsible for this system</td>'
-              . '<td>???? (???)</td>'
+              . '<td>'. $this->_system->Organization->getNode()->getParent()->name
+              . ' ('. $this->_system->Organization->getNode()->getParent()->nickname .')</td>'
               . '</tr><tr>'
               . '<td>System FIPS 199 Security Categorization</td>'
               . '<td>'
