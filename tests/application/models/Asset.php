@@ -42,4 +42,21 @@ class Test_Application_Models_Asset extends Test_Case_Unit
 
        $this->assertEquals(1, $asset->getOrganizationDependencyId());
     }
+
+    /**
+     * Test preDelete()
+     * 
+     * @return void
+     */
+    public function testPreDelete()
+    {
+        $asset = new Asset();
+        $asset->preDelete(null); // as Vulnerabilities array is empty, no exception thrown
+
+        $mockVulnerability = $this->getMock('Mock_Blank', array('set'));
+        $asset->Vulnerabilities[] = $mockVulnerability;
+        
+        $this->setExpectedException('Fisma_Zend_Exception_User', 'This asset cannot be deleted because it has vulnerabilities against it');
+        $asset->preDelete(null); // expects exception as Vulnerability has been added
+    }
 }

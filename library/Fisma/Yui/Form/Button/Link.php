@@ -43,7 +43,7 @@ class Fisma_Yui_Form_Button_Link extends Fisma_Yui_Form_Button
         $onClickArgument = $this->getAttrib('onClickArgument');
         $onClickRender = '';
         if (!empty($onClickFunction)) {
-            $onClickRender .= ", onclick: {fn:$onClickFunction";
+            $onClickRender .= "onclick: {fn:$onClickFunction";
             if (!empty($onClickArgument)) {
                 $onClickRender .= ", obj: \"$onClickArgument\"";
             }
@@ -57,9 +57,9 @@ class Fisma_Yui_Form_Button_Link extends Fisma_Yui_Form_Button
         $render = "<span id='{$this->getName()}'></span>
                    <script type='text/javascript'>
                         YAHOO.util.Event.onDOMReady(function() {
-                            var button = new YAHOO.widget.Button({  
-                                 type: \"link\",  
-                                 label: \"{$this->getValue()}\",  
+                            var button = new YAHOO.widget.Button({
+                                 type: \"link\",
+                                 label: \"{$this->getValue()}\",
                                  href: \"{$this->getAttrib('href')}\",
                                  id: \"{$this->getName()}Button\",
                                  $onClickRender

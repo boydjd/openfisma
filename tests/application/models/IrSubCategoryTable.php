@@ -30,7 +30,7 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_IrSubCategoryTable extends Test_Case_Unit
 {
     /**
-     * testGetSearchableFields 
+     * Check if getSearchableFields() returns a not-empty array 
      * 
      * @access public
      * @return void
@@ -40,7 +40,7 @@ class Test_Application_Models_IrSubCategoryTable extends Test_Case_Unit
         $searchableFields = IrSubCategoryTable::getSearchableFields();
 
         $this->assertTrue(is_array($searchableFields));
-        $this->assertEquals(4, count($searchableFields));
+        $this->assertNotEmpty($searchableFields);
     }
 
     /**

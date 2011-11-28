@@ -27,14 +27,15 @@
 class UserRole extends BaseUserRole
 {
     /**
-     * Invalidate ACL of affected user 
+     * Invalidate ACL of the associated user
+     *
+     * This new implementation reflects the relationship UserRole->hasOne(User)
      * 
-     * @param Doctrine_Event $event 
+     * @param mixed $event 
+     * @return void
      */
     public function postSave($event)
     {
-        $invoker = $event->getInvoker();
-        $affectedUser = Doctrine::getTable('User')->find($invoker->userId);
-        $affectedUser->invalidateAcl();
+        $this->User->invalidateAcl();
     }
 }

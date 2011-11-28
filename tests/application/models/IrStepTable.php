@@ -24,19 +24,32 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * @uses Test_Case_Unit
  * @package Test 
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Duy K. Bui <duy.bui@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Test_Application_Models_IrStepTable extends Test_Case_Unit
 {
-    /**
-     * testClassExists 
-     * 
-     * @access public
+       /**
+     * Test the query built for _openGap()
+     *
      * @return void
      */
-    public function testClassExists()
+    public function testOpenGapQuery()
     {
-        $this->assertTrue(class_exists('IrStepTable'));
+        $query = Doctrine::getTable('IrStep')->openGapQuery(1, 1)->getDql();
+        $expectedQuery = 'SET irstep.cardinality = irstep.cardinality + 1';
+        $this->assertContains($expectedQuery, $query);
+    }
+
+    /**
+     * Test the query built for _closeGap()
+     *
+     * @return void
+     */
+    public function testCloseGapQuery()
+    {
+        $query = Doctrine::getTable('IrStep')->closeGapQuery(1, 1)->getDql();
+        $expectedQuery = 'SET irstep.cardinality = irstep.cardinality - 1';
+        $this->assertContains($expectedQuery, $query);
     }
 }

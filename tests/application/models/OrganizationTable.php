@@ -53,4 +53,60 @@ class Test_Application_Models_OrganizationTable extends Test_Case_Unit
         $this->assertEquals('Doctrine_Query', get_class($q));
         $this->assertEquals(" FROM System s WHERE organization_type.nickname <> ?", $q->getDql());
     }
+    
+    /**
+     * Check if getOrganizationIds() returns correctly formatted array
+     * 
+     * @return void
+     */
+    public function testGetOrganizationIds()
+    {
+        $orgArray = array(0 => array('id' => 'id'));
+        $mockOrg = $this->getMock('Mock_Blank', array('toKeyValueArray'));
+        $mockOrg->expects($this->exactly(2))
+                ->method('toKeyValueArray')
+                ->with('id', 'id')
+                ->will($this->onConsecutiveCalls(null, $orgArray));
+        $user =  $this->getMock('Mock_Blank', array('getOrganizationsByPrivilege'));
+        $user->expects($this->exactly(2))
+             ->method('getOrganizationsByPrivilege')
+             ->will($this->returnValue($mockOrg));
+        CurrentUser::setInstance($user);
+
+        $orgId = OrganizationTable::getOrganizationIds();
+        $this->assertEquals(0, count($orgId));
+
+        $orgId = OrganizationTable::getOrganizationIds();
+        $this->assertEquals(1, count($orgId));
+        $this->assertEquals('id', $orgId[0]['id']);
+        CurrentUser::setInstance(null);
+    }
+    
+    /**
+     * Test the join part of the query
+     *
+     * @return void
+     */
+    public function testGetUsersAndRolesByOrganizationIdQuery()
+    {
+        $query = OrganizationTable::getUsersAndRolesByOrganizationIdQuery(0)->getDql();
+        $expectedQuery = 'FROM User u '
+                        .'LEFT JOIN u.UserRole ur '
+                        .'LEFT JOIN ur.UserRoleOrganization uro '
+                        .'LEFT JOIN ur.Role r '
+                        .'LEFT JOIN uro.Organization o';
+        $this->assertContains($expectedQuery, $query);
+    }
+    
+    /**
+     * Test the join and condition part of the query
+     *
+     * @return void
+     */
+    public function testGetSystemsLikeNameQuery()
+    {
+        $query = OrganizationTable::getSystemsLikeNameQuery('test')->getDql();
+        $expectedQuery = 'FROM Organization o LEFT JOIN o.System s WHERE o.name LIKE ?';
+        $this->assertContains($expectedQuery, $query);
+    }
 }

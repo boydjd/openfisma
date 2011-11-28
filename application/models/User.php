@@ -297,7 +297,7 @@ class User extends BaseUser
             $suppressWarningsOriginalValue = $classLoader->suppressNotFoundWarnings();
             $classLoader->suppressNotFoundWarnings(true);
 
-            $acl = new Fisma_Zend_Acl();
+            $acl = new Fisma_Zend_Acl($this->username);
 
             // For each role, add its privileges to the ACL
             $roleArray = array();
@@ -422,7 +422,7 @@ class User extends BaseUser
     public function getAvailableEvents()
     {
         $availableEvents = array();
-        
+
         if ('root' == $this->username) {
             $query = Doctrine::getTable('Event')->findAll();
         } else {
@@ -623,7 +623,7 @@ class User extends BaseUser
         return $query;
     }
 
-     /**
+    /**
      * Get a query which will select this user's systems
      *
      * @return Doctrine_Query
@@ -767,15 +767,11 @@ class User extends BaseUser
      *
      * @param int $hydrationMode A doctrine hydrator
      * @return mixed The roles of user
+     * @deprecated pending on the removal of execution out of model class
      */
-    public function getRoles($hydrationMode = Doctrine::HYDRATE_SCALAR)
+    public function getRoles($hydrationMode = Doctrine::HYDRATE_SCALAR, $userRolesQuery = null)
     {
-        $userRolesQuery = Doctrine_Query::create()
-            ->select('u.id, r.*')
-            ->from('User u')
-            ->innerJoin('u.Roles r')
-            ->where('u.id = ?', $this->id)
-            ->setHydrationMode($hydrationMode);
+        $userRolesQuery = (isset($userRolesQuery)) ? $userRolesQuery : Doctrine::getTable('User')->getRolesQuery($hydrationMode);
         $userRolesResult = $userRolesQuery->execute();
 
         return $userRolesResult;

@@ -98,7 +98,7 @@ class Fisma_Import_Filter_Nmap
     {
         try {
             $assets = array();
-            $this->_parseAssets(&$assets);
+            $this->_parseAssets($assets);
 
             return $assets;
         } catch (Exception $e) {

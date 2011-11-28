@@ -39,7 +39,7 @@ class Test_Application_Services_Acl extends Test_Case_Unit
     {
         $acl = new Application_Service_Acl();
         $this->assertAttributeEmpty('_acl', $acl);
-        $acl->set(new Fisma_Zend_Acl());
+        $acl->set(new Fisma_Zend_Acl(null));
         $this->assertAttributeInstanceOf('Fisma_Zend_Acl', '_acl', $acl);
     }
 
@@ -52,7 +52,7 @@ class Test_Application_Services_Acl extends Test_Case_Unit
     public function testGet()
     {
         $acl = new Application_Service_Acl();
-        $acl->set(new Fisma_Zend_Acl());
+        $acl->set(new Fisma_Zend_Acl(null));
         $this->assertInstanceOf('Fisma_Zend_Acl', $acl->get());
     }
 }

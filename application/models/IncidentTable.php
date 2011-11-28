@@ -31,18 +31,19 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
      * Returns a query which matches all of the current user's viewable incidents
      *
      * @param User $user
-     * @param Fisma_Zend_Acl $acl
+     * @param Fisma_Zend_Acl $acl   Optional, defaults to $user->acl()
      * @return Doctrine_Query
      */
-    public function getUserIncidentQuery(User $user, Fisma_Zend_Acl $acl)
+    public function getUserIncidentQuery(User $user, Fisma_Zend_Acl $acl = null)
     {
+        $incidentQuery = Doctrine_Query::create()
+                         ->from('Incident i');
+
         /*
          * A user can read *all* incidents if he has the "incident read" privilege. Otherwise, he is only allowed to
          * view those incidents for which he is an actor or an observer.
          */
-        $incidentQuery = Doctrine_Query::create()
-                         ->from('Incident i');
-
+        $acl = (isset($acl)) ? $acl : $user->acl();
         if (!$acl->hasPrivilegeForClass('read', 'Incident')) {
             $incidentQuery->leftJoin('i.Users u')
                           ->where('u.id = ?', $user->id);
@@ -162,8 +163,22 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
      * Provide ID list for ACL filter
      *
      * @return array
+     * @deprecated pending on the removal of executions from model classes
      */
-    static function getIncidentIds()
+    static function getIncidentIds($incidentAccessQuery = null)
+    {
+        $incidentAccessQuery = (isset($incidentAccessQuery)) ? $incidentAccessQuery : self::getIncidentIdsQuery();
+        $results = $incidentAccessQuery->execute();
+        $incidentIds = array_keys($results);
+        return $incidentIds;
+    }
+    
+    /**
+     * Build the query for getIncidentIds
+     * 
+     * @return Doctrine_Query 
+     */
+    static function getIncidentIdsQuery()
     {
         $currentUser = CurrentUser::getInstance();
 
@@ -172,11 +187,6 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                                ->from('IrIncidentUser INDEXBY incidentId')
                                ->where('userId = ?', $currentUser->id)
                                ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-
-        $results = $incidentAccessQuery->execute();
-        
-        $incidentIds = array_keys($results);
-
-        return $incidentIds;
+        return $incidentAccessQuery;
     }
 }

@@ -294,4 +294,57 @@ class Test_Application_Models_System extends Test_Case_Unit
             array('expected' => 'LOW', 'threat' => 'LOW', 'countermeasure' => 'HIGH')
         );
     }
+    
+    /**
+     * Test calcMin()
+     * 
+     * @return void
+     */
+    public function testCalcMin()
+    {
+        $system = new System();
+        $this->assertEquals('LOW', $system->calcMin('LOW', 'HIGH'));
+    }
+    
+    /**
+     * Test getName()
+     * 
+     * @return void
+     */
+    public function testGetName()
+    {
+        $system = new System();
+        $system->Organization->nickname = 'org_nick';
+        $system->Organization->name = 'org_name';
+        $this->assertEquals('org_nick - org_name', $system->getName());
+    }
+    
+    /**
+     * Test getOrganizationDependencyId()
+     * 
+     * @return void
+     */
+    public function testGetOrganizationDependencyId()
+    {
+        $system = new System();
+        $system->Organization->id = 1;
+        $this->assertEquals(1, $system->getOrganizationDependencyId());
+    }
+    
+    /**
+     * Test the implementation of ON_DELETE constraint
+     *
+     * @return void
+     */
+    public function testPreDelete()
+    {
+        $system = new System();
+        $system->preDelete(null);
+        
+        $mockIncident = $this->getMock('Mock_Blank', array('set'));
+        $system->Organization->Incidents[] = $mockIncident;
+        
+        $this->setExpectedException('Fisma_Zend_Exception_User');
+        $system->preDelete(null);
+    }
 }

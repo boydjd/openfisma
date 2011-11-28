@@ -22,25 +22,24 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * Test_Application_Models_SourceTable 
  * 
  * @uses Test_Case_Unit
- * @package Test_ 
+ * @package Test 
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Test_Application_Models_SourceTable extends Test_Case_Unit
 {
     /**
-     * testGetSearchableFields 
+     * Check if getSearchableFields() returns a not-empty array 
      * 
      * @access public
      * @return void
      */
     public function testGetSearchableFields()
     {
-        $searchableFields = SourceTable::getSearchableFields();
-
+        $searchableFields = Doctrine::getTable('Source')->getSearchableFields();
         $this->assertTrue(is_array($searchableFields));
-        $this->assertEquals(3, count($searchableFields));
+        $this->assertNotEmpty($searchableFields);
     }
 
     /**
@@ -51,6 +50,31 @@ class Test_Application_Models_SourceTable extends Test_Case_Unit
      */
     public function testGetAclFields()
     {
-        $this->assertTrue(is_array(SourceTable::getAclFields()));
+        $this->assertTrue(is_array(Doctrine::getTable('Source')->getAclFields()));
+    }
+    
+    /**
+     * Test the query built for getSources()
+     *
+     * @return void
+     */
+    public function testGetSourcesQuery()
+    {
+        $query = Doctrine::getTable('Source')->getSourcesQuery()->getDql();
+        $expectedQuery = 'FROM Source s ORDER BY s.nickname';
+        $this->assertContains($expectedQuery, $query);
+    }
+    
+    /**
+     * Test the execution of the query from getSourcesQuery()
+     *
+     * @return void
+     * @deprecated pending on the removal of source method
+     */
+    public function testGetSources()
+    {
+        $mockQuery = $this->getMock('Mock_Blank', array('execute'));
+        $mockQuery->expects($this->once())->method('execute');
+        SourceTable::getSources($mockQuery);
     }
 }

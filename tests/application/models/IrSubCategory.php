@@ -30,13 +30,18 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_IrSubCategory extends Test_Case_Unit
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
+     * Test implementation of ON_DELETE constraint.
+     *
      * @return void
      */
-    public function testClassExists()
+    public function testPreDelete()
     {
-        $this->assertTrue(class_exists('IrSubCategory'));
+        $irSubCategory = new IrSubCategory();
+        $irSubCategory->preDelete(null);
+        
+        $mockIncident = $this->getMock('Mock_Blank', array('set'));
+        $irSubCategory->Incident[] = $mockIncident;
+        $this->setExpectedException('Fisma_Zend_Exception_User');
+        $irSubCategory->preDelete(null);
     }
 }

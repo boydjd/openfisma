@@ -40,6 +40,6 @@ class Fisma_Yui_MenuItem_GoTo extends Fisma_Yui_MenuItem
             'Fisma.Menu.goTo',
             array('model' => $model, 'controller' => $controller)
         );
-        parent::__construct('Go To...', '', $onClick);
+        parent::__construct($label, '', $onClick);
     }
 }

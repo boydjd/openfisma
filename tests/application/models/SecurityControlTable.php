@@ -22,7 +22,7 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * Test_Application_Models_SecurityControlTable 
  * 
  * @uses Test_Case_Unit
- * @package Test_ 
+ * @package Test 
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
@@ -37,6 +37,19 @@ class Test_Application_Models_SecurityControlTable extends Test_Case_Unit
      */
     public function testGetAclFields()
     {
-        $this->assertTrue(is_array(SecurityControlTable::getAclFields()));
+        $this->assertTrue(is_array(Doctrine::getTable('SecurityControl')->getAclFields()));
+    }
+    
+    /**
+     * Check if getSearchableFields() returns a not-empty array 
+     * 
+     * @access public
+     * @return void
+     */
+    public function testGetSearchableFields()
+    {
+        $searchableFields = Doctrine::getTable('SecurityControl')->getSearchableFields();
+        $this->assertTrue(is_array($searchableFields));
+        $this->assertNotEmpty($searchableFields);
     }
 }

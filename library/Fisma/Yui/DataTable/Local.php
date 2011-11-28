@@ -33,6 +33,13 @@ class Fisma_Yui_DataTable_Local extends Fisma_Yui_DataTable_Abstract
      * @var Fisma_Yui_DataTable_Source_Interface
      */
     private $_data;
+
+    /*
+     * The message to send in the exception
+     *
+     * @const string
+     */
+    const LAYOUT_NOT_INSTANTIATED_ERROR = 'Layout has not been instantiated.';
     
     /**
      * An array of events for the data-table to listen for, and the javascript function name to tigger for each
@@ -60,10 +67,18 @@ class Fisma_Yui_DataTable_Local extends Fisma_Yui_DataTable_Abstract
      * Render the datatable with HTML and/or Javascript
      * 
      * @return string
+     * @throws Fisma_Zend_Exception
      */
-    public function render()
+    public function render($layout = null)
     {
-        $view = Zend_Layout::getMvcInstance()->getView();
+        if (!isset($layout)) {
+            $layout = Zend_Layout::getMvcInstance();
+        }
+        if ($layout==null) {
+            throw new Fisma_Zend_Exception(self::LAYOUT_NOT_INSTANTIATED_ERROR);
+        } else {
+            $view = $layout->getView();
+        }
 
         $uniqueId = uniqid();
        

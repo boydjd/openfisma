@@ -80,7 +80,7 @@ class Fisma_Js_SwitchButton
         $callback = isset($this->_callbackMethod) ? ", '$this->_callbackMethod'" : '';
         $payload = isset($this->_payload) ? (', ' . json_encode($this->_payload)) : '';
         
-        $constructorArguments = "'$this->_id', $initialState $callback $payload";
+        $constructorArguments = "'$this->_id', " . $initialState . $callback . $payload;
 
         $render = "<div id='$this->_id'></div>
                    <script type='text/javascript'>
@@ -90,5 +90,5 @@ class Fisma_Js_SwitchButton
                    </script>";
         
         return $render;
-    }
+    }    
 }

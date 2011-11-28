@@ -30,13 +30,31 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_UserRoleTable extends Test_Case_Unit
 {
     /**
-     * testClassExists 
+     * Test the join part in the query 
      * 
-     * @access public
      * @return void
      */
-    public function testClassExists()
+    public function testGetRolesAndUsersByOrganizationIdQuery()
     {
-        $this->assertTrue(class_exists('UserRoleTable'));
+        $query = UserRoleTable::getRolesAndUsersByOrganizationIdQuery(0)->getDql();
+        $expectedQuery = 'FROM Role r '
+                        .'INNER JOIN r.UserRole ur '
+                        .'INNER JOIN ur.Organizations o WITH o.id = ? '
+                        .'INNER JOIN ur.User u '
+                        .'WHERE (u.locktype is null or u.locktype != ?)';
+        $this->assertContains($expectedQuery, $query);
+        $this->assertContains('locktype is null', $query);
+    }
+
+    /**
+     * Test the condition part in the query
+     * 
+     * @return void
+     */
+    public function testGetByUserIdAndRoleIdQuery()
+    {
+        $query = UserRoleTable::getByUserIdAndRoleIdQuery(0, 0)->getDql();
+        $expectedQuery = 'FROM UserRole ur WHERE ur.userId = ? AND ur.roleId = ?';
+        $this->assertContains($expectedQuery, $query);
     }
 }

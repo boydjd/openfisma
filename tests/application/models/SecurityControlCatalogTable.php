@@ -30,13 +30,28 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_SecurityControlCatalogTable extends Test_Case_Unit
 {
     /**
-     * testClassExists 
+     * test the query built by getCatalogsQuery()
      * 
-     * @access public
      * @return void
      */
-    public function testClassExists()
+    public function testGetCatalogsQuery()
     {
-        $this->assertTrue(class_exists('SecurityControlCatalogTable'));
+        $expectedQuery = 'FROM SecurityControlCatalog ORDER BY name';
+        $query = Doctrine::getTable('SecurityControlCatalog')->getCatalogsQuery();
+        $this->assertContains($expectedQuery, $query->getDql());
+    }
+
+    /**
+     * test the execution of getCatalogs()
+     * 
+     * @return void
+     * @deprecated pending the removal of source method
+     */
+    public function testGetCatalogs()
+    {
+        $mockQuery = $this->getMock('Mock_Blank', array('execute'));
+        $mockQuery->expects($this->once())->method('execute');
+        Doctrine::getTable('SecurityControlCatalog')->getCatalogs($mockQuery);
     }
 }
+

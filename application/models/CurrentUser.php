@@ -70,4 +70,16 @@ class CurrentUser
 
         return self::$_instance;
     }
+
+    /**
+     * Set the instance of CurrentUser, used primarily for testing only
+     * 
+     * @param mixed $user expects null (reset) or a User-like object 
+     * 
+     * @return void
+     */
+    public static function setInstance($user)
+    {
+        self::$_instance = $user;
+    }
 }

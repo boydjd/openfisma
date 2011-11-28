@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Incidents, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -23,20 +23,95 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * 
  * @uses Test_Case_Unit
  * @package Test 
- * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @copyright (c) Endeavor Incidents, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Test_Application_Models_IncidentTable extends Test_Case_Unit
 {
-    /**
-     * testClassExists 
-     * 
+    /*
+     * Check if getSearchableFields() returns a not-empty array
+     *
      * @access public
      * @return void
      */
-    public function testClassExists()
+    public function testGetSearchableFields()
     {
-        $this->assertTrue(class_exists('IncidentTable'));
+        $searchableFields = Doctrine::getTable('Incident')->getSearchableFields();
+        $this->assertTrue(is_array($searchableFields));
+        $this->assertNotEmpty($searchableFields);
+    }
+    
+    /**
+     * Test the query with and without permission constraint
+     *
+     * @return void
+     */
+    public function testGetUserIncidentQuery()
+    {
+        $user = new User();
+        
+        $acl = new Fisma_Zend_Acl('root');
+        $elevatedQuery = IncidentTable::getUserIncidentQuery($user, $acl)->getDql();
+        $this->assertContains('FROM Incident i', $elevatedQuery);
+        
+        $acl = new Fisma_Zend_Acl('mple');
+        $limitedQuery = IncidentTable::getUserIncidentQuery($user, $acl)->getDql();
+        $this->assertContains('LEFT JOIN', $limitedQuery);
+    }
+    
+    /**
+     * Test getAclFields() with different users
+     *
+     * @return void
+     */
+    public function testAclFields()
+    {
+        $user = $this->getMock('Mock_Blank', array('acl'));
+        $user->expects($this->exactly(2))->method('acl')
+             ->will($this->onConsecutiveCalls(
+                 new Fisma_Zend_Acl('sample'),
+                 new Fisma_Zend_Acl('root')
+             ));
+        CurrentUser::setInstance($user);        
+        
+        $incidentTable = Doctrine::getTable('Incident');
+        $limitedAclFields = $incidentTable->getAclFields();
+        $this->assertGreaterThanOrEqual(1, count($limitedAclFields));
+        
+        $elevatedAclFields = $incidentTable->getAclFields();
+        $this->assertEquals(0, count($elevatedAclFields));
+        CurrentUser::setInstance(null);
+    }
+    
+    /**
+     * Test the query built for getIncidentIds
+     *
+     * @return void
+     */
+    public function testGetIncidentIdsQuery()
+    {
+        $user = new User();
+        $query = Doctrine::getTable('Incident')->getIncidentIdsQuery()->getDql();
+        $expectedQuery = 'FROM IrIncidentUser INDEXBY incidentId WHERE userId = ?';
+        $this->assertContains($expectedQuery, $query);
+    }
+    
+    /**
+     * Test the execution in getIncidentIds
+     *
+     * @return void
+     * @deprecated pending on the removal of source method
+     */
+    public function testGetIncidentIds()
+    {
+        $mockQuery = $this->getMock('Mock_Blank', array('execute'));
+        $mockQuery->expects($this->once())->method('execute')
+                  ->will($this->returnValue(array(
+                      '13' => 'Incident 13 Resultset',
+                      '27' => 'Incident 27 Resultset'
+                  )));
+        $incidentIds = IncidentTable::getIncidentIds($mockQuery);
+        $this->assertEquals(array('13', '27'), $incidentIds);
     }
 }

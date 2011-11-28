@@ -70,7 +70,7 @@ class Test_Application_Modules_Default_Views_Helpers_Acl extends Test_Case_Unit
      */
     public function testSetAcl()
     {
-        $this->_helper->setAcl(new Fisma_Zend_Acl());
+        $this->_helper->setAcl(new Fisma_Zend_Acl(null));
         $this->assertInstanceOf('Fisma_Zend_Acl', $this->_helper->acl());
     }
 }

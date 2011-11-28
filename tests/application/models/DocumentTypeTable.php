@@ -30,7 +30,7 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_DocumentTypeTable extends Test_Case_Unit
 {
     /**
-     * testGetSearchableFields 
+     * Check if getSearchableFields() returns a not-empty array 
      * 
      * @access public
      * @return void
@@ -40,7 +40,7 @@ class Test_Application_Models_DocumentTypeTable extends Test_Case_Unit
         $searchableFields = DocumentTypeTable::getSearchableFields();
 
         $this->assertTrue(is_array($searchableFields));
-        $this->assertEquals(2, count($searchableFields));
+        $this->assertNotEmpty($searchableFields);
     }
 
     /**
@@ -70,5 +70,18 @@ class Test_Application_Models_DocumentTypeTable extends Test_Case_Unit
             . " required FROM System s",
             $q->getDql()
         );
+    }
+
+    /**
+     * Make sure getAllRequiredDeocumentTypeQuery() returns the expected query
+     * 
+     * @return void
+     */
+    public function testGetAllRequiredDocumentTypeQuery()
+    {
+        $query = DocumentTypeTable::getAllRequiredDocumentTypeQuery();
+        $query = $query->getDql();
+        $expectedQuery = 'FROM DocumentType dt WHERE dt.required = ?';
+        $this->assertContains($expectedQuery, $query);
     }
 }

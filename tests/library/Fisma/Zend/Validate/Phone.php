@@ -31,15 +31,25 @@ class Test_Library_Fisma_Zend_Validate_Phone extends Test_Case_Unit
 {
     /**
      * Test that the isValid() method correctly matches only valid phone numbers.
+     * @return void
      */
     public function testIsValid()
     {
         $validator = new Fisma_Zend_Validate_Phone();
+ 
+        //not required -> true
         $this->assertTrue($validator->isValid(''));
+ 
+        //functional true
         $this->assertTrue($validator->isValid('(321) 321-4321'));
+ 
+        //function falses
         $this->assertFalse($validator->isValid('3213214321'));
         $this->assertFalse($validator->isValid('321-321-4321'));
         $this->assertFalse($validator->isValid('321.321.4321'));
         $this->assertFalse($validator->isValid('(xyz) 123-0987'));
+ 
+        //erroneous false;
+        $this->assertFalse($validator->isValid($validator));
     }
 }

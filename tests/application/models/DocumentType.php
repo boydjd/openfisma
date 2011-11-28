@@ -30,13 +30,20 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_DocumentType extends Test_Case_Unit
 {
     /**
-     * testClassExists 
+     * Test implementation of ON_DELETE constraint.
      * 
-     * @access public
      * @return void
      */
-    public function testClassExists()
+    public function testPreDelete()
     {
-        $this->assertTrue(class_exists('DocumentType'));
+        $docType = new DocumentType();
+        $docType->preDelete(null);
+        
+        $mockDocType = $this->getMock('Mock_Blank', array('set'));
+        $docType->Uploads[] = $mockDocType;
+        
+        $this->setExpectedException('Fisma_Zend_Exception_User', 'This document type cannot be deleted because it is already associated with one or more '
+                                   .'system documents.');
+        $docType->preDelete(null);
     }
 }

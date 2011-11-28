@@ -30,13 +30,111 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_IrStep extends Test_Case_Unit
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
+     * Check for the call of _openGap() with correct parameters
+     *
      * @return void
      */
-    public function testClassExists()
+    public function testPreInsert()
     {
-        $this->assertTrue(class_exists('IrStep'));
+        $workflowId = 1;
+        $cardinality = 1;
+        
+        @$irStep = $this->getMock('IrStep', array('_openGap'));
+        $irStep->expects($this->once())->method('_openGap')->with($workflowId, $cardinality);
+        
+        $irStep->workflowId = $workflowId;
+        $irStep->cardinality = $cardinality;
+        
+        $irStep->preInsert(null);
+    }
+    
+    /**
+     * Check for the call of _closeGap() with correct parameters
+     *
+     * @return void
+     */
+    public function testPostDelete()
+    {
+        $workflowId = 1;
+        $cardinality = 1;
+        
+        @$irStep = $this->getMock('IrStep', array('_closeGap'));
+        $irStep->expects($this->once())->method('_closeGap')->with($workflowId, $cardinality);
+        
+        $mockInvoker = new Mock_Blank();
+        $mockInvoker->workflowId = $workflowId;
+        $mockInvoker->cardinality = $cardinality;
+        
+        $mockEvent = $this->getMock('Mock_Blank', array('getInvoker'));
+        $mockEvent->expects($this->once())->method('getInvoker')->will($this->returnValue($mockInvoker));
+
+        $irStep->postDelete($mockEvent);
+    }
+    
+     /**
+     * Test the execution in _openGap() via preInsert()
+     *
+     * @return void
+     */
+    public function testOpenGap()
+    {
+        $mockQuery = $this->getMock('Mock_Blank', array('execute'));
+        $mockQuery->expects($this->once())->method('execute');
+        
+        $irStep = new IrStep();
+        $irStep->preInsert($null, $mockQuery);
+    }
+    
+    /**
+     * Test the execution in _closeGap() via postDelete()
+     *
+     * @return void
+     */
+    public function testCloseGap()
+    {
+        $mockQuery = $this->getMock('Mock_Blank', array('execute'));
+        $mockQuery->expects($this->once())->method('execute');
+        
+        $mockInvoker = new Mock_Blank();
+        $mockInvoker->workflowId = $workflowId;
+        $mockInvoker->cardinality = $cardinality;
+        
+        $mockEvent = $this->getMock('Mock_Blank', array('getInvoker'));
+        $mockEvent->expects($this->once())->method('getInvoker')->will($this->returnValue($mockInvoker));
+
+        $irStep = new IrStep();
+        $irStep->postDelete($mockEvent, $mockQuery);
+    }
+    
+    /**
+     * Test the room shuffling in preUpdate()
+     *
+     * @return void
+     */
+    public function testPreUpdate()
+    {
+        $oldWorkflowId = 1;
+        $oldCardinality = 1;
+        
+        $workflowId = 2;
+        $cardinality = 2;
+        
+        @$irStep = $this->getMock('IrStep', array('getModified', '_openGap', '_closeGap'));
+        $irStep->expects($this->exactly(2))->method('getModified')->with(true)
+               ->will($this->onConsecutiveCalls(
+                   array(),
+                   array(
+                       'workflowId' => $oldWorkflowId,
+                       'cardinality' => $oldCardinality
+                   )
+               ));
+        $irStep->expects($this->once())->method('_closeGap')->with($oldWorkflowId, $oldCardinality);
+        $irStep->expects($this->once())->method('_openGap')->with($workflowId, $cardinality);
+        
+        $irStep->workflowId = $workflowId;
+        $irStep->cardinality = $cardinality;
+        
+        $irStep->preUpdate(null);
+        $irStep->preUpdate(null);
     }
 }

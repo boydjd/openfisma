@@ -30,13 +30,16 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_UserRole extends Test_Case_Unit
 {
     /**
-     * testClassExists 
+     * Test the invalidation of Acl after saving changes to a UserRole
      * 
-     * @access public
      * @return void
      */
-    public function testClassExists()
+    public function testPostSave()
     {
-        $this->assertTrue(class_exists('UserRole'));
+        $userRole = new UserRole();
+        @$user = $this->getMock('User', array('invalidateAcl'));
+        $userRole->User = $user;
+        $user->expects($this->once())->method('invalidateAcl');
+        $userRole->postSave(null);
     }
 }

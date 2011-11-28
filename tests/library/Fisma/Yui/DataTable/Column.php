@@ -31,19 +31,28 @@ class Test_Library_Fisma_Yui_DataTable_Column extends Test_Case_Unit
 {
     /**
      * Test the constructor and accessors for the table column class
+     * @return void
      */
     public function testCreateColumn()
     {
-        $column1 = new Fisma_Yui_DataTable_Column('Column 1', true, "Mock_Formatter");
+        $column1 = new Fisma_Yui_DataTable_Column('Column 1', true);
         
         $this->assertEquals('Column 1', $column1->getLabel());
         $this->assertNotContains(' ', $column1->getName());
         $this->assertTrue($column1->getSortable());
-        $this->assertEquals("Mock_Formatter", $column1->getFormatter());
         
-        $column2 = new Fisma_Yui_DataTable_Column('Column 2', false);
+        $formatParams = array(
+            'width' => 'auto',
+            'css' => 'none'
+        );
+        $column2 = new Fisma_Yui_DataTable_Column('Column 2', false, 'Fisma.DataTable.Bare', $formatParams, 'Test_Column_2', true, 'script');
 
         $this->assertEquals('Column 2', $column2->getLabel());
+        $this->assertEquals("Fisma.DataTable.Bare", $column2->getFormatter());
         $this->assertFalse($column2->getSortable());
+        $this->assertEquals('Test_Column_2', $column2->getName());
+        $this->assertEquals($formatParams, $column2->getFormatterParameters());
+        $this->assertEquals('script', $column2->getParser());
+        $this->assertTrue($column2->getHidden());
     }
 }

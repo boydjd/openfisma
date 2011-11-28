@@ -30,13 +30,15 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_SecurityControl extends Test_Case_Unit
 {
     /**
-     * testClassExists 
+     * Test name formatting in getAuditLogValue()
      * 
-     * @access public
      * @return void
      */
-    public function testClassExists()
+    public function testGetAuditLogValue()
     {
-        $this->assertTrue(class_exists('SecurityControl'));
+        $securityControl = new SecurityControl();
+        $securityControl->name = 'Test_Control';
+        $securityControl->Catalog->name = 'Test_Catalog';
+        $this->assertEquals('Test_Control [Test_Catalog]', $securityControl->getAuditLogValue());
     }
 }
