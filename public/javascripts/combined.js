@@ -7656,7 +7656,7 @@ Fisma.Finding = {
      * @param params {Array} The arguments passed to the autocomplete constructor
      */
     setupSecurityControlAutocomplete : function (autocomplete, params) {
-        autocomplete.itemSelectEvent.subscribe(Fisma.AutoComplete.handleSecurityControlSelection);
+        autocomplete.itemSelectEvent.subscribe(Fisma.Finding.handleSecurityControlSelection);
     }
 };
 /**
@@ -8227,7 +8227,11 @@ Fisma.Finding = {
             
             // Add organization/POC criterion
             if (nodeState == Fisma.TreeTable.NodeState.COLLAPSED) {
-                url += '/' + searchKey + '/organizationSubtree/' + encodeURIComponent(rowLabel);
+                if (this._currentViewType == "systemAggregation") {
+                    url += '/' + searchKey + '/systemAggregationSubtree/' + encodeURIComponent(rowLabel);
+                } else {
+                    url += '/' + searchKey + '/organizationSubtree/' + encodeURIComponent(rowLabel);
+                }
             } else {
                 url += '/' + searchKey + '/textExactMatch/' + encodeURIComponent(rowLabel);
             }
