@@ -62,7 +62,13 @@ Fisma_Format_Section::stopSection();
 <?php
 Fisma_Format_Section::startSection('Documentation Workflow');
 ?>
-<div> <img src="/images/documentationworkflow.png"> </div>
+<div>
+    <img src="/images/documentationworkflow.png" width="421" height="445" border="0" usemap="#Map"/>
+    <map name="Map" id="Map">
+        <area shape="rect" coords="180,-8,252,51" href="<?php echo $this->escape($this->generateScdLink, 'none');?>"
+             title="Click here to generate SCD"/>
+    </map>
+</div>
 <?php
 Fisma_Format_Section::stopSection();
 ?>

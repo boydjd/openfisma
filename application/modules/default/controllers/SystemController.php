@@ -481,6 +481,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->generateScdButton = $generateScdButton;
+        $this->view->generateScdLink = '/system/generate-scd/format/pdf/id/' . $id;
 
         // Get all documents for current system, sorted alphabetically on the document type name
         $documentQuery = Doctrine_Query::create()
