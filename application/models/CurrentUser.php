@@ -61,7 +61,7 @@ class CurrentUser
     public static function getInstance()
     {
         if (!isset(self::$_instance)) {
-            if ((Fisma::RUN_MODE_COMMAND_LINE || Fisma::RUN_MODE_TEST) != Fisma::mode()) {
+            if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode() && Fisma::RUN_MODE_TEST != Fisma::mode()) {
                 $auth = Zend_Auth::getInstance();
                 $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
                 self::$_instance = $auth->getIdentity();

@@ -49,18 +49,14 @@ class Test_Library_Fisma_Yui_Form_AutoComplete extends Test_Case_Unit
         $resultsList = 'Test_AutoComplete';
         $fields = '{id, content}';
         $xhr = '/test/autocomplete';
-        $queryPrepend = 'mysql://';
-        $callback = 'autocomplete_callback';
+        $queryPrepend = '/keyword/';
+        $setupCallback = 'autocomplete_callback';
 
         $render  = "<div>
-                    <input type='hidden' 
-                           id='$hiddenField' 
-                           name='$hiddenField'
-                           value=\"$hiddenValue\">
                     <input type=\"text\" 
                            name=\"$name\" 
                            id=\"$name\" 
-                           value=\"$label\"
+                           value=\"$hiddenValue\"
                            $disabled>
                     <img class='spinner'
                          id='{$containerId}Spinner' 
@@ -74,8 +70,8 @@ class Test_Library_Fisma_Yui_Form_AutoComplete extends Test_Case_Unit
                             fieldId : \"$name\",
                             containerId: \"$containerId\",
                             hiddenFieldId: \"$hiddenField\",
-                            queryPrepend: \"$queryPrepend\",
-                            callback : '$callback'
+                            setupCallback : '$setupCallback',
+                            queryPrepend: \"$queryPrepend\"
                           } );
                     </script>";
 
@@ -88,7 +84,7 @@ class Test_Library_Fisma_Yui_Form_AutoComplete extends Test_Case_Unit
             fields => $fields,
             xhr => $xhr,
             queryPrepend => $queryPrepend,
-            callback => $callback
+            setupCallback => $setupCallback
         );
         $button = new Fisma_Yui_Form_AutoComplete($name, $options);
         $button->setDisplayText($label);
