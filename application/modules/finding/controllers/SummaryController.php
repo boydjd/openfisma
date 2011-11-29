@@ -80,7 +80,12 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $tooltips['ms'] = $this->view->partial("/summary/ms-approvals-tooltip.phtml", array('approvals' => $approvals));
         $tooltips['ev'] = $this->view->partial("/summary/ev-approvals-tooltip.phtml", array('approvals' => $approvals));
 
-        array_walk($tooltips, function (&$value) {$value = str_replace("\n", " ", $value);});
+        array_walk($tooltips, 
+            function (&$value)
+            {
+                $value = str_replace("\n", " ", $value);
+            }
+        );
 
         $this->view->tooltips = $tooltips;
 
@@ -131,7 +136,12 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         }
 
         // Convert "numbers" to actual numbers
-        array_walk_recursive($treeNodes, function (&$scalar) {if (is_numeric($scalar)) $scalar = (int)$scalar;});
+        array_walk_recursive($treeNodes,
+            function (&$scalar)
+            {
+                if (is_numeric($scalar)) $scalar = (int)$scalar;
+            }
+        );
 
         /* 
          * Remove the prefixed column alias that HYDRATE_SCALAR adds, and group all key-value pairs under 
@@ -327,7 +337,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                          : null;
 
                 // Skip all the child systems of a disposal system
-                while (in_array($innerId, $disposalSystemIds)){
+                while (in_array($innerId, $disposalSystemIds)) {
                     $innerSystemsIndex++;
                     $innerId = isset($innerSystems[$innerSystemsIndex]) 
                              ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
@@ -471,7 +481,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             if (isset($pointsOfContact[$currentOrganizationId])) {
                 $level = $organizations[$currentOrganization]['o_level'];
 
-                foreach($pointsOfContact[$currentOrganizationId] as &$poc) {
+                foreach ($pointsOfContact[$currentOrganizationId] as &$poc) {
                     if (isset($findings[$poc['p_id']])) {
                         $poc = array_merge($poc, $findings[$poc['p_id']]);
                     }

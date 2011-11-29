@@ -169,12 +169,13 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
         
         foreach ($requiredFields as $requiredField) {
             if (is_null($this->$requiredField)) {
-                trigger_error("$requiredField cannot be null when rendering a remote table.", E_USER_ERROR); }
-            //if phpunit saw a } on its own line after a trigger_error(), throw Exception, or return, it will generate warning
+                trigger_error("$requiredField cannot be null when rendering a remote table.", E_USER_ERROR); 
+            }
         }
         
         if (count($this->getColumns()) == 0) {
-            trigger_error("Table must contain at least one column.", E_USER_ERROR); } //so these two } was put up here
+            trigger_error("Table must contain at least one column.", E_USER_ERROR);
+        }
     }
     
     /**

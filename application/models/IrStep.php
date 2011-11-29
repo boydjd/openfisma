@@ -14,13 +14,13 @@ class IrStep extends BaseIrStep
     /**
      * Override parent to make room for new step
      *
-     * @param Doctrine_Query $openGapQuery Optional, default to null, used primarily for testing
+     * @param Doctrine_Query $openGapQr Optional, default to null, used primarily for testing
      * @param Doctrine_Event $event
      * @param return void
      */
-    public function preInsert($event, $openGapQuery = null)
+    public function preInsert($event, $openGapQr = null)
     {
-        $this->_openGap($this->workflowId, $this->cardinality, $openGapQuery);
+        $this->_openGap($this->workflowId, $this->cardinality, $openGapQr);
     }
 
     /**
@@ -50,13 +50,13 @@ class IrStep extends BaseIrStep
      * Override parent to close gap left by removing step
      *
      * @param Doctrine_Event $event
-     * @param Doctrine_Query $closeGapQuery Optional, default to null, used primarily for testing
+     * @param Doctrine_Query $clsGapQr Optional, default to null, used primarily for testing
      * @return void
      */
-    public function postDelete($event, $closeGapQuery = null)
+    public function postDelete($event, $clsGapQr = null)
     {
         $i = $event->getInvoker();
-        $this->_closeGap($i->workflowId, $i->cardinality, $closeGapQuery);
+        $this->_closeGap($i->workflowId, $i->cardinality, $clsGapQr);
     }
 
     /**
@@ -67,10 +67,10 @@ class IrStep extends BaseIrStep
      * @return void
      * @deprecated pending on the removal of executions from model classes
      */
-    protected function _openGap($workflowId, $position, $openGapQuery = null)
+    protected function _openGap($workflowId, $position, $openGapQr = null)
     {
-        $openGapQuery = (isset($openGapQuery)) ? $openGapQuery : Doctrine::getTable('IrStep')->openGapQuery($workflowId, $position);
-        $openGapQuery->execute(); 
+        $openGapQr = (isset($openGapQr)) ? $openGapQr : Doctrine::getTable('IrStep')->openGapQr($workflowId, $position);
+        $openGapQr->execute(); 
     }
 
     /**
@@ -81,9 +81,9 @@ class IrStep extends BaseIrStep
      * @return void
      * @deprecated pending on the removal of executions from model classes
      */
-    protected function _closeGap($workflowId, $position, $closeGapQuery = null)
+    protected function _closeGap($workflowId, $position, $clsGapQr = null)
     {
-        $closeGapQuery = (isset($closeGapQuery)) ? $closeGapQuery : Doctrine::getTable('IrStep')->closeGapQuery($workflowId, $position);
-        $closeGapQuery->execute(); 
+        $clsGapQr = (isset($clsGapQr)) ? $clsGapQr : Doctrine::getTable('IrStep')->clsGapQr($workflowId, $position);
+        $clsGapQr->execute(); 
     }
 }

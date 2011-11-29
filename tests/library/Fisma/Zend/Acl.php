@@ -55,7 +55,8 @@ class Test_Library_Fisma_Zend_Acl extends Test_Case_Unit
         $testAcl = new Fisma_Zend_Acl('root'); 
         $testAcl->requireArea($area, $user);
 
-        $this->setExpectedException('Fisma_Zend_Exception_InvalidPrivilege', 'User does not have access to this area: \''.$area.'\'');
+        $this->setExpectedException('Fisma_Zend_Exception_InvalidPrivilege',
+            "User does not have access to this area: '$area'");
         $testAcl = new Fisma_Zend_Acl('defaultUser');
         $testAcl->requireArea($area);
     }
@@ -79,7 +80,8 @@ class Test_Library_Fisma_Zend_Acl extends Test_Case_Unit
 
         //class not found -> exception thrown;
         $testClass = 'unsupported class';
-        $this->setExpectedException('Fisma_Zend_Exception', 'Privilege check failed for class \''.$testClass.'\' because the class could not be found');
+        $this->setExpectedException('Fisma_Zend_Exception',
+            "Privilege check failed for class '$testClass' because the class could not be found");
         $testAcl->hasPrivilegeForClass($testPrivilege, $testClass);
 
         //@todo test privileges with wildcards
@@ -99,7 +101,8 @@ class Test_Library_Fisma_Zend_Acl extends Test_Case_Unit
         $testAcl->requirePrivilegeForClass($testPrivilege, $testClass);
 
         $testAcl = new Fisma_Zend_Acl('defaultUser');
-        $this->setExpectedException('Fisma_Zend_Exception_InvalidPrivilege', "User does not have privilege '".$testPrivilege."' for class '".$testClass."'");
+        $this->setExpectedException('Fisma_Zend_Exception_InvalidPrivilege',
+            "User does not have privilege '".$testPrivilege."' for class '".$testClass."'");
         $testAcl->requirePrivilegeForClass($testPrivilege, $testClass);
     }
 
@@ -114,7 +117,8 @@ class Test_Library_Fisma_Zend_Acl extends Test_Case_Unit
         $testAcl = new Fisma_Zend_Acl('defaultUser');
         $testPrivilege = 'insert';
         $testObj = $testAcl;
-        $this->assertEquals($testAcl->hasPrivilegeForClass($testPrivilege, get_class($testObj)), $testAcl->hasPrivilegeForObject($testPrivilege, $testObj));
+        $this->assertEquals($testAcl->hasPrivilegeForClass($testPrivilege, get_class($testObj)),
+                            $testAcl->hasPrivilegeForObject($testPrivilege, $testObj));
 
         //object has Organization dependency
         require_once(realpath(dirname(__FILE__) . '/MockOrg.php'));
@@ -148,7 +152,8 @@ class Test_Library_Fisma_Zend_Acl extends Test_Case_Unit
 
         //user has no privilege -> exception thrown
         $testAcl = new Fisma_Zend_Acl('defaultUser');
-        $this->setExpectedException('Fisma_Zend_Exception_InvalidPrivilege', 'User does not have privilege \''.$testPrivilege.'\' for this object.');
+        $this->setExpectedException('Fisma_Zend_Exception_InvalidPrivilege',
+            "User does not have privilege '$testPrivilege' for this object.");
         $testAcl->requirePrivilegeForObject($testPrivilege, $testObj);
 
     }

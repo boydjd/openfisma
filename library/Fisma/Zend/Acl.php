@@ -181,7 +181,8 @@ class Fisma_Zend_Acl extends Zend_Acl
     }
     
     /**
-     * Require the current user to have a particular privilege on a particular class of objects, or else throw an exception
+     * Require the current user to have a particular privilege on a particular class of objects, 
+     * or else throw an exception
      * 
      * @param string $privilege
      * @param string $className
