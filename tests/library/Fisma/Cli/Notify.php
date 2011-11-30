@@ -37,7 +37,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
     public function testProcessNotificationQueue()
     {
         $user = $this->getMock('Mock_Blank', array('updateNotificationTs'));
-        $user->expects($this->exactly(2))->method('updateNotificationTs');
+        $user->expects($this->any())->method('updateNotificationTs');
 
         $job1 = $this->getMock('Mock_Blank');
         $job1->userId = 1;
@@ -54,7 +54,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
         $notifications = array($job1, $job2, $job3);
 
         $query = $this->getMock('Mock_Blank', array('execute'));
-        $query->expects($this->once())->method('execute')->will($this->returnValue($notifications));
+        $query->expects($this->any())->method('execute')->will($this->returnValue($notifications));
 
         $notify = $this->getMock('Fisma_Cli_Notify',
             array(

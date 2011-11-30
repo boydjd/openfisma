@@ -42,7 +42,7 @@ class Fisma_Zend_View extends Zend_View
     {
         $fname = '_escape' . ucfirst($escType);
 
-        if (is_callable(array($this, $fname))) {
+        if (method_exists($this, $fname)) {
             return $this->$fname($string);
         } else {
             throw new Fisma_Zend_Exception('Requested escaping type is not available!');

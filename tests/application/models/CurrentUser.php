@@ -30,17 +30,6 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_CurrentUser extends Test_Case_Unit
 {
     /**
-     * testClassExists 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testClassExists()
-    {
-        $this->assertTrue(class_exists('CurrentUser'));
-    }
-
-    /**
      * testGetInstanceIsNull 
      * 
      * @access public
