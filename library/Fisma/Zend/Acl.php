@@ -211,11 +211,16 @@ class Fisma_Zend_Acl extends Zend_Acl
             if (!is_object($role)) {
                 return false;
             }
-            $username = $role->username;
+
+            // Add prefix 'user_' to match the role identifier
+            $username = 'user_' . $role->username;
         }
         
-        // Root can do anything
-        if ('root' == $username) {
+        /**
+         * Root can do anything
+         * Add prefix 'user_' to match the role identifier
+         */ 
+        if ('user_root' == $username) {
             return true;
         }
         

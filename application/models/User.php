@@ -297,15 +297,15 @@ class User extends BaseUser
             $suppressWarningsOriginalValue = $classLoader->suppressNotFoundWarnings();
             $classLoader->suppressNotFoundWarnings(true);
 
-            $acl = new Fisma_Zend_Acl($this->username);
+            $acl = new Fisma_Zend_Acl('user_' . $this->username);
 
             // For each role, add its privileges to the ACL
             $roleArray = array();
             foreach ($this->Roles as $role) {
                 // Roles are stored by role.nickname, e.g. "ADMIN", which are guaranteed to be unique
-                $newRole = new Zend_Acl_Role($role->nickname);
+                $newRole = new Zend_Acl_Role('role_' . $role->nickname);
                 $acl->addRole($newRole);
-                $roleArray[] = $role->nickname;
+                $roleArray[] = 'role_' . $role->nickname;
 
                 foreach ($role->Privileges as $privilege) {
                     /**
@@ -357,7 +357,7 @@ class User extends BaseUser
             }
 
             // Create a role for this user that inherits all of the roles created above
-            $userRole = new Zend_Acl_Role($this->username);
+            $userRole = new Zend_Acl_Role('user_' . $this->username);
             $acl->addRole($userRole, $roleArray);
 
             $cache->save($acl, md5($this->username) . '_acl');

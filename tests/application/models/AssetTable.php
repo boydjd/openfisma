@@ -79,7 +79,7 @@ class Test_Application_Models_AssetTable extends Test_Case_Unit
         $user = $this->getMock('Mock_Blank', array('acl'));
         $user->expects($this->exactly(2))
              ->method('acl')
-             ->will($this->onConsecutiveCalls(new Fisma_Zend_Acl('defaultUser'), new Fisma_Zend_Acl('root')));
+             ->will($this->onConsecutiveCalls(new Fisma_Zend_Acl('defaultUser'), new Fisma_Zend_Acl('user_root')));
         CurrentUser::setInstance($user);
         $assetTable = Doctrine::getTable('Asset');
         $field = $assetTable->getAclFields();
