@@ -265,7 +265,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         // Load the object's form
         $form = $this->getForm();
-        $form->setReadOnly(true);
+        if ($this->_acl->hasPrivilegeForObject('update', $subject)) {
+            $form->setAction("{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
+        } else {
+            $form->setReadOnly(true);
+        }
         $this->setForm($subject, $form);
         $this->view->form = $form;
 
@@ -995,10 +999,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $links = array();
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('read', $subject)) {
-            $links['View'] = "{$this->_moduleName}/{$this->_controllerName}/view/id/{$subject->id}";
-        }
-
         if ($this->_isDeletable() && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
         }
@@ -1017,10 +1017,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function getViewLinks(Fisma_Doctrine_Record $subject)
     {
         $links = array();
-
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('update', $subject)) {
-            $links['Edit'] = "{$this->_moduleName}/{$this->_controllerName}/edit/id/{$subject->id}";
-        }
 
         if ($this->_isDeletable() && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";

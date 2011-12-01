@@ -1,33 +1,41 @@
-<?php
-
+<?php 
 echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
 
-$actions = '';
+$operation = '';
 
-foreach ($this->links as $label => $url) {
-    if ('delete' === strtolower($label)) {
-        $deleteUrl = $url;
-    }
-    $actions .= "&nbsp;&nbsp;[<a href='$url' id = '" . $label . "Link' >$label</a>]";
+if ($this->acl()->hasPrivilegeForObject('read', $this->subject)) {
+    $operation .= "&nbsp;&nbsp;[<a href='{$this->auditLogLink}'>Audit Log</a>]";
 }
 
-Fisma_Format_Section::startSection('View: ' . $this->modelName . $actions); 
+$operation .= "&nbsp;&nbsp;[<a href='{$this->escape($this->commentLink)}'>Comments</a>]";
+
+Fisma_Format_Section::startSection("User Account Information $operation"); ?>
+
+<?php 
+if (!empty($this->requirements)) {
 ?>
-<div>
-    <?php echo $this->escape($this->form, 'none'); ?>
-    <?php echo $this->escape($this->tabView, 'none'); ?>
+    <p>The password must meet the following complexity criteria:</p>
+    <ul>
+    <?php foreach ($this->requirements as $requirement): ?>
+        <li>
+            <?php echo $this->escape($requirement, 'none'); ?>
+        </li>
+    <?php endforeach; ?>
+    </ul>
+<?php 
+} 
+?>
+
+<div class="form_box">
+    <form method="post" action="/User/edit/id/<?php echo $this->escape($this->id); ?>">
+    <?php 
+        echo $this->escape($this->form, 'none');
+        echo $this->escape($this->tabView, 'none');
+    ?>
+    </form>
 </div>
-
-<?php Fisma_Format_Section::stopSection();
-
-if (!empty($deleteUrl)):
-?>
-<script type="text/javascript">
-    YAHOO.util.Event.onDOMReady(function () {
-        var url = {url : '<?php echo $this->escape($deleteUrl) ?>' };
-        YAHOO.util.Event.addListener("DeleteLink", "click", Fisma.Util.showDeleteWarning, url);
-    });
-</script>
-<?php
-endif;
-?>
+<?php 
+Fisma_Format_Section::stopSection();
+$opts = array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0);
+echo $this->escape($this->partial('yui/roles.phtml', $opts), 'none');
+unset($opts);
