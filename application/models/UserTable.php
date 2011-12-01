@@ -155,17 +155,21 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
         return $query;    
     }
     
-    
-
     /**
      * Build the query for getRoles()
      *
+     * @param mixed $userId 
      * @param mixed $hydrationMode Optional, defaults to Doctrine::HYDRATE_SCALAR.
      * @return Doctrine_Query
      */
-    public function getRolesQuery($hydrationMode = Doctrine::HYDRATE_SCALAR)
+    public function getRolesQuery($userId, $hydrationMode = Doctrine::HYDRATE_SCALAR)
     {
-        $userRolesQuery = Doctrine_Query::create()->select('u.id, r.*')->from('User u')->innerJoin('u.Roles r')->where('u.id = ?', $this->_me->id)->setHydrationMode($hydrationMode);
+        $userRolesQuery = Doctrine_Query::create()
+                          ->select('u.id, r.*')
+                          ->from('User u')
+                          ->innerJoin('u.Roles r')
+                          ->where('u.id = ?', $userId)
+                          ->setHydrationMode($hydrationMode);
         return $userRolesQuery;
     }
 }
