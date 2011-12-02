@@ -59,12 +59,12 @@ STR;
     public function getPanel($layout = null)
     {
         //if $layout is not provided, use currentLayout
-        if($layout==null) {
+        if ($layout==null) {
             $layout = Zend_Layout::getMvcInstance();
         }
 
         //if currentLayout is not instantiated, return with an error code
-        if($layout==null) {
+        if ($layout==null) {
             throw new Fisma_Zend_Exception(self::LAYOUT_NOT_INSTANTIATED_ERROR);
         } else {
             $view = $layout->getView();
