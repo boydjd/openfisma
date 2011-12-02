@@ -101,7 +101,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
             $values = $form->getValues();
             $actionName = strtolower($this->_request->getActionName());
-            if ('edit' === $actionName && 'root' !== $subject->username) {
+            if ('view' === $actionName && 'root' !== $subject->username) {
 
                 // Check whether role is changed for audit log
                 $originalRoles = $subject->getRoles(Doctrine::HYDRATE_ARRAY);
@@ -630,12 +630,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
         $this->view->roles = Zend_Json::encode($roles);
 
-        if ($readOnly) {
-            parent::_viewObject();
-        } else {
-            parent::_editObject();
-        }
- 
+        parent::_viewObject();
+
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
     }
 
