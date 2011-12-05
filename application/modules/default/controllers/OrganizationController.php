@@ -118,7 +118,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         parent::setForm($subject, $form);
 
         // The root node cannot have it's parent changed
-        if ($subject->getNode()->isRoot()) {
+        if (empty($subject->getNode()->getParent())) { //temporary change: isRoot() -> empty(getParent())
             $form->removeElement('parent');
         } else {
             $parent = $subject->getNode()->getParent();
@@ -273,7 +273,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 }
                 // if the organization is not the root and
                 // its parent id is not equal the value submited
-                if (!$organization->getNode()->isRoot() &&
+                if (!empty($organization->getNode()->getParent()) && //temporary change: isRoot() -> empty(getParent())
+
                         (int)$orgValues['parent'] != $organization->getNode()->getParent()->id) {
                     // then move this organization to an other parent node
                     $organization->getNode()
