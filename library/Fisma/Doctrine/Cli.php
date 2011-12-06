@@ -46,4 +46,32 @@ class Fisma_Doctrine_Cli extends Doctrine_Cli
 
         return $taskClass;
     }
+    
+    /**
+     * Get array of all the Doctrine_Task child classes that are loaded
+     *
+     * @return array $tasks
+     */
+    public function getLoadedTasks()
+    {
+        $parent = new ReflectionClass('Doctrine_Task');
+        
+        $classes = get_declared_classes();
+        
+        $tasks = array();
+        
+        foreach ($classes as $className) {
+            $class = new ReflectionClass($className);
+        
+            if ($class->isSubClassOf($parent)) {
+                $task = str_replace('Doctrine_Task_', '', $className);
+                $tasks[$task] = $task;
+            }
+        }
+
+        // Make sure migrate action does not in the tasks
+        $tasks['Migrate'] = null;
+
+        return array_merge($this->_tasks, $tasks);
+    }
 }
