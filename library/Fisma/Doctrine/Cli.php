@@ -69,8 +69,14 @@ class Fisma_Doctrine_Cli extends Doctrine_Cli
             }
         }
 
-        // Make sure migrate action does not in the tasks
-        $tasks['Migrate'] = null;
+        // Make sure migrate action does not exist in the tasks
+        if (isset($tasks['Migrate'])) {
+            unset($tasks['Migrate']);
+        }
+
+        if (isset($this->_tasks['Migrate'])) {
+            unset($this->_tasks['Migrate']);
+        }
 
         return array_merge($this->_tasks, $tasks);
     }
