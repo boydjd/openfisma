@@ -47,7 +47,7 @@ class Fisma_Zend_Controller_Action_Helper_PasswordRequirements extends Zend_Cont
             $requirements[] = "Must contain at least 1 numeric digit (0-9)";
         }
         if (Fisma::configuration()->getConfig('pass_special') == 1) {
-            $requirements[] = htmlentities("Must contain at least 1 special character (!@#$%^&*-=+~`_)");
+            $requirements[] = "Must contain at least 1 special character (!@#$%^&*-=+~`_)";
         }
         return $requirements;
     }
