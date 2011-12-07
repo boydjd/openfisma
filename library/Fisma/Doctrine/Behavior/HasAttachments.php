@@ -47,28 +47,44 @@ class Fisma_Doctrine_Behavior_HasAttachments extends Doctrine_Template
      */
     public function setUp()
     {
-        $foreignClassName = $this->getTable()->getComponentName() . 'Attachment';
+        $foreignClassName = $this->getTable()->getComponentName() . 'Upload';
 
         $this->hasMany(
-            $foreignClassName, 
+            'Upload as Uploads',
             array(
                 'local' => 'id',
                 'foreign' => 'objectId'
+                'foreignAlias' => $this->getTable()->getComponentName() . 's',
+                'refClass' => $foreignClassName
             )
         );
         
         $this->_plugin->initialize($this->getTable());
     }
-    
+
+    /**
+     * @todo: short description.
+     * 
+     * @return @todo
+     */
+    public function attach($file)
+    {
+        $upload = new Upload();
+        $upload->instantiate($file);
+
+        $instance = $this->getInvoker();
+        $instance->Uploads[] = $upload;
+    }
     /**
      * Return an Attachments instance
      * 
      * The instance acts as glue between the instance itself and the generator which needs to act on it
      * 
      * @return Fisma_Doctrine_Behavior_HasAttachments_Proxy
-     */
-    public function getAttachments()
+     *
+    public function getProxy()
     {
         return new Fisma_Doctrine_Behavior_HasAttachments_Proxy($this->getInvoker(), $this->_plugin);
     }
+     */
 }

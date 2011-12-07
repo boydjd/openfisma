@@ -71,11 +71,12 @@ class Fisma_Doctrine_Behavior_HasAttachments_Proxy
      * 
      * @param int $attachmentId The primary key of the attachment to find
      * @return Doctrine_Record
-     */
+     *
     public function find($attachmentId)
     {
         return $this->_generator->find($this->_instance, $attachmentId);
     }
+     */
     
     /**
      * Proxy method for listing attachments related to an object
@@ -84,27 +85,30 @@ class Fisma_Doctrine_Behavior_HasAttachments_Proxy
      * @param int $limit SQL style limit
      * @param int $offset SQL style offset
      * @return mixed A query result whose type depends on which hydration mode you choose.
-     */
+     *
     public function fetch($hydrationMode, $limit = null, $offset = null)
     {
         return $this->_generator->fetch($this->_instance, $hydrationMode, $limit, $offset);
     }
+     */
     
     /**
      * Proxy method for counting the number of attachments attached to an object
-     */
+     *
     public function count()
     {
         return $this->_generator->count($this->_instance);
     }
+     */
         
     /**
      * Proxy method for getting an attachment base query relative to an object
      * 
      * @return Doctrine_Query The attachment base query related to the instance
-     */
+     *
     public function query()
     {
         return $this->_generator->query($this->_instance);
     }
+     */
 }

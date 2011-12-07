@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -19,30 +19,32 @@
 /**
  * Upload
  * 
- * @author     Ryan Yang <ryan@users.sourceforge.net>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Model
  */
 class Upload extends BaseUpload
 {
     /**
-     * Construct an upload from the HTTP Request File info array
+     * Create an upload from the HTTP Request File info array
      * 
      * @param mixed $file The array mapped from HTTP Request File info
-     * 
+     * @return Upload
      */
-    public function __construct($file)
+    public static function create($file)
     {
+        $upload = new Upload();
+        
         $fm = Zend_Registry::get('fileManager');
         $hash = $fm->store($file['tmp_name']);
 
-        $this->fileName = $file['name'];
-        $this->fileHash = $hash;
-        $this->userId = CurrentUser::getInstance()->id;
-        $this->uploadIp = $_SERVER['REMOTE_ADDR'];
+        $upload->fileName = $file['name'];
+        $upload->fileHash = $hash;
+        $upload->userId = CurrentUser::getInstance()->id;
+        $upload->uploadIp = $_SERVER['REMOTE_ADDR'];
 
-        $this->save();
+        $upload->save();
     }
 
     /**

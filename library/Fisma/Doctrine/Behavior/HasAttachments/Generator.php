@@ -28,31 +28,6 @@
 class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_Generator
 {
     /**
-     * Extensions which should not be attached
-     * 
-     * @var array
-     */
-    private $_extensionsBlackList = array(
-        /* CSS        */ 'css',
-        /* Executable */ 'app', 'exe', 'com',
-        /* HTML       */ 'htm', 'html', 'xhtml',
-        /* Java       */ 'class',
-        /* Javascript */ 'js',
-        /* PHP        */ 'php', 'phtml', 'php3', 'php4', 'php5',
-    );
-    
-    /**
-     * MIME types which should not be attached
-     * 
-     * @var array
-     */
-     private $_mimeTypeBlackList = array(
-         /* CSS        */ 'text/css',
-         /* HTML       */ 'text/html', 'application/xhtml+xml',
-         /* Javascript */ 'application/x-javascript', 'text/javascript', 'application/ecmascript',
-     );
-    
-    /**
      * Set up the generated class name
      * 
      * @return void
@@ -60,24 +35,26 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
     public function initOptions()
     {
         // This will result in class names like 'IncidentAttachment'
-        $this->setOption('className', '%CLASS%Attachment');
+        $this->setOption('className', '%CLASS%Upload');     
         
-        // Set the Fisma_Doctrine_Behavior_HasAttachments_Attachment model as the base class for these generated classes
+        /* Set the Fisma_Doctrine_Behavior_HasAttachments_Attachment model as the base class for these generated classes
         $this->setOption(
             'builderOptions', array('baseClassName' => 'Fisma_Doctrine_Behavior_HasAttachments_Attachment')
         );
+         */
     }
     
     /**
      * Set up relations
      * 
      * @return void
-     */
+     *
     public function buildRelation()
     {
         $this->buildForeignRelation('Upload');
         $this->buildLocalRelation();
     }
+     */
     
     /**
      * Table definition
@@ -113,49 +90,26 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
      * Set up parent object and user relations
      * 
      * @return void
-     */
+     *
     public function setUp()
     {
-        // The base class is the class which is using this behavior, such as 'Finding' or 'System'
-        $baseClass = $this->getOption('table')->getComponentName();
-        
-        // Relation for the base class
-        $this->hasOne(
-            $baseClass,
-            array(
-                'local' => 'objectId',
-                'foreign' => 'id'
-            )
-        );
-        
-        // Relation for the Upload class
-        $this->hasOne(
-            'Upload',
-            array(
-                'local' => 'uploadId',
-                'foreign' => 'id'
-            )
-        );
     }
+     */
 
     /**
      * Attach an attachment to an object
      * 
      * @param Doctrine_Record $instance The object to which this attachment needs to be attached
      * @param mixed $file The array mapped from FILE_ARRAY by HTTP Request 
-     */
+     *
     public function attach(Doctrine_Record $instance, $file)
     {
-        $upload = new Upload($file);
-        
-        $attachmentClass = $this->_options['className'];
-        $attachment = new $attachmentClass; 
+        $upload = new Upload();
+        $upload->instantiate($file);
 
-        $attachment->uploadId = $upload->id;
-        $attachment->objectId = $instance->id;
-   
-        $attachment->save();
+        $instance->Uploads[] = $upload;
     }
+     */
 
     /**
      * Find an attachment by its primary key or FALSE if none found
@@ -163,7 +117,7 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
      * @param Doctrine_Record $instance The object which owns the attachment
      * @param int $id The primary key of the attachment
      * @return Doctrine_Record|false
-     */
+     *
     public function find(Doctrine_Record $instance, $id)
     {
         $query = $this->query($instance)->addWhere('id = ?', $id);
@@ -175,16 +129,17 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
             return false;
         }
     }
+     */
     
     /**
-     * List attachments for this object, optionally providing a SQL-style limit and offset for pagination
+     * List attachments for this object, optionally providing an SQL-style limit and offset for pagination
      * 
      * @param Doctrine_Record $instance The object to get attachments for
      * @param int $hydrationMode A valid Doctrine hydration mode, e.g. Doctrine::HYDRATE_ARRAY
      * @param int $limit SQL style limit
      * @param int $offset SQL style offset
      * @return mixed A query result whose type depends on which hydration mode you choose.
-     */
+     *
     public function fetch($instance, $hydrationMode, $limit = null, $offset = null)
     {
         $query = $this->query($instance)->setHydrationMode($hydrationMode);
@@ -201,34 +156,36 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
         
         return $results;
     }
+     */
     
     /**
      * Count the number of attachments attached to this object
      * 
      * @param Doctrine_Record $instance
      * @return int
-     */
+     *
     public function count($instance)
     {
         $query = $this->query($instance);
         
         return $query->count();
     }
+     */
     
     /**
      * Get a base query which will return all attachments for the current object
      * 
      * @param Doctrine_Record $instance The object to get attachments for
      * @return Doctrine_Query The base query for attachments related to the instance
-     */
+     *
     public function query($instance)
     {
         $query = Doctrine_Query::create()->from("{$this->_options['className']} o")
-                                         ->leftJoin('o.Upload f')
-                                         ->leftJoin('f.User u')
+                                         ->leftJoin('o.User u')
                                          ->where('o.objectId = ?', $instance->id)
                                          ->orderBy('a.createdTs desc');
 
         return $query;
     }
+     */
 }
