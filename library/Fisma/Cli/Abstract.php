@@ -149,6 +149,17 @@ abstract class Fisma_Cli_Abstract
             fwrite($stderr, $e->getMessage() . "\n\n" . $this->getHelpText()); 
             fclose($stderr);
             return;
+        } catch (Zend_Config_Exception $zce) {
+            // A zend config exception indicates that the application may not be installed properly
+            echo 'The application is not installed correctly.' . PHP_EOL;
+            echo 'Exception ' . get_class($zce) . ' occured: ' . $zce->getMessage() . PHP_EOL;
+            return;
+        } catch (Exception $e) {
+            print get_class($e) . PHP_EOL
+                . $e->getMessage() . PHP_EOL
+                . $e->getTraceAsString() . PHP_EOL;
+
+            return;
         }
 
         // Calculate elapsed time

@@ -44,8 +44,7 @@ $application = new Zend_Application(
 
 Fisma::setAppConfig($application->getOptions());
 Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
-$application->bootstrap('Db');
-$application->bootstrap('SearchEngine');
+$application->bootstrap(array('Db', 'SearchEngine', 'registerLogger'));
 Fisma::setConfiguration(new Fisma_Configuration_Database);
 
 // Warning message if somebody tries to run the bootstrap file directly
