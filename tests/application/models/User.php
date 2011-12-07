@@ -280,11 +280,13 @@ class Test_Application_Models_User extends Test_Case_Unit
         $user->expects($this->once())->method('getAuditLog')->will($this->returnValue($mockAuditLog));
 
         CurrentUser::setInstance($user);
+        $exceptionCaught = false;
         try {
             $user->lockAccount('manual');
-        } catch (Doctrine_Connection_Sqlite_Exception $e) {
-            $this->assertTrue(true); //database called as expected
+        } catch(Doctrine_Connection_Sqlite_Exception $e) {
+            $exceptionCaught = true;
         }
+        $this->assertTrue($exceptionCaught);
         CurrentUser::setInstance(null);
     }
 
@@ -303,11 +305,13 @@ class Test_Application_Models_User extends Test_Case_Unit
         $user->expects($this->once())->method('getAuditLog')->will($this->returnValue($mockAuditLog));
 
         CurrentUser::setInstance(null);
+        $exceptionCaught = false;
         try {
             $user->lockAccount('manual');
         } catch(Doctrine_Connection_Sqlite_Exception $e) {
-            $this->assertTrue(true); //database called as expected
+            $exceptionCaught = true;
         }
+        $this->assertTrue($exceptionCaught);
     }
 
     /**
