@@ -4,6 +4,12 @@ Upload:
         fileName:
             type: string(255)
             comment: Name of the uploaded file
+        fileHash:
+            type: char(40)
+            comment: SHA-1 hash of the uploaded file
+        uploadIp:
+            type: string(39)
+            comment: The IP address from which the file is uploaded
         userId:
             type: integer
             comment: Foreign key to the user who uploaded this file

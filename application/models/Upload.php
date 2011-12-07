@@ -26,5 +26,96 @@
  */
 class Upload extends BaseUpload
 {
+    /**
+     * Construct an upload from the HTTP Request File info array
+     * 
+     * @param mixed $file The array mapped from HTTP Request File info
+     * 
+     */
+    public function __construct($file)
+    {
+        $fm = Zend_Registry::get('fileManager');
+        $hash = $fm->store($file['tmp_name']);
+
+        $this->fileName = $file['name'];
+        $this->fileHash = $hash;
+        $this->userId = CurrentUser::getInstance()->id;
+        $this->uploadIp = $_SERVER['REMOTE_ADDR'];
+
+        $this->save();
+    }
+
+    /**
+     * Get a URL for this file's icon
+     * 
+     * The icon is derived from the file extension
+     * 
+     * @return string
+     */
+    public function getIconUrl()
+    {
+        $pi = pathinfo($this->fileName);
+        $extension = (!empty($pi['extension'])) ? strtolower($pi['extension']) : '';
+        $imagePath = Fisma::getPath('image');
+    
+        if (file_exists("$imagePath/mimetypes/$extension.png")) {
+            return "/images/mimetypes/$extension.png";
+        } else {
+            return "/images/mimetypes/unknown.png";
+        }
+    }
+    
+    /**
+     * Get the size of the file and display it in human-friendly form
+     * 
+     * E.g. 1.2M or 4.7K
+     * 
+     * @return string
+     */
+    public function getDisplayFileSize()
+    {
+        $fm = Zend_Registry::get('fileManager');
+        $fileSize = $fm->getFileSize($this->fileHash);
+
+        if ($fileSize < 1024) {
+            $size = $fileSize;
+            $units = 'bytes';
+        } elseif ($fileSize < 1048576) {
+            $size = sprintf("%.1f", $fileSize / 1024);
+            $units = 'KB';
+        } elseif ($fileSize < 1073741824) {
+            $size = sprintf("%.1f", $fileSize / 1048576);
+            $units = 'MB';
+        } else {
+            $size = sprintf("%.1f", $fileSize / 1073741824);
+            $units = 'GB';
+        }
+
+        return "$size $units";
+    }
+
+    /**
+     * Send a file to the user
+     * 
+     * This method fulfills an HTTP request by setting the appropriate headers and then streaming the binary data
+     * to the user's browser
+     * 
+     * @return void
+     */
+    public function send()
+    {
+        $fm = Zend_Registry::get('fileManager'); 
+
+        $mimeType = $fm->getMimeType($this->fileHash);
+        header("Content-Type: $mimeType", true);
+        header('Content-Disposition: attachment; filename="' . basename($this->fileName) . '"', true);
+        header('Expires: 0', true);
+        header('Cache-Control: none', true);
+        header('Pragma: none', true);
+        $fileSize = $fm->getFileSize($this->fileHash);
+        header("Content-Length: $fileSize", true);
+
+        $fm->stream($this->fileHash);
+    }
 
 }
