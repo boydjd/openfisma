@@ -34,7 +34,7 @@ class IrStepTable extends Fisma_Doctrine_Table
      * @param int $position   Position in workflow where the gap should be created
      * @return Doctrine_Query
      */
-    public function openGapQuery($workflowId, $position)
+    public function openGapQr($workflowId, $position)
     {
         $openGapQuery = Doctrine_Query::create()->update('IrStep irstep')
                                                 ->set('irstep.cardinality', 'irstep.cardinality + 1')
@@ -50,7 +50,7 @@ class IrStepTable extends Fisma_Doctrine_Table
      * @param int $position   Position of the gap to be closed.
      * @return Doctrine_Query
      */
-    public static function closeGapQuery($workflowId, $position)
+    public static function clsGapQr($workflowId, $position)
     {
         $closeGapQuery = Doctrine_Query::create()->update('IrStep irstep')
                                                  ->set('irstep.cardinality', 'irstep.cardinality - 1')

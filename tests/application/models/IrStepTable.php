@@ -36,7 +36,7 @@ class Test_Application_Models_IrStepTable extends Test_Case_Unit
      */
     public function testOpenGapQuery()
     {
-        $query = Doctrine::getTable('IrStep')->openGapQuery(1, 1)->getDql();
+        $query = Doctrine::getTable('IrStep')->openGapQr(1, 1)->getDql();
         $expectedQuery = 'SET irstep.cardinality = irstep.cardinality + 1';
         $this->assertContains($expectedQuery, $query);
     }
@@ -48,7 +48,7 @@ class Test_Application_Models_IrStepTable extends Test_Case_Unit
      */
     public function testCloseGapQuery()
     {
-        $query = Doctrine::getTable('IrStep')->closeGapQuery(1, 1)->getDql();
+        $query = Doctrine::getTable('IrStep')->clsGapQr(1, 1)->getDql();
         $expectedQuery = 'SET irstep.cardinality = irstep.cardinality - 1';
         $this->assertContains($expectedQuery, $query);
     }
