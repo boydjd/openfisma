@@ -5,7 +5,8 @@ Upload:
             type: string(255)
             comment: Name of the uploaded file
         fileHash:
-            type: char(40)
+            type: string(40)
+            fixed: true
             comment: SHA-1 hash of the uploaded file
         uploadIp:
             type: string(39)

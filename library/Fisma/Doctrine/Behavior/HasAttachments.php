@@ -41,20 +41,20 @@ class Fisma_Doctrine_Behavior_HasAttachments extends Doctrine_Template
     }
         
     /**
-     * Define a relation to the generated artifacts class
+     * Define a relation to the Upload class
      * 
      * @return void
      */
     public function setUp()
     {
-        $foreignClassName = $this->getTable()->getComponentName() . 'Upload';
+        $baseClassName = $this->getTable()->getComponentName();
+        $foreignClassName = $baseClassName . 'Upload';
 
         $this->hasMany(
             'Upload as Uploads',
             array(
                 'local' => 'id',
-                'foreign' => 'objectId'
-                'foreignAlias' => $this->getTable()->getComponentName() . 's',
+                'foreign' => 'objectId',
                 'refClass' => $foreignClassName
             )
         );

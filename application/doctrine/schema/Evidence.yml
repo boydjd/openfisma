@@ -27,3 +27,4 @@ Evidence:
                 type: timestamp
             updated:
                 disabled: true
+        Fisma_Doctrine_Behavior_HasAttachments: true

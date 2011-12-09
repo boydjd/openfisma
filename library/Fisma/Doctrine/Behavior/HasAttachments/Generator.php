@@ -48,14 +48,15 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
      * Set up relations
      * 
      * @return void
-     *
+     */
     public function buildRelation()
     {
-        $this->buildForeignRelation('Upload');
-        $this->buildLocalRelation();
-    }
-     */
-    
+        //$this->buildForeignRelation('Uploads');
+        //$this->buildLocalRelation();
+
+   }
+     
+
     /**
      * Table definition
      * 
@@ -63,38 +64,58 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
      */
     public function setTableDefinition()
     {
-        // Foreign key to the object which this attachment belongs to
+        /*$this->hasColumn(
+            'id',
+            'integer',
+            null,
+            array(
+                'primary' => true,
+                'autoincrement' => true
+            )
+        );*/
+
+        // Foreign key to the Upload associated with this Attachment entry
         $this->hasColumn(
             'objectId', 
             'integer', 
             null, 
             array(
-                'primary' => true,
-                'comment' => 'The parent object to which the attachment belongs'
+                'comment' => 'The uploaded file',
+                'primary' => true
             )
         );
         
-        // Foreign key to the Upload associated with this Attachment entry
+        // Foreign key to the object which this attachment belongs to
         $this->hasColumn(
-            'uploadId', 
+            'id', 
             'integer', 
             null, 
             array(
-                'primary' => true,
-                'comment' => 'The uploaded file'
+                'comment' => 'The parent object to which the attachment belongs',
+                'primary' => true
             )
         );
+
     }
     
     /**
      * Set up parent object and user relations
      * 
      * @return void
-     *
+     */
     public function setUp()
     {
+        // Relation for the upload class
+         $this->hasOne(
+            'Upload as Upload',
+            array(
+                'local' => 'objectId',
+                'foreign' => 'id',
+                'owningSide' => true
+            )
+        );
     }
-     */
+         
 
     /**
      * Attach an attachment to an object
