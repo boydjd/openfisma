@@ -120,7 +120,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                              ->execute();
 
         if (0 == count($this->_samplePocs)) {
-            throw new Fisma_Exception("Cannot generate sample data because the application has no POCs.");
+            throw new Fisma_Zend_Exception_User("Cannot generate sample data because the application has no POCs.");
         }        
 
         // Get the evaluation ID for MSA

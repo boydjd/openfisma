@@ -40,7 +40,7 @@ class Version127 extends Doctrine_Migration_Base
                                        ->findByDql('WHERE resource = ? AND action = ?', $adminNotificationParams);
 
         if (count($adminNotificationPrivileges) != 1) {
-            throw new Fisma_Exception("Not able to find the admin notification privilege.");
+            throw new Fisma_Zend_Exception_User("Not able to find the admin notification privilege.");
         }
 
         $adminNotificationPrivilege = $adminNotificationPrivileges[0];

@@ -92,7 +92,8 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
                                       ->execute();
 
         if (0 == count($this->_sampleOrganizations)) {
-            throw new Fisma_Exception("Cannot generate sample data because the application has no organizations.");
+            throw new Fisma_Zend_Exception_User("Cannot generate sample data because the application has no"
+                . " organizations.");
         }
 
         // Get some users
@@ -103,7 +104,7 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
                               ->execute();
 
         if (0 == count($this->_sampleUsers)) {
-            throw new Fisma_Exception("Cannot generate sample data because the application has no users.");
+            throw new Fisma_Zend_Exception_User("Cannot generate sample data because the application has no users.");
         }
 
         // Get some subcategories
@@ -113,7 +114,8 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
                                       ->execute();
 
         if (0 == count($this->_sampleSubCategories)) {
-            throw new Fisma_Exception("Cannot generate sample data because the application has no IR categories.");
+            throw new Fisma_Zend_Exception_User("Cannot generate sample data because the application has no"
+                . " IR categories.");
         }
 
         // Some enumerations to randomly pick values from
