@@ -1,0 +1,7 @@
+CREATE TABLE `<?php echo $this->escape($this->tableName, 'none'); ?>` (
+<?php foreach ($this->columns as $columnName => $columnDefinition): ?>
+    `<?php echo $this->escape($columnName, 'none'); ?>` <?php echo $this->escape($columnDefinition, 'none'); ?>,
+<?php endforeach; ?>
+
+    PRIMARY KEY (`<?php echo $this->escape($this->primaryKey, 'none'); ?>`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci

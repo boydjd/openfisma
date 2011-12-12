@@ -1,0 +1,25 @@
+Migration:
+    columns:
+        majorVersion:
+            type: integer
+            notnull: true
+            comment: The major version associated with the migration. E.g. 2 in 2.17.0.
+        minorVersion:
+            type: integer
+            notnull: true
+            comment: The minor version associated with the migration. E.g. 17 in 2.17.0.
+        tagNumber:
+            type: integer
+            notnull: true
+            comment: The tag number associated with the migration. E.g. 0 in 2.17.0.
+        name:
+            type: string(255)
+            notnull: true
+            notblank: true
+            comment: The name of the migration.
+        startedTs: 
+            type: timestamp
+            comment: The date and time this migration was started, or null if not started.
+        completedTs: 
+            type: timestamp
+            comment: The date and time this migration was completed, or null if not completed.

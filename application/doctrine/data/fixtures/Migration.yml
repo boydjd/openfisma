@@ -1,0 +1,8 @@
+Migration:
+    # This is just a sample, since we don't have any migrations yet. If you're the first one to add a migration,
+    # then remove this comment before you add your own migration to the end of the file.
+    # add_foo_table:
+    #     majorVersion: 2
+    #     minorVersion: 17
+    #     tagNumber: 0
+    #     name: AddFooTable

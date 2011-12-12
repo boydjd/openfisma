@@ -1,3 +1,0 @@
-MigrationVersion:
-    columns:
-        version: integer
