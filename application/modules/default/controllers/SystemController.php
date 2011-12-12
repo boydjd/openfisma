@@ -289,7 +289,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'version' => $document->version,
                 'description' => $this->view->textToHtml($this->view->escape($document->description)),
                 'username' => $this->view->userInfo($document->User->username),
-                'date' => $document->updated_at,
+                'date' => $document->['updated_at'],
                 'view' => "<a href=/system-document/view/id/{$document->id}>Version History</a>"
             );
         }
