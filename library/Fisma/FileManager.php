@@ -27,10 +27,24 @@
 class Fisma_FileManager
 {
     /**
+     * Base directory of storage.
+     */
+    private $_baseDir;
+
+    /**
+     * finfo instance
+     * 
+     * @var finfo
+     */
+    private $_finfo;
+
+    /**
      * @param String $baseDir Base storage directory
      */
-    public function __construct($baseDir)
+    public function __construct($baseDir, finfo $finfo)
     {
+        $this->_baseDir = $baseDir;
+        $this->_finfo = $finfo;
     }
 
     /**
@@ -39,6 +53,27 @@ class Fisma_FileManager
      */
     public function store($filePath)
     {
+        $sha1 = $this->_sha1File($filePath);
+        if (!$sha1) {
+            throw new Fisma_FileManager_Exception('Unable to compute SHA! sum of source file: ' . $filePath);
+        }
+        $path = substr($sha1, 0, 2);
+        $name = substr($sha1, 2);
+        $destDir = $this->_baseDir . DIRECTORY_SEPARATOR . $path;
+        $dest = $destDir . DIRECTORY_SEPARATOR . $name;
+        if (!$this->_fileExists($destDir)) {
+            $mkdirOk = $this->_mkdir($destDir);
+            if (!$mkdirOk) {
+                throw new Fisma_FileManager_Exception('Unable to create directory: ' . $destDir);
+            }
+        }
+        if (!$this->_fileExists($dest)) {
+            $copyOk = $this->_copy($filePath, $dest);
+            if (!$copyOk) {
+                throw new Fisma_FileManager_Exception('Unable to copy to storage location: ' . $dest);
+            }
+        }
+        return $sha1;
     }
 
     /**
@@ -48,13 +83,115 @@ class Fisma_FileManager
      */
     public function copyTo($hash, $destination)
     {
+        $source = $this->_hashPath($hash);
+        if (!$this->_fileExists($source)) {
+            throw new Fisma_FileManager_Exception(
+                'Unable to copy file from storage, requested file does not exist: ' . $source
+            );
+        }
+        $copyOk = $this->_copy($source, $destination);
+        if (!$copyOk) {
+            throw new Fisma_FileManager_Exception('Unable to copy file to destination: ' . $destination);
+        }
     }
 
     /**
      * @param $hash Hash of file to stream
+     * @param string Optional filename for content-disposition, attachment.
      * @return void
      */
-    public function stream($hash)
+    public function stream($hash, $filename = null)
     {
+        $source = $this->_hashPath($hash);
+        if (!$this->_fileExists($source)) {
+            throw new Fisma_FileManager_Exception('Cannot stream, requested file does not exist: ' . $source);
+        }
+
+        $this->_header('Content-type: ' . $this->_finfo->file($source));
+        if (!empty($filename)) {
+            $this->_header('Content-Disposition: attachment; filename="' . $filename . '"');
+        }
+        $this->_readfile($source);
+    }
+
+    /**
+     * Helper method to get a full path in storage for a SHA1 hash.
+     *
+     * @param string $hash SHA1 Hash for which we're providing a path
+     * @return string Path string
+     */
+    protected function _hashPath($hash)
+    {
+        $path = substr($hash, 0, 2);
+        $name = substr($hash, 2);
+        return implode(array($this->_baseDir, $path, $name), DIRECTORY_SEPARATOR);
+    }
+
+    /**
+     * Wrapping function for file-related function sha1_file()
+     * 
+     * @param string $filename 
+     * @return string
+     */
+    protected function _sha1File($filename)
+    {
+        return sha1_file($filename);
+    }
+
+    /**
+     * Wrapper for file-related function file_exists()
+     * 
+     * @param string $filename 
+     * @return bool
+     */
+    protected function _fileExists($filename)
+    {
+        return file_exists($filename);
+    }
+
+    /**
+     * Wrapper for file-related function mkdir()
+     * 
+     * @param string $directory 
+     * @return bool
+     */
+    protected function _mkdir($directory)
+    {
+        return mkdir($directory, 0777, true);
+    }
+
+    /**
+     * Wrapper for file-related function copy()
+     * 
+     * @param string $source 
+     * @param string $dest 
+     * @return bool
+     */
+    protected function _copy($source, $dest)
+    {
+        return copy($source, $dest);
+    }
+
+    /**
+     * Wrapper for file-related function readfile()
+     * 
+     * @param string $filename 
+     * @return int
+     */
+    protected function _readfile($filename)
+    {
+        return readfile($filename);
+    }
+
+    /**
+     * Wrapper for system function header()
+     * 
+     * @param string $string 
+     * @param bool $replace 
+     * @return void
+     */
+    protected function _header($string, $replace = false)
+    {
+        header($string, $replace);
     }
 }
