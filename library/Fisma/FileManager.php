@@ -100,18 +100,33 @@ class Fisma_FileManager
      * @param string Optional filename for content-disposition, attachment.
      * @return void
      */
-    public function stream($hash, $filename = null)
+    public function stream($hash)
     {
         $source = $this->_hashPath($hash);
         if (!$this->_fileExists($source)) {
             throw new Fisma_FileManager_Exception('Cannot stream, requested file does not exist: ' . $source);
         }
 
-        $this->_header('Content-type: ' . $this->_finfo->file($source));
-        if (!empty($filename)) {
-            $this->_header('Content-Disposition: attachment; filename="' . $filename . '"');
-        }
         $this->_readfile($source);
+    }
+
+    /**
+     * Determine the MIME Type of a file.
+     *
+     * Currently employing the FileInfo library provided by _finfo
+     * 
+     * @param $hash Hash of the file to determine MIME type for
+     * 
+     * @return string
+     */
+    public function getMimeType($hash)
+    {
+        $source = $this->_hashPath($hash);
+        if (!$this->_fileExists($source)) {
+            throw new Fisma_FileManager_Exception('Cannot determine MIME, requested file does not exist: ' . $source);
+        }
+
+        return $this->_finfo->file($source);
     }
 
     /**
@@ -181,17 +196,5 @@ class Fisma_FileManager
     protected function _readfile($filename)
     {
         return readfile($filename);
-    }
-
-    /**
-     * Wrapper for system function header()
-     * 
-     * @param string $string 
-     * @param bool $replace 
-     * @return void
-     */
-    protected function _header($string, $replace = false)
-    {
-        header($string, $replace);
     }
 }
