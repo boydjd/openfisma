@@ -96,21 +96,6 @@ class Fisma_FileManager
     }
 
     /**
-     * @param $hash Hash of file to stream
-     * @param string Optional filename for content-disposition, attachment.
-     * @return void
-     */
-    public function stream($hash)
-    {
-        $source = $this->_hashPath($hash);
-        if (!$this->_fileExists($source)) {
-            throw new Fisma_FileManager_Exception('Cannot stream, requested file does not exist: ' . $source);
-        }
-
-        $this->_readfile($source);
-    }
-
-    /**
      * Determine the MIME Type of a file.
      *
      * Currently employing the FileInfo library provided by _finfo
@@ -127,6 +112,34 @@ class Fisma_FileManager
         }
 
         return $this->_finfo->file($source);
+    }
+
+    /**
+     * @param string $hash Hash of file to stream
+     * @return void
+     */
+    public function stream($hash)
+    {
+        $source = $this->_hashPath($hash);
+        if (!$this->_fileExists($source)) {
+            throw new Fisma_FileManager_Exception('Cannot stream, requested file does not exist: ' . $source);
+        }
+
+        $this->_readfile($source);
+    }
+
+    /**
+     * @param string $hash Hash of file
+     * @return int
+     */
+    public function getFileSize($hash)
+    {
+        $source = $this->_hashPath($hash);
+        if (!$this->_fileExists($source)) {
+            throw new Fisma_FileManager_Exception('Cannot stream, requested file does not exist: ' . $source);
+        }
+
+        return $this->_filesize($source);
     }
 
     /**
@@ -196,5 +209,16 @@ class Fisma_FileManager
     protected function _readfile($filename)
     {
         return readfile($filename);
+    }
+
+    /**
+     * Wrapper for file-related function filesize()
+     * 
+     * @param string $filename 
+     * @return int
+     */
+    protected function _filesize($filename)
+    {
+        return filesize($filename);
     }
 }

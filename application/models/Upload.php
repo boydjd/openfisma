@@ -95,29 +95,4 @@ class Upload extends BaseUpload
 
         return "$size $units";
     }
-
-    /**
-     * Send a file to the user
-     * 
-     * This method fulfills an HTTP request by setting the appropriate headers and then streaming the binary data
-     * to the user's browser
-     * 
-     * @return void
-     */
-    public function send()
-    {
-        $fm = Zend_Registry::get('fileManager'); 
-
-        $mimeType = $fm->getMimeType($this->fileHash);
-        header("Content-Type: $mimeType", true);
-        header('Content-Disposition: attachment; filename="' . basename($this->fileName) . '"', true);
-        header('Expires: 0', true);
-        header('Cache-Control: none', true);
-        header('Pragma: none', true);
-        $fileSize = $fm->getFileSize($this->fileHash);
-        header("Content-Length: $fileSize", true);
-
-        $fm->stream($this->fileHash);
-    }
-
 }
