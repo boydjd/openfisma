@@ -14527,15 +14527,15 @@ Fisma.TableFormat = {
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(from);
         } else {
             // This is the TOTAL column
-            var yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            var yesterdayString = yesterday.getFullYear();
-            yesterdayString += '-';
-            yesterdayString += (yesterday.getMonth() + 1);
-            yesterdayString += '-';
-            yesterdayString += yesterday.getDate();
+            var today = new Date();
+            today.setDate(today.getDate()) ;
+            var todayString = today.getFullYear();
+            todayString += '-';
+            todayString += (today.getMonth() + 1);
+            todayString += '-';
+            todayString += today.getDate();
 
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(yesterdayString);
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(todayString);
         }
 
         elCell.innerHTML = '<a href="' + overdueFindingSearchUrl + '">' + oData + "</a>";
