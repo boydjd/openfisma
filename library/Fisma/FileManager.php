@@ -136,7 +136,7 @@ class Fisma_FileManager
     {
         $source = $this->_hashPath($hash);
         if (!$this->_fileExists($source)) {
-            throw new Fisma_FileManager_Exception('Cannot stream, requested file does not exist: ' . $source);
+            throw new Fisma_FileManager_Exception('Cannot get file size, requested file does not exist: ' . $source);
         }
 
         return $this->_filesize($source);

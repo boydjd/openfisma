@@ -41,17 +41,17 @@ class Fisma_Zend_Controller_Action_Helper_DownloadAttachment extends Zend_Contro
         $this->getControllerAction()->getHelper('layout')->disableLayout(true);
         $this->getControllerAction()->getHelper('viewRenderer')->setNoRender();
 
-        $mimeType = $fm->getMimeType($upload->fileHash);
+        $mimeType = $fm->getMimeType($hash);
         // @TODO Make these Zend Response class calls.
         header("Content-Type: $mimeType", true);
-        header('Content-Disposition: attachment; filename="' . urlencode($upload->fileName) . '"', true);
+        header('Content-Disposition: attachment; filename="' . urlencode($filename) . '"', true);
         header('Expires: 0', true);
         header('Cache-Control: none', true);
         header('Pragma: none', true);
-        $fileSize = $fm->getFileSize($upload->fileHash);
+        $fileSize = $fm->getFileSize($hash);
         header("Content-Length: $fileSize", true);
 
-        $fm->stream($upload->fileHash);
+        $fm->stream($hash);
     }
     
     /**
