@@ -27,24 +27,49 @@
 class Upload extends BaseUpload
 {
     /**
+     * Extensions which should not be attached
+     * 
+     * @var array
+     */
+    private $_extensionsBlackList = array(
+        /* CSS        */ 'css',
+        /* Executable */ 'app', 'exe', 'com',
+        /* HTML       */ 'htm', 'html', 'xhtml',
+        /* Java       */ 'class',
+        /* Javascript */ 'js',
+        /* PHP        */ 'php', 'phtml', 'php3', 'php4', 'php5',
+    );
+    
+    /**
+     * MIME types which should not be attached
+     * 
+     * @var array
+     */
+     private $_mimeTypeBlackList = array(
+         /* CSS        */ 'text/css',
+         /* HTML       */ 'text/html', 'application/xhtml+xml',
+         /* Javascript */ 'application/x-javascript', 'text/javascript', 'application/ecmascript',
+     );
+     
+     /**
      * Create an upload from the HTTP Request File info array
      * 
      * @param mixed $file The array mapped from HTTP Request File info
      * @return Upload
      */
-    public static function create($file)
+    public function instantiate($file)
     {
-        $upload = new Upload();
-        
+        $this->checkFileBlackList($file);
+
         $fm = Zend_Registry::get('fileManager');
         $hash = $fm->store($file['tmp_name']);
 
-        $upload->fileName = $file['name'];
-        $upload->fileHash = $hash;
-        $upload->userId = CurrentUser::getInstance()->id;
-        $upload->uploadIp = $_SERVER['REMOTE_ADDR'];
-
-        $upload->save();
+        $this->fileName = $file['name'];
+        $this->fileHash = $hash;
+        $this->userId = CurrentUser::getInstance()->id;
+        $this->uploadIp = $_SERVER['REMOTE_ADDR'];
+        
+        return $this;
     }
 
     /**
@@ -94,5 +119,26 @@ class Upload extends BaseUpload
         }
 
         return "$size $units";
+    }
+    
+    /**
+     * Check the specified file against the blacklist to see if it is disallowed
+     * 
+     * @param array $file File information in array format as specified in the $_FILES super-global
+     * @throw Fisma_Zend_Exception_User If the user has specified a file type which is black listed
+     */
+    public function checkFileBlackList($file)
+    {
+        // Check file extension
+        $fileExtension = pathinfo($file['name'], PATHINFO_EXTENSION);
+
+        if (in_array($fileExtension, $this->_extensionsBlackList)) {
+            throw new Fisma_Zend_Exception_User("This file type (.$fileExtension) is not allowed.");
+        }
+
+        // Check mime type
+        if (in_array($file['type'], $this->_mimeTypeBlackList)) {
+            throw new Fisma_Zend_Exception_User("This file type ({$file['type']}) is not allowed.");
+        }
     }
 }

@@ -204,9 +204,9 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
     }
 
     /**
-     * @todo: short description.
+     * Test the store() method when making directories fails
      * 
-     * @return @todo
+     * @return void
      */
     public function testStpreMkdirFail()
     {
@@ -226,6 +226,27 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
         $this->setExpectedException('Fisma_FileManager_Exception');
         $fm->store('temp_file'); 
 
+    }
+	
+    /**
+     * Test the getFileSize() method
+     *
+     * @return void
+     */
+    public function testGetFileSize()
+    {
+        $fm = $this->getMock(
+            'Fisma_FileManager',
+            array(
+                '_fileExists',
+                '_filesize'
+            ),
+            array($this->BASE_DIR, $this->fi)
+        );
+        $fm->expects($this->any())->method('_fileExists')->will($this->onConsecutiveCalls(true, false));
+        $fm->expects($this->once())->method('_filesize')->will($this->returnValue(0));
+        
+        $this->assertEquals(0, $fm->getFileSize($this->hash));
     }
 }
 
