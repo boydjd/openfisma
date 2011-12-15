@@ -324,6 +324,18 @@ class PocController extends Fisma_Zend_Controller_Action_Object
                                 $stack[$j-1]['children'][$i] = $item;
                                 $stack[] = &$stack[$j-1]['children'][$i];
                                 break;
+                            } elseif ($node->getNode()->getLevel() > 1) {
+
+                                // Find the node's organization parent when its parent is a system. 
+                                $parent = $this->_getOrganizationParent($node->getNode());
+
+                                if ($parent && $parent->name == $stack[$j-1]['name']) {
+                                    // Add node to parent
+                                    $i = count($stack[$j-1]['children']);
+                                    $stack[$j-1]['children'][$i] = $item;
+                                    $stack[] = &$stack[$j-1]['children'][$i];
+                                    break;
+                                }
                             }
                         }
                     }
@@ -337,6 +349,26 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         }
 
         return $trees;
+    }
+
+    /**
+     * Get the nearest ancestor with organization type. 
+     *
+     * @param Doctrine_Record $node The nested node.
+     * @return mixed Doctrine_Record if found, otherwise false.
+     */
+    private function _getOrganizationParent($node)
+    {
+        $ancestors = $node->getAncestors();
+        if ($ancestors) {
+            for ($i = count($ancestors) - 1; $i >= 0; $i--) { 
+                if (is_null($ancestors[$i]->systemId)) {
+                    return $ancestors[$i];
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
