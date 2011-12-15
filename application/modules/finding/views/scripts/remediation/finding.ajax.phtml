@@ -135,13 +135,7 @@
             <tr>
                 <td>On Time:</td>
                 <td>                    
-                <?php if (is_null($finding->nextDueDate)): ?>
-                    N/A
-                <?php elseif (time() <= strtotime($finding->nextDueDate)): ?>
-                    On Time
-                <?php else: ?>
-                    Overdue
-                <?php endif; ?>
+                <?php echo $this->escape($this->onTimeState); ?>
                 </td>
             </tr>
             <?php 
