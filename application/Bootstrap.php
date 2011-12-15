@@ -250,10 +250,13 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
      * Initialize the File Manager
      *
      * @access protected
-     * @return Fisma_FileManager
+     * @return void
      */
     protected function _initFileManager()
     {
-        return new Fisma_FileManager(Fisma::getPath('fileStorage'), new finfo(FILEINFO_MIME));
+        Zend_Registry::set(
+            'fileManager',
+            new Fisma_FileManager(Fisma::getPath('fileStorage'), new finfo(FILEINFO_MIME))
+        );
     }
 }
