@@ -276,15 +276,9 @@ Fisma.TableFormat = {
         } else if (from) {
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(from);
         } else {
-            // This is the TOTAL column
-            var today = new Date();
-            today.setDate(today.getDate()) ;
-            var todayString = today.getFullYear();
-            todayString += '-';
-            todayString += (today.getMonth() + 1);
-            todayString += '-';
-            todayString += today.getDate();
 
+            // This is the TOTAL column
+            var todayString = $P.date('Y-m-d');
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(todayString);
         }
 
