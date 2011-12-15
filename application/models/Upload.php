@@ -66,7 +66,7 @@ class Upload extends BaseUpload
 
         $this->fileName = $file['name'];
         $this->fileHash = $hash;
-        $this->userId = CurrentUser::getInstance()->id;
+        $this->User = CurrentUser::getInstance();
         $this->uploadIp = $_SERVER['REMOTE_ADDR'];
         
         return $this;
