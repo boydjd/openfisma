@@ -46,7 +46,7 @@ class Fisma_Zend_Controller_Action_Helper_DownloadAttachment extends Zend_Contro
         header("Content-Type: $mimeType", true);
         header('Content-Disposition: attachment; filename="' . urlencode($filename) . '"', true);
         header('Expires: 0', true);
-        header('Cache-Control: none', true);
+        header('Cache-Control: no-cache', true);
         header('Pragma: none', true);
         $fileSize = $fm->getFileSize($hash);
         header("Content-Length: $fileSize", true);
