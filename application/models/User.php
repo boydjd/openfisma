@@ -769,10 +769,12 @@ class User extends BaseUser
      * @return mixed The roles of user
      * @deprecated pending on the removal of execution out of model class
      */
-    public function getRoles($hydrationMode = Doctrine::HYDRATE_SCALAR, $userRolesQr = null)
+    public function getRoles($hydrationMode = Doctrine::HYDRATE_SCALAR, $userRolesQuery = null)
     {
-        $userRolesQr = (isset($userRolesQr)) ? $userRolesQr : Doctrine::getTable('User')->getRolesQuery($hydrationMode);
-        $userRolesResult = $userRolesQr->execute();
+        $userRolesQuery = (isset($userRolesQuery))
+                        ? $userRolesQuery
+                        : Doctrine::getTable('User')->getRolesQuery($hydrationMode);
+        $userRolesResult = $userRolesQuery->execute();
 
         return $userRolesResult;
     }
