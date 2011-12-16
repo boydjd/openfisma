@@ -9,18 +9,6 @@ SystemDocument:
             type: unique
     
     columns:
-        createdTs: timestamp
-        mimeType:
-            type: string(255)
-            comment: Store the MIME type of this uploaded file
-        fileName:
-            type: string(255)
-            extra:
-                notify: true
-            comment: Name of the uploaded file
-        size:
-            type: integer
-            comment: Size of the file in bytes
         description:
             type: string
             comment: A place for the user to enter version comments
@@ -28,9 +16,7 @@ SystemDocument:
         documentTypeId:
             type: integer
             comment: Foreign key to a table which describes what type of document this is, e.g. system security plan, etc.
-        userId:
-            type: integer
-            comment: Foreign key to the user who uploaded this file
+        uploadId: integer
         systemId:
             type: integer
             comment: Foreign key to the system which this file belongs to
@@ -40,10 +26,9 @@ SystemDocument:
             local: documentTypeId
             foreign: id
             foreignAlias: Uploads
-        User:
-            local: userId
+        Upload:
+            local: uploadId
             foreign: id
-            foreignAlias: Uploads
         System:
             local: systemId
             foreign: id
@@ -55,7 +40,3 @@ SystemDocument:
             className: %CLASS%Version
             auditLog: true
             deleteVersions: true
-        Timestampable:
-            created:
-                name: createdTs
-                type: timestamp

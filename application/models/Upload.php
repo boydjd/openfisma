@@ -93,6 +93,16 @@ class Upload extends BaseUpload
     }
     
     /**
+     * Get the size of the file
+     * 
+     * @return int
+     */
+    public function getFileSize()
+    {
+        return Zend_Registry::get('fileManager')->getFileSize($this->fileHash);
+    }
+    
+    /**
      * Get the size of the file and display it in human-friendly form
      * 
      * E.g. 1.2M or 4.7K
@@ -101,8 +111,7 @@ class Upload extends BaseUpload
      */
     public function getDisplayFileSize()
     {
-        $fm = Zend_Registry::get('fileManager');
-        $fileSize = $fm->getFileSize($this->fileHash);
+        $fileSize = $this->getFileSize();
 
         if ($fileSize < 1024) {
             $size = $fileSize;

@@ -38,8 +38,8 @@ class Fisma_Zend_Controller_Action_Helper_DownloadAttachment extends Zend_Contro
     public function downloadAttachment($hash, $filename)
     {
         $fm = Zend_Registry::get('fileManager'); 
-        $this->getControllerAction()->getHelper('layout')->disableLayout(true);
-        $this->getControllerAction()->getHelper('viewRenderer')->setNoRender();
+        $this->getActionController()->getHelper('layout')->disableLayout(true);
+        $this->getActionController()->getHelper('viewRenderer')->setNoRender();
 
         $mimeType = $fm->getMimeType($hash);
         // @TODO Make these Zend Response class calls.
