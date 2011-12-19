@@ -224,13 +224,16 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                 } elseif ($f->status == 'EA') {
                     // Create a sample piece of evidence
                     $evidence = new Evidence();
-
-                    $evidence->filename = "sample-file-name.txt";
                     $evidence->Finding = $f;
-                    $evidence->User = $this->_getRandomUser();
-                    
+
+                    $upload = new Upload();
+                    $upload->fileHash = '7022767bf2f83dff89f5df9ea9570fd9ccf2c826';
+                    $upload->fileName = 'sample.png';
+                    $upload->User = $this->_getRandomUser();
+
+                    $evidence->Attachments[] = $upload;
                     $evidence->save();
-                    
+
                     $f->updateDenormalizedStatus();
                     $f->save();
 
