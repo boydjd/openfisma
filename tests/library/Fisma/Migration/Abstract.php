@@ -62,4 +62,40 @@ class Test_Library_Fisma_Migration_Abstract extends Test_Case_Unit
 
         $this->assertEquals($migration->getDb(), $db);
     }
+
+    /**
+     * Test get/set helpers
+     */
+    public function testGetSetHelper()
+    {
+        $db = $this->getMock('Mock_Pdo');
+        $migration = $this->getMockForAbstractClass('Fisma_Migration_Abstract');
+        $migration->setDb($db);
+
+        // Should create a new helper even though we haven't explicitly set one yet.
+        $helper1 = $migration->getHelper();
+
+        $this->assertInstanceOf('Fisma_Migration_Helper', $helper1);
+
+        // Subsequent calls should return the same helper.
+        $this->assertSame($helper1, $migration->getHelper());
+
+        // Try setting a new helper
+        $helper2 = $this->getMock('Fisma_Migration_Helper', array(), array($db));
+        $migration->setHelper($helper2);
+
+        $this->assertNotSame($helper1, $migration->getHelper());
+        $this->assertSame($helper2, $migration->getHelper());
+    }
+
+    /**
+     * A helper cannot be created if the migration doesn't have a database handle.
+     *
+     * @expectedException Fisma_Zend_Exception_Migration
+     */
+    public function testSetHelperWithoutDb()
+    {
+        $migration = $this->getMockForAbstractClass('Fisma_Migration_Abstract');
+        $migration->getHelper();
+    }
 }

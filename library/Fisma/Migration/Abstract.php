@@ -43,6 +43,16 @@ abstract class Fisma_Migration_Abstract
     private $_db;
 
     /**
+     * A reference to a migration helper.
+     *
+     * The migration helper is an instance of Fisma_Migration_Helper that has utility methods for doing common
+     * things that migrations need to do.
+     *
+     * @var Fisma_Migration_Helper
+     */
+    private $_helper;
+
+    /**
      * Run this migration step.
      *
      * @param PDO
@@ -67,7 +77,7 @@ abstract class Fisma_Migration_Abstract
     /**
      * Return the name of this migration.
      *
-     * The name is deteremind by removing the prefix and version number from the class name.
+     * The name is determined by removing the prefix and version number from the class name.
      *
      * @return string
      */
@@ -98,75 +108,31 @@ abstract class Fisma_Migration_Abstract
         return $this->_db;
     }
 
-    /**
-     * Create a view object that can be used to render migration templates, such as SQL query templates.
+   /**
+     * Set the current helper.
      *
-     * @return Fisma_Zend_View
+     * @param Fisma_Migration_Helper $helper
      */
-    protected function _createView()
+    public function setHelper(Fisma_Migration_Helper $helper)
     {
-        $view = new Fisma_Zend_View();
-
-        $view->setScriptPath(Fisma::getPath('migrationViews'))
-             ->setEncoding('utf-8');
-
-        return $view;
+        $this->_helper = $helper;
     }
 
     /**
-     * Create a table.
+     * Get the current helper.
      *
-     * @param string $tableName
-     * @param array $columns Keys are column names and values are the SQL definitions.
-     * @param string $primaryKey This must be one of the key values in $columns.
+     * @return Fisma_Migration_Helper
      */
-    protected function _createTable($tableName, $columns, $primaryKey)
+    public function getHelper()
     {
-        $view = $this->_createView();
+        if (!$this->_helper) {
+            if (!$this->_db) {
+                throw new Fisma_Zend_Exception_Migration("Cannot create a helper until the db is set.");
+            }
 
-        $view->tableName = $tableName;
-        $view->columns = $columns;
-        $view->primaryKey = $primaryKey;
-
-        $createTableSql = $view->render('create_table.phtml');
-
-        $result = $this->_db->exec($createTableSql);
-
-        if ($result === FALSE) {
-            throw new Fisma_Zend_Exception_Migration("Not able to create table ($tableName).");
+            $this->_helper = new Fisma_Migration_Helper($this->_db);
         }
-    }
 
-    /**
-     * Drop the specified table.
-     *
-     * @param string $tableName
-     */
-    protected function _dropTable($tableName)
-    {
-        $statement = $this->getDb()->prepare("DROP TABLE $tableName");
-        $result = $statement->execute();
-
-        if ($result === FALSE) {
-            throw new Fisma_Zend_Exception_Migration("Not able to drop table ($tableName).");
-        }
-    }
-
-    /**
-     * Check whether a table exists with the specified name.
-     *
-     * @param string $tableName
-     * @return bool
-     */
-    protected function _tableExists($tableName)
-    {
-        $statement = $this->getDb()->prepare("SHOW TABLES LIKE :tableName");
-
-        $statement->bindValue('tableName', addcslashes($tableName, '%_'), PDO::PARAM_STR);
-        $statement->execute();
-
-        $result = $statement->fetch(PDO::FETCH_ASSOC);
-
-        return ($result !== FALSE);
+        return $this->_helper;
     }
 }

@@ -52,11 +52,11 @@ class Application_Migration_021700_BootstrapMigration extends Fisma_Migration_Ab
         );
 
 		echo "Creating migration table…\n";
-        $this->_createTable('migration', $columns, 'id');
+        $this->getHelper()->createTable('migration', $columns, 'id');
 
-		if ($this->_tableExists('migration_version')) {
+		if ($this->getHelper()->tableExists('migration_version')) {
 			echo "Dropping doctrine migration_version table…\n";
-	        $this->_dropTable('migration_version');
+	        $this->getHelper()->dropTable('migration_version');
 		} else {
 			echo "Doctrine migration_version table not found… skipping.\n";
 		}

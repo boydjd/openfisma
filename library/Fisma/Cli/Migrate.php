@@ -341,7 +341,9 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
                 $migrationClass = Fisma_Migration_Abstract::CLASS_NAME_PREFIX
                                 . "{$versionString}_{$migrationName}";
 
-                $migrationSet->add(new $migrationClass);
+                $migrationInstance = new $migrationClass();
+                $migrationInstance->setDb($this->_db);
+                $migrationSet->add($migrationInstance);
             }
         }
 
