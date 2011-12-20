@@ -4,3 +4,8 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: BootstrapMigration
+    021700_consolidate_file_upload:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: ConsolidateFileUpload

@@ -135,4 +135,15 @@ abstract class Fisma_Migration_Abstract
 
         return $this->_helper;
     }
+
+    /**
+     * Provides an instance of the FileManager
+     *
+     * @return Fisma_FileManager
+     */
+    public function getFileManager()
+    {
+        return new Fisma_FileManager(Fisma::getPath('fileStorage'), new finfo(FILEINFO_MIME));
+    }
+
 }
