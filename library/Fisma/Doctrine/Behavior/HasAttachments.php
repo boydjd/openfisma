@@ -63,13 +63,16 @@ class Fisma_Doctrine_Behavior_HasAttachments extends Doctrine_Template
     }
 
     /**
-     * @todo: short description.
+     * A helper method to associate an attachment with the host object
      * 
-     * @return @todo
+     * @param mixed $file The array mapped from HTTP $_FILES
+     * @param string $comment Optional. The comment of the attachment
+     * @return void
      */
-    public function attach($file)
+    public function attach($file, $comment = null)
     {
         $upload = new Upload();
+        $upload->description = $comment;
         $upload->instantiate($file);
 
         $instance = $this->getInvoker();

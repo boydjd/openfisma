@@ -14,13 +14,16 @@ Upload:
         userId:
             type: integer
             comment: Foreign key to the user who uploaded this file
-    
+        description:
+            type: string
+            comment: A comment associated with the upload provided by user
+
     relations:
         User:
             local: userId
             foreign: id
             foreignAlias: Uploads
-        
+
     actAs:
         Timestampable:
             created:

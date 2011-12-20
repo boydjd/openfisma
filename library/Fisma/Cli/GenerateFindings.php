@@ -226,9 +226,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                     $evidence = new Evidence();
                     $evidence->Finding = $f;
 
-                    $upload = new Upload();
-                    $upload->fileHash = '7022767bf2f83dff89f5df9ea9570fd9ccf2c826';
-                    $upload->fileName = 'sample.png';
+                    $upload = $this->generateAttachment();
                     $upload->User = $this->_getRandomUser();
 
                     $evidence->Attachments[] = $upload;

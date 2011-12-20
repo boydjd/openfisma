@@ -214,6 +214,14 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
 
             foreach ($incidents as $incident) {
                 $i = new Incident();
+
+                // 20% of the incidents have an attached artifact
+                if (rand(1, 100) <= 20) {
+                    $upload = $this->generateAttachment();
+                    $upload->User = $this->_getRandomUser();
+                    $i->Attachments[] = $upload;
+                }
+
                 $i->merge($incident);
 
                 // 50% are reported by a real user, 50% reported by an anonymous user
@@ -240,6 +248,9 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
                     $i->reject('Automatically rejected by generate-incidents.php script.');
                     $i->save();
                 }
+
+                
+                //$i->save();
 
                 $i->free();
                 unset($i);
