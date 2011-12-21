@@ -152,12 +152,12 @@ abstract class Fisma_Cli_Abstract
         } catch (Zend_Config_Exception $zce) {
             // A zend config exception indicates that the application may not be installed properly
             echo 'The application is not installed correctly.' . PHP_EOL;
-            echo 'Exception ' . get_class($zce) . ' occured: ' . $zce->getMessage() . PHP_EOL;
+            echo 'Exception ' . get_class($zce) . ' Occurred: ' . $zce->getMessage() . PHP_EOL;
             return;
         } catch (Exception $e) {
-            print get_class($e) . PHP_EOL
-                . $e->getMessage() . PHP_EOL
-                . $e->getTraceAsString() . PHP_EOL;
+            echo get_class($e) . PHP_EOL
+               . $e->getMessage() . PHP_EOL
+               . $e->getTraceAsString() . PHP_EOL;
 
             return;
         }

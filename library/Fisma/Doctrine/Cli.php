@@ -38,7 +38,8 @@ class Fisma_Doctrine_Cli extends Doctrine_Cli
     protected function _getTaskClassFromArgs($args)
     {
         $taskName = str_replace('-', '_', $args[1]);
-        if ('migrate' == $taskName) {
+        $taskNames = array('build_all_reload', 'rebuild_db', 'drop_db');
+        if (in_array($taskName, $taskNames)) {
             $taskClass = 'Fisma_Doctrine_Task_' . Doctrine_Inflector::classify($taskName);
         } else {
             $taskClass = 'Doctrine_Task_' . Doctrine_Inflector::classify($taskName);

@@ -35,7 +35,8 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
     public function getArgumentsDefinitions()
     {
         return array(
-            'y|o' => 'Agree to drop database.'
+            'auto-yes|y' => "Automatically pick 'yes' for yes/no questions",
+            'auto-no|n' => "Automatically pick 'no' for yes/no questions"
         );
     }
 
@@ -71,6 +72,13 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
             unset($arguments[$migrateOffset]);
         }
 
+        // Make sure that user does not use both arguments auto-yes and auto-no at the same time
+        $autoYes = $this->getOption('auto-yes');
+        $autoNo = $this->getOption('auto-no');
+        if (!is_null($autoYes) && !is_null($autoNo)) {
+            throw new Fisma_Zend_Exception_User("Cannot use auto-yes and auto-no at the same time!");
+        }
+
         // Check to see if sample data was requested, e.g. `doctrine-cli.php build-all-reload sample-data`
         $sampleDataParameter = array_search('sample-data', $arguments);
         if ($sampleDataParameter) {
@@ -84,7 +92,7 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
             // Remove the request parameter before passing it to Doctrine since Doctrine won't understand it
             unset($arguments[$sampleDataParameter]);
         }
-    
+
         // Kick off the CLI
         $cli = new Fisma_Doctrine_Cli($configuration);
         $cli->run($arguments);
