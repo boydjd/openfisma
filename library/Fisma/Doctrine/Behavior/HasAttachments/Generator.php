@@ -55,6 +55,11 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
         //$this->buildLocalRelation();
 
    }
+    
+    public function buildForeignKeys(Doctrine_Table $table)
+    {
+        return array();
+    }
      
 
     /**
@@ -76,7 +81,7 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
 
         // Foreign key to the Upload associated with this Attachment entry
         $this->hasColumn(
-            'objectId', 
+            'uploadId', 
             'integer', 
             null, 
             array(
@@ -105,7 +110,7 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
      */
     public function setUp()
     {
-        // Relation for the upload class
+        /* Relation for the upload class
          $this->hasOne(
             'Upload as Upload',
             array(
@@ -113,6 +118,6 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
                 'foreign' => 'id',
                 'owningSide' => true
             )
-        );
+        );*/
     }
 }
