@@ -108,8 +108,7 @@ class Fisma_Migration_Helper
      */
     public function dropTable($tableName)
     {
-        $statement = $this->_db->prepare("DROP TABLE :tableName");
-        $result = $statement->execute(array(':tableName' => $tableName));
+        $result = $this->_db->exec("DROP TABLE $tableName");
 
         if ($result === FALSE) {
             throw new Fisma_Zend_Exception_Migration("Not able to drop table ($tableName).");

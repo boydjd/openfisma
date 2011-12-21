@@ -137,7 +137,6 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
         }
 
         $doctrineVersionQuery = $this->_db->query("SELECT MAX(version) AS maxVersion FROM migration_version");
-        $doctrineVersionQuery->execute();
 
         $result = $doctrineVersionQuery->fetch(PDO::FETCH_ASSOC);
         if ($result === FALSE) {
@@ -166,8 +165,10 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
             $message = "Some previous migrations did not complete."
                      . " These must be resolved before migrations can be run again.\n\n";
 
+            $message .= "VERSION\tNAME\tSTARTED AT\n-------\t----\t----------\n";
+
             foreach ($incompleteMigrations as $migration) {
-                $message .= "\t{$migration['majorversion']}.{$migration['minorversion']}.{$migration['tagnumber']}"
+                $message .= "{$migration['majorversion']}.{$migration['minorversion']}.{$migration['tagnumber']}"
                           . "\t{$migration['name']}\t{$migration['startedts']}\n";
             }
 
@@ -183,6 +184,8 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
      */
     private function _bootstrapMigrationTable()
     {
+        echo "BOOTSTRAP:\nAttempting to bootstrap migrations…\n";
+
         $bootstrapMigration = new Application_Migration_021700_BootstrapMigration;
         $bootstrapMigration->setDb($this->_db);
         $bootstrapMigration->migrate();

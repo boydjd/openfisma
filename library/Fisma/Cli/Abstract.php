@@ -28,6 +28,27 @@
 abstract class Fisma_Cli_Abstract
 {
     /**
+     * Indicates successful execution.
+     *
+     * @var int
+     */
+    const EXIT_SUCCESS = 0;
+
+    /**
+     * Indicates failed execution due to bad command line arguments.
+     *
+     * @var int
+     */
+    const EXIT_BAD_ARGS = 1;
+
+    /**
+     * Indicates failed execution due to unhandled exception.
+     *
+     * @var int
+     */
+    const EXIT_UNHANDLED_EXCEPTION = 2;
+
+    /**
      * Command line options
      *
      * @see getOption()
@@ -115,6 +136,8 @@ abstract class Fisma_Cli_Abstract
 
     /**
      * A generic run method which handles options and times the length of execution
+     *
+     * @return int The exit code for this process.
      */
     final public function run()
     {
@@ -132,23 +155,30 @@ abstract class Fisma_Cli_Abstract
             $help = $this->_cliArguments->getOption('h');
             if ($help) {
                 fwrite(STDOUT, $this->getHelpText());
-                return;
+                return self::EXIT_SUCCESS;
             }
         } catch (Zend_Console_Getopt_Exception $e) {
             echo $e->getUsageMessage();
             if (Fisma::RUN_MODE_TEST != Fisma::mode()) {
-                return;
+                return self::EXIT_BAD_ARGS;
             }
         }
 
        // Invoke subclass worker method
         try {
             $this->_run();
-        } catch (Fisma_Zend_Exception_User $e) {
+        } catch (Exception $e) {
             $stderr = fopen('php://stderr', 'w');
-            fwrite($stderr, $e->getMessage() . "\n");
+            fwrite($stderr, "ERROR: " . $e->getMessage() . "\n");
+
+            // Don't print stack traces for user-level exceptions.
+            if (!($e instanceof Fisma_Zend_Exception_User)) {
+                fwrite($stderr, $e->getTraceAsString() . "\n\n");
+            }
+
             fclose($stderr);
-            exit(1);
+
+            return self::EXIT_UNHANDLED_EXCEPTION;
         }
 
         // Calculate elapsed time
@@ -158,6 +188,8 @@ abstract class Fisma_Cli_Abstract
         $seconds = $elapsed - ($minutes * 60);
 
         print "\nFinished in $minutes minutes and $seconds seconds.\n";
+
+        return self::EXIT_SUCCESS;
     }
 
     /*
