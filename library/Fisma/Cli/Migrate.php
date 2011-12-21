@@ -115,13 +115,13 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
 
             foreach ($completedMigrations as $migration) {
                 $versionString = "{$migration['majorversion']}.{$migration['minorversion']}.{$migration['tagnumber']}";
-                printf(
-                    $formatString,
-                    $versionString,
-                    $migration['name'],
-                    $migration['startedts'],
-                    isset($migration['completedts']) ? $migration['completedts'] : 'DID NOT FINISH'
-                );
+
+                $start = isset($migration['startedts']) ?  $migration['startedts'] : 'BUILT IN';
+                $stop = isset($migration['completedts'])
+                      ? $migration['completedts']
+                      : (isset($migration['startedts']) ? 'DID NOT FINISH' : 'BUILT IN');
+
+                printf($formatString, $versionString, $migration['name'], $start, $stop);
             }
         }
     }
