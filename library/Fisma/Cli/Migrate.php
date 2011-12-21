@@ -62,6 +62,7 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
     {
         return array(
             'dry-run|d' => 'Dry run. (Show what the script would do, but don\'t actually do anything.)',
+            'info|i' => 'Show information about the migration system.'
         );
     }
 
@@ -77,6 +78,59 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
         $dbConnection = Doctrine_Manager::getInstance()->getCurrentConnection();
         $this->_db = $dbConnection->getDbh();
 
+        if ($this->getOption('info') === true) {
+            $this->_doInfo();
+        } else {
+            $this->_doMigrations();
+        }
+    }
+
+    /**
+     * Display diagnostic information
+     */
+    private function _doInfo()
+    {
+        if (!$this->_migrationTableExists()) {
+            echo "* The migration table DOES NOT exist.\n";
+        } else {
+            echo "* The migration table exists.\n";
+
+            $availableMigrations = $this->_getAvailableMigrations(Fisma::getPath('migration'));
+            $completedMigrations = $this->_getCompletedMigrations();
+
+            echo "* There are "
+                 . count($availableMigrations)
+                 . " migrations available and your system has completed "
+                 . count($completedMigrations)
+                 . " migrations.\n";
+
+            $completedSql = "SELECT * FROM migration ORDER BY majorversion, minorversion, tagnumber, startedts";
+            $completedMigrations = $this->_db->query($completedSql)->fetchAll();
+
+            echo "* The following migrations have been executed already:\n\n";
+
+            $formatString = "%-10s| %-60s| %-20s| %-20s\n";
+            printf($formatString, "VERSION", "NAME", "STARTED", "COMPLETED");
+            echo str_repeat('-', 116) . "\n";
+
+            foreach ($completedMigrations as $migration) {
+                $versionString = "{$migration['majorversion']}.{$migration['minorversion']}.{$migration['tagnumber']}";
+                printf(
+                    $formatString,
+                    $versionString,
+                    $migration['name'],
+                    $migration['startedts'],
+                    isset($migration['completedts']) ? $migration['completedts'] : 'DID NOT FINISH'
+                );
+            }
+        }
+    }
+
+    /**
+     * Run the migration execution logic.
+     */
+    private function _doMigrations()
+    {
         // If the migrations system has never been run before, then we need to bootstrap it by creating the migration
         // table.
         if (!$this->_migrationTableExists()) {
