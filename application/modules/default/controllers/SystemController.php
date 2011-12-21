@@ -606,18 +606,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function userAction()
     {
         $this->_helper->layout->disableLayout();
-        
-        $id             = $this->getRequest()->getParam('id');
+        $id = $this->getRequest()->getParam('id');
 
         /**
          * Both OrganizationController and SystemController use this action. So, when the OrganizationController
          * uses this action, it would pass a param of type which indicates the id param is organizationId.
          */
-        $type           = $this->getRequest()->getParam('type');
+        $type = $this->getRequest()->getParam('type');
         if (!is_null($type) && 'organization' == $type) {
-            $organization   = Doctrine::getTable('Organization')->findOneById($id);
+            $organization = Doctrine::getTable('Organization')->findOneById($id);
         } else {
-            $organization   = Doctrine::getTable('Organization')->findOneBySystemId($id);
+            $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
         }
 
         $this->_acl->requirePrivilegeForObject('read', $organization);

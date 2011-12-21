@@ -315,7 +315,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      * Update organization information on the organization tabview.
      *
      * @return void
-     * @throws Exception_General if organization id is invalid
+     * @throws Fisma_Zend_Exception if organization id is invalid
      */
     public function updateAction()
     {
@@ -337,10 +337,10 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                     $organization->merge($post);
                     if ($organization->isValid(true)) {
                         $organization->save();
-                        $msg   = 'The organization updated successfully';
+                        $msg  = 'The organization updated successfully';
                         $type = 'notice';
                     } else {
-                        $msg = "Error while trying to save: <br />" . $organization->getErrorStackAsString();
+                        $msg  = "Error while trying to save: <br />" . $organization->getErrorStackAsString();
                         $type = "warning";
                     }
                     
