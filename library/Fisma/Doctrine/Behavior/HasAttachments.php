@@ -53,7 +53,7 @@ class Fisma_Doctrine_Behavior_HasAttachments extends Doctrine_Template
         $this->hasMany(
             'Upload as Attachments',
             array(
-                'local' => 'id',
+                'local' => 'objectId',
                 'foreign' => 'uploadId',
                 'refClass' => $foreignClassName
             )

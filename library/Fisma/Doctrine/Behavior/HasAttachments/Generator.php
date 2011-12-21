@@ -35,32 +35,28 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
     public function initOptions()
     {
         // This will result in class names like 'IncidentAttachment'
-        $this->setOption('className', '%CLASS%Upload');     
-        
-        /* Set the Fisma_Doctrine_Behavior_HasAttachments_Attachment model as the base class for these generated classes
-        $this->setOption(
-            'builderOptions', array('baseClassName' => 'Fisma_Doctrine_Behavior_HasAttachments_Attachment')
-        );
-         */
+        $this->setOption('className', '%CLASS%Upload');
     }
     
     /**
-     * Set up relations
+     * Overriding default relation building between the generated model (a joint table) and the host model
      * 
      * @return void
      */
     public function buildRelation()
-    {
-        //$this->buildForeignRelation('Uploads');
-        //$this->buildLocalRelation();
-
-   }
+    {   
+    }
     
+    /**
+     * Overriding default relation building between the generated model (a joint table) and the host model
+     * 
+     * @param Doctrine_Table $table The host table
+     * @return mixed
+     */
     public function buildForeignKeys(Doctrine_Table $table)
     {
         return array();
     }
-     
 
     /**
      * Table definition
@@ -69,16 +65,6 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
      */
     public function setTableDefinition()
     {
-        /*$this->hasColumn(
-            'id',
-            'integer',
-            null,
-            array(
-                'primary' => true,
-                'autoincrement' => true
-            )
-        );*/
-
         // Foreign key to the Upload associated with this Attachment entry
         $this->hasColumn(
             'uploadId', 
@@ -92,7 +78,7 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
         
         // Foreign key to the object which this attachment belongs to
         $this->hasColumn(
-            'id', 
+            'objectId', 
             'integer', 
             null, 
             array(
@@ -101,23 +87,5 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
             )
         );
 
-    }
-    
-    /**
-     * Set up parent object and user relations
-     * 
-     * @return void
-     */
-    public function setUp()
-    {
-        /* Relation for the upload class
-         $this->hasOne(
-            'Upload as Upload',
-            array(
-                'local' => 'objectId',
-                'foreign' => 'id',
-                'owningSide' => true
-            )
-        );*/
     }
 }
