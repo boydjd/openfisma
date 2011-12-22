@@ -143,6 +143,19 @@ class Fisma_FileManager
     }
 
     /**
+     * @param string $hash Hash of file
+     * @return boolean
+     */
+    public function remove($hash)
+    {
+        $source = $this->_hashPath($hash);
+        if ($this->_fileExists($source)) {
+            return $this->_unlink($source);
+        }
+        return true;
+    }
+
+    /**
      * Helper method to get a full path in storage for a SHA1 hash.
      *
      * @param string $hash SHA1 Hash for which we're providing a path
@@ -209,6 +222,17 @@ class Fisma_FileManager
     protected function _readfile($filename)
     {
         return readfile($filename);
+    }
+
+    /**
+     * Wrapper for file-related function unlink()
+     * 
+     * @param string $filename 
+     * @return boolean
+     */
+    protected function _unlink($filename)
+    {
+        return unlink($filename);
     }
 
     /**

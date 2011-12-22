@@ -248,5 +248,27 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
         
         $this->assertEquals(0, $fm->getFileSize($this->hash));
     }
+
+    /**
+     * @todo: short description.
+     * 
+     * @return @todo
+     */
+    public function testRemove()
+    {
+        $fm = $this->getMock(
+            'Fisma_FileManager',
+            array(
+                '_fileExists',
+                '_unlink'
+            ),
+            array($this->BASE_DIR, $this->fi)
+        );
+        $fm->expects($this->any())->method('_fileExists')->will($this->onConsecutiveCalls(true, true, false));
+        $fm->expects($this->exactly(2))->method('_unlink')->will($this->onConsecutiveCalls(true, false));
+        $this->assertTrue($fm->remove($this->hash));
+        $this->assertFalse($fm->remove($this->hash));
+        $this->assertTrue($fm->remove($this->hash));
+    }
 }
 
