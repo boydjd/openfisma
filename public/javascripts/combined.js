@@ -5379,7 +5379,14 @@ Fisma.Chart = {
 
         // Does the link contain a variable?
         if (theLink !== false) {
-            theLink = String(theLink).replace('#ColumnLabel#', encodeURIComponent(paramObj.chartDataText[pointIndex]));
+            theLink = String(theLink);
+            if (theLink.indexOf('#ColumnLabel#') !== -1) {
+                theLink = theLink.replace('#ColumnLabel#', encodeURIComponent(paramObj.chartDataText[pointIndex]));
+            } else {
+                theLink = escape(theLink);
+                theLink = theLink.replace('%3F', '?');
+                theLink = theLink.replace('%3D', '=');
+            }
         }
 
         if (paramObj.linksdebug === true) {
