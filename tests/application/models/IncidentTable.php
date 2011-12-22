@@ -71,7 +71,7 @@ class Test_Application_Models_IncidentTable extends Test_Case_Unit
         $user->expects($this->exactly(2))->method('acl')
              ->will($this->onConsecutiveCalls(
                  new Fisma_Zend_Acl('sample'),
-                 new Fisma_Zend_Acl('root')
+                 new Fisma_Zend_Acl('user_root')
              ));
         CurrentUser::setInstance($user);        
         

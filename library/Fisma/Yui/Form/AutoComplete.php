@@ -76,10 +76,6 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
         $name = $this->getName();
 
         $hiddenField = $this->getAttrib('hiddenField');
-        $hiddenValue = $this->getValue();
-        $hiddenValueAttrib = empty($hiddenValue) ? '' : "value=\"$hiddenValue\"";
-
-        $displayedValueAttrib = empty($this->_displayText) ? '' : "value=\"$this->_displayText\"";
 
         $setupCallback = $this->getAttrib('setupCallback')
                        ? "setupCallback : '{$this->getAttrib('setupCallback')}',"
@@ -90,7 +86,6 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
                            name=\"$name\" 
                            id=\"$name\" 
                            value=\"{$this->getValue()}\"
-                           $displayedValueAttrib
                            $disabled>
                     <img class='spinner'
                          id='{$this->getAttrib('containerId')}Spinner' 

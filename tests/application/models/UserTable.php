@@ -86,7 +86,7 @@ class Test_Application_Models_UserTable extends Test_Case_Unit
     public function testGetRolesQuery()
     {
         $userTable = Doctrine::getTable('User');
-        $query = $userTable->getRolesQuery()->getDql();
+        $query = $userTable->getRolesQuery(1)->getDql();
         $expectedQuery = 'FROM User u INNER JOIN u.Roles r WHERE u.id = ?';
         $this->assertContains($expectedQuery, $query);
     }    

@@ -261,8 +261,17 @@ class Test_Library_Fisma_Zend_View extends Test_Case_Unit
         $originalString = '<a&b+c>/\'d\'';
         $escapedString = $originalString;
         $this->assertEquals($escapedString, $testView->escape($originalString, 'none'));
+    }
 
+    /**
+     * Test with non-supported escape type
+     * 
+     * @return void
+     */
+    public function testEscapeWithNonSupportedType()
+    {
         $this->setExpectedException('Fisma_Zend_Exception', 'Requested escaping type is not available!');
+        $testView = new Fisma_Zend_View();
         $testView->escape($originalString, 'a sample non-supported type');
     }
 }

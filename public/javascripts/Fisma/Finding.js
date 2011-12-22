@@ -430,6 +430,6 @@ Fisma.Finding = {
      * @param params {Array} The arguments passed to the autocomplete constructor
      */
     setupSecurityControlAutocomplete : function (autocomplete, params) {
-        autocomplete.itemSelectEvent.subscribe(Fisma.AutoComplete.handleSecurityControlSelection);
+        autocomplete.itemSelectEvent.subscribe(Fisma.Finding.handleSecurityControlSelection);
     }
 };

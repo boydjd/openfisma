@@ -37,9 +37,6 @@ Fisma.Email = function() {
          */
         showRecipientDialog : function() {
 
-            // The error message should be hidden before handles test email
-            YAHOO.util.Dom.get('msgbar').style.display = 'none';
-
             // Remove used old panel if necessary
             if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();

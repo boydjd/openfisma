@@ -16,28 +16,26 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
-
 /**
- * Test_Application_Models_CurrentUser
- * 
- * @uses Test_Case_Unit
- * @package Test 
- * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
- * @license http://www.openfisma.org/content/license GPLv3
+ * Overrite parent construct function to call Fisma_Doctrine_Task_DropDb instead
+ *
+ * @author     Ben Zheng <ben.zheng@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license    http://www.openfisma.org/content/license GPLv3
+ * @package    Fisma
+ * @subpackage Fisma_Doctrine_Task
  */
-class Test_Application_Models_CurrentUser extends Test_Case_Unit
+class Fisma_Doctrine_Task_RebuildDb extends Doctrine_Task_RebuildDb
 {
     /**
-     * testGetInstanceIsNull 
-     * 
-     * @access public
+     * Use Fisma_Doctrine_Task_DropDb so that it can detect auto-yes/auto-no argument
+     *
      * @return void
      */
-    public function testGetInstanceIsNull()
+    public function __construct($dispatcher = null)
     {
-        $currentUser = CurrentUser::getInstance();
-        $this->assertNull($currentUser);
+        parent::__construct($dispatcher);
+
+        $this->dropDb = new Fisma_Doctrine_Task_DropDb($this->dispatcher);
     }
 }

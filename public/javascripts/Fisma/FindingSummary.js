@@ -566,7 +566,11 @@
             
             // Add organization/POC criterion
             if (nodeState == Fisma.TreeTable.NodeState.COLLAPSED) {
-                url += '/' + searchKey + '/organizationSubtree/' + encodeURIComponent(rowLabel);
+                if (this._currentViewType == "systemAggregation") {
+                    url += '/' + searchKey + '/systemAggregationSubtree/' + encodeURIComponent(rowLabel);
+                } else {
+                    url += '/' + searchKey + '/organizationSubtree/' + encodeURIComponent(rowLabel);
+                }
             } else {
                 url += '/' + searchKey + '/textExactMatch/' + encodeURIComponent(rowLabel);
             }

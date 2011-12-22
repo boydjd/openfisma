@@ -16,28 +16,31 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
-
 /**
- * Test_Application_Models_CurrentUser
- * 
- * @uses Test_Case_Unit
- * @package Test 
- * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
- * @license http://www.openfisma.org/content/license GPLv3
+ * Overrite parent execute function
+ *
+ * @author     Ben Zheng <ben.zheng@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license    http://www.openfisma.org/content/license GPLv3
+ * @package    Fisma
+ * @subpackage Fisma_Doctrine_Task
  */
-class Test_Application_Models_CurrentUser extends Test_Case_Unit
+class Fisma_Doctrine_Task_DropDb extends Doctrine_Task_DropDb
 {
     /**
-     * testGetInstanceIsNull 
-     * 
-     * @access public
+     * Overrite parent execute function so that it cancels the action of drop database when there is auto-no|n argument
+     *
      * @return void
      */
-    public function testGetInstanceIsNull()
+    public function execute()
     {
-        $currentUser = CurrentUser::getInstance();
-        $this->assertNull($currentUser);
+        $argument = $this->getArgument('force');
+        if ('--auto-no' == $argument || '-n' == $argument) {
+            $this->notify('Cancelled to drop the database');
+
+            return;
+        }
+
+        parent::execute();
     }
 }

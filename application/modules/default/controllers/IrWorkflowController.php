@@ -158,7 +158,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
         $steps = $stepsQuery->execute();
 
         // If no steps exist, create a blank step
-        if (0 === count($steps) && 'edit' == $actionName) {
+        if (0 === count($steps) && 'view' == $actionName) {
             $defaultStep = new IrStep();
             $defaultStep->cardinality = 1;
 
@@ -175,12 +175,9 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
             $stepElement->setValue($step);
             $stepElement->setRoles($roles);
             $stepElement->setDefaultRole($step->roleId);
-
-            /**
-             * @todo Kludge... the readonly attribute of the form isn't getting carried down to the step elements.
-             * I dont' have time to fix it, so I'm going to set it directly when the action is 'view'. This is bad.
-             */
-            if ('view' == $actionName) {
+          
+            $resource = $this->getAclResourceName(); 
+            if ($this->_enforceAcl && !$this->_acl->hasPrivilegeForClass('update', $resource)) { 
                 $stepElement->readOnly = true;
             }
 

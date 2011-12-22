@@ -127,27 +127,38 @@ abstract class Fisma_Cli_Abstract
         try {
             $this->_cliArguments = new Zend_Console_Getopt($argumentsDefinitions);
             $this->_cliArguments->parse();
+ 
+            // If help is requested, then display help text and exit out
+            $help = $this->_cliArguments->getOption('h');           
+            if ($help) {
+                fwrite(STDOUT, $this->getHelpText());                
+                return;
+            }
         } catch (Zend_Console_Getopt_Exception $e) {
             echo $e->getUsageMessage();
-            return;
+            if (Fisma::RUN_MODE_TEST != Fisma::mode()) {
+                return;
+            }
         }
 
-        // If help is requested, then display help text and exit out
-        $help = $this->_cliArguments->getOption('h');
-        
-        if ($help) {
-            fwrite(STDOUT, $this->getHelpText());
-            
-            return;
-        }
-
-        // Invoke subclass worker method
+       // Invoke subclass worker method
         try {
             $this->_run();
         } catch (Fisma_Zend_Exception_User $e) {
             $stderr = fopen('php://stderr', 'w'); 
             fwrite($stderr, $e->getMessage() . "\n\n" . $this->getHelpText()); 
             fclose($stderr);
+            return;
+        } catch (Zend_Config_Exception $zce) {
+            // A zend config exception indicates that the application may not be installed properly
+            echo 'The application is not installed correctly.' . PHP_EOL;
+            echo 'Exception ' . get_class($zce) . ' Occurred: ' . $zce->getMessage() . PHP_EOL;
+            return;
+        } catch (Exception $e) {
+            echo get_class($e) . PHP_EOL
+               . $e->getMessage() . PHP_EOL
+               . $e->getTraceAsString() . PHP_EOL;
+
             return;
         }
 
