@@ -4618,7 +4618,7 @@ Fisma.Chart = {
         // hook highlight event for tooltips
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
             function (ev, seriesIndex, pointIndex, data) {
-                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+                Fisma.Chart.chartHighlightEvent(jPlotParamObj, ev, seriesIndex, pointIndex, data);
             }
         );
 
@@ -4822,7 +4822,7 @@ Fisma.Chart = {
         // hook highlight event for tooltips
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
             function (ev, seriesIndex, pointIndex, data) {
-                Fisma.Chart.chartHighlightEvent(chartParamsObj, ev, seriesIndex, pointIndex, data);
+                Fisma.Chart.chartHighlightEvent(jPlotParamObj, ev, seriesIndex, pointIndex, data);
             }
         );    
         
