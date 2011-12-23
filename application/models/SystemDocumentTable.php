@@ -73,7 +73,7 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                 'sortable' => true,
                 'type' => 'integer'
             ),
-            'createdTs' => array(
+            'updated_at' => array(
                 'initiallyVisible' => true,
                 'label' => 'Last Modification Date',
                 'sortable' => true,
