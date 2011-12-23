@@ -17,7 +17,7 @@
  */
 
 /**
- * Overrite parent construct function to call Fisma_Doctrine_Task_DropDb and Fisma_Doctrine_Task_BuildAll instead
+ * Overrite parent construct function to call Fisma_Doctrine_Task_GenerateModelsYaml instead
  *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -25,19 +25,17 @@
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Task
  */
-class Fisma_Doctrine_Task_RebuildDb extends Doctrine_Task_RebuildDb
+class Fisma_Doctrine_Task_BuildAll extends Doctrine_Task_BuildAll
 {
     /**
-     * Use Fisma_Doctrine_Task_DropDb so that it can detect auto-yes/auto-no argument,
-     * use Fisma_Doctrine_Task_BuildAll so that it can call Fisma_Doctrine_Task_GenerateModelsYaml instead
+     * Use Fisma_Doctrine_Task_GenerateModelsYaml so that it can clean generated models
      *
      * @return void
      */
     public function __construct($dispatcher = null)
     {
         parent::__construct($dispatcher);
-
-        $this->dropDb = new Fisma_Doctrine_Task_DropDb($this->dispatcher);
-        $this->buildAll = new Fisma_Doctrine_Task_BuildAll($this->dispatcher);
+        
+        $this->models = new Fisma_Doctrine_Task_GenerateModelsYaml($this->dispatcher);
     }
 }

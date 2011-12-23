@@ -17,7 +17,7 @@
  */
 
 /**
- * Overrite parent construct function to call Fisma_Doctrine_Task_DropDb and Fisma_Doctrine_Task_BuildAll instead
+ * Overrite parent execute function to clean generated models first
  *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -25,19 +25,32 @@
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Task
  */
-class Fisma_Doctrine_Task_RebuildDb extends Doctrine_Task_RebuildDb
+class Fisma_Doctrine_Task_GenerateModelsYaml extends Doctrine_Task_GenerateModelsYaml
 {
     /**
-     * Use Fisma_Doctrine_Task_DropDb so that it can detect auto-yes/auto-no argument,
-     * use Fisma_Doctrine_Task_BuildAll so that it can call Fisma_Doctrine_Task_GenerateModelsYaml instead
-     *
+     * Clean generated models before call execute function
+     * 
      * @return void
      */
-    public function __construct($dispatcher = null)
+    public function execute()
     {
-        parent::__construct($dispatcher);
+        $this->removeGeneratedModels();
 
-        $this->dropDb = new Fisma_Doctrine_Task_DropDb($this->dispatcher);
-        $this->buildAll = new Fisma_Doctrine_Task_BuildAll($this->dispatcher);
+        parent::execute();
+    }
+
+    /**
+     * Delete all generated model files
+     * 
+     * @return void
+     */
+    protected function removeGeneratedModels() 
+    {
+        $generatedModelPath = Fisma::getPath('model'). "/generated";
+        if (is_dir($generatedModelPath)) {
+            foreach (glob($generatedModelPath . '/*') as $file) {
+                unlink($file);
+            }
+        }
     }
 }
