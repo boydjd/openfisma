@@ -57,8 +57,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
 
     <span id ="threat_level" type="select" name="finding[threatLevel]" href="/metainfo/list/o/threat_level/format/html/"
         <?php 
-        if (!$this->finding->isDeleted() && $this->acl()->hasPrivilegeForObject('update_threat', $finding)
-            && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
+        if ($this->isThreatLevelEditable) {
             echo $this->escape(' class="editable" target="threat_level"', 'none');
         }
         ?>>
@@ -69,8 +68,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
 <p>
     <b target="threat" 
         <?php
-        if (!$this->finding->isDeleted() && $this->acl()->hasPrivilegeForObject('update_threat', $finding)
-           && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) { 
+        if ($this->isThreatEditable) {
             echo $this->escape('class="editable"', 'none');
         } 
         ?>>Threat Description:</b>
@@ -103,8 +101,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
           id="effectiveness" 
           href="/metainfo/list/o/countermeasures-effectiveness/format/html/"
         <?php
-        if (!$this->finding->isDeleted() && $this->acl()->hasPrivilegeForObject('update_countermeasures', $finding)
-           && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
+        if ($this->isCountermeasuresEffectivenessEditable) {
             echo $this->escape('class="editable" target="effectiveness"', 'none');
         }
         ?>>
@@ -115,8 +112,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
 <p>
     <b target="countermeasures" 
         <?php 
-            if (!$this->finding->isDeleted() && $this->acl()->hasPrivilegeForObject('update_countermeasures', $finding)
-               && ('NEW' == $finding->status || 'DRAFT' == $finding->status)) {
+            if ($this->isCountermeasuresEditable) {
                 echo $this->escape('class="editable"', 'none');
             } 
         ?>>
