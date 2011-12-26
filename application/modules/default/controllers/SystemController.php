@@ -854,7 +854,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $query = $this->getRequest()->getParam('query');
 
         $systems = Doctrine::getTable('Organization')->getSystemsLikeNameQuery($query)
-                   ->select('o.id, o.name')
+                   ->select('o.id')
+                   ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS name")
                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                    ->execute();
 
