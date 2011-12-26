@@ -17,7 +17,7 @@
  */
 
 /**
- * Overrite parent construct function to call Fisma_Doctrine_Task_BuildAll instead
+ * Override parent construct function to call Fisma_Doctrine_Task_BuildAll instead
  *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -35,6 +35,12 @@ class Fisma_Doctrine_Task_BuildAllLoad extends Doctrine_Task_BuildAllLoad
     public function __construct($dispatcher = null)
     {
         parent::__construct($dispatcher);
+
+        $this->taskName = str_replace(
+            '_',
+            '-',
+            Doctrine_Inflector::tableize(str_replace('Fisma_Doctrine_Task_', '', get_class($this)))
+        );
 
         $this->buildAll = new Fisma_Doctrine_Task_BuildAll($this->dispatcher);
     }

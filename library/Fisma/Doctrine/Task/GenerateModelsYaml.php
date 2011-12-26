@@ -17,7 +17,7 @@
  */
 
 /**
- * Overrite parent execute function to clean generated models first
+ * Override parent execute function to clean generated models first
  *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -27,6 +27,22 @@
  */
 class Fisma_Doctrine_Task_GenerateModelsYaml extends Doctrine_Task_GenerateModelsYaml
 {
+    /**
+     * Remove 'Fisma_Doctrine_Task_' instead of 'Doctrine_Task_' so that the taskname can be displayed correctly
+     *
+     * @return void
+     */
+    public function __construct($dispatcher = null)
+    {
+        parent::__construct($dispatcher);
+
+        $this->taskName = str_replace(
+            '_',
+            '-',
+            Doctrine_Inflector::tableize(str_replace('Fisma_Doctrine_Task_', '', get_class($this)))
+        );
+    }
+
     /**
      * Clean generated models before call execute function
      * 
