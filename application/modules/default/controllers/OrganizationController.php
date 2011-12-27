@@ -266,8 +266,29 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab($firstTab, "/organization/organization/id/$id");
         $tabView->addTab("Users", "/system/user/type/organization/id/$id");
 
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-        $this->view->organization = $organization;
+        $toolbarButtons = $this->getToolbarButtons();
+
+        if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
+            $discardButton = new Fisma_Yui_Form_Button_Link(
+                                 'discardChanges',
+                                 array(
+                                     'value' => 'Discard Changes',
+                                     'href' => "/organization/view/id/$id"
+                                 )
+                             );
+
+            $submitButton = new Fisma_Yui_Form_Button_Submit(
+                                'saveChanges',
+                                array(
+                                    'label' => 'Save Changes'
+                                )
+                            );
+
+            array_unshift($toolbarButtons, $discardButton, $submitButton);
+        }
+
+        $this->view->toolbarButtons = $toolbarButtons;
+        $this->view->organizationId = $organization->id;
         $this->view->tabView = $tabView;
     }
 
@@ -278,7 +299,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      */
     public function organizationAction()
     {
-        $id = $this->getRequest()->getParam('id');
+        $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
         $organization = Doctrine::getTable('Organization')->findOneById($id);
         $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
@@ -288,24 +309,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             $editable = true;
         }
 
-        $discardButton = new Fisma_Yui_Form_Button_Link(
-                             'discardChanges',
-                             array(
-                                 'value' => 'Discard Changes',
-                                 'href' => "/organization/view/id/$id"
-                             )
-                         );
-
-        $submitButton = new Fisma_Yui_Form_Button_Submit(
-                            'saveChanges',
-                            array(
-                                'label' => 'Save Changes'
-                            )
-                        );
-
-        $this->view->formAction = "/organization/update/id/$id";;
-        $this->view->discardChangesButton = $discardButton;
-        $this->view->saveChangesButton = $submitButton;
         $this->view->organization = $organization;
         $this->view->editable = $editable;
         $this->render();

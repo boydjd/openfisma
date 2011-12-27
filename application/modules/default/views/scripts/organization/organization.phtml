@@ -1,14 +1,3 @@
-<form method="post" action="<?php echo $this->escape($this->formAction, 'none'); ?>">
-
-<div class="buttonBar">
-<?php
-    if ($this->editable):
-        echo $this->escape($this->discardChangesButton, 'none');
-        echo $this->escape($this->saveChangesButton, 'none');
-    endif;
-?>
-</div>
-
 <?php
 Fisma_Format_Section::startSection('Details');
 ?>
@@ -115,4 +104,3 @@ if ($this->editable) {
     <?php echo $this->escape($this->organization->description, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
-</form>
