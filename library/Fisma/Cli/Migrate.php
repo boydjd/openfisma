@@ -347,7 +347,7 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
         $result = $this->_db->exec($sql);
 
         if ($result === FALSE) {
-            throw new Fisma_Zend_Migration_Exception('Not able to complete migration (' . get_class($migration) . ')');
+            throw new Fisma_Zend_Exception_Migration('Not able to complete migration (' . get_class($migration) . ')');
         }
     }
 
