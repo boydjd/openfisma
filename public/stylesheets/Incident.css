@@ -66,7 +66,7 @@ div.incidentStep {
     position: relative;
 }
 
-div.incidentStep td {
+div.incidentStep > tbody > tr > td {
     padding: 5px;
     border-style: none;
        
