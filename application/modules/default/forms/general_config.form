@@ -20,6 +20,10 @@ elements.system_name.options.required = true
 elements.system_name.options.tooltip = "<p><b>System Name</b></p><p>The System Name will be used to identify the OpenFISMA application in the browser tab and in email communications sent back and forth between users and OpenFISMA.</p>"
 displayGroups.general.elements.system_name = "system_name"
 
+elements.host_url.type = "text"
+elements.host_url.options.label = "Host Url"
+elements.host_url.options.validators.strlen.validator = "StringLength"
+displayGroups.general.elements.host_url = "host_url"
 
 elements.account_inactivity_period.type = "text"
 elements.account_inactivity_period.options.label = "Inactive Account Expiration (days)"

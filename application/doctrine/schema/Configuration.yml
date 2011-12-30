@@ -178,9 +178,7 @@ Configuration:
             default: sha1
         host_url:
             type: string(255)
-            notblank: true
             comment: This is used to construct self referencing URLs in non-HTTP contexts. The installer should overwrite this value.
-            default: ""
         default_security_control_catalog_id:
             type: integer(1)
             notblank: true
