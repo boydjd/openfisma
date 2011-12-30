@@ -214,14 +214,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
 
         $organizations = $this->_me->getOrganizationsByPrivilege('finding', 'read');
         $organizationList = array('' => '') + $this->view->systemSelect($organizations);
-
         $organizationsCount = $organizations->count();
-        if (0 == $organizationsCount) {
-            /* @todo English */
-            $message = "There are no organizations or systems to generate overdue report for. "
-                     . "Please create an organization or system first.";
-            $this->view->priorityMessenger($message, 'warning');
-        }
 
         $sourceList = array('' => '') + Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'nickname');
         asort($sourceList);
@@ -264,7 +257,11 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
             $source = Doctrine::getTable('Source')->find($sourceId);
         }
 
-        $reportData = $overdueQuery->execute();
+        if (0 == $organizationsCount) {
+            $reportData = array();
+        } else {
+            $reportData = $overdueQuery->execute();
+        }
 
         // Assign view outputs
         $report = new Fisma_Report();
