@@ -553,6 +553,14 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     public function viewAction() 
     {
         $id = $this->_request->getParam('id');
+
+        $incidentQuery = Doctrine_Query::create()
+                         ->from('Incident i')
+                         ->leftJoin('i.Attachments a')
+                         ->where('i.id = ?', $id);
+        $results = $incidentQuery->execute();
+        $incident = $results->getFirst();
+        
         $incident = $this->_getSubject($id);
 
         $this->_assertCurrentUserCanViewIncident($id);
@@ -563,7 +571,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Put a span around the comment count so that it can be updated from Javascript
         $commentCount = '<span id=\'incidentCommentsCount\'>' . $incident->getComments()->count() . '</span>';
         
-        $artifactCount = $incident->getArtifacts()->count();
+        $artifactCount = $incident->Attachments->count();
 
         // Create tab view
         $tabView = new Fisma_Yui_TabView('SystemView', $id);
