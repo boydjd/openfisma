@@ -109,6 +109,14 @@
         _storage: null,
 
         /**
+         * A DIV element that contains an error message, if any error condition has occurred.
+         *
+         * @type HTMLElement
+         * @protected
+         */
+        _errorBarContainer: null,
+
+        /**
          * Render the entire widget
          *
          * @method OrganizationTreeView.render
@@ -125,6 +133,10 @@
                 that._loadingContainer = document.createElement("div");
                 that._renderLoading(that._loadingContainer);
                 that._contentDiv.appendChild(that._loadingContainer);
+
+                that._errorBarContainer= document.createElement("div");
+                that._contentDiv.appendChild(that._errorBarContainer);
+                that._hideError();
 
                 that._treeViewContainer = document.createElement("div");
                 that._renderTreeView(that._treeViewContainer);
@@ -224,6 +236,15 @@
                 {
                     success: function (response) {
                         var json = YAHOO.lang.JSON.parse(response.responseText);
+
+                        if (YAHOO.lang.isNull(json.treeData)) {
+
+                           // Gracefully handle a result that has no tree
+                            this._showError("No data available.");
+                            this._hideLoadingImage();
+                            this._hideDisposalCheckbox();
+                            return;
+                        }
 
                         // Load the tree data into a tree view
                         this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
@@ -461,6 +482,36 @@
             }
 
             window.location = url;
+        },
+ 
+        /**
+         * Display an error message in the error bar.
+         * 
+         * If errorMessage is not set, then just display the error bar.
+         */
+        _showError: function (errorMessage) {
+            if (YAHOO.lang.isString(errorMessage)) {
+                var p = document.createElement("p");
+                p.appendChild(document.createTextNode(errorMessage));
+
+                this._errorBarContainer.appendChild(p);
+            }
+            
+            this._errorBarContainer.style.display = "";
+        },
+        
+        /**
+         * Hide the error bar.
+         */
+        _hideError: function () {
+            this._errorBarContainer.style.display = "none";
+        },
+
+        /**
+         * Hide the disposal checkbox.
+         */
+        _hideDisposalCheckbox: function () {
+            this._disposalCheckboxContainer.style.display = "none";
         }
     };
 
