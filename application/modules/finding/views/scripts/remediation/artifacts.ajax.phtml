@@ -1,15 +1,16 @@
 <?php 
-Fisma_Format_Section::startSection('Artifacts (' . $this->artifacts->count() . ')');
 
 if (count($this->artifacts) == 0):
     echo $this->escape('<p><i>There are no artifacts for this finding.</i></p>', 'none');
 else:
+    // Only start "Rejected" section once if not empty
+    $rejectedStarted = false;
+
     // Each artifact block is rendered in a partial view.
     foreach ($this->artifacts as $index => $artifact):
     
         // The first artifact is the one which is currently being evaluated if the finding is in EA status.
         $currentArtifact = (0 == $index && 'EA' == $this->finding->status);
-        
         if ($currentArtifact):
             echo $this->partial(
                 'remediation/artifact-current-item.phtml', 
@@ -20,8 +21,14 @@ else:
                     'activeArtifact' => true,
                     'evaluations' => $this->evaluations
                 )
-            );        
+            );
         else:
+            if(!$rejectedStarted):
+                Fisma_Format_Section::startSection('Rejected Evidence');
+                echo("<a href='#' onclick='document.getElementById(\"rejectedEvidencesContainer\").style.display=\"block\";this.style.display=\"none\";'>Click to display</a>");
+                echo("<div id='rejectedEvidencesContainer' style='display:none'>");
+                $rejectedStarted = true;
+            endif;
             echo $this->partial(
                 'remediation/artifact-old-item.phtml', 
                 'finding',
@@ -33,8 +40,14 @@ else:
             );
         endif;
     endforeach;
+        
+    if($rejectedStarted):
+        echo "</div>";
+        Fisma_Format_Section::stopSection();
+    endif;
 endif;
 
+Fisma_Format_Section::startSection('Submit New Evidence');
 $message = "WARNING: You are about to upload evidence. This action cannot be undone."
            . ' Please click "Yes" to confirm your action or click "No" to stop.';
 $uploadEvidenceButton = new Fisma_Yui_Form_Button(
@@ -58,8 +71,10 @@ if (
 endif;
 ?>
 
-<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
+<p>New evidence can only be submitted if the finding is in 'EN' status and if you have the required role.</p>
 
 <div class='buttonBar'>
     <?php echo $this->escape($uploadEvidenceButton, 'none');?>
 </div>
+<?php Fisma_Format_Section::stopSection(); ?>
+ 

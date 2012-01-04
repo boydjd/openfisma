@@ -1,18 +1,92 @@
+<?php
+/**
+ * Get artifact data as Doctrine Collection. Loop over to get icon URLs and file size, then convert to array
+ * for view binding.
+ */
+$attachmentCollection = $this->artifact->Attachments;
+$attachmentRows = array();
+
+foreach ($attachmentCollection as $attachment) {
+    $downloadUrl = '/finding/remediation/downloadevidence/evidenceId/' . $this->artifact->id
+                 . '/attachmentId/' . $attachment->id;
+    $attachmentRows[] = array(
+        'iconUrl'  => "<a href=$downloadUrl><img src=" . $this->escape($attachment->getIconUrl()) . "></a>",
+        'fileName' => "<a href=$downloadUrl><div>" . $this->escape($attachment->fileName) . "</div></a>",
+        'fileSize' => $attachment->getFileSize(),
+        'user'     => $this->userInfo($attachment->User->username),
+        'date'     => $attachment->createdTs,
+        'comment'  => $this->textToHtml($this->escape($attachment->description))
+    );
+}
+
+$dataTable = new Fisma_Yui_DataTable_Local();
+
+$dataTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'Icon',
+        false,
+        'Fisma.TableFormat.formatHtml',
+        null,
+        'icon'
+    )
+);
+
+$dataTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'File Name',
+        true,
+        'Fisma.TableFormat.formatHtml',
+        null,
+        'fileName'
+    )
+);
+
+$dataTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'Size',
+        true,
+        'Fisma.TableFormat.formatFileSize',
+        null,
+        'size',
+        false,
+        'number'
+    )
+);
+
+$dataTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'Uploaded By',
+        true,
+        'Fisma.TableFormat.formatHtml',
+        null,
+        'uploadedBy'
+    )
+);
+
+$dataTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'Upload Date',
+        true,
+        null,
+        null,
+        'uploadDate'
+    )
+);
+
+$dataTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'Comment',
+        false,
+        'Fisma.TableFormat.formatHtml',
+        null,
+        'comment'
+    )
+);
+
+$dataTable->setData($attachmentRows);
+echo $this->escape($dataTable, 'none');
+?>
+
 <div class="approvalHeader">
-    <b>File: </b>
-
-    <a href='/finding/remediation/downloadevidence/id/<?php echo $this->escape($this->artifact->id)?>' target='_blank'>
-        <?php echo $this->escape($this->artifact->Attachments[0]->fileName); ?>
-    </a>
-
-    submitted by 
-
-    <?php 
-        $user = $this->artifact->Attachments[0]->User;
-        $fullName = $user->nameFirst . ' ' . $user->nameLast;
-        
-        echo $this->escape($this->userInfo($fullName, $user->username), 'none');
-    ?> 
-    on 
-    <?php echo $this->escape($this->artifact->createdTs); ?>
+    <b>Approval Status</b>
 </div>

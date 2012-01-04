@@ -593,13 +593,15 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      */
     public function downloadevidenceAction()
     {
-        $id = $this->_request->getParam('id');
+        $evidenceId = $this->_request->getParam('evidenceId');
+        $attachmentId = $this->_request->getParam('attachmentId');
 
         $artifactsQuery = Doctrine_Query::create()
                           ->from('Evidence e')
                           ->leftJoin('e.Finding f')
                           ->leftJoin('e.Attachments a')
-                          ->where('e.id = ?', $id);
+                          ->where('e.id = ?', $evidenceId)
+                          ->andWhere('a.id = ?', $attachmentId);
 
         $evidence = $artifactsQuery->execute()->getLast();
 
