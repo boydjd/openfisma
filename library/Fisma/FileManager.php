@@ -55,7 +55,7 @@ class Fisma_FileManager
     {
         $sha1 = $this->_sha1File($filePath);
         if (!$sha1) {
-            throw new Fisma_FileManager_Exception('Unable to compute SHA! sum of source file: ' . $filePath);
+            throw new Fisma_FileManager_Exception('Unable to compute SHA1 sum of source file: ' . $filePath);
         }
         $path = substr($sha1, 0, 2);
         $name = substr($sha1, 2);

@@ -56,11 +56,9 @@ class Fisma_Cli_RemoveFile extends Fisma_Cli_Abstract
         if (is_null($this->getOption('no-warning'))) {
             print("This action is not undo-able. Are you sure you want to continue? (y/n): ");
             $confirm = fgets(STDIN);
-            if (substr($confirm, 0, 1) != 'y') {
+            if (!in_array($confirm, array('y', 'yes')) {
                 print("No changes have been made to the repository.\n");
                 return false;
-            } else {
-                print("Tips: the confirmation could be suppressed with the --no-warning option.\n");
             }
         }
 
@@ -71,8 +69,7 @@ class Fisma_Cli_RemoveFile extends Fisma_Cli_Abstract
             return false;
         }
 
-        print("Target file successfully removed from OpenFISMA repository!\n" .
-              "Please note that the registry in database is NOT touched.\n");
+        print("Target file successfully removed from OpenFISMA repository!\n");
         return true;
     }
 
