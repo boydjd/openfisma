@@ -135,8 +135,8 @@
                 that._contentDiv.appendChild(that._loadingContainer);
 
                 that._errorBarContainer= document.createElement("div");
+                that._renderErrorBar(that._errorBarContainer);
                 that._contentDiv.appendChild(that._errorBarContainer);
-                that._hideError();
 
                 that._treeViewContainer = document.createElement("div");
                 that._renderTreeView(that._treeViewContainer);
@@ -184,6 +184,19 @@
 
             container.style.display = "none";
             container.appendChild(loadingImage);
+        },
+
+        /**
+         * Render the error bar
+         *
+         * @method OrganizationTreeView._renderErrorBar
+         * @param container {HTMLElement} The container that the error is rendered into
+         */
+        _renderErrorBar: function (container) {
+            var p = document.createElement("p");
+
+            container.style.display = "none";
+            container.appendChild(p);
         },
 
         /**
@@ -242,7 +255,7 @@
                            // Gracefully handle a result that has no tree
                             this._showError("No data available.");
                             this._hideLoadingImage();
-                            this._hideDisposalCheckbox();
+                            this._hideTreeView();
                             return;
                         }
 
@@ -264,8 +277,10 @@
                         $.each(defaultExpandNodes, function (key, node) {node.expand();});
 
                         this._treeView.draw();
+                        this._showTreeView();
                         this._buildContextMenu();
                         this._hideLoadingImage();
+                        this._hideError(); 
                     },
                     failure: function (response) {
                         alert('Unable to load the organization tree: ' + response.statusText);
@@ -491,10 +506,7 @@
          */
         _showError: function (errorMessage) {
             if (YAHOO.lang.isString(errorMessage)) {
-                var p = document.createElement("p");
-                p.appendChild(document.createTextNode(errorMessage));
-
-                this._errorBarContainer.appendChild(p);
+                this._errorBarContainer.firstChild.innerHTML = errorMessage;
             }
             
             this._errorBarContainer.style.display = "";
@@ -508,10 +520,17 @@
         },
 
         /**
-         * Hide the disposal checkbox.
+         * Hide the TreeView.
          */
-        _hideDisposalCheckbox: function () {
-            this._disposalCheckboxContainer.style.display = "none";
+        _hideTreeView: function () {
+            this._treeViewContainer.style.display = "none";
+        },
+
+        /**
+         * Show the TreeView.
+         */
+        _showTreeView: function () {
+            this._treeViewContainer.style.display = "block";
         }
     };
 

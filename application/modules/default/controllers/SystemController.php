@@ -930,6 +930,10 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             }
         }
 
+        if (empty($systems)) {
+            return null;   
+        }
+
         return array_values($systems);
     }
 
