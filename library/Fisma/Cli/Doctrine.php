@@ -28,6 +28,21 @@
 class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 {
     /**
+     * List of doctrine tasks
+     * 
+     * @var array
+     */
+    private $_doctrineTasks = array(
+        'build-all',
+        'build-all-load',
+        'build-all-reload',
+        'dql',
+        'dump-data',
+        'load-data',
+        'generate-models-yaml'
+    );
+
+    /**
      * Configure the arguments accepted for this CLI program
      * 
      * @return array An array containing getopt long syntax
@@ -36,7 +51,14 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
     {
         return array(
             'auto-yes|y' => "Automatically pick 'yes' for yes/no questions",
-            'auto-no|n' => "Automatically pick 'no' for yes/no questions"
+            'auto-no|n' => "Automatically pick 'no' for yes/no questions",
+            'build-all|a' => "Calls generate-models-from-yaml, create-db, and create-tables",
+            'build-all-load|l' => "Calls build-all, and load-data",
+            'build-all-reload|r' => "Calls rebuild-db and load-data",
+            'dql|q' => "Execute dql query and display the results",
+            'dump-data' => "Dump data to a yaml data fixture file",
+            'load-data' => "Load data from a yaml data fixture file",
+            'generate-models-yaml|m' => "Generates your Doctrine_Record definitions from a Yaml schema file"
         );
     }
 
@@ -45,6 +67,20 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
      */
     protected function _run()
     {
+        $arguments = array_map('strtolower', $_SERVER['argv']);
+
+        // The default doctrine cli task is the first argument
+        $arguments[1] = $this->_getAvailableDoctrineTaskFromArguments();
+
+        // Make sure that user does not use both arguments auto-yes and auto-no at the same time
+        $autoYes = $this->getOption('auto-yes');
+        $autoNo = $this->getOption('auto-no');
+        if ($autoYes === true && $autoNo === true) {
+            throw new Fisma_Zend_Exception_User("Cannot use auto-yes and auto-no at the same time!");
+        } else if ($autoYes === true) {
+            array_push($arguments, 'yes');
+        }
+
         Fisma::setNotificationEnabled(false);
         Fisma::setListenerEnabled(false);
 
@@ -65,21 +101,7 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 
         $configuration = Zend_Registry::get('doctrine_config');
 
-        // Block the 'migrate' action from running because migrate approach is changed by OFJ-1617.
-        $arguments = array_map('strtolower', $_SERVER['argv']);
-        $migrateOffset = array_search('migrate', $arguments);
-        if ($migrateOffset) {
-            unset($arguments[$migrateOffset]);
-        }
-
-        // Make sure that user does not use both arguments auto-yes and auto-no at the same time
-        $autoYes = $this->getOption('auto-yes');
-        $autoNo = $this->getOption('auto-no');
-        if (!is_null($autoYes) && !is_null($autoNo)) {
-            throw new Fisma_Zend_Exception_User("Cannot use auto-yes and auto-no at the same time!");
-        }
-
-        // Check to see if sample data was requested, e.g. `doctrine-cli.php build-all-reload sample-data`
+        // Check to see if sample data was requested, e.g. `doctrine.php -r sample-data`
         $sampleDataParameter = array_search('sample-data', $arguments);
         if ($sampleDataParameter) {
             $sampleDataBuildPath = Fisma::getPath('sampleDataBuild');
@@ -208,6 +230,32 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Get the task name from arguments. Throw exception if there is no or more than one options
+     *  
+     * @return string $taskName The doctrine task
+     * @throws Fisma_Zend_Exception_User
+     */
+    private function _getAvailableDoctrineTaskFromArguments()
+    {
+        $taskCount = 0;
+        $taskName = null;
+        foreach ($this->_doctrineTasks as $task) {
+            if ($this->getOption($task) === true) {
+                $taskName = $task;
+                $taskCount++;
+            }
+        }
+
+        if ($taskCount == 0) {
+            throw new Fisma_Zend_Exception_User("An option is required.");
+        } else if ($taskCount > 1) {
+            throw new Fisma_Zend_Exception_User("Cannot use more than one option.");
+        } else {
+            return $taskName;
         }
     }
 }
