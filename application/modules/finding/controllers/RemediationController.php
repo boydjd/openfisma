@@ -556,28 +556,35 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
 
-        define('EVIDENCE_PATH', Fisma::getPath('data') . '/uploads/evidence');
-        $file = $_FILES['evidence'];
-
         try {
-            if ($file['error'] != UPLOAD_ERR_OK) {
-              if ($file['error'] == UPLOAD_ERR_INI_SIZE) {
-                $message = "The uploaded file is larger than is allowed by the server.";
-              } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {
-                $message = "The uploaded file was only partially received.";
-              } else {
-                $message = "An error occurred while processing the uploaded file.";
-              }
-              throw new Fisma_Zend_Exception($message);
-            }
-
-            if (!$file['name']) {
-                $message = "You did not select a file to upload. Please select a file and try again.";
-                throw new Fisma_Zend_Exception($message);
-            }
-
             $evidence = new Evidence();
-            $evidence->attach($file);
+            for ($i = 0; $i<count($_FILES['evidence']['name']); $i++)
+            {
+                // PHP handles multiple uploads as $_FILES['element_name']['attribute'][idx] 
+                // instead of $_FILES['element_name'][idx]['attribute'], so we need to manually remap it
+                $file = array();
+                foreach($_FILES['evidence'] as $index => $value) {
+                    $file[$index] = $value[$i];
+                }
+
+                if (!$file['name']) {
+                    $message = "You did not select a file to upload. Please select a file and try again.";
+                    throw new Fisma_Zend_Exception($message);
+                }
+
+                if ($file['error'] != UPLOAD_ERR_OK) {
+                  if ($file['error'] == UPLOAD_ERR_INI_SIZE) {
+                    $message = "The uploaded file {$file['name']} is larger than is allowed by the server.";
+                  } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {
+                    $message = "The uploaded file {$file['name']} was only partially received.";
+                  } else {
+                    $message = "An error occurred while processing the uploaded file {$file['name']}.";
+                  }
+                  throw new Fisma_Zend_Exception($message);
+                }
+
+                $evidence->attach($file);
+            }
             $finding->submitEvidence($evidence);
         } catch (Fisma_Zend_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
