@@ -567,23 +567,24 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     $file[$index] = $value[$i];
                 }
 
-                if (!$file['name']) {
-                    $message = "You did not select a file to upload. Please select a file and try again.";
-                    throw new Fisma_Zend_Exception($message);
-                }
+                if (!empty($file['name'])) {                    
+                    if ($file['error'] != UPLOAD_ERR_OK) {
+                      if ($file['error'] == UPLOAD_ERR_INI_SIZE) {
+                        $message = "The uploaded file {$file['name']} is larger than is allowed by the server.";
+                      } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {
+                        $message = "The uploaded file {$file['name']} was only partially received.";
+                      } else {
+                        $message = "An error occurred while processing the uploaded file {$file['name']}.";
+                      }
+                      throw new Fisma_Zend_Exception($message);
+                    }
 
-                if ($file['error'] != UPLOAD_ERR_OK) {
-                  if ($file['error'] == UPLOAD_ERR_INI_SIZE) {
-                    $message = "The uploaded file {$file['name']} is larger than is allowed by the server.";
-                  } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {
-                    $message = "The uploaded file {$file['name']} was only partially received.";
-                  } else {
-                    $message = "An error occurred while processing the uploaded file {$file['name']}.";
-                  }
-                  throw new Fisma_Zend_Exception($message);
+                    $evidence->attach($file);
                 }
-
-                $evidence->attach($file);
+            }
+            if ($evidence->Attachments->count()==0) {
+                $message = "You did not select any file to upload. Please select a file and try again.";
+                throw new Fisma_Zend_Exception($message);
             }
             $finding->submitEvidence($evidence);
         } catch (Fisma_Zend_Exception $e) {

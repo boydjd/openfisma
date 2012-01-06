@@ -111,6 +111,29 @@ Fisma.Remediation = {
         };
         
         return true;
-    }
+    },
 
+    /**
+     * Handle onclick event of the button on the Evidence upload form 
+     * to attach one more file
+     */
+    add_upload_evidence : function() {
+        var file_list = document.getElementById('evidence_upload_file_list');
+
+        var new_upload = document.createElement('input');
+        new_upload.type = 'file';
+        new_upload.name = 'evidence[]';
+        file_list.appendChild(new_upload);
+
+        return false; // to avoid form submission
+    },
+
+    /**
+     * Handle onclick event of the link on the Evidence list view 
+     * to show rejected evidence(s)
+     */
+    show_rejected_evidences : function() {
+        document.getElementById('rejectedEvidencesContainer').style.display='block';
+        document.getElementById('rejectedEvidencesTrigger').style.display='none';
+    }
 };

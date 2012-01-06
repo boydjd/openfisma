@@ -25,8 +25,16 @@ else:
         else:
             if(!$rejectedStarted):
                 Fisma_Format_Section::startSection('Rejected Evidence');
-                echo("<a href='#' onclick='document.getElementById(\"rejectedEvidencesContainer\").style.display=\"block\";this.style.display=\"none\";'>Click to display</a>");
-                echo("<div id='rejectedEvidencesContainer' style='display:none'>");
+                $displayRejectedEvidenceButton = new Fisma_Yui_Form_Button(
+                    'rejectedEvidencesTrigger',
+                    array(
+                        'label' => 'Click to display',
+                        'onClickFunction' => 'Fisma.Remediation.show_rejected_evidences',
+                        'onClickArgument' => array()
+                    )
+                );
+                echo $this->escape($displayRejectedEvidenceButton, 'none');
+                echo "<div id='rejectedEvidencesContainer'>";
                 $rejectedStarted = true;
             endif;
             echo $this->partial(
