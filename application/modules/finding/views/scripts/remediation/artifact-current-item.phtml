@@ -1,6 +1,31 @@
 <?php
 Fisma_Format_Section::startSection('Current Evidence (orginally submitted on ' .
                                    $this->escape($this->artifact->createdTs) . ')');
+
+
+$message = "WARNING: You are about to append files to the evidence currently under evaluation. "
+         . 'This action cannot be undone. Please click "YES" to confirm your action or click "No" to stop.';
+$addToEvidenceButton = new Fisma_Yui_Form_Button(
+    'addToEvidenceButton',
+    array(
+        'label' => 'Add More Files',
+        'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+        'onClickArgument' => array(
+            'text' => $message,
+            'func' => 'Fisma.Remediation.upload_evidence'
+        )
+    )
+);
+if (
+    $this->artifact->Finding->isDeleted() || 
+    'EA' != $this->artifact->Finding->status || 
+    !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->artifact->Finding)
+):
+    $addToEvidenceButton->readOnly = true;
+endif;
+
+echo $this->escape($addToEvidenceButton, 'none');
+
 echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $this->artifact));
 ?>
 

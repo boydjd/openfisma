@@ -557,7 +557,16 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
 
         try {
-            $evidence = new Evidence();
+            $newEvidence = ($finding->status == 'EN');
+            if ($newEvidence) { // Upload new evidence
+                $evidence = new Evidence();
+            } else {  // Add to the current Evidence under evaluation
+                $evidenceQuery = Doctrine_Query::create()
+                    ->from('Evidence e')
+                    ->leftJoin('e.Attachments')
+                    ->where('e.findingId = ?', $id);
+                $evidence = $evidenceQuery->execute()->getLast();
+            }
             for ($i = 0; $i<count($_FILES['evidence']['name']); $i++)
             {
                 // PHP handles multiple uploads as $_FILES['element_name']['attribute'][idx] 
@@ -586,7 +595,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 $message = "You did not select any file to upload. Please select a file and try again.";
                 throw new Fisma_Zend_Exception($message);
             }
-            $finding->submitEvidence($evidence);
+            if ($newEvidence) {
+                $finding->submitEvidence($evidence);
+            } else {
+                $evidence->save();
+            }
         } catch (Fisma_Zend_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
