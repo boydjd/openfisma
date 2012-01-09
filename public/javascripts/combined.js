@@ -10478,7 +10478,7 @@ Fisma.Module = {
 
     Fisma.Registry = Registry;
 })();
-Fisma.Remediation={upload_evidence:function(){Fisma.UrlPanel.showPanel("Upload Evidence","/finding/remediation/upload-form",Fisma.Remediation.upload_evidence_form_init);return false},upload_evidence_form_init:function(){document.finding_detail_upload_evidence.action=document.finding_detail.action},remediationAction:function(c,i,g){var e=document.createElement("div");var b=document.createElement("p");var f;if("APPROVED"===c){f=document.createTextNode("Comments (OPTIONAL):")}else{f=document.createTextNode("Comments:")}b.appendChild(f);e.appendChild(b);var h=document.createElement("textarea");h.id="dialog_comment";h.name="comment";h.rows=5;h.cols=60;e.appendChild(h);var a=document.createElement("div");a.style.height="20px";e.appendChild(a);var d=document.createElement("input");d.type="button";d.id="dialog_continue";d.value="Continue";e.appendChild(d);Fisma.HtmlPanel.showPanel(g,e.innerHTML);document.getElementById("dialog_continue").onclick=function(){var j=document.getElementById(i);var n=document.getElementById("dialog_comment").value;if("DENIED"===c){if(n.match(/^\s*$/)){var m="Comments are required in order to submit.";var k={zIndex:10000};Fisma.Util.showAlertDialog(m,k);return}}j.elements.comment.value=n;j.elements.decision.value=c;var l=document.createElement("input");l.type="hidden";l.name="submit_msa";l.value=c;j.appendChild(l);j.submit();return};return true},add_upload_evidence:function(){var a=document.getElementById("evidence_upload_file_list");a.appendChild(document.createElement("br"));var b=document.createElement("input");b.type="file";b.name="evidence[]";a.appendChild(b);return false},show_rejected_evidences:function(){document.getElementById("rejectedEvidencesContainer").style.display="block";document.getElementById("rejectedEvidencesTrigger").style.display="none"}};/**
+Fisma.Remediation={upload_evidence:function(){Fisma.UrlPanel.showPanel("Upload Evidence","/finding/remediation/upload-form",Fisma.Remediation.upload_evidence_form_init);return false},upload_evidence_form_init:function(){document.finding_detail_upload_evidence.action=document.finding_detail.action},remediationAction:function(c,i,g){var e=document.createElement("div");var b=document.createElement("p");var f;if("APPROVED"===c){f=document.createTextNode("Comments (OPTIONAL):")}else{f=document.createTextNode("Comments:")}b.appendChild(f);e.appendChild(b);var h=document.createElement("textarea");h.id="dialog_comment";h.name="comment";h.rows=5;h.cols=60;e.appendChild(h);var a=document.createElement("div");a.style.height="20px";e.appendChild(a);var d=document.createElement("input");d.type="button";d.id="dialog_continue";d.value="Continue";e.appendChild(d);Fisma.HtmlPanel.showPanel(g,e.innerHTML);document.getElementById("dialog_continue").onclick=function(){var j=document.getElementById(i);var n=document.getElementById("dialog_comment").value;if("DENIED"===c){if(n.match(/^\s*$/)){var m="Comments are required in order to submit.";var k={zIndex:10000};Fisma.Util.showAlertDialog(m,k);return}}j.elements.comment.value=n;j.elements.decision.value=c;var l=document.createElement("input");l.type="hidden";l.name="submit_msa";l.value=c;j.appendChild(l);j.submit();return};return true},add_upload_evidence:function(){var a=document.getElementById("evidence_upload_file_list");var b=document.createElement("input");b.type="file";b.name="evidence[]";a.appendChild(b);return false},show_rejected_evidences:function(){document.getElementById("rejectedEvidencesContainer").style.display="block";document.getElementById("rejectedEvidencesTrigger").style.display="none"}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -10535,61 +10535,70 @@ Fisma.Remediation = {
      * @param {String} action The action name: APPROVED or DENIED
      * @param {String} formId 
      * @param {String} panelTitle the text shows on the panel.
+     * @param {int} findingId the id of the current finding.
      */
-    remediationAction : function(action, formId, panelTitle) {
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        var c_title;
-        if ('APPROVED' === action) {
-            c_title = document.createTextNode('Comments (OPTIONAL):');
-        } else {
-            c_title = document.createTextNode('Comments:');
-        }
-        p.appendChild(c_title);
-        content.appendChild(p);
-        var textarea = document.createElement('textarea');
-        textarea.id = 'dialog_comment';
-        textarea.name = 'comment';
-        textarea.rows = 5;
-        textarea.cols = 60;
-        content.appendChild(textarea);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-       
-        Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
-
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = document.getElementById(formId);
-            var comment = document.getElementById('dialog_comment').value;
-
-            if ('DENIED' === action) { 
-                if (comment.match(/^\s*$/)) {
-                    var alertMessage = 'Comments are required in order to submit.';
-                    var config = {zIndex : 10000};
-                    Fisma.Util.showAlertDialog(alertMessage, config);
-                    return;
+    remediationAction : function(action, formId, panelTitle, findingId) {
+        if ('REJECTED' === action) {
+            Fisma.UrlPanel.showPanel(
+                panelTitle,
+                '/finding/remediation/reject-evidence/id/' + findingId,
+                function(){
+                    document.finding_detail_reject_evidence.action = document.finding_detail.action;
                 }
+            );
+        } else {
+            var content = document.createElement('div');
+            var p = document.createElement('p');
+            var c_title;
+            if ('APPROVED' === action) {
+                c_title = document.createTextNode('Comments (OPTIONAL):');
+            } else {
+                c_title = document.createTextNode('Comments:');
             }
+            p.appendChild(c_title);
+            content.appendChild(p);
+            var textarea = document.createElement('textarea');
+            textarea.id = 'dialog_comment';
+            textarea.name = 'comment';
+            textarea.rows = 5;
+            textarea.cols = 60;
+            content.appendChild(textarea);
+            var div = document.createElement('div');
+            div.style.height = '20px';
+            content.appendChild(div);
+            var button = document.createElement('input');
+            button.type = 'button';
+            button.id = 'dialog_continue';
+            button.value = 'Continue';
+            content.appendChild(button);
+           
+            Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = action;
+            document.getElementById('dialog_continue').onclick = function (){
+                var form2 = document.getElementById(formId);
+                var comment = document.getElementById('dialog_comment').value;
 
-            var sub = document.createElement('input');
-            sub.type = 'hidden';
-            sub.name = 'submit_msa';
-            sub.value = action;
-            form2.appendChild(sub);
-            form2.submit();
-            return;
-        };
-        
+                if ('DENIED' === action) { 
+                    if (comment.match(/^\s*$/)) {
+                        var alertMessage = 'Comments are required in order to submit.';
+                        var config = {zIndex : 10000};
+                        Fisma.Util.showAlertDialog(alertMessage, config);
+                        return;
+                    }
+                }
+
+                form2.elements['comment'].value = comment;
+                form2.elements['decision'].value = action;
+
+                var sub = document.createElement('input');
+                sub.type = 'hidden';
+                sub.name = 'submit_msa';
+                sub.value = action;
+                form2.appendChild(sub);
+                form2.submit();
+                return;
+            };
+        }
         return true;
     },
 
