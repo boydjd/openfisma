@@ -68,6 +68,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             } elseif (isset($_POST['upload_evidence'])) {
                 $request->setParam('sub', null);
                 $this->_forward('uploadevidence');
+            } elseif (isset($_POST['reject_evidence'])) {
+                $request->setParam('sub', null);
+                $this->_forward('evidence');
             }
         }
     }
@@ -655,18 +658,30 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         try {
             Doctrine_Manager::connection()->beginTransaction();
+            $comment = $this->_request->getParam('comment');
+
             if ('APPROVED' == $decision) {
-                $comment = $this->_request->getParam('comment');
                 $finding->approve(CurrentUser::getInstance(), $comment);
             }
 
             if ('DENIED' == $decision) {
-                $comment = $this->_request->getParam('comment');
                 $finding->deny(CurrentUser::getInstance(), $comment);
+            }
+
+            if ('REJECTED' == $decision) {
+                $targetStatus = $this->_request->getPost('target_status');
+                $finding->rejectTo(CurrentUser::getInstance(), $comment, $targetStatus);
             }
             Doctrine_Manager::connection()->commit();
         } catch (Doctrine_Exception $e) {
             Doctrine_Manager::connection()->rollback();
+            $message = "Failure in this operation. ";
+            if (Fisma::debug()) {
+                $message .= $e->getMessage();
+            }
+            $model = 'warning';
+            $this->view->priorityMessenger($message, $model);
+        } catch (Fisma_Zend_Exception $e) {
             $message = "Failure in this operation. ";
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
@@ -915,6 +930,19 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function uploadFormAction() 
     {
         $this->_helper->layout()->disableLayout();
+    }
+
+    /**
+     * Renders the form for rejecting evidence.
+     * 
+     * @return void
+     */
+    function rejectEvidenceAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $id = $this->_request->getParam('id');
+        $finding = $this->_getSubject($id);
+        $this->view->finding = $finding;
     }
 
     /**

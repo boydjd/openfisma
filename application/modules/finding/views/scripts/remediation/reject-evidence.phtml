@@ -1,0 +1,34 @@
+<?php
+    $currentPrecedence = $this->finding->CurrentEvaluation->precedence;
+    $evaluationQuery = Doctrine_Query::create()
+                           ->from('Evaluation e')
+                           ->where('e.approvalgroup LIKE ?', 'evidence')
+                           ->andWhere('e.precedence < ?', $currentPrecedence);
+    $previousEvaluations = $evaluationQuery->execute();
+// phpcs requires php tags or it generates warnings
+?>
+
+<form id="finding_detail_reject_evidence"
+      name="finding_detail_reject_evidence" method="post" enctype="multipart/form-data">
+<p><b>Which status do you want to send this finding to?</b></p>
+<p>
+    <input type="radio" name="target_status" value="0" checked> Evidence Needed (EN)<br/>
+<?php
+    foreach($previousEvaluations as $evaluation)
+    {
+        $id = $evaluation->id;
+        echo "<input type='radio' name='target_status' value='{$id}' id='target_status_{$id}'>"
+           . "<label for='target_status_{$id}'>{$evalution->name} ($evaluation->nickname)</label><br/>";
+    }
+?>
+</p>
+<p>
+    <label for="finding_detail_reject_evidence_comment"><b>Comments (REQUIRED):</b></label><br/>
+    <textarea id="finding_detail_reject_evidence_comment
+" name="comment" rows=5 cols=60></textarea>
+</p>
+<p>
+    <input type="hidden" name="decision" value="REJECTED"/>
+    <input type="submit" name="reject_evidence" value="Save"/>
+</p>
+</form>

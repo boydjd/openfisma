@@ -55,61 +55,70 @@ Fisma.Remediation = {
      * @param {String} action The action name: APPROVED or DENIED
      * @param {String} formId 
      * @param {String} panelTitle the text shows on the panel.
+     * @param {int} findingId the id of the current finding.
      */
-    remediationAction : function(action, formId, panelTitle) {
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        var c_title;
-        if ('APPROVED' === action) {
-            c_title = document.createTextNode('Comments (OPTIONAL):');
-        } else {
-            c_title = document.createTextNode('Comments:');
-        }
-        p.appendChild(c_title);
-        content.appendChild(p);
-        var textarea = document.createElement('textarea');
-        textarea.id = 'dialog_comment';
-        textarea.name = 'comment';
-        textarea.rows = 5;
-        textarea.cols = 60;
-        content.appendChild(textarea);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-       
-        Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
-
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = document.getElementById(formId);
-            var comment = document.getElementById('dialog_comment').value;
-
-            if ('DENIED' === action) { 
-                if (comment.match(/^\s*$/)) {
-                    var alertMessage = 'Comments are required in order to submit.';
-                    var config = {zIndex : 10000};
-                    Fisma.Util.showAlertDialog(alertMessage, config);
-                    return;
+    remediationAction : function(action, formId, panelTitle, findingId) {
+        if ('REJECTED' === action) {
+            Fisma.UrlPanel.showPanel(
+                panelTitle,
+                '/finding/remediation/reject-evidence/id/' + findingId,
+                function(){
+                    document.finding_detail_reject_evidence.action = document.finding_detail.action;
                 }
+            );
+        } else {
+            var content = document.createElement('div');
+            var p = document.createElement('p');
+            var c_title;
+            if ('APPROVED' === action) {
+                c_title = document.createTextNode('Comments (OPTIONAL):');
+            } else {
+                c_title = document.createTextNode('Comments:');
             }
+            p.appendChild(c_title);
+            content.appendChild(p);
+            var textarea = document.createElement('textarea');
+            textarea.id = 'dialog_comment';
+            textarea.name = 'comment';
+            textarea.rows = 5;
+            textarea.cols = 60;
+            content.appendChild(textarea);
+            var div = document.createElement('div');
+            div.style.height = '20px';
+            content.appendChild(div);
+            var button = document.createElement('input');
+            button.type = 'button';
+            button.id = 'dialog_continue';
+            button.value = 'Continue';
+            content.appendChild(button);
+           
+            Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = action;
+            document.getElementById('dialog_continue').onclick = function (){
+                var form2 = document.getElementById(formId);
+                var comment = document.getElementById('dialog_comment').value;
 
-            var sub = document.createElement('input');
-            sub.type = 'hidden';
-            sub.name = 'submit_msa';
-            sub.value = action;
-            form2.appendChild(sub);
-            form2.submit();
-            return;
-        };
-        
+                if ('DENIED' === action) { 
+                    if (comment.match(/^\s*$/)) {
+                        var alertMessage = 'Comments are required in order to submit.';
+                        var config = {zIndex : 10000};
+                        Fisma.Util.showAlertDialog(alertMessage, config);
+                        return;
+                    }
+                }
+
+                form2.elements['comment'].value = comment;
+                form2.elements['decision'].value = action;
+
+                var sub = document.createElement('input');
+                sub.type = 'hidden';
+                sub.name = 'submit_msa';
+                sub.value = action;
+                form2.appendChild(sub);
+                form2.submit();
+                return;
+            };
+        }
         return true;
     },
 

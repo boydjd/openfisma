@@ -362,6 +362,30 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     }
 
     /**
+     * Reject the evaluation back to a specific stage
+     * 
+     * @param User  $user         The user who commit the decision
+     * @param mixed $comment      The comment to put in
+     * @param mixed $targetStatus The id of the target Evaluation stage, 0 means no EN
+     * 
+     * @return void
+     */
+    public function rejectTo(User $user, $comment, $targetStatus)
+    {
+        $currentStatus = $this->status;
+        $this->deny($user, $comment);
+        if ($targetStatus > 0)
+        {
+            $this->CurrentEvaluation = Doctrine::getTable('Evaluation')->find($targetStatus);
+            $this->status = $currentStatus;
+        }
+        $this->_updateNextDueDate();
+        $this->updateDenormalizedStatus();
+
+        $this->save();
+    }
+
+    /**
      * Set the status as 'EA' and the currentEvaluationId as the first Evidence Evaluation id
      *
      * @param Evidence $evidence

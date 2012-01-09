@@ -31,15 +31,40 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
 
 <div class="approval">
     <?php
-    /*
+    $activeEvaluation = $this->finding->CurrentEvaluation; // <-- an Evaluation class, not a FindingEvaluation instance
+
+    /**
      * This is used to track which evaluations have been completed for this artifact. After the first loop completes,
      * any evaluation (i.e. the Evaluation table) which is not on this list can be inferred to be pending or skipped.
      */
-    $completedEvaluations = array();
-    
+    $distinctEvaluationQuery = new Doctrine_RawSql(); // Cannot use subqueries in DQL joins
+    $distinctEvaluationQuery
+        ->select('{fe1.*}, {f.*}, {e.*}, {u.*}')
+        ->from(
+            "finding_evaluation fe1 " .
+            "INNER JOIN (" .
+                "SELECT MAX(createdts) AS updatedts " .
+                "FROM finding_evaluation fe2 " .
+                "WHERE fe2.findingid = {$this->finding->id} " .
+                "GROUP BY evaluationid" .
+            ") fe3 ON fe1.createdts = fe3.updatedts " .
+            "LEFT JOIN finding f ON fe1.findingid = f.id " .
+            "LEFT JOIN evaluation e ON fe1.evaluationid = e.id " .
+            "LEFT JOIN poc u ON fe1.userid = u.id " .
+            "WHERE fe1.findingid = {$this->finding->id}"
+        )
+        ->addComponent('fe1', 'FindingEvaluation fe1')
+        ->addComponent('e', 'fe1.Evaluation e')
+        ->addComponent('f', 'fe1.Finding f')
+        ->addComponent('u', 'fe1.User u');
+    $distinctEvaluations = $distinctEvaluationQuery->execute();
+
     // First: display all of the completed evaluations for the artifact.
-    foreach ($this->artifact->FindingEvaluations as $findingEvaluation):
-        $completedEvaluations[] = $findingEvaluation->Evaluation->id;
+    foreach ($distinctEvaluations as $findingEvaluation):
+        // Only evaluations preceeding to the CurrentEvaluation are marked as completed
+        if ($findingEvaluation->Evaluation->precedence >= $activeEvaluation->precedence):
+            continue;
+        endif;
 
         $user = $findingEvaluation->User;
         $fullName = $user->nameFirst . ' ' . $user->nameLast;
@@ -68,13 +93,11 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
     ?>
 
     <?php
-    $activeEvaluation = $this->finding->CurrentEvaluation;
 
     /*
      * Second: Show approval buttons for the current evaluation if the user has the required privileges.
      */
     if ($this->acl()->hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)):
-        $completedEvaluations[] = $activeEvaluation->id;
     ?>
         <div class="approvalStep">
             <p>
@@ -88,12 +111,12 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
         $approveButton = new Fisma_Yui_Form_Button(
             'approveButton',
              array(
-                  'label' => 'APPROVED', 
+                  'label' => 'APPROVE', 
                   'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                   'onClickArgument' => array(
                       'text' => $message, 
                       'func' => 'Fisma.Remediation.remediationAction',
-                      'args' => array("APPROVED", "finding_detail", "Evidence Approval")
+                      'args' => array("APPROVED", "finding_detail", "Evidence Approval", $this->finding->id)
                  )
             )    
         );
@@ -105,12 +128,12 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
         $denyButton = new Fisma_Yui_Form_Button(
             'denyButton',
             array(
-                  'label' => 'DENIED', 
+                  'label' => 'REJECT', 
                   'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                   'onClickArgument' => array(
                       'text' => $message, 
                       'func' => 'Fisma.Remediation.remediationAction',
-                      'args' => array("DENIED", "finding_detail", "Evidence Denial")
+                      'args' => array("REJECTED", "finding_detail", "Evidence Denial", $this->finding->id)
                   )
             )
         );
@@ -129,7 +152,8 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
      * which are still under review, the status is listed as 'PENDING'.
      */
     foreach ($this->evaluations as $evaluation):
-        if (!in_array($evaluation->id, $completedEvaluations)):
+        if ($evaluation->precedence > $activeEvaluation->precedence):
+//        if (!in_array($evaluation->id, $completedEvaluations)):
     ?>
             <div class='approvalStep'>
                 <p><b><?php echo $this->escape($evaluation->name)?></b>PENDING</p>
