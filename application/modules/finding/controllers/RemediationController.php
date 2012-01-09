@@ -570,6 +570,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     ->where('e.findingId = ?', $id);
                 $evidence = $evidenceQuery->execute()->getLast();
             }
+            $auditMessage = 'Add more evidence(s):'; // for Audit logging
             for ($i = 0; $i<count($_FILES['evidence']['name']); $i++)
             {
                 // PHP handles multiple uploads as $_FILES['element_name']['attribute'][idx] 
@@ -592,6 +593,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     }
 
                     $evidence->attach($file);
+                    $auditMessage .= " {$file['name']};";
                 }
             }
             if ($evidence->Attachments->count()==0) {
@@ -602,6 +604,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 $finding->submitEvidence($evidence);
             } else {
                 $evidence->save();
+                $finding->getAuditLog()->write($auditMessage);
             }
         } catch (Fisma_Zend_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');

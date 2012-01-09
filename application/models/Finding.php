@@ -378,6 +378,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         {
             $this->CurrentEvaluation = Doctrine::getTable('Evaluation')->find($targetStatus);
             $this->status = $currentStatus;
+            $this->getAuditLog()->write('Sent to ' . $this->CurrentEvaluation->nickname);
         }
         $this->_updateNextDueDate();
         $this->updateDenormalizedStatus();
@@ -407,7 +408,11 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         
         $this->updateDenormalizedStatus();
 
-        $this->getAuditLog()->write('Upload evidence: ' . $evidence->Attachments[0]->fileName);
+        $message = 'Upload evidence(s):';
+        foreach ($evidence->Attachments as $attachment) {
+            $message .= " {$attachment->fileName};";
+        }
+        $this->getAuditLog()->write($message);
         $this->save();
     }
     /**
