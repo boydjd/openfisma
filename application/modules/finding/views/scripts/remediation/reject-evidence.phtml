@@ -17,7 +17,7 @@
     foreach($previousEvaluations as $evaluation)
     {
         $id = $evaluation->id;
-        echo "<input type='radio' name='target_status' value='{$id}' id='target_status_{$id}'>"
+        echo "<input type='radio' name='target_status' value='{$id}' id='target_status_{$id}'> "
            . "<label for='target_status_{$id}'>{$evaluation->name} ($evaluation->nickname)</label><br/>";
     }
 ?>
