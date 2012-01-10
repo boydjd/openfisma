@@ -37,3 +37,7 @@ fieldset#evidence_upload_file_list input {
 div#rejectedEvidencesContainer {
     display: none;
 }
+
+form#finding_detail_upload_evidence button {
+    display: none;
+}

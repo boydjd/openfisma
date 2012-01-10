@@ -132,6 +132,7 @@ Fisma.Remediation = {
         var new_upload = document.createElement('input');
         new_upload.type = 'file';
         new_upload.name = 'evidence[]';
+        new_upload.multiple = true;
         file_list.appendChild(new_upload);
 
         return false; // to avoid form submission

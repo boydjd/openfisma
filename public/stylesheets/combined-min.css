@@ -17,6 +17,7 @@ fieldset#evidence_upload_file_list{border:1px solid;padding-top:8px;padding-righ
 fieldset#evidence_upload_file_list legend{font-weight:bold;}
 fieldset#evidence_upload_file_list input{width:100%;display:block;margin-bottom:4px;}
 div#rejectedEvidencesContainer{display:none;}
+form#finding_detail_upload_evidence button{display:none;}
 span#irReportForwardsContainer{position:relative;left:245px;}
 span#irReportSaveContainer{position:relative;left:260px;}
 span#irReportBackwardsContainer{position:relative;left:-110px;}
