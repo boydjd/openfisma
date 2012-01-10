@@ -33,13 +33,10 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
      * @var array
      */
     private $_doctrineTasks = array(
-        'build-all',
-        'build-all-load',
-        'build-all-reload',
-        'dql',
-        'dump-data',
-        'load-data',
-        'generate-models-yaml'
+        'build' => 'build-all-load',
+        'rebuild' => 'build-all-reload',
+        'models' => 'generate-models-yaml',
+        'dql' => 'dql'
     );
 
     /**
@@ -52,13 +49,11 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
         return array(
             'auto-yes|y' => "Automatically pick 'yes' for yes/no questions",
             'auto-no|n' => "Automatically pick 'no' for yes/no questions",
-            'build-all|a' => "Calls generate-models-from-yaml, create-db, and create-tables",
-            'build-all-load|l' => "Calls build-all, and load-data",
-            'build-all-reload|r' => "Calls rebuild-db and load-data",
-            'dql|q' => "Execute dql query and display the results",
-            'dump-data' => "Dump data to a yaml data fixture file",
-            'load-data' => "Load data from a yaml data fixture file",
-            'generate-models-yaml|m' => "Generates your Doctrine_Record definitions from a Yaml schema file"
+            'build|b' => "Create models, create tables, and load fixtures",
+            'rebuild|r' => "Drop existing tables (if they exist), then do --build",
+            'models|m' => "Create models (a different name for what we currently call generate-models-yaml)",
+            'sample-data|s' => "When building (or rebuilding) include sample data. Does not apply when not building",
+            'dql|q=s' => "Execute dql query and display the results",
         );
     }
 
@@ -67,10 +62,16 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
      */
     protected function _run()
     {
-        $arguments = array_map('strtolower', $_SERVER['argv']);
+        // Default doctrine script name
+        $arguments[0] = 'doctrine.php';
 
         // The default doctrine cli task is the first argument
         $arguments[1] = $this->_getAvailableDoctrineTaskFromArguments();
+
+        $dqlParameter = $this->getOption('dql');
+        if ($dqlParameter) {
+            array_push($arguments, $dqlParameter);
+        }
 
         // Make sure that user does not use both arguments auto-yes and auto-no at the same time
         $autoYes = $this->getOption('auto-yes');
@@ -78,7 +79,9 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
         if ($autoYes === true && $autoNo === true) {
             throw new Fisma_Zend_Exception_User("Cannot use auto-yes and auto-no at the same time!");
         } else if ($autoYes === true) {
-            array_push($arguments, 'yes');
+            array_push($arguments, 'auto-yes');
+        } else if ($autoNo === true) {
+            array_push($arguments, 'auto-no');
         }
 
         Fisma::setNotificationEnabled(false);
@@ -102,17 +105,13 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
         $configuration = Zend_Registry::get('doctrine_config');
 
         // Check to see if sample data was requested, e.g. `doctrine.php -r sample-data`
-        $sampleDataParameter = array_search('sample-data', $arguments);
-        if ($sampleDataParameter) {
+        if ($this->getOption('sample-data')) {
             $sampleDataBuildPath = Fisma::getPath('sampleDataBuild');
 
             $this->loadFixtureFilesWithSampleData($sampleDataBuildPath);
 
             // Point Doctrine data loader at the new directory
             $configuration['data_fixtures_path'] = $sampleDataBuildPath;
-
-            // Remove the request parameter before passing it to Doctrine since Doctrine won't understand it
-            unset($arguments[$sampleDataParameter]);
         }
 
         // Kick off the CLI
@@ -243,8 +242,8 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
     {
         $taskCount = 0;
         $taskName = null;
-        foreach ($this->_doctrineTasks as $task) {
-            if ($this->getOption($task) === true) {
+        foreach ($this->_doctrineTasks as $key => $task) {
+            if ($this->getOption($key)) {
                 $taskName = $task;
                 $taskCount++;
             }

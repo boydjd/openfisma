@@ -51,7 +51,7 @@ class Fisma_Doctrine_Task_DropDb extends Doctrine_Task_DropDb
     public function execute()
     {
         $argument = $this->getArgument('force');
-        if ('--auto-no' == $argument || '-n' == $argument) {
+        if ('auto-no' == $argument) {
             $this->notify('Cancelled to drop the database');
 
             return;
