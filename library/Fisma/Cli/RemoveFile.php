@@ -56,7 +56,7 @@ class Fisma_Cli_RemoveFile extends Fisma_Cli_Abstract
         if (is_null($this->getOption('no-warning'))) {
             print("This action is not undo-able. Are you sure you want to continue? (y/n): ");
             $confirm = fgets(STDIN);
-            if (!in_array($confirm, array('y', 'yes')) {
+            if (!in_array($confirm, array('y', 'yes'))) {
                 print("No changes have been made to the repository.\n");
                 return false;
             }

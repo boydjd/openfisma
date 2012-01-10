@@ -53,15 +53,18 @@ class Fisma_Cli_AddFile extends Fisma_Cli_Abstract
         }
         try
         {
-            $hash = $this->_store();
+            $u = new Upload();
+            $u->fileName = pathinfo($this->getOption('in'), PATHINFO_FILENAME);
+            $u->fileHash = $this->_store();
+            $u->uploadIp = '127.0.0.1';
+            $u->save();
         } catch (Exception $e) {
             throw new Fisma_Zend_Exception_User($e->getMessage());
             return false;
         }
 
-        print("Target file successfully stored into OpenFISMA repository!\n" .
-              "Please note that the file is NOT registered in the database. To access it, use the copy-file script ".
-              "with the following SHA1 hash:\n$hash\n");
+        print("Target file successfully stored into OpenFISMA repository as Upload ID = {$u->id}\n" .
+              "To access it with the copy-file script, please use the following SHA1 hash:\n{$u->fileHash}\n");
         return true;
     }
 
