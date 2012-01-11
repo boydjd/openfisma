@@ -40,6 +40,8 @@ class ArtifactController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Display the artifact upload form
+     *
+     * @GETAllowed
      */
     public function uploadFormAction()
     {
@@ -114,6 +116,8 @@ class ArtifactController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * Check upload progress if APC is available
+     *
+     * @GETAllowed
      */
     public function uploadProgressAction()
     {

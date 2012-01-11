@@ -44,6 +44,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      * Presents the view which contains the summary table. The summary table loads summary data
      * asynchronously by invoking the summaryDataAction().
      * 
+     * @GETAllowed
      * @return void
      */
     public function indexAction()
@@ -92,6 +93,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
     /**
      * Invoked asynchronously to load data for the summary table.
      * 
+     * @GETAllowed
      * @return void
      */
     public function dataAction()

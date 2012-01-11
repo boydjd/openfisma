@@ -39,6 +39,8 @@ class SecurityControlAdminController extends Fisma_Zend_Controller_Action_Securi
 
     /**
      * Display administrative configuration options
+     *
+     * @GETAllowed
      */
     public function indexAction()
     {
@@ -57,6 +59,8 @@ class SecurityControlAdminController extends Fisma_Zend_Controller_Action_Securi
     
     /**
      * Persist any changes to the administration section and redirect back to the admin action
+     *
+     * @GETAllowed
      */
     public function saveAction()
     {

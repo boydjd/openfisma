@@ -67,6 +67,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * The default dashboard view, displays a tabview
+     *
+     * @GETAllowed
      */
     public function indexAction()
     {
@@ -83,6 +85,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * Display summary charts
+     *
+     * @GETAllowed
      */
     public function chartsAction()
     {
@@ -134,6 +138,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
      * Show incidents in new status, with oldest "new" items sorted to the top
      * 
      * This action renders a YUI table which uses an XHR to populate its data
+     *
+     * @GETAllowed
      */
     public function newIncidentsAction()
     {
@@ -144,6 +150,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * Returns the data required for the newIncidentsAction in JSON format
+     *
+     * @GETAllowed
      */
     public function newIncidentsDataAction()
     {
@@ -170,6 +178,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Show incidents which have been updated in the last 48 hours
+     *
+     * @GETAllowed
      */
     public function recentlyUpdatedAction()
     {
@@ -180,6 +190,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * Returns the data required for the recentlyUpdatedAction in JSON format
+     *
+     * @GETAllowed
      */
     public function recentlyUpdatedDataAction()
     {
@@ -210,6 +222,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * Show incidents which have been closed in the last 5 days
+     *
+     * @GETAllowed
      */
     public function recentlyClosedAction()
     {
@@ -220,6 +234,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * Returns the data required for the recentlyClosedAction in JSON format
+     *
+     * @GETAllowed
      */
     public function recentlyClosedDataAction()
     {
@@ -251,6 +267,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Show incidents which have comments added in the last 48 hours
+     *
+     * @GETAllowed
      */
     public function recentCommentsAction()
     {
@@ -261,6 +279,8 @@ class IncidentDashboardController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * Returns the data required for the recentCommentsAction in JSON format
+     *
+     * @GETAllowed
      */
     public function recentCommentsDataAction()
     {

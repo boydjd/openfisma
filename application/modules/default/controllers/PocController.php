@@ -97,6 +97,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * A helper action for autocomplete text boxes
+     *
+     * @GETAllowed
      */
     public function autocompleteAction()
     {
@@ -119,6 +121,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display the POC form without any layout
+     *
+     * @GETAllowed
      */
     public function formAction()
     {
@@ -145,7 +149,6 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         $this->_enforceAcl = false;
         parent::_viewObject();
         $this->_enforceAcl = true;
-        $this->view->links = parent::getViewLinks($this->view->subject);
     }
 
     /**
@@ -190,6 +193,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display organizations and POCs in tree mode for quick restructuring of the
      * POC hierarchy.
+     *
+     * @GETAllowed
      */
     public function treeAction()
     {
@@ -206,6 +211,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Returns a JSON object that describes the POC tree
+     *
+     * @GETAllowed
      */
     public function treeDataAction()
     {
@@ -375,6 +382,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
      * Moves a POC node from one organization to another.
      * 
      * This is used by the YUI tree node to handle drag and drop of organization nodes. It replies with a JSON object.
+     *
+     * @GETAllowed
      */
     public function moveNodeAction()
     {

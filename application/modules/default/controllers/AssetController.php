@@ -112,6 +112,8 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Import assets from an uploaded XML file using an import plugin
+     *
+     * @GETAllowed
      */
     public function importAction()
     {

@@ -214,5 +214,44 @@ Fisma.Util = {
                 } ); 
 
         return dialog;
+    },
+
+    /**
+     * Use post method to update/delete a subject. The parameters take action url and a subject id. 
+     * 
+     * @param event { Event Object } The event from click event
+     * @param param1 { mixed } It is an object when called by click event, otherwise, it is a string for action url. 
+     * @param param2 { number|null } It is a number for subject id or it is null when it is called by click event.
+     */
+    formPostAction : function (event, param1, param2) {
+        var submitForm = document.createElement("FORM");
+        document.body.appendChild(submitForm);
+        submitForm.method = "POST";
+
+        if (YAHOO.lang.isNull(event) || '' === event) {
+            submitForm.action= param1;
+        } else {
+            submitForm.action= param1.action;
+        }
+
+        var subId = document.createElement('input');
+        subId.type = 'hidden';
+        subId.name = 'id';
+
+        if (YAHOO.lang.isNull(event) || '' === event) {
+            subId.value = param2;
+        } else {
+            subId.value = param1.id;
+        }
+
+        submitForm.appendChild(subId);
+
+        var subcsrf = document.createElement('input');
+        subcsrf.type = 'hidden';
+        subcsrf.name = 'csrf';
+        subcsrf.value = $('[name="csrf"]').val();
+        submitForm.appendChild(subcsrf);
+       
+        submitForm.submit();
     }
 };

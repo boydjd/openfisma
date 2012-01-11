@@ -110,6 +110,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * the user.
      * 
      * Notice that this method is allowed for unauthenticated users
+     *
+     * @GETAllowed
      */
     public function reportAction() 
     {
@@ -420,6 +422,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * Lets a user review the incident report in its entirety before submitting it.
      * 
      * This action is available to unauthenticated users.
+     *
+     * @GETAllowed
      */
     public function reviewReportAction() 
     {
@@ -469,6 +473,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * 
      * This action is available to unauthenticated users
      *
+     * @GETAllowed
      * @return string the rendered page
      */
     public function saveReportAction() 
@@ -530,6 +535,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * Remove the serialized incident object from the session object.
      * 
      * This action is available to unauthenticated users
+     *
+     * @GETAllowed
      */
     public function cancelReportAction()
     {
@@ -548,6 +555,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     /**
      * Displays information for editing or viewing a particular incident
      *
+     * @GETAllowed
      * @return string the rendered page
      */
     public function viewAction() 
@@ -584,6 +592,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * Display incident details
      * 
      * This is loaded into a tab view, so it has no layout
+     *
+     * @GETAllowed
      */
     public function incidentAction()
     {
@@ -625,22 +635,30 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
-        $this->view->unlockButton = new Fisma_Yui_Form_Button_Link(
+        $this->view->unlockButton = new Fisma_Yui_Form_Button(
             'unlock',
-            array(
-                'value' => 'Unlock Incident',
-                'href' => "/incident/unlock/id/$id"
+             array(
+                   'label' => 'UnLock Incident',
+                   'onClickFunction' => 'Fisma.Util.formPostAction',
+                   'onClickArgument' => array(
+                       'action' => '/incident/unlock/', 
+                       'id' => $id
+                ) 
             )
         );
 
-        $this->view->lockButton = new Fisma_Yui_Form_Button_Link(
-            'lock',
-            array(
-                'value' => 'Lock Incident',
-                'href' => "/incident/lock/id/$id"
+        $this->view->lockButton = new Fisma_Yui_Form_Button(
+            'lock', 
+             array(
+                   'label' => 'Lock Incident',
+                   'onClickFunction' => 'Fisma.Util.formPostAction',
+                   'onClickArgument' => array(
+                       'action' => '/incident/lock/', 
+                       'id' => $id
+                ) 
             )
         );
-    
+   
         $this->view->formAction = "/incident/update/id/$id";
 
         $orgId = $incident['Organization']['id'];
@@ -690,6 +708,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     
     /**
      * Display the audit log for an incident
+     *
+     * @GETAllowed
      */
     public function auditLogAction()
     {
@@ -752,6 +772,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     
     /**
      * Display users with actor or observer privileges and provide controls to add/remove actors and observers
+     *
+     * @GETAllowed
      */
     public function usersAction()
     {
@@ -782,10 +804,17 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $actorUsername   = $this->view->userInfo($actor['a_username']);
             $actorFirstName  = $actor['a_nameFirst'];
             $actorLastName   = $actor['a_nameLast'];
-            $actorRemoveLink = '<a href=/incident/remove-user/incidentId/' . $this->view->escape($id)
-                             . '/userId/' . $actor['a_id'] . '>Remove</a>';
+            $actorRemoveButton = 'Remove';
+            $actorId = $actor['a_id'];        
+            $incidentId = $id;        
 
-            $actorColumns = array($actorUsername, $actorFirstName, $actorLastName, $actorRemoveLink);
+            $actorColumns = $updateIncidentPrivilege ?  
+                array($actorUsername, $actorFirstName, $actorLastName,
+                      $actorRemoveButton, $actorId, $incidentId
+                )
+                :
+                array($actorUsername, $actorFirstName, $actorLastName
+                );
 
             $actorRows[] = $updateIncidentPrivilege ? $actorColumns : array_pop($actorColumns);
         }
@@ -823,10 +852,20 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         );
 
         if ($updateIncidentPrivilege) {
-            $actorDataTable->addColumn(new Fisma_Yui_DataTable_Column('Remove', true, 'Fisma.TableFormat.formatHtml'));
+            $actorDataTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'Remove', 
+                    true, 
+                    'YAHOO.widget.DataTable.formatButton'
+                )
+            );
+
+            $actorDataTable->addColumn(new Fisma_Yui_DataTable_Column('userId', null, null, null, null, true));
+            $actorDataTable->addColumn(new Fisma_Yui_DataTable_Column('incidentId', null, null, null, null, true));
         }
 
         $actorDataTable->setData($actorRows);
+        $actorDataTable->addEventListener("buttonClickEvent", 'Fisma.Incident.deleteUser'); 
 
         $this->view->actorDataTable = $actorDataTable;
 
@@ -847,12 +886,21 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $observerUsername   = $this->view->userInfo($observer['o_username']);
             $observerFirstName  = $observer['o_nameFirst'];
             $observerLastName   = $observer['o_nameLast'];
-            $observerRemoveLink = '<a href=/incident/remove-user/incidentId/' . $this->view->escape($id)
-                                . '/userId/' . $observer['o_id'] . '>Remove</a>';
+            $observerRemoveButton  = 'Remove';
+            $observerId         = $observer['o_id'];             
+            $incidentId         = $id;          
+ 
+            $observerColumns = $updateIncidentPrivilege ? 
+                array(
+                    $observerUsername, $observerFirstName, $observerLastName,
+                    $observerRemoveButton, $observerId, $incidentId
+                )
+                :
+                array(
+                    $observerUsername, $observerFirstName, $observerLastName
+                );
 
-            $observerColumns = array($observerUsername, $observerFirstName, $observerLastName, $observerRemoveLink);
-
-            $observerRows[] = $updateIncidentPrivilege ? $observerColumns : array_pop($observerColumns);
+            $observerRows[] = $observerColumns;
         }
 
         $observerDataTable = new Fisma_Yui_DataTable_Local();
@@ -892,12 +940,17 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 new Fisma_Yui_DataTable_Column(
                     'Remove',
                     true,
-                    'Fisma.TableFormat.formatHtml'
+                    'YAHOO.widget.DataTable.formatButton'
                 )
             );
+
+            $observerDataTable->addColumn(new Fisma_Yui_DataTable_Column('userId', null, null, null, null, true));
+            $observerDataTable->addColumn(new Fisma_Yui_DataTable_Column('incidentId', null, null, null, null, true));
+
         }
 
         $observerDataTable->setData($observerRows);
+        $observerDataTable->addEventListener("buttonClickEvent", 'Fisma.Incident.deleteUser'); 
 
         $this->view->observerDataTable = $observerDataTable;
 
@@ -940,6 +993,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     
     /**
      * Add a user as an actor or observer to the specified incident
+     *
      */
     public function addUserAction()
     {
@@ -1019,6 +1073,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function removeUserAction()
     {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
         $incidentId = $this->getRequest()->getParam('incidentId');
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
@@ -1030,7 +1087,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incident->unlink('Users', array($userId));
         $incident->save();
 
-        $this->_redirect("/incident/view/id/$incidentId");
     }
             
     /**
@@ -1038,6 +1094,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * 
      * This actually forwards to one of several different views and doesn't render anything itself
      * 
+     * @GETAllowed
      * @return string the rendered page
      */
     public function workflowAction() 
@@ -1066,6 +1123,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Displays the steps in the workflow associated with a particular incident
+     *
+     * @GETAllowed
      */
     public function workflowStepsAction()
     {
@@ -1131,6 +1190,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Show an interface to classify an incident
+     *
+     * @GETAllowed
      */
     public function classifyFormAction()
     {
@@ -1255,6 +1316,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Add a comment to a specified incident
+     *
      */
     public function addCommentAction()
     {
@@ -1277,6 +1339,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     /**
      * Displays the incident comment interface
      *
+     * @GETAllowed
      * @return Zend_Form
      */
     function commentsAction() 
@@ -1363,6 +1426,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     
     /**
      * Display file artifacts associated with an incident
+     *
+     * @GETAllowed
      */
     public function artifactsAction()
     {
@@ -1497,6 +1562,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * as JSON.
      * 
      * Instead, we render an HTML view with the JSON-serialized response inside it.
+     *
+     * @GETAllowed
      */
     public function attachArtifactAction()
     {
@@ -1546,6 +1613,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     
     /**
      * Download an artifact to the user's browser
+     *
+     * @GETAllowed
      */
     public function downloadArtifactAction()
     {
@@ -1564,6 +1633,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incident->getArtifacts()->find($artifactId)->send();
     }
 
+    /**
+     * Update incident
+     */
     public function updateAction() 
     {
         $id = $this->_request->getParam('id');
@@ -1912,6 +1984,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * List users eligible to be an actor or observer
      * 
      * All users are eligible unless they are already an actor or observer for this incident.
+     *
+     * @GETAllowed
      */
     public function getEligibleUsersAction()
     {

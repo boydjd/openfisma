@@ -285,5 +285,31 @@ Fisma.Incident = {
         var stepNumber = 1 + trEls.length;
         var textareaId = 'textareaid' + stepNumber;
         return textareaId;
+    },
+
+    /** 
+    * This takes a YUI datatable as parameters, delete a row, then refresh the table  
+    *    
+    * @param YUI datatable
+    */
+    deleteUser: function (oArgs) {
+        var oRecord = this.getRecord(oArgs.target);
+        var data = oRecord.getData();
+        var postData = new Object();
+
+        var that = this;
+        postData.incidentId = data.incidentId;
+        postData.userId = data.userId;
+        postData.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/incident/remove-user/',
+            data: postData,
+            dataType: "json",
+            success: function() {
+                that.deleteRow(oArgs.target);
+            }
+        });
     }
 };

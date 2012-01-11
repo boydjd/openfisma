@@ -53,6 +53,8 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
      * 
      * This is the one report which is not constrained by the organizations which a user is allowed to view. This report
      * is kind of like a phone book for security personnel, so all users are allowed to view all entries in it.
+     *
+     * @GETAllowed
      */
     public function personnelAction()
     {
@@ -89,6 +91,8 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * List privacy status for all systems
+     *
+     * @GETAllowed
      */
     public function privacyAction()
     {
@@ -164,6 +168,8 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * List security authorization status for all systems
+     *
+     * @GETAllowed
      */
     public function securityAuthorizationAction()
     {
@@ -249,6 +255,8 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Generate documentation compliance report
+     *
+     * @GETAllowed
      */
     public function documentationComplianceAction()
     {

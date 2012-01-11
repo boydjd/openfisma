@@ -8794,6 +8794,32 @@ Fisma.Incident = {
         var stepNumber = 1 + trEls.length;
         var textareaId = 'textareaid' + stepNumber;
         return textareaId;
+    },
+
+    /** 
+    * This takes a YUI datatable as parameters, delete a row, then refresh the table  
+    *    
+    * @param YUI datatable
+    */
+    deleteUser: function (oArgs) {
+        var oRecord = this.getRecord(oArgs.target);
+        var data = oRecord.getData();
+        var postData = new Object();
+
+        var that = this;
+        postData.incidentId = data.incidentId;
+        postData.userId = data.userId;
+        postData.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/incident/remove-user/',
+            data: postData,
+            dataType: "json",
+            success: function() {
+                that.deleteRow(oArgs.target);
+            }
+        });
     }
 };
 /**
@@ -8882,7 +8908,32 @@ Fisma.Ldap = {
                 }
             }
         );
-    }  
+    },
+      
+    /** 
+    * This takes a YUI datatable as parameters, delete a row, then refresh the table  
+    *    
+    * @param YUI datatable
+    */
+    deleteLdap: function (oArgs) {
+        var oRecord = this.getRecord(oArgs.target);
+        var data = oRecord.getData();
+        var postData = new Object();
+
+        var that = this;
+        postData.id = data.LdapId;
+        postData.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/config/delete-ldap/',
+            data: postData,
+            dataType: "json",
+            success: function() {
+                that.deleteRow(oArgs.target);
+            }
+        });
+    }
 };
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
@@ -9238,17 +9289,18 @@ Fisma.Module = {
         
         var enabled = switchButton.state ? 'true' : 'false';
         
-        var requestUrl = '/config/set-module/id/' + switchButton.payload.id + '/enabled/' + enabled + '/format/json/';
-        
+        var requestUrl = '/config/set-module/format/json/';
+        var postData = 'id=' + switchButton.payload.id + '&enabled=' + enabled + '&csrf=' + $('[name="csrf"]').val(); 
+
         YAHOO.util.Connect.asyncRequest(
-            'GET', 
+            'POST', 
             requestUrl,
             {
                 success : Fisma.Module.handleAsyncResponse,
                 failure : Fisma.Module.handleAsyncResponse,
                 argument : switchButton
             }, 
-            null);
+            postData);
     },
     
     /**
@@ -15709,6 +15761,45 @@ Fisma.Util = {
                 } ); 
 
         return dialog;
+    },
+
+    /**
+     * Use post method to update/delete a subject. The parameters take action url and a subject id. 
+     * 
+     * @param event { Event Object } The event from click event
+     * @param param1 { mixed } It is an object when called by click event, otherwise, it is a string for action url. 
+     * @param param2 { number|null } It is a number for subject id or it is null when it is called by click event.
+     */
+    formPostAction : function (event, param1, param2) {
+        var submitForm = document.createElement("FORM");
+        document.body.appendChild(submitForm);
+        submitForm.method = "POST";
+
+        if (YAHOO.lang.isNull(event) || '' === event) {
+            submitForm.action= param1;
+        } else {
+            submitForm.action= param1.action;
+        }
+
+        var subId = document.createElement('input');
+        subId.type = 'hidden';
+        subId.name = 'id';
+
+        if (YAHOO.lang.isNull(event) || '' === event) {
+            subId.value = param2;
+        } else {
+            subId.value = param1.id;
+        }
+
+        submitForm.appendChild(subId);
+
+        var subcsrf = document.createElement('input');
+        subcsrf.type = 'hidden';
+        subcsrf.name = 'csrf';
+        subcsrf.value = $('[name="csrf"]').val();
+        submitForm.appendChild(subcsrf);
+       
+        submitForm.submit();
     }
 };
 /**

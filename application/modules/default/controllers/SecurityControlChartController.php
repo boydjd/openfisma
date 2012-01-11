@@ -40,6 +40,8 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
 
     /**
      * Renders a bar chart that shows the number of open findings against each security control code.
+     *
+     * @GETAllowed
      */
     public function controlDeficienciesAction()
     {

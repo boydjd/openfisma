@@ -221,6 +221,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      * This is a temporary crutch because we have some bugs popping up with objects being viewed by the wrong 
      * controller. It will write a log message for any bad URLs, so after some time in production we can see where
      * the other bad links are and eventually remove this crutch.
+     *
+     * @GETAllowed
      */
     public function viewAction()
     {
@@ -309,6 +311,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      * Display organizations and systems in tree mode for quick restructuring of the
      * organizational hiearchy.
      *
+     * @GETAllowed
      * @return void
      */
     public function treeAction()
@@ -352,6 +355,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Returns a JSON object that describes the organization tree, including systems
      *
+     * @GETAllowed
      * @return void
      */
     public function treeDataAction()
@@ -453,6 +457,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      * Moves a tree node relative to another tree node. This is used by the YUI tree node to handle drag and drops
      * of organization nodes. It replies with a JSON object.
      *
+     * @GETAllowed
      * @return void
      */
     public function moveNodeAction()
@@ -548,6 +553,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         return $buttons;
     }
     
+    /**
+     * Convert an organization to system.
+     *
+     * @return void
+     */
     public function convertToSystemAction()
     {
         if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
@@ -580,6 +590,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     /**
      * AJAX action to render the form for converting an Organization to a System.
      *
+     * @GETAllowed
      * @return void
      */
     public function convertToSystemFormAction()

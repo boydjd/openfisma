@@ -84,5 +84,30 @@ Fisma.Ldap = {
                 }
             }
         );
-    }  
+    },
+      
+    /** 
+    * This takes a YUI datatable as parameters, delete a row, then refresh the table  
+    *    
+    * @param YUI datatable
+    */
+    deleteLdap: function (oArgs) {
+        var oRecord = this.getRecord(oArgs.target);
+        var data = oRecord.getData();
+        var postData = new Object();
+
+        var that = this;
+        postData.id = data.LdapId;
+        postData.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/config/delete-ldap/',
+            data: postData,
+            dataType: "json",
+            success: function() {
+                that.deleteRow(oArgs.target);
+            }
+        });
+    }
 };

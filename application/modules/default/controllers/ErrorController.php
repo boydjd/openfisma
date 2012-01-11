@@ -31,6 +31,7 @@ class ErrorController extends Zend_Controller_Action
      * This action handles Application errors, Errors in the controller chain arising from missing 
      * controller classes and/or action methods
      * 
+     * @GETAllowed
      * @return void
      */
     public function errorAction()
@@ -87,6 +88,7 @@ class ErrorController extends Zend_Controller_Action
     /**
      * Error handler for input validation error
      * 
+     * @GETAllowed
      * @return void
      */
     public function inputerrorAction()

@@ -97,6 +97,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      * 
      * It combines the searching and summary into one page.
      * 
+     * @GETAllowed
      * @return void
      */
     public function indexAction()
@@ -220,6 +221,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * View details of a finding object
      * 
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -261,17 +263,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         if (!$finding->isDeleted()) {
             // Display the delete finding button if the user has the delete finding privilege
             if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
-
+                $args = array(null, '/finding/remediation/delete/', $id);
                 $buttons['delete'] = new Fisma_Yui_Form_Button(
                     'deleteFinding', 
                     array(
                           'label' => 'Delete Finding',
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
-                              'url' => "/finding/remediation/delete/id/$id",
+                              'args' => $args,
                               'text' => "WARNING: You are about to delete the finding record. This action cannot be " 
                                         . "undone. Do you want to continue?",
-                              'isLink' => false
+                              'func' => 'Fisma.Util.formPostAction'
                         ) 
                     )
                 );
@@ -311,6 +313,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Printer-friendly version of the finding view page.
      * 
+     * @GETAllowed
      * @return void
      */
     public function printAction()
@@ -326,6 +329,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display comments for this finding
+     *
+     * @GETAllowed
      */
     public function commentsAction()
     {
@@ -409,6 +414,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Modify the finding
      * 
+     * @GETAllowed
      * @return void
      */
     public function modifyAction()
@@ -542,6 +548,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Upload evidence
      * 
+     * @GETAllowed
      * @return void
      */
     public function uploadevidenceAction()
@@ -618,6 +625,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Download evidence
      * 
+     * @GETAllowed
      * @return void
      */
     public function downloadevidenceAction()
@@ -706,6 +714,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      *
      * It can handle different format of RAF report.
      * 
+     * @GETAllowed
      * @return void
      */
     public function rafAction()
@@ -750,6 +759,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display basic data about the finding and the affected asset
      * 
+     * @GETAllowed
      * @return void
      */
     function findingAction() 
@@ -770,6 +780,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Fields for defining the mitigation strategy
      * 
+     * @GETAllowed
      * @return void
      */
     function mitigationStrategyAction() 
@@ -780,6 +791,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display fields related to risk analysis such as threats and countermeasures
      * 
+     * @GETAllowed
      * @return void
      */
     function riskAnalysisAction() 
@@ -791,6 +803,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display fields related to risk analysis such as threats and countermeasures
      * 
+     * @GETAllowed
      * @return void
      */
     function artifactsAction() 
@@ -820,6 +833,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display the audit log associated with a finding
      * 
+     * @GETAllowed
      * @return void
      */
     function auditLogAction() 
@@ -878,6 +892,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display the NIST SP 800-53 control mapping and related information
      * 
+     * @GETAllowed
      * @return void
      */
     function securityControlAction() 
@@ -932,6 +947,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /** 
      * Renders the form for uploading artifacts.
      * 
+     * @GETAllowed
      * @return void
      */
     function uploadFormAction() 
@@ -959,6 +975,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override createAction() to show the warning message on the finding create page if there is no system.
      * 
+     * @GETAllowed
      * @return void
      */
     public function createAction()

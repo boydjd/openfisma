@@ -51,6 +51,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->toKeyValueArray('id', 'id');
     }
 
+    /**
+     * @GETAllowed
+     */
     public function indexAction()
     {
         // Top-left chart - Finding Forecast
@@ -240,6 +243,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      * Expected params: displayBy
      * Returns exported Fisma_Chart
      *
+     * @GETAllowed
      * @return array
      */
     public function chartfindingbyorgdetailAction()
@@ -575,6 +579,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
     }
 
+    /**
+     * @GETAllowed
+     */
     public function chartoverdueAction()
     {
         $dayRanges = str_replace(' ', '', urldecode($this->getRequest()->getParam('dayRanges')));
@@ -921,6 +928,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
     /**
      * Calculate "finding forcast" data for a chart based on finding.currentecd in the database
      *
+     * @GETAllowed
      * @return void
      */
     public function chartfindnomitstratAction()
@@ -1123,6 +1131,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
     /**
      * Calculate "finding forcast" data for a chart based on finding.currentecd in the database
      *
+     * @GETAllowed
      * @return void
      */
     public function findingforecastAction()

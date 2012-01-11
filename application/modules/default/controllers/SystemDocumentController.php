@@ -43,6 +43,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
     /**
      * View detail information of the subject model
      *
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -116,6 +117,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
     /**
      * Download the specified system document
      *
+     * @GETAllowed
      * @return void
      * @throws Fisma_Zend_Exception if requested file doesn`t exist
      */

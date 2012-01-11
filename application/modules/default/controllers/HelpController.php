@@ -32,6 +32,7 @@ class HelpController extends Zend_Controller_Action
      * Get the parameter from request and decide which template will be used. If the template is not existed 
      * use a default template.
      * 
+     * @GETAllowed
      * @return void
      */
     public function helpAction()

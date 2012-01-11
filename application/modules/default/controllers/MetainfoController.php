@@ -42,6 +42,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
     /**
      * List meta data on the remediation detail page
      * 
+     * @GETAllowed
      * @return void
      */
     public function listAction()

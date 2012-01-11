@@ -40,6 +40,8 @@ class StorageController extends Fisma_Zend_Controller_Action_Security
        
     /**
      * Synchronize storage values.
+     *
+     * @GETAllowed
      */
     public function syncAction()
     {
@@ -89,6 +91,7 @@ class StorageController extends Fisma_Zend_Controller_Action_Security
     /**
      * Action to return a whitelist file for clients using SWF storage.
      *
+     * @GETAllowed
      * @return void
      */
     public function whitelistAction()

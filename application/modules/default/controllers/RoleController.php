@@ -36,26 +36,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
     protected $_modelName = 'Role';
 
     /**
-     * Override the parent class to add a link for editing privileges
-     * 
-     * @param Fisma_Doctrine_Record $subject
-     */
-    public function getViewLinks(Fisma_Doctrine_Record $subject)
-    {
-        $links = array();
-        
-        if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
-            $links['Edit Privilege Matrix'] = '/role/view-matrix';
-        }
-        
-        $links = array_merge($links, parent::getViewLinks($subject));
-
-        return $links;
-    }
-    
-    /**
      * Displays a (checkbox-)table of privileges associated with each role
      * 
+     * @GETAllowed
      * @return void
      */
      public function viewMatrixAction()
@@ -263,7 +246,8 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                         $removeRolePrivilegeQuery->execute()->delete();
                         
                         // Add to message stack
-                        $msg[] = "Removed the '" . $privilegeDescription . "' privilege from the " . $roleName . ' role.';
+                        $msg[] = "Removed the '" . $privilegeDescription . "' privilege from the " . 
+                                 $roleName . ' role.';
                     }
 
                 }

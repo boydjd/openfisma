@@ -243,6 +243,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      * All of the default logic for creating a record is performed in _createObject, so that child classes can use the
      * default logic but still render their own views.
      *
+     * @GETAllowed
      * @return void
      */
     public function createAction()
@@ -329,6 +330,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      * All of the default logic for viewing a record is performed in _viewObject, so that child classes can use the
      * default logic but still render their own views.
      *
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -365,8 +367,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
  
        $this->setForm($subject, $form);
 
-        $this->view->links = $this->getViewLinks($subject);
-
         // Update the model
         if ($this->_request->isPost()) {
             if ($this->_enforceAcl) {
@@ -402,8 +402,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
         }
 
+        $viewButtons = $this->getViewButtons($subject);
+        $toolbarButtons = $this->getToolbarButtons();
+        $buttons = array_merge($toolbarButtons, $viewButtons);
         $this->view->modelName = $this->getSingularModelName();
-        $this->view->toolbarButtons = $this->getToolbarButtons();
+        $this->view->toolbarButtons = $buttons;
 
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;
@@ -530,6 +533,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     /**
      * List the subjects
      *
+     * @GETAllowed
      * @return void
      */
     public function listAction()
@@ -680,9 +684,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
         return $result;
     }
+
     /**
      * Apply a user query to the search engine and return the results in JSON format
      *
+     * @GETAllowed
      * @return string The encoded table data in json format
      */
     public function searchAction()
@@ -959,22 +965,36 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * Return an array of links that are displayed on the object view page
-     *
-     * The keys are link labels and the values are the URLs
+     * Return an array of buttons that are displayed on the object view page
      *
      * @param Fisma_Doctrine_Record $subject
      * @return array
      */
-    public function getViewLinks(Fisma_Doctrine_Record $subject)
+    public function getViewButtons(Fisma_Doctrine_Record $subject)
     {
-        $links = array();
+        $buttons = array();
 
         if ($this->_isDeletable() && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject))) {
-            $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
+            $postAction = "{$this->_moduleName}/{$this->_controllerName}/delete/";
+
+            $buttons['delete'] = new Fisma_Yui_Form_Button(
+                'delete' . $this->_modelName, 
+                 array(
+                       'label' => 'Delete '. $this->_modelName,
+                       'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                       'onClickArgument' => array(
+                           'args' => array(null, $postAction, $subject->id),
+                           'text' => 'WARNING: You are about to delete the ' 
+                                    . strtolower($this->_modelName) 
+                                    . 'record. This action cannot be undone. Do you want to continue?',
+                           'func' => 'Fisma.Util.formPostAction'
+                    ) 
+                )
+            );
+
         }
 
-        return $links;
+        return $buttons;
     }
 
     /**

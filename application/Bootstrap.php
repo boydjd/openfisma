@@ -207,6 +207,7 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     protected function _initHelperBroker()
     {
         Zend_Controller_Action_HelperBroker::addPrefix('Fisma_Zend_Controller_Action_Helper');
+        Zend_Controller_Action_HelperBroker::addHelper(new Fisma_Zend_Controller_Action_Helper_ForcedPostRequest);
     }
 
     /**
