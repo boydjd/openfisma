@@ -818,18 +818,16 @@ td.jqplot-table-legend {
     border-style: none;
 }
 
-#chartFindForecastholder table, #chartTotalStatusholder table, #incidentHistorytoplegend table,
-#incidentHistorytoplegend table, #chartOverdueFindingtoplegend table, #chartNoMitholder table,
-#findingOrgCharttoplegend table {
+table.jqplot-threat-legend {
+    font-size: 12px;
+    color: #000000;
     margin-bottom: 0;
 }
 
-#chartFindForecastholder td, #chartTotalStatusholder td, #incidentHistorytoplegend td, #incidentHistorytoplegend td,
-#chartOverdueFindingtoplegend td, #chartNoMitholder td, #findingOrgCharttoplegend td {
+table.jqplot-threat-legend td {
     border-style: none;
     padding: 0;
 }
-
 /* The group cell */
 .yui-skin-sam .yui-dt .group
 {
