@@ -35,7 +35,7 @@ class Fisma_Url
     static function baseUrl()
     {
         $hostUrl = Fisma::configuration()->getConfig('host_url');
-        if (!is_null($hostUrl)) {
+        if (!empty($hostUrl)) {
             return $hostUrl;
         } else if (isset($_SERVER) && 
             array_key_exists('SERVER_NAME', $_SERVER) && 
@@ -55,7 +55,7 @@ class Fisma_Url
 
             return $scheme . '://' . $_SERVER['SERVER_NAME'] . $port;
         } else {
-            $serverName = exec('hostname -f');
+            $serverName = php_uname('n');
             if (!empty($serverName)) {
                 return 'http://' . $serverName;
             } else {

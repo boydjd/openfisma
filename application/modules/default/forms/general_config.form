@@ -21,8 +21,9 @@ elements.system_name.options.tooltip = "<p><b>System Name</b></p><p>The System N
 displayGroups.general.elements.system_name = "system_name"
 
 elements.host_url.type = "text"
-elements.host_url.options.label = "Host Url"
-elements.host_url.options.validators.strlen.validator = "StringLength"
+elements.host_url.options.label = "Host URL"
+elements.host_url.options.validators.url.validator = "Url"
+elements.host_url.options.tooltip = "<p><b>Host URL</b></p><p>Enter the url that the OpenFISMA application can be accessed publicly by the browser. The valid URL should be something like https://www.example.com or http://www.example.com:8888 </p>"
 displayGroups.general.elements.host_url = "host_url"
 
 elements.account_inactivity_period.type = "text"

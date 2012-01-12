@@ -44,7 +44,7 @@ class Test_Library_Fisma_Url extends Test_Case_Unit
         $_SERVER['HTTPS']       = '';
         $_SERVER['SERVER_NAME'] = '';
         $_SERVER['SERVER_PORT'] = '';
-        $hostName = 'http://' . exec('hostname -f');
+        $hostName = 'http://' . php_uname('n');
         
         $this->assertEquals($hostName, Fisma_Url::baseUrl());
     }
