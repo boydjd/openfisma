@@ -204,14 +204,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             // Just send out email when create a new account or change password by admin user,
             // and it does not sent out email when the root user changes his own password.
             if ('create' === $actionName) {
-                $mail = new Fisma_Zend_Mail();
-                $mail->sendAccountInfo($subject);
-            } else if ('edit' === $actionName
+                $this->_sendMail($subject, 'sendAccountInfo');
+            } else if ('view' === $actionName
                        && !empty($values['password'])
                        && ('root' !== $subject->username || $this->_me->username !== 'root')) {
-                $mail = new Fisma_Zend_Mail();
-                $mail->sendPassword($subject);
-            } 
+                $this->_sendMail($subject, 'sendPassword');
+            }
 
             // do not need to audit log root user's role or organization
             if ('edit' === $actionName && ($roleChanged || $organizationChanged) && 'root' !== $subject->username) {
@@ -1094,5 +1092,43 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             } 
         }
         return false;
+    }
+
+    /**
+     * Send email by each template script
+     * 
+     * @param User $user
+     * @param string $template
+     */
+    private function _sendMai(User $user, $template)
+    {
+        $systemName = Fisma::configuration()->getConfig('system_name');
+
+        $mail = new Fisma_Mail();
+        $mail->recipient     = $user->email;
+        $mail->recipientName = $user->nameFirst . $user->nameLast;
+        $mail->sender        = Fisma::configuration()->getConfig('sender');
+        $mail->senderName    = Fisma::configuration()->getConfig('system_name');
+
+        $options = array();
+        if ('sendAccountInfo' == $template) {
+            $mail->subject = "Your new account for $systemName has been created";
+            $options = array(
+                'systemName' => $systemName,
+                'username' => $user->username,
+                'plainTextPassword' => $user->plainTextPassword,
+                'authType' => Fisma::configuration()->getConfig('auth_type')
+            );
+        } else if ('sendPassword' == $template) {
+            $mail->subject = "Your password for $systemName has been changed";
+            $options = array(
+                'systemName' => $systemName,
+                'plainTextPassword' => $user->plainTextPassword,
+                'host' => Fisma_Url::baseUrl()
+            );
+        }
+
+        $mail->body = $this->view->partial("mail/{$template}.phtml", 'default', $options);
+        Zend_Registry::get('mail_handler')->setMail($mail)->send();
     }
 }

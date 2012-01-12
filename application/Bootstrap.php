@@ -245,4 +245,17 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         $viewRenderer->setView($view);
         $viewRenderer->setViewSuffix('phtml');
     }
+
+    /**
+     * Instantiate a mail hanlder
+     * 
+     * @access protected
+     * @return void
+     */
+    protected function _initMailHanlder()
+    {
+        $mailHandler = new Fisma_MailHandler_Queue();
+
+        Zend_Registry::set('mail_handler', $mailHandler);
+    }
 }

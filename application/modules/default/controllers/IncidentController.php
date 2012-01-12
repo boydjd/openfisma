@@ -518,8 +518,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Send emails to IRCs
         $coordinators = $this->_getIrcs();
         foreach ($coordinators as $coordinator) {
-            $mail = new Fisma_Zend_Mail();
-            $mail->IRReport($coordinator, $incident->id);
+            $this->_sendMail('IRreported', $coordinator, $incident->id);
         }
         
         // Clear out serialized incident object
@@ -1007,8 +1006,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             }
 
             // Send e-mail
-            $mail = new Fisma_Zend_Mail();
-            $mail->IRAssign($userId, $incidentId);
+            $this->_sendMail('IRAssign', $userId, $incidentId);
         }
         
         $this->_redirect("/incident/view/id/$incidentId");
@@ -1111,8 +1109,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $incident->completeStep($comment);
 
             foreach ($this->_getAssociatedUsers($id) as $user) {
-                $mail = new Fisma_Zend_Mail();
-                $mail->IRStep($user['userId'], $id, $currentStep->name, $currentStep->User->username);
+                $options = array(
+                    'workflowStep' => $currentStep->name,
+                    'workflowCompletedBy' => $currentStep->User->username
+                );
+                $this->_sendMail('IRStep', $user['userId'], $id, $options);
             }
 
             $message = 'Workflow step completed. ';
@@ -1953,5 +1954,48 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         );
 
         return $buttons;
+    }
+
+    /**
+     * Send email by each template script
+     * 
+     * @param integer $userId
+     * @param string $template
+     * @param integer $incidentId
+     * @param array $options
+     */
+    private function _sendMail($template, $userId, $incidentId, $options = array())
+    {
+        $systemName = Fisma::configuration()->getConfig('system_name');
+
+        $user = Doctrine::getTable('User')->find($userId);
+
+        $mail = new Fisma_Mail();
+        $mail->recipient     = $user->email;
+        $mail->recipientName = $user->nameFirst . $user->nameLast;
+        $mail->sender        = Fisma::configuration()->getConfig('sender');
+        $mail->senderName    = Fisma::configuration()->getConfig('system_name');
+
+        if (empty($options)) {
+            $options = array(
+                'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incidentId,
+                'incidentId' => $incidentId
+            );
+        } else {
+            $options['incidentUrl'] = Fisma_Url::baseUrl() . '/incident/view/id/' . $incidentId;
+            $options['incidentId']  = $incidentId;
+        }
+
+        if ('IRReported' == $template) {
+            $mail->subject = "A new incident has been reported.";
+        } else if ('IRAssign' == $template) {
+            $mail->subject = "You have been assigned to a new incident.";
+        } else if ('IRStep' == $template) {
+            $mail->subject = "A workflow step has been completed";
+        }
+
+        $mail->body = $this->view->partial("mail/{$template}.phtml", 'default', $options);
+
+        Zend_Registry::get('mail_handler')->setMail($mail)->send();
     }
 }

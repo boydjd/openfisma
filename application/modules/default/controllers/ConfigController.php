@@ -519,28 +519,17 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                          . " administrator to determine if the e-mail configuration is" 
                          . " working correctly. There is no need to reply to this e-mail.";
 
-            // Define Zend_Mail() for sending test email
-            $mail = new Zend_Mail();
-            $mail->addTo($emailConfiguration['recipient']);
-            $mail->setFrom($emailConfiguration['sender']);
-            $mail->setSubject($emailConfiguration['subject']);
-            $mail->setBodyText($mailContent);
+            // Send email
+            $mail = new Fisma_Mail();
+            $mail->recipient = $emailConfiguration['recipient'];
+            $mail->sender    = $emailConfiguration['sender'];
+            $mail->subject   = $emailConfiguration['subject'];
+            $mail->body      = $mailContent;
+            $mail->transport = $this->_getTransport($emailConfiguration);
 
-            // Sendmail transport
-            if ($emailConfiguration['send_type'] == 'sendmail') {
-                $mail->send();
-            } elseif ($emailConfiguration['send_type'] == 'smtp') {
-                // SMTP transport
-                $emailConfig = array('auth'     => 'login',
-                                     'username' => $emailConfiguration['smtp_username'],
-                                     'password' => $emailConfiguration['smtp_password'],
-                                     'port'     => $emailConfiguration['smtp_port']);
-                if (1 == $emailConfiguration['smtp_tls']) {
-                    $emailConfig['ssl'] = 'tls';
-                }
-                $transport = new Zend_Mail_Transport_Smtp($emailConfiguration['smtp_host'], $emailConfig);
-                $mail->send($transport);
-            }
+            $mailHandler = new Fisma_MailHandler_Immediate();
+            $mailHandler->setMail($mail)->send();
+
             $type = 'message';
             $msg  = 'Sent test email to ' . $emailConfiguration['recipient'] . ' successfully !';
         } catch (Zend_Mail_Exception $e) {
@@ -655,4 +644,34 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                                  ->getPlugin('Fisma_Zend_Controller_Plugin_CsrfProtect')
                                  ->getToken();
     }
+
+    /**
+     * Return the appropriate Zend_Mail_Transport subclass,
+     * based on the system's configuration.
+     * 
+     * @param array $email the array of post values from email config form 
+     * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail The initialized email sender
+     */
+    private function _getTransport($email)
+    {
+        if ($email['send_type'] == 'sendmail') {
+            $transport = new Zend_Mail_Transport_Sendmail();
+        } elseif ($email['send_type'] == 'smtp') {
+            // SMTP transport
+            $config = array('auth'     => 'login',
+                            'username' => $email['smtp_username'],
+                            'password' => $email['smtp_password'],
+                            'port'     => $email['smtp_port']
+            );
+
+            if (1 == $email['smtp_tls']) {
+                $email['ssl'] = 'tls';
+            }
+
+            $transport = new Zend_Mail_Transport_Smtp($email['smtp_host'], $config);
+        }
+
+        return $transport;
+    }
+    
 }
