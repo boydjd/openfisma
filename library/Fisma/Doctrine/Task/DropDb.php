@@ -48,7 +48,7 @@ class Fisma_Doctrine_Task_DropDb extends Doctrine_Task_DropDb
     {
         $argument = $this->getArgument('force');
         if ('auto-no' == $argument) {
-            $this->notify('Cancelled to drop the database');
+            $this->notify('Database dropping cancelled');
 
             return;
         }
