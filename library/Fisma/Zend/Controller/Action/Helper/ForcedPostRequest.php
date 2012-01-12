@@ -29,9 +29,10 @@ class Fisma_Zend_Controller_Action_Helper_ForcedPostRequest extends Fisma_Zend_C
 {
 
     /**
-     * Override the preDispatch() to enforce post request 
-     * 
-     * @return Fisma_Zend_Controller_Plugin_ForcedActionHandler 
+     * Override the preDispatch() to enforce post request. Each action should have a doc block, 
+     * and should add @GETAllowed to doc block if it can be accessed by GET request.
+     *
+     * @return void 
      */
     public function preDispatch()
     {
@@ -44,12 +45,13 @@ class Fisma_Zend_Controller_Action_Helper_ForcedPostRequest extends Fisma_Zend_C
                 if ($this->getRequest()->isPost()) {
                     return;
                 } else {
-                    throw new Zend_Controller_Action_Exception('The request is not a POST request');
+                    throw new Zend_Controller_Action_Exception('The request must be a POST request.');
                 }
                 
             }
         } else {
-            throw new Zend_Controller_Action_Exception('The request is not a POST request');
+            throw new Zend_Controller_Action_Exception('The action function needs a DOC block. And add @GETAllowed' .
+                ' if it can be accessed by GET request.');
         } 
     }
 
