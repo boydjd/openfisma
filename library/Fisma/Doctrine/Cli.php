@@ -38,12 +38,47 @@ class Fisma_Doctrine_Cli extends Doctrine_Cli
     protected function _getTaskClassFromArgs($args)
     {
         $taskName = str_replace('-', '_', $args[1]);
-        if ('migrate' == $taskName) {
+        $taskNames = array('build_all_reload', 'rebuild_db', 'drop_db');
+        if (in_array($taskName, $taskNames)) {
             $taskClass = 'Fisma_Doctrine_Task_' . Doctrine_Inflector::classify($taskName);
         } else {
             $taskClass = 'Doctrine_Task_' . Doctrine_Inflector::classify($taskName);
         }
 
         return $taskClass;
+    }
+    
+    /**
+     * Get array of all the Doctrine_Task child classes that are loaded
+     *
+     * @return array $tasks
+     */
+    public function getLoadedTasks()
+    {
+        $parent = new ReflectionClass('Doctrine_Task');
+        
+        $classes = get_declared_classes();
+        
+        $tasks = array();
+        
+        foreach ($classes as $className) {
+            $class = new ReflectionClass($className);
+        
+            if ($class->isSubClassOf($parent)) {
+                $task = str_replace('Doctrine_Task_', '', $className);
+                $tasks[$task] = $task;
+            }
+        }
+
+        // Make sure migrate action does not exist in the tasks
+        if (isset($tasks['Migrate'])) {
+            unset($tasks['Migrate']);
+        }
+
+        if (isset($this->_tasks['Migrate'])) {
+            unset($this->_tasks['Migrate']);
+        }
+
+        return array_merge($this->_tasks, $tasks);
     }
 }

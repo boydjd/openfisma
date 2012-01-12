@@ -167,6 +167,11 @@ abstract class Fisma_Cli_Abstract
        // Invoke subclass worker method
         try {
             $this->_run();
+        } catch (Zend_Config_Exception $zce) {
+            // A zend config exception indicates that the application may not be installed properly
+            echo 'The application is not installed correctly.' . PHP_EOL;
+            echo 'Exception ' . get_class($zce) . ' Occurred: ' . $zce->getMessage() . PHP_EOL;
+            return;
         } catch (Exception $e) {
             $stderr = fopen('php://stderr', 'w');
             fwrite($stderr, "ERROR: " . $e->getMessage() . "\n");
@@ -177,7 +182,6 @@ abstract class Fisma_Cli_Abstract
             }
 
             fclose($stderr);
-
             return self::EXIT_UNHANDLED_EXCEPTION;
         }
 

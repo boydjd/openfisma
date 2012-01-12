@@ -49,7 +49,8 @@ class Test_Library_Fisma_Doctrine_Cli extends Test_Case_Unit
         $cli = new Test_Library_Fisma_Doctrine_CliDummy();
 
         $args = array(1 => 'migrate');
-        $this->assertEquals('Fisma_Doctrine_Task_Migrate', $cli->getTaskClassFromArgs($args)); //customized classes are checked manually
+        //customized classes are checked manually 
+        $this->assertEquals('Fisma_Doctrine_Task_Migrate', $cli->getTaskClassFromArgs($args));
 
         $args[1] = 'Compile';
         $this->assertEquals('Doctrine_Task_Compile', $cli->getTaskClassFromArgs($args));

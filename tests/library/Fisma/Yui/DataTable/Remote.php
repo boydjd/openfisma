@@ -77,7 +77,8 @@ class Test_Library_Fisma_Yui_DataTable_Remote extends Test_Case_Unit
     public function testValidate_1()
     {
         $table = new Fisma_Yui_DataTable_Remote();
-        $this->setExpectedException('PHPUnit_Framework_Error', '_dataUrl cannot be null when rendering a remote table.');
+        $this->setExpectedException('PHPUnit_Framework_Error',
+                                    '_dataUrl cannot be null when rendering a remote table.');
         $table->render();
     }
     public function testValidate_2()

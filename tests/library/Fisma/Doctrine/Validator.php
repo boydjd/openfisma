@@ -46,7 +46,8 @@ class Test_Library_Fisma_Doctrine_Validator extends Test_Case_Unit
      */
     public function testGetCustomValidator()
     {
-        $this->assertEquals('Fisma_Doctrine_Validator_Ip', get_class(Fisma_Doctrine_Validator::getValidator('Fisma_Doctrine_Validator_Ip')));
+        $this->assertEquals('Fisma_Doctrine_Validator_Ip',
+                            get_class(Fisma_Doctrine_Validator::getValidator('Fisma_Doctrine_Validator_Ip')));
     }
 
     /**

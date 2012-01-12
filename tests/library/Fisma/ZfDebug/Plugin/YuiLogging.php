@@ -48,7 +48,8 @@ class Test_Library_Fisma_ZfDebug_Plugin_YuiLogging extends Test_Case_Unit
     public function testGetIconData()
     {
         $samplePlugin = new Fisma_ZfDebug_Plugin_YuiLogging();
-        $this->assertEquals(Fisma_ZfDebug_Plugin_YuiLogging::ICON_MIME.';'.Fisma_ZfDebug_Plugin_YuiLogging::ICON_DATA, $samplePlugin->getIconData());
+        $this->assertEquals(Fisma_ZfDebug_Plugin_YuiLogging::ICON_MIME.';'.Fisma_ZfDebug_Plugin_YuiLogging::ICON_DATA,
+                            $samplePlugin->getIconData());
     }
 
     /**
@@ -73,7 +74,8 @@ class Test_Library_Fisma_ZfDebug_Plugin_YuiLogging extends Test_Case_Unit
         $samplePlugin = new Fisma_ZfDebug_Plugin_YuiLogging();
 
         // test with mock view
-        $this->assertEquals('debug/zfdebug-yui-logging-tab.phtml', $samplePlugin->getPanel(new ZfDebugPluginMockLayout()));
+        $this->assertEquals('debug/zfdebug-yui-logging-tab.phtml',
+                            $samplePlugin->getPanel(new ZfDebugPluginMockLayout()));
 
         // test with default view
         $this->setExpectedException('Fisma_Zend_Exception', $samplePlugin::LAYOUT_NOT_INSTANTIATED_ERROR);

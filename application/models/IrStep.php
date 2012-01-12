@@ -69,7 +69,9 @@ class IrStep extends BaseIrStep
      */
     protected function _openGap($workflowId, $position, $openGapQuery = null)
     {
-        $openGapQuery = (isset($openGapQuery)) ? $openGapQuery : Doctrine::getTable('IrStep')->openGapQuery($workflowId, $position);
+        $openGapQuery = (isset($openGapQuery))
+                      ? $openGapQuery
+                      : Doctrine::getTable('IrStep')->openGapQuery($workflowId, $position);
         $openGapQuery->execute(); 
     }
 
@@ -83,7 +85,9 @@ class IrStep extends BaseIrStep
      */
     protected function _closeGap($workflowId, $position, $closeGapQuery = null)
     {
-        $closeGapQuery = (isset($closeGapQuery)) ? $closeGapQuery : Doctrine::getTable('IrStep')->closeGapQuery($workflowId, $position);
+        $closeGapQuery = (isset($closeGapQuery))
+                       ? $closeGapQuery
+                       : Doctrine::getTable('IrStep')->closeGapQuery($workflowId, $position);
         $closeGapQuery->execute(); 
     }
 }

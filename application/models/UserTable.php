@@ -154,7 +154,7 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 
         return $query;    
     }
-    
+
     /**
      * Build the query for getRoles()
      *
