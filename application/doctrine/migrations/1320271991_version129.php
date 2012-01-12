@@ -32,7 +32,7 @@ class Version129 extends Doctrine_Migration_Base
      */
     public function up()
     {
-		$this->changeColumn('finding', 'countermeasureseffectiveness', '', 'enum', array(
+        $this->changeColumn('finding', 'countermeasureseffectiveness', '', 'enum', array(
              'values' => 
              array(
               0 => 'LOW',
@@ -45,7 +45,8 @@ class Version129 extends Doctrine_Migration_Base
               'auditLog' => '1',
               'logicalName' => 'Effectiveness of Countermeasures',
              ),
-             'comment' => 'A subjective assessment of the effectivness of the in-place countermeasures against the described threat',
+             'comment' => 'A subjective assessment of the effectivness '
+                         .'of the in-place countermeasures against the described threat',
              ));
     }
 
@@ -56,7 +57,7 @@ class Version129 extends Doctrine_Migration_Base
      */
     public function down()
     {
-		$this->changeColumn('finding', 'countermeasureseffectiveness', '', 'enum', array(
+        $this->changeColumn('finding', 'countermeasureseffectiveness', '', 'enum', array(
              'values' => 
              array(
               0 => 'LOW',
@@ -69,7 +70,8 @@ class Version129 extends Doctrine_Migration_Base
               'auditLog' => '1',
               'logicalName' => 'Effectiveness of Countermeasures',
              ),
-             'comment' => 'A subjective assessment of the effectivness of the in-place countermeasures against the described threat',
+             'comment' => 'A subjective assessment of the effectivness of the in-place countermeasures '
+                         .'against the described threat',
              ));
     }
 }

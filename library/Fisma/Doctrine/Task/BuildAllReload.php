@@ -17,19 +17,25 @@
  */
 
 /**
- * This is a blank class used for creating mock objects in testing
- * 
- * This class will be used to create mock objects in tests where the tested methods do not specify the type of argument 
- * (i.e. accepting mixed). It's declared transparent ("blank") to save memory. All necessary methods / attributes will 
- * be added (mocked) at call time.
+ * Overrite parent construct function to call Fisma_Doctrine_Task_RebuildDb instead
  *
- * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Test
- * 
+ * @package    Fisma
+ * @subpackage Fisma_Doctrine_Task
  */
-class Mock_Blank
+class Fisma_Doctrine_Task_BuildAllReload extends Doctrine_Task_BuildAllReload
 {
-    
+    /**
+     * Use Fisma_Doctrine_Task_RebuildDb so that it can detect auto-yes/auto-no argument
+     *
+     * @return void
+     */
+    public function __construct($dispatcher = null)
+    {
+        parent::__construct($dispatcher);
+
+        $this->rebuildDb = new Fisma_Doctrine_Task_RebuildDb($this->dispatcher);
+    }
 }

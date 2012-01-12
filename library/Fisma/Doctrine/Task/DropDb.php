@@ -17,19 +17,30 @@
  */
 
 /**
- * This is a blank class used for creating mock objects in testing
- * 
- * This class will be used to create mock objects in tests where the tested methods do not specify the type of argument 
- * (i.e. accepting mixed). It's declared transparent ("blank") to save memory. All necessary methods / attributes will 
- * be added (mocked) at call time.
+ * Overrite parent execute function
  *
- * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Test
- * 
+ * @package    Fisma
+ * @subpackage Fisma_Doctrine_Task
  */
-class Mock_Blank
+class Fisma_Doctrine_Task_DropDb extends Doctrine_Task_DropDb
 {
-    
+    /**
+     * Overrite parent execute function so that it cancels the action of drop database when there is auto-no|n argument
+     *
+     * @return void
+     */
+    public function execute()
+    {
+        $argument = $this->getArgument('force');
+        if ('--auto-no' == $argument || '-n' == $argument) {
+            $this->notify('Cancelled to drop the database');
+
+            return;
+        }
+
+        parent::execute();
+    }
 }

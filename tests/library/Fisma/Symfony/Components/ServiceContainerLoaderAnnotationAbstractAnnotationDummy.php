@@ -25,7 +25,8 @@
  ** @subpackage Test_Library
  **/
 
-class Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy extends Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotation
+class Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy
+    extends Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotation
 {
     /*
      * dummy implementation of parent's abstract methods

@@ -42,8 +42,10 @@ class Test_Application_Models_DocumentType extends Test_Case_Unit
         $mockDocType = $this->getMock('Mock_Blank', array('set'));
         $docType->Uploads[] = $mockDocType;
         
-        $this->setExpectedException('Fisma_Zend_Exception_User', 'This document type cannot be deleted because it is already associated with one or more '
-                                   .'system documents.');
+        $this->setExpectedException(
+            'Fisma_Zend_Exception_User',
+            'This document type cannot be deleted because it is already associated with one or more system documents.'
+        );
         $docType->preDelete(null);
     }
 }

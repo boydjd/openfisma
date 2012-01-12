@@ -33,7 +33,7 @@ class Test_Library_Fisma_Import_AbstractDummy extends Fisma_Import_Abstract
      */
     public function __construct($values = null)
     {
-        if(isset($values)) {
+        if (isset($values)) {
             parent::__construct($values);
         } else {
             $this->_orgSystemId = 0;

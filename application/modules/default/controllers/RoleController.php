@@ -263,7 +263,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                         $removeRolePrivilegeQuery->execute()->delete();
                         
                         // Add to message stack
-                        $msg[] = "Removed the '" . $privilegeDescription . "' privilege from the " . $roleName . ' role.';
+                        $msg[] = "Removed the '$privilegeDescription' privilege from the $roleName role.";
                     }
 
                 }
