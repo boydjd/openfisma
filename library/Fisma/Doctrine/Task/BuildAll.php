@@ -36,11 +36,7 @@ class Fisma_Doctrine_Task_BuildAll extends Doctrine_Task_BuildAll
     {
         parent::__construct($dispatcher);
 
-        $this->taskName = str_replace(
-            '_',
-            '-',
-            Doctrine_Inflector::tableize(str_replace('Fisma_Doctrine_Task_', '', get_class($this)))
-        );
+        $this->taskName = Fisma_Doctrine_Task::getDoctrineTaskName($this);
 
         $this->models = new Fisma_Doctrine_Task_GenerateModelsYaml($this->dispatcher);
     }

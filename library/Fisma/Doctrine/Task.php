@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,27 +17,28 @@
  */
 
 /**
- * Override parent construct function to call Fisma_Doctrine_Task_RebuildDb instead
- *
+ * Abstract class used for writing Doctrine Tasks
+ * 
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
- * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Task
  */
-class Fisma_Doctrine_Task_BuildAllReload extends Doctrine_Task_BuildAllReload
+abstract class Fisma_Doctrine_Task extends Doctrine_Task
 {
     /**
-     * Use Fisma_Doctrine_Task_RebuildDb so that it can detect auto-yes/auto-no argument
-     *
-     * @return void
+     * Return a task name from Fisma_Doctrine_Task_{TASK_NAME}
+     * 
+     * @param Object $task
+     * @return string
      */
-    public function __construct($dispatcher = null)
+    public static function getDoctrineTaskName($task)
     {
-        parent::__construct($dispatcher);
-
-        $this->taskName = Fisma_Doctrine_Task::getDoctrineTaskName($this);
-
-        $this->rebuildDb = new Fisma_Doctrine_Task_RebuildDb($this->dispatcher);
+        return str_replace(
+            '_',
+            '-',
+            Doctrine_Inflector::tableize(str_replace('Fisma_Doctrine_Task_', '', get_class($task)))
+        );
     }
 }
