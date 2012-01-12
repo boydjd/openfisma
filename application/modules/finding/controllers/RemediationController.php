@@ -245,7 +245,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id/format/html");
         $tabView->addTab("Comments ($commentCount)", "/finding/remediation/comments/id/$id/format/html");
         $tabView->addTab(
-            "Evidences (" . $finding->Evidence->count() . ")",
+            "Evidence (" . $finding->Evidence->count() . ")",
             "/finding/remediation/artifacts/id/$id/format/html"
         );
         $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id/format/html");
@@ -641,6 +641,42 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $upload = $evidence->Attachments[0];
         $this->_helper->downloadAttachment($upload->fileHash, $upload->fileName);
+    }
+    
+    /**
+     * Delete evidence
+     * 
+     * @return void
+     */
+    public function deleteevidenceAction()
+    {
+        $evidenceId = $this->_request->getParam('evidenceId');
+        $attachmentId = $this->_request->getParam('attachmentId');
+
+        $artifactsQuery = Doctrine_Query::create()
+                          ->from('Evidence e')
+                          ->leftJoin('e.Finding f')
+                          ->leftJoin('e.Attachments a')
+                          ->where('e.id = ?', $evidenceId)
+                          ->andWhere('a.id = ?', $attachmentId);
+
+        $evidence = $artifactsQuery->execute()->getLast();
+
+        if (empty($evidence)) {
+            throw new Fisma_Zend_Exception('Invalid evidence ID');
+        }
+
+        // There is no ACL defined for evidence objects, access is only based on the associated finding:
+        $this->_acl->requirePrivilegeForObject('upload_evidence', $evidence->Finding);
+
+        $message = "Attachment {$evidence->Attachments[0]->fileName} (Upload #{$evidence->Attachments[0]->id}) "
+                 . "removed from evidence.";
+        $evidence->Attachments->remove(0);
+        $evidence->save();
+
+        $evidence->Finding->getAuditLog()->write($message);
+
+        $this->_redirect("/finding/remediation/view/id/{$evidence->Finding->id}");
     }
     
     /**

@@ -1,4 +1,5 @@
 <?php
+Fisma_Format_Section::startSection('Latest Evidence');
 $addToEvidenceButton = new Fisma_Yui_Form_Button(
     'addToEvidenceButton',
     array(
@@ -15,7 +16,7 @@ if (
 endif;
 echo "<div class='buttonBar'>" . $this->escape($addToEvidenceButton, 'none') . "</div>";
 
-echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $this->artifact));
+echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $this->artifact, 'isLatest' => true));
 ?>
 
 <div class="approval">
@@ -34,13 +35,14 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
             "INNER JOIN (" .
                 "SELECT MAX(createdts) AS updatedts " .
                 "FROM finding_evaluation fe2 " .
-                "WHERE fe2.findingid = {$this->finding->id} " .
+                "WHERE fe2.evidenceid = {$this->artifact->id} " .
                 "GROUP BY evaluationid" .
             ") fe3 ON fe1.createdts = fe3.updatedts " .
             "LEFT JOIN finding f ON fe1.findingid = f.id " .
             "LEFT JOIN evaluation e ON fe1.evaluationid = e.id " .
             "LEFT JOIN poc u ON fe1.userid = u.id " .
-            "WHERE fe1.findingid = {$this->finding->id}"
+            "WHERE fe1.evidenceid = {$this->artifact->id} " .
+            "ORDER BY fe1.createdts ASC"
         )
         ->addComponent('fe1', 'FindingEvaluation fe1')
         ->addComponent('e', 'fe1.Evaluation e')
@@ -51,9 +53,6 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
     // First: display all of the completed evaluations for the artifact.
     foreach ($distinctEvaluations as $findingEvaluation):
         // Only evaluations preceeding to the CurrentEvaluation are marked as completed
-        if ($findingEvaluation->Evaluation->precedence >= $activeEvaluation->precedence):
-            continue;
-        endif;
 
         $user = $findingEvaluation->User;
         $fullName = $user->nameFirst . ' ' . $user->nameLast;
@@ -81,9 +80,13 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
     endforeach;
     ?>
 
-    <?php
+<?php
+/**
+ * If the current status is 'EN', the current evidence must have been rejected.
+ */
+if ($this->finding->status == 'EA'):
 
-    /*
+    /**
      * Second: Show approval buttons for the current evaluation if the user has the required privileges.
      */
     if ($this->acl()->hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)):
@@ -149,5 +152,9 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
     <?php
         endif;
     endforeach;
+endif;
     ?>
 </div>
+<?php
+    Fisma_Format_Section::stopSection();
+?>

@@ -7,15 +7,16 @@ $attachmentCollection = $this->artifact->Attachments;
 $attachmentRows = array();
 
 foreach ($attachmentCollection as $attachment) {
-    $downloadUrl = '/finding/remediation/downloadevidence/evidenceId/' . $this->artifact->id
-                 . '/attachmentId/' . $attachment->id;
+    $baseUrl = '/finding/remediation/';
+    $currentUrl = '/evidenceId/' . $this->artifact->id . '/attachmentId/' . $attachment->id;
     $attachmentRows[] = array(
-        'iconUrl'  => "<a href=$downloadUrl><img src=" . $this->escape($attachment->getIconUrl()) . "></a>",
-        'fileName' => "<a href=$downloadUrl><div>" . $this->escape($attachment->fileName) . "</div></a>",
+        'iconUrl'  => "<a href={$baseUrl}downloadevidence{$currentUrl}><img src={$attachment->getIconUrl()}></a>",
+        'fileName' => "<a href={$baseUrl}downloadevidence{$currentUrl}><div>"
+                    . $this->escape($attachment->fileName) . "</div></a>",
         'fileSize' => $attachment->getFileSize(),
         'user'     => $this->userInfo($attachment->User->username),
         'date'     => $attachment->createdTs,
-        'comment'  => $this->textToHtml($this->escape($attachment->description))
+        'action'   => "<a href={$baseUrl}deleteevidence{$currentUrl}>Delete</a>"
     );
 }
 
@@ -73,15 +74,22 @@ $dataTable->addColumn(
     )
 );
 
-$dataTable->addColumn(
-    new Fisma_Yui_DataTable_Column(
-        'Comment',
-        false,
-        'Fisma.TableFormat.formatHtml',
-        null,
-        'comment'
-    )
-);
+if (
+    $this->acl()->hasPrivilegeForObject('upload_evidence', $this->artifact->Finding) &&
+    !$this->artifact->Finding->isDeleted() &&
+    $this->isLatest &&
+    in_array($this->artifact->Finding->status, array('EN', 'EA'))
+):
+    $dataTable->addColumn(
+        new Fisma_Yui_DataTable_Column(
+            'Action',
+            true,
+            'Fisma.TableFormat.formatHtml',
+            null,
+            null
+        )
+    );
+endif;
 
 $dataTable->setData($attachmentRows);
 echo $this->escape($dataTable, 'none');

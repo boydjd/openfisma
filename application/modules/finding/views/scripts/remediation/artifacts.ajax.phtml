@@ -8,7 +8,7 @@ if (count($this->artifacts) > 0):
     foreach ($this->artifacts as $index => $artifact):
     
         // The first artifact is the one which is currently being evaluated if the finding is in EA status.
-        $currentArtifact = (0 == $index && 'EA' == $this->finding->status);
+        $currentArtifact = (0 == $index);
         if ($currentArtifact):
             echo $this->partial(
                 'remediation/artifact-current-item.phtml', 
@@ -22,7 +22,7 @@ if (count($this->artifacts) > 0):
             );
         else:
             if(!$rejectedStarted):
-                Fisma_Format_Section::startSection('Evaluated Evidence');
+                Fisma_Format_Section::startSection('Previously Rejected Evidence');
                 $displayRejectedEvidenceButton = new Fisma_Yui_Form_Button(
                     'rejectedEvidencesTrigger',
                     array(
