@@ -271,6 +271,7 @@ div.approvalHeader {
     background-color: #cecece;
     border: 1px solid #cecece;
     padding: 3px 8px;
+    margin-top: 8px;
 }
 
 div.approvalStep {

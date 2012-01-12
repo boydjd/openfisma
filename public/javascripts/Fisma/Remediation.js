@@ -57,7 +57,12 @@ Fisma.Remediation = {
      * @param {String} panelTitle the text shows on the panel.
      * @param {int} findingId the id of the current finding.
      */
-    remediationAction : function(action, formId, panelTitle, findingId) {
+    remediationAction : function(event, args) {
+        action = args.action;
+        formId = args.formId;
+        panelTitle = args.panelTitle;
+        findingId = args.findingId;
+        
         if ('REJECTED' === action) {
             Fisma.UrlPanel.showPanel(
                 panelTitle,
@@ -68,6 +73,12 @@ Fisma.Remediation = {
             );
         } else {
             var content = document.createElement('div');
+            var warning = document.createElement('div');
+            warning.className = 'messageBox info';
+            var warn_message = 'WARNING: You are about to make the "' + panelTitle + '" decision';
+            warn_message += '. This action cannot be undone.';
+            warning.appendChild(document.createTextNode(warn_message));
+            content.appendChild(warning);
             var p = document.createElement('p');
             var c_title;
             if ('APPROVED' === action) {
@@ -91,7 +102,7 @@ Fisma.Remediation = {
             button.id = 'dialog_continue';
             button.value = 'Continue';
             content.appendChild(button);
-           
+
             Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 
             document.getElementById('dialog_continue').onclick = function (){

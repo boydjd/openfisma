@@ -1,19 +1,9 @@
 <?php
-Fisma_Format_Section::startSection('Current Evidence (orginally submitted on ' .
-                                   $this->escape($this->artifact->createdTs) . ')');
-
-
-$message = "WARNING: You are about to append files to the evidence currently under evaluation. "
-         . 'This action cannot be undone. Please click "YES" to confirm your action or click "No" to stop.';
 $addToEvidenceButton = new Fisma_Yui_Form_Button(
     'addToEvidenceButton',
     array(
         'label' => 'Add More Files',
-        'onClickFunction' => 'Fisma.Util.showConfirmDialog',
-        'onClickArgument' => array(
-            'text' => $message,
-            'func' => 'Fisma.Remediation.upload_evidence'
-        )
+        'onClickFunction' => 'Fisma.Remediation.upload_evidence'
     )
 );
 if (
@@ -23,8 +13,7 @@ if (
 ):
     $addToEvidenceButton->readOnly = true;
 endif;
-
-echo $this->escape($addToEvidenceButton, 'none');
+echo "<div class='buttonBar'>" . $this->escape($addToEvidenceButton, 'none') . "</div>";
 
 echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $this->artifact));
 ?>
@@ -110,31 +99,30 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
     
         $approveButton = new Fisma_Yui_Form_Button(
             'approveButton',
-             array(
-                  'label' => 'APPROVE', 
-                  'onClickFunction' => 'Fisma.Util.showConfirmDialog',
-                  'onClickArgument' => array(
-                      'text' => $message, 
-                      'func' => 'Fisma.Remediation.remediationAction',
-                      'args' => array("APPROVED", "finding_detail", "Evidence Approval", $this->finding->id)
-                 )
+            array(
+                'label' => 'APPROVE', 
+                'onClickFunction' => 'Fisma.Remediation.remediationAction',
+                'onClickArgument' => array(
+                    'action' => "APPROVED",
+                    'formId' => "finding_detail",
+                    'panelTitle' => "Evidence Approval",
+                    'findingId' => $this->finding->id
+                )
             )    
         );
         echo $this->escape($approveButton, 'none');
     
-        $message = 'WARNING: You are about to deny the evidence package. This action cannot be undone.'
-                 . ' Are you sure that you want to continue?';
-    
         $denyButton = new Fisma_Yui_Form_Button(
             'denyButton',
             array(
-                  'label' => 'REJECT', 
-                  'onClickFunction' => 'Fisma.Util.showConfirmDialog',
-                  'onClickArgument' => array(
-                      'text' => $message, 
-                      'func' => 'Fisma.Remediation.remediationAction',
-                      'args' => array("REJECTED", "finding_detail", "Evidence Denial", $this->finding->id)
-                  )
+                'label' => 'REJECT', 
+                'onClickFunction' => 'Fisma.Remediation.remediationAction',
+                'onClickArgument' => array(
+                    'action' => "REJECTED",
+                    'formId' => "finding_detail",
+                    'panelTitle' => "Evidence Denial",
+                    'findingId' => $this->finding->id
+                )
             )
         );
 
@@ -163,7 +151,3 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
     endforeach;
     ?>
 </div>
-
-<?php 
-    Fisma_Format_Section::stopSection();
-?>
