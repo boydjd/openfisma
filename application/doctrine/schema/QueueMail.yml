@@ -1,0 +1,20 @@
+QueueMail:
+    columns:
+        recipient:
+            type: string(255)
+            comment: The recipient email address
+        recipientName:
+            type: string(255)
+            comment: The recipient name
+        sender:
+            type: string(255)
+            comment: The sender email address
+        senderName:
+            type: string(255)
+            comment: The name for sender mail
+        subject:
+            type: string(255)
+            comment: The subject for mail
+        body:
+            type: string
+            comment: Email body text

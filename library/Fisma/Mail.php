@@ -28,11 +28,46 @@
 class Fisma_Mail
 {
     /**
-     * Recipient: address
+     * Array for Fisma_Mail
      * 
-     * @var string
+     * @var array
      */
-    private $_mail = null;
+    private $_mail = array();
+
+    /**
+     * Constructor
+     * 
+     * @param array $data
+     * @param string $template
+     * @param array $options 
+     * @return void
+     */
+    public function __construct($data, $template, $options = array())
+    {
+        if (!empty($data['recipient'])) {
+            $this->_mail['recipient'] = $data['recipient'];
+        } else {
+            throw new Fisma_Zend_Exception_User('the recipient address cannot be empty');
+        }
+
+        $this->_mail['recipientName'] = $data['recipientName'];
+        $this->_mail['subject']       = $data['subject'];
+
+        if (!empty($data['sender'])) {
+            $this->_mail['sender'] = $data['sender'];
+        } else {
+            $this->_mail['sender'] = Fisma::configuration()->getConfig('sender');
+        }
+
+        if (!empty($data['senderName'])) {
+            $this->_mail['senderName'] = $data['senderName'];
+        } else {
+            $this->_mail['senderName'] = Fisma::configuration()->getConfig('system_name');
+        }
+
+        $view = Zend_Layout::getMvcInstance()->getView();
+        $this->_mail['body'] = $view->partial("mail/{$template}.phtml", 'default', $options);
+    }
 
     /**
      * Set mail variable
@@ -60,6 +95,5 @@ class Fisma_Mail
 
         return null;
     }
-    
 }
 

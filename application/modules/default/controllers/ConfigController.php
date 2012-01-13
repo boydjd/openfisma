@@ -525,7 +525,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $mail->sender    = $emailConfiguration['sender'];
             $mail->subject   = $emailConfiguration['subject'];
             $mail->body      = $mailContent;
-            $mail->transport = $this->_getTransport($emailConfiguration);
+            $mail->transport = $this->_getTransportFromPost($emailConfiguration);
 
             $mailHandler = new Fisma_MailHandler_Immediate();
             $mailHandler->setMail($mail)->send();
@@ -652,11 +652,11 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      * @param array $email the array of post values from email config form 
      * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail The initialized email sender
      */
-    private function _getTransport($email)
+    private function _getTransportFromPost($email)
     {
-        if ($email['send_type'] == 'sendmail') {
+        if ('sendmail' == $email['send_type']) {
             $transport = new Zend_Mail_Transport_Sendmail();
-        } elseif ($email['send_type'] == 'smtp') {
+        } else if ('smtp' == $email['send_type']) {
             // SMTP transport
             $config = array('auth'     => 'login',
                             'username' => $email['smtp_username'],
@@ -669,6 +669,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             }
 
             $transport = new Zend_Mail_Transport_Smtp($email['smtp_host'], $config);
+        } else {
+            throw new Fisma_Zend_Exception_User('Invalid email configuration type');
         }
 
         return $transport;

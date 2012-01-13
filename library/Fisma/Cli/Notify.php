@@ -103,14 +103,21 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
      * stored in the 0 row of $notifications.
      * 
      * @param array $notifications A group of rows from the notification table
-     * @param Fisma_Zend_Mail $mailEngine
      * @return void
      */
-    function sendNotificationEmail($notifications, $mailEngine = null) 
+    function sendNotificationEmail($notifications) 
     {
-        $mail = (isset($mailEngine)) ? $mailEngine : new Fisma_Zend_Mail();
-        // Send the e-mail
-        $mail->sendNotification($notifications);
+        $user = $notifications[0]->User;
+
+        $mailData = array();
+        $mailData['recipient']     = $user->email;
+        $mailData['recipientName'] = $user->nameFirst . ' ' . $user->nameLast;
+        $mailData['subject']       = "Your notifications for " . Fisma::configuration()->getConfig('system_name');
+        $options = array('notifyData' => $notifications);
+
+        $mail = new Fisma_Mail($mailData, 'notification', $options);
+        $mailHandler = new Fisma_MailHandler_Immediate();
+        $mailHandler->setMail($mail)->send();
     }
 
     /**

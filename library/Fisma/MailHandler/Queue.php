@@ -37,7 +37,7 @@ class Fisma_MailHandler_Queue extends Fisma_MailHandler_Abstract
         $mail->recipientName = $this->getMail()->recipientName;
         $mail->sender        = $this->getMail()->sender;
         $mail->senderName    = $this->getMail()->senderName;
-        $mail->subject       = $this->getMail()->bubject;
+        $mail->subject       = $this->getMail()->subject;
         $mail->body          = $this->getMail()->body;
         $mail->save();
     }
