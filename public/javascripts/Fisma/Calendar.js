@@ -21,7 +21,7 @@
  * @license   http://www.openfisma.org/content/license
  */
  
-Fisma.Calendar = function () {
+Fisma.Calendar = (function () {
     return {
         /**
          * Add a popup calendar to any text field.
@@ -52,13 +52,13 @@ Fisma.Calendar = function () {
 
             var handleSelect = function (type, args, obj) {
                 var dateParts = args[0][0]; 
-                var year = dateParts[0], month = "" + dateParts[1], day = "" + dateParts[2];
+                var year = dateParts[0], month = dateParts[1].toString(), day = dateParts[2].toString();
 
-                if (1 == month.length) {
+                if (1 === month.length) {
                     month = "0" + month;
                 }
 
-                if (1 == day.length) {
+                if (1 === day.length) {
                     day = "0" + day;
                 }
 
@@ -70,4 +70,4 @@ Fisma.Calendar = function () {
             calendar.selectEvent.subscribe(handleSelect, calendar, true);            
         }
     };
-}();
+}());
