@@ -74,7 +74,7 @@ Fisma.Remediation = {
         } else {
             var content = document.createElement('div');
             var warning = document.createElement('div');
-            warning.className = 'messageBox info';
+            warning.className = 'messageBox attention';
             var warn_message = 'WARNING: You are about to make the "' + panelTitle + '" decision';
             warn_message += '. This action cannot be undone.';
             warning.appendChild(document.createTextNode(warn_message));
@@ -100,8 +100,12 @@ Fisma.Remediation = {
             var button = document.createElement('input');
             button.type = 'button';
             button.id = 'dialog_continue';
-            button.value = 'Continue';
+            button.value = 'Confirm';
             content.appendChild(button);
+            var instruction = document.createElement('span');
+            instruction.className = 'instruction';
+            instruction.appendChild(document.createTextNode(' (or close this dialog to cancel) '));
+            content.appendChild(instruction);
 
             Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 

@@ -43,3 +43,8 @@ div#rejectedEvidencesContainer {
 form#finding_detail_upload_evidence button {
     display: none;
 }
+
+span.instruction {
+    font-size:smaller;
+    font-style:italic;
+}

@@ -570,7 +570,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     ->where('e.findingId = ?', $id);
                 $evidence = $evidenceQuery->execute()->getLast();
             }
-            $auditMessage = 'Add more evidence(s):'; // for Audit logging
+            $auditMessages = array();
             for ($i = 0; $i<count($_FILES['evidence']['name']); $i++)
             {
                 // PHP handles multiple uploads as $_FILES['element_name']['attribute'][idx] 
@@ -593,7 +593,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     }
 
                     $evidence->attach($file);
-                    $auditMessage .= " {$file['name']};";
+                    $auditMessages[] = "Evidence upload: \"{$file['name']}\"";
                 }
             }
             if ($evidence->Attachments->count()==0) {
@@ -604,6 +604,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 $finding->submitEvidence($evidence);
             } else {
                 $evidence->save();
+            }
+
+            foreach ($auditMessages as $auditMessage) {
                 $finding->getAuditLog()->write($auditMessage);
             }
         } catch (Fisma_Zend_Exception $e) {
@@ -669,7 +672,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         // There is no ACL defined for evidence objects, access is only based on the associated finding:
         $this->_acl->requirePrivilegeForObject('upload_evidence', $evidence->Finding);
 
-        $message = "Attachment {$evidence->Attachments[0]->fileName} (Upload #{$evidence->Attachments[0]->id}) "
+        $message = "Attachment #{$evidence->Attachments[0]->id} (\"{$evidence->Attachments[0]->fileName}\") "
                  . "removed from evidence.";
         $evidence->Attachments->remove(0);
         $evidence->save();

@@ -408,11 +408,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         
         $this->updateDenormalizedStatus();
 
-        $message = 'Upload evidence(s):';
-        foreach ($evidence->Attachments as $attachment) {
-            $message .= " {$attachment->fileName};";
-        }
-        $this->getAuditLog()->write($message);
         $this->save();
     }
     /**

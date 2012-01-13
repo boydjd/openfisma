@@ -181,6 +181,11 @@ div#rejectedEvidencesContainer {
 form#finding_detail_upload_evidence button {
     display: none;
 }
+
+span.instruction {
+    font-size:smaller;
+    font-style:italic;
+}
 /*******************************************************************************
  *
  * Incident.css
@@ -359,6 +364,12 @@ tr.incidentStep {
     color: green;
     background-color: lightgreen;
     border-color: green;
+}
+
+.messageBox.attention {
+    color: red;
+    background-color: orange;
+    border-color: red;
 }
 
 .messageBox.hide {

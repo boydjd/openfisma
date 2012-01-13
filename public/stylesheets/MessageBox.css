@@ -55,6 +55,12 @@
     border-color: green;
 }
 
+.messageBox.attention {
+    color: red;
+    background-color: orange;
+    border-color: red;
+}
+
 .messageBox.hide {
     display: none;
 }
