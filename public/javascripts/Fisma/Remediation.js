@@ -75,8 +75,7 @@ Fisma.Remediation = {
             var content = document.createElement('div');
             var warning = document.createElement('div');
             warning.className = 'messageBox attention';
-            var warn_message = 'WARNING: You are about to make the "' + panelTitle + '" decision';
-            warn_message += '. This action cannot be undone.';
+            var warn_message = 'WARNING: The decision you are going to make action cannot be undone.';
             warning.appendChild(document.createTextNode(warn_message));
             content.appendChild(warning);
             var p = document.createElement('p');
@@ -115,7 +114,7 @@ Fisma.Remediation = {
 
                 if ('DENIED' === action) { 
                     if (comment.match(/^\s*$/)) {
-                        var alertMessage = 'Comments are required in order to submit.';
+                        var alertMessage = 'Comments are required in order to submit a denial.';
                         var config = {zIndex : 10000};
                         Fisma.Util.showAlertDialog(alertMessage, config);
                         return;
@@ -158,7 +157,24 @@ Fisma.Remediation = {
      * to show rejected evidence(s)
      */
     show_rejected_evidences : function() {
-        document.getElementById('rejectedEvidencesContainer').style.display='block';
-        document.getElementById('rejectedEvidencesTrigger').style.display='none';
+        var container = document.getElementById('rejectedEvidencesContainer');
+        var trigger = document.getElementById('rejectedEvidencesTrigger-button');
+        if (container.style.display != 'block') {
+            container.style.display = 'block';
+            trigger.innerHTML = 'Click to hide';
+        } else {
+            container.style.display = 'none';
+            trigger.innerHTML = 'Click to display';
+        }
+    },
+
+    reject_evidence_validate : function() {
+        if (document.finding_detail_reject_evidence.comment.value.match(/^\s*$/)) {
+            var alertMessage = 'Comments are required in order to submit a denial.';
+            var config = {zIndex : 10000};
+            Fisma.Util.showAlertDialog(alertMessage, config);
+            return false;
+        }
+        return true;
     }
 };

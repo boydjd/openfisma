@@ -724,10 +724,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $model = 'warning';
             $this->view->priorityMessenger($message, $model);
         } catch (Fisma_Zend_Exception $e) {
-            $message = "Failure in this operation. ";
-            if (Fisma::debug()) {
-                $message .= $e->getMessage();
-            }
+            $message = $e->getMessage();
             $model = 'warning';
             $this->view->priorityMessenger($message, $model);
         }
