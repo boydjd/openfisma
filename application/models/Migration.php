@@ -1,7 +1,6 @@
-#!/usr/bin/env php
 <?php
 /**
- * Copyright (c) 2010 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,7 +16,17 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
-
-$cli = new Fisma_Cli_OptimizeIndex();
-exit($cli->run());
+/**
+ * A migration represents a change made to the OpenFISMA database schema.
+ * 
+ * Each migration instance corresponds to a migration class in the migrations directory.
+ * 
+ * @author     Mark E. Haase <mhaase@endeavorystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @license    http://www.openfisma.org/content/license GPLv3
+ * @package    Model
+ */
+class Migration extends BaseMigration
+{
+    
+}

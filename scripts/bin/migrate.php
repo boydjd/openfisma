@@ -1,7 +1,7 @@
 #!/usr/bin/env php
 <?php
 /**
- * Copyright (c) 2010 Endeavor Systems, Inc.
+ * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -19,5 +19,5 @@
 
 require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
-$cli = new Fisma_Cli_OptimizeIndex();
+$cli = new Fisma_Cli_Migrate();
 exit($cli->run());
