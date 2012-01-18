@@ -32,9 +32,9 @@
         <label for="finding_detail_reject_evidence_comment"><b>Comments (REQUIRED):</b></label><br/>
         <textarea id="finding_detail_reject_evidence_comment" name="comment" rows=5 cols=60></textarea>
     </p>
-    <p>
+    <div class="buttonBar">
         <input type="hidden" name="decision" value="REJECTED"/>
         <input type="submit" name="reject_evidence" value="Confirm"/>
-        <span style="instruction"> (or close this dialog to cancel)</span>
-    </p>
+        <button id="dialog_close">Cancel</button>
+    </div>
 </form>

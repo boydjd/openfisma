@@ -58,17 +58,21 @@ Fisma.Remediation = {
      * @param {int} findingId the id of the current finding.
      */
     remediationAction : function(event, args) {
-        action = args.action;
-        formId = args.formId;
-        panelTitle = args.panelTitle;
-        findingId = args.findingId;
+        var action = args.action;
+        var formId = args.formId;
+        var panelTitle = args.panelTitle;
+        var findingId = args.findingId;
         
         if ('REJECTED' === action) {
-            Fisma.UrlPanel.showPanel(
+            var panel = Fisma.UrlPanel.showPanel(
                 panelTitle,
                 '/finding/remediation/reject-evidence/id/' + findingId,
                 function(){
                     document.finding_detail_reject_evidence.action = document.finding_detail.action;
+                    document.getElementById('dialog_close').onclick = function (){
+                        panel.destroy();
+                        return false;
+                    }
                 }
             );
         } else {
@@ -94,19 +98,19 @@ Fisma.Remediation = {
             textarea.cols = 60;
             content.appendChild(textarea);
             var div = document.createElement('div');
-            div.style.height = '20px';
+            div.className = 'buttonBar';
             content.appendChild(div);
-            var button = document.createElement('input');
-            button.type = 'button';
-            button.id = 'dialog_continue';
-            button.value = 'Confirm';
-            content.appendChild(button);
-            var instruction = document.createElement('span');
-            instruction.className = 'instruction';
-            instruction.appendChild(document.createTextNode(' (or close this dialog to cancel) '));
-            content.appendChild(instruction);
+            var confirmButton = document.createElement('button');
+            confirmButton.id = 'dialog_continue';
+            confirmButton.appendChild(document.createTextNode('Confirm'));
+            div.appendChild(confirmButton);
+            var cancelButton = document.createElement('button');
+            cancelButton.id = 'dialog_close';
+            cancelButton.style.marginLeft = '5px';
+            cancelButton.appendChild(document.createTextNode('Cancel'));
+            div.appendChild(cancelButton);
 
-            Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
+            var panel = Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 
             document.getElementById('dialog_continue').onclick = function (){
                 var form2 = document.getElementById(formId);
@@ -132,6 +136,11 @@ Fisma.Remediation = {
                 form2.submit();
                 return;
             };
+
+            document.getElementById('dialog_close').onclick = function (){
+                panel.destroy();
+                return false;
+            }
         }
         return true;
     },
