@@ -25,22 +25,8 @@
  * @package    Fisma
  * @subpackage Fisma_Cli
  */
-class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
+class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
 {
-    /**
-     * Some users to randomly involve in the creation of findings
-     * 
-     * @var string
-     */
-    private $_sampleUsers;
-
-    /**
-     * Some points of contact (poc's) to randomly assign to findings
-     * 
-     * @var string
-     */
-    private $_samplePocs;
-    
     /**
      * Configure the arguments accepted for this CLI program
      *
@@ -100,28 +86,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                                 ->from('SecurityControl s')
                                 ->setHydrationMode(Doctrine::HYDRATE_NONE)
                                 ->execute();
-                                
-        // Get some users
-        $this->_sampleUsers = Doctrine_Query::create()
-                              ->from('User u')
-                              ->where('u.username NOT LIKE ?', 'root')
-                              ->limit(50)
-                              ->execute();
-
-        if (0 == count($this->_sampleUsers)) {
-            throw new Fisma_Zend_Exception_User("Cannot generate sample data because the application has no users.");
-        }
-
-        // Get some sample POCs
-        $this->_samplePocs = Doctrine_Query::create()
-                             ->from('Poc p')
-                             ->where('p.username NOT LIKE ?', 'root')
-                             ->limit(50)
-                             ->execute();
-
-        if (0 == count($this->_samplePocs)) {
-            throw new Fisma_Exception("Cannot generate sample data because the application has no POCs.");
-        }        
 
         // Get the evaluation ID for MSA
         $msaQuery = Doctrine_Query::create()
@@ -226,10 +190,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
                     $evidence = new Evidence();
                     $evidence->Finding = $f;
 
-                    $upload = $this->generateAttachment();
-                    $upload->User = $this->_getRandomUser();
-
-                    $evidence->Attachments[] = $upload;
+                    $evidence->Attachments[] = $this->_getSampleAttachment();
                     $evidence->save();
 
                     $f->updateDenormalizedStatus();
@@ -252,25 +213,5 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_Abstract
             Doctrine_Manager::connection()->rollBack();
             throw $e;
         }
-    }
-    
-    /**
-     * Return a random user object
-     * 
-     * @return User
-     */
-    private function _getRandomUser()
-    {
-        return $this->_sampleUsers[rand(0, count($this->_sampleUsers)-1)];
-    }
-
-    /**
-     * Return a random POC
-     * 
-     * @return Poc
-     */
-    private function _getRandomPoc()
-    {
-        return $this->_samplePocs[rand(0, count($this->_samplePocs))];
     }
 }
