@@ -47,31 +47,22 @@ class Fisma_Cli_AddFile extends Fisma_Cli_Abstract
     {
         if (is_null($this->getOption('in'))) {
             throw new Fisma_Zend_Exception_User ("Input file is not defined. " .
-                    "Please specify the path name for the target input file with the -i option.\n" .
-                    "See -h for more help.");
-            return false;
+                    "Please specify the path name for the target input file with the -i option.\n");
         }
-        try
-        {
-            $u = new Upload();
-            $u->fileName = pathinfo($this->getOption('in'), PATHINFO_FILENAME);
-            $u->fileHash = $this->_store();
-            $u->uploadIp = '127.0.0.1';
-            $u->save();
-        } catch (Exception $e) {
-            throw new Fisma_Zend_Exception_User($e->getMessage());
-            return false;
-        }
+        $u = new Upload();
+        $u->fileName = pathinfo($this->getOption('in'), PATHINFO_FILENAME);
+        $u->fileHash = $this->_store();
+        $u->uploadIp = '127.0.0.1';
+        $u->save();
 
         print("Target file successfully stored into OpenFISMA repository as Upload ID = {$u->id}\n" .
               "To access it with the copy-file script, please use the following SHA1 hash:\n{$u->fileHash}\n");
-        return true;
     }
 
     /**
      * Store the file using Fisma_FileManager
      *
-     * Extracted out for convinent unit testing
+     * Extracted out for convenient unit testing
      * 
      * @return string
      */

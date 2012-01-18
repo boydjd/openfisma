@@ -48,25 +48,15 @@ class Fisma_Cli_CopyFile extends Fisma_Cli_Abstract
     {
         if (is_null($this->getOption('sha'))) {
             throw new Fisma_Zend_Exception_User ("Input hash is not defined. " .
-                    "Please specify the hash key of the target input file with the -s option.\n" . 
-                    "See -h for more help.");
-            return false;
+                    "Please specify the hash key of the target input file with the -s option.\n");
         }
 
         if (is_null($this->getOption('out'))) {
             throw new Fisma_Zend_Exception_User ("Output file is not defined. " .
-                    "Please specify the path name for the target output file with the -o option.\n" .
-                    "See -h for more help.");
-            return false;
+                    "Please specify the path name for the target output file with the -o option.\n");
         }
 
-        try {
-            $this->_copy();
-        } catch (Exception $e) {
-            throw new Fisma_Zend_Exception_User($e->getMessage());
-            return false;
-        }
-
+        $this->_copy();
         print("Target file successfully copied from OpenFISMA repository!\n");
         return true;
     }

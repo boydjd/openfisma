@@ -48,27 +48,18 @@ class Fisma_Cli_RemoveFile extends Fisma_Cli_Abstract
     {
         if (is_null($this->getOption('sha'))) {
             throw new Fisma_Zend_Exception_User ("Input hash is not defined. " .
-                    "Please specify the hash key of the target input file with the -s option.\n" . 
-                    "See -h for more help.");
-            return false;
+                    "Please specify the hash key of the target input file with the -s option.\n");
         }
 
         if (is_null($this->getOption('no-warning'))) {
             print("This action is not undo-able. Are you sure you want to continue? (y/n): ");
             $confirm = fgets(STDIN);
-            if (!in_array($confirm, array('y' . PHP_EOL, 'yes' . PHP_EOL))) {
+            if (!in_array(trim($confirm), array('y', 'yes'))) {
                 print("No changes have been made to the repository.\n");
-                return false;
             }
         }
 
-        try {
-            $this->_remove();
-        } catch (Exception $e) {
-            throw new Fisma_Zend_Exception_User($e->getMessage());
-            return false;
-        }
-
+        $this->_remove();
         print("Target file successfully removed from OpenFISMA repository!\n");
         return true;
     }
