@@ -29,8 +29,8 @@
  */
 class Mock_Pdo extends PDO
 {
-	public function __construct()
-	{
-		// null constructor
-	}
+    public function __construct()
+    {
+        // null constructor
+    }
 }
