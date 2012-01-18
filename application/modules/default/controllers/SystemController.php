@@ -916,11 +916,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     {
         $orgIds = $this->_me->getOrganizationsByPrivilege('organization', 'read', $includeDisposal)
                        ->toKeyValueArray('id', 'id');
+
+        if (empty($orgIds)) {
+            return null;   
+        }
+
         $systemObjects = Doctrine_Query::create()
             ->from ('System s, s.Organization o')
             ->whereIn ('o.id', $orgIds)
             ->orderBy('o.nickname')
             ->execute();
+
         // convert to arrays
         $systems = array();
         foreach ($systemObjects as $s) {
@@ -932,6 +938,10 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 $systems[$v['parent']]['children'][] =& $systems[$k];
                 unset($systems[$k]);
             }
+        }
+
+        if (empty($systems)) {
+            return null;   
         }
 
         return array_values($systems);
