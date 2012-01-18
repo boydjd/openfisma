@@ -249,9 +249,6 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
                     $i->save();
                 }
 
-                
-                //$i->save();
-
                 $i->free();
                 unset($i);
 

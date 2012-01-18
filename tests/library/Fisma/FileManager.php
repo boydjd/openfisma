@@ -31,40 +31,28 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
 {
     /**
      * The base directory for FileManager
-     * 
-     * @var mixed  Defaults to "test_upload". 
      */
     var $BASE_DIR = "test_upload";
 
     /**
      * A mock object for FileInfo library
-     * 
-     * @var mixed
      */
     var $fi;
 
     /**
      * The default hash for all tests
-     * 
-     * @var mixed  Defaults to '1234567890123456789012345678901234567890'. 
      */
     var $hash = '1234567890123456789012345678901234567890';
     
     /**
      * Mocking the FileInfo and setting up environment for virtual file system
+     *
+     * Might be implemented more gracefully using https://github.com/mikey179/vfsStream
      *  
      * @return void
      */
     public function setup()
     {
-        /**
-         * Attempting to use vfsStream (https://github.com/mikey179/vfsStream)
-         *
-        require_once 'vfsStream/vfsStream.php';
-        vfsStreamWrapper::register();
-        vfsStreamWrapper::setRoot(new vfsStreamDirectory($this->BASE_DIR));
-         */
-
         $this->fi = $this->getMock('finfo', array('file'));
     }
 
@@ -250,9 +238,9 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
     }
 
     /**
-     * @todo: short description.
+     * Test the remove() method
      * 
-     * @return @todo
+     * @return void
      */
     public function testRemove()
     {

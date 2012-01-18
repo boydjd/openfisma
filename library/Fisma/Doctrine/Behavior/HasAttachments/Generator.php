@@ -39,7 +39,7 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
     }
     
     /**
-     * Overriding default relation building between the generated model (a joint table) and the host model
+     * Overriding to avoid default relation building between the generated model (a joint table) and the host model
      * 
      * @return void
      */
@@ -48,7 +48,7 @@ class Fisma_Doctrine_Behavior_HasAttachments_Generator extends Doctrine_Record_G
     }
     
     /**
-     * Overriding default relation building between the generated model (a joint table) and the host model
+     * Overriding to avoid default relation building between the generated model (a joint table) and the host model
      * 
      * @param Doctrine_Table $table The host table
      * @return mixed
