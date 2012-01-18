@@ -50,8 +50,8 @@ class Fisma_Zend_Controller_Action_Helper_ForcedPostRequest extends Fisma_Zend_C
                 
             }
         } else {
-            throw new Zend_Controller_Action_Exception('The action function needs a DOC block. And add @GETAllowed' .
-                ' if it can be accessed by GET request.');
+            $msg = 'The action function needs a DOC block. And add @GETAllowed if it can be accessed by GET request.';
+            throw new Zend_Controller_Action_Exception($msg);
         } 
     }
 

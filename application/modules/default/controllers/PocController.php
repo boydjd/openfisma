@@ -204,6 +204,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
         $this->view->toolbarButtons['list']->setValue("View POC List");
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
         
         // We're already on the tree screen, so don't show a "view tree" button
         unset($this->view->toolbarButtons['tree']);
@@ -382,8 +383,6 @@ class PocController extends Fisma_Zend_Controller_Action_Object
      * Moves a POC node from one organization to another.
      * 
      * This is used by the YUI tree node to handle drag and drop of organization nodes. It replies with a JSON object.
-     *
-     * @GETAllowed
      */
     public function moveNodeAction()
     {

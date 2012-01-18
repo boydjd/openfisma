@@ -41,7 +41,6 @@ class StorageController extends Fisma_Zend_Controller_Action_Security
     /**
      * Synchronize storage values.
      *
-     * @GETAllowed
      */
     public function syncAction()
     {

@@ -83,8 +83,6 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Handle upload of a spreadsheet template file
-     *
-     * @GETAllowed
      */
     public function uploadSpreadsheetAction()
     {

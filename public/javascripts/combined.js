@@ -9737,13 +9737,10 @@ Fisma.Module = {
          * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} The drag target relative to destNode
          */        
         handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
-            // Set up the GET query string for this operation
-            var query = '/organization/move-node/src/' 
-                      + srcNode.data.organizationId 
-                      + '/dest/' 
-                      + destNode.data.organizationId 
-                      + '/dragLocation/' 
-                      + dragLocation;
+            // Set up the POST query string for this operation
+            var query = '/organization/move-node/';
+            var postData = 'src=' + srcNode.data.organizationId + '&dest=' + destNode.data.organizationId 
+                           + '&dragLocation=' + dragLocation + '&csrf=' + $('[name="csrf"]').val();
     
             // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
             // but it prevents the user from modifying the tree while an update is already pending.
@@ -9768,7 +9765,7 @@ Fisma.Module = {
             this._savePanel.show();
     
             YAHOO.util.Connect.asyncRequest(
-                'GET', 
+                'POST', 
                 query, 
                 {
                     success: function (event) {
@@ -9794,7 +9791,7 @@ Fisma.Module = {
                     },
                     scope: this
                 }, 
-                null
+                postData
             );
         },
 
@@ -10346,19 +10343,17 @@ Fisma.Module = {
             this._savePanel.setBody('<img src="/images/loading_bar.gif">');
             this._savePanel.show();
             
-            // Set up the GET query string for this operation
+            // Set up the POST data string for this operation
             var destination = (YAHOO.lang.isValue(destNode.data.pocId))
-                            ? ('/destPoc/' + destNode.data.pocId)
-                            : ('/destOrg/' + destNode.data.organizationId);
+                            ? ('&destPoc=' + destNode.data.pocId)
+                            : ('&destOrg=' + destNode.data.organizationId);
 
-            var query = '/poc/move-node/src/' 
-                      + srcNode.data.pocId 
-                      + destination
-                      + '/dragLocation/' 
-                      + dragLocation;
+            var query = '/poc/move-node/';
+            var postData = 'src=' + srcNode.data.pocId + destination + '&dragLocation=' + dragLocation
+                           + '&csrf=' + $('[name="csrf"]').val();
 
             YAHOO.util.Connect.asyncRequest(
-                'GET', 
+                'POST', 
                 query, 
                 {
                     success: function (event) {
@@ -10380,7 +10375,7 @@ Fisma.Module = {
                     },
                     scope: this
                 }, 
-                null
+                postData
             );
         },
 

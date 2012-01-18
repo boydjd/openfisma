@@ -152,10 +152,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         $dataTable->addEventListener("buttonClickEvent", 'Fisma.Ldap.deleteLdap'); 
         $this->view->dataTable = $dataTable;
-        $this->view->csrfToken = Zend_Controller_Front::getInstance()
-                                 ->getPlugin('Fisma_Zend_Controller_Plugin_CsrfProtect')
-                                 ->getToken();
-        
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
     }
 
     /**
@@ -374,10 +371,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             }
         }
 
-        $this->view->csrfToken = Zend_Controller_Front::getInstance()
-                                 ->getPlugin('Fisma_Zend_Controller_Plugin_CsrfProtect')
-                                 ->getToken();
-        
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
         $this->view->modules = $modules;
     }
     
@@ -676,8 +670,6 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             )
         );
         
-        $this->view->csrfToken = Zend_Controller_Front::getInstance()
-                                 ->getPlugin('Fisma_Zend_Controller_Plugin_CsrfProtect')
-                                 ->getToken();
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
     }
 }

@@ -512,7 +512,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display a form inside a panel for uploading a document
      *
-     * @GETAllowed
      * @return void
      */
     public function uploadDocumentAction()

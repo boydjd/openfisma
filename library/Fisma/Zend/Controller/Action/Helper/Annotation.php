@@ -39,7 +39,7 @@ class Fisma_Zend_Controller_Action_Helper_Annotation extends Zend_Controller_Act
         $actionName = $this->getFrontController()->getDispatcher()->formatActionName($actionName);
         $reflectionClass = new Zend_Reflection_Class($this->getActionController());
         if (!$reflectionClass->hasMethod($actionName)) {
-            return '';
+            return NULL;
         }
 
         $reflectionMethod = $reflectionClass->getMethod($actionName);

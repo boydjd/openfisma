@@ -322,6 +322,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
         $this->view->toolbarButtons['list']->setValue("View Organization List");
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
         
         // We're already on the tree screen, so don't show a "view tree" button
         unset($this->view->toolbarButtons['tree']);
@@ -457,7 +458,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      * Moves a tree node relative to another tree node. This is used by the YUI tree node to handle drag and drops
      * of organization nodes. It replies with a JSON object.
      *
-     * @GETAllowed
      * @return void
      */
     public function moveNodeAction()

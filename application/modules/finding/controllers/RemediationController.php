@@ -414,7 +414,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Modify the finding
      * 
-     * @GETAllowed
      * @return void
      */
     public function modifyAction()
@@ -548,7 +547,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Upload evidence
      * 
-     * @GETAllowed
      * @return void
      */
     public function uploadevidenceAction()

@@ -167,9 +167,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
         if ($user->Notifications->count() > 0) {
             $this->view->notifications = $user->Notifications;
-            $this->view->csrfToken = Zend_Controller_Front::getInstance()
-                                     ->getPlugin('Fisma_Zend_Controller_Plugin_CsrfProtect')
-                                     ->getToken();
+            $this->view->csrfToken = $this->_helper->csrf->getToken();
             $this->view->submitUrl = "javascript:Fisma.Util.formPostAction('', '/dashboard/dismiss/', " 
                                      . $this->_me->id . ')';
         }
