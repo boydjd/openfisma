@@ -135,6 +135,10 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                 throw new Fisma_Zend_Exception("Invalid summary type ($summaryType)");
         }
 
+        if (empty($treeNodes)) {
+            $this->view->rootNodes = null;
+            return;
+        }
         // Convert "numbers" to actual numbers
         array_walk_recursive($treeNodes,
             function (&$scalar)
@@ -224,7 +228,10 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $this->_addFindingStatusFields($userOrgQuery, $findingParams);
 
         $userOrgs = $userOrgQuery->execute(null, Doctrine::HYDRATE_SCALAR);
-        
+        if (empty($userOrgs)) {
+            return $userOrgs;
+        }   
+     
         // Stitch together the two organization lists.
         $orgMax = count($organizations) - 1;
         $previousOrg = null;
