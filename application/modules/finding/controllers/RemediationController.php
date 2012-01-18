@@ -755,13 +755,22 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function findingAction() 
     {
         $this->_viewFinding();
-        
+        $table = Doctrine::getTable('Finding');
+     
         $finding = $this->view->finding;
         $organization = $finding->Organization;
 
         // For users who can view organization or system URLs, construct that URL
         $controller = ($organization->OrganizationType->nickname == 'system' ? 'system' : 'organization');
         $idParameter = ($organization->OrganizationType->nickname == 'system' ? 'oid' : 'id');
+         
+        $this->view->isLegacyFindingKeyEditable = $this->_isEditable('legacyFindingKey', $table, $finding); 
+        $this->view->isPocEditable = $this->_isEditable('pocId', $table, $finding); 
+        $this->view->isSourceEditable = $this->_isEditable('sourceId', $table, $finding); 
+        $this->view->isOrganizationEditable = $this->_isEditable('responsibleOrganizationId', $table, $finding); 
+        $this->view->isDescriptionEditable = $this->_isEditable('description', $table, $finding); 
+        $this->view->isRecommendationEditable = $this->_isEditable('description', $table, $finding); 
+
         $this->view->organizationViewUrl = "/$controller/view/$idParameter/$organization->id";
 
         $this->view->keywords = $this->_request->getParam('keywords');
@@ -775,6 +784,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function mitigationStrategyAction() 
     {
         $this->_viewFinding();
+        $finding = $this->view->finding;
+        $table = Doctrine::getTable('Finding');
+
+        $this->view->isTypeEditable = $this->_isEditable('type', $table, $finding); 
+        $this->view->isMitigationStrategyEditable = $this->_isEditable('mitigationStrategy', $table, $finding); 
+        $this->view->isResourcesEditable = $this->_isEditable('resourcesRequired', $table, $finding); 
+        $this->view->isThreatLevelEditable = $this->_isEditable('threatLevel', $table, $finding); 
+
     }
 
     /**
@@ -786,6 +803,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_viewFinding();
         $this->view->keywords = $this->_request->getParam('keywords');
+
+        $finding = $this->view->finding;
+        $table = Doctrine::getTable('Finding');
+
+        $this->view->isThreatLevelEditable = $this->_isEditable('threatLevel', $table, $finding); 
+        $this->view->isThreatEditable = $this->_isEditable('threat', $table, $finding); 
+        $this->view->isCountermeasuresEditable = $this->_isEditable('countermeasures', $table, $finding); 
+        $this->view->isCountermeasuresEffectivenessEditable = $this->_isEditable(
+                                                                                 'countermeasuresEffectiveness', 
+                                                                                 $table, 
+                                                                                 $finding); 
     }
 
     /**
@@ -952,7 +980,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         // Check that the user is permitted to view this finding
         $this->_acl->requirePrivilegeForObject('read', $finding);
-
         $this->view->finding = $finding;
     }
 
@@ -972,4 +999,43 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($message, 'warning');
         }
     }
+
+    /**
+     * Check whether a field is editable by its column metadata of requiredPrivilege and/or requiredUpdateStatus.   
+     * 
+     * @param string $column The column name.
+     * @param Doctrine_Table $table The finding table object. 
+     * @param Doctrine_Record $finding The finding object. 
+     * @return bool  
+     */
+    private function _isEditable($column, $table, $finding)
+    {
+        $editable = false;
+
+        $fieldDefinition = $table->getDefinitionOf($column);
+
+        if (isset($fieldDefinition['extra'])                      
+             && isset ($fieldDefinition['extra']['requiredUpdateStatus'])) {
+
+            $updateStatus = $fieldDefinition['extra']['requiredUpdateStatus'];                     
+        }
+
+        if (isset($fieldDefinition['extra'])                      
+             && isset ($fieldDefinition['extra']['requiredPrivilege'])) {
+
+            $updatePrivilege = $fieldDefinition['extra']['requiredPrivilege'];                     
+        }
+
+        if (!$finding->isDeleted()
+            && isset($updatePrivilege) && $this->_acl->hasPrivilegeForObject($updatePrivilege, $finding)) {
+            
+            // Some fields might not need to check status such as POC
+            if (!isset($updateStatus) || (isset($updateStatus) && in_array($finding->status, $updateStatus))) {
+                $editable = true ;
+            }
+        }  
+
+        return $editable;
+    }
+    
 }

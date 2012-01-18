@@ -18,8 +18,7 @@
                 <td>
                     <span 
                         <?php
-                        if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status) &&
-                            $this->acl()->hasPrivilegeForObject('update_legacy_finding_key', $finding)) {
+                        if ($this->isLegacyFindingKeyEditable) {
                         ?>
                             id="legacyFindingKey" 
                             class="editable" 
@@ -69,8 +68,7 @@
                 </span>
 
                 <?php
-                if (!$this->finding->isDeleted() 
-                    && $this->acl()->hasPrivilegeForObject('update_poc', $finding)):
+                if ($this->isPocEditable):
                 ?>
                     <span class="editable" target="pointOfContact">&nbsp;</span>
                 <?php 
@@ -112,8 +110,7 @@
                     </span>
 
                     <?php
-                    if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
-                         && $this->acl()->hasPrivilegeForObject('update_finding_source', $finding)):
+                    if ($this->isSourceEditable):
                     ?>
                         <span class="editable" target="source">&nbsp;</span>
                     <?php 
@@ -166,8 +163,7 @@
                     </span>
 
                     <?php
-                    if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
-                         && $this->acl()->hasPrivilegeForObject('update_assignment', $finding)):
+                    if ($this->isOrganizationEditable):
                     ?>
                         <span class="editable" target="organization">&nbsp;</span>
                     <?php 
@@ -185,8 +181,7 @@
 <div class="column right">
 
     <?php 
-    if (!$this->finding->isDeleted() && $this->acl()->hasPrivilegeForObject('update_description', $finding)
-        && ('NEW' == $status || 'DRAFT' == $status)) {
+    if ($this->isDescriptionEditable) {
         Fisma_Format_Section::startSection('Description', 'finding_description');
     } else {
         Fisma_Format_Section::startSection('Description');
@@ -202,8 +197,7 @@
 <div class="clear"></div>
 
 <?php
-if (!$this->finding->isDeleted() && ('NEW' == $status || 'DRAFT' == $status)
-    && $this->acl()->hasPrivilegeForObject('update_recommendation', $finding)) {
+if ($this->isRecommendationEditable) {
     Fisma_Format_Section::startSection('Recommendation', 'recommendation');
 } else {
     Fisma_Format_Section::startSection('Recommendation');
