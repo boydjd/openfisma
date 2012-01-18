@@ -9,7 +9,7 @@ div#logout{float:right;}
 .searchBox{display:none;}
 .yui-pg-container{display:none;}
 img#logoImg{width:145px;height:30px;}
-.chartContainer{margin-top:5px;margin-bottom:5px;page-break-inside:avoid;}
+.chartContainer{margin-top:5px;margin-bottom:5px;page-break-inside:avoid;page-break-after:always;}
 .chartGear{display:none;}
 div.externalMediaMarking{clear:both;display:block;border:1px solid black;padding:1em;}
 div.toolbar{display:none;}
@@ -17,8 +17,9 @@ ul.yui-nav{display:none;}
 div.yui-content{clear:both;}
 .yui-skin-sam .yui-navset .yui-content{background:white;padding:0;border:none;}
 .yui-navset .yui-content .yui-hidden{visibility:visible;position:static;}
-div.sectionHeader{clear:both;color:black;background:#eee;margin-top:1em;padding:1em;padding-bottom:0;border:1px solid black;border-bottom:none;}
-div.section{color:black;padding:1em;border:1px solid black;border-top:none;text-align:left;}
+div.sectionHeader{clear:both;color:black;background:#eee;margin-top:1em;padding:1em;padding-bottom:0;border:1px solid black;}
+div.sectionHeader td{border-style:none;}
+div.section{color:black;padding:1em;border:1px solid black;text-align:left;}
 table.searchFilters{display:none;}
 .editable{background-image:none;}
 div#footer{display:none;}
@@ -28,3 +29,17 @@ table.treeTable>tr{page-break-inside:avoid;}
 table.treeTable>tr>th{text-align:center;}
 table.treeTable td.ontime{background-color:#a6eba9!important;}
 table.treeTable td.overdue{background-color:#fae4e6!important;}
+table.jqplot-table-legend{margin:12px;background-color:rgba(255,255,255,0.6);border:1px solid #ccc;position:absolute;font-size:.75em;color:000000;}
+td.jqplot-table-legend{vertical-align:middle;padding:.5em!important;border-style:none;}
+td.jqplot-table-legend>div{border:1px solid #ccc;padding:1px;color:#000;}
+div.jqplot-table-legend-swatch{width:0;height:0;border-width:5px 6px 5px 6px;border-style:solid;color:#000;}
+table.jqplot-threat-legend{font-size:12px;color:#000;margin-bottom:0;}
+table.jqplot-threat-legend td{border-style:none;padding:0;}
+#expandAllButton,#collapseAllButton{display:none;}
+div.dashboardCard{position:relative;float:left;width:10em;height:6em;margin:.8em;border:1px solid #b0b0b0;background-color:lightgrey;}
+div.dashboardCard div.title{margin:.3em auto 0 auto;text-align:center;font-weight:bold;font-size:1em;}
+div.dashboardCard div.metric{position:absolute;width:100%;bottom:0;text-align:center;font-weight:bold;font-size:2.5em;}
+div.dashboardGreen{border-color:#83ca8d;background-color:lightgreen;}
+div.dashboardYellow{border-color:#e2e13b;background-color:yellow;}
+div.dashboardRed{border-color:#daaeb5;background-color:pink;}
+div.dashboardChart{margin:2em 0;text-align:center;font-weight:bold;}
