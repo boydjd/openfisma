@@ -113,7 +113,7 @@ class Fisma_Zend_Form_Element_Time extends Zend_Form_Element
      */
     private function _getHour()
     {
-        $render = "<select onchange='updateTimeField(\"{$this->_name}\")'"
+        $render = "<select onchange='Fisma.Util.updateTimeField(\"{$this->_name}\")'"
                 . " name='{$this->_name}Hour' id='{$this->_name}Hour'><option value=''></option>";
         
         for ($hour = 1; $hour <= 12; $hour++) {
@@ -133,7 +133,7 @@ class Fisma_Zend_Form_Element_Time extends Zend_Form_Element
      */
     private function _getMinute()
     {
-        $render = "<select onchange='updateTimeField(\"{$this->_name}\")'"
+        $render = "<select onchange='Fisma.Util.updateTimeField(\"{$this->_name}\")'"
                 . " name='{$this->_name}Minute' id='{$this->_name}Minute'><option value=''></option>";
 
         for ($minute = 0; $minute <= 55; $minute += 5) {
@@ -154,7 +154,7 @@ class Fisma_Zend_Form_Element_Time extends Zend_Form_Element
      */
     private function _getAmpm()
     {
-        $render = "<select onchange='updateTimeField(\"{$this->_name}\")'"
+        $render = "<select onchange='Fisma.Util.updateTimeField(\"{$this->_name}\")'"
                 . " name='{$this->_name}Ampm' id='{$this->_name}Ampm'><option value=''></option>";
         
         foreach ($this->_ampmList as $ampm) {

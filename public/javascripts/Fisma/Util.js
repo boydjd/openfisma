@@ -214,5 +214,66 @@ Fisma.Util = {
                 } ); 
 
         return dialog;
+    },
+
+    /**
+     * I've refactored this slightly by moving most of the logic into MessageBox.js and MessageBoxStack.js, and moving 
+     * the styles into MessageBox.css. I've kept this global method in place to avoid breaking the API right before a 
+     * release (which would require diff'ing a lot of lines of code.)
+     * 
+     * @param msg {String} the message to display
+     * @param model {String} either "info" or "warning" -- this affects the color scheme used to display the message
+     * @param clear {Boolean} If true, new message will replace existing message. If false, new message will be
+     *              appended.
+     */
+     message: function (msg, model, clear) {
+        clear = clear || false;
+
+        msg = $P.stripslashes(msg);
+
+        var messageBoxStack = Fisma.Registry.get("messageBoxStack");
+        var messageBox = messageBoxStack.peek();
+
+        if (messageBox) {
+            if (clear) {
+                messageBox.setMessage(msg);
+            } else {
+                messageBox.addMessage(msg);
+            }
+            
+            if (model == 'warning') {
+                messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN);
+            } else {
+                messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO);
+            }
+
+            messageBox.show();
+        }
+    },
+
+    /**
+     * To format time on the hidden element by id
+     * 
+     * @param id
+     */
+    updateTimeField: function (id) {
+        var hiddenEl = document.getElementById(id);
+        var hourEl = document.getElementById(id + 'Hour');
+        var minuteEl = document.getElementById(id + 'Minute');
+        var ampmEl = document.getElementById(id + 'Ampm');
+        
+        var hour = hourEl.value;
+        var minute = minuteEl.value;
+        var ampm = ampmEl.value;
+        
+        if ('PM' == ampm) {
+            hour = parseInt(hour) + 12;
+        }
+        
+        hour = $P.str_pad(hour, 2, '0', 'STR_PAD_LEFT');
+        minute = $P.str_pad(minute, 2, '0', 'STR_PAD_LEFT');    
+        
+        var time = hour + ':' + minute + ':00';
+        hiddenEl.value = time;
     }
 };

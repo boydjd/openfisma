@@ -787,7 +787,7 @@ tinyMCE.init({
     }
 });
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -806,535 +806,19 @@ tinyMCE.init({
  *
  * @fileoverview Main js file
  *
- * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author    Ben Zheng <ben.zheng@reyosoft.com>
+ * @copyright (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
- *
- * @todo      Start migrating functionality out of this file. 
- *            Eventually this file needs to be removed 
  */
+(function() {
+    Fisma = {};
 
-var Fisma = {};
+    $P = new PHP_JS();
 
-$P = new PHP_JS();
-
-String.prototype.trim = function() {
+    String.prototype.trim = function() {
         return this.replace(/^\s+|\s+$/g,"");
-}
-
-var readyFunc = function () {
-    YAHOO.util.Event.throwErrors = true;
-
-    var zfDebugYuiLoggingTab = document.getElementById('zfdebug_yui_logging_tab');
-    
-    if (zfDebugYuiLoggingTab) {
-        var logReader = new YAHOO.widget.LogReader(
-            zfDebugYuiLoggingTab, 
-            {
-                draggable : false,
-                verboseOutput : false,
-                width : '95%'
-            }
-        );
-        
-        logReader.hideCategory("info");
-        logReader.hideCategory("time");
-        logReader.hideCategory("window");
-        logReader.hideCategory("iframe");
     }
-    
-    var calendars = YAHOO.util.Selector.query('.date');
-    for(var i = 0; i < calendars.length; i ++) {
-        YAHOO.util.Event.on(calendars[i].getAttribute('id')+'_show', 'click', callCalendar, calendars[i].getAttribute('id'));
-    }
-    
-    // switch Aging Totals or Date Opened and End 
-    var searchAging = function (){
-        if (document.getElementById('remediationSearchAging')) {
-            var value = document.getElementById('remediationSearchAging').value.trim();
-        } else {
-            return ;
-        }
-        var dateBegin = document.getElementById('created_date_begin');
-        var dateEnd = document.getElementById('created_date_end');
-        if (value == '0') {
-            dateBegin.disabled = false;
-            dateEnd.disabled = false;
-            document.getElementById('show1').disabled = false;
-            document.getElementById('show2').disabled = false;
-        } else {
-            dateBegin.disabled = true;
-            dateEnd.disabled = true;
-            dateBegin.value = '';
-            dateEnd.value = '';
-            document.getElementById('show1').disabled = true;
-            document.getElementById('show2').disabled = true;
-        }
-    }
-    YAHOO.util.Event.on('remediationSearchAging', 'change', searchAging);
-    searchAging();
-    
-    var searchAging1 = function (){
-        if (document.getElementById('created_date_begin') 
-                && document.getElementById('created_date_end')) {
-            var value1 = document.getElementById('created_date_begin').value.trim();
-            var value2 = document.getElementById('created_date_end').value.trim();
-        } else {
-            return ;
-        } 
-        if(value1 != '' || value2 != '') {
-            document.getElementById('remediationSearchAging').disabled = true;
-        } else {
-            document.getElementById('remediationSearchAging').disabled = false;
-        }
-    }
-    YAHOO.util.Event.on('created_date_begin', 'change', searchAging1);
-    YAHOO.util.Event.on('created_date_end', 'change', searchAging1);
-    searchAging1();
-    
-    var changeEncrypt = function () {
-        if (document.getElementById('encrypt')) {
-            var obj = document.getElementById('encrypt');
-        } else {
-            return;
-        }
-        var value = obj.value.trim();
-        if (value == 'sha256') {
-             obj.style.display = '';
-        } else {
-             obj.style.display = 'none';
-        }
-    }
-    YAHOO.util.Event.on('encrypt', 'change', changeEncrypt);
-    changeEncrypt();
-
-    //
-    YAHOO.util.Event.on('function_screen', 'change', search_function);
-    search_function();
-    //
-    YAHOO.util.Event.on('add_function', 'click', function() {
-        var options = new YAHOO.util.Selector.query('#availableFunctions option');
-        for (var i = 0; i < options.length; i ++) {
-            if (options[i].selected == true) {
-                document.getElementById('existFunctions').appendChild(options[i]);
-            }
-        }
-        return false;  
-    });
-    //
-    YAHOO.util.Event.on('remove_function', 'click', function() {
-        var options = YAHOO.util.Selector.query('#existFunctions option');
-        for (var i = 0; i < options.length; i ++) {
-            if (options[i].selected == true) {
-                document.getElementById('availableFunctions').appendChild(options[i]);
-            }
-        }
-        return false;
-    });
-    //
-    YAHOO.util.Event.on(YAHOO.util.Selector.query('form[name=assign_right]'), 'submit', 
-    function (){
-        var options = YAHOO.util.Selector.query('#existFunctions option');
-        for (var i = 0; i < options.length; i ++) {
-            options[i].selected = true;
-        }
-    });
-    //
-    YAHOO.util.Event.on('searchAsset', 'click', searchAsset);
-    //
-    YAHOO.util.Event.on('search_product' ,'click', searchProduct);
-    //
-    YAHOO.util.Event.on(YAHOO.util.Selector.query('.confirm'), 'click', function(){
-        var str = "DELETING CONFIRMATION!";
-        if(confirm(str) == true){
-            return true;
-        }
-        return false;
-    });
-    //
-    asset_detail();
-    //
-    getProdId();
-}
-
-function search_function() {
-    var trigger = YAHOO.util.Selector.query('select[name=function_screen]');
-    if (trigger == ''){return;}
-    var param = name = '';
-    var options = YAHOO.util.Selector.query('select[name=function_screen] option');
-
-    for (var i = 0; i < options.length; i++) {
-        if (options[i].selected == true) {
-            name = options[i].text;
-        }
-    }
-    if('' != name){
-        param += '/screen_name/'+name;
-    }
-    var kids = YAHOO.util.Selector.query('#existFunctions option');
-    var existFunctions = '';
-    for (var i=0;i < kids.length;i++) {
-        if (i == 0) {
-            existFunctions += kids[i].value;
-        } else {
-            existFunctions += ',' + kids[i].value;
-        }
-    }
-    var url = document.getElementById('function_screen').getAttribute('url')
-              + '/do/availableFunctions' + param + '/existFunctions/'+existFunctions;
-    var request = YAHOO.util.Connect.asyncRequest('GET', url, 
-        {success: function(o){
-                   document.getElementById('availableFunctions').parentNode.innerHTML = '<select style="width: 250px;" name="availableFunctions" id="availableFunctions" size="20" multiple="">'+o.responseText+'</select>';
-                },
-        failure: handleFailure});
-}
-
-var handleFailure = function(o){alert('error');}
-
-function getProdId(){
-    var trigger= document.getElementById('productId');
-    YAHOO.util.Event.on(trigger, 'change', function (){
-        document.getElementById('productId').value = trigger.value;
-    });
-}
-
-var searchProduct = function (){
-    var trigger = document.getElementById('search_product');
-    var url = trigger.getAttribute('url');
-    
-    var productInput = YAHOO.util.Selector.query('input.product');
-    for(var i = 0;i < productInput.length; i++) {
-        if (productInput[i].value != undefined && productInput[i].value != '') {
-            url += '/' + productInput[i].name + '/' + productInput[i].value;
-        }
-    }
-    YAHOO.util.Connect.asyncRequest('GET', url, 
-    {success: function(o){
-                document.getElementById('productId').parentNode.innerHTML = o.responseText;
-                document.getElementById('productId').style.width = "400px";
-                getProdId();
-              },
-    failure: handleFailure});
-}
-
-var searchAsset = function() {
-    var trigger = new YAHOO.util.Element('orgSystemId');
-    if(trigger.get('id') == undefined){
-        return ;
-    }
-    var sys = trigger.get('value');
-    var param =  '';
-    if(0 != parseInt(sys)){
-        param +=  '/system_id/' + sys;
-    }
-    var assetInput = YAHOO.util.Selector.query('input.assets');
-    for(var i = 0;i < assetInput.length; i++) {
-        if (assetInput[i].value != undefined && assetInput[i].value != '') {
-            param += '/' + assetInput[i].name + '/' + assetInput[i].value;
-        }
-    }
-    var url = document.getElementById('orgSystemId').getAttribute("url") + param;
-    YAHOO.util.Connect.asyncRequest('GET', url, 
-    {success:function (o){
-        document.getElementById('assetId').options.length = 0;
-        var records = YAHOO.lang.JSON.parse(o.responseText);
-        records = records.table.records;
-        for(var i=0;i < records.length;i++){
-            document.getElementById('assetId').options.add(new Option(records[i].name, records[i].id));
-        }
-    },
-    failure: handleFailure});
-}
-
-function asset_detail() {
-    YAHOO.util.Event.on('assetId', 'change', function (){
-        var url = this.getAttribute("url") + this.value;
-        YAHOO.util.Connect.asyncRequest('GET', url, {
-            success:function (o){
-                document.getElementById('asset_info').innerHTML = o.responseText
-            },
-            failure: handleFailure});
-    });
-}
-
-/**
- * Legacy code. This should be removed in a future release.
- * 
- * I've refactored this slightly by moving most of the logic into MessageBox.js and MessageBoxStack.js, and moving the
- * styles into MessageBox.css. I've kept this global method in place to avoid breaking the API right before a release
- * (which would require diff'ing a lot of lines of code.)
- * 
- * @param msg {String} the message to display
- * @param model {String} either "info" or "warning" -- this affects the color scheme used to display the message
- * @param clear {Boolean} If true, new message will replace existing message. If false, new message will be appended.
- */
-function message(msg, model, clear) {
-    clear = clear || false;
-
-    msg = $P.stripslashes(msg);
-
-    var messageBoxStack = Fisma.Registry.get("messageBoxStack");
-    var messageBox = messageBoxStack.peek();
-
-    if (messageBox) {
-        if (clear) {
-            messageBox.setMessage(msg);
-        } else {
-            messageBox.addMessage(msg);
-        }
-        
-        if (model == 'warning') {
-            messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN);
-        } else {
-            messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO);
-        }
-
-        messageBox.show();
-    }
-}
-
-function toggleSearchOptions(obj) {
-    var searchbox = document.getElementById('advanced_searchbox');
-    if (searchbox.style.display == 'none') {
-        searchbox.style.display = '';
-        obj.value = 'Basic Search';
-    } else {
-        searchbox.style.display = 'none';
-        obj.value = 'Advanced Search';
-    }
-}
-
-function showJustification(){
-    if (document.getElementById('ecd_justification')) {
-        document.getElementById('ecd_justification').style.display = '';
-    }
-}
-
-function addBookmark(obj, url){
-    if (window.sidebar) { 
-        // Firefox
-        window.sidebar.addPanel(url.title, url.href,'');
-    } else if (window.opera) {
-        // Opera
-        var a = document.createElement("A");
-        a.rel = "sidebar";
-        a.target = "_search";
-        a.title = url.title;
-        a.href = url.href;
-        a.click();
-    } else if (document.all) { 
-        // IE
-        window.external.AddFavorite(url.href, url.title);
-    } else {
-        alert("Your browser does not support automatic bookmarks. Please try to bookmark this page manually instead.");
-    }
-}
-
-function switchYear(step){
-    if( !isFinite(step) ){
-        step = 0;
-    }
-    var oYear = document.getElementById('gen_shortcut');
-    var year = oYear.getAttribute('year');
-    year = Number(year) + Number(step);
-    oYear.setAttribute('year', year);
-    var url = oYear.getAttribute('url') + year + '/';
-    var tmp = YAHOO.util.Selector.query('#gen_shortcut span:nth-child(1)');
-    tmp[0].innerHTML = year;
-    tmp[0].parentNode.setAttribute('href', url);
-    tmp[1].parentNode.setAttribute('href', url + 'q/1/');
-    tmp[2].parentNode.setAttribute('href', url + 'q/2/');
-    tmp[3].parentNode.setAttribute('href', url + 'q/3/');
-    tmp[4].parentNode.setAttribute('href', url + 'q/4/');
-}
-
-/**
- * Check the form if has something changed but not saved
- * if nothing changes, then give a confirmation
- * @param dom check_form checking form
- * @param str user's current action
- */
-function form_confirm (check_form, action) {
-    var changed = false;
-    
-    elements = YAHOO.util.Selector.query("[name*='finding']");
-    for (var i = 0;i < elements.length; i ++) {
-        var tag_name = elements[i].tagName.toUpperCase();
-        if (tag_name == 'INPUT') {
-            var e_type = elements[i].type;
-            if (e_type == 'text' || e_type == 'password') {
-                var _v = elements[i].getAttribute('_value');
-                if(typeof(_v) == 'undefined')   _v = '';
-                if(_v != elements[i].value) {
-                    ; //this logic is broken... needs a complete rewrite
-                }
-            }
-            if (e_type == 'checkbox' || e_type == 'radio') {
-                var _v = elements[i].checked ? 'on' : 'off';  
-                if(_v != elements[i].getAttribute('_value')) {
-                    changed = true;  
-                }
-            }
-        } else if (tag_name == 'SELECT') {
-            var _v = elements[i].getAttribute('_value');    
-            if(typeof(_v) == 'undefined')   _v = '';    
-            if(_v != elements[i].options[elements[i].selectedIndex].value) {
-                changed = true;  
-            }
-        } else if (tag_name == 'TEXTAREA') {
-            var _v = elements[i].getAttribute('_value');
-            if(typeof(_v) == 'undefined')   _v = '';
-            var textarea_val = elements[i].value ? elements[i].value : elements[i].innerHTML;
-            if(_v != textarea_val) {
-                changed = true;
-            }
-        }
-    }
-
-    if(changed) {
-        if (confirm('WARNING: You have unsaved changes on the page. If you continue, these'
-                  + ' changes will be lost. If you want to save your changes, click "Cancel"' 
-                  + ' now and then click "Save Changes".')) {
-            return true;
-        }
-        else {
-            return false;
-        }
-    }
-    
-    if (confirm('WARNING: You are about to ' + action + '. This action cannot be undone.'
-              + ' Please click "Ok" to confirm your action or click "Cancel" to stop.')) {
-        return true;
-    }
-
-    return false;
-}
-
-function dump(arr) {
-    var text = '' + arr;
-    for (i in arr) {
-        if ('function' != typeof(arr[i])) {
-            text += i + " : " + arr[i] + "\n";
-        }
-    }
-    alert(text);
-} 
-
-var e = YAHOO.util.Event;
-e.onDOMReady(readyFunc);
-
-function callCalendar(evt, ele) {
-    showCalendar(ele, ele+'_show');
-}
-
-function showCalendar(block, trigger) {
-    var Event = YAHOO.util.Event, Dom = YAHOO.util.Dom, dialog, calendar;
-
-    var showBtn = Dom.get(trigger);
-    
-    var dialog;
-    var calendar;
-    
-    // Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners, until the first time the button is clicked.
-    if (!dialog) {
-        function resetHandler() {
-            Dom.get(block).value = '';
-            closeHandler();
-        }
-
-        function closeHandler() {
-            dialog.hide();
-        }
-
-        dialog = new YAHOO.widget.Dialog("container", {
-            visible:false,
-            context:[block, "tl", "bl"],
-            draggable:true,
-            close:true
-        });
-        
-        dialog.setHeader('Pick A Date');
-        dialog.setBody('<div id="cal"></div><div class="clear"></div>');
-        dialog.render(document.body);
-
-        dialogEl = document.getElementById('container');
-        dialogEl.style.padding = "0px"; // doesn't format itself correctly in safari, for some reason
-
-        dialog.showEvent.subscribe(function() {
-            if (YAHOO.env.ua.ie) {
-                // Since we're hiding the table using yui-overlay-hidden, we 
-                // want to let the dialog know that the content size has changed, when
-                // shown
-                dialog.fireEvent("changeContent");
-            }
-        });
-    }
-
-    // Lazy Calendar Creation - Wait to create the Calendar until the first time the button is clicked.
-    if (!calendar) {
-
-        calendar = new YAHOO.widget.Calendar("cal", {
-            iframe:false,          // Turn iframe off, since container has iframe support.
-            hide_blank_weeks:true  // Enable, to demonstrate how we handle changing height, using changeContent
-        });
-        calendar.render();
-
-        calendar.selectEvent.subscribe(function() {
-            if (calendar.getSelectedDates().length > 0) {
-                var selDate = calendar.getSelectedDates()[0];
-                // Pretty Date Output, using Calendar's Locale values: Friday, 8 February 2008
-                //var wStr = calendar.cfg.getProperty("WEEKDAYS_LONG")[selDate.getDay()];
-                var dStr = (selDate.getDate() < 10) ? '0'+selDate.getDate() : selDate.getDate();
-                var mStr = (selDate.getMonth()+1 < 10) ? '0'+(selDate.getMonth()+1) : (selDate.getMonth()+1);
-                var yStr = selDate.getFullYear();
-
-                Dom.get(block).value = yStr + '-' + mStr + '-' + dStr;
-            } else {
-                Dom.get(block).value = "";
-            }
-            dialog.hide();
-            if ('finding[currentEcd]' == Dom.get(block).name) {
-                validateEcd();
-            }
-        });
-
-        calendar.renderEvent.subscribe(function() {
-            // Tell Dialog it's contents have changed, which allows 
-            // container to redraw the underlay (for IE6/Safari2)
-            dialog.fireEvent("changeContent");
-        });
-    }
-
-    var seldate = calendar.getSelectedDates();
-
-    if (seldate.length > 0) {
-        // Set the pagedate to show the selected date if it exists
-        calendar.cfg.setProperty("pagedate", seldate[0]);
-        calendar.render();
-    }
-    dialog.show();
-}
-
-function updateTimeField(id) {
-    var hiddenEl = document.getElementById(id);
-    var hourEl = document.getElementById(id + 'Hour');
-    var minuteEl = document.getElementById(id + 'Minute');
-    var ampmEl = document.getElementById(id + 'Ampm');
-    
-    var hour = hourEl.value;
-    var minute = minuteEl.value;
-    var ampm = ampmEl.value;
-    
-    if ('PM' == ampm) {
-        hour = parseInt(hour) + 12;
-    }
-    
-    hour = $P.str_pad(hour, 2, '0', 'STR_PAD_LEFT');
-    minute = $P.str_pad(minute, 2, '0', 'STR_PAD_LEFT');    
-    
-    var time = hour + ':' + minute + ':00';
-    hiddenEl.value = time;
-}
+})();
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -1389,7 +873,7 @@ function setupEditFields() {
                  textEl.style.width = (oldWidth - 10) + "px";
                  if (eclass == 'date') {
                      var target = document.getElementById(t_name);
-                     target.onfocus = function () {showCalendar(t_name, t_name+'_show');};
+                     target.onfocus = function () {Fisma.Calendar.showCalendar(t_name, t_name+'_show');};
                  }
              } else if( type == 'textarea' ) {
                  var row = target.getAttribute('rows');
@@ -4128,36 +3612,53 @@ Fisma.Blinker.prototype.cycle = function () {
     }
 };
 /**
- * Copyright (c) 2010 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
- * details.
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
- * {@link http://www.gnu.org/licenses/}.
- * 
- * @fileoverview Renders different types of search criteria
- * 
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @copyright (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
  */
- 
-Fisma.Calendar = function () {
-    return {
-        /**
-         * Add a popup calendar to any text field.
-         * 
-         * @param textEl
-         */
-        addCalendarPopupToTextField : function (textEl) {
+(function() {
+    /**
+     * Instantiate a global Fisma.Calendar.callCalendar on the elements' date style classes.
+     */
+    YAHOO.util.Event.onDOMReady(function () {
+        var calendars = YAHOO.util.Selector.query('.date');
+
+        for(var i = 0; i < calendars.length; i ++) {
+            YAHOO.util.Event.on(
+                calendars[i].getAttribute('id')+'_show',
+               'click',
+               Fisma.Calendar.callCalendar,
+               calendars[i].getAttribute('id')
+            );
+        }
+    });
+
+    /**
+     * 
+     * @namespace Fisma
+     * @class Calendar
+     * @extends n/a
+     * @constructor
+     */
+    var Calendar = {
+       addCalendarPopupToTextField: function (textEl) {
             var popupCalendarDiv = document.createElement('div');
             popupCalendarDiv.style.position = 'absolute';
             popupCalendarDiv.style.zIndex = 99;
@@ -4196,10 +3697,107 @@ Fisma.Calendar = function () {
                 calendar.hide();
             };
 
-            calendar.selectEvent.subscribe(handleSelect, calendar, true);            
+            calendar.selectEvent.subscribe(handleSelect, calendar, true);
+        },
+
+        callCalendar: function(evt, ele) {alert('testa');
+            this.showCalendar(ele, ele+'_show');
+        },
+
+        showCalendar: function (block, trigger) {
+            var Event = YAHOO.util.Event, Dom = YAHOO.util.Dom, dialog, calendar;
+
+            var showBtn = Dom.get(trigger);
+
+            var dialog;
+            var calendar;
+
+            /*
+             * Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners, 
+             * until the first time the button is clicked.
+             */ 
+            if (!dialog) {
+                function resetHandler() {
+                    Dom.get(block).value = '';
+                    closeHandler();
+                }
+
+                function closeHandler() {
+                    dialog.hide();
+                }
+
+                dialog = new YAHOO.widget.Dialog("container", {
+                    visible:false,
+                    context:[block, "tl", "bl"],
+                    draggable:true,
+                    close:true
+                });
+                
+                dialog.setHeader('Pick A Date');
+                dialog.setBody('<div id="cal"></div><div class="clear"></div>');
+                dialog.render(document.body);
+
+                dialogEl = document.getElementById('container');
+                dialogEl.style.padding = "0px"; // doesn't format itself correctly in safari, for some reason
+
+                dialog.showEvent.subscribe(function() {
+                    if (YAHOO.env.ua.ie) {
+                        // Since we're hiding the table using yui-overlay-hidden, we 
+                        // want to let the dialog know that the content size has changed, when
+                        // shown
+                        dialog.fireEvent("changeContent");
+                    }
+                });
+            }
+
+            // Lazy Calendar Creation - Wait to create the Calendar until the first time the button is clicked.
+            if (!calendar) {
+
+                calendar = new YAHOO.widget.Calendar("cal", {
+                    iframe:false,          // Turn iframe off, since container has iframe support.
+                    hide_blank_weeks:true  // Enable, to demonstrate how we handle changing height, using changeContent
+                });
+                calendar.render();
+
+                calendar.selectEvent.subscribe(function() {
+                    if (calendar.getSelectedDates().length > 0) {
+                        var selDate = calendar.getSelectedDates()[0];
+                        // Pretty Date Output, using Calendar's Locale values: Friday, 8 February 2008
+                        //var wStr = calendar.cfg.getProperty("WEEKDAYS_LONG")[selDate.getDay()];
+                        var dStr = (selDate.getDate() < 10) ? '0'+selDate.getDate() : selDate.getDate();
+                        var mStr = (selDate.getMonth()+1 < 10) ? '0'+(selDate.getMonth()+1) : (selDate.getMonth()+1);
+                        var yStr = selDate.getFullYear();
+
+                        Dom.get(block).value = yStr + '-' + mStr + '-' + dStr;
+                    } else {
+                        Dom.get(block).value = "";
+                    }
+                    dialog.hide();
+                    if ('finding[currentEcd]' == Dom.get(block).name) {
+                        validateEcd();
+                    }
+                });
+
+                calendar.renderEvent.subscribe(function() {
+                    // Tell Dialog it's contents have changed, which allows 
+                    // container to redraw the underlay (for IE6/Safari2)
+                    dialog.fireEvent("changeContent");
+                });
+            }
+
+            var seldate = calendar.getSelectedDates();
+
+            if (seldate.length > 0) {
+                // Set the pagedate to show the selected date if it exists
+                calendar.cfg.setProperty("pagedate", seldate[0]);
+                calendar.render();
+            }
+            dialog.show();
         }
     };
-}();
+
+    Fisma.Calendar = Calendar;
+})();
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *
@@ -7203,7 +6801,7 @@ Fisma.Email = function() {
             YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json', {
                 success : function(o) {
                     var data = YAHOO.lang.JSON.parse(o.responseText);
-                    message(data.msg, data.type, true);
+                    Fisma.Util.message(data.msg, data.type, true);
                     spinner.hide();
                 },
                 failure : function(o) {
@@ -7636,9 +7234,9 @@ Fisma.Finding = {
                     Fisma.Finding.pocHiddenEl.value = pocId;
                     Fisma.Finding.pocAutocomplete.getInputEl().value = username;
 
-                    message('A point of contact has been created.', 'info', true);
+                    Fisma.Util.message('A point of contact has been created.', 'info', true);
                 } else {
-                    message(result.message, 'warning', true);
+                    Fisma.Util.message(result.message, 'warning', true);
                     button.set("disabled", false);
                 }
             },
@@ -8868,7 +8466,7 @@ Fisma.Ldap = {
                 success : function (o) {
                     var response = YAHOO.lang.JSON.parse(o.responseText);
                     
-                    message(response.msg, response.type, true);
+                    Fisma.Util.message(response.msg, response.type, true);
 
                     validateButton.className = "yui-button yui-push-button";
                     Fisma.Ldap.validateLdapBusy = false;
@@ -8876,7 +8474,7 @@ Fisma.Ldap = {
                 },
 
                 failure : function (o) {
-                    message('Validation failed: ' + o.statusText, 'warning', true);
+                    Fisma.Util.message('Validation failed: ' + o.statusText, 'warning', true);
 
                     spinner.hide();
                 }
@@ -10737,9 +10335,9 @@ Fisma.Search = function() {
                         var response = YAHOO.lang.JSON.parse(o.responseText).response;
 
                         if (response.success) {
-                            message("Search configuration is valid", "notice", true);
+                            Fisma.Util.message("Search configuration is valid", "notice", true);
                         } else {
-                            message(response.message, "warning", true);
+                            Fisma.Util.message(response.message, "warning", true);
                         }
 
                         YAHOO.util.Dom.removeClass(testConfigurationButton, "yui-button-disabled");
@@ -10748,7 +10346,7 @@ Fisma.Search = function() {
                     },
 
                     failure : function (o) {
-                        message('Error: ' + o.statusText, 'warning');
+                        Fisma.Util.message('Error: ' + o.statusText, 'warning');
 
                         spinner.hide();
                     }
@@ -10835,7 +10433,7 @@ Fisma.Search = function() {
                 Fisma.Search.searchPreferences = searchPrefs;
                 Fisma.Search.updateQueryState(queryState, form);
             } catch (e) {
-                message(e);
+                Fisma.Util.message(e);
             } finally {
 
                 // Set the fromSearchForm to true when a search comes from search form submission
@@ -10963,7 +10561,7 @@ Fisma.Search = function() {
                 postData = Fisma.Search.buildPostRequest(tableState);
             } catch (error) {
                 if ('string' == typeof error) {
-                    message(error, 'warning', true);
+                    Fisma.Util.message(error, 'warning', true);
                 }
             }
 
@@ -11164,16 +10762,16 @@ Fisma.Search = function() {
                     Fisma.Search.columnPreferencesSpinner.hide();
 
                     if (object.status === "ok") {
-                        message("Your column preferences have been saved", "notice", true);
+                        Fisma.Util.message("Your column preferences have been saved", "notice", true);
                     } else {
-                        message(object.status, "warning", true);
+                        Fisma.Util.message(object.status, "warning", true);
                     }
                 },
 
                 failure : function (response) {
                     Fisma.Search.columnPreferencesSpinner.hide();
 
-                    message('Error: ' + response.statusText, 'warning', true);
+                    Fisma.Util.message('Error: ' + response.statusText, 'warning', true);
                 }
             });
         },
@@ -11208,7 +10806,7 @@ Fisma.Search = function() {
             
             // Do some sanity checking
             if (0 === checkedRecords.length) {
-                message("No records selected for deletion.", "warning", true);
+                Fisma.Util.message("No records selected for deletion.", "warning", true);
                 
                 return;
             }
@@ -11282,7 +10880,7 @@ Fisma.Search = function() {
                         if (o.responseText !== undefined) {
                             var response = YAHOO.lang.JSON.parse(o.responseText);
                             
-                            message(response.msg, response.status, true);
+                            Fisma.Util.message(response.msg, response.status, true);
                         }
                         
                         // Refresh search results
@@ -11298,7 +10896,7 @@ Fisma.Search = function() {
                     failure : function(o) {
                         var text = 'An error occurred while trying to delete the records.';
                         text += ' The error has been logged for administrator review.'; 
-                        message(text, "warning", true);
+                        Fisma.Util.message(text, "warning", true);
                     }
                 },
                 postString);
@@ -15338,20 +14936,21 @@ Fisma.User = {
                         // Make sure each column value is not null in LDAP account, then populate to related elements.
                         if (YAHOO.lang.isValue(data.accounts)) {
                             if (data.accounts.length == 0) {
-                                message('No account matches your query: ' + escape(data.query) + '.', 'warning', true);
+                                Fisma.Util.message('No account matches your query: '
+                                    + escape(data.query) + '.', 'warning', true);
                             } else if (data.accounts.length == 1) {
                                 Fisma.User.populateAccountForm(data.accounts[0]);
                             } else {
                                 Fisma.User.showMultipleAccounts(data.accounts);
                             }
                         } else {
-                            message(data.msg, data.type, true);
+                            Fisma.Util.message(data.msg, data.type, true);
                         }
                     } catch (e) {
                         if (YAHOO.lang.isValue(e.message)) {
-                            message('Error: ' + e.message, 'warning', true);
+                            Fisma.Util.message('Error: ' + e.message, 'warning', true);
                         } else {
-                            message('An unknown error occurred.', 'warning', true);
+                            Fisma.Util.message('An unknown error occurred.', 'warning', true);
                         }
                     }
 
@@ -15378,7 +14977,7 @@ Fisma.User = {
      * @param account {Object} A dictionary of LDAP data for an account.
      */
     populateAccountForm : function (account) {
-        message('Your search matched one user: ' + account.dn, 'info', true);
+        Fisma.Util.message('Your search matched one user: ' + account.dn, 'info', true);
 
         for (var ldapColumn in Fisma.User.ldapColumnMap) {
             if (!Fisma.User.ldapColumnMap.hasOwnProperty(ldapColumn)) {
@@ -15400,7 +14999,7 @@ Fisma.User = {
      * @param accounts {Object} An array of LDAP account dictionaries.
      */
     showMultipleAccounts : function (accounts) {
-        message('<p>Multiple accounts match your query. Click a name to select it.</p>', 'info', 'true');
+        Fisma.Util.message('<p>Multiple accounts match your query. Click a name to select it.</p>', 'info', 'true');
         var msgBar = document.getElementById('msgbar');
 
         var accountsContainer = document.createElement('p');
@@ -15709,6 +15308,67 @@ Fisma.Util = {
                 } ); 
 
         return dialog;
+    },
+
+    /**
+     * I've refactored this slightly by moving most of the logic into MessageBox.js and MessageBoxStack.js, and moving 
+     * the styles into MessageBox.css. I've kept this global method in place to avoid breaking the API right before a 
+     * release (which would require diff'ing a lot of lines of code.)
+     * 
+     * @param msg {String} the message to display
+     * @param model {String} either "info" or "warning" -- this affects the color scheme used to display the message
+     * @param clear {Boolean} If true, new message will replace existing message. If false, new message will be
+     *              appended.
+     */
+     message: function (msg, model, clear) {
+        clear = clear || false;
+
+        msg = $P.stripslashes(msg);
+
+        var messageBoxStack = Fisma.Registry.get("messageBoxStack");
+        var messageBox = messageBoxStack.peek();
+
+        if (messageBox) {
+            if (clear) {
+                messageBox.setMessage(msg);
+            } else {
+                messageBox.addMessage(msg);
+            }
+            
+            if (model == 'warning') {
+                messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN);
+            } else {
+                messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO);
+            }
+
+            messageBox.show();
+        }
+    },
+
+    /**
+     * To format time on the hidden element by id
+     * 
+     * @param id
+     */
+    updateTimeField: function (id) {
+        var hiddenEl = document.getElementById(id);
+        var hourEl = document.getElementById(id + 'Hour');
+        var minuteEl = document.getElementById(id + 'Minute');
+        var ampmEl = document.getElementById(id + 'Ampm');
+        
+        var hour = hourEl.value;
+        var minute = minuteEl.value;
+        var ampm = ampmEl.value;
+        
+        if ('PM' == ampm) {
+            hour = parseInt(hour) + 12;
+        }
+        
+        hour = $P.str_pad(hour, 2, '0', 'STR_PAD_LEFT');
+        minute = $P.str_pad(minute, 2, '0', 'STR_PAD_LEFT');    
+        
+        var time = hour + ':' + minute + ':00';
+        hiddenEl.value = time;
     }
 };
 /**
@@ -15791,6 +15451,68 @@ Fisma.Vulnerability = {
         yuiPanel.destroy();
     }
 };
+/**
+ * Copyright (c) 2012 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ * @author    Mark E. Haase <mhaase@endeavorsystems.com>
+ * @copyright (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
+ * @license   http://www.openfisma.org/content/license
+ */
+
+(function() {
+    /**
+     * Instantiate a global ZfDebugYuiLogging and if the layout has a container for it.
+     */
+    YAHOO.util.Event.onDOMReady(function () {
+        YAHOO.util.Event.throwErrors = true;
+        var zfDebugYuiLoggingTab = document.getElementById('zfdebug_yui_logging_tab');
+
+        if (zfDebugYuiLoggingTab) {
+            var zfDebugYuiLogging = new Fisma.ZfDebugYuiLogging(zfDebugYuiLoggingTab);
+        }
+    });
+
+    /**
+     * Render YUI Logger on container
+     * 
+     * @namespace Fisma
+     * @class ZfDebugYuiLogging
+     * @extends n/a
+     * @constructor
+     */
+    var ZFDYL = function(container) {
+        var logReader = new YAHOO.widget.LogReader(
+                container, 
+                {
+                    draggable : false,
+                    verboseOutput : false,
+                    width : '95%'
+                }
+            );
+
+        logReader.hideCategory("info");
+        logReader.hideCategory("time");
+        logReader.hideCategory("window");
+        logReader.hideCategory("iframe");
+    };
+
+    Fisma.ZfDebugYuiLogging = ZFDYL;
+})();
 /**
  * Title: jqPlot Charts
  * 
