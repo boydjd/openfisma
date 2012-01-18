@@ -1,0 +1,106 @@
+<?php
+Fisma_Format_Section::startSection('Details');
+?>
+<table class="keyValues">
+    <tr>
+        <td>Organization Name: </td>
+        <td>
+            <?php
+            if ($this->editable) {
+            ?>
+            <span id="name" class="editable" target="name" name="name" type="text">
+                <?php echo $this->escape($this->organization->name); ?>
+            </span>
+            <?php
+            } else {
+            ?>
+            <span>
+                <?php echo $this->escape($this->organization->name); ?>
+            </span>
+            <?php
+            }
+            ?>
+        </td>
+    </tr>
+    <tr>
+        <td>Organization Nickname: </td>
+        <td>
+            <?php
+            if ($this->editable) {
+            ?>
+            <span id="nickname" class="editable" target="nickname" name="nickname" type="text">
+                <?php echo $this->escape($this->organization->nickname); ?>
+            </span>
+            <?php
+            } else {
+            ?>
+            <span>
+                <?php echo $this->escape($this->organization->nickname); ?>
+            </span>
+            <?php
+            }
+            ?>
+        </td>
+    </tr>
+    <tr>
+       <td>Organization Type: </td>
+        <td>
+            <span id="organizationType" 
+                          type="select" 
+                          name="orgTypeId" 
+                          href="/metainfo/list/o/organizationType/format/html/">
+        <?php
+            echo $this->escape($this->organization->OrganizationType->nickname);
+        ?>
+        <?php if ($this->editable) : ?>
+            <span class="editable" target="organizationType">&nbsp;</span>
+        <?php endif ?>
+        </td>
+    </tr>
+    <tr>
+       <td>Parent Organization/System: </td>
+        <td>
+            <span id="organization" 
+                          type="select" 
+                          name="parent" 
+                          href="/metainfo/list/o/organization/format/html/">
+        <?php
+            $parentOrganization = $this->organization->getNode()->getParent();
+            if (!empty($parentOrganization)) {
+                $organizationTypeNickname = $parentOrganization->OrganizationType->nickname;
+                $parentOrganizationName = $parentOrganization->nickname . ' - ' . $parentOrganization->name;
+                if ($this->acl()->hasPrivilegeForObject('read', $parentOrganization)) {
+                    $parentOrgType = 'system' == $organizationTypeNickname ? 'system' : 'organization';
+                    $parentOrganizationId = 'system' == $parentOrgType ? 
+                                            $parentOrganization->systemId : $parentOrganization->id;
+                    echo $this->escape('<a href="/' . $parentOrgType . '/view/id/', 'none');
+                    echo $this->escape($parentOrganizationId, 'url');
+                    echo $this->escape('">', 'none');
+                    echo $this->escape($parentOrganizationName);
+                    echo $this->escape('</a>', 'none');
+                } else {
+                    echo $this->escape($parentOrganizationName);
+                }
+            } else {
+                echo $this->escape('<i>None</i>', 'none');
+            }
+        ?>
+        <?php if ($this->editable) : ?>
+            <span class="editable" target="organization">&nbsp;</span>
+        <?php endif ?>
+        </td>
+    </tr>
+</table>
+<?php
+Fisma_Format_Section::stopSection();
+
+if ($this->editable) {
+    Fisma_Format_Section::startSection('Organization Description', 'organization_description');
+} else {
+    Fisma_Format_Section::startSection('Organization Description');
+}
+?>
+<div name="description" id="organization_description" type="textarea" rows="3" cols="120"> 
+    <?php echo $this->escape($this->organization->description, 'none'); ?>
+</div>
+<?php Fisma_Format_Section::stopSection(); ?>

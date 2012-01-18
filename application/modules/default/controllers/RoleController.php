@@ -141,7 +141,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             // Add column
             $dataTable->addColumn(
                 new Fisma_Yui_DataTable_Column(
-                    $role['nickname'],
+                    $this->view->escape($role['nickname']),
                     false,
                     'YAHOO.widget.DataTable.formatCheckbox',
                     'dataTableCheckboxClick',

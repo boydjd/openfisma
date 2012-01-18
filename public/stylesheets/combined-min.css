@@ -18,7 +18,7 @@ span#irReportSaveContainer{position:relative;left:260px;}
 span#irReportBackwardsContainer{position:relative;left:-110px;}
 span#irReportCancelContainer{position:relative;left:-110px;}
 div.incidentStep{margin:10px;padding:10px 10px 10px 40px;position:relative;}
-div.incidentStep td{padding:5px;border-style:none;}
+div.incidentStep>table>tbody>tr>td{padding:5px;border-style:none;}
 div.incidentStep td:first-child{font-weight:bold;text-align:right;}
 div.incidentCardinality{position:absolute;top:-2px;left:-2px;padding:5px 10px;font-size:x-large;}
 div.completedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
@@ -260,7 +260,7 @@ span#removeUsers{margin-left:0;}
 div#swfstoreContainer{width:0;height:0;}
 form#transitionsForm{display:inline;}
 table.keyValues,table.fisma_crud{border-collapse:collapse;border-spacing:0;}
-table.keyValues td,table.keyValues th,table.fisma_crud td,table.fisma_crud th{border:none;}
+table.keyValues>tbody>tr>td,table.keyValues>tbody>tr>th,table.fisma_crud>tbody>tr>td,table.fisma_crud>tbody>tr>th{border:none;}
 .eventNotifyBlock{border:1px #44637A solid;padding:10px;}
 .eventNotifyBlock .inline{float:left;clear:right;padding:0 20px;}
 .eventNotifyBlock #move{padding-top:40px;}

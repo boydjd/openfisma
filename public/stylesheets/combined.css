@@ -221,10 +221,9 @@ div.incidentStep {
     position: relative;
 }
 
-div.incidentStep td {
+div.incidentStep > table > tbody > tr > td {
     padding: 5px;
     border-style: none;
-       
 }
 
 div.incidentStep td:first-child {
@@ -1813,7 +1812,8 @@ table.keyValues, table.fisma_crud {
 }
 
 /* Remove base formatting from selected td and th classes */
-table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th {
+table.keyValues > tbody > tr > td, table.keyValues > tbody > tr > th,
+table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
     border: none;
 }
 
