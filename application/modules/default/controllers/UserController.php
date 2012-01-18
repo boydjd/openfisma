@@ -723,6 +723,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         }
 
         try {
+            $msg = '';
+            $matchedAccounts = null;
+            $account = null;
+
             $ldapServerConfigurations = LdapConfig::getConfig();
 
             if (count($ldapServerConfigurations) == 0) {
@@ -731,9 +735,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             $accountInfo = array();
             $account = $this->_request->getParam('account');
-
-            $msg = '';
-            $matchedAccounts = null;
 
             if (empty($account)) {
                 throw new Fisma_Zend_Exception_User('You did not specify any account name.');
