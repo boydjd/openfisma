@@ -75,7 +75,7 @@ Fisma.Remediation = {
             var content = document.createElement('div');
             var warning = document.createElement('div');
             warning.className = 'messageBox attention';
-            var warn_message = 'WARNING: The decision you are going to make action cannot be undone.';
+            var warn_message = 'WARNING: This action cannot be undone.';
             warning.appendChild(document.createTextNode(warn_message));
             content.appendChild(warning);
             var p = document.createElement('p');
@@ -114,7 +114,7 @@ Fisma.Remediation = {
 
                 if ('DENIED' === action) { 
                     if (comment.match(/^\s*$/)) {
-                        var alertMessage = 'Comments are required in order to submit a denial.';
+                        var alertMessage = 'Comments are required.';
                         var config = {zIndex : 10000};
                         Fisma.Util.showAlertDialog(alertMessage, config);
                         return;
@@ -170,7 +170,7 @@ Fisma.Remediation = {
 
     reject_evidence_validate : function() {
         if (document.finding_detail_reject_evidence.comment.value.match(/^\s*$/)) {
-            var alertMessage = 'Comments are required in order to submit a denial.';
+            var alertMessage = 'Comments are required.';
             var config = {zIndex : 10000};
             Fisma.Util.showAlertDialog(alertMessage, config);
             return false;

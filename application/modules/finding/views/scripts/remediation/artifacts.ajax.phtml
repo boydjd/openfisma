@@ -31,7 +31,7 @@ if (count($this->artifacts) > 0):
                         'onClickArgument' => array()
                     )
                 );
-                echo $this->escape($displayRejectedEvidenceButton, 'none');
+                echo $this->escape("<div class='buttonBar'>$displayRejectedEvidenceButton</div>", 'none');
                 echo "<div id='rejectedEvidencesContainer'>";
                 $rejectedStarted = true;
             endif;
