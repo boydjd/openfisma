@@ -46,20 +46,20 @@ class Test_Library_Fisma_Array extends Test_Case_Unit
         );
 
         $expectedOutput1 = array(
-        	'OpenFISMA' => array(
-	        	array('id' => 1, 'name' => 'Mark'),
-	        	array('id' => 2, 'name' => 'Andrew'),
-	        	array('id' => 3, 'name' => 'Duy')),
-        	'BD' => array(
-	        	array('id' => 4, 'name' => 'Max'),
-	        	array('id' => 5, 'name' => 'Craig')),
-        	'APT' => array(
-	        	array('id' => 6, 'name' => 'Anthony'),
-	        	array('id' => 7, 'name' => 'AJ'),
-	        	array('id' => 8, 'name' => 'Frank'))
-	    );
+            'OpenFISMA' => array(
+                array('id' => 1, 'name' => 'Mark'),
+                array('id' => 2, 'name' => 'Andrew'),
+                array('id' => 3, 'name' => 'Duy')),
+            'BD' => array(
+                array('id' => 4, 'name' => 'Max'),
+                array('id' => 5, 'name' => 'Craig')),
+            'APT' => array(
+                array('id' => 6, 'name' => 'Anthony'),
+                array('id' => 7, 'name' => 'AJ'),
+                array('id' => 8, 'name' => 'Frank'))
+        );
 
-	    $this->assertEquals($expectedOutput1, Fisma_Array::groupByKey($linearArray, 'groupId'));
+        $this->assertEquals($expectedOutput1, Fisma_Array::groupByKey($linearArray, 'groupId'));
 
         $expectedOutput2 = array(
             'OpenFISMA' => array('Mark', 'Andrew', 'Duy'),

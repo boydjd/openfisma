@@ -34,7 +34,7 @@ class Test_Library_Fisma_Version extends Test_Case_Unit
      */
     public function testConstructorAndGetters()
     {
-        $version = new Fisma_Version(2,17,0);
+        $version = new Fisma_Version(2, 17, 0);
 
         $this->assertSame(2, $version->getMajorVersion());
         $this->assertSame(17, $version->getMinorVersion());

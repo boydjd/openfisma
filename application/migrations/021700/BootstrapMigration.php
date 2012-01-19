@@ -51,14 +51,14 @@ class Application_Migration_021700_BootstrapMigration extends Fisma_Migration_Ab
                            . " COMMENT 'The date and time this migration was completed, or null if not completed.'",
         );
 
-		echo "Creating migration table…\n";
+        echo "Creating migration table…\n";
         $this->getHelper()->createTable('migration', $columns, 'id');
 
-		if ($this->getHelper()->tableExists('migration_version')) {
-			echo "Dropping doctrine migration_version table…\n";
-	        $this->getHelper()->dropTable('migration_version');
-		} else {
-			echo "Doctrine migration_version table not found… skipping.\n";
-		}
+        if ($this->getHelper()->tableExists('migration_version')) {
+            echo "Dropping doctrine migration_version table…\n";
+            $this->getHelper()->dropTable('migration_version');
+        } else {
+            echo "Doctrine migration_version table not found… skipping.\n";
+        }
     }
 }
