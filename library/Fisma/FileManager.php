@@ -17,7 +17,7 @@
  */
 
 /**
- * Fisma_FileManager 
+ * Provides methods to manage files uploaded to OpenFISMA.
  * 
  * @package Fisma
  * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -40,6 +40,7 @@ class Fisma_FileManager
 
     /**
      * @param String $baseDir Base storage directory
+     * @param finfo $finfo Instance of finfo (File Info API) initialized to provide MIME type information.
      */
     public function __construct($baseDir, finfo $finfo)
     {
@@ -57,10 +58,12 @@ class Fisma_FileManager
         if (!$sha1) {
             throw new Fisma_FileManager_Exception('Unable to compute SHA1 sum of source file: ' . $filePath);
         }
+
         $path = substr($sha1, 0, 2);
         $name = substr($sha1, 2);
         $destDir = $this->_baseDir . DIRECTORY_SEPARATOR . $path;
         $dest = $destDir . DIRECTORY_SEPARATOR . $name;
+
         if (!$this->_fileExists($destDir)) {
             $mkdirOk = $this->_mkdir($destDir);
             if (!$mkdirOk) {
@@ -73,12 +76,13 @@ class Fisma_FileManager
                 throw new Fisma_FileManager_Exception('Unable to copy to storage location: ' . $dest);
             }
         }
+
         return $sha1;
     }
 
     /**
-     * @param $hash Hash of desired file.
-     * @param $destination Location to save requested file.
+     * @param string $hash Hash of desired file.
+     * @param string $destination Location to save requested file.
      * @return void
      */
     public function copyTo($hash, $destination)

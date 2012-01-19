@@ -17,8 +17,7 @@
  */
 
 /**
- * Translate the criteria to a string which can be used in an URL
- * OpenFISMA.
+ * Helper to facilitate sending a file to the client from an action.
  *
  * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -38,18 +37,21 @@ class Fisma_Zend_Controller_Action_Helper_DownloadAttachment extends Zend_Contro
     public function downloadAttachment($hash, $filename)
     {
         $fm = Zend_Registry::get('fileManager'); 
-        $this->getActionController()->getHelper('layout')->disableLayout(true);
-        $this->getActionController()->getHelper('viewRenderer')->setNoRender();
+        $controller = $this->getActionController();
+        $response = $controller->getResponse();
+
+        $controller->getHelper('layout')->disableLayout(true);
+        $controller->getHelper('viewRenderer')->setNoRender();
 
         $mimeType = $fm->getMimeType($hash);
-        // @TODO Make these Zend Response class calls.
-        header("Content-Type: $mimeType", true);
-        header('Content-Disposition: attachment; filename="' . urlencode($filename) . '"', true);
-        header('Expires: 0', true);
-        header('Cache-Control: no-cache', true);
-        header('Pragma: none', true);
         $fileSize = $fm->getFileSize($hash);
-        header("Content-Length: $fileSize", true);
+        $response->setHeader('Content-Type', $mimeType, true);
+        $response->setHeader('Content-Disposition', 'attachment; filename="' . urlencode($filename) . '"', true);
+        $response->setHeader('Expires', 0, true);
+        $response->setHeader('Cache-Control', 'no-cache', true);
+        $response->setHeader('Pragma', 'none', true);
+        $response->setHeader('Content-Length', $fileSize, true);
+        $response->sendHeaders();
 
         $fm->stream($hash);
     }
