@@ -5068,9 +5068,8 @@ Fisma.Chart = {
 
                 // Tabel to hold all colored boxes and labels
                 var threatTable = document.createElement("table");
-                threatTable.style.fontSize = '12px';
-                threatTable.style.color = '#000000';
                 threatTable.width = threatLegendWidth;
+                threatTable.className = 'jqplot-threat-legend';
                 var tblBody = document.createElement("tbody");
                 var row = document.createElement("tr");
 
@@ -11841,13 +11840,13 @@ Fisma.Search.CriteriaDefinition = function () {
         },
 
         nonSortableText : {
-            textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
-            textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'}
+            textContains : {label : "Contains Words", renderer : 'text', query : 'oneInput', isDefault : true},
+            textDoesNotContain : {label : "Does Not Contain Words", renderer : 'text', query : 'oneInput'}
         },
 
         sortableText : {
-            textContains : {label : "Contains", renderer : 'text', query : 'oneInput', isDefault : true},
-            textDoesNotContain : {label : "Does Not Contain", renderer : 'text', query : 'oneInput'},
+            textContains : {label : "Contains Words", renderer : 'text', query : 'oneInput', isDefault : true},
+            textDoesNotContain : {label : "Does Not Contain Words", renderer : 'text', query : 'oneInput'},
             textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'},
             textNotExactMatch : {label : "Not Exact Match", renderer : 'text', query : 'oneInput'}
         },
@@ -13797,6 +13796,14 @@ Fisma.System = {
         _storage: null,
 
         /**
+         * A DIV element that contains an error message, if any error condition has occurred.
+         *
+         * @type HTMLElement
+         * @protected
+         */
+        _errorBarContainer: null,
+
+        /**
          * Render the entire widget
          *
          * @method OrganizationTreeView.render
@@ -13813,6 +13820,10 @@ Fisma.System = {
                 that._loadingContainer = document.createElement("div");
                 that._renderLoading(that._loadingContainer);
                 that._contentDiv.appendChild(that._loadingContainer);
+
+                that._errorBarContainer= document.createElement("div");
+                that._renderErrorBar(that._errorBarContainer);
+                that._contentDiv.appendChild(that._errorBarContainer);
 
                 that._treeViewContainer = document.createElement("div");
                 that._renderTreeView(that._treeViewContainer);
@@ -13860,6 +13871,19 @@ Fisma.System = {
 
             container.style.display = "none";
             container.appendChild(loadingImage);
+        },
+
+        /**
+         * Render the error bar
+         *
+         * @method OrganizationTreeView._renderErrorBar
+         * @param container {HTMLElement} The container that the error is rendered into
+         */
+        _renderErrorBar: function (container) {
+            var p = document.createElement("p");
+
+            container.style.display = "none";
+            container.appendChild(p);
         },
 
         /**
@@ -13913,6 +13937,15 @@ Fisma.System = {
                     success: function (response) {
                         var json = YAHOO.lang.JSON.parse(response.responseText);
 
+                        if (YAHOO.lang.isNull(json.treeData)) {
+
+                           // Gracefully handle a result that has no tree
+                            this._showError("No data available.");
+                            this._hideLoadingImage();
+                            this._hideTreeView();
+                            return;
+                        }
+
                         // Load the tree data into a tree view
                         this._treeView = new YAHOO.widget.TreeView(this._treeViewContainer);
                         this._buildTreeNodes(json.treeData, this._treeView.getRoot());
@@ -13931,8 +13964,10 @@ Fisma.System = {
                         $.each(defaultExpandNodes, function (key, node) {node.expand();});
 
                         this._treeView.draw();
+                        this._showTreeView();
                         this._buildContextMenu();
                         this._hideLoadingImage();
+                        this._hideError(); 
                     },
                     failure: function (response) {
                         alert('Unable to load the organization tree: ' + response.statusText);
@@ -14149,6 +14184,40 @@ Fisma.System = {
             }
 
             window.location = url;
+        },
+ 
+        /**
+         * Display an error message in the error bar.
+         * 
+         * If errorMessage is not set, then just display the error bar.
+         */
+        _showError: function (errorMessage) {
+            if (YAHOO.lang.isString(errorMessage)) {
+                this._errorBarContainer.firstChild.innerHTML = errorMessage;
+            }
+            
+            this._errorBarContainer.style.display = "";
+        },
+        
+        /**
+         * Hide the error bar.
+         */
+        _hideError: function () {
+            this._errorBarContainer.style.display = "none";
+        },
+
+        /**
+         * Hide the TreeView.
+         */
+        _hideTreeView: function () {
+            this._treeViewContainer.style.display = "none";
+        },
+
+        /**
+         * Show the TreeView.
+         */
+        _showTreeView: function () {
+            this._treeViewContainer.style.display = "block";
         }
     };
 

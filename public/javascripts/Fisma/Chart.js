@@ -866,9 +866,8 @@ Fisma.Chart = {
 
                 // Tabel to hold all colored boxes and labels
                 var threatTable = document.createElement("table");
-                threatTable.style.fontSize = '12px';
-                threatTable.style.color = '#000000';
                 threatTable.width = threatLegendWidth;
+                threatTable.className = 'jqplot-threat-legend';
                 var tblBody = document.createElement("tbody");
                 var row = document.createElement("tr");
 

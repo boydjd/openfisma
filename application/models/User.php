@@ -771,9 +771,9 @@ class User extends BaseUser
      */
     public function getRoles($hydrationMode = Doctrine::HYDRATE_SCALAR, $userRolesQuery = null)
     {
-        $userRolesQuery = (isset($userRolesQuery)) ? 
-                          $userRolesQuery : Doctrine::getTable('User')->getRolesQuery($this->id, $hydrationMode);
-
+        $userRolesQuery = (isset($userRolesQuery))
+                        ? $userRolesQuery
+                        : Doctrine::getTable('User')->getRolesQuery($hydrationMode);
         return $userRolesQuery->execute();
     }
 

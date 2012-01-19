@@ -8,8 +8,7 @@
 
     <span type="select" name="finding[type]" href="/metainfo/list/o/type/format/html/" id="type"
         <?php 
-            if (!$this->finding->isDeleted() && ('NEW' == $finding->status || 'DRAFT' == $finding->status) 
-                && $this->acl()->hasPrivilegeForObject('update_type', $finding)) {
+            if ($this->isTypeEditable) { 
                 echo $this->escape('class="editable" target="type"', 'none');
             }
         ?>>
@@ -20,8 +19,7 @@
 <p>
     <b target="mitigation_strategy"
         <?php 
-            if (!$this->finding->isDeleted() && in_array($finding->status, array('NEW', 'DRAFT'))
-                && $this->acl()->hasPrivilegeForObject('update_course_of_action', $finding)) {
+            if ($this->isMitigationStrategyEditable) {
                echo $this->escape('class="editable"', 'none');
             }
         ?>>
@@ -35,8 +33,7 @@
 <p>
     <b
         <?php
-            if (!$this->finding->isDeleted() && in_array($finding->status, array('NEW', 'DRAFT'))
-                && $this->acl()->hasPrivilegeForObject('update_resources', $finding)) {
+            if ($this->isResourcesEditable) {
                 echo $this->escape('class="editable" target="resources_required"', 'none');
             } 
         ?>>

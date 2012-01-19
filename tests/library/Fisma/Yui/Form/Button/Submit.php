@@ -89,7 +89,6 @@ class Test_Library_Fisma_Yui_Form_Button_Submit extends Test_Case_Unit
                            });
                            
                        ";
-
    
         $fullrender .= "});</script>";
         $barerender .= "});</script>";

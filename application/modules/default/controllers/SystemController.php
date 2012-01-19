@@ -289,7 +289,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'version' => $document->version,
                 'description' => $this->view->textToHtml($this->view->escape($document->description)),
                 'username' => $this->view->userInfo($document->User->username),
-                'date' => $document->updated_at,
+                'date' => $document->{'updated_at'},
                 'view' => "<a href=/system-document/view/id/{$document->id}>Version History</a>"
             );
         }
@@ -606,9 +606,18 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function userAction()
     {
         $this->_helper->layout->disableLayout();
+        $id = $this->getRequest()->getParam('id');
 
-        $id             = $this->getRequest()->getParam('id');
-        $organization   = Doctrine::getTable('Organization')->findOneBySystemId($id);
+        /**
+         * Both OrganizationController and SystemController use this action. So, when the OrganizationController
+         * uses this action, it would pass a param of type which indicates the id param is organizationId.
+         */
+        $type = $this->getRequest()->getParam('type');
+        if (!is_null($type) && 'organization' == $type) {
+            $organization = Doctrine::getTable('Organization')->findOneById($id);
+        } else {
+            $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
+        }
 
         $this->_acl->requirePrivilegeForObject('read', $organization);
 
@@ -845,7 +854,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $query = $this->getRequest()->getParam('query');
 
         $systems = Doctrine::getTable('Organization')->getSystemsLikeNameQuery($query)
-                   ->select('o.id, o.name')
+                   ->select('o.id')
+                   ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS name")
                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                    ->execute();
 
@@ -906,11 +916,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     {
         $orgIds = $this->_me->getOrganizationsByPrivilege('organization', 'read', $includeDisposal)
                        ->toKeyValueArray('id', 'id');
+
+        if (empty($orgIds)) {
+            return null;   
+        }
+
         $systemObjects = Doctrine_Query::create()
             ->from ('System s, s.Organization o')
             ->whereIn ('o.id', $orgIds)
             ->orderBy('o.nickname')
             ->execute();
+
         // convert to arrays
         $systems = array();
         foreach ($systemObjects as $s) {
@@ -922,6 +938,10 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 $systems[$v['parent']]['children'][] =& $systems[$k];
                 unset($systems[$k]);
             }
+        }
+
+        if (empty($systems)) {
+            return null;   
         }
 
         return array_values($systems);
