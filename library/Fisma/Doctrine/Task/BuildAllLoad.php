@@ -17,7 +17,7 @@
  */
 
 /**
- * Override parent construct function to call Fisma_Doctrine_Task_RebuildDb instead
+ * Override parent construct function to call Fisma_Doctrine_Task_BuildAll instead
  *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -25,10 +25,10 @@
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Task
  */
-class Fisma_Doctrine_Task_BuildAllReload extends Doctrine_Task_BuildAllReload
+class Fisma_Doctrine_Task_BuildAllLoad extends Doctrine_Task_BuildAllLoad
 {
     /**
-     * Use Fisma_Doctrine_Task_RebuildDb so that it can detect auto-yes/auto-no argument
+     * Use Fisma_Doctrine_Task_BuildAll so that it can call Fisma_Doctrine_Task_GenerateModelsYaml instead
      *
      * @return void
      */
@@ -38,6 +38,7 @@ class Fisma_Doctrine_Task_BuildAllReload extends Doctrine_Task_BuildAllReload
 
         $this->taskName = Fisma_Doctrine_Task::getDoctrineTaskName($this);
 
-        $this->rebuildDb = new Fisma_Doctrine_Task_RebuildDb($this->dispatcher);
+        $this->buildAll = new Fisma_Doctrine_Task_BuildAll($this->dispatcher);
     }
+
 }

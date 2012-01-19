@@ -28,6 +28,18 @@
 class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 {
     /**
+     * List of doctrine tasks
+     * 
+     * @var array
+     */
+    private $_doctrineTasks = array(
+        'build' => 'build-all-load',
+        'rebuild' => 'build-all-reload',
+        'models' => 'generate-models-yaml',
+        'dql' => 'dql'
+    );
+
+    /**
      * Configure the arguments accepted for this CLI program
      * 
      * @return array An array containing getopt long syntax
@@ -36,7 +48,12 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
     {
         return array(
             'auto-yes|y' => "Automatically pick 'yes' for yes/no questions",
-            'auto-no|n' => "Automatically pick 'no' for yes/no questions"
+            'auto-no|n' => "Automatically pick 'no' for yes/no questions",
+            'build|b' => "Create models, create tables, and load fixtures",
+            'rebuild|r' => "Drop existing tables (if they exist), then do --build",
+            'models|m' => "Create models (a different name for what we currently call generate-models-yaml)",
+            'sample-data|s' => "When building (or rebuilding) include sample data. Does not apply when not building",
+            'dql|q=s' => "Execute dql query and display the results",
         );
     }
 
@@ -45,6 +62,28 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
      */
     protected function _run()
     {
+        // Default doctrine script name
+        $arguments[0] = 'doctrine.php';
+
+        // The default doctrine cli task is the first argument
+        $arguments[1] = $this->_getAvailableDoctrineTaskFromArguments();
+
+        $dqlParameter = $this->getOption('dql');
+        if ($dqlParameter) {
+            array_push($arguments, $dqlParameter);
+        }
+
+        // Make sure that user does not use both arguments auto-yes and auto-no at the same time
+        $autoYes = $this->getOption('auto-yes');
+        $autoNo = $this->getOption('auto-no');
+        if ($autoYes === true && $autoNo === true) {
+            throw new Fisma_Zend_Exception_User("Cannot use auto-yes and auto-no at the same time!");
+        } else if ($autoYes === true) {
+            array_push($arguments, 'auto-yes');
+        } else if ($autoNo === true) {
+            array_push($arguments, 'auto-no');
+        }
+
         Fisma::setNotificationEnabled(false);
         Fisma::setListenerEnabled(false);
 
@@ -65,32 +104,14 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 
         $configuration = Zend_Registry::get('doctrine_config');
 
-        // Block the 'migrate' action from running because migrate approach is changed by OFJ-1617.
-        $arguments = array_map('strtolower', $_SERVER['argv']);
-        $migrateOffset = array_search('migrate', $arguments);
-        if ($migrateOffset) {
-            unset($arguments[$migrateOffset]);
-        }
-
-        // Make sure that user does not use both arguments auto-yes and auto-no at the same time
-        $autoYes = $this->getOption('auto-yes');
-        $autoNo = $this->getOption('auto-no');
-        if (!is_null($autoYes) && !is_null($autoNo)) {
-            throw new Fisma_Zend_Exception_User("Cannot use auto-yes and auto-no at the same time!");
-        }
-
-        // Check to see if sample data was requested, e.g. `doctrine-cli.php build-all-reload sample-data`
-        $sampleDataParameter = array_search('sample-data', $arguments);
-        if ($sampleDataParameter) {
+        // Check to see if sample data was requested, e.g. `doctrine.php -r sample-data`
+        if ($this->getOption('sample-data')) {
             $sampleDataBuildPath = Fisma::getPath('sampleDataBuild');
 
             $this->loadFixtureFilesWithSampleData($sampleDataBuildPath);
 
             // Point Doctrine data loader at the new directory
             $configuration['data_fixtures_path'] = $sampleDataBuildPath;
-
-            // Remove the request parameter before passing it to Doctrine since Doctrine won't understand it
-            unset($arguments[$sampleDataParameter]);
         }
 
         // Kick off the CLI
@@ -208,6 +229,32 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
                     }
                 }
             }
+        }
+    }
+
+    /**
+     * Get the task name from arguments. Throw exception if there is no or more than one options
+     *  
+     * @return string $taskName The doctrine task
+     * @throws Fisma_Zend_Exception_User
+     */
+    private function _getAvailableDoctrineTaskFromArguments()
+    {
+        $taskCount = 0;
+        $taskName = null;
+        foreach ($this->_doctrineTasks as $key => $task) {
+            if ($this->getOption($key)) {
+                $taskName = $task;
+                $taskCount++;
+            }
+        }
+
+        if ($taskCount == 0) {
+            throw new Fisma_Zend_Exception_User("An option is required.");
+        } else if ($taskCount > 1) {
+            throw new Fisma_Zend_Exception_User("Cannot use more than one option.");
+        } else {
+            return $taskName;
         }
     }
 }
