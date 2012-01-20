@@ -20,4 +20,3 @@ Privilege:
             local: privilegeId
             foreign: roleId
             refClass: RolePrivilege
-            

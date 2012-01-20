@@ -120,7 +120,7 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->securityControl = Doctrine::getTable('SecurityControl')->find($securityControlId);
     }
-    
+
     /**
      * Override parent to provide proper human-readable name for SystemDocument class
      */
@@ -140,11 +140,12 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override to remove the "Create New" button
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
-        $buttons = parent::getToolbarButtons();
+        $buttons = parent::getToolbarButtons($record);
 
         unset($buttons['create']);
 

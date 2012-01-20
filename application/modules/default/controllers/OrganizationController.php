@@ -82,12 +82,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             if (!empty($organizationTree)) {
                 foreach ($organizationTree as $organization) {
                     $value = $organization['id'];
-                    $text = str_repeat("--", $organization['level']) 
+                    $text = str_repeat("--", $organization['level'])
                           . ' '
-                          . $organization['nickname'] 
+                          . $organization['nickname']
                           . ' - '
                           . $organization['name'];
-                          
+
                     $parent = $form->getElement('parent');
                     if ($parent) {
                         $form->getElement('parent')->addMultiOptions(array($value => $text));
@@ -99,11 +99,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 // (Notice that '0' is a special value which no primary key can actually take)
                 $form->getElement('parent')->addMultiOptions(array(0 => 'None'));
             }
-         
+
             // The type menu should display all types of organization EXCEPT system
             $orgTypeArray = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
             $form->getElement('orgTypeId')->addMultiOptions($orgTypeArray);
-        } 
+        }
 
         return $form;
     }
@@ -128,7 +128,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         }
         return $form;
     }
-    
+
     /**
      * Display the form for creating a new organization.
      *
@@ -140,7 +140,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     protected function saveValue($form, $subject=null)
     {
         $form = $this->getForm();
-        
+
         $objectId = null;
 
         if ($subject) {
@@ -198,11 +198,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
             } else {
                 $organization = $subject;
-                
+
                 $organization->merge($orgValues);
                 if (isset($orgValues['parent']) && $orgValues['parent'] != $organization->getNode()->getParent()->id) {
 
-                    // Check whether $parentOrg is in the subtree under $organization. If it is, show warning message   
+                    // Check whether $parentOrg is in the subtree under $organization. If it is, show warning message
                     // because it might break organization tree structure
                     $parentOrg = Doctrine::getTable('Organization')->find($orgValues['parent']);
                     if ($parentOrg->getNode()->isDescendantOf($organization)) {
@@ -213,7 +213,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                     } else {
                         $organization->getNode()
                                      ->moveAsLastChildOf($parentOrg);
-                    }    
+                    }
                 }
                 $organization->save();
             }
@@ -224,7 +224,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
             $this->view->priorityMessenger("Unable to save: $errorString", 'warning');
         }
-        
+
         return $objectId;
     }
 
@@ -235,8 +235,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override parent to check if the object is a system object, in which case the user is redirected.
-     * 
-     * This is a temporary crutch because we have some bugs popping up with objects being viewed by the wrong 
+     *
+     * This is a temporary crutch because we have some bugs popping up with objects being viewed by the wrong
      * controller. It will write a log message for any bad URLs, so after some time in production we can see where
      * the other bad links are and eventually remove this crutch.
      */
@@ -259,14 +259,14 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $tabView = new Fisma_Yui_TabView('OrganizationView', $id);
-        
+
         $firstTab = $this->view->escape($organization->name)
                   . ' (' . $this->view->escape($organization->nickname) . ')';
 
         $tabView->addTab($firstTab, "/organization/organization/id/$id");
         $tabView->addTab("Users", "/system/user/type/organization/id/$id");
 
-        $toolbarButtons = $this->getToolbarButtons();
+        $toolbarButtons = $this->getToolbarButtons($organization);
 
         if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
             $discardButton = new Fisma_Yui_Form_Button_Link(
@@ -303,7 +303,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $organization = Doctrine::getTable('Organization')->findOneById($id);
         $this->_acl->requirePrivilegeForObject('read', $organization);
         $this->_helper->layout()->disableLayout();
-        
+
         $editable = false;
         if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
             $editable = true;
@@ -346,11 +346,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                         $msg  = "Error while trying to save: <br />" . $organization->getErrorStackAsString();
                         $type = "warning";
                     }
-                    
+
                     $parent = $organization->getNode()->getParent();
                     if (!empty($parent) && isset($post['parent']) && (int)$post['parent'] != $parent->id) {
 
-                        // Move this organization to an other parent node if the parent node is not its descendant. 
+                        // Move this organization to an other parent node if the parent node is not its descendant.
                         $newParent = Doctrine::getTable('Organization')->find($post['parent']);
                         if (!$newParent->getNode()->isDescendantOf($organization)) {
                             $organization->getNode()->moveAsLastChildOf($newParent);
@@ -371,7 +371,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
                 $this->view->priorityMessenger($msg, $type);
                 $this->_redirect("/organization/view/id/$id");
-            } 
+            }
         }
 
         $this->_redirect("/organization/view/id/$id");
@@ -387,11 +387,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-        
+        $this->view->toolbarButtons = $this->getToolbarButtons(null);
+
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
         $this->view->toolbarButtons['list']->setValue("View Organization List");
-        
+
         // We're already on the tree screen, so don't show a "view tree" button
         unset($this->view->toolbarButtons['tree']);
 
@@ -431,7 +431,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
         $includeDisposalSystem = ('true' === $this->_request->getParam('displayDisposalSystem'));
-        
+
         // Save preferences for this screen
         $userId = CurrentUser::getInstance()->id;
         $namespace = 'Organization.Tree';
@@ -577,9 +577,10 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Add the "Organization Tree" button
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
         $buttons = array();
 
@@ -592,9 +593,9 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 )
             );
         }
-        
-        $buttons = array_merge($buttons, parent::getToolbarButtons());
-    
+
+        $buttons = array_merge($buttons, parent::getToolbarButtons($record));
+
         $id = $this->getRequest()->getParam('id');
         if (
             !empty($id)
@@ -602,7 +603,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         ) {
 
             $buttons['convertToSystem'] = new Fisma_Yui_Form_Button(
-                'convertToSys', 
+                'convertToSys',
                 array(
                       'label' => 'Convert To System',
                       'onClickFunction' => 'Fisma.System.convertToOrgOrSystem',
@@ -610,23 +611,23 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                           'id' => $this->view->escape($id, 'url'),
                           'text' => "Are you sure you want to convert this organization to a system?",
                           'func' => 'Fisma.System.askForOrgToSysInput'
-                          
-                    ) 
+
+                    )
                 )
             );
-            
+
         }
-        
+
         return $buttons;
     }
-    
+
     public function convertToSystemAction()
     {
         if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
-            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
-                'cannot create Organization');            
+            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' .
+                'cannot create Organization');
         }
-        
+
         $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
 
         $form = $this->getForm('organization_converttosystem');

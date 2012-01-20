@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -28,21 +28,21 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
-     * 
+     *
      * @var string
      */
     protected $_modelName = 'Poc';
 
     /**
      * Override to provide a better singular name
-     * 
+     *
      * @return string
      */
     public function getSingularModelName()
     {
         return 'Point of Contact';
     }
-   
+
     /**
      * Override base class to prevent deletion of POC objects
      *
@@ -86,7 +86,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
             $form->getElement('nameLast')->setAttrib("readonly", "readonly");
             $form->getElement('email')->setAttrib("readonly", "readonly");
         }
-        
+
         // Populate <select> for responsible organization
         $organizations = Doctrine::getTable('Organization')->getOrganizationSelectQuery(true)->execute();
         $selectArray = $this->view->systemSelect($organizations);
@@ -123,7 +123,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     public function formAction()
     {
         $this->_helper->layout()->disableLayout();
-        
+
         // The standard form needs to be modified to work inside a modal yui dialog
         $form = $this->getForm();
         $submit = $form->getElement('save');
@@ -134,7 +134,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override _viewObject to work around the permission wonkiness.
-     * 
+     *
      * A POC can also be a User. If a person has the read/poc privilege but not read/user, then the person won't be
      * able to view a User object. So we work around that right here.
      */
@@ -150,7 +150,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override _editObject to work around the permission wonkiness.
-     * 
+     *
      * A POC can also be a User. If a person has the update/poc privilege but not update/user, then the person won't be
      * able to modify a User object. So we work around that right here.
      */
@@ -166,9 +166,10 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     /**
      * Add the "POC Hierarchy" button
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
         $buttons = array();
 
@@ -182,7 +183,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
             );
         }
 
-        $buttons = array_merge($buttons, parent::getToolbarButtons());
+        $buttons = array_merge($buttons, parent::getToolbarButtons($record));
 
         return $buttons;
     }
@@ -195,11 +196,11 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Poc');
 
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-        
+        $this->view->toolbarButtons = $this->getToolbarButtons(null);
+
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
         $this->view->toolbarButtons['list']->setValue("View POC List");
-        
+
         // We're already on the tree screen, so don't show a "view tree" button
         unset($this->view->toolbarButtons['tree']);
     }
@@ -210,7 +211,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     public function treeDataAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'Poc');
-        
+
         $this->view->treeData = $this->_getPocTree();
     }
 
@@ -229,10 +230,10 @@ class PocController extends Fisma_Zend_Controller_Action_Object
                     ->where('p.reportingOrganizationId IS NOT NULL')
                     ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         $pocs = $pocQuery->execute();
-        
+
         // Group POCs by organization ID
         $pocsByOrgId = array();
-        
+
         foreach ($pocs as $poc) {
             $orgId = $poc['p_reportingOrganizationId'];
 
@@ -326,7 +327,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
                                 break;
                             } elseif ($node->getNode()->getLevel() > 1) {
 
-                                // Find the node's organization parent when its parent is a system. 
+                                // Find the node's organization parent when its parent is a system.
                                 $parent = $this->_getOrganizationParent($node->getNode());
 
                                 if ($parent && $parent->name == $stack[$j-1]['name']) {
@@ -352,7 +353,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Get the nearest ancestor with organization type. 
+     * Get the nearest ancestor with organization type.
      *
      * @param Doctrine_Record $node The nested node.
      * @return mixed Doctrine_Record if found, otherwise false.
@@ -361,7 +362,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     {
         $ancestors = $node->getAncestors();
         if ($ancestors) {
-            for ($i = count($ancestors) - 1; $i >= 0; $i--) { 
+            for ($i = count($ancestors) - 1; $i >= 0; $i--) {
                 if (is_null($ancestors[$i]->systemId)) {
                     return $ancestors[$i];
                 }
@@ -373,7 +374,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Moves a POC node from one organization to another.
-     * 
+     *
      * This is used by the YUI tree node to handle drag and drop of organization nodes. It replies with a JSON object.
      */
     public function moveNodeAction()
@@ -393,7 +394,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
             $destOrg = $destPoc->ReportingOrganization;
         } else {
             $destId = $this->getRequest()->getParam('destOrg');
-            $destOrg = Doctrine::getTable('Organization')->find($destId);            
+            $destOrg = Doctrine::getTable('Organization')->find($destId);
         }
 
         if ($src && $destOrg) {

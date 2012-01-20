@@ -112,7 +112,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->document = $document;
 
-        $this->view->toolbarButtons = $this->getToolbarButtons();
+        $this->view->toolbarButtons = $this->getToolbarButtons($document);
     }
 
     /**
@@ -159,11 +159,12 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
      * 1) List All <model name>s
      * 2) Create New <model name>
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
-        $buttons = parent::getToolbarButtons();
+        $buttons = parent::getToolbarButtons($record);
 
         // Remove the "Create" button, since that function is accessed through the system artifacts screen
         unset($buttons['create']);
@@ -189,7 +190,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override to indicate that this model is not deletable. (Since its versioned, we never delete a document.)
-     * 
+     *
      * @return bool
      */
     protected function _isDeletable()

@@ -304,5 +304,29 @@ Fisma.Incident = {
         var stepNumber = 1 + trEls.length;
         var textareaId = 'textareaid' + stepNumber;
         return textareaId;
+    },
+
+    /**
+     * Confirm before an incident is rejected
+     *
+     * @param {YAHOO.util.Event} e
+     */
+    confirmReject: function (e) {
+        var confirmation = {
+            text: "Are you sure you want to reject this incident? This action can NOT be undone.",
+            func: function () {
+                var incidentForm = document.getElementById('incident_detail');
+
+                var hiddenEl = document.createElement('input');
+                hiddenEl.type = "hidden";
+                hiddenEl.name = "reject";
+                hiddenEl.value = "reject";
+
+                incidentForm.appendChild(hiddenEl);
+                incidentForm.submit();
+            }
+        };
+
+        Fisma.Util.showConfirmDialog(e, confirmation);
     }
 };

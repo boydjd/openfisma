@@ -1,18 +1,18 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2009 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -23,31 +23,31 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * 
+ *
  * @see        Zend_View_Helper_Abstract
  */
 class AssetController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
-     * 
+     *
      * This model is the main subject which the controller operates on.
-     * 
+     *
      * @var string
      */
     protected $_modelName = 'Asset';
 
     /**
      * Invokes a contract with Fisma_Zend_Controller_Action_Object regarding privileges.
-     * 
+     *
      * @var string
      * @link http://jira.openfisma.org/browse/OFJ-24
      */
     protected $_organizations = '*';
-    
+
     /**
      * Hooks for manipulating the values before setting to a form
-     * 
+     *
      * @param Doctrine_Record $subject The specified subject model
      * @param Zend_Form $form The specified form
      * @return Zend_Form The manipulated form
@@ -56,7 +56,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     {
         $product = $subject->Product;
 
-        if ($this->getRequest()->getParam('sub') != 'edit') 
+        if ($this->getRequest()->getParam('sub') != 'edit')
             $form->getElement('product')->setAttrib('readonly', true);
 
         $form->getElement('productId')->setValue($subject->productId);
@@ -91,11 +91,12 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     /**
      * Customize the toolbar buttons
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
-        $buttons = parent::getToolbarButtons();
+        $buttons = parent::getToolbarButtons($record);
 
         if ($this->_acl->hasPrivilegeForClass('create', 'Asset')) {
             $buttons[] = new Fisma_Yui_Form_Button_Link(
@@ -155,7 +156,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                 $upload->userId = $this->_me->id;
                 $upload->fileName = basename($filePath);
                 $upload->save();
-                    
+
                 $import = Fisma_Import_Factory::create('asset', $values);
                 $success = $import->parse();
 
@@ -178,7 +179,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                     $upload->delete();
                 }
 
-                if (!$msgs) 
+                if (!$msgs)
                     $msgs[] = array('notice' => 'An unrecoverable error has occured.');
             }
 
