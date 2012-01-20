@@ -30,27 +30,17 @@ class Fisma_MailHandler_Immediate extends Fisma_MailHandler_Abstract
     /*
      * Send mail immediately
      */
-    public function _send()
+    protected function _send()
     {
-        $recipient = $this->getMail()->recipient;
-        $recipientName = $this->getMail()->recipientName;
-        $sender = $this->getMail()->sender;
-        $senderName = $this->getMail()->senderName;
-        $subject = $this->getMail()->subject;
-        $body = $this->getMail()->body;
-
         $mail = new Zend_Mail();
-        $mail->setFrom($sender, $senderName);
-        $mail->addTo($recipient, $recipientName);
-        $mail->setSubject($subject);
-        $mail->setBodyText($body);
+        $mail->setFrom($this->getMail()->sender, $this->getMail()->senderName);
+        $mail->addTo($this->getMail()->recipient, $this->getMail()->recipientName);
+        $mail->setSubject($this->getMail()->subject);
+        $mail->setBodyText($this->getMail()->body);
 
         $transport = $this->getMail()->transport;
-        $transport = $transport ? $transport : $this->getTransport();
-        try {
-            $mail->send($transport);
-        } catch (Exception $excetpion) {
-        }
+
+        $mail->send($this->getTransport($transport));
     }
 }
 

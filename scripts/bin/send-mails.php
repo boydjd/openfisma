@@ -1,3 +1,4 @@
+#!/usr/bin/env php
 <?php
 /**
  * Copyright (c) 2012 Endeavor Systems, Inc.
@@ -16,24 +17,8 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-/**
- * A concrete implementation of the mail handler interface sending nothing
- * This implementation is ideal for run CLI purposes
- * 
- * @author     Ben Zheng <ben.zheng@reyosoft.com>
- * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Fisma
- * @subpackage Fisma_MailHandler
- */
-class Fisma_MailHandler_Null extends Fisma_MailHandler_Abstract
-{
-    /**
-     * Send nothing
-     */
-    protected function _send()
-    {
+require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
-    }
-}
+$cli = new Fisma_Cli_SendMails();
+$cli->run();
 

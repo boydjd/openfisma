@@ -30,7 +30,7 @@ class Fisma_MailHandler_Queue extends Fisma_MailHandler_Abstract
     /*
      * Save mail to queue mail table
      */
-    public function _send()
+    protected function _send()
     {
         $mail = New QueueMail();
         $mail->recipient     = $this->getMail()->recipient;

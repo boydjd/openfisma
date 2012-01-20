@@ -1132,8 +1132,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
             foreach ($this->_getAssociatedUsers($id) as $user) {
                 $mailData = array();
-                $mailData['recipient']     = $user['email'];
-                $mailData['recipientName'] = $user['name'];
+                $mailData['recipient']     = $user['u_email'];
+                $mailData['recipientName'] = $user['u_name'];
                 $mailData['subject']       = "A workflow step has been completed";
                 $options = array(
                     'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $id,
@@ -1270,8 +1270,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 if (isset($currentStep)) {
                     foreach ($this->_getAssociatedUsers($id) as $user) {
                         $mailData = array();
-                        $mailData['recipient']     = $user['email'];
-                        $mailData['recipientName'] = $user['name'];
+                        $mailData['recipient']     = $user['u_email'];
+                        $mailData['recipientName'] = $user['u_name'];
                         $mailData['subject']       = "A workflow step has been completed";
                         $options = array(
                             'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $id,
@@ -1935,9 +1935,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     {
         $incidentUsersQuery = Doctrine_Query::create()
                               ->select("u.email as email, CONCAT(u.nameFirst, ' ', u.nameLast) as name")
-                              ->from('IrIncidentUser u')   
-                              ->where('u.incidentId = ?', $incidentId)
-                              ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                              ->from('IrIncidentUser iru')
+                              ->leftJoin('iru.User u')
+                              ->where('iru.incidentId = ?', $incidentId)
+                              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $incidentUsers = $incidentUsersQuery->execute();
 

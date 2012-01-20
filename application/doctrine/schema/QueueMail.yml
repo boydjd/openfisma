@@ -2,6 +2,7 @@ QueueMail:
     columns:
         recipient:
             type: string(255)
+            notnull: true
             comment: The recipient email address
         recipientName:
             type: string(255)
@@ -14,7 +15,9 @@ QueueMail:
             comment: The name for sender mail
         subject:
             type: string(255)
+            notnull: true
             comment: The subject for mail
         body:
             type: string
+            notnull: true
             comment: Email body text

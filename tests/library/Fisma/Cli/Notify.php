@@ -31,6 +31,19 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
 {
     /**
+     * setUp 
+     * 
+     * @access public
+     * @return void
+     */
+    public function setUp()
+    {
+        Fisma::setConfiguration(new Fisma_Configuration_Array(), true);
+
+        Fisma::configuration()->setConfig('system_name', 'OpenFISMA');
+    }
+
+    /**
      * Test the main function
      * @return void
      */
@@ -96,11 +109,12 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
      */
     public function testSendMail()
     {
-        $mail = $this->getMock('Mock_Blank', array('sendNotification'));
-        $mail->expects($this->once())->method('sendNotification');
+        $mail = $this->getMock('Mock_Blank', array('send', 'setMail'));
+        $mail->expects($this->once())->method('setMail')->will($this->returnSelf());
+        $mail->expects($this->once())->method('send');
 
         $notify = new Fisma_Cli_Notify();
-        $notify->sendNotificationEmail(null, $mail);
+        $notify->sendNotificationEmail(array(), $mail);
     }
 
     /**
@@ -113,7 +127,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
         $notification = $this->getMock('Mock_Blank', array('delete'));
         $notification->expects($this->once())->method('delete');
         $notify = new Fisma_Cli_Notify();
-        $notify->purgeNotifications(array($notification), $query);
+        $notify->purgeNotifications(array($notification));
     }
 }
 

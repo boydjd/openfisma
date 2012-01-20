@@ -72,17 +72,15 @@ abstract class Fisma_MailHandler_Abstract
 
     /**
      * Return the appropriate Zend_Mail_Transport subclass, based on the system's configuration
-     * or from the parameters.
      * 
+     * @param  Zend_Mail_Transport_Abstract $transport
      * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail The initialized email sender
      */
-    protected function getTransport()
+    public function getTransport(Zend_Mail_Transport_Abstract $transport = null)
     {
-        // The transport config from parameters.
-        $transport = $this->_mail->getTransport();
-
-        // Get from system's configuration
-        if (!$transport) {
+        if ($transport) {
+            return $transport;
+        } else {
             if ('smtp' == Fisma::configuration()->getConfig('send_type')) {
                 $username = Fisma::configuration()->getConfig('smtp_username');
                 $password = Fisma::configuration()->getConfig('smtp_password');
