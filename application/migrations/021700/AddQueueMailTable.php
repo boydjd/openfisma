@@ -34,11 +34,11 @@ class Application_Migration_021700_AddQueueMailTable extends Fisma_Migration_Abs
         $columns = array(
             'id'            => "bigint(20) NOT NULL AUTO_INCREMENT",
             'recipient'     => "varchar(255) NOT NULL COMMENT 'The recipient email address'",
-            'recipientName' => "varchar(255) DEFAULT NULL COMMENT 'The recipient name.'",
+            'recipientName' => "varchar(255) DEFAULT NULL COMMENT 'The recipient name'",
             'sender'        => "varchar(255) DEFAULT NULL COMMENT 'The sender email address'",
             'senderName'    => "varchar(255) DEFAULT NULL COMMENT 'The name for sender mail'",
-            'subject'       => "varchar(255) NOT NULL COMMENT 'The subject for mail.'",
-            'body'          => "varchar(255) NOT NULL COMMENT 'Email body text.'"
+            'subject'       => "varchar(255) NOT NULL COMMENT 'The subject for mail'",
+            'body'          => "text NOT NULL COMMENT 'Email body text'"
         );
 
         echo "Creating queue mail table…\n";
