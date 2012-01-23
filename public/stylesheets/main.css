@@ -261,7 +261,6 @@ div.buttonBar {
 
 /* These styles are used on the remediation detail page to indicate approval status and comments */
 div.approval {
-    background-color: #efefef;
     border: 1px solid #cecece;
     padding: 3px;
     margin-bottom: 24px;
@@ -275,8 +274,14 @@ div.approvalHeader {
 }
 
 div.approvalStep {
+    background-color: #efefef;
     border-top: 2px dashed #cecece;
+    padding-left: 3px;
+    padding-bottom: 8px;
+    padding-top: 8px;
 }
+
+div.approvalStep p {margin-bottom:0px;}
 
 div.approvalStep:first-child {
     border-top: none;
@@ -294,6 +299,15 @@ div.approval span.approved {
 div.approval span.denied {
     background-color: #ffcccc;
     padding: 3px;
+}
+
+div.approvalStep.highlight {
+    background-color:#FEFEFE;
+}
+
+span.findingStatus {
+    font-style: italic;
+    vertical-align: super;
 }
 
 /* This is the standard style for the basic CRUD forms such as users, systems,

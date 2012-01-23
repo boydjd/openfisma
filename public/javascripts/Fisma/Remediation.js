@@ -177,6 +177,9 @@ Fisma.Remediation = {
         }
     },
 
+    /**
+     * Validate the reject_evidence form for required field(s)
+     */
     reject_evidence_validate : function() {
         if (document.finding_detail_reject_evidence.comment.value.match(/^\s*$/)) {
             var alertMessage = 'Comments are required.';
@@ -185,5 +188,77 @@ Fisma.Remediation = {
             return false;
         }
         return true;
+    },
+
+    /**
+     * Validate the upload_evidence form to check for duplicated uploads
+     */
+    upload_evidence_validate : function() {
+        if (document.finding_detail_upload_evidence.forceSubmit) {
+            return true;
+        }
+        var duplicationDetected = false;
+        var message = "WARNING: The following file(s) will be replaced: <ul>";
+        
+        for (var i = 0; i < document.links.length; i++) {
+            var link = document.links[i];
+            
+            if (link.href.indexOf('downloadevidence') >= 0 && link.firstChild.nodeName == 'DIV') {
+                var files = document.finding_detail_upload_evidence['evidence[]'].files;
+                if (!files) // this ugly chunk is the workaround for IE7
+                {
+                    var elements = document.finding_detail_upload_evidence.elements;
+                    for (var j = 0; j < elements.length; j++) {
+                        if (elements[j].name == 'forceSubmit') {
+                            return true;
+                        }
+                        if (elements[j].name == 'evidence[]') {
+                            var fileName = elements[j].value;
+                            fileName = fileName.slice(fileName.lastIndexOf('\\')+1);
+                            if (fileName == link.firstChild.innerHTML) {
+                                duplicationDetected = true;
+                                message += "<li>" + fileName + "</li>";
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    for (var j = 0; j < files.length; j++) {
+                        if (files[j].fileName == link.firstChild.innerHTML) {
+                            duplicationDetected = true;
+                            message += "<li>" + files[j].fileName + "</li>";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        message += "</ul>Do you want to continue?";
+        if (duplicationDetected) {
+            Fisma.Util.showConfirmDialog(
+                event,
+                {
+                    text:message,
+                    func:'Fisma.Remediation.upload_evidence_confirm',
+                    args:[true]
+                }
+            );
+            return false;
+        } else {
+            return true;
+        }
+    },
+
+    /**
+     * Force the submission of upload_evidence form
+     */
+    upload_evidence_confirm : function() {
+        var forcedIndicator = document.createElement('input');
+        forcedIndicator.type = 'hidden';
+        forcedIndicator.name = 'forceSubmit';
+        forcedIndicator.value = true;
+        document.finding_detail_upload_evidence.appendChild(forcedIndicator);
+        document.finding_detail_upload_evidence.upload_evidence.click();
     }
 };

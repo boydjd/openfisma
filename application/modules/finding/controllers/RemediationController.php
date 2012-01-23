@@ -229,7 +229,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $id = $this->_request->getParam('id');
 
-        $finding = $this->_getSubject($id);
+        $finding = Doctrine_Query::create()
+            ->from('Finding f')->leftJoin('f.Attachments')->where('f.id = ?', $id)
+            ->fetchOne();
         $this->view->finding = $finding;
         
         $this->_acl->requirePrivilegeForObject('read', $finding);
@@ -245,7 +247,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id/format/html");
         $tabView->addTab("Comments ($commentCount)", "/finding/remediation/comments/id/$id/format/html");
         $tabView->addTab(
-            "Evidence (" . $finding->Evidence->count() . ")",
+            "Evidence (" . $finding->Attachments->count() . ")",
             "/finding/remediation/artifacts/id/$id/format/html"
         );
         $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id/format/html");
@@ -550,7 +552,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function uploadevidenceAction()
     {
         $id = $this->_request->getParam('id');
-        $finding = $this->_getSubject($id);
+        $finding = Doctrine_Query::create()
+            ->from('Finding f')->leftJoin('f.Attachments')->where('f.id = ?', $id)
+            ->fetchOne();
 
         if ($finding->isDeleted()) {
             $message = "Evidence cannot be uploaded to a deleted finding.";
@@ -560,17 +564,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
 
         try {
-            $newEvidence = ($finding->status == 'EN');
-            if ($newEvidence) { // Upload new evidence
-                $evidence = new Evidence();
-            } else {  // Add to the current Evidence under evaluation
-                $evidenceQuery = Doctrine_Query::create()
-                    ->from('Evidence e')
-                    ->leftJoin('e.Attachments')
-                    ->where('e.findingId = ?', $id);
-                $evidence = $evidenceQuery->execute()->getLast();
-            }
             $auditMessages = array();
+            $errorMessages = "";
             for ($i = 0; $i<count($_FILES['evidence']['name']); $i++)
             {
                 // PHP handles multiple uploads as $_FILES['element_name']['attribute'][idx] 
@@ -583,31 +578,45 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 if (!empty($file['name'])) {                    
                     if ($file['error'] != UPLOAD_ERR_OK) {
                       if ($file['error'] == UPLOAD_ERR_INI_SIZE) {
-                        $message = "The uploaded file {$file['name']} is larger than is allowed by the server.";
+                        $errorMessages .= "The uploaded file {$file['name']} is too large.\n";
                       } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {
-                        $message = "The uploaded file {$file['name']} was only partially received.";
+                        $errorMessages .= "The uploaded file {$file['name']} was only partially received.\n";
                       } else {
-                        $message = "An error occurred while processing the uploaded file {$file['name']}.";
+                        $errorMessages .= "An error occurred while processing the uploaded file {$file['name']}.\n";
                       }
-                      throw new Fisma_Zend_Exception($message);
+                    } else {
+                        $duplicated = false;
+                        foreach ($finding->Attachments as $index => $attachment) {
+                            if ($attachment->fileName == $file['name']) {
+                                $auditMessages[] = "Evidence replace: {$attachment->fileName} (#{$attachment->id})";
+                                $finding->Attachments->remove($index);
+                                $duplicated = true;
+                                break;
+                            }
+                        }
+                        if (!$duplicated) {
+                            $auditMessages[] = "Evidence upload: \"{$file['name']}\"";
+                        }
+                        $finding->attach($file);
                     }
-
-                    $evidence->attach($file);
-                    $auditMessages[] = "Evidence upload: \"{$file['name']}\"";
                 }
             }
-            if ($evidence->Attachments->count()==0) {
+
+            // If no uploaded files were successful processed, throw a fatal error
+            if (count($auditMessages)==0) {
                 $message = "You did not select any file to upload. Please select a file and try again.";
                 throw new Fisma_Zend_Exception($message);
             }
-            if ($newEvidence) {
-                $finding->submitEvidence($evidence);
-            } else {
-                $evidence->save();
-            }
 
+            $finding->save();
+            
             foreach ($auditMessages as $auditMessage) {
                 $finding->getAuditLog()->write($auditMessage);
+            }
+
+            // Throw non-fatal error(s) after saving the Finding
+            if (!empty($errorMessages)) {
+                throw new Fisma_Zend_Exception($errorMessages);
             }
         } catch (Fisma_Zend_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
@@ -623,26 +632,25 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      */
     public function downloadevidenceAction()
     {
-        $evidenceId = $this->_request->getParam('evidenceId');
+        $id = $this->_request->getParam('id');
         $attachmentId = $this->_request->getParam('attachmentId');
 
         $artifactsQuery = Doctrine_Query::create()
-                          ->from('Evidence e')
-                          ->leftJoin('e.Finding f')
-                          ->leftJoin('e.Attachments a')
-                          ->where('e.id = ?', $evidenceId)
+                          ->from('Finding f')
+                          ->leftJoin('f.Attachments a')
+                          ->where('f.id = ?', $id)
                           ->andWhere('a.id = ?', $attachmentId);
 
-        $evidence = $artifactsQuery->execute()->getLast();
+        $finding = $artifactsQuery->execute()->getLast();
 
-        if (empty($evidence)) {
-            throw new Fisma_Zend_Exception('Invalid evidence ID');
+        if (empty($finding)) {
+            throw new Fisma_Zend_Exception('Invalid finding ID');
         }
 
         // There is no ACL defined for evidence objects, access is only based on the associated finding:
-        $this->_acl->requirePrivilegeForObject('read', $evidence->Finding);
+        $this->_acl->requirePrivilegeForObject('read', $finding);
 
-        $upload = $evidence->Attachments[0];
+        $upload = $finding->Attachments[0];
         $this->_helper->downloadAttachment($upload->fileHash, $upload->fileName);
     }
     
@@ -653,33 +661,58 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      */
     public function deleteevidenceAction()
     {
-        $evidenceId = $this->_request->getParam('evidenceId');
+        $id = $this->_request->getParam('id');
         $attachmentId = $this->_request->getParam('attachmentId');
 
         $artifactsQuery = Doctrine_Query::create()
-                          ->from('Evidence e')
-                          ->leftJoin('e.Finding f')
-                          ->leftJoin('e.Attachments a')
-                          ->where('e.id = ?', $evidenceId)
+                          ->from('Finding f')
+                          ->leftJoin('f.Attachments a')
+                          ->where('f.id = ?', $id)
                           ->andWhere('a.id = ?', $attachmentId);
 
-        $evidence = $artifactsQuery->execute()->getLast();
+        $finding = $artifactsQuery->execute()->getLast();
 
-        if (empty($evidence)) {
-            throw new Fisma_Zend_Exception('Invalid evidence ID');
+        if (empty($finding)) {
+            throw new Fisma_Zend_Exception('Invalid finding ID');
         }
 
         // There is no ACL defined for evidence objects, access is only based on the associated finding:
-        $this->_acl->requirePrivilegeForObject('upload_evidence', $evidence->Finding);
+        $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
 
-        $message = "Attachment #{$evidence->Attachments[0]->id} (\"{$evidence->Attachments[0]->fileName}\") "
-                 . "removed from evidence.";
-        $evidence->Attachments->remove(0);
-        $evidence->save();
+        $message = "Evidence delete: {$finding->Attachments[0]->fileName} (#{$finding->Attachments[0]->id})";
+        $finding->Attachments->remove(0);
+        $finding->save();
 
-        $evidence->Finding->getAuditLog()->write($message);
+        $finding->getAuditLog()->write($message);
 
-        $this->_redirect("/finding/remediation/view/id/{$evidence->Finding->id}");
+        $this->_redirect("/finding/remediation/view/id/{$id}");
+    }
+
+    /**
+     * Handle the submit evidence package action
+     * 
+     * @return void
+     */
+    public function submitevidenceAction()
+    {
+        $id = $this->_request->getParam('id');
+        $finding = $this->_getSubject($id);
+
+        if ($finding->isDeleted()) {
+            $message = "Evidence cannot be uploaded to a deleted finding.";
+            throw new Fisma_Zend_Exception($message);
+        }
+
+        $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
+
+        try {
+            $finding->submitEvidence();
+        } catch (Fisma_Zend_Exception $e) {
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
+        }
+
+        $this->_redirect("/finding/remediation/view/id/$id");
+
     }
     
     /**
@@ -830,15 +863,13 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         // Get a list of artifacts related to this finding
         $artifactsQuery = Doctrine_Query::create()
-                          ->from('Evidence e')
-                          ->leftJoin('e.Attachments a')
-                          ->leftJoin('e.FindingEvaluations fe')
-                          ->leftJoin('e.User u1')
+                          ->from('Finding f')
+                          ->leftJoin('f.Attachments a')
+                          ->leftJoin('f.FindingEvaluations fe')
                           ->leftJoin('fe.User u2')
-                          ->where('e.findingId = ?', $this->view->finding->id)
-                          ->orderBy('e.createdTs DESC');
+                          ->where('f.id = ?', $this->view->finding->id);
 
-        $this->view->artifacts = $artifactsQuery->execute();
+        $this->view->finding = $artifactsQuery->fetchOne();
 
         // Get a list of all evaluations so that the ones which are skipped or pending can still be rendered.
         $evaluationsQuery = Doctrine_Query::create()

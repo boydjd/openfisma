@@ -219,9 +219,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         }
         
         $findingEvaluation = new FindingEvaluation();
-        if ($this->CurrentEvaluation->approvalGroup == 'evidence') {
-            $findingEvaluation->Evidence   = $this->Evidence->getLast();
-        }
         $findingEvaluation->Finding    = $this;
         $findingEvaluation->Evaluation = $this->CurrentEvaluation;
         $findingEvaluation->decision   = 'APPROVED';
@@ -332,9 +329,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         }
 
         $findingEvaluation = new FindingEvaluation();
-        if ($this->CurrentEvaluation->approvalGroup == 'evidence') {
-            $findingEvaluation->Evidence   = $this->Evidence->getLast();
-        }
         $findingEvaluation->Finding      = $this;
         $findingEvaluation->Evaluation   = $this->CurrentEvaluation;
         $findingEvaluation->decision     = 'DENIED';
@@ -389,10 +383,9 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     /**
      * Set the status as 'EA' and the currentEvaluationId as the first Evidence Evaluation id
      *
-     * @param Evidence $evidence
      * @return void
      */
-    public function submitEvidence(Evidence $evidence)
+    public function submitEvidence()
     {
         if ('EN' != $this->status) {
             throw new Fisma_Zend_Exception("Evidence can only be updated when the finding is in EN status");
@@ -404,10 +397,9 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $this->CurrentEvaluation = $evaluation[0];
         $this->_updateNextDueDate();
         
-        $this->Evidence[] = $evidence;
-        
         $this->updateDenormalizedStatus();
-
+        
+        $this->getAuditLog()->write('Evidence package submitted.');
         $this->save();
     }
     /**

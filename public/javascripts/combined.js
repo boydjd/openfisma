@@ -10478,7 +10478,7 @@ Fisma.Module = {
 
     Fisma.Registry = Registry;
 })();
-Fisma.Remediation={upload_evidence:function(){Fisma.UrlPanel.showPanel("Upload Evidence","/finding/remediation/upload-form",Fisma.Remediation.upload_evidence_form_init);return false},upload_evidence_form_init:function(){document.finding_detail_upload_evidence.action=document.finding_detail.action},remediationAction:function(c,h){action=h.action;formId=h.formId;panelTitle=h.panelTitle;findingId=h.findingId;if("REJECTED"===action){Fisma.UrlPanel.showPanel(panelTitle,"/finding/remediation/reject-evidence/id/"+findingId,function(){document.finding_detail_reject_evidence.action=document.finding_detail.action})}else{var g=document.createElement("div");var j=document.createElement("div");j.className="messageBox attention";var e="WARNING: The decision you are going to make action cannot be undone.";j.appendChild(document.createTextNode(e));g.appendChild(j);var d=document.createElement("p");var i;if("APPROVED"===action){i=document.createTextNode("Comments (OPTIONAL):")}else{i=document.createTextNode("Comments:")}d.appendChild(i);g.appendChild(d);var k=document.createElement("textarea");k.id="dialog_comment";k.name="comment";k.rows=5;k.cols=60;g.appendChild(k);var b=document.createElement("div");b.style.height="20px";g.appendChild(b);var f=document.createElement("input");f.type="button";f.id="dialog_continue";f.value="Confirm";g.appendChild(f);var a=document.createElement("span");a.className="instruction";a.appendChild(document.createTextNode(" (or close this dialog to cancel) "));g.appendChild(a);Fisma.HtmlPanel.showPanel(panelTitle,g.innerHTML);document.getElementById("dialog_continue").onclick=function(){var l=document.getElementById(formId);var p=document.getElementById("dialog_comment").value;if("DENIED"===action){if(p.match(/^\s*$/)){var o="Comments are required in order to submit a denial.";var m={zIndex:10000};Fisma.Util.showAlertDialog(o,m);return}}l.elements.comment.value=p;l.elements.decision.value=action;var n=document.createElement("input");n.type="hidden";n.name="submit_msa";n.value=action;l.appendChild(n);l.submit();return}}return true},add_upload_evidence:function(){var a=document.getElementById("evidence_upload_file_list");var b=document.createElement("input");b.type="file";b.name="evidence[]";b.multiple=true;a.appendChild(b);return false},show_rejected_evidences:function(){var a=document.getElementById("rejectedEvidencesContainer");var b=document.getElementById("rejectedEvidencesTrigger-button");if(a.style.display!="block"){a.style.display="block";b.innerHTML="Click to hide"}else{a.style.display="none";b.innerHTML="Click to display"}},reject_evidence_validate:function(){if(document.finding_detail_reject_evidence.comment.value.match(/^\s*$/)){var b="Comments are required in order to submit a denial.";var a={zIndex:10000};Fisma.Util.showAlertDialog(b,a);return false}return true}};/**
+Fisma.Remediation={upload_evidence:function(){Fisma.UrlPanel.showPanel("Upload Evidence","/finding/remediation/upload-form",Fisma.Remediation.upload_evidence_form_init);return false},upload_evidence_form_init:function(){document.finding_detail_upload_evidence.action=document.finding_detail.action},remediationAction:function(c,j){var g=j.action;var q=j.formId;var l=j.panelTitle;var h=j.findingId;if("REJECTED"===g){var a=Fisma.UrlPanel.showPanel(l,"/finding/remediation/reject-evidence/id/"+h,function(){document.finding_detail_reject_evidence.action=document.finding_detail.action;document.getElementById("dialog_close").onclick=function(){a.destroy();return false}})}else{var i=document.createElement("div");var n=document.createElement("div");n.className="messageBox attention";var f="WARNING: This action cannot be undone.";n.appendChild(document.createTextNode(f));i.appendChild(n);var d=document.createElement("p");var k;if("APPROVED"===g){k=document.createTextNode("Comments (OPTIONAL):")}else{k=document.createTextNode("Comments:")}d.appendChild(k);i.appendChild(d);var o=document.createElement("textarea");o.id="dialog_comment";o.name="comment";o.rows=5;o.cols=60;i.appendChild(o);var b=document.createElement("div");b.className="buttonBar";i.appendChild(b);var m=document.createElement("button");m.id="dialog_continue";m.appendChild(document.createTextNode("Confirm"));b.appendChild(m);var e=document.createElement("button");e.id="dialog_close";e.style.marginLeft="5px";e.appendChild(document.createTextNode("Cancel"));b.appendChild(e);var a=Fisma.HtmlPanel.showPanel(l,i.innerHTML);document.getElementById("dialog_continue").onclick=function(){var p=document.getElementById(q);var u=document.getElementById("dialog_comment").value;if("DENIED"===g){if(u.match(/^\s*$/)){var t="Comments are required.";var r={zIndex:10000};Fisma.Util.showAlertDialog(t,r);return}}p.elements.comment.value=u;p.elements.decision.value=g;var s=document.createElement("input");s.type="hidden";s.name="submit_msa";s.value=g;p.appendChild(s);p.submit();return};document.getElementById("dialog_close").onclick=function(){a.destroy();return false}}return true},add_upload_evidence:function(){var a=document.getElementById("evidence_upload_file_list");var b=document.createElement("input");b.type="file";b.name="evidence[]";b.multiple=true;a.appendChild(b);return false},show_rejected_evidences:function(){var a=document.getElementById("rejectedEvidencesContainer");var b=document.getElementById("rejectedEvidencesTrigger-button");if(a.style.display!="block"){a.style.display="block";b.innerHTML="Click to hide"}else{a.style.display="none";b.innerHTML="Click to display"}},reject_evidence_validate:function(){if(document.finding_detail_reject_evidence.comment.value.match(/^\s*$/)){var b="Comments are required.";var a={zIndex:10000};Fisma.Util.showAlertDialog(b,a);return false}return true},upload_evidence_validate:function(){if(document.finding_detail_upload_evidence.forceSubmit){return true}var h=false;var e="WARNING: The following file(s) will be replaced: <ul>";for(var b=0;b<document.links.length;b++){var d=document.links[b];if(d.href.indexOf("downloadevidence")>=0&&d.firstChild.nodeName=="DIV"){var c=document.finding_detail_upload_evidence["evidence[]"].files;if(!c){var f=document.finding_detail_upload_evidence.elements;for(var a=0;a<f.length;a++){if(f[a].name=="forceSubmit"){return true}if(f[a].name=="evidence[]"){var g=f[a].value;g=g.slice(g.lastIndexOf("\\")+1);if(g==d.firstChild.innerHTML){h=true;alert(g);e+="<li>"+g+"</li>";break}}}}else{for(var a=0;a<c.length;a++){if(c[a].fileName==d.firstChild.innerHTML){h=true;e+="<li>"+c[a].fileName+"</li>";break}}}}}e+="</ul>Do you want to continue?";if(h){Fisma.Util.showConfirmDialog(event,{text:e,func:"Fisma.Remediation.upload_evidence_confirm",args:[true]});return false}else{return true}},upload_evidence_confirm:function(){var a=document.createElement("input");a.type="hidden";a.name="forceSubmit";a.value=true;document.finding_detail_upload_evidence.appendChild(a);document.finding_detail_upload_evidence.upload_evidence.click()}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -10657,6 +10657,9 @@ Fisma.Remediation = {
         }
     },
 
+    /**
+     * Validate the reject_evidence form for required field(s)
+     */
     reject_evidence_validate : function() {
         if (document.finding_detail_reject_evidence.comment.value.match(/^\s*$/)) {
             var alertMessage = 'Comments are required.';
@@ -10665,6 +10668,78 @@ Fisma.Remediation = {
             return false;
         }
         return true;
+    },
+
+    /**
+     * Validate the upload_evidence form to check for duplicated uploads
+     */
+    upload_evidence_validate : function() {
+        if (document.finding_detail_upload_evidence.forceSubmit) {
+            return true;
+        }
+        var duplicationDetected = false;
+        var message = "WARNING: The following file(s) will be replaced: <ul>";
+        
+        for (var i = 0; i < document.links.length; i++) {
+            var link = document.links[i];
+            
+            if (link.href.indexOf('downloadevidence') >= 0 && link.firstChild.nodeName == 'DIV') {
+                var files = document.finding_detail_upload_evidence['evidence[]'].files;
+                if (!files) // this ugly chunk is the workaround for IE7
+                {
+                    var elements = document.finding_detail_upload_evidence.elements;
+                    for (var j = 0; j < elements.length; j++) {
+                        if (elements[j].name == 'forceSubmit') {
+                            return true;
+                        }
+                        if (elements[j].name == 'evidence[]') {
+                            var fileName = elements[j].value;
+                            fileName = fileName.slice(fileName.lastIndexOf('\\')+1);
+                            if (fileName == link.firstChild.innerHTML) {
+                                duplicationDetected = true;
+                                message += "<li>" + fileName + "</li>";
+                                break;
+                            }
+                        }
+                    }
+                } else {
+                    for (var j = 0; j < files.length; j++) {
+                        if (files[j].fileName == link.firstChild.innerHTML) {
+                            duplicationDetected = true;
+                            message += "<li>" + files[j].fileName + "</li>";
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        message += "</ul>Do you want to continue?";
+        if (duplicationDetected) {
+            Fisma.Util.showConfirmDialog(
+                event,
+                {
+                    text:message,
+                    func:'Fisma.Remediation.upload_evidence_confirm',
+                    args:[true]
+                }
+            );
+            return false;
+        } else {
+            return true;
+        }
+    },
+
+    /**
+     * Force the submission of upload_evidence form
+     */
+    upload_evidence_confirm : function() {
+        var forcedIndicator = document.createElement('input');
+        forcedIndicator.type = 'hidden';
+        forcedIndicator.name = 'forceSubmit';
+        forcedIndicator.value = true;
+        document.finding_detail_upload_evidence.appendChild(forcedIndicator);
+        document.finding_detail_upload_evidence.upload_evidence.click();
     }
 };
 Fisma.Role={rolePrivChanges:{},dataTableCheckboxClick:function(f){var g=f.target;var d=this.getColumn(g);var b=d.key;var c=this.getRow(g).childNodes[1].childNodes[0].childNodes[0];var e=$(c).text();var a={roleName:b,privilegeId:e,newValue:g.checked};Fisma.Role.rolePrivChanges[b+e]=a;YAHOO.util.Dom.get("rolePrivChanges").value=YAHOO.lang.JSON.stringify(Fisma.Role.rolePrivChanges)}};/**

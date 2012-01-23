@@ -3,11 +3,12 @@
 ?>
 
 <form id="finding_detail_upload_evidence"
-      name="finding_detail_upload_evidence" method="post" enctype="multipart/form-data">
+      name="finding_detail_upload_evidence" method="post" enctype="multipart/form-data"
+      onsubmit="return Fisma.Remediation.upload_evidence_validate();">
 <fieldset id="evidence_upload_file_list">
     <legend>Select File(s):</legend>
     <input type="hidden" name="MAX_FILE_SIZE" value="10485760"/>
-    <input type="file" name="evidence[]" multiple title="No files selected."/>
+    <input type="file" name="evidence[]" multiple/>
 </fieldset>
 <p>
     <button onclick="return Fisma.Remediation.add_upload_evidence();">Add another file</button>

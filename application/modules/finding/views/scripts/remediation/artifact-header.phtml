@@ -3,12 +3,12 @@
  * Get artifact data as Doctrine Collection. Loop over to get icon URLs and file size, then convert to array
  * for view binding.
  */
-$attachmentCollection = $this->artifact->Attachments;
+$attachmentCollection = $this->finding->Attachments;
 $attachmentRows = array();
 
 foreach ($attachmentCollection as $attachment) {
     $baseUrl = '/finding/remediation/';
-    $currentUrl = '/evidenceId/' . $this->artifact->id . '/attachmentId/' . $attachment->id;
+    $currentUrl = '/id/' . $this->finding->id . '/attachmentId/' . $attachment->id;
     $attachmentRows[] = array(
         'iconUrl'  => "<a href={$baseUrl}downloadevidence{$currentUrl}><img src={$attachment->getIconUrl()}></a>",
         'fileName' => "<a href={$baseUrl}downloadevidence{$currentUrl}><div>"
@@ -75,10 +75,9 @@ $dataTable->addColumn(
 );
 
 if (
-    $this->acl()->hasPrivilegeForObject('upload_evidence', $this->artifact->Finding) &&
-    !$this->artifact->Finding->isDeleted() &&
-    $this->isLatest &&
-    in_array($this->artifact->Finding->status, array('EN', 'EA'))
+    $this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding) &&
+    !$this->finding->isDeleted() &&
+    in_array($this->finding->status, array('EN', 'EA'))
 ):
     $dataTable->addColumn(
         new Fisma_Yui_DataTable_Column(
@@ -94,7 +93,3 @@ endif;
 $dataTable->setData($attachmentRows);
 echo $this->escape($dataTable, 'none');
 ?>
-
-<div class="approvalHeader">
-    <b>Approval Status</b>
-</div>
