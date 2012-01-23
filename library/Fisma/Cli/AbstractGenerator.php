@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2013 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -28,21 +28,21 @@
 abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
 {
     /**
-     * Some organizations to randomly involve in the creation of incidents
+     * Some organizations to randomly involve in the creation of sample data
      * 
      * @var Doctrine_Collection
      */
     private $_sampleOrganizations;
 
     /**
-     * Some sub categories to randomly involve in the creation of incidents
+     * Some sub categories to randomly involve in the creation of sample data
      * 
      * @var Doctrine_Collection
      */
     private $_sampleSubCategories;
     
     /**
-     * Some users to randomly involve in the creation of findings
+     * Some users to randomly involve in the creation of sample data
      * 
      * @var Doctrine_Collection
      */

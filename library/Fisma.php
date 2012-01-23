@@ -129,6 +129,7 @@ class Fisma
         'temp' => 'data/temp',
         'test' => 'tests',
         'uploads' => 'data/uploads',
+        'fileStorage' => 'data/uploads',
         'viewHelper' => 'application/modules/default/views/helpers',
         'yui' => 'public/yui'
     );
