@@ -553,6 +553,14 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     public function viewAction() 
     {
         $id = $this->_request->getParam('id');
+
+        $incidentQuery = Doctrine_Query::create()
+                         ->from('Incident i')
+                         ->leftJoin('i.Attachments a')
+                         ->where('i.id = ?', $id);
+        $results = $incidentQuery->execute();
+        $incident = $results->getFirst();
+        
         $incident = $this->_getSubject($id);
 
         $this->_assertCurrentUserCanViewIncident($id);
@@ -563,7 +571,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Put a span around the comment count so that it can be updated from Javascript
         $commentCount = '<span id=\'incidentCommentsCount\'>' . $incident->getComments()->count() . '</span>';
         
-        $artifactCount = $incident->getArtifacts()->count();
+        $artifactCount = $incident->Attachments->count();
 
         // Create tab view
         $tabView = new Fisma_Yui_TabView('SystemView', $id);
@@ -1368,7 +1376,12 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     {
         $id = $this->_request->getParam('id');
         $this->view->assign('id', $id);
-        $incident = Doctrine::getTable('Incident')->find($id);
+        $incident = Doctrine_Query::create()
+                            ->from('Incident i')
+                            ->leftJoin('i.Attachments a')
+                            ->where('i.id = ?', $id)
+                            ->execute()
+                            ->getLast();
 
         /** @todo move to ajax context */
         $this->_helper->layout->disableLayout();
@@ -1405,7 +1418,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
          * Get artifact data as Doctrine Collection. Loop over to get icon URLs and file size, then convert to array
          * for view binding.
          */
-        $artifactCollection = $incident->getArtifacts()->fetch(Doctrine::HYDRATE_RECORD);;
+        $artifactCollection = $incident->Attachments;
         $artifactRows = array();
 
         foreach ($artifactCollection as $artifact) {
@@ -1413,10 +1426,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $artifactRows[] = array(
                 'iconUrl'  => "<a href=$downloadUrl><img src=" . $this->view->escape($artifact->getIconUrl()) . "></a>",
                 'fileName' => "<a href=$downloadUrl><div>" . $this->view->escape($artifact->fileName) . "</div></a>",
-                'fileSize' => $artifact->fileSize,
+                'fileSize' => $artifact->getFileSize(),
                 'user'     => $this->view->userInfo($artifact->User->username),
                 'date'     => $artifact->createdTs,
-                'comment'  => $this->view->textToHtml($this->view->escape($artifact->comment))
+                'comment'  => $this->view->textToHtml($this->view->escape($artifact->description))
             );
         }
 
@@ -1508,8 +1521,12 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $response = new Fisma_AsyncResponse();
         
         try {
-            
-            $incident = Doctrine::getTable('Incident')->find($id);
+            $incident = Doctrine_Query::create()
+                            ->from('Incident i')
+                            ->leftJoin('i.Attachments a')
+                            ->where('i.id = ?', $id)
+                            ->execute()
+                            ->getLast();
 
             $this->_assertCurrentUserCanUpdateIncident($id);
 
@@ -1523,7 +1540,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 throw new Fisma_Zend_Exception_User('You did not specify a file to upload.');
             }
 
-            $incident->getArtifacts()->attach($_FILES['file'], $comment);
+            $incident->attach($_FILES['file'], $comment);
+            $incident->save();
             
         } catch (Fisma_Zend_Exception_User $e) {
             $response->fail($e->getMessage());
@@ -1549,9 +1567,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function downloadArtifactAction()
     {
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
-        
         $incidentId = $this->getRequest()->getParam('id');
         $artifactId = $this->getRequest()->getParam('artifactId');
         
@@ -1561,7 +1576,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->_assertCurrentUserCanViewIncident($incidentId);
 
         // Send artifact to browser
-        $incident->getArtifacts()->find($artifactId)->send();
+        $upload = Doctrine::getTable('Upload')->find($artifactId);
+        $this->_helper->downloadAttachment($upload->fileHash, $upload->fileName);
     }
 
     public function updateAction() 

@@ -339,8 +339,8 @@ Incident:
         
         Fisma_Doctrine_Behavior_Lockable: true
 
-        Fisma_Doctrine_Behavior_AttachArtifacts: true
-            
+        Fisma_Doctrine_Behavior_HasAttachments: true
+
         Fisma_Doctrine_Behavior_AuditLoggable:
             logCreateObject: true
             logUpdateField: true

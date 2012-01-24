@@ -339,15 +339,12 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     }
 
     /**
-     * Upload Evidence
      * Set the status as 'EA' and the currentEvaluationId as the first Evidence Evaluation id
      *
-     * @param string $fileName The uploaded evidence file name
-     * @param User $user The specified user to upload the evidence
+     * @param Evidence $evidence
      * @return void
-     * @throws Fisma_Zend_Exception if the evidence is updated when the finding is not in EN status
      */
-    public function uploadEvidence($fileName, User $user)
+    public function submitEvidence(Evidence $evidence)
     {
         if ('EN' != $this->status) {
             throw new Fisma_Zend_Exception("Evidence can only be updated when the finding is in EN status");
@@ -358,19 +355,14 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                                         ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
         $this->CurrentEvaluation = $evaluation[0];
         $this->_updateNextDueDate();
-
-        $evidence = new Evidence();
-        $evidence->filename = $fileName;
-        $evidence->Finding  = $this;
-        $evidence->User     = $user;
-        $this->Evidence[]   = $evidence;
-
+        
+        $this->Evidence[] = $evidence;
+        
         $this->updateDenormalizedStatus();
 
-        $this->getAuditLog()->write('Upload evidence: ' . $fileName);
+        $this->getAuditLog()->write('Upload evidence: ' . $evidence->Attachments[0]->fileName);
         $this->save();
     }
-
     /**
      * Set the nextduedate when the status has changed except 'CLOSED'
      * 

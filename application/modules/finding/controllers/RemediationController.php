@@ -576,38 +576,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 throw new Fisma_Zend_Exception($message);
             }
 
-            $extension = explode('.', $file['name']);
-            $extension = end($extension);
-
-            /** @todo cleanup */
-            if (in_array(strtolower($extension), array('exe', 'php', 'phtml', 'php5', 'php4', 'js', 'css'))) {
-                $message = 'This file type is not allowed.';
-                throw new Fisma_Zend_Exception($message);
-            }
-
-            if (!file_exists(EVIDENCE_PATH)) {
-                mkdir(EVIDENCE_PATH);
-            }
-            if (!file_exists(EVIDENCE_PATH .'/'. $id)) {
-                mkdir(EVIDENCE_PATH .'/'. $id);
-            }
-            $nowStr = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
-            $count = 0;
-            $filename = preg_replace('/^(.*)\.(.*)$/', '$1-' . $nowStr . '.$2', $file['name'], 2, $count);
-            $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
-            if ($count > 0) {
-                if (!move_uploaded_file($file['tmp_name'], $absFile)) {
-                    $message = 'The file upload failed due to a server configuration error.' 
-                             . ' Please contact the administrator.';
-                    $logger = $this->getInvokeArg('bootstrap')->getResource('Log');
-                    $logger->log('Failed in move_uploaded_file(). ' . $absFile . "\n" . $file['error'], Zend_Log::ERR);
-                    throw new Fisma_Zend_Exception($message);
-                }
-            } else {
-                throw new Fisma_Zend_Exception('The filename is not valid');
-            }
-
-            $finding->uploadEvidence($filename, CurrentUser::getInstance());
+            $evidence = new Evidence();
+            $evidence->attach($file);
+            $finding->submitEvidence($evidence);
         } catch (Fisma_Zend_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
@@ -623,7 +594,15 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function downloadevidenceAction()
     {
         $id = $this->_request->getParam('id');
-        $evidence = Doctrine::getTable('Evidence')->find($id);
+
+        $artifactsQuery = Doctrine_Query::create()
+                          ->from('Evidence e')
+                          ->leftJoin('e.Finding f')
+                          ->leftJoin('e.Attachments a')
+                          ->where('e.id = ?', $id);
+
+        $evidence = $artifactsQuery->execute()->getLast();
+
         if (empty($evidence)) {
             throw new Fisma_Zend_Exception('Invalid evidence ID');
         }
@@ -631,33 +610,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         // There is no ACL defined for evidence objects, access is only based on the associated finding:
         $this->_acl->requirePrivilegeForObject('read', $evidence->Finding);
 
-        $fileName = $evidence->filename;
-        $filePath = Fisma::getPath('data') . '/uploads/evidence/'. $evidence->findingId . '/';
-
-        if (file_exists($filePath . $fileName)) {
-            $this->_helper->layout->disableLayout(true);
-            $this->_helper->viewRenderer->setNoRender();
-            ob_end_clean();
-            $expireDateTime = new Zend_Date(time()+31536000, Zend_Date::TIMESTAMP);
-            $expireDateTime->setTimezone('GMT');
-            header(
-                'Expires: '
-                . $expireDateTime->toString(Fisma_Date::FORMAT_WEEKDAY_SHORT_DAY_MONTH_NAME_SHORT_YEAR_TIME)
-                . ' GMT'
-            );
-            header('Content-type: application/octet-stream');
-            header('Content-Disposition: attachment; filename=' . urlencode($fileName));
-            header('Content-Length: ' . filesize($filePath . $fileName));
-            header('Pragma: ');
-            $fp = fopen($filePath . $fileName, 'rb');
-            while (!feof($fp)) {
-                $buffer = fgets($fp, 4096);
-                echo $buffer;
-            }
-            fclose($fp);
-        } else {
-            throw new Fisma_Zend_Exception('The requested file could not be found');
-        }
+        $upload = $evidence->Attachments[0];
+        $this->_helper->downloadAttachment($upload->fileHash, $upload->fileName);
     }
     
     /**
@@ -828,6 +782,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         // Get a list of artifacts related to this finding
         $artifactsQuery = Doctrine_Query::create()
                           ->from('Evidence e')
+                          ->leftJoin('e.Attachments a')
                           ->leftJoin('e.FindingEvaluations fe')
                           ->leftJoin('e.User u1')
                           ->leftJoin('fe.User u2')

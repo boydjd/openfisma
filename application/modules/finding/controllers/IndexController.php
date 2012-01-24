@@ -98,22 +98,8 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
             try {
                 Doctrine_Manager::connection()->beginTransaction();
                 
-                // get upload path
-                $path = Fisma::getPath('data') . '/uploads/spreadsheet/';
-                
-                // get original file name
-                $originalName = pathinfo($file['name'], PATHINFO_FILENAME);
-                
-                // get current time and set to a format like '20090504_112202'
-                $dateTime = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
-                
-                // define new file name
-                $newName = str_replace($originalName, $originalName . '_' . $dateTime, $file['name']);
-                
                 // organize upload data
                 $upload = new Upload();
-                $upload->userId = $this->_me->id;
-                $upload->fileName = $newName;
                 $upload->save();
 
                 $injectExcel = new Fisma_Inject_Excel();
@@ -121,7 +107,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 $rowsProcessed = $injectExcel->inject($file['tmp_name'], $upload->id);
                 
                 // upload file after the file parsed
-                move_uploaded_file($file['tmp_name'], $path . $newName);
+                $upload->instantiate($file);
                 
                 Doctrine_Manager::connection()->commit();
                 $error = "$rowsProcessed findings were created.";

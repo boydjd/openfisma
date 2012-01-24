@@ -288,8 +288,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'size' => $document->getSizeKb(),
                 'version' => $document->version,
                 'description' => $this->view->textToHtml($this->view->escape($document->description)),
-                'username' => $this->view->userInfo($document->User->username),
-                'date' => $document->{'updated_at'},
+                'username' => $this->view->userInfo($document->Upload->User->username),
+                'date' => $document->Upload->createdTs,
                 'view' => "<a href=/system-document/view/id/{$document->id}>Version History</a>"
             );
         }
@@ -521,10 +521,12 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             if (empty($documentTypeId)) {
                 throw new Fisma_Zend_Exception_User('Select a Document Type');
             }
-
-            // Validate file extension and mime type. Failure will trigger exception handler at the end of this block
-            $artifactsGenerator = new Fisma_Doctrine_Behavior_AttachArtifacts_Generator();
-            $artifactsGenerator->checkFileBlackList($_FILES['file']);
+            if ('' == trim($versionNotes)) {
+                throw new Fisma_Zend_Exception_User("Version notes are required.");
+            }
+            if (empty($_FILES['file']['name'])) {
+                throw new Fisma_Zend_Exception_User("You did not specify a file to upload.");
+            }
 
             // Get the existing document
             $documentQuery = Doctrine_Query::create()
@@ -542,45 +544,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 $document = new SystemDocument();
                 $document->documentTypeId = $documentTypeId;
                 $document->System = $organization->System;
-                $document->User = CurrentUser::getInstance();
             } else {
                 $document = $documents[0];
-                $document->User = CurrentUser::getInstance();
             }
 
-            // Move file into its correct place
-            $error = '';
-            if (empty($_FILES['file']['name'])) {
-                throw new Fisma_Zend_Exception_User("You did not specify a file to upload.");
-            }
-            $file = $_FILES['file'];
-            $destinationPath = Fisma::getPath('systemDocument') . '/' . $organization->id;
-            if (!is_dir($destinationPath)) {
-                mkdir($destinationPath);
-            }
-            $dateTime = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
-            $fileName = preg_replace('/^(.*)\.(.*)$/', '$1-' . $dateTime . '.$2', $file['name'], 2, $count);
-            $filePath = "$destinationPath/$fileName";
-
-            if (!move_uploaded_file($file['tmp_name'], $filePath)) {
-                throw new Fisma_Zend_Exception(
-                    "The file could not be stored due to the server's permissions settings."
-                );
-            }
-
-            // Update the document object and save
-            if ('' == trim($versionNotes)) {
-                throw new Fisma_Zend_Exception_User("Version notes are required.");
-            }
-
+            $document->Upload  = new Upload();
+            $document->Upload->instantiate($_FILES['file']);
             $document->description = $versionNotes;
-            $document->fileName = $fileName;
-            $document->mimeType = $file['type'];
-            $document->size = $file['size'];
             $document->save();
         } catch (Fisma_Zend_Exception_User $e) {
             $response->fail($e->getMessage());
-        } catch (Fisma_Zend_Exception $e) {
+        } catch (Exception $e) {
             if (Fisma::debug()) {
                 $response->fail("Failure (debug mode): " . $e->getMessage());
             } else {

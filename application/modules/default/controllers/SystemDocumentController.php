@@ -61,10 +61,12 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
 
         $historyRows = array();
 
+        $uploadTable = Doctrine::getTable('Upload');
         foreach ($versionHistory as $history) {
+            $upload = $uploadTable->find($history->uploadId);
             $downloadUrl = '/system-document/download/id/' . $history->id . '/version/' . $history->version;
             $historyRows[] = array(
-                'fileName' => "<a href=$downloadUrl>" . $this->view->escape($history->fileName) . "</a>",
+                'fileName' => "<a href=$downloadUrl>" . $this->view->escape($upload->fileName) . "</a>",
                 'version' => $history->version,
                 'description' => $this->view->textToHtml($this->view->escape($history->description)),
             );
@@ -146,20 +148,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
         }
 
         // Stream file to user's browser. Unset cache headers to false to avoid IE7/SSL errors.
-        $this->getResponse()
-             ->setHeader('Content-Type', $document->mimeType)
-             ->setHeader('Cache-Control', null, true)
-             ->setHeader('Pragma', null, true)
-             ->setHeader('Content-Disposition', "attachment; filename=\"$document->fileName\"");
-
-        $path = $document->getPath();
-
-        $result = readfile($path);
-
-        // Notice that 0 is an acceptable result, while FALSE is not, so use === instead of ==.
-        if (false === $result) {
-            throw new Fisma_Zend_Exception("Unable to read file $path");
-        }
+        $this->_helper->downloadAttachment($document->Upload->fileHash, $document->Upload->fileName);
     }
 
     /**

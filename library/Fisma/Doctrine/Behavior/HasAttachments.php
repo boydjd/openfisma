@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,15 +17,15 @@
  */
 
 /**
- * A behavior which provides the ability to attach artifacts (files) to models
+ * A behavior which provides the ability to has uploaded attachment accessed via the File API
  * 
- * @author     Mark E. Haase
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
- * @subpackage Fisma_Doctrine_Behavior_AttachArtifacts
+ * @subpackage Fisma_Doctrine_Behavior_HasAttachments
  */
-class Fisma_Doctrine_Behavior_AttachArtifacts extends Doctrine_Template
+class Fisma_Doctrine_Behavior_HasAttachments extends Doctrine_Template
 {
     /**
      * Overload constructor to plug in the record generator
@@ -37,42 +37,45 @@ class Fisma_Doctrine_Behavior_AttachArtifacts extends Doctrine_Template
     {
         parent::__construct($options);
         
-        $this->_plugin = new Fisma_Doctrine_Behavior_AttachArtifacts_Generator();
+        $this->_plugin = new Fisma_Doctrine_Behavior_HasAttachments_Generator();
     }
         
     /**
-     * Define a relation to the generated artifacts class
+     * Define a relation to the Upload class
      * 
      * @return void
      */
     public function setUp()
     {
-        /**
-         * The "component name" is the name of the class which is applying this behavior, so this will 
-         * result in a class name like 'IncidentArtifact'
-         */
-        $foreignClassName = $this->getTable()->getComponentName() . 'Artifact';
+        $baseClassName = $this->getTable()->getComponentName();
+        $foreignClassName = $baseClassName . 'Upload';
 
         $this->hasMany(
-            $foreignClassName, 
+            'Upload as Attachments',
             array(
-                'local' => 'id',
-                'foreign' => 'objectId'
+                'local' => 'objectId',
+                'foreign' => 'uploadId',
+                'refClass' => $foreignClassName
             )
         );
         
         $this->_plugin->initialize($this->getTable());
     }
-    
+
     /**
-     * Return an artifacts instance
+     * A helper method to associate an attachment with the host object
      * 
-     * The instance acts as glue between the instance itself and the generator which needs to act on it
-     * 
-     * @return Fisma_Doctrine_Behavior_AuditLoggable_Proxy
+     * @param mixed $file The array mapped from HTTP $_FILES
+     * @param string $comment Optional. The comment of the attachment
+     * @return void
      */
-    public function getArtifacts()
+    public function attach($file, $comment = null)
     {
-        return new Fisma_Doctrine_Behavior_AttachArtifacts_Proxy($this->getInvoker(), $this->_plugin);
+        $upload = new Upload();
+        $upload->description = $comment;
+        $upload->instantiate($file);
+
+        $instance = $this->getInvoker();
+        $instance->Attachments[] = $upload;
     }
 }
