@@ -203,7 +203,7 @@ Fisma.Remediation = {
         for (var i = 0; i < document.links.length; i++) {
             var link = document.links[i];
             
-            if (link.href.indexOf('downloadevidence') >= 0 && link.firstChild.nodeName == 'DIV') {
+            if (link.href.indexOf('downloadevidence') >= 0 && link.lastChild.nodeName == 'DIV') {
                 var files = document.finding_detail_upload_evidence['evidence[]'].files;
                 if (!files) // this ugly chunk is the workaround for IE7
                 {
@@ -215,16 +215,15 @@ Fisma.Remediation = {
                         if (elements[j].name == 'evidence[]') {
                             var fileName = elements[j].value;
                             fileName = fileName.slice(fileName.lastIndexOf('\\')+1);
-                            if (fileName == link.firstChild.innerHTML) {
+                            if (fileName == link.lastChild.innerHTML) {
                                 duplicationDetected = true;
                                 message += "<li>" + fileName + "</li>";
-                                break;
                             }
                         }
                     }
                 } else {
                     for (var j = 0; j < files.length; j++) {
-                        if (files[j].fileName == link.firstChild.innerHTML) {
+                        if (files[j].fileName == link.lastChild.innerHTML) {
                             duplicationDetected = true;
                             message += "<li>" + files[j].fileName + "</li>";
                             break;
