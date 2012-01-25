@@ -588,14 +588,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                         $duplicated = false;
                         foreach ($finding->Attachments as $index => $attachment) {
                             if ($attachment->fileName == $file['name']) {
-                                $auditMessages[] = "Evidence replace: {$attachment->fileName} (#{$attachment->id})";
+                                $auditMessages[] = "Evidence replaced: {$attachment->fileName} (#{$attachment->id})";
                                 $finding->Attachments->remove($index);
                                 $duplicated = true;
                                 break;
                             }
                         }
                         if (!$duplicated) {
-                            $auditMessages[] = "Evidence upload: \"{$file['name']}\"";
+                            $auditMessages[] = "Evidence uploaded: \"{$file['name']}\"";
                         }
                         $finding->attach($file);
                     }
@@ -679,7 +679,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         // There is no ACL defined for evidence objects, access is only based on the associated finding:
         $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
 
-        $message = "Evidence delete: {$finding->Attachments[0]->fileName} (#{$finding->Attachments[0]->id})";
+        $message = "Evidence deleted: {$finding->Attachments[0]->fileName} (#{$finding->Attachments[0]->id})";
         $finding->Attachments->remove(0);
         $finding->save();
 

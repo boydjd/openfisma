@@ -226,7 +226,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]    = $findingEvaluation;
         
-        $logMessage = 'Approved: '
+        $logMessage = 'Evidence package approved: '
                     . $this->getStatus() 
                     . (preg_match('/^\s*$/', $comment) ? '' : "\n\nComment:\n" . $comment);
         
@@ -336,7 +336,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $findingEvaluation->comment      = $comment;
         $this->FindingEvaluations[]      = $findingEvaluation;
 
-        $this->getAuditLog()->write('Denied: ' . $this->getStatus() . "\n\nComment:\n" . $comment);
+        $this->getAuditLog()->write('Evidence package denied: ' . $this->getStatus() . "\n\nComment:\n" . $comment);
 
         switch ($this->status) {
             case 'MSA':
@@ -372,7 +372,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         {
             $this->CurrentEvaluation = Doctrine::getTable('Evaluation')->find($targetStatus);
             $this->status = $currentStatus;
-            $this->getAuditLog()->write('Sent to ' . $this->CurrentEvaluation->nickname);
+            $this->getAuditLog()->write('Evidence package sent to ' . $this->CurrentEvaluation->nickname);
         }
         $this->_updateNextDueDate();
         $this->updateDenormalizedStatus();
