@@ -49,7 +49,7 @@ class SystemDocument extends BaseSystemDocument
      */
     public function getSizeKb()
     {
-        return round($this->Upload->getFileSize() / 1024, 0) . " KB";
+        return round($this->Upload->getFileSize() / 1024) . " KB";
     }
     
     /**
@@ -59,13 +59,6 @@ class SystemDocument extends BaseSystemDocument
      */
     public function getIconUrl()
     {
-        $pi = pathinfo($this->Upload->fileName);
-        $extension = (!empty($pi['extension'])) ? strtolower($pi['extension']) : '';
-        $imagePath = Fisma::getPath('image');
-        if (file_exists("$imagePath/mimetypes/$extension.png")) {
-            return "/images/mimetypes/$extension.png";
-        } else {
-            return "/images/mimetypes/unknown.png";
-        }
+        return $this->Upload->getIconUrl();
     }
 }
