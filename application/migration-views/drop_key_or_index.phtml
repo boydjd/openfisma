@@ -1,0 +1,7 @@
+ALTER TABLE `<?php echo $this->escape($this->table); ?>`
+
+<?php if ($this->foreignKey): ?>
+    DROP FOREIGN KEY `<?php echo $this->escape($this->foreignKey); ?>`
+<?php elseif ($this->index): ?>
+    DROP INDEX `<?php echo $this->escape($this->index); ?>`
+<?php endif; ?>

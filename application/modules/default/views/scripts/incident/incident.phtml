@@ -20,11 +20,85 @@
             <td>
                 <?php
                 if (!empty($this->incident['resolution'])):
-                    echo $this->escape($this->incident['resolution'], 'none');
+                    echo $this->escape(ucfirst($this->incident['resolution']), 'none');
                 else:
                     echo $this->escape('n/a', 'none');
                 endif;
                 ?>
+            </td>
+        </tr>
+        <tr>
+            <td>Incident Occurred:</td>
+            <td>
+                <?php echo $this->escape($this->incident['incidentDate'])?>
+                <?php echo $this->escape($this->incident['incidentTime'])?>
+                <?php echo $this->escape($this->incident['incidentTimezone'])?>
+            </td>
+        </tr>
+        <tr>
+            <td>Incident Reported:</td>
+            <td>
+                <?php echo $this->escape($this->incident['reportTs'])?>
+                <?php echo $this->escape($this->incident['reportTz'])?>
+            </td>
+        </tr>
+        <tr>
+            <td>Opened By:</td>
+            <td>
+                <?php
+                    if (isset($this->incident['ReportingUser'])):
+                        echo $this->escape($this->userInfo($this->incident['ReportingUser']['username']), 'none');
+                    else:
+                        echo $this->escape("Not reported by a registered user.");
+                    endif;
+                ?>
+            </td>
+        </tr>
+        <tr>
+            <td>Point Of Contact:</td>
+            <td>
+            <span id="pointOfContact"
+                  type="autocomplete"
+                  xhr="/poc/autocomplete/format/json"
+                  queryPrepend="/keyword/"
+                  schemaObject="pointsOfContact"
+                  schemaField="name"
+                  name="incident[pocId]"
+                  <?php
+                  if ($this->acl()->hasPrivilegeForClass('create', 'Poc')):
+                  ?>
+                      setupCallback="Fisma.Finding.setupPocAutocomplete"
+                  <?php
+                  endif;
+                  ?>
+                  value="<?php echo $this->escape($this->incident['pocId']); ?>"
+                  defaultValue="<?php echo $this->escape($this->incident['PointOfContact']['username']); ?>">
+
+                 <?php echo $this->escape($this->userInfo($this->incident['PointOfContact']['username']), 'none'); ?>
+            </span>
+
+            <?php
+            if ($this->updateIncidentPrivilege):
+            ?>
+                <span class="editable" target="pointOfContact">&nbsp;</span>
+            <?php
+            endif;
+            ?>
+        </tr>
+        <tr>
+            <td>Category:</td>
+            <td>
+                <span name="incident[categoryId]"
+                     id="categoryId"
+                     type="select"
+                     href="/metainfo/list/o/incidentCategories/format/html/"
+                     target="categoryId"
+                     <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
+                        class="editable"
+                     <?php endif; ?>>
+
+                    <?php echo $this->escape($this->incident['Category']['name']); ?>&nbsp;
+                </span>
             </td>
         </tr>
         <?php
@@ -42,7 +116,7 @@
         endif;
         ?>
         <tr>
-            <td>Affected Organization/System:</td>
+            <td>Organization/System:</td>
             <td>
                 <span id="organization"
                       type="select"
@@ -68,73 +142,6 @@
                 </span>
 
                 <span class="editable" target="organization">&nbsp;</span>
-            </td>
-            </tr>
-        <tr>
-            <td>Category:</td>
-            <td>
-                <span name="incident[categoryId]"
-                     id="categoryId"
-                     type="select"
-                     href="/metainfo/list/o/incidentCategories/format/html/"
-                     target="categoryId"
-                     <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
-                        class="editable"
-                     <?php endif; ?>>
-
-                    <?php echo $this->escape($this->incident['Category']['name']); ?>&nbsp;
-                </span>
-            </td>
-        </tr>
-        <tr>
-            <td>Incident Occured:</td>
-            <td>
-                <?php echo $this->escape($this->incident['incidentDate'])?>
-                <?php echo $this->escape($this->incident['incidentTime'])?>
-                <?php echo $this->escape($this->incident['incidentTimezone'])?>
-            </td>
-        </tr>
-        <tr>
-            <td>Report Created:</td>
-            <td>
-                <?php echo $this->escape($this->incident['reportTs'])?>
-                <?php echo $this->escape($this->incident['reportTz'])?>
-            </td>
-        </tr>
-        <tr>
-            <td>Description:</td>
-            <td>
-                <div name="incident[additionalInfo]"
-                     id="additionalInfo"
-                     <?php
-                     if ($this->updateIncidentPrivilege):
-                     ?>
-                         class="editable"
-                         type="textarea"
-                         target="additionalInfo"
-                     <?php
-                     endif;
-                     ?>>
-                    <?php echo $this->escape($this->incident['additionalInfo'], 'none'); ?>&nbsp;
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td>Actions Taken Prior To Report:</td>
-            <td>
-                <div name="incident[actionsTaken]"
-                     id="actionsTaken"
-                     <?php
-                     if ($this->updateIncidentPrivilege):
-                     ?>
-                         class="editable"
-                         type="textarea"
-                         target="actionsTaken"
-                     <?php
-                     endif;
-                     ?>>
-                    <?php echo $this->escape($this->incident['actionsTaken'], 'none'); ?>&nbsp;
-                </div>
             </td>
         </tr>
     </table>
@@ -223,6 +230,23 @@
 </div>
 <div class="column right">
     <?php
+    Fisma_Format_Section::startSection('Description');
+    ?>
+        <div name="incident[additionalInfo]"
+             id="additionalInfo"
+             <?php
+             if ($this->updateIncidentPrivilege):
+             ?>
+                 class="editable"
+                 type="textarea"
+                 target="additionalInfo"
+             <?php
+             endif;
+             ?>>
+            <?php echo $this->escape($this->incident['additionalInfo'], 'none'); ?>&nbsp;
+        </div>
+    <?php
+    Fisma_Format_Section::stopSection();
     Fisma_Format_Section::startSection('Reported By');
     ?>
     <table class="keyValues">
@@ -234,7 +258,11 @@
             </tr>
             <tr>
                 <td>User:</td>
-                <td><?php echo $this->escape($this->incident['ReportingUser']['username']); ?></td>
+                <td>
+                    <?php
+                        echo $this->escape($this->userInfo($this->incident['ReportingUser']['username']), 'none');
+                    ?>
+                </td>
             </tr>
         <?php
         else:

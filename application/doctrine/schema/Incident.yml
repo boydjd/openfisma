@@ -269,14 +269,6 @@ Incident:
                 logicalName: Additional Details About Incident Source
             comment: Additional description of the source or origin of the incident
 
-        actionsTaken:
-            type: string
-            extra:
-                auditLog: true
-                purify: html
-                logicalName: Actions That Were Taken Prior To Incident Report
-            comment: What actions were taken prior to reporting the incident?
-
         status:
             type: enum
             values: [new, open, closed]
@@ -305,6 +297,13 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Affected System/Organization
+        pocId:
+            type: integer
+            extra:
+                auditLog: true
+                logicalName: Point Of Contact
+                requiredPrivilege: update_poc
+            comment: Foreign key to the point of contact for this incident
 
     relations:
         CurrentWorkflowStep:
@@ -324,6 +323,11 @@ Incident:
         Organization:
             class: Organization
             local: organizationId
+            foreign: id
+            foreignAlias: Incidents
+        PointOfContact:
+            class: Poc
+            local: pocId
             foreign: id
             foreignAlias: Incidents
         Users:

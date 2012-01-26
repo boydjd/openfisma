@@ -165,14 +165,19 @@ class Fisma_Zend_Mail extends Zend_Mail
      */
     public function IRAssign($userId, $incidentId)
     {
-        $user = new User();
-        $user = $user->getTable()->find($userId);
+        // This is going to conflict when merged with OFJ-422… I had to change this because it didn't work with POCs
+        // at all!
+        $user = Doctrine::getTable('Poc')->find($userId);
 
         $this->addTo($user->email, $user->nameFirst . ' ' . $user->nameLast);
-        $this->setSubject("You have been assigned to a new incident.");
-        
+        // This changed e-mail subject should also be merged in.
+        $this->setSubject("You have been assigned as the Point Of Contact for an incident");
+
         $this->_contentTpl->incidentId = $incidentId;
-        
+        // This will also conflict… the template sent to the POC needs to change based on whether that person is
+        // allowed to log in and view the incident.
+        $this->_contentTpl->isUser = ($user instanceof User);
+
         $content = $this->_contentTpl->render('IRAssign.phtml');
         
         $this->setBodyText($content);

@@ -413,13 +413,20 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incidentReview = array();
         $richColumns = array();
         $incidentTable = Doctrine::getTable('Incident');
+
         foreach ($incidentReport as $key => &$value) {
             $cleanValue = trim(strip_tags($value));
             if (!empty($cleanValue)) {
                 $columnDef = $incidentTable->getDefinitionOf($key);
+
                 if ('boolean' == $columnDef['type']) {
                     $value = ($value == 1) ? 'YES' : 'NO';
                 }
+
+                if ($key == 'organizationId') {
+                    $value = "{$incident->Organization->nickname} - {$incident->Organization->name}";
+                }
+
                 if ($columnDef) {
                     $logicalName = stripslashes($columnDef['extra']['logicalName']);
                     $incidentReview[$logicalName] = stripslashes($value);
@@ -497,6 +504,33 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         foreach ($coordinators as $coordinator) {
             $mail = new Fisma_Zend_Mail();
             $mail->IRReport($coordinator, $incident->id);
+        }
+
+        // Set the intial POC to one of the ISSOs (Yes, this code stinks, but the requirements lack
+        // specificity on this topic.)
+        if ($incident->organizationId) {
+            $issoQuery = Doctrine_Query::create()->from('User u')
+                                                 ->select('u.id')
+                                                 ->select('u.username')
+                                                 ->innerJoin('u.UserRole ur')
+                                                 ->innerJoin('ur.Role r')
+                                                 ->innerJoin('ur.UserRoleOrganization uro')
+                                                 ->where('r.nickname LIKE ?', 'ISSO')
+                                                 ->andWhere('uro.organizationId = ?', $incident->organizationId)
+                                                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
+            $issos = $issoQuery->execute();
+
+            if (count($issos) > 0) {
+                $incident->pocId = $issos[0]['id'];
+                $incident->save();
+
+                $mail = new Fisma_Zend_Mail;
+                $mail->IRAssign($incident->pocId, $incident->id);
+
+                $message = "The ISSO ({$issos[0]['username']}) has been notified of this incident.";
+                $this->view->priorityMessenger($message, 'notice');
+            }
         }
 
         // Clear out serialized incident object
@@ -595,6 +629,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                          ->leftJoin('i.Organization o')
                          ->leftJoin('i.Category category')
                          ->leftJoin('i.ReportingUser reporter')
+                         ->leftJoin('i.PointOfContact poc')
                          ->where('i.id = ?', $id)
                          ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $results = $incidentQuery->execute();
@@ -1328,20 +1363,12 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $response = new Fisma_AsyncResponse();
 
         try {
-<<<<<<< HEAD
             $incident = Doctrine_Query::create()
                             ->from('Incident i')
                             ->leftJoin('i.Attachments a')
                             ->where('i.id = ?', $id)
                             ->execute()
                             ->getLast();
-||||||| merged common ancestors
-
-            $incident = Doctrine::getTable('Incident')->find($id);
-=======
-
-            $incident = Doctrine::getTable('Incident')->find($id);
->>>>>>> OFJ-1662 IRTM Enhancements
 
             $this->_assertCurrentUserCanUpdateIncident($id);
 
@@ -1355,17 +1382,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 throw new Fisma_Zend_Exception_User('You did not specify a file to upload.');
             }
 
-<<<<<<< HEAD
             $incident->attach($_FILES['file'], $comment);
             $incident->save();
 
-||||||| merged common ancestors
-            $incident->getArtifacts()->attach($_FILES['file'], $comment);
-
-=======
-            $incident->getArtifacts()->attach($_FILES['file'], $comment);
-
->>>>>>> OFJ-1662 IRTM Enhancements
         } catch (Fisma_Zend_Exception_User $e) {
             $response->fail($e->getMessage());
         } catch (Exception $e) {
@@ -1390,16 +1409,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function downloadArtifactAction()
     {
-<<<<<<< HEAD
-||||||| merged common ancestors
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
-
-=======
-        $this->_helper->layout()->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
-
->>>>>>> OFJ-1662 IRTM Enhancements
         $incidentId = $this->getRequest()->getParam('id');
         $artifactId = $this->getRequest()->getParam('artifactId');
 
@@ -1433,10 +1442,19 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         }
 
         try {
+            // Update the incident's data
             $newValues = $this->getRequest()->getParam('incident');
             if (!empty($newValues)) {
                 $incident->merge($newValues);
                 $incident->save();
+            }
+
+             // If the POC changed, then send the POC an e-mail.
+            if (isset($newValues['pocId'])) {
+                $mail = new Fisma_Zend_Mail;
+                $mail->IRAssign($newValues['pocId'], $incident->id);
+
+                $this->view->priorityMessenger('A notification has been sent to the new Point Of Contact.' , 'notice');
             }
         } catch (Doctrine_Validator_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
@@ -1801,7 +1819,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         }
 
         // Add a "Reject" button if the incident is still in "new" status
-        if ('new' == $record->status) {
+        if ($record && 'new' == $record->status) {
             $buttons['reject'] = new Fisma_Yui_Form_Button(
                 'reject',
                 array(

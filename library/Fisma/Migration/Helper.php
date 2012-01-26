@@ -137,7 +137,7 @@ class Fisma_Migration_Helper
      */
     public function dropTable($tableName)
     {
-        $result = $this->_db->exec("DROP TABLE $tableName");
+        $result = $this->_db->exec("DROP TABLE `$tableName`");
 
         if ($result === FALSE) {
             throw new Fisma_Zend_Exception_Migration("Not able to drop table ($tableName).");
@@ -191,5 +191,204 @@ class Fisma_Migration_Helper
         $params = array_values($fields);
         array_splice($params, count($params), 0, array_values($where));
         $stmt->execute($params);
+    }
+
+    /**
+     * Add a single column to a table.
+     *
+     * The column definition has the following possible keys, with required keys denoted by *.
+     *
+     * type*         string   A MySQL data type, e.g. integer(10).
+     * nullable      boolean  Defaults to true.
+     * after         string   The name of the column that this column is placed after.
+     * default       string   The default value of the field, or none if not specified.
+     * autoIncrement boolean  Whether this column autoincrements. Defaults to false.
+     * unique        boolean  Whether this column is unique. Defaults to false. (Cannot be combined with 'primary'.)
+     * primary       boolean  Whether this column is the primary key. Defaults to false.
+     * comment       string   The comment on this column. (Not required but highly recommended.)
+     *
+     * @param string $table
+     * @param string $column
+     * @param array $columnDefinition
+     */
+    public function addColumn($table, $column, $columnDefinition)
+    {
+        // Sanity check
+        if (empty($table) || empty($column) || !isset($columnDefinition['type'])) {
+            $message = "Table name, column name, and type fields are required when adding a column.";
+
+            throw new Fisma_Zend_Exception_Migration($message);
+        }
+
+        if (isset($columnDefinition['unique']) && isset($columnDefinition['primary']) &&
+            $columnDefinition['unique'] === true && $columnDefinition['primary'] === true) {
+
+            $message = "A column cannot have both unique and primary keys."
+                     . " You probably want to use a primary key only.";
+
+            throw new Fisma_Zend_Exception_Migration($message);
+        }
+
+        // Render view
+        $view = $this->_createView();
+        $view->table = $table;
+        $view->column = $column;
+
+        foreach ($columnDefinition as $key => $value) {
+            $view->$key = $value;
+        }
+
+        $alterTableSql = $view->render('add_column.phtml');
+        $this->_db->exec($alterTableSql);
+    }
+
+    /**
+     * Add columns to a table
+     *
+     * @see addColumn
+     * @param $table
+     * @param array $columns Array of column definitions with key = column name and value = column definition.
+     */
+    public function addColumns($table, $columns)
+    {
+        foreach ($columns as $columnName => $columnDefinition) {
+            $this->addColumn($table, $columnName, $columnDefinition);
+        }
+    }
+
+    /**
+     * Drop a single column on a single table.
+     *
+     * @param string $table
+     * @param string $column
+     */
+    public function dropColumn($table, $column)
+    {
+        $view = $this->_createView();
+        $view->table = $table;
+        $view->column = $column;
+
+        $alterTableSql = $view->render('drop_column.phtml');
+        $this->_db->exec($alterTableSql);
+    }
+
+    /**
+     * Drop the specified columns on a single table.
+     *
+     * @param string $table
+     * @param array $columns Array of column names to drop
+     */
+    public function dropColumns($table, $columns)
+    {
+        foreach ($columns as $column) {
+            $this->dropColumn($table, $column);
+        }
+    }
+
+    /**
+     * Add an index to a single table.
+     *
+     * @param string $table
+     * @param array|string $columns Array of column names to include in this index or a single column name.
+     * @param string $index If not specified and there is only 1 column, the index name is derived from the column.
+     */
+    public function addIndex($table, $columns, $index = null)
+    {
+        $view = $this->_createView();
+
+        $view->table = $table;
+
+        if ($index) {
+            $view->index = $index;
+        } else {
+            if (!is_array($columns) || count($columns) == 1) {
+                // This naming convention mirror's Doctrine's
+                $view->index = (is_array($columns) ? $columns[0] : $columns) . '_idx';
+            } else {
+                throw new Fisma_Zend_Exception_Migration("Index name is required when using more than 1 column.");
+            }
+        }
+
+        if (is_array($columns)) {
+            $view->columns = implode(', ', array_map(function($v) {return "`$v`";}, $columns));
+        } else {
+            $view->columns = "`$columns`";
+        }
+
+        $alterTableSql = $view->render('add_index.phtml');
+        $this->_db->exec($alterTableSql);
+    }
+
+    /**
+     * Drop the specified indexes on a single table.
+     *
+     * @param string $table
+     * @param array|string $indexes Array of index names to drop or a single name.
+     */
+    public function dropIndexes($table, $indexes)
+    {
+        if (is_array($indexes)) {
+            foreach ($indexes as $index) {
+                $this->dropIndexes($table, $index);
+            }
+        } else {
+            $view = $this->_createView();
+            $view->table = $table;
+            $view->index = $indexes;
+
+            $alterTableSql = $view->render('drop_key_or_index.phtml');
+            $this->_db->exec($alterTableSql);
+        }
+    }
+
+    /**
+     * Add a foreign key.
+     *
+     * @param string $table
+     * @param string $name The name of the constraint. If omitted, it's inferred from the other parameters.
+     * @param string $column The name of the column to add the constraint on.
+     * @param string $refTable The name of the table that the constraint references.
+     * @param string $refColumn The column that the constraint references.
+     */
+    public function addForeignKey($table, $name = null, $column, $refTable, $refColumn)
+    {
+        $view = $this->_createView();
+
+        $view->table = $table;
+        $view->column = $column;
+        $view->refTable = $refTable;
+        $view->refColumn = $refColumn;
+
+        if ($name) {
+            $view->name = $name;
+        } else {
+            // This naming convention mirror's Doctrine's
+            $view->name = "{$table}_{$column}_{$refTable}_{$refColumn}";
+        }
+
+        $alterTableSql = $view->render('add_foreign_key.phtml');
+        $this->_db->exec($alterTableSql);
+    }
+
+    /**
+     * Drop the specified columns on a single table.
+     *
+     * @param string $table
+     * @param array|string $foreignKeys Array of foreign key names to drop or a single name.
+     */
+    public function dropForeignKeys($table, $foreignKeys)
+    {
+        if (is_array($foreignKeys)) {
+            foreach ($foreignKeys as $foreignKey) {
+                $this->dropForeignKeys($table, $foreignKey);
+            }
+        } else {
+            $view = $this->_createView();
+            $view->table = $table;
+            $view->foreignKey = $foreignKeys;
+
+            $alterTableSql = $view->render('drop_key_or_index.phtml');
+            $this->_db->exec($alterTableSql);
+        }
     }
 }

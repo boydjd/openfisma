@@ -34,7 +34,7 @@ class IrCategoryTable extends Fisma_Doctrine_Table
      *
      * @return array
      */
-    public function getCategoriesForSelect()
+    static public function getCategoriesForSelect()
     {
         $q = Doctrine_Query::create()
              ->select('c.category, c.name, s.id, s.name')

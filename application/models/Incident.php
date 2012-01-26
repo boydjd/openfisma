@@ -58,6 +58,7 @@ class Incident extends BaseIncident
 
         $this->hasMutator('categoryId', 'setCategoryId');
         $this->hasMutator('hostIp', 'setHostIp');
+        $this->hasMutator('pocId', 'setPocId');
         $this->hasMutator('reporterEmail', 'setReporterEmail');
         $this->hasMutator('ReportingUser', 'setReportingUser');
         $this->hasMutator('sourceIp', 'setSourceIp');
@@ -111,6 +112,11 @@ class Incident extends BaseIncident
      */
     public function setCategoryId($categoryId)
     {
+        if ($categoryId === '0') {
+            // This is the "I don't know" category in the report wizard
+            return;
+        }
+
         $this->_set('categoryId', $categoryId);
         $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
 
@@ -308,5 +314,43 @@ class Incident extends BaseIncident
         $this->reporterPhone = null;
         $this->reporterFax = null;
         $this->reporterEmail = null;
+    }
+
+    /**
+     * Make sure POCs are added as actors on the incident.
+     *
+     * @param string $value
+     */
+    public function setPocId($value)
+    {
+        // Clear out null values
+        $sanitized = (int)$value;
+
+        if (empty($sanitized)) {
+            $this->_set('pocId', null);
+        } else {
+            $this->_set('pocId', $sanitized);
+
+            // Make sure the POC is an actor
+            $poc = Doctrine::getTable('Poc')->find($value);
+
+            if ($poc instanceof User) {
+                $pocIsActorQuery = Doctrine_Query::create()->from('IrIncidentUser iu')
+                                                           ->leftJoin('iu.Incident i')
+                                                           ->leftJoin('iu.User u')
+                                                           ->where('i.id = ?', $this->id)
+                                                           ->andWhere('iu.accessType = ?', 'ACTOR')
+                                                           ->andWhere('u.id = ?', $poc->id);
+                if ($pocIsActorQuery->count() === 0) {
+                    $actor = new IrIncidentUser;
+
+                    $actor->accessType = 'ACTOR';
+                    $actor->userId = $poc->id;
+                    $actor->incidentId = $this->id;
+
+                    $actor->save();
+                }
+            }
+        }
     }
 }

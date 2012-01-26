@@ -51,9 +51,3 @@ elements.additionalInfo.options.rows = "7"
 elements.additionalInfo.options.validators.mce.validator = "MceNotEmpty"
 elements.additionalInfo.options.required = true
 displayGroups.incident.elements.additionalInfo = "additionalInfo"
-
-elements.actionsTaken.type="textarea"
-elements.actionsTaken.options.label="Describe what actions have already been taken"
-elements.actionsTaken.options.cols = "70%"
-elements.actionsTaken.options.rows = "7"
-displayGroups.incident.elements.actionsTaken="actionsTaken"
