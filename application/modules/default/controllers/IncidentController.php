@@ -1085,9 +1085,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
             $incident->completeStep($comment);
 
-            foreach ($this->_getAssociatedUsers($id) as $user) {
+            foreach ($this->_getAssociatedUsers($incident->id) as $user) {
                 $mail = new Fisma_Zend_Mail();
-                $mail->IRStep($user['userId'], $id, $currentStep->name, $currentStep->User->username);
+                $mail->IRStep($user['userId'], $incident->id, $currentStep->name, $currentStep->User->username);
             }
 
             $message = 'Workflow step completed. ';

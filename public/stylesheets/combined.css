@@ -153,6 +153,8 @@ div#findingSecurityControlSearch {
     margin-right: 10px;
     padding: 8px;
 }
+/* @override http://openfisma/stylesheets/Incident.css */
+
 /*******************************************************************************
  *
  * Incident.css
@@ -185,31 +187,6 @@ div#findingSecurityControlSearch {
  *
  *******************************************************************************
  */
-
-/* 
- * RE-arrange buttons on the incident report wizard. The first button in the source will be the default submit button,
- * so we use CSS to display them in a more logical order.
- */
-
-span#irReportForwardsContainer {
-	position: relative;
-	left: 245px;
-}
-
-span#irReportSaveContainer {
-    position: relative;
-    left: 260px;
-}
-
-span#irReportBackwardsContainer {
-	position: relative;
-	left: -110px;
-}
-
-span#irReportCancelContainer {
-	position: relative;
-	left: -110px;
-}
 
 /*
  * Styles used for displaying the incident workflow
