@@ -1,17 +1,9 @@
-<?php
-    $currentPrecedence = $this->finding->CurrentEvaluation->precedence;
-    $evaluationQuery = Doctrine_Query::create()
-                           ->from('Evaluation e')
-                           ->where('e.approvalgroup LIKE ?', 'evidence')
-                           ->andWhere('e.precedence < ?', $currentPrecedence);
-    $previousEvaluations = $evaluationQuery->execute();
-?>
 <form
     id="finding_detail_reject_evidence"
     name="finding_detail_reject_evidence"
     method="post"
     enctype="multipart/form-data"
-    onsubmit="return Fisma.Remediation.reject_evidence_validate();"
+    onsubmit="return Fisma.Remediation.rejectEvidenceValidate();"
 >
     <div class="messageBox attention">
         WARNING: You are about to deny the evidence package. This action cannot be undone.
@@ -20,7 +12,7 @@
     <p>
         <input type="radio" name="target_status" value="0" checked> Evidence Needed (EN)<br/>
     <?php
-        foreach($previousEvaluations as $evaluation)
+        foreach($this->previousEvaluations as $evaluation)
         {
             $id = $evaluation->id;
             echo "<input type='radio' name='target_status' value='{$id}' id='target_status_{$id}'> "

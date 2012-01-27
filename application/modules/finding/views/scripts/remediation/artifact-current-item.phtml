@@ -4,12 +4,12 @@ $addToEvidenceButton = new Fisma_Yui_Form_Button(
     'addToEvidenceButton',
     array(
         'label' => 'Add More Files',
-        'onClickFunction' => 'Fisma.Remediation.upload_evidence'
+        'onClickFunction' => 'Fisma.Remediation.uploadEvidence'
     )
 );
 if (
-    $this->artifact->Finding->isDeleted() || 
-    'EA' != $this->artifact->Finding->status || 
+    $this->artifact->Finding->isDeleted() ||
+    'EA' != $this->artifact->Finding->status ||
     !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->artifact->Finding)
 ):
     $addToEvidenceButton->readOnly = true;
@@ -56,21 +56,21 @@ echo $this->partial('remediation/artifact-header.phtml', array('artifact' => $th
 
         $user = $findingEvaluation->User;
         $fullName = $user->nameFirst . ' ' . $user->nameLast;
-        
+
         $decision = $findingEvaluation->decision;
         $spanClass = strtolower($decision);
     ?>
         <div class="approvalStep">
             <p>
                 <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?></b>
-                
+
                 <span class="<?php echo $this->escape($spanClass)?>">
                     <b><?php echo $this->escape($decision)?></b>
-                    <?php echo $this->escape($this->userInfo($fullName, $user->username), 'none'); ?> 
+                    <?php echo $this->escape($this->userInfo($fullName, $user->username), 'none'); ?>
                     at <?php echo $this->escape($findingEvaluation->createdTs)?>
                 </span>
             </p>
-        <?php 
+        <?php
             if (!empty($findingEvaluation->comment)):
                     echo $this->escape($this->textToHtml($this->escape($findingEvaluation->comment)), 'none');
             endif;
@@ -99,11 +99,11 @@ if ($this->finding->status == 'EA'):
 <?php
         $message = 'WARNING: You are about to approve the evidence package. This action cannot be undone.'
                  . ' Are you sure that you want to continue?';
-    
+
         $approveButton = new Fisma_Yui_Form_Button(
             'approveButton',
             array(
-                'label' => 'APPROVE', 
+                'label' => 'APPROVE',
                 'onClickFunction' => 'Fisma.Remediation.remediationAction',
                 'onClickArgument' => array(
                     'action' => "APPROVED",
@@ -111,14 +111,14 @@ if ($this->finding->status == 'EA'):
                     'panelTitle' => "Evidence Approval",
                     'findingId' => $this->finding->id
                 )
-            )    
+            )
         );
         echo $this->escape($approveButton, 'none');
-    
+
         $denyButton = new Fisma_Yui_Form_Button(
             'denyButton',
             array(
-                'label' => 'REJECT', 
+                'label' => 'REJECT',
                 'onClickFunction' => 'Fisma.Remediation.remediationAction',
                 'onClickArgument' => array(
                     'action' => "REJECTED",
@@ -138,7 +138,7 @@ if ($this->finding->status == 'EA'):
     endif;
 
     /*
-     * Third: If there are any evaluations beyond the current one, then they are listed here. For artifacts which are 
+     * Third: If there are any evaluations beyond the current one, then they are listed here. For artifacts which are
      * already denied, the status is listed as 'SKIPPED' because those evaluation will never be performed. For artifacts
      * which are still under review, the status is listed as 'PENDING'.
      */

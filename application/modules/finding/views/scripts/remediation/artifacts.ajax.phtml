@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 if (count($this->artifacts) > 0):
     // Only start "Rejected" section once if not empty
@@ -6,12 +6,12 @@ if (count($this->artifacts) > 0):
 
     // Each artifact block is rendered in a partial view.
     foreach ($this->artifacts as $index => $artifact):
-    
+
         // The first artifact is the one which is currently being evaluated if the finding is in EA status.
         $currentArtifact = (0 == $index);
         if ($currentArtifact):
             echo $this->partial(
-                'remediation/artifact-current-item.phtml', 
+                'remediation/artifact-current-item.phtml',
                 'finding',
                 array(
                     'finding' => $this->finding,
@@ -36,7 +36,7 @@ if (count($this->artifacts) > 0):
                 $rejectedStarted = true;
             endif;
             echo $this->partial(
-                'remediation/artifact-old-item.phtml', 
+                'remediation/artifact-old-item.phtml',
                 'finding',
                 array(
                     'finding' => $this->finding,
@@ -46,7 +46,7 @@ if (count($this->artifacts) > 0):
             );
         endif;
     endforeach;
-        
+
     if($rejectedStarted):
         echo "</div>";
         Fisma_Format_Section::stopSection();
@@ -57,14 +57,14 @@ Fisma_Format_Section::startSection('Submit New Evidence');
 $uploadEvidenceButton = new Fisma_Yui_Form_Button(
     'uploadEvidenceButton',
     array(
-          'label' => 'Upload Evidence', 
-          'onClickFunction' => 'Fisma.Remediation.upload_evidence'
+          'label' => 'Upload Evidence',
+          'onClickFunction' => 'Fisma.Remediation.uploadEvidence'
         )
     );
 
 if (
-    $this->finding->isDeleted() || 
-    'EN' != $this->finding->status || 
+    $this->finding->isDeleted() ||
+    'EN' != $this->finding->status ||
     !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)
 ):
     $uploadEvidenceButton->readOnly = true;
