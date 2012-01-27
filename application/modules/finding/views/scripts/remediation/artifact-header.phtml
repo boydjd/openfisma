@@ -10,13 +10,13 @@ foreach ($attachmentCollection as $attachment) {
     $baseUrl = '/finding/remediation/';
     $currentUrl = '/id/' . $this->finding->id . '/attachmentId/' . $attachment->id;
     $attachmentRows[] = array(
-        'iconUrl'  => "<a href={$baseUrl}downloadevidence{$currentUrl}><img src={$attachment->getIconUrl()}></a>",
-        'fileName' => "<a href={$baseUrl}downloadevidence{$currentUrl}><div>"
+        'iconUrl'  => "<a href={$baseUrl}download-evidence{$currentUrl}><img src={$attachment->getIconUrl()}></a>",
+        'fileName' => "<a href={$baseUrl}download-evidence{$currentUrl}><div>"
                     . $this->escape($attachment->fileName) . "</div></a>",
         'fileSize' => $attachment->getFileSize(),
         'user'     => $this->userInfo($attachment->User->username),
         'date'     => $attachment->createdTs,
-        'action'   => "<a href={$baseUrl}deleteevidence{$currentUrl}>Delete</a>"
+        'action'   => "<a href={$baseUrl}delete-evidence{$currentUrl}>Delete</a>"
     );
 }
 

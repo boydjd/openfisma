@@ -26,34 +26,28 @@
 Fisma.Remediation = {
     /**
      * Popup a panel for upload evidence
-     * 
+     *
      * @return {Boolean} False to interrupt consequent operations
      */
-    upload_evidence : function() {
-
+    uploadEvidence : function() {
         Fisma.UrlPanel.showPanel(
-            'Upload Evidence', 
-            '/finding/remediation/upload-form', 
-            Fisma.Remediation.upload_evidence_form_init);
-
+            'Upload Evidence',
+            '/finding/remediation/upload-form',
+            function() {
+                // Initialize form action from finding_detail.action since they are separated forms and the form from
+                // from the panel belongs to document body rather than the form document.finding_detail.But they should
+                // have same target action. So set the latter`s action with the former`s.
+                document.finding_detail_upload_evidence.action = document.finding_detail.action;
+            }
+        );
         return false;
-    },
-
-    /**
-     * Initialize another form finding_detail_upload_evidence after panel loaded
-     */
-    upload_evidence_form_init : function() {
-        // Initialize form action from finding_detail.action since they are separated forms and the form from
-        // from the panel belongs to document body rather than the form document.finding_detail.But they should
-        // have same target action. So set the latter`s action with the former`s.
-        document.finding_detail_upload_evidence.action = document.finding_detail.action;
     },
 
    /**
      * To approve or deny mitigation strategy or evidence with comment
-     * 
+     *
      * @param {String} action The action name: APPROVED or DENIED
-     * @param {String} formId 
+     * @param {String} formId
      * @param {String} panelTitle the text shows on the panel.
      * @param {int} findingId the id of the current finding.
      */
@@ -62,7 +56,7 @@ Fisma.Remediation = {
         var formId = args.formId;
         var panelTitle = args.panelTitle;
         var findingId = args.findingId;
-        
+
         if ('REJECTED' === action) {
             var panel = Fisma.UrlPanel.showPanel(
                 panelTitle,
@@ -116,7 +110,7 @@ Fisma.Remediation = {
                 var form2 = document.getElementById(formId);
                 var comment = document.getElementById('dialog_comment').value;
 
-                if ('DENIED' === action) { 
+                if ('DENIED' === action) {
                     if (comment.match(/^\s*$/)) {
                         var alertMessage = 'Comments are required.';
                         var config = {zIndex : 10000};
@@ -146,10 +140,10 @@ Fisma.Remediation = {
     },
 
     /**
-     * Handle onclick event of the button on the Evidence upload form 
+     * Handle onclick event of the button on the Evidence upload form
      * to attach one more file
      */
-    add_upload_evidence : function() {
+    addUploadEvidence : function() {
         var file_list = document.getElementById('evidence_upload_file_list');
 
         var new_upload = document.createElement('input');
@@ -162,25 +156,9 @@ Fisma.Remediation = {
     },
 
     /**
-     * Handle onclick event of the link on the Evidence list view 
-     * to show rejected evidence(s)
-     */
-    show_rejected_evidences : function() {
-        var container = document.getElementById('rejectedEvidencesContainer');
-        var trigger = document.getElementById('rejectedEvidencesTrigger-button');
-        if (container.style.display != 'block') {
-            container.style.display = 'block';
-            trigger.innerHTML = 'Click to hide';
-        } else {
-            container.style.display = 'none';
-            trigger.innerHTML = 'Click to display';
-        }
-    },
-
-    /**
      * Validate the reject_evidence form for required field(s)
      */
-    reject_evidence_validate : function() {
+    rejectEvidenceValidate : function() {
         if (document.finding_detail_reject_evidence.comment.value.match(/^\s*$/)) {
             var alertMessage = 'Comments are required.';
             var config = {zIndex : 10000};
@@ -193,16 +171,16 @@ Fisma.Remediation = {
     /**
      * Validate the upload_evidence form to check for duplicated uploads
      */
-    upload_evidence_validate : function() {
+    uploadEvidenceValidate : function() {
         if (document.finding_detail_upload_evidence.forceSubmit) {
             return true;
         }
         var duplicationDetected = false;
         var message = "WARNING: The following file(s) will be replaced: <ul>";
-        
+
         for (var i = 0; i < document.links.length; i++) {
             var link = document.links[i];
-            
+
             if (link.href.indexOf('downloadevidence') >= 0 && link.lastChild.nodeName == 'DIV') {
                 var files = document.finding_detail_upload_evidence['evidence[]'].files;
                 if (!files) // this ugly chunk is the workaround for IE7
@@ -239,8 +217,7 @@ Fisma.Remediation = {
                 event,
                 {
                     text:message,
-                    func:'Fisma.Remediation.upload_evidence_confirm',
-                    args:[true]
+                    func:'Fisma.Remediation.uploadEvidenceConfirm'
                 }
             );
             return false;
@@ -252,7 +229,7 @@ Fisma.Remediation = {
     /**
      * Force the submission of upload_evidence form
      */
-    upload_evidence_confirm : function() {
+    uploadEvidenceConfirm : function() {
         var forcedIndicator = document.createElement('input');
         forcedIndicator.type = 'hidden';
         forcedIndicator.name = 'forceSubmit';

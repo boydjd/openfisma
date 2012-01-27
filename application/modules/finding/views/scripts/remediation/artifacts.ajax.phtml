@@ -1,18 +1,15 @@
 <?php
 Fisma_Format_Section::startSection('Evidence Package');
-
-echo '<div class="buttonBar">';
-
 if (!(
-    $this->finding->isDeleted() || 
-    !in_array($this->finding->status, array('EN', 'EA')) || 
+    $this->finding->isDeleted() ||
+    !in_array($this->finding->status, array('EN', 'EA')) ||
     !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)
 )):
     $uploadEvidenceButton = new Fisma_Yui_Form_Button(
         'uploadEvidenceButton',
         array(
-          'label' => 'Upload Evidence', 
-          'onClickFunction' => 'Fisma.Remediation.upload_evidence'
+          'label' => 'Upload Evidence',
+          'onClickFunction' => 'Fisma.Remediation.uploadEvidence'
         )
     );
     echo $this->escape($uploadEvidenceButton, 'none');
@@ -40,7 +37,7 @@ if (
     $approveButton = new Fisma_Yui_Form_Button(
         'approveButton',
         array(
-            'label' => 'APPROVE', 
+            'label' => 'APPROVE',
             'onClickFunction' => 'Fisma.Remediation.remediationAction',
             'onClickArgument' => array(
                 'action' => "APPROVED",
@@ -48,14 +45,14 @@ if (
                 'panelTitle' => "Evidence Approval",
                 'findingId' => $this->finding->id
             )
-        )    
+        )
     );
     echo $this->escape($approveButton, 'none');
 
     $denyButton = new Fisma_Yui_Form_Button(
         'denyButton',
         array(
-            'label' => 'REJECT', 
+            'label' => 'REJECT',
             'onClickFunction' => 'Fisma.Remediation.remediationAction',
             'onClickArgument' => array(
                 'action' => "REJECTED",
@@ -117,7 +114,7 @@ for ($i = $this->finding->FindingEvaluations->count(); $i > 0; $i--): // Reverse
     $fullName = $user->nameFirst . ' ' . $user->nameLast;
     $decision = $findingEvaluation->decision;
     $spanClass = strtolower($decision);
-    $approvalHistory .= 
+    $approvalHistory .=
         "<div class='approvalStep{$highlighted}'>" .
                 "<b>{$this->escape($findingEvaluation->Evaluation->name)}</b>" .
                 "<span class='{$this->escape($spanClass)}'>" .
