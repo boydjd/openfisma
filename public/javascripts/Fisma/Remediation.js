@@ -44,12 +44,14 @@ Fisma.Remediation = {
     },
 
    /**
-     * To approve or deny mitigation strategy or evidence with comment
+     * Popup a panel to approve or deny mitigation strategy or evidence
      *
-     * @param {String} action The action name: APPROVED or DENIED
-     * @param {String} formId
-     * @param {String} panelTitle the text shows on the panel.
-     * @param {int} findingId the id of the current finding.
+     * @param {Event} event     The event object
+     * @param {Object} args     The actual argument array in an object form
+     * {String} args.action     The action name: APPROVED or DENIED
+     * {String} args.formId     The HTML id of the original form
+     * {String} args.panelTitle The text shown on the panel
+     * {int}    args.findingId  The id of the current finding
      */
     remediationAction : function(event, args) {
         var action = args.action;
@@ -143,7 +145,7 @@ Fisma.Remediation = {
      * Handle onclick event of the button on the Evidence upload form
      * to attach one more file
      */
-    addUploadEvidence : function() {
+    addUploadEvidence : function(event) {
         var file_list = document.getElementById('evidence_upload_file_list');
 
         var new_upload = document.createElement('input');
@@ -152,7 +154,7 @@ Fisma.Remediation = {
         new_upload.multiple = true;
         file_list.appendChild(new_upload);
 
-        return false; // to avoid form submission
+        YAHOO.util.Event.preventDefault(event);
     },
 
     /**

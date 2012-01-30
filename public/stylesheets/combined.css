@@ -181,11 +181,6 @@ div#rejectedEvidencesContainer {
 form#finding_detail_upload_evidence button {
     display: none;
 }
-
-span.instruction {
-    font-size:smaller;
-    font-style:italic;
-}
 /*******************************************************************************
  *
  * Incident.css
@@ -334,7 +329,7 @@ tr.incidentStep {
  *
  *******************************************************************************
  *
- * A message box is a notification area where messages, notifications, and 
+ * A message box is a notification area where messages, notifications, and
  * errors can be displayed to a user.
  *
  * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
@@ -367,9 +362,9 @@ tr.incidentStep {
 }
 
 .messageBox.attention {
-    color: red;
-    background-color: orange;
-    border-color: red;
+    color: #9f6000;
+    background-color: #feefb3;
+    border-color: #9f6000;
 }
 
 .messageBox.hide {
@@ -1477,7 +1472,7 @@ div.approval {
     background-color: #efefef;
     border: 1px solid #cecece;
     padding: 3px;
-    margin-bottom: 10px;
+    margin-bottom: 24px;
 }
 
 div.approvalHeader {

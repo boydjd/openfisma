@@ -18,7 +18,6 @@ fieldset#evidence_upload_file_list legend{font-weight:bold;}
 fieldset#evidence_upload_file_list input{width:100%;display:block;margin-bottom:4px;}
 div#rejectedEvidencesContainer{display:none;}
 form#finding_detail_upload_evidence button{display:none;}
-span.instruction{font-size:smaller;font-style:italic;}
 span#irReportForwardsContainer{position:relative;left:245px;}
 span#irReportSaveContainer{position:relative;left:260px;}
 span#irReportBackwardsContainer{position:relative;left:-110px;}
@@ -37,7 +36,7 @@ tr.incidentStep{border-top:1px dotted silver;}
 .messageBox{border:1px solid black;margin-top:10px;text-align:center;font-weight:bold;position:relative;padding:.5em;}
 .messageBox.warn{color:red;background-color:pink;border-color:red;}
 .messageBox.info{color:green;background-color:lightgreen;border-color:green;}
-.messageBox.attention{color:red;background-color:orange;border-color:red;}
+.messageBox.attention{color:#9f6000;background-color:#feefb3;border-color:#9f6000;}
 .messageBox.hide{display:none;}
 .messageBox .closeControl{position:absolute;top:-6px;right:0;padding:3px;font-size:1.5em;font-weight:normal;cursor:pointer;}
 table.modules{margin-left:auto;margin-right:auto;}
@@ -202,7 +201,7 @@ table.keyValues td:first-child{font-weight:bold;text-align:right;}
 table.keyValues th{text-align:center;font-weight:bold;font-style:normal;padding:5px;}
 div.buttonBar{margin-bottom:10px;}
 .editable{background:url(/images/edit.png) no-repeat top right;padding-right:20px;margin-right:10px;cursor:pointer;}
-div.approval{background-color:#efefef;border:1px solid #cecece;padding:3px;margin-bottom:10px;}
+div.approval{background-color:#efefef;border:1px solid #cecece;padding:3px;margin-bottom:24px;}
 div.approvalHeader{background-color:#cecece;border:1px solid #cecece;padding:3px 8px;margin-top:8px;}
 div.approvalStep{border-top:2px dashed #cecece;}
 div.approvalStep:first-child{border-top:none;}

@@ -5,4 +5,3 @@ fieldset#evidence_upload_file_list legend{font-weight:bold;}
 fieldset#evidence_upload_file_list input{width:100%;display:block;margin-bottom:4px;}
 div#rejectedEvidencesContainer{display:none;}
 form#finding_detail_upload_evidence button{display:none;}
-span.instruction{font-size:smaller;font-style:italic;}
