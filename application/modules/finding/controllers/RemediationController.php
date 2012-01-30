@@ -692,14 +692,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      *
      * @return void
      */
-    public function submitevidenceAction()
+    public function submitEvidenceAction()
     {
         $id = $this->_request->getParam('id');
         $finding = $this->_getSubject($id);
 
         if ($finding->isDeleted()) {
             $message = "Evidence cannot be uploaded to a deleted finding.";
-            throw new Fisma_Zend_Exception($message);
+            throw new Fisma_Zend_Exception_User($message);
         }
 
         $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);

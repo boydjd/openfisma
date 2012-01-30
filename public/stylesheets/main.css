@@ -307,10 +307,15 @@ div.approvalStep.highlight {
     background-color:#FEFEFE;
 }
 
-span.findingStatus {
-    font-style: italic;
-    vertical-align: super;
+div.findingStatus {
+    margin-bottom:10px;
+    margin-left:5px;
 }
+
+div.findingStatus span {
+    font-style: italic;
+}
+
 
 /* This is the standard style for the basic CRUD forms such as users, systems,
    finding sources, etc.

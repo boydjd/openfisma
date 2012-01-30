@@ -1,5 +1,30 @@
 <?php
 Fisma_Format_Section::startSection('Evidence Package');
+echo "<div class='findingStatus'><b>Status: </b><span>";
+switch ($this->finding->status) {
+    case 'NEW':
+        echo "Awaiting Mitigation Strategy";
+        break;
+    case 'DRAFT':
+        echo "Awaiting Mitigation Strategy Submission";
+        break;
+    case 'MSA':
+        echo "Awaiting Mitigation Strategy Approval";
+        break;
+    case 'EN':
+        echo "Awaiting Evidence Package Submission";
+        break;
+    case 'EA':
+        echo "Awaiting {$activeEvaluation->name}";
+        break;
+    case 'CLOSED':
+        echo "Finding Officially Closed.";
+        break;
+    default:
+        echo "Unknown Status";
+}
+echo "</span></div>";
+
 if (!(
     $this->finding->isDeleted() ||
     !in_array($this->finding->status, array('EN', 'EA')) ||
@@ -18,7 +43,7 @@ if (!(
             'submitEvidenceButton',
             array(
                 'value' => 'Submit Evidence Package',
-                'href' => "/finding/remediation/submitevidence/id/{$this->finding->id}"
+                'href' => "/finding/remediation/submit-evidence/id/{$this->finding->id}"
             )
         );
         echo $this->escape($submitEvidenceButton, 'none');
@@ -64,31 +89,6 @@ if (
     );
     echo $this->escape($denyButton, 'none');
 endif;
-
-echo "<span class='findingStatus'>";
-switch ($this->finding->status) {
-    case 'NEW':
-        echo "Pending Mitigation Strategy";
-        break;
-    case 'DRAFT':
-        echo "Pending Mitigation Strategy Submission";
-        break;
-    case 'MSA':
-        echo "Pending Mitigation Strategy Approval";
-        break;
-    case 'EN':
-        echo "Pending Evidence Package Submission";
-        break;
-    case 'EA':
-        echo "Pending {$activeEvaluation->name}";
-        break;
-    case 'CLOSED':
-        echo "Finding is officially closed.";
-        break;
-    default:
-        echo "Unknown Status";
-}
-echo "</span>";
 
 echo "</div>";
 
