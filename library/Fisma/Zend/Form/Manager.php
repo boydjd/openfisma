@@ -117,7 +117,7 @@ class Fisma_Zend_Form_Manager
      * Extracted from prepareForm to be used with customized forms e.g. Indicent steps
      *
      * @param mixed $form
-     * @return @todo
+     * @return Fisma_Zend_Form The decorated form
      */
     static function addDefaultElementDecorators(Fisma_Zend_Form $form)
     {
@@ -126,7 +126,7 @@ class Fisma_Zend_Form_Manager
             if (!$element->getFilter('StringTrim')) {
                 $element->addFilter('StringTrim');
             }
-            // Add YUI decorator for select element
+            // Add decorator for select element
             if ($element->getType() == 'Zend_Form_Element_Select') {
                 $element->addDecorator(new Fisma_Zend_Form_Decorator_YuiSelect);
             }
