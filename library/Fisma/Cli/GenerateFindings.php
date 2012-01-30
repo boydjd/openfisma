@@ -176,12 +176,9 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
                 $f->merge($finding);
                 $f->CreatedBy = $this->_getRandomUser();
                 $f->pocId = $this->_getRandomPoc()->id;
-                //$f->save();
-                //$f->Attachments; // Trigger Doctrine's auto fetch
-                
+
                 if ($f->status == 'MSA') {
                     $f->updateDenormalizedStatus();
-                  //  $f->save();
 
                     if (rand(0, 1)) {
                         $f->approve($this->_getRandomUser(), 'Approved by generate-findings.php script.');
@@ -190,7 +187,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
                     // Create a sample piece of evidence
                     $f->Attachments[] = $this->_getSampleAttachment();
                     $f->updateDenormalizedStatus();
-                    //$f->save();
 
                     if (rand(0, 1)) {
                         $f->approve($this->_getRandomUser(), 'Approved by generate-findings.php script.');
