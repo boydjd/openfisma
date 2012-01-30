@@ -249,13 +249,14 @@ if ($finding->status != 'NEW'
             $approveButton = new Fisma_Yui_Form_Button(
                 'approveButton',
                 array(
-                      'label' => 'APPROVED', 
-                      'onClickFunction' => 'Fisma.Util.showConfirmDialog',
-                      'onClickArgument' => array(
-                          'text' => $message, 
-                          'func' => 'Fisma.Remediation.remediationAction',
-                          'args' => array("APPROVED", "finding_detail", "Mitigation Strategy Approval") 
-                      )
+                    'label' => 'APPROVE', 
+                    'onClickFunction' => 'Fisma.Remediation.remediationAction',
+                    'onClickArgument' => array(
+                        'action' => "APPROVED",
+                        'formId' => "finding_detail",
+                        'panelTitle' => "Mitigation Strategy Approval",
+                        'findingId' => $this->finding->id
+                    )
                 )
             );
             echo $this->escape($approveButton, 'none');
@@ -265,13 +266,14 @@ if ($finding->status != 'NEW'
             $denyButton = new Fisma_Yui_Form_Button(
                 'denyButton',
                 array(
-                      'label' => 'DENIED', 
-                      'onClickFunction' => 'Fisma.Util.showConfirmDialog',
-                      'onClickArgument' => array(
-                          'text' => $message, 
-                          'func' => 'Fisma.Remediation.remediationAction',
-                          'args' => array("DENIED", "finding_detail", "Mitigation Strategy Denial")
-                      )
+                    'label' => 'DENIED', 
+                    'onClickFunction' => 'Fisma.Remediation.remediationAction',
+                    'onClickArgument' => array(
+                        'action' => "DENIED",
+                        'formId' => "finding_detail",
+                        'panelTitle' => "Mitigation Strategy Denial",
+                        'findingId' => $this->finding->id
+                    )
                 )
             );
 

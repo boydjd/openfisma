@@ -34,8 +34,8 @@ table.keyValues td:first-child{font-weight:bold;text-align:right;}
 table.keyValues th{text-align:center;font-weight:bold;font-style:normal;padding:5px;}
 div.buttonBar{margin-bottom:10px;}
 .editable{background:url(/images/edit.png) no-repeat top right;padding-right:20px;margin-right:10px;cursor:pointer;}
-div.approval{background-color:#efefef;border:1px solid #cecece;padding:3px;margin-bottom:10px;}
-div.approvalHeader{background-color:#cecece;border:1px solid #cecece;padding:3px 8px;}
+div.approval{background-color:#efefef;border:1px solid #cecece;padding:3px;margin-bottom:24px;}
+div.approvalHeader{background-color:#cecece;border:1px solid #cecece;padding:3px 8px;margin-top:8px;}
 div.approvalStep{border-top:2px dashed #cecece;}
 div.approvalStep:first-child{border-top:none;}
 div.approval b{margin-right:10px;}

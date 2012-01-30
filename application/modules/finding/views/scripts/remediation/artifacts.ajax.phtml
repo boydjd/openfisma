@@ -1,18 +1,17 @@
-<?php 
-Fisma_Format_Section::startSection('Artifacts (' . $this->artifacts->count() . ')');
+<?php
 
-if (count($this->artifacts) == 0):
-    echo $this->escape('<p><i>There are no artifacts for this finding.</i></p>', 'none');
-else:
+if (count($this->artifacts) > 0):
+    // Only start "Rejected" section once if not empty
+    $rejectedStarted = false;
+
     // Each artifact block is rendered in a partial view.
     foreach ($this->artifacts as $index => $artifact):
-    
+
         // The first artifact is the one which is currently being evaluated if the finding is in EA status.
-        $currentArtifact = (0 == $index && 'EA' == $this->finding->status);
-        
+        $currentArtifact = (0 == $index);
         if ($currentArtifact):
             echo $this->partial(
-                'remediation/artifact-current-item.phtml', 
+                'remediation/artifact-current-item.phtml',
                 'finding',
                 array(
                     'finding' => $this->finding,
@@ -20,10 +19,24 @@ else:
                     'activeArtifact' => true,
                     'evaluations' => $this->evaluations
                 )
-            );        
+            );
         else:
+            if(!$rejectedStarted):
+                Fisma_Format_Section::startSection('Previously Rejected Evidence');
+                $displayRejectedEvidenceButton = new Fisma_Yui_Form_Button(
+                    'rejectedEvidencesTrigger',
+                    array(
+                        'label' => 'Click to display',
+                        'onClickFunction' => 'Fisma.Remediation.show_rejected_evidences',
+                        'onClickArgument' => array()
+                    )
+                );
+                echo $this->escape("<div class='buttonBar'>$displayRejectedEvidenceButton</div>", 'none');
+                echo "<div id='rejectedEvidencesContainer'>";
+                $rejectedStarted = true;
+            endif;
             echo $this->partial(
-                'remediation/artifact-old-item.phtml', 
+                'remediation/artifact-old-item.phtml',
                 'finding',
                 array(
                     'finding' => $this->finding,
@@ -33,33 +46,35 @@ else:
             );
         endif;
     endforeach;
+
+    if($rejectedStarted):
+        echo "</div>";
+        Fisma_Format_Section::stopSection();
+    endif;
 endif;
 
-$message = "WARNING: You are about to upload evidence. This action cannot be undone."
-           . ' Please click "Yes" to confirm your action or click "No" to stop.';
+Fisma_Format_Section::startSection('Submit New Evidence');
 $uploadEvidenceButton = new Fisma_Yui_Form_Button(
     'uploadEvidenceButton',
     array(
-          'label' => 'Upload Evidence', 
-          'onClickFunction' => 'Fisma.Util.showConfirmDialog',
-          'onClickArgument' => array(
-                  'text' => $message, 
-                  'func' => 'Fisma.Remediation.upload_evidence'
-              )
+          'label' => 'Upload Evidence',
+          'onClickFunction' => 'Fisma.Remediation.uploadEvidence'
         )
     );
 
 if (
-    $this->finding->isDeleted() || 
-    'EN' != $this->finding->status || 
+    $this->finding->isDeleted() ||
+    'EN' != $this->finding->status ||
     !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)
 ):
     $uploadEvidenceButton->readOnly = true;
 endif;
 ?>
 
-<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
+<p>New evidence can only be submitted if the finding is in 'EN' status and if you have the required role.</p>
 
 <div class='buttonBar'>
     <?php echo $this->escape($uploadEvidenceButton, 'none');?>
 </div>
+<?php Fisma_Format_Section::stopSection(); ?>
+

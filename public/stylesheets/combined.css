@@ -153,6 +153,34 @@ div#findingSecurityControlSearch {
     margin-right: 10px;
     padding: 8px;
 }
+
+fieldset#evidence_upload_file_list {
+    border: 1px solid;
+    padding-top: 8px;
+    padding-right: 24px;
+    padding-bottom: 4px;
+    padding-left: 16px;
+    margin-top:8px;
+    margin-bottom:8px;
+}
+
+fieldset#evidence_upload_file_list legend {
+    font-weight: bold;
+}
+
+fieldset#evidence_upload_file_list input {
+    width: 100%;
+    display: block;
+    margin-bottom: 4px;
+}
+
+div#rejectedEvidencesContainer {
+    display: none;
+}
+
+form#finding_detail_upload_evidence button {
+    display: none;
+}
 /*******************************************************************************
  *
  * Incident.css
@@ -300,7 +328,7 @@ tr.incidentStep {
  *
  *******************************************************************************
  *
- * A message box is a notification area where messages, notifications, and 
+ * A message box is a notification area where messages, notifications, and
  * errors can be displayed to a user.
  *
  * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
@@ -330,6 +358,12 @@ tr.incidentStep {
     color: green;
     background-color: lightgreen;
     border-color: green;
+}
+
+.messageBox.attention {
+    color: #9f6000;
+    background-color: #feefb3;
+    border-color: #9f6000;
 }
 
 .messageBox.hide {
@@ -1435,13 +1469,14 @@ div.approval {
     background-color: #efefef;
     border: 1px solid #cecece;
     padding: 3px;
-    margin-bottom: 10px;
+    margin-bottom: 24px;
 }
 
 div.approvalHeader {
     background-color: #cecece;
     border: 1px solid #cecece;
     padding: 3px 8px;
+    margin-top: 8px;
 }
 
 div.approvalStep {

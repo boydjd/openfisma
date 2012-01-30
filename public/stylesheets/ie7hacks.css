@@ -82,3 +82,7 @@ div.searchCriteria input[type='text'] {
 span.searchQueryButtons button {
     height: 24px;
 }
+
+form#finding_detail_upload_evidence button {
+    display: inline;
+}

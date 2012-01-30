@@ -23,7 +23,7 @@
  *
  *******************************************************************************
  *
- * A message box is a notification area where messages, notifications, and 
+ * A message box is a notification area where messages, notifications, and
  * errors can be displayed to a user.
  *
  * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
@@ -53,6 +53,12 @@
     color: green;
     background-color: lightgreen;
     border-color: green;
+}
+
+.messageBox.attention {
+    color: #9f6000;
+    background-color: #feefb3;
+    border-color: #9f6000;
 }
 
 .messageBox.hide {
