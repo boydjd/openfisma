@@ -3,10 +3,4 @@ div#findingSecurityControlSearch{display:none;background-color:white;border:1px 
 fieldset#evidence_upload_file_list{border:1px solid;padding-top:8px;padding-right:24px;padding-bottom:4px;padding-left:16px;margin-top:8px;margin-bottom:8px;}
 fieldset#evidence_upload_file_list legend{font-weight:bold;}
 fieldset#evidence_upload_file_list input{width:100%;display:block;margin-bottom:4px;}
-<<<<<<< HEAD
 form#finding_detail_upload_evidence button{display:none;}
-span.instruction{font-size:smaller;font-style:italic;}
-=======
-div#rejectedEvidencesContainer{display:none;}
-form#finding_detail_upload_evidence button{display:none;}
->>>>>>> ofj678
