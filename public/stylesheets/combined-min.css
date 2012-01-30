@@ -200,11 +200,7 @@ table.keyValues td:first-child{font-weight:bold;text-align:right;}
 table.keyValues th{text-align:center;font-weight:bold;font-style:normal;padding:5px;}
 div.buttonBar{margin-bottom:10px;}
 .editable{background:url(/images/edit.png) no-repeat top right;padding-right:20px;margin-right:10px;cursor:pointer;}
-<<<<<<< HEAD
 div.approval{border:1px solid #cecece;padding:3px;margin-bottom:24px;}
-=======
-div.approval{background-color:#efefef;border:1px solid #cecece;padding:3px;margin-bottom:24px;}
->>>>>>> ofj678
 div.approvalHeader{background-color:#cecece;border:1px solid #cecece;padding:3px 8px;margin-top:8px;}
 div.approvalStep{background-color:#efefef;border-top:2px dashed #cecece;padding-left:3px;padding-bottom:8px;padding-top:8px;}
 div.approvalStep p{margin-bottom:0;}
