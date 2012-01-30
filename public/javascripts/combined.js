@@ -10478,7 +10478,11 @@ Fisma.Module = {
 
     Fisma.Registry = Registry;
 })();
+<<<<<<< HEAD
 Fisma.Remediation={uploadEvidence:function(){Fisma.UrlPanel.showPanel("Upload Evidence","/finding/remediation/upload-form",function(){document.finding_detail_upload_evidence.action=document.finding_detail.action});return false},remediationAction:function(c,j){var g=j.action;var q=j.formId;var l=j.panelTitle;var h=j.findingId;if("REJECTED"===g){var a=Fisma.UrlPanel.showPanel(l,"/finding/remediation/reject-evidence/id/"+h,function(){document.finding_detail_reject_evidence.action=document.finding_detail.action;document.getElementById("dialog_close").onclick=function(){a.destroy();return false}})}else{var i=document.createElement("div");var n=document.createElement("div");n.className="messageBox attention";var f="WARNING: This action cannot be undone.";n.appendChild(document.createTextNode(f));i.appendChild(n);var d=document.createElement("p");var k;if("APPROVED"===g){k=document.createTextNode("Comments (OPTIONAL):")}else{k=document.createTextNode("Comments:")}d.appendChild(k);i.appendChild(d);var o=document.createElement("textarea");o.id="dialog_comment";o.name="comment";o.rows=5;o.cols=60;i.appendChild(o);var b=document.createElement("div");b.className="buttonBar";i.appendChild(b);var m=document.createElement("button");m.id="dialog_continue";m.appendChild(document.createTextNode("Confirm"));b.appendChild(m);var e=document.createElement("button");e.id="dialog_close";e.style.marginLeft="5px";e.appendChild(document.createTextNode("Cancel"));b.appendChild(e);var a=Fisma.HtmlPanel.showPanel(l,i.innerHTML);document.getElementById("dialog_continue").onclick=function(){var p=document.getElementById(q);var u=document.getElementById("dialog_comment").value;if("DENIED"===g){if(u.match(/^\s*$/)){var t="Comments are required.";var r={zIndex:10000};Fisma.Util.showAlertDialog(t,r);return}}p.elements.comment.value=u;p.elements.decision.value=g;var s=document.createElement("input");s.type="hidden";s.name="submit_msa";s.value=g;p.appendChild(s);p.submit();return};document.getElementById("dialog_close").onclick=function(){a.destroy();return false}}return true},addUploadEvidence:function(){var a=document.getElementById("evidence_upload_file_list");var b=document.createElement("input");b.type="file";b.name="evidence[]";b.multiple=true;a.appendChild(b);return false},rejectEvidenceValidate:function(){if(document.finding_detail_reject_evidence.comment.value.match(/^\s*$/)){var b="Comments are required.";var a={zIndex:10000};Fisma.Util.showAlertDialog(b,a);return false}return true},uploadEvidenceValidate:function(){if(document.finding_detail_upload_evidence.forceSubmit){return true}var h=false;var e="WARNING: The following file(s) will be replaced: <ul>";for(var b=0;b<document.links.length;b++){var d=document.links[b];if(d.href.indexOf("downloadevidence")>=0&&d.lastChild.nodeName=="DIV"){var c=document.finding_detail_upload_evidence["evidence[]"].files;if(!c){var f=document.finding_detail_upload_evidence.elements;for(var a=0;a<f.length;a++){if(f[a].name=="forceSubmit"){return true}if(f[a].name=="evidence[]"){var g=f[a].value;g=g.slice(g.lastIndexOf("\\")+1);if(g==d.lastChild.innerHTML){h=true;e+="<li>"+g+"</li>"}}}}else{for(var a=0;a<c.length;a++){if(c[a].fileName==d.lastChild.innerHTML){h=true;e+="<li>"+c[a].fileName+"</li>";break}}}}}e+="</ul>Do you want to continue?";if(h){Fisma.Util.showConfirmDialog(event,{text:e,func:"Fisma.Remediation.uploadEvidenceConfirm",args:[true]});return false}else{return true}},uploadEvidenceConfirm:function(){var a=document.createElement("input");a.type="hidden";a.name="forceSubmit";a.value=true;document.finding_detail_upload_evidence.appendChild(a);document.finding_detail_upload_evidence.upload_evidence.click()}};/**
+=======
+Fisma.Remediation={uploadEvidence:function(){Fisma.UrlPanel.showPanel("Upload Evidence","/finding/remediation/upload-form",function(){document.finding_detail_upload_evidence.action=document.finding_detail.action});return false},remediationAction:function(c,j){var g=j.action;var q=j.formId;var l=j.panelTitle;var h=j.findingId;if("REJECTED"===g){var a=Fisma.UrlPanel.showPanel(l,"/finding/remediation/reject-evidence/id/"+h,function(){document.finding_detail_reject_evidence.action=document.finding_detail.action;document.getElementById("dialog_close").onclick=function(){a.destroy();return false}})}else{var i=document.createElement("div");var n=document.createElement("div");var f=Fisma.Registry.get("messageBoxStack").peek();f.setMessage("WARNING: This action cannot be undone.");f.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN);var d=document.createElement("p");var k;if("APPROVED"===g){k=document.createTextNode("Comments (OPTIONAL):")}else{k=document.createTextNode("Comments:")}d.appendChild(k);i.appendChild(d);var o=document.createElement("textarea");o.id="dialog_comment";o.name="comment";o.rows=5;o.cols=60;i.appendChild(o);var b=document.createElement("div");b.className="buttonBar";i.appendChild(b);var m=document.createElement("button");m.id="dialog_continue";m.appendChild(document.createTextNode("Confirm"));b.appendChild(m);var e=document.createElement("button");e.id="dialog_close";e.style.marginLeft="5px";e.appendChild(document.createTextNode("Cancel"));b.appendChild(e);var a=Fisma.HtmlPanel.showPanel(l,i.innerHTML);f.show();document.getElementById("dialog_continue").onclick=function(){var p=document.getElementById(q);var u=document.getElementById("dialog_comment").value;if("DENIED"===g){if(u.match(/^\s*$/)){var t="Comments are required.";var r={zIndex:10000};Fisma.Util.showAlertDialog(t,r);return}}p.elements.comment.value=u;p.elements.decision.value=g;var s=document.createElement("input");s.type="hidden";s.name="submit_msa";s.value=g;p.appendChild(s);p.submit();return};document.getElementById("dialog_close").onclick=function(){a.destroy();return false}}return true},addUploadEvidence:function(d,b){var a=document.getElementById("evidence_upload_file_list");var c=document.createElement("input");c.type="file";c.name="evidence[]";c.multiple=true;a.appendChild(c);YAHOO.util.Event.preventDefault(d)},show_rejected_evidences:function(){var a=document.getElementById("rejectedEvidencesContainer");var b=document.getElementById("rejectedEvidencesTrigger-button");if(a.style.display!="block"){a.style.display="block";b.innerHTML="Click to hide"}else{a.style.display="none";b.innerHTML="Click to display"}},rejectEvidenceValidate:function(){if(document.finding_detail_reject_evidence.comment.value.match(/^\s*$/)){var b="Comments are required.";var a={zIndex:10000};Fisma.Util.showAlertDialog(b,a);return false}return true}};/**
+>>>>>>> ofj678
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -10524,12 +10528,14 @@ Fisma.Remediation = {
     },
 
    /**
-     * To approve or deny mitigation strategy or evidence with comment
+     * Popup a panel to approve or deny mitigation strategy or evidence
      *
-     * @param {String} action The action name: APPROVED or DENIED
-     * @param {String} formId
-     * @param {String} panelTitle the text shows on the panel.
-     * @param {int} findingId the id of the current finding.
+     * @param {Event} event     The event object
+     * @param {Object} args     The actual argument array in an object form
+     * {String} args.action     The action name: APPROVED or DENIED
+     * {String} args.formId     The HTML id of the original form
+     * {String} args.panelTitle The text shown on the panel
+     * {int}    args.findingId  The id of the current finding
      */
     remediationAction : function(event, args) {
         var action = args.action;
@@ -10623,7 +10629,7 @@ Fisma.Remediation = {
      * Handle onclick event of the button on the Evidence upload form
      * to attach one more file
      */
-    addUploadEvidence : function() {
+    addUploadEvidence : function(event) {
         var file_list = document.getElementById('evidence_upload_file_list');
 
         var new_upload = document.createElement('input');
@@ -10632,7 +10638,7 @@ Fisma.Remediation = {
         new_upload.multiple = true;
         file_list.appendChild(new_upload);
 
-        return false; // to avoid form submission
+        YAHOO.util.Event.preventDefault(event);
     },
 
     /**
