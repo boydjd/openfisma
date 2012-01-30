@@ -106,18 +106,31 @@ class Fisma_Zend_Form_Manager
             unset($prepareForm);
         }
 
-        // Specifically handle some special element types
+        $form = self::addDefaultElementDecorators($form);
+
+        return $form;
+    }
+
+    /**
+     * Specifically handle some special element types.
+     *
+     * Extracted from prepareForm to be used with customized forms e.g. Indicent steps
+     *
+     * @param mixed $form
+     * @return @todo
+     */
+    static function addDefaultElementDecorators(Fisma_Zend_Form $form)
+    {
         foreach ($form->getElements() as $element) {
             // By default, all input is trimmed of extraneous white space
             if (!$element->getFilter('StringTrim')) {
                 $element->addFilter('StringTrim');
             }
-            // Add decorator for select element
+            // Add YUI decorator for select element
             if ($element->getType() == 'Zend_Form_Element_Select') {
                 $element->addDecorator(new Fisma_Zend_Form_Decorator_YuiSelect);
             }
         }
-
         return $form;
     }
 

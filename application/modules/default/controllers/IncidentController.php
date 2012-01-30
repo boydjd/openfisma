@@ -390,6 +390,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 break;
         }
 
+        $formPart = Fisma_Zend_Form_Manager::addDefaultElementDecorators($formPart);
         return $formPart;
     }
 

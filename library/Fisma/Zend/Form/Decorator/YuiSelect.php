@@ -36,6 +36,10 @@ class Fisma_Zend_Form_Decorator_YuiSelect extends Zend_Form_Decorator_Abstract
     {
         $name = $this->getElement()->getName();
         $chunks = explode('<select', $content);
+
+        // YUI 2.9 fails to generate the submenus when the optgroups have 'id' attribute
+        $chunks[1] = preg_replace('/<optgroup id=".*" label=/', '<optgroup label=', $chunks[1]);
+
         $render = "{$chunks[0]}<input type='button' id='{$name}-button'/><select{$chunks[1]}
                    <script>
                        YAHOO.util.Event.onContentReady('$name-button', function () {
