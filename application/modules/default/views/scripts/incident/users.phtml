@@ -3,15 +3,14 @@
     Fisma_Format_Section::startSection("Actors");
     if ($this->updateIncidentPrivilege):
     ?>
-        <form method="post" action="/incident/add-user/type/actor/id/<?php echo $this->escape($this->id); ?>">
-            <div style="float: left; margin-top: 3px; width: 50%;">
-                <?php echo $this->escape($this->actorAutocomplete, 'none'); ?>
-            </div>
-            <div style="float: left; margin-left: 15px; margin-bottom: 15px;">
-                <?php echo $this->escape($this->addActorButton, 'none'); ?>
-            </div>
-            <div style="clear: both;"></div>
-        </form>
+        <input type="hidden" id="actorId" />
+        <div style="float: left; margin-top: 3px; width: 50%;">
+            <?php echo $this->escape($this->actorAutocomplete, 'none'); ?>
+        </div>
+        <div style="float: left; margin-left: 15px; margin-bottom: 15px;">
+            <?php echo $this->escape($this->addActorButton, 'none'); ?>
+        </div>
+        <div style="clear: both;"></div>
     <?php
     endif;
 
@@ -26,7 +25,7 @@
     Fisma_Format_Section::startSection("Observers");
     if ($this->updateIncidentPrivilege):
     ?>
-    <form method="post" action="/incident/add-user/type/observer/id/<?php echo $this->escape($this->id); ?>">
+        <input type="hidden" id="observerId" />
         <div style="float: left; margin-top: 3px; width: 50%;">
             <?php echo $this->escape($this->observerAutocomplete, 'none'); ?>
         </div>
@@ -34,12 +33,11 @@
             <?php echo $this->escape($this->addObserverButton, 'none'); ?>
         </div>
         <div style="clear: both;"></div>
-    </form>
     <?php
     endif;
 
     echo $this->escape($this->observerDataTable, 'none');
 
     Fisma_Format_Section::stopSection();
-    ?>    
+    ?>
 </div>

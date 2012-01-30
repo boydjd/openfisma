@@ -328,5 +328,189 @@ Fisma.Incident = {
         };
 
         Fisma.Util.showConfirmDialog(e, confirmation);
+    },
+
+    /**
+     * Add an actor or observer to a specified incident.
+     *
+     * Because this is coming from PHP, we can only pass 1 argument, so the argument is a dictionary containing:
+     *
+     * type: either 'actor' or 'observer'
+     * incidentId: the ID of the incident to add the person to
+     *
+     * @param {YAHOO.util.Event} event
+     * @param {Object} arguments
+     */
+    addUser: function(event, arguments) {
+        var type = arguments.type;
+        var incidentId = arguments.incidentId;
+        var userId = document.getElementById(type + "Id").value;
+        var username = document.getElementById(type + "Autocomplete").value;
+
+        var postData = Fisma.Util.convertObjectToPostData({
+            csrf: document.getElementById('incident_detail').elements['csrf'].value,
+            userId: userId,
+            username: username,
+            incidentId: incidentId,
+            type: type
+        });
+
+        // Put button in the closure scope
+        var button = this;
+        button.set('disabled', true);
+
+        YAHOO.util.Connect.asyncRequest(
+            'POST',
+            '/incident/add-user/format/json',
+            {
+                success: function(o) {
+                    button.set('disabled', false);
+
+                    var parsed, response, user;
+
+                    try {
+                        parsed = YAHOO.lang.JSON.parse(o.responseText);
+                        response = parsed.response;
+                        user = parsed.user;
+                    } catch (e) {
+                        response = {success: false, message: "invalid response from server"};
+                    }
+
+                    if (response.success) {
+                        var dataTable;
+
+                        if (type == 'actor') {
+                            dataTable = Fisma.Registry.get('actorTable');
+                        } else {
+                            dataTable = Fisma.Registry.get('observerTable');
+                        }
+
+                        Fisma.Incident.addUserToTable(user, dataTable);
+                        Fisma.Registry.get('messageBoxStack').peek().hide();
+                    } else {
+                        var message = "Cannot add actor or observer: " + response.message;
+                        Fisma.Registry.get('messageBoxStack').peek().setMessage(message).show();
+                    }
+                },
+
+                failure: function(o) {
+                    button.set('disabled', false);
+
+                    var message = 'Cannot add actor or observer: ' + o.statusText;
+                    Fisma.Registry.get('messageBoxStack').peek().setMessage(message).show();
+                }
+            },
+            postData
+
+        );
+    },
+
+    /**
+     * Add a user (actor or observer) to a data table.
+     *
+     * @param {Object} user
+     * @param {YAHOO.widget.DataTable} table
+     */
+    addUserToTable: function (user, table) {
+        table.addRow(user, 0);
+        table.set("sortedBy", null)
+
+        // Highlight the added row so the user can see that it worked
+        var blinker = new Fisma.Blinker(
+            100,
+            6,
+            function () {
+                table.highlightRow(0);
+            },
+            function () {
+                table.unhighlightRow(0);
+            }
+        );
+
+        blinker.start();
+    },
+
+    /**
+     * Remove a user (actor or observer) from an incident.
+     *
+     * @param {Integer} incidentId
+     * @param {Integer} userId
+     * @param {YAHOO.widget.DataTable} table
+     */
+    removeUser: function (incidentId, userId, table) {
+        var postData = Fisma.Util.convertObjectToPostData({
+            incidentId: incidentId,
+            userId: userId
+        });
+
+        YAHOO.util.Connect.asyncRequest(
+            'POST',
+            '/incident/remove-user/format/json',
+            {
+                success: function(o) {
+                    var response;
+
+                    try {
+                        response = YAHOO.lang.JSON.parse(o.responseText).response;
+                    } catch (e) {
+                        response = {success: false, message: "invalid response from server"};
+                    }
+
+                    if (response.success) {
+                        Fisma.Incident.removeUserFromTable(userId, table);
+                        Fisma.Registry.get('messageBoxStack').peek().hide();
+                    } else {
+                        var message = "Cannot remove actor or observer: " + response.message;
+                        Fisma.Registry.get('messageBoxStack').peek().setMessage(message).show();
+                    }
+                },
+
+                failure: function(o) {
+                    var message = 'Cannot remove actor or observer: ' + o.statusText;
+                    Fisma.Registry.get('messageBoxStack').peek().setMessage(message).show();
+                }
+            },
+            postData
+        );
+    },
+
+    /**
+     * Remove a user row from a data table
+     *
+     * @param {Integer} userId
+     * @param {YAHOO.widget.DataTable} table
+     */
+    removeUserFromTable: function (userId, table) {
+        var recordSet = table.getRecordSet();
+
+        // There doesn't seem to be an easy way to get a particular record from a click event, so loop over the table
+        // to find the matching record.
+        for (var i = 0; i < recordSet.getLength(); i++) {
+            var record = recordSet.getRecord(i);
+
+            if (record.getData('userId') == userId) {
+                recordSet.deleteRecord(recordSet.getRecordIndex(record));
+                table.render();
+                return;
+            }
+        }
+    },
+
+    /**
+     * This is called when a user presses enter on an incident actor or observer autocomplete field.
+     *
+     * It responds by triggering the "add actor" or "add observer" button click event.
+     *
+     * @param {Fisma.AutoComplete} ac
+     * @param {String} type Either "actor" or "observer"
+     */
+    handleAutocompleteEnterKey: function (ac, type) {
+        if (!ac.isContainerOpen()) {
+            var button = document.getElementById('add' + $P.ucfirst(type) + "-button");
+
+            if (button) {
+                button.click();
+            }
+        }
     }
 };
