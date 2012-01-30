@@ -1153,18 +1153,18 @@ div.jqplot-bubble-label.jqplot-bubble-label-highlight {
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
  * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
  * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see {@link
  * http://www.gnu.org/licenses/}.
  */
- 
+
 /* The main style sheet for OpenFISMA. This includes all of the non-YUI, foundational styles.
  *
  * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
@@ -1246,7 +1246,7 @@ div#logo {
     margin-bottom: 10px;
 }
 
-/* The logout form is floated to the right and 
+/* The logout form is floated to the right and
    moved down a bit from the corner. */
 div#logout {
     float: right;
@@ -1270,7 +1270,7 @@ div#tab1 td {
     border-style: none;
 }
 
-/* This class is used to mark elements which should only be applied when data is transferred to 
+/* This class is used to mark elements which should only be applied when data is transferred to
    external media, such as a print out. By default, these items are hidden. @see print.css */
 div.externalMediaMarking {
     display: none;
@@ -1323,10 +1323,10 @@ div.panel {
     padding: 10px;
 }
 
-/* 
+/*
 These definitions provide an easy method for creating columns.
 For example, two columns can be arranged like this:
-<div class="column left"></div> 
+<div class="column left"></div>
 <div class="column right"></div>
 <div class="clear"></div>
 */
@@ -1477,7 +1477,7 @@ table.fisma_crud tr td, table.fisma_crud tr td input {
     padding: 3px 5px;
 }
 
-/* 
+/*
 This class indicates that the item should have a tooltip associated with it.
 The tooltip itself is added with YUI.
 */
@@ -1530,14 +1530,14 @@ div.notice p {
 }
 
 /* add bgcolor to all row */
-tr.alt td { 
+tr.alt td {
     background:#ecf6fc;
 }
-    
+
 /* add bgcolor when mouseover */
-tr.over td { 
+tr.over td {
     background:#bcd4ec;
-} 
+}
 
 /* The notice styles are used for things like the privacy policy, rules of behavior, etc. Sometimes these items
  * are presented outside of any main layout, so they need to be able to stand on their own.
@@ -1571,7 +1571,7 @@ tr.over td {
     height:8em; /* hold some space while loading */
 }
 
-/* 
+/*
 Styles for displaying system documentation
 */
 table.systemDocuments {
@@ -1818,6 +1818,11 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 /* Style for the td of table on /role/right/id/# page */
 #assign_right td {
     border-style: none;
+}
+
+/* Constraint a min-width for all <select> elements wrapped in YUI Menu Buttons */
+.yui-button.yui-menu-button button{
+    min-width:100px;
 }
 body, td, pre {
     font: 13px/1.231 arial,helvetica,clean,sans-serif !important;
