@@ -143,6 +143,8 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
         } elseif ($module == 'source') {
             $sources = Doctrine::getTable('Source')->getSources();
             $list = $this->view->sourceSelect($sources);
+        } elseif ($module == 'organizationType') {
+            $list = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
         }
 
         $this->view->list = $list;

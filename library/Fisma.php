@@ -120,7 +120,8 @@ class Fisma
         'layout' => 'application/layouts/scripts',
         'listener' => 'application/models/listener',
         'log' => 'data/logs',
-        'migration' => 'application/doctrine/migrations',
+        'migration' => 'application/migrations',
+        'migrationViews' => 'application/migration-views',
         'sampleData' => 'application/doctrine/data/sample',
         'sampleDataBuild' => 'application/doctrine/data/sample-build',
         'schema' => 'application/doctrine/schema',
@@ -129,6 +130,7 @@ class Fisma
         'temp' => 'data/temp',
         'test' => 'tests',
         'uploads' => 'data/uploads',
+        'fileStorage' => 'data/uploads',
         'viewHelper' => 'application/modules/default/views/helpers',
         'yui' => 'public/yui'
     );
@@ -179,6 +181,7 @@ class Fisma
         ));
 
         $resourceLoader->addResourceType('service', 'application/services/', 'Service_');
+        $resourceLoader->addResourceType('migration', 'application/migrations/', 'Migration_');
 
         // Set the initialized flag
         self::$_initialized = true;

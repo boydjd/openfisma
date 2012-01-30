@@ -56,7 +56,8 @@ class Test_Application_Models_Asset extends Test_Case_Unit
         $mockVulnerability = $this->getMock('Mock_Blank', array('set'));
         $asset->Vulnerabilities[] = $mockVulnerability;
         
-        $this->setExpectedException('Fisma_Zend_Exception_User', 'This asset cannot be deleted because it has vulnerabilities against it');
+        $this->setExpectedException('Fisma_Zend_Exception_User',
+                                    'This asset cannot be deleted because it has vulnerabilities against it');
         $asset->preDelete(null); // expects exception as Vulnerability has been added
     }
 }

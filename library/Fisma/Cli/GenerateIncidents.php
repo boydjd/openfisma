@@ -25,29 +25,8 @@
  * @package    Fisma
  * @subpackage Fisma_Cli
  */
-class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
+class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
 {
-    /**
-     * Some users to randomly involve in the creation of incidents
-     * 
-     * @var Doctrine_Collection
-     */
-    private $_sampleUsers;
-
-    /**
-     * Some organizations to randomly involve in the creation of incidents
-     * 
-     * @var Doctrine_Collection
-     */
-    private $_sampleOrganizations;
-
-    /**
-     * Some sub categories to randomly involve in the creation of incidents
-     * 
-     * @var Doctrine_Collection
-     */
-    private $_sampleSubCategories;
-    
     /**
      * Configure the arguments accepted for this CLI program
      *
@@ -82,41 +61,6 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
         }
 
         $incidents = array();
-
-        // Get some organizations
-        $this->_sampleOrganizations = Doctrine_Query::create()
-                                      ->select('o.id')
-                                      ->from('Organization o')
-                                      ->leftJoin('o.System s')
-                                      ->limit(50)
-                                      ->execute();
-
-        if (0 == count($this->_sampleOrganizations)) {
-            throw new Fisma_Zend_Exception_User("Cannot generate sample data because the application has no"
-                . " organizations.");
-        }
-
-        // Get some users
-        $this->_sampleUsers = Doctrine_Query::create()
-                              ->from('User u')
-                              ->where('u.username NOT LIKE ?', 'root')
-                              ->limit(50)
-                              ->execute();
-
-        if (0 == count($this->_sampleUsers)) {
-            throw new Fisma_Zend_Exception_User("Cannot generate sample data because the application has no users.");
-        }
-
-        // Get some subcategories
-        $this->_sampleSubCategories = Doctrine_Query::create()
-                                      ->from('IrSubCategory c')
-                                      ->limit(50)
-                                      ->execute();
-
-        if (0 == count($this->_sampleSubCategories)) {
-            throw new Fisma_Zend_Exception_User("Cannot generate sample data because the application has no"
-                . " IR categories.");
-        }
 
         // Some enumerations to randomly pick values from
         $reporterTitle = array('Mr.', 'Mrs.', 'Miss', 'Ms.');
@@ -216,6 +160,12 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
 
             foreach ($incidents as $incident) {
                 $i = new Incident();
+
+                // 20% of the incidents have an attached artifact
+                if (rand(1, 100) <= 20) {
+                    $i->Attachments[] = $this->_getSampleAttachment();
+                }
+
                 $i->merge($incident);
 
                 // 50% are reported by a real user, 50% reported by an anonymous user
@@ -255,55 +205,5 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_Abstract
             Doctrine_Manager::connection()->rollBack();
             throw $e;
         }
-    }
-    
-    /**
-     * Return a random user object
-     * 
-     * @return Fisma_Record
-     */
-    private function _getRandomUser()
-    {
-        return $this->_sampleUsers[rand(0, count($this->_sampleUsers))];
-    }
-
-    /**
-     * Return a random organization object
-     * 
-     * @return Fisma_Record
-     */
-    private function _getRandomOrganization()
-    {
-        return $this->_sampleOrganizations[rand(0, count($this->_sampleOrganizations))];
-    }
-
-    /**
-     * Return a random subcategory object
-     * 
-     * @return Fisma_Record
-     */
-    private function _getRandomSubCategory()
-    {
-        return $this->_sampleSubCategories[rand(0, count($this->_sampleSubCategories))];
-    }
-
-    /**
-     * Generate a random phone number
-     * 
-     * @return string
-     */
-    private function _getRandomPhoneNumber()
-    {
-        return '(' . rand(100, 999) . ') ' . rand(100, 999) . '-' . rand(1000, 9999);
-    }
-
-    /**
-     * Generate a random ipv4 address
-     * 
-     * @return string
-     */
-    private function _getRandomIpAddress()
-    {
-        return rand(1, 255) . '.' . rand(1, 255) . '.' . rand(1, 255) . '.' . rand(1, 255);
     }
 }

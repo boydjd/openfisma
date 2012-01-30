@@ -1,0 +1,1 @@
+(function(){Fisma={};$P=new PHP_JS();String.prototype.trim=function(){return this.replace(/^\s+|\s+$/g,"")}})();

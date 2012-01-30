@@ -246,4 +246,18 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         $viewRenderer->setView($view);
         $viewRenderer->setViewSuffix('phtml');
     }
+
+    /**
+     * Initialize the File Manager
+     *
+     * @access protected
+     * @return void
+     */
+    protected function _initFileManager()
+    {
+        Zend_Registry::set(
+            'fileManager',
+            new Fisma_FileManager(Fisma::getPath('fileStorage'), new finfo(FILEINFO_MIME))
+        );
+    }
 }

@@ -17,7 +17,7 @@
  */
 
 /**
- * Overrite parent execute function
+ * Override parent execute function
  *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -28,15 +28,27 @@
 class Fisma_Doctrine_Task_DropDb extends Doctrine_Task_DropDb
 {
     /**
-     * Overrite parent execute function so that it cancels the action of drop database when there is auto-no|n argument
+     * Remove 'Fisma_Doctrine_Task_' instead of 'Doctrine_Task_' so that the taskname can be displayed correctly
+     *
+     * @return void
+     */
+    public function __construct($dispatcher = null)
+    {
+        parent::__construct($dispatcher);
+
+        $this->taskName = Fisma_Doctrine_Task::getDoctrineTaskName($this);
+    }
+
+    /**
+     * Override parent execute function so that it cancels the action of drop database when there is auto-no|n argument
      *
      * @return void
      */
     public function execute()
     {
         $argument = $this->getArgument('force');
-        if ('--auto-no' == $argument || '-n' == $argument) {
-            $this->notify('Cancelled to drop the database');
+        if ('auto-no' == $argument) {
+            $this->notify('Database dropping cancelled');
 
             return;
         }

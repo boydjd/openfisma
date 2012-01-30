@@ -40,14 +40,12 @@ displayGroups.assetInfo.elements.productId = "productId"
 
 elements.orgSystemId.type = "select"
 elements.orgSystemId.options.label = "System"
-elements.orgSystemId.options.style = "width:250px"
 elements.orgSystemId.options.required = true
 displayGroups.assetInfo.elements.orgSystemId = "orgSystemId"
 
 elements.networkId.type = "select"
 elements.networkId.options.label = "Network"
 elements.networkId.options.required = true
-elements.networkId.options.style = "width:250px"
 displayGroups.assetInfo.elements.networkId = "networkId"
 
 elements.save.type = "Form_Button_Submit"

@@ -51,12 +51,14 @@ class Test_Library_Fisma_Format_Section extends Test_Case_Unit
         $this->expectOutputString($bareReturn . $withAnchorName);
         Fisma_Format_Section::startSection($anchorText, null, $anchorName);
 
-        $withEditableTarget = $openTag . 'class=\'editable\' target=\'' . $editableTarget . '\'>' . $anchorText . $closeTag;
+        $withEditableTarget = $openTag . 'class=\'editable\' target=\'' . $editableTarget . '\'>' 
+                            . $anchorText . $closeTag;
         //cascading the old outputs
         $this->expectOutputString($bareReturn . $withAnchorName . $withEditableTarget);
         Fisma_Format_Section::startSection($anchorText, $editableTarget);
 
-        $fullReturn = $openTag . 'class=\'editable\' target=\'' . $editableTarget . '\'><a name=\'' . $anchorName . '\'>' . $anchorText . '</a>' . $closeTag;
+        $fullReturn = $openTag . 'class=\'editable\' target=\'' . $editableTarget . '\'><a name=\'' 
+                    . $anchorName . '\'>' . $anchorText . '</a>' . $closeTag;
         $this->expectOutputString($bareReturn . $withAnchorName . $withEditableTarget . $fullReturn);
         Fisma_Format_Section::startSection($anchorText, $editableTarget, $anchorName);
     }

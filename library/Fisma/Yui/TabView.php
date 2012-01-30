@@ -134,11 +134,10 @@ class Fisma_Yui_TabView
      */
     public function render($layout = null)
     {
-        if (!isset($layout))
-        {
+        if (!isset($layout)) {
             $layout = Zend_Layout::getMvcInstance();
         }
-        if($layout==null) {
+        if ($layout==null) {
             throw new Fisma_Zend_Exception(self::LAYOUT_NOT_INSTANTIATED_ERROR);
         }
         $view = $layout->getView();

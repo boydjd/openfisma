@@ -17,32 +17,7 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-/**
-    backup.php
-
-    This is a script to take a backup of an OpenFISMA application
-    instance. The script makes a copy of all source code files and also
-    produces a schema dump. The backup is tar'ed and gzip'ed.
-
-    Before running this script, make sure to edit the
-    backup-restore.cfg file to specify the proper database access
-    properties.
-
-    The script is designed to run in a POSIX environment, but may run
-    under windows if a compatible mysqldump and tar executable exists
-    in the path.
-
-    @author     Dale Frey
-    @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
-    @license    http://www.openfisma.org/content/license GPLv3
-    @package  
-    @version    $Id$
- */
-
 require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
 $cli = new Fisma_Cli_Backup();
-$cli->run();
-
-?>
-
+exit($cli->run());

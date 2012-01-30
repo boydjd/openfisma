@@ -48,29 +48,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     );
 
     /**
-     * Maps fields to their corresponding privileges. This is kind of ugly. A better solution would be to store this
-     * information in the model itself, and then include it in a global listener.
-     * 
-     * @var array
-     */
-    private static $_requiredPrivileges = array(
-        'type' => 'update_type',
-        'description' => 'update_description',
-        'recommendation' => 'update_recommendation',
-        'mitigationStrategy' => 'update_course_of_action',
-        'responsibleOrganizationId' => 'update_assignment',
-        'securityControl' => 'update_control_assignment',
-        'threatLevel' => 'update_threat',
-        'threat' => 'update_threat',
-        'countermeasures' => 'update_countermeasures',
-        'countermeasuresEffectiveness' => 'update_countermeasures',
-        'recommendation' => 'update_recommendation',
-        'resourcesRequired' => 'update_resources',
-        'legacyFindingKey' => 'update_legacy_finding_key',
-        'sourceId' => 'update_finding_source'
-    );
-
-    /**
      * Threshold of overdue for various status
      * 
      * @var array
@@ -362,15 +339,12 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     }
 
     /**
-     * Upload Evidence
      * Set the status as 'EA' and the currentEvaluationId as the first Evidence Evaluation id
      *
-     * @param string $fileName The uploaded evidence file name
-     * @param User $user The specified user to upload the evidence
+     * @param Evidence $evidence
      * @return void
-     * @throws Fisma_Zend_Exception if the evidence is updated when the finding is not in EN status
      */
-    public function uploadEvidence($fileName, User $user)
+    public function submitEvidence(Evidence $evidence)
     {
         if ('EN' != $this->status) {
             throw new Fisma_Zend_Exception("Evidence can only be updated when the finding is in EN status");
@@ -381,19 +355,14 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                                         ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
         $this->CurrentEvaluation = $evaluation[0];
         $this->_updateNextDueDate();
-
-        $evidence = new Evidence();
-        $evidence->filename = $fileName;
-        $evidence->Finding  = $this;
-        $evidence->User     = $user;
-        $this->Evidence[]   = $evidence;
-
+        
+        $this->Evidence[] = $evidence;
+        
         $this->updateDenormalizedStatus();
 
-        $this->getAuditLog()->write('Upload evidence: ' . $fileName);
+        $this->getAuditLog()->write('Upload evidence: ' . $evidence->Attachments[0]->fileName);
         $this->save();
     }
-
     /**
      * Set the nextduedate when the status has changed except 'CLOSED'
      * 
@@ -569,13 +538,30 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 throw new Fisma_Zend_Exception_User('The finding cannot be modified since it has been deleted.');
             }
 
+            $table = Doctrine::getTable('Finding');
             foreach ($modified as $key => $value) {
                 // Check whether the user has the privilege to update this column
                 if (Fisma::mode() != Fisma::RUN_MODE_COMMAND_LINE) {
-                    if (isset(self::$_requiredPrivileges[$key])) {
-                        CurrentUser::getInstance()->acl()->requirePrivilegeForObject(
-                            self::$_requiredPrivileges[$key], $this
-                        );
+                    $fieldDefinition = $table->getDefinitionOf($key);
+
+                    if (isset($fieldDefinition['extra'])) {
+                        $requiredPrivilege = isset($fieldDefinition['extra']['requiredPrivilege']) ? 
+                                            $fieldDefinition['extra']['requiredPrivilege'] : null;
+
+                        if (!is_null($requiredPrivilege)) {
+                            CurrentUser::getInstance()->acl()->requirePrivilegeForObject(
+                                $requiredPrivilege, $this
+                            );
+                        }
+
+                        $updateStatus = isset($fieldDefinition['extra']['requiredUpdateStatus']) ?
+                                        $fieldDefinition['extra']['requiredUpdateStatus'] : null;
+
+                        if (!is_null($updateStatus) && !in_array($this->status, $updateStatus)) {
+                            throw new Fisma_Zend_Exception_User(
+                                'The finding cannot be modified because its status is not in ' 
+                                . implode(", ", $updateStatus));
+                        }       
                     }
                 }
             

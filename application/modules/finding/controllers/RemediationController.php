@@ -581,38 +581,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 throw new Fisma_Zend_Exception($message);
             }
 
-            $extension = explode('.', $file['name']);
-            $extension = end($extension);
-
-            /** @todo cleanup */
-            if (in_array(strtolower($extension), array('exe', 'php', 'phtml', 'php5', 'php4', 'js', 'css'))) {
-                $message = 'This file type is not allowed.';
-                throw new Fisma_Zend_Exception($message);
-            }
-
-            if (!file_exists(EVIDENCE_PATH)) {
-                mkdir(EVIDENCE_PATH);
-            }
-            if (!file_exists(EVIDENCE_PATH .'/'. $id)) {
-                mkdir(EVIDENCE_PATH .'/'. $id);
-            }
-            $nowStr = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
-            $count = 0;
-            $filename = preg_replace('/^(.*)\.(.*)$/', '$1-' . $nowStr . '.$2', $file['name'], 2, $count);
-            $absFile = EVIDENCE_PATH ."/{$id}/{$filename}";
-            if ($count > 0) {
-                if (!move_uploaded_file($file['tmp_name'], $absFile)) {
-                    $message = 'The file upload failed due to a server configuration error.' 
-                             . ' Please contact the administrator.';
-                    $logger = $this->getInvokeArg('bootstrap')->getResource('Log');
-                    $logger->log('Failed in move_uploaded_file(). ' . $absFile . "\n" . $file['error'], Zend_Log::ERR);
-                    throw new Fisma_Zend_Exception($message);
-                }
-            } else {
-                throw new Fisma_Zend_Exception('The filename is not valid');
-            }
-
-            $finding->uploadEvidence($filename, CurrentUser::getInstance());
+            $evidence = new Evidence();
+            $evidence->attach($file);
+            $finding->submitEvidence($evidence);
         } catch (Fisma_Zend_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
@@ -629,7 +600,15 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function downloadevidenceAction()
     {
         $id = $this->_request->getParam('id');
-        $evidence = Doctrine::getTable('Evidence')->find($id);
+
+        $artifactsQuery = Doctrine_Query::create()
+                          ->from('Evidence e')
+                          ->leftJoin('e.Finding f')
+                          ->leftJoin('e.Attachments a')
+                          ->where('e.id = ?', $id);
+
+        $evidence = $artifactsQuery->execute()->getLast();
+
         if (empty($evidence)) {
             throw new Fisma_Zend_Exception('Invalid evidence ID');
         }
@@ -637,33 +616,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         // There is no ACL defined for evidence objects, access is only based on the associated finding:
         $this->_acl->requirePrivilegeForObject('read', $evidence->Finding);
 
-        $fileName = $evidence->filename;
-        $filePath = Fisma::getPath('data') . '/uploads/evidence/'. $evidence->findingId . '/';
-
-        if (file_exists($filePath . $fileName)) {
-            $this->_helper->layout->disableLayout(true);
-            $this->_helper->viewRenderer->setNoRender();
-            ob_end_clean();
-            $expireDateTime = new Zend_Date(time()+31536000, Zend_Date::TIMESTAMP);
-            $expireDateTime->setTimezone('GMT');
-            header(
-                'Expires: '
-                . $expireDateTime->toString(Fisma_Date::FORMAT_WEEKDAY_SHORT_DAY_MONTH_NAME_SHORT_YEAR_TIME)
-                . ' GMT'
-            );
-            header('Content-type: application/octet-stream');
-            header('Content-Disposition: attachment; filename=' . urlencode($fileName));
-            header('Content-Length: ' . filesize($filePath . $fileName));
-            header('Pragma: ');
-            $fp = fopen($filePath . $fileName, 'rb');
-            while (!feof($fp)) {
-                $buffer = fgets($fp, 4096);
-                echo $buffer;
-            }
-            fclose($fp);
-        } else {
-            throw new Fisma_Zend_Exception('The requested file could not be found');
-        }
+        $upload = $evidence->Attachments[0];
+        $this->_helper->downloadAttachment($upload->fileHash, $upload->fileName);
     }
     
     /**
@@ -763,13 +717,22 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function findingAction() 
     {
         $this->_viewFinding();
-        
+        $table = Doctrine::getTable('Finding');
+     
         $finding = $this->view->finding;
         $organization = $finding->Organization;
 
         // For users who can view organization or system URLs, construct that URL
         $controller = ($organization->OrganizationType->nickname == 'system' ? 'system' : 'organization');
         $idParameter = ($organization->OrganizationType->nickname == 'system' ? 'oid' : 'id');
+         
+        $this->view->isLegacyFindingKeyEditable = $this->_isEditable('legacyFindingKey', $table, $finding); 
+        $this->view->isPocEditable = $this->_isEditable('pocId', $table, $finding); 
+        $this->view->isSourceEditable = $this->_isEditable('sourceId', $table, $finding); 
+        $this->view->isOrganizationEditable = $this->_isEditable('responsibleOrganizationId', $table, $finding); 
+        $this->view->isDescriptionEditable = $this->_isEditable('description', $table, $finding); 
+        $this->view->isRecommendationEditable = $this->_isEditable('description', $table, $finding); 
+
         $this->view->organizationViewUrl = "/$controller/view/$idParameter/$organization->id";
 
         $this->view->keywords = $this->_request->getParam('keywords');
@@ -784,6 +747,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function mitigationStrategyAction() 
     {
         $this->_viewFinding();
+        $finding = $this->view->finding;
+        $table = Doctrine::getTable('Finding');
+
+        $this->view->isTypeEditable = $this->_isEditable('type', $table, $finding); 
+        $this->view->isMitigationStrategyEditable = $this->_isEditable('mitigationStrategy', $table, $finding); 
+        $this->view->isResourcesEditable = $this->_isEditable('resourcesRequired', $table, $finding); 
+        $this->view->isThreatLevelEditable = $this->_isEditable('threatLevel', $table, $finding); 
+
     }
 
     /**
@@ -796,6 +767,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_viewFinding();
         $this->view->keywords = $this->_request->getParam('keywords');
+
+        $finding = $this->view->finding;
+        $table = Doctrine::getTable('Finding');
+
+        $this->view->isThreatLevelEditable = $this->_isEditable('threatLevel', $table, $finding); 
+        $this->view->isThreatEditable = $this->_isEditable('threat', $table, $finding); 
+        $this->view->isCountermeasuresEditable = $this->_isEditable('countermeasures', $table, $finding); 
+        $this->view->isCountermeasuresEffectivenessEditable = $this->_isEditable(
+                                                                                 'countermeasuresEffectiveness', 
+                                                                                 $table, 
+                                                                                 $finding); 
     }
 
     /**
@@ -811,6 +793,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         // Get a list of artifacts related to this finding
         $artifactsQuery = Doctrine_Query::create()
                           ->from('Evidence e')
+                          ->leftJoin('e.Attachments a')
                           ->leftJoin('e.FindingEvaluations fe')
                           ->leftJoin('e.User u1')
                           ->leftJoin('fe.User u2')
@@ -966,7 +949,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         // Check that the user is permitted to view this finding
         $this->_acl->requirePrivilegeForObject('read', $finding);
-
         $this->view->finding = $finding;
     }
 
@@ -987,4 +969,43 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($message, 'warning');
         }
     }
+
+    /**
+     * Check whether a field is editable by its column metadata of requiredPrivilege and/or requiredUpdateStatus.   
+     * 
+     * @param string $column The column name.
+     * @param Doctrine_Table $table The finding table object. 
+     * @param Doctrine_Record $finding The finding object. 
+     * @return bool  
+     */
+    private function _isEditable($column, $table, $finding)
+    {
+        $editable = false;
+
+        $fieldDefinition = $table->getDefinitionOf($column);
+
+        if (isset($fieldDefinition['extra'])                      
+             && isset ($fieldDefinition['extra']['requiredUpdateStatus'])) {
+
+            $updateStatus = $fieldDefinition['extra']['requiredUpdateStatus'];                     
+        }
+
+        if (isset($fieldDefinition['extra'])                      
+             && isset ($fieldDefinition['extra']['requiredPrivilege'])) {
+
+            $updatePrivilege = $fieldDefinition['extra']['requiredPrivilege'];                     
+        }
+
+        if (!$finding->isDeleted()
+            && isset($updatePrivilege) && $this->_acl->hasPrivilegeForObject($updatePrivilege, $finding)) {
+            
+            // Some fields might not need to check status such as POC
+            if (!isset($updateStatus) || (isset($updateStatus) && in_array($finding->status, $updateStatus))) {
+                $editable = true ;
+            }
+        }  
+
+        return $editable;
+    }
+    
 }

@@ -17,7 +17,7 @@
  */
 
 /**
- * Overrite parent construct function to call Fisma_Doctrine_Task_RebuildDb instead
+ * Override parent construct function to call Fisma_Doctrine_Task_RebuildDb instead
  *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
@@ -35,6 +35,8 @@ class Fisma_Doctrine_Task_BuildAllReload extends Doctrine_Task_BuildAllReload
     public function __construct($dispatcher = null)
     {
         parent::__construct($dispatcher);
+
+        $this->taskName = Fisma_Doctrine_Task::getDoctrineTaskName($this);
 
         $this->rebuildDb = new Fisma_Doctrine_Task_RebuildDb($this->dispatcher);
     }

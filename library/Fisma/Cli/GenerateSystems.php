@@ -25,16 +25,8 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
+class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
 {
-    /**
-     * _sampleOrganizations 
-     * 
-     * @var Doctrine_Collection 
-     * @access private
-     */
-    private $_sampleOrganizations;
-
     /**
      * Configure the arguments accepted for this CLI program
      *
@@ -70,20 +62,6 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
         }
 
         $systems = array();
-
-        // Get some organizations
-        $this->_sampleOrganizations = Doctrine_Query::create()
-                                      ->select('o.id')
-                                      ->from('Organization o')
-                                      ->leftJoin('o.System s')
-                                      ->limit(50)
-                                      ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-                                      ->execute();
- 
-        if (0 == count($this->_sampleOrganizations)) {
-            throw new Fisma_Zend_Exception_User("Cannot generate sample data because the application has no"
-                . " organizations.");
-        }
 
         // Some enumerations to randomly pick values from
         $type = array('gss', 'major', 'minor');
@@ -152,17 +130,6 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_Abstract
         }
     }
     
-    /**
-     * Return a random organization object
-     * 
-     * @return Fisma_Record
-     */
-    private function _getRandomOrganization()
-    {
-        $orgId = $this->_sampleOrganizations[array_rand($this->_sampleOrganizations)]['id'];
-        return Doctrine::getTable('Organization')->find($orgId);    
-    }
-
     /**
      * Assign the generated organzation to an admin user if it exists
      * 

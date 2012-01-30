@@ -70,7 +70,7 @@ Fisma.Ldap = {
                 success : function (o) {
                     var response = YAHOO.lang.JSON.parse(o.responseText);
                     
-                    message(response.msg, response.type, true);
+                    Fisma.Util.message(response.msg, response.type, true);
 
                     validateButton.className = "yui-button yui-push-button";
                     Fisma.Ldap.validateLdapBusy = false;
@@ -78,7 +78,7 @@ Fisma.Ldap = {
                 },
 
                 failure : function (o) {
-                    message('Validation failed: ' + o.statusText, 'warning', true);
+                    Fisma.Util.message('Validation failed: ' + o.statusText, 'warning', true);
 
                     spinner.hide();
                 }

@@ -34,20 +34,33 @@ class Fisma_Url
      */    
     static function baseUrl()
     {
-        if (isset($_SERVER) && 
+        $hostUrl = Fisma::configuration()->getConfig('host_url');
+        if (!empty($hostUrl)) {
+            return $hostUrl;
+        } else if (isset($_SERVER) && 
             array_key_exists('SERVER_NAME', $_SERVER) && 
-            array_key_exists('SERVER_PORT', $_SERVER) && 
-            array_key_exists('HTTP_HOST', $_SERVER)) {
+            !empty($_SERVER['SERVER_NAME'])) {
+
             // Get the scheme http or https
             $scheme = (!empty($_SERVER['HTTPS'])) ? 'https' : 'http';
+
             // Get the http host
-            $name = (!empty($_SERVER['SERVER_NAME'])) ? $_SERVER['SERVER_NAME'] : null;
-            $port = (!empty($_SERVER['SERVER_PORT'])) ? $_SERVER['SERVER_PORT'] : null;
-            $port = ($port != 80 || 443) ? ':' . $port : null;
-            $host = (!empty($_SERVER['HTTP_HOST'])) ? $_SERVER['HTTP_HOST'] : $name . $port;
-            return $scheme . '://' . $host;
+            $port = null;
+            if (array_key_exists('SERVER_PORT', $_SERVER)) {
+                if (!empty($_SERVER['SERVER_PORT']) 
+                    && $_SERVER['SERVER_PORT'] != 80 && $_SERVER['SERVER_PORT'] != 443) {
+                    $port = ':' . $_SERVER['SERVER_PORT'];
+                }
+            }
+
+            return $scheme . '://' . $_SERVER['SERVER_NAME'] . $port;
         } else {
-            return Fisma::configuration()->getConfig('host_url');
+            $serverName = php_uname('n');
+            if (!empty($serverName)) {
+                return 'http://' . $serverName;
+            } else {
+                throw new Fisma_Zend_Exception_User('Cannot get host url.');
+            }
         }
     }
     

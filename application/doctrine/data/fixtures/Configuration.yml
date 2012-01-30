@@ -54,6 +54,4 @@ Configuration:
 
         hash_type: sha1
 
-        host_url: "https://openfisma.agency.gov:443"
-
         default_security_control_catalog_id: 4

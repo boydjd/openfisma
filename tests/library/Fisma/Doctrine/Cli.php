@@ -48,8 +48,24 @@ class Test_Library_Fisma_Doctrine_Cli extends Test_Case_Unit
     {
         $cli = new Test_Library_Fisma_Doctrine_CliDummy();
 
-        $args = array(1 => 'migrate');
-        $this->assertEquals('Fisma_Doctrine_Task_Migrate', $cli->getTaskClassFromArgs($args)); //customized classes are checked manually
+        // Customized classes are checked manually
+        $args[1] ='generate_models_yaml';
+        $this->assertEquals('Fisma_Doctrine_Task_GenerateModelsYaml', $cli->getTaskClassFromArgs($args));
+
+        $args[1] ='drop_db';
+        $this->assertEquals('Fisma_Doctrine_Task_DropDb', $cli->getTaskClassFromArgs($args));
+
+        $args[1] ='rebuild_db';
+        $this->assertEquals('Fisma_Doctrine_Task_RebuildDb', $cli->getTaskClassFromArgs($args));
+
+        $args[1] ='build_all';
+        $this->assertEquals('Fisma_Doctrine_Task_BuildAll', $cli->getTaskClassFromArgs($args));
+
+        $args[1] ='build_all_load';
+        $this->assertEquals('Fisma_Doctrine_Task_BuildAllLoad', $cli->getTaskClassFromArgs($args));
+
+        $args[1] ='build_all_reload';
+        $this->assertEquals('Fisma_Doctrine_Task_BuildAllReload', $cli->getTaskClassFromArgs($args));
 
         $args[1] = 'Compile';
         $this->assertEquals('Doctrine_Task_Compile', $cli->getTaskClassFromArgs($args));

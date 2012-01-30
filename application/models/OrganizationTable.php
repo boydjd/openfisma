@@ -246,7 +246,8 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
         return Doctrine_Query::create()
             ->from('Organization o')
             ->leftJoin('o.System s')
-            ->where('o.name LIKE ?', $query . '%');
+            ->where('o.name LIKE ?', $query . '%')
+            ->orWhere('o.nickname LIKE ?', $query . '%');
     }
     
     /**
