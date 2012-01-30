@@ -853,7 +853,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Display fields related to risk analysis such as threats and countermeasures
+     * Display evidence package and evaluations
      *
      * @return void
      */
@@ -878,6 +878,97 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                             ->orderBy('e.precedence');
 
         $this->view->evaluations = $evaluationsQuery->execute();
+
+        // Build the Evidence Package table
+        $attachmentCollection = $this->view->finding->Attachments;
+        $attachmentRows = array();
+
+        foreach ($attachmentCollection as $attachment) {
+            $baseUrl = '/finding/remediation/';
+            $currentUrl = '/id/' . $this->finding->id . '/attachmentId/' . $attachment->id;
+            $attachmentRows[] = array(
+                'iconUrl'  => "<a href={$baseUrl}download-evidence{$currentUrl}><img src={$attachment->getIconUrl()}></a>",
+                'fileName' => "<a href={$baseUrl}download-evidence{$currentUrl}><div>"
+                            . $this->view->escape($attachment->fileName) . "</div></a>",
+                'fileSize' => $attachment->getFileSize(),
+                'user'     => $this->view->userInfo($attachment->User->username),
+                'date'     => $attachment->createdTs,
+                'action'   => "<a href={$baseUrl}delete-evidence{$currentUrl}>Delete</a>"
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Icon',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'icon'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'fileName'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Size',
+                true,
+                'Fisma.TableFormat.formatFileSize',
+                null,
+                'size',
+                false,
+                'number'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Uploaded By',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'uploadedBy'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Upload Date',
+                true,
+                null,
+                null,
+                'uploadDate'
+            )
+        );
+
+        if (
+            $this->_acl->hasPrivilegeForObject('upload_evidence', $this->view->finding) &&
+            !$this->view->finding->isDeleted() &&
+            in_array($this->view->finding->status, array('EN', 'EA'))
+        ):
+            $dataTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'Action',
+                    true,
+                    'Fisma.TableFormat.formatHtml',
+                    null,
+                    null
+                )
+            );
+        endif;
+
+        $dataTable->setData($attachmentRows);
+        $this->view->evidencePackage = $dataTable;
     }
 
     /**

@@ -92,8 +92,9 @@ echo "</span>";
 
 echo "</div>";
 
+// Print the evidence packaqe table (if not empty)
 if ($this->finding->Attachments->count() > 0):
-    echo $this->partial('remediation/artifact-header.phtml', array('finding' => $this->finding));
+    echo $this->escape($this->evidencePackage, 'none');
 endif;
 
 $approvalHistory = '';
