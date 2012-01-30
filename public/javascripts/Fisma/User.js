@@ -256,20 +256,21 @@ Fisma.User = {
                         // Make sure each column value is not null in LDAP account, then populate to related elements.
                         if (YAHOO.lang.isValue(data.accounts)) {
                             if (data.accounts.length == 0) {
-                                message('No account matches your query: ' + escape(data.query) + '.', 'warning', true);
+                                Fisma.Util.message('No account matches your query: '
+                                    + escape(data.query) + '.', 'warning', true);
                             } else if (data.accounts.length == 1) {
                                 Fisma.User.populateAccountForm(data.accounts[0]);
                             } else {
                                 Fisma.User.showMultipleAccounts(data.accounts);
                             }
                         } else {
-                            message(data.msg, data.type, true);
+                            Fisma.Util.message(data.msg, data.type, true);
                         }
                     } catch (e) {
                         if (YAHOO.lang.isValue(e.message)) {
-                            message('Error: ' + e.message, 'warning', true);
+                            Fisma.Util.message('Error: ' + e.message, 'warning', true);
                         } else {
-                            message('An unknown error occurred.', 'warning', true);
+                            Fisma.Util.message('An unknown error occurred.', 'warning', true);
                         }
                     }
 
@@ -296,7 +297,7 @@ Fisma.User = {
      * @param account {Object} A dictionary of LDAP data for an account.
      */
     populateAccountForm : function (account) {
-        message('Your search matched one user: ' + account.dn, 'info', true);
+        Fisma.Util.message('Your search matched one user: ' + account.dn, 'info', true);
 
         for (var ldapColumn in Fisma.User.ldapColumnMap) {
             if (!Fisma.User.ldapColumnMap.hasOwnProperty(ldapColumn)) {
@@ -318,7 +319,7 @@ Fisma.User = {
      * @param accounts {Object} An array of LDAP account dictionaries.
      */
     showMultipleAccounts : function (accounts) {
-        message('<p>Multiple accounts match your query. Click a name to select it.</p>', 'info', 'true');
+        Fisma.Util.message('<p>Multiple accounts match your query. Click a name to select it.</p>', 'info', 'true');
         var msgBar = document.getElementById('msgbar');
 
         var accountsContainer = document.createElement('p');

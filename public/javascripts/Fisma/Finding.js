@@ -410,9 +410,9 @@ Fisma.Finding = {
                     Fisma.Finding.pocHiddenEl.value = pocId;
                     Fisma.Finding.pocAutocomplete.getInputEl().value = username;
 
-                    message('A point of contact has been created.', 'info', true);
+                    Fisma.Util.message('A point of contact has been created.', 'info', true);
                 } else {
-                    message(result.message, 'warning', true);
+                    Fisma.Util.message(result.message, 'warning', true);
                     button.set("disabled", false);
                 }
             },
@@ -430,6 +430,6 @@ Fisma.Finding = {
      * @param params {Array} The arguments passed to the autocomplete constructor
      */
     setupSecurityControlAutocomplete : function (autocomplete, params) {
-        autocomplete.itemSelectEvent.subscribe(Fisma.AutoComplete.handleSecurityControlSelection);
+        autocomplete.itemSelectEvent.subscribe(Fisma.Finding.handleSecurityControlSelection);
     }
 };

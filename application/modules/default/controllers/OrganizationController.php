@@ -77,6 +77,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             // The parent menu should show all organizations and systems (irregardless of user's ACL)
             $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
             $organizationTree = $organizationTreeObject->fetchTree();
+            $form->getElement('copyOrganizationId')->addMultiOptions(array(null => null));
 
             if (!empty($organizationTree)) {
                 foreach ($organizationTree as $organization) {
@@ -91,6 +92,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                     if ($parent) {
                         $form->getElement('parent')->addMultiOptions(array($value => $text));
                     }
+                    $form->getElement('copyOrganizationId')->addMultiOptions(array($value => $text));
                 }
             } else {
                 // If there are no other organizations, the parent only shows the option "None"
@@ -118,14 +120,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         parent::setForm($subject, $form);
 
         // The root node cannot have it's parent changed
-        if ($subject->getNode()->isRoot()) {
+        $parent = $subject->getNode()->getParent();
+        if (empty($parent)) { //temporary change: isRoot() -> empty(getParent())
             $form->removeElement('parent');
         } else {
-            $parent = $subject->getNode()->getParent();
-            
             $form->getElement('parent')->setValue($parent->id);
         }
-
         return $form;
     }
     
@@ -179,6 +179,23 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $userRoles->save();
                 $this->_me->invalidateAcl();
 
+                // Copy users and roles from another organization
+                if (!empty($orgValues['copyOrganizationId'])) {
+                    $userRoles = Doctrine_Query::create()
+                         ->from('UserRole ur')
+                         ->leftJoin('ur.User u')
+                         ->leftJoin('ur.UserRoleOrganization uro')
+                         ->leftJoin('uro.Organization o')
+                         ->where('o.id = ?', $orgValues['copyOrganizationId'])
+                         ->execute();
+
+                    foreach ($userRoles as $userRole) {
+                        $userRole->Organizations[] = $organization;
+                    }
+
+                    $userRoles->save();
+                }
+
             } else {
                 $organization = $subject;
                 
@@ -225,7 +242,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      */
     public function viewAction()
     {
-        $organization = Doctrine::getTable('Organization')->find($this->getRequest()->getParam('id'));
+        $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
+        $organization = Doctrine::getTable('Organization')->find($id);
+
+        if (!$organization) {
+            throw new Fisma_Zend_Exception("Invalid Organization ID");
+        }
 
         if ('system' == $organization->OrganizationType->nickname) {
             $message = "Organization controller: expected an organization object but got a system object. Referer: "
@@ -236,73 +258,123 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             $this->_redirect('/system/view/oid/' . $organization->id);
         }
 
-        parent::viewAction();
+        $tabView = new Fisma_Yui_TabView('OrganizationView', $id);
+        
+        $firstTab = $this->view->escape($organization->name)
+                  . ' (' . $this->view->escape($organization->nickname) . ')';
+
+        $tabView->addTab($firstTab, "/organization/organization/id/$id");
+        $tabView->addTab("Users", "/system/user/type/organization/id/$id");
+
+        $toolbarButtons = $this->getToolbarButtons();
+
+        if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
+            $discardButton = new Fisma_Yui_Form_Button_Link(
+                                 'discardChanges',
+                                 array(
+                                     'value' => 'Discard Changes',
+                                     'href' => "/organization/view/id/$id"
+                                 )
+                             );
+
+            $submitButton = new Fisma_Yui_Form_Button_Submit(
+                                'saveChanges',
+                                array(
+                                    'label' => 'Save Changes'
+                                )
+                            );
+
+            array_unshift($toolbarButtons, $discardButton, $submitButton);
+        }
+
+        $this->view->toolbarButtons = $toolbarButtons;
+        $this->view->organizationId = $organization->id;
+        $this->view->tabView = $tabView;
     }
 
     /**
-     * Update organization information after submitting an edit form.
+     * Display organization properties such as name, creation date, etc.
      *
      * @return void
-     * @throws Exception_General if organization id is invalid
-     * @todo cleanup this function
+     */
+    public function organizationAction()
+    {
+        $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
+        $organization = Doctrine::getTable('Organization')->findOneById($id);
+        $this->_acl->requirePrivilegeForObject('read', $organization);
+        $this->_helper->layout()->disableLayout();
+        
+        $editable = false;
+        if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
+            $editable = true;
+        }
+
+        $this->view->organization = $organization;
+        $this->view->editable = $editable;
+        $this->render();
+    }
+
+    /**
+     * Update organization information on the organization tabview.
+     *
+     * @return void
+     * @throws Fisma_Zend_Exception if organization id is invalid
      */
     public function updateAction()
     {
-        $id = $this->_request->getParam('id', 0);
-        $organization = new Organization();
-        $organization = $organization->getTable()->find($id);
+        $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
+        $organization = Doctrine::getTable('Organization')->findOneById($id);
 
         if (!$organization) {
-            throw new Exception_General("Invalid organization ID");
+            throw new Fisma_Zend_Exception("Invalid Organization ID");
         }
 
-        $this->_acl->requirePrivilegeForObject('update', $organization);
-
-        $form = $this->_getOrganizationForm($organization);
-        $orgValues = $this->_request->getPost();
-
-        try {
-            if ($form->isValid($orgValues)) {
-                $isModify = false;
-                $orgValues = $form->getValues();
-                $organization->merge($orgValues);
-
-                if ($organization->isModified()) {
-                     $organization->save();
-                     $isModify = true;
-                }
-                // if the organization is not the root and
-                // its parent id is not equal the value submited
-                if (!$organization->getNode()->isRoot() &&
-                        (int)$orgValues['parent'] != $organization->getNode()->getParent()->id) {
-                    // then move this organization to an other parent node
-                    $organization->getNode()
-                    ->moveAsLastChildOf(Doctrine::getTable('Organization')->find($orgValues['parent']));
-                    $isModify = true;
-                }
-
-                if ($isModify) {
-                    $msg = "The organization is saved";
-                    $model = 'notice';
-                } else {
-                    $msg = "Nothing changes";
-                    $model = 'warning';
-                }
-                $this->view->priorityMessenger($msg, $model);
-                $this->_redirect("/organization/view/id/{$organization->id}");
-            } else {
-                $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                // Error message
-                $this->view->priorityMessenger("Unable to update organization<br>$errorString", 'warning');
-                // On error, redirect back to the edit action.
-                $this->_redirect("/organization/view/id/$id/v/edit");
+        if ($this->_request->isPost()) {
+            if ($this->_enforceAcl) {
+                $this->_acl->requirePrivilegeForObject('update', $organization);
             }
-        } catch (Doctrine_Validator_Exception $e) {
-            $msg = "Error while trying to save: " . $e->getMessage();
-            $this->view->priorityMessenger($msg, 'warning');
+
+            $post = $this->_request->getPost();
+            if ($post) {
+                try {
+                    $organization->merge($post);
+                    if ($organization->isValid(true)) {
+                        $organization->save();
+                        $msg  = 'The organization updated successfully';
+                        $type = 'notice';
+                    } else {
+                        $msg  = "Error while trying to save: <br />" . $organization->getErrorStackAsString();
+                        $type = "warning";
+                    }
+                    
+                    $parent = $organization->getNode()->getParent();
+                    if (!empty($parent) && isset($post['parent']) && (int)$post['parent'] != $parent->id) {
+
+                        // Move this organization to an other parent node if the parent node is not its descendant. 
+                        $newParent = Doctrine::getTable('Organization')->find($post['parent']);
+                        if (!$newParent->getNode()->isDescendantOf($organization)) {
+                            $organization->getNode()->moveAsLastChildOf($newParent);
+                        } else {
+                            $msg  = "Error while trying to save: cannot move an organization into itself.";
+                            $type = 'warning';
+                        }
+                    }
+
+                } catch (Doctrine_Exception $e) {
+                    $msg  = "Error while trying to save: ";
+                    $msg .= $e->getMessage();
+                    $type = 'warning';
+                } catch (Fisma_Zend_Exception_User $e) {
+                    $msg  = "Error while trying to save: " . $e->getMessage();
+                    $type = 'warning';
+                }
+
+                $this->view->priorityMessenger($msg, $type);
+                $this->_redirect("/organization/view/id/$id");
+            } 
         }
-        // On error, redirect back to the edit action.
-        $this->_redirect("/organization/view/id/$id/v/edit");
+
+        $this->_redirect("/organization/view/id/$id");
     }
 
     /**

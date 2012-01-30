@@ -101,7 +101,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
             $values = $form->getValues();
             $actionName = strtolower($this->_request->getActionName());
-            if ('edit' === $actionName && 'root' !== $subject->username) {
+            if ('view' === $actionName && 'root' !== $subject->username) {
 
                 // Check whether role is changed for audit log
                 $originalRoles = $subject->getRoles(Doctrine::HYDRATE_ARRAY);
@@ -487,38 +487,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Override parent to add roles interface
-     *
-     * @return void
-     */
-    public function viewAction()
-    {
-        $id = $this->getRequest()->getParam('id');
-
-        $tabView = new Fisma_Yui_TabView('UserView');
-
-        $q = Doctrine_Query::create()
-            ->from('User u')
-            ->leftJoin('u.Roles r')
-            ->where('u.id = ?', $id);
-
-        $user = $q->fetchArray();
-
-        foreach ($user[0]['Roles'] as $role) {
-            $tabView->addTab(
-                $this->view->escape($role['nickname']), 
-                "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/1", 
-                $role['id'],
-                'false'
-            );
-        }
-
-        $this->view->tabView = $tabView;
-
-        parent::_viewObject();
-    }
-    
-    /**
      * Override parent to add an audit log link
      * 
      * @param Fisma_Doctrine_Record $subject
@@ -621,7 +589,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      *
      * @return void
      */
-    public function editAction()
+    public function viewAction()
     {
         $id = $this->getRequest()->getParam('id');
         $tabView = new Fisma_Yui_TabView('UserView');
@@ -632,14 +600,21 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->where('u.id = ?', $id);
 
         $user = $q->fetchArray();
+        
+        $subject = $this->_getSubject($id);
+        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('update', $subject)) {
+            $readOnly = 0;
+        } else {
+            $readOnly = 1;
+        }
 
         if (isset($user[0]['Roles'])) {
             foreach ($user[0]['Roles'] as $role) {
                 $tabView->addTab(
                     $this->view->escape($role['nickname']), 
-                    "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/0", 
+                    "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/$readOnly", 
                     $role['id'],
-                    'true' 
+                    $readOnly == 0 ? 'true' : 'false' 
                 );
             }
         }
@@ -655,7 +630,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
         $this->view->roles = Zend_Json::encode($roles);
 
-        parent::_editObject();
+        parent::_viewObject();
 
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
     }
@@ -748,6 +723,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         }
 
         try {
+            $msg = '';
+            $matchedAccounts = null;
+            $account = null;
+
             $ldapServerConfigurations = LdapConfig::getConfig();
 
             if (count($ldapServerConfigurations) == 0) {
@@ -756,9 +735,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             $accountInfo = array();
             $account = $this->_request->getParam('account');
-
-            $msg = '';
-            $matchedAccounts = null;
 
             if (empty($account)) {
                 throw new Fisma_Zend_Exception_User('You did not specify any account name.');

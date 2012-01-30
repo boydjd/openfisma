@@ -20,6 +20,11 @@ elements.system_name.options.required = true
 elements.system_name.options.tooltip = "<p><b>System Name</b></p><p>The System Name will be used to identify the OpenFISMA application in the browser tab and in email communications sent back and forth between users and OpenFISMA.</p>"
 displayGroups.general.elements.system_name = "system_name"
 
+elements.host_url.type = "text"
+elements.host_url.options.label = "Host URL"
+elements.host_url.options.validators.url.validator = "Url"
+elements.host_url.options.tooltip = "<p><b>Host URL</b></p><p>Enter the url that the OpenFISMA application can be accessed publicly by the browser. The valid URL should be something like https://www.example.com or http://www.example.com:8888 </p>"
+displayGroups.general.elements.host_url = "host_url"
 
 elements.account_inactivity_period.type = "text"
 elements.account_inactivity_period.options.label = "Inactive Account Expiration (days)"

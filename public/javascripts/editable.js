@@ -52,7 +52,7 @@ function setupEditFields() {
                  textEl.style.width = (oldWidth - 10) + "px";
                  if (eclass == 'date') {
                      var target = document.getElementById(t_name);
-                     target.onfocus = function () {showCalendar(t_name, t_name+'_show');};
+                     target.onfocus = function () {Fisma.Calendar.showCalendar(t_name, t_name+'_show');};
                  }
              } else if( type == 'textarea' ) {
                  var row = target.getAttribute('rows');

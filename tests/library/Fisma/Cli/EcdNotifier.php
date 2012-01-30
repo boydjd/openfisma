@@ -48,12 +48,12 @@ class Test_Library_Fisma_Cli_EcdNotifier extends Test_Case_Unit
         $findings = array($finding1, $finding2, $finding3, $finding4);
 
         $query = $this->getMock('Mock_Blank', array('execute'));
-        $query->expects($this->once())->method('execute')->will($this->returnValue($findings));
+        $query->expects($this->any())->method('execute')->will($this->returnValue($findings));
 
         $notify = $this->getMock('Fisma_Cli_EcdNotifier', array('getQuery', 'notify'));
-        $notify->expects($this->once())->method('getQuery')->will($this->returnValue($query));
-        $notify->expects($this->exactly(4))->method('notify');
-
+        $notify->expects($this->any())->method('getQuery')->will($this->returnValue($query));
+        $notify->expects($this->exactly(count($findings)))->method('notify');
+        Fisma::initialize(Fisma::RUN_MODE_TEST);
         $notify->run();
 
     }

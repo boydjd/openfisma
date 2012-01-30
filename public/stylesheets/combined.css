@@ -245,10 +245,9 @@ div.incidentStep {
     position: relative;
 }
 
-div.incidentStep td {
+div.incidentStep > table > tbody > tr > td {
     padding: 5px;
     border-style: none;
-       
 }
 
 div.incidentStep td:first-child {
@@ -848,18 +847,16 @@ td.jqplot-table-legend {
     border-style: none;
 }
 
-#chartFindForecastholder table, #chartTotalStatusholder table, #incidentHistorytoplegend table,
-#incidentHistorytoplegend table, #chartOverdueFindingtoplegend table, #chartNoMitholder table,
-#findingOrgCharttoplegend table {
+table.jqplot-threat-legend {
+    font-size: 12px;
+    color: #000000;
     margin-bottom: 0;
 }
 
-#chartFindForecastholder td, #chartTotalStatusholder td, #incidentHistorytoplegend td, #incidentHistorytoplegend td,
-#chartOverdueFindingtoplegend td, #chartNoMitholder td, #findingOrgCharttoplegend td {
+table.jqplot-threat-legend td {
     border-style: none;
     padding: 0;
 }
-
 /* The group cell */
 .yui-skin-sam .yui-dt .group
 {
@@ -1860,7 +1857,8 @@ table.keyValues, table.fisma_crud {
 }
 
 /* Remove base formatting from selected td and th classes */
-table.keyValues td, table.keyValues th, table.fisma_crud td, table.fisma_crud th {
+table.keyValues > tbody > tr > td, table.keyValues > tbody > tr > th,
+table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
     border: none;
 }
 

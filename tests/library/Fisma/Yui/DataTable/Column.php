@@ -45,7 +45,8 @@ class Test_Library_Fisma_Yui_DataTable_Column extends Test_Case_Unit
             'width' => 'auto',
             'css' => 'none'
         );
-        $column2 = new Fisma_Yui_DataTable_Column('Column 2', false, 'Fisma.DataTable.Bare', $formatParams, 'Test_Column_2', true, 'script');
+        $column2 = new Fisma_Yui_DataTable_Column('Column 2', false, 'Fisma.DataTable.Bare', $formatParams,
+                                                  'Test_Column_2', true, 'script');
 
         $this->assertEquals('Column 2', $column2->getLabel());
         $this->assertEquals("Fisma.DataTable.Bare", $column2->getFormatter());

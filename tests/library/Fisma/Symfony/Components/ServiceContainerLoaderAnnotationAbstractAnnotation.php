@@ -48,8 +48,8 @@ class Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbst
     public function testConstructor()
     {
         $name = 'very long';
-        $tooLong = new Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy($name);
-        $this->assertEquals($name, $tooLong->getName());
+        $t = new Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy($name);
+        $this->assertEquals($name, $t->getName());
     }
 
     /**
@@ -58,12 +58,12 @@ class Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbst
      */
     public function testFilters()
     {
-        $tooLong = new Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy('testObject');
+        $t = new Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy('testO');
         $message = 'bem bem';
-        $this->assertEquals($message, $tooLong->filterUnderscore('_'.$message));
-        $this->assertEquals($message, $tooLong->filterUnderscore($message));
-        $this->assertEquals($message, $tooLong->filterSetPrefix('set'.$message));
-        $this->assertEquals('a'.$message, $tooLong->filterSetPrefix('A'.$message));
+        $this->assertEquals($message, $t->filterUnderscore('_'.$message));
+        $this->assertEquals($message, $t->filterUnderscore($message));
+        $this->assertEquals($message, $t->filterSetPrefix('set'.$message));
+        $this->assertEquals('a'.$message, $t->filterSetPrefix('A'.$message));
     }
 
     /**
@@ -72,8 +72,9 @@ class Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbst
      */
     public function testGetTag()
     {
-        $tooLong = new Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy('testObject');
-        $this->assertEquals('testObject_tagged', $tooLong->getTag(new Test_Library_Fisma_Symfony_Components_ZendReflectionDocblockDummy()));
+        $t = new Test_Library_Fisma_Symfony_Components_ServiceContainerLoaderAnnotationAbstractAnnotationDummy('testO');
+        $this->assertEquals('testO_tagged', 
+                            $t->getTag(new Test_Library_Fisma_Symfony_Components_ZendReflectionDocblockDummy()));
     }
 }
 

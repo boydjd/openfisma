@@ -82,6 +82,7 @@ img#logoImg {
     margin-top:5px;
     margin-bottom:5px;
     page-break-inside: avoid;
+    page-break-after: always;
 }
 
 .chartGear {
@@ -130,14 +131,16 @@ div.sectionHeader {
     padding: 1em;
     padding-bottom: 0;
     border: 1px solid black;
-    border-bottom: none;
+}
+
+div.sectionHeader td {
+    border-style: none;
 }
 
 div.section {
     color: black;
     padding: 1em;
     border: 1px solid black;
-    border-top: none;
     text-align: left;
 }
 
@@ -184,4 +187,112 @@ table.treeTable td.ontime {
 
 table.treeTable td.overdue {
     background-color: #fae4e6 ! important;
+}
+
+/*
+ * Style for the legend of jqplot
+ */
+table.jqplot-table-legend {
+    margin: 12px;
+    background-color: rgba(255,255,255,0.6);
+    border: 1px solid #cccccc;
+    position: absolute;
+    font-size: 0.75em;
+    color: 000000;
+}
+td.jqplot-table-legend {
+    vertical-align:middle;
+    padding: .5em !important;
+    border-style: none;
+}
+td.jqplot-table-legend > div {
+    border: 1px solid #cccccc;
+    padding:1px;
+    color: #000000;
+}
+div.jqplot-table-legend-swatch {
+    width:0px;
+    height:0px;
+    border-width: 5px 6px 5px 6px;
+    border-style: solid;
+    color: #000000;
+}
+
+table.jqplot-threat-legend {
+    font-size: 12px;
+    color: #000000;
+    margin-bottom: 0;
+}
+
+table.jqplot-threat-legend td {
+    border-style: none;
+    padding: 0;
+}
+
+/*
+ * Hide the buttons on tree
+ */
+#expandAllButton, #collapseAllButton {
+    display: none;
+}
+
+/*
+ * A dashboard card is a simple box that contains the title and value of a particular metric.
+ * By default, it is gray in color. But it can be colored by using the color styles below.
+ */
+div.dashboardCard {
+    /* Relative positioning lets us absolutely position the child elements */
+    position: relative;
+    float: left;
+    width: 10em;
+    height: 6em;
+    margin: .8em;
+    border: 1px solid #b0b0b0;
+    background-color: lightgrey;
+}
+
+/*
+ * Each dashboard card has two child divs, a title and a metric value.
+ */
+div.dashboardCard div.title {
+    margin: .3em auto 0em auto;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+div.dashboardCard div.metric {
+    position: absolute;
+    width: 100%;
+    bottom: 0em;
+    text-align: center;
+    font-weight: bold;
+    font-size: 2.5em;
+}
+
+/*
+ * The following styles are for coloring a dashboard card.
+ */
+div.dashboardGreen {
+    border-color: #83ca8d;
+    background-color: lightgreen;
+}
+
+div.dashboardYellow {
+    border-color: #e2e13b;
+    background-color: yellow;
+}
+
+div.dashboardRed {
+    border-color: #daaeb5;
+    background-color: pink;
+}
+
+/*
+ * A dashboard chart is centered and has bold text
+ */
+div.dashboardChart {
+    margin: 2em 0em;
+    text-align: center;
+    font-weight: bold;
 }

@@ -20,5 +20,4 @@
 require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
 $cli = new Fisma_Cli_GenerateFindings();
-$cli->run();
-
+exit($cli->run());

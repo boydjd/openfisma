@@ -22,7 +22,7 @@ span#irReportSaveContainer{position:relative;left:260px;}
 span#irReportBackwardsContainer{position:relative;left:-110px;}
 span#irReportCancelContainer{position:relative;left:-110px;}
 div.incidentStep{margin:10px;padding:10px 10px 10px 40px;position:relative;}
-div.incidentStep td{padding:5px;border-style:none;}
+div.incidentStep>table>tbody>tr>td{padding:5px;border-style:none;}
 div.incidentStep td:first-child{font-weight:bold;text-align:right;}
 div.incidentCardinality{position:absolute;top:-2px;left:-2px;padding:5px 10px;font-size:x-large;}
 div.completedIncidentStep{border:2px solid gray;background-color:#f0f0f0;}
@@ -111,8 +111,8 @@ span.userInfo:active{color:#416ed7;}
 .widgetSpaceHolder th,.widgetSpaceHolder td{padding:0;}
 .chartGear{cursor:pointer;width:20px;}
 td.jqplot-table-legend{border-style:none;}
-#chartFindForecastholder table,#chartTotalStatusholder table,#incidentHistorytoplegend table,#incidentHistorytoplegend table,#chartOverdueFindingtoplegend table,#chartNoMitholder table,#findingOrgCharttoplegend table{margin-bottom:0;}
-#chartFindForecastholder td,#chartTotalStatusholder td,#incidentHistorytoplegend td,#incidentHistorytoplegend td,#chartOverdueFindingtoplegend td,#chartNoMitholder td,#findingOrgCharttoplegend td{border-style:none;padding:0;}
+table.jqplot-threat-legend{font-size:12px;color:#000;margin-bottom:0;}
+table.jqplot-threat-legend td{border-style:none;padding:0;}
 .yui-skin-sam .yui-dt .group{border-top:1px solid #CBCBCB;font-weight:bold;color:black;cursor:pointer;background-color:#f1f2f2;}
 .yui-skin-sam .yui-dt .group td{border-color:#cbcbcb;border-style:solid;border-width:1px 0 0 0;}
 .yui-skin-sam .yui-dt .group .liner{padding:4px 10px;}
@@ -268,7 +268,7 @@ span#removeUsers{margin-left:0;}
 div#swfstoreContainer{width:0;height:0;}
 form#transitionsForm{display:inline;}
 table.keyValues,table.fisma_crud{border-collapse:collapse;border-spacing:0;}
-table.keyValues td,table.keyValues th,table.fisma_crud td,table.fisma_crud th{border:none;}
+table.keyValues>tbody>tr>td,table.keyValues>tbody>tr>th,table.fisma_crud>tbody>tr>td,table.fisma_crud>tbody>tr>th{border:none;}
 .eventNotifyBlock{border:1px #44637A solid;padding:10px;}
 .eventNotifyBlock .inline{float:left;clear:right;padding:0 20px;}
 .eventNotifyBlock #move{padding-top:40px;}

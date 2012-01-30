@@ -37,9 +37,6 @@ Fisma.Email = function() {
          */
         showRecipientDialog : function() {
 
-            // The error message should be hidden before handles test email
-            YAHOO.util.Dom.get('msgbar').style.display = 'none';
-
             // Remove used old panel if necessary
             if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.removeMask();
@@ -117,7 +114,7 @@ Fisma.Email = function() {
             YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json', {
                 success : function(o) {
                     var data = YAHOO.lang.JSON.parse(o.responseText);
-                    message(data.msg, data.type, true);
+                    Fisma.Util.message(data.msg, data.type, true);
                     spinner.hide();
                 },
                 failure : function(o) {

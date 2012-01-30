@@ -181,7 +181,8 @@ class Fisma_Zend_Acl extends Zend_Acl
     }
     
     /**
-     * Require the current user to have a particular privilege on a particular class of objects, or else throw an exception
+     * Require the current user to have a particular privilege on a particular class of objects, 
+     * or else throw an exception
      * 
      * @param string $privilege
      * @param string $className
@@ -211,11 +212,16 @@ class Fisma_Zend_Acl extends Zend_Acl
             if (!is_object($role)) {
                 return false;
             }
-            $username = $role->username;
+
+            // Add prefix 'user_' to match the role identifier
+            $username = 'user_' . $role->username;
         }
         
-        // Root can do anything
-        if ('root' == $username) {
+        /**
+         * Root can do anything
+         * Add prefix 'user_' to match the role identifier
+         */ 
+        if ('user_root' == $username) {
             return true;
         }
         

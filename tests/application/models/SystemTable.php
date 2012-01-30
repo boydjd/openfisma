@@ -52,7 +52,8 @@ class Test_Application_Models_SystemTable extends Test_Case_Unit
     {
         $orgArray = array('key' => 'value');
         $mockOrg = $this->getMock('Mock_Blank', array('toKeyValueArray'));
-        $mockOrg->expects($this->once())->method('toKeyValueArray')->with('systemId', 'systemId')->will($this->returnValue($orgArray));
+        $mockOrg->expects($this->once())->method('toKeyValueArray')
+                ->with('systemId', 'systemId')->will($this->returnValue($orgArray));
         $user = $this->getMock('Mock_Blank', array('getSystemsByPrivilege'));
         $user->expects($this->once())->method('getSystemsByPrivilege')->will($this->returnValue($mockOrg));
         CurrentUser::setInstance($user);

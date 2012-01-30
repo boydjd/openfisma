@@ -91,9 +91,9 @@ Fisma.Search = function() {
                         var response = YAHOO.lang.JSON.parse(o.responseText).response;
 
                         if (response.success) {
-                            message("Search configuration is valid", "notice", true);
+                            Fisma.Util.message("Search configuration is valid", "notice", true);
                         } else {
-                            message(response.message, "warning", true);
+                            Fisma.Util.message(response.message, "warning", true);
                         }
 
                         YAHOO.util.Dom.removeClass(testConfigurationButton, "yui-button-disabled");
@@ -102,7 +102,7 @@ Fisma.Search = function() {
                     },
 
                     failure : function (o) {
-                        message('Error: ' + o.statusText, 'warning');
+                        Fisma.Util.message('Error: ' + o.statusText, 'warning');
 
                         spinner.hide();
                     }
@@ -189,7 +189,7 @@ Fisma.Search = function() {
                 Fisma.Search.searchPreferences = searchPrefs;
                 Fisma.Search.updateQueryState(queryState, form);
             } catch (e) {
-                message(e);
+                Fisma.Util.message(e);
             } finally {
 
                 // Set the fromSearchForm to true when a search comes from search form submission
@@ -317,7 +317,7 @@ Fisma.Search = function() {
                 postData = Fisma.Search.buildPostRequest(tableState);
             } catch (error) {
                 if ('string' == typeof error) {
-                    message(error, 'warning', true);
+                    Fisma.Util.message(error, 'warning', true);
                 }
             }
 
@@ -518,16 +518,16 @@ Fisma.Search = function() {
                     Fisma.Search.columnPreferencesSpinner.hide();
 
                     if (object.status === "ok") {
-                        message("Your column preferences have been saved", "notice", true);
+                        Fisma.Util.message("Your column preferences have been saved", "notice", true);
                     } else {
-                        message(object.status, "warning", true);
+                        Fisma.Util.message(object.status, "warning", true);
                     }
                 },
 
                 failure : function (response) {
                     Fisma.Search.columnPreferencesSpinner.hide();
 
-                    message('Error: ' + response.statusText, 'warning', true);
+                    Fisma.Util.message('Error: ' + response.statusText, 'warning', true);
                 }
             });
         },
@@ -562,7 +562,7 @@ Fisma.Search = function() {
             
             // Do some sanity checking
             if (0 === checkedRecords.length) {
-                message("No records selected for deletion.", "warning", true);
+                Fisma.Util.message("No records selected for deletion.", "warning", true);
                 
                 return;
             }
@@ -636,7 +636,7 @@ Fisma.Search = function() {
                         if (o.responseText !== undefined) {
                             var response = YAHOO.lang.JSON.parse(o.responseText);
                             
-                            message(response.msg, response.status, true);
+                            Fisma.Util.message(response.msg, response.status, true);
                         }
                         
                         // Refresh search results
@@ -652,7 +652,7 @@ Fisma.Search = function() {
                     failure : function(o) {
                         var text = 'An error occurred while trying to delete the records.';
                         text += ' The error has been logged for administrator review.'; 
-                        message(text, "warning", true);
+                        Fisma.Util.message(text, "warning", true);
                     }
                 },
                 postString);

@@ -32,7 +32,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
     /**
      * The base directory for FileManager
      */
-    var $BASE_DIR = "test_upload";
+    var $baseDir = "test_upload";
 
     /**
      * A mock object for FileInfo library
@@ -66,7 +66,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
         $mime = 'image/png';
 
         $this->fi->expects($this->any())->method('file')->will($this->returnValue($mime));
-        $fm = $this->getMock('Fisma_FileManager', array('_fileExists'), array($this->BASE_DIR, $this->fi));
+        $fm = $this->getMock('Fisma_FileManager', array('_fileExists'), array($this->baseDir, $this->fi));
         $fm->expects($this->any())->method('_fileExists')->will($this->onConsecutiveCalls(true, false));
         
         $this->assertEquals($mime, $fm->getMimeType($this->hash));
@@ -81,7 +81,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
      */
     public function testStream()
     {
-        $fm = $this->getMock('Fisma_FileManager', array('_fileExists', '_readfile'), array($this->BASE_DIR, $this->fi));
+        $fm = $this->getMock('Fisma_FileManager', array('_fileExists', '_readfile'), array($this->baseDir, $this->fi));
         $fm->expects($this->any())->method('_fileExists')->will($this->onConsecutiveCalls(true, false));
         $fm->expects($this->once())->method('_readfile');
         
@@ -98,7 +98,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
      */
     public function testCopyTo()
     { 
-        $fm = $this->getMock('Fisma_FileManager', array('_fileExists', '_copy'), array($this->BASE_DIR, $this->fi));
+        $fm = $this->getMock('Fisma_FileManager', array('_fileExists', '_copy'), array($this->baseDir, $this->fi));
         $fm->expects($this->any())->method('_fileExists')->will($this->returnValue(true));
         $fm->expects($this->exactly(2))->method('_copy')->will($this->onConsecutiveCalls(true, false));
         $fm->copyTo($this->hash, 'admin_avatar.png');
@@ -114,7 +114,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
      */
     public function testCopyToWithInvalidHash()
     {
-        $fm = $this->getMock('Fisma_FileManager', array('_fileExists', '_copy'), array($this->BASE_DIR, $this->fi));
+        $fm = $this->getMock('Fisma_FileManager', array('_fileExists', '_copy'), array($this->baseDir, $this->fi));
         $fm->expects($this->any())->method('_fileExists')->will($this->returnValue(false));
         $this->setExpectedException('Fisma_FileManager_Exception');
         $fm->copyTo($this->hash, 'admin_avatar.png');
@@ -135,7 +135,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
                 '_mkdir',
                 '_copy'
             ),
-            array($this->BASE_DIR, $this->fi)
+            array($this->baseDir, $this->fi)
         );
         $fm->expects($this->any())->method('_sha1File')->will($this->returnValue($this->hash));
         $fm->expects($this->any())->method('_fileExists')->will($this->returnValue(false));
@@ -160,7 +160,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
                 '_sha1File',
                 '_fileExists',
             ),
-            array($this->BASE_DIR, $this->fi)
+            array($this->baseDir, $this->fi)
         );
         $fm->expects($this->any())->method('_sha1File')->will($this->returnValue($this->hash));
         $fm->expects($this->any())->method('_fileExists')->will($this->returnValue(true));
@@ -183,7 +183,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
                 '_mkdir',
                 '_copy'
             ),
-            array($this->BASE_DIR, $this->fi)
+            array($this->baseDir, $this->fi)
         );
         $fm->expects($this->any())->method('_sha1File')->will($this->returnValue(null));
 
@@ -205,7 +205,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
                 '_fileExists',
                 '_mkdir',
             ),
-            array($this->BASE_DIR, $this->fi)
+            array($this->baseDir, $this->fi)
         );
         $fm->expects($this->any())->method('_sha1File')->will($this->returnValue($this->hash));
         $fm->expects($this->any())->method('_fileExists')->will($this->returnValue(false));
@@ -215,7 +215,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
         $fm->store('temp_file'); 
 
     }
-	
+    
     /**
      * Test the getFileSize() method
      *
@@ -229,7 +229,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
                 '_fileExists',
                 '_filesize'
             ),
-            array($this->BASE_DIR, $this->fi)
+            array($this->baseDir, $this->fi)
         );
         $fm->expects($this->any())->method('_fileExists')->will($this->onConsecutiveCalls(true, false));
         $fm->expects($this->once())->method('_filesize')->will($this->returnValue(0));
@@ -250,7 +250,7 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
                 '_fileExists',
                 '_unlink'
             ),
-            array($this->BASE_DIR, $this->fi)
+            array($this->baseDir, $this->fi)
         );
         $fm->expects($this->any())->method('_fileExists')->will($this->onConsecutiveCalls(true, true, false));
         $fm->expects($this->exactly(2))->method('_unlink')->will($this->onConsecutiveCalls(true, false));

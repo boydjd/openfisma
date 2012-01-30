@@ -238,46 +238,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * Display details for a single record.
-     *
-     * All of the default logic for viewing a record is performed in _viewObject, so that child classes can use the
-     * default logic but still render their own views.
-     *
-     * @return void
-     */
-    public function viewAction()
-    {
-        $this->_viewObject();
-        $this->renderScript('object/view.phtml');
-    }
-
-    /**
-     * A protected method which holds all of the logic for the view action, but does not actually render a view
-     */
-    protected function _viewObject()
-    {
-        $id = $this->_request->getParam('id');
-        $subject = $this->_getSubject($id);
-
-        if ($this->_enforceAcl) {
-            $this->_acl->requirePrivilegeForObject('read', $subject);
-        }
-
-        // Load the object's form
-        $form = $this->getForm();
-        $form->setReadOnly(true);
-        $this->setForm($subject, $form);
-        $this->view->form = $form;
-
-        $this->view->id   = $id;
-        $this->view->subject = $subject;
-        $this->view->links = $this->getViewLinks($subject);
-
-        $this->view->modelName = $this->getSingularModelName();
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-    }
-
-    /**
      * Display a create page for a single record. 
      *
      * All of the default logic for creating a record is performed in _createObject, so that child classes can use the
@@ -362,42 +322,57 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->modelName = $this->getSingularModelName();
         $this->view->toolbarButtons = $this->getToolbarButtons();
     }
+
     /**
-     * Display an edit page for a single record.
+     * Display/edit details for a single record.
      *
-     * All of the default logic for editing a record is performed in _editObject, so that child classes can use the
+     * All of the default logic for viewing a record is performed in _viewObject, so that child classes can use the
      * default logic but still render their own views.
      *
      * @return void
      */
-    public function editAction()
+    public function viewAction()
     {
-        $this->_editObject();
-
-        $this->renderScript('object/edit.phtml');
+        $this->_viewObject();
+        $this->renderScript('object/view.phtml');
     }
 
     /**
-     * A protected method which holds all of the logic for the edit page but does not actually render a view
+     * A protected method which holds all of the logic for the view/edit page but does not actually render a view
      */
-    protected function _editObject()
+    protected function _viewObject()
     {
         $id     = $this->_request->getParam('id');
         $subject = $this->_getSubject($id);
 
-        if ($this->_enforceAcl) {
-            $this->_acl->requirePrivilegeForObject('update', $subject);
+        // Since combine view and edit in one action, it needs read and/or update privilege to access view page
+        if ($this->_enforceAcl && 
+            (!$this->_acl->hasPrivilegeForObject('read', $subject) && 
+             !$this->_acl->hasPrivilegeForObject('update', $subject))) {
+
+               $this->view->priorityMessenger("Don't have permission to read/update this object.", 'warning');
+               $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/list");
         }
 
         $this->view->subject = $subject;
 
         $form   = $this->getForm();
-        $form->setAction("{$this->_moduleName}/{$this->_controllerName}/edit/id/$id");
+        if ($this->_acl->hasPrivilegeForObject('update', $subject)) {
+            $form->setAction("{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
+        } else {
+            $form->setReadOnly(true);
+        }
+ 
+       $this->setForm($subject, $form);
 
-        $this->view->links = $this->getEditLinks($subject);
+        $this->view->links = $this->getViewLinks($subject);
 
         // Update the model
         if ($this->_request->isPost()) {
+            if ($this->_enforceAcl) {
+                $this->_acl->requirePrivilegeForObject('update', $subject);
+            }
+
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
                 try {
@@ -984,29 +959,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * Return an array of links that are displayed on the object edit page
-     *
-     * The keys are link labels and the values are the URLs
-     *
-     * @param Fisma_Doctrine_Record $subject
-     * @return array
-     */
-    public function getEditLinks(Fisma_Doctrine_Record $subject)
-    {
-        $links = array();
-
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('read', $subject)) {
-            $links['View'] = "{$this->_moduleName}/{$this->_controllerName}/view/id/{$subject->id}";
-        }
-
-        if ($this->_isDeletable() && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject))) {
-            $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
-        }
-
-        return $links;
-    }
-
-    /**
      * Return an array of links that are displayed on the object view page
      *
      * The keys are link labels and the values are the URLs
@@ -1018,17 +970,13 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $links = array();
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('update', $subject)) {
-            $links['Edit'] = "{$this->_moduleName}/{$this->_controllerName}/edit/id/{$subject->id}";
-        }
-
         if ($this->_isDeletable() && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
         }
 
         return $links;
     }
-    
+
     /**
      * Returns true if the model is deletable, false otherwise.
      * 
