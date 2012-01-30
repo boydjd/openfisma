@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2010 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,10 +17,10 @@
  */
 
 /**
- * A decorator which lets an element render itself, if the element has a renderSelf() method
+ * Render <select> elements as YUI Menu Button
  *
- * @author     Mark E. Haase
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Zend
