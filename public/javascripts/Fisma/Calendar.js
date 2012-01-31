@@ -74,13 +74,13 @@
 
             var handleSelect = function (type, args, obj) {
                 var dateParts = args[0][0]; 
-                var year = dateParts[0], month = "" + dateParts[1], day = "" + dateParts[2];
+                var year = dateParts[0], month = dateParts[1].toString(), day = dateParts[2].toString();
 
-                if (1 == month.length) {
+                if (1 === month.length) {
                     month = "0" + month;
                 }
 
-                if (1 == day.length) {
+                if (1 === day.length) {
                     day = "0" + day;
                 }
 
@@ -201,6 +201,10 @@
             dialog.show();
         }
     };
+<<<<<<< HEAD
 
     Fisma.Calendar = Calendar;
 })();
+=======
+}());
+>>>>>>> origin/ofj1658

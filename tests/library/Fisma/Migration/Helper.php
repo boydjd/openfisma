@@ -109,20 +109,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testDropTable()
     {
-        // Mock prepared statement
-        $statement = $this->getMock('PDOStatement');
-        $statement->expects($this->once())
-                  ->method('execute')
-                  ->with($this->arrayHasKey(':tableName'))
-                  ->will($this->returnValue(0)); // PDOStatement::execute returns number of rows affected
-
         // Mock DB
         $db = $this->getMock('Mock_Pdo');
         $db->expects($this->once())
-           ->method('prepare')
+           ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
-           ->with($this->matchesRegularExpression('/drop\s+table/Usi'))
-           ->will($this->returnValue($statement));
+           ->with($this->matchesRegularExpression('/drop\s+table/Usi'));
 
         // The real meaning in this test is in the with() calls, so no assertions performed here.
         $helper = new Fisma_Migration_Helper($db);
@@ -136,20 +128,13 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testDropTableFailure()
     {
-        // Mock prepared statement
-        $statement = $this->getMock('PDOStatement');
-        $statement->expects($this->once())
-                  ->method('execute')
-                  ->with($this->arrayHasKey(':tableName'))
-                  ->will($this->returnValue(FALSE)); // PDOStatement::execute returns number of rows affected
-
         // Mock DB
         $db = $this->getMock('Mock_Pdo');
         $db->expects($this->once())
-           ->method('prepare')
+           ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression('/drop\s+table/Usi'))
-           ->will($this->returnValue($statement));
+           ->will($this->returnValue(FALSE));
 
         $helper = new Fisma_Migration_Helper($db);
         $helper->dropTable('Foo');

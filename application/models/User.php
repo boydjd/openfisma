@@ -598,7 +598,7 @@ class User extends BaseUser
 
             if (!$includeDisposal) {
                 $query->leftJoin('o.System s2')
-                      ->andWhere("s2.sdlcphase <> 'disposal' or s2.sdlcphase is NULL"); 
+                      ->andWhere("s2.sdlcphase <> 'disposal' or s2.sdlcphase is NULL");
             }
         }
 
@@ -663,7 +663,7 @@ class User extends BaseUser
             $searchEngine = Zend_Registry::get('search_engine');
             $indexer = new Fisma_Search_Indexer($searchEngine);
             $indexQuery = $indexer->getRecordFetchQuery('Poc', $relationAliases);
-        
+
             // Relation aliases are derived from doctrine table metadata and are safe to interpolate
             $baseClassAlias = $relationAliases['Poc'];
             $indexQuery->andWhere("$baseClassAlias.id = ?", $this->id);
@@ -773,7 +773,7 @@ class User extends BaseUser
     {
         $userRolesQuery = (isset($userRolesQuery))
                         ? $userRolesQuery
-                        : Doctrine::getTable('User')->getRolesQuery($hydrationMode);
+                        : Doctrine::getTable('User')->getRolesQuery($this->id, $hydrationMode);
         return $userRolesQuery->execute();
     }
 
