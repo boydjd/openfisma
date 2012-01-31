@@ -615,7 +615,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
             // Throw non-fatal error(s) after saving the Finding
             if (!empty($errorMessages)) {
-                throw new Fisma_Zend_Exception_User($errorMessages);
+                throw new Fisma_Zend_Exception_User(implode("\n", $errorMessages));
             }
         } catch (Fisma_Zend_Exception_User $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
@@ -634,23 +634,20 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $id = $this->_request->getParam('id');
         $attachmentId = $this->_request->getParam('attachmentId');
 
-        $artifactsQuery = Doctrine_Query::create()
-                          ->from('Finding f')
-                          ->leftJoin('f.Attachments a')
-                          ->where('f.id = ?', $id)
-                          ->andWhere('a.id = ?', $attachmentId);
-
-        $finding = $artifactsQuery->execute()->getLast();
+        $finding = Doctrine::getTable('Finding')->getAttachmentQuery($id, $attachmentId)->execute()->getLast();
 
         if (empty($finding)) {
-            throw new Fisma_Zend_Exception('Invalid finding ID');
+            throw new Fisma_Zend_Exception_User('Invalid finding ID');
+        }
+        if ($finding->Attachments->count() <= 0) {
+            throw new Fisma_Zend_Exception_User('Invalid evidence ID');
         }
 
         // There is no ACL defined for evidence objects, access is only based on the associated finding:
         $this->_acl->requirePrivilegeForObject('read', $finding);
 
-        $upload = $finding->Attachments[0];
-        $this->_helper->downloadAttachment($upload->fileHash, $upload->fileName);
+        $attachment = $finding->Attachments[0];
+        $this->_helper->downloadAttachment($attachment->fileHash, $attachment->fileName);
     }
 
     /**
@@ -663,15 +660,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $id = $this->_request->getParam('id');
         $attachmentId = $this->_request->getParam('attachmentId');
 
-        $artifactsQuery = Doctrine_Query::create()
-                          ->from('Finding f')
-                          ->leftJoin('f.Attachments a')
-                          ->where('f.id = ?', $id)
-                          ->andWhere('a.id = ?', $attachmentId);
+        $finding = Doctrine::getTable('Finding')->getAttachmentQuery($id, $attachmentId)->execute()->getLast();
 
-        $finding = $artifactsQuery->execute()->getLast();
-
-        if (empty($evidence)) {
+        if (empty($finding)) {
+            throw new Fisma_Zend_Exception_User('Invalid finding ID');
+        }
+        if ($finding->Attachments->count() <= 0) {
             throw new Fisma_Zend_Exception_User('Invalid evidence ID');
         }
 
@@ -997,6 +991,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable->setData($attachmentRows);
         $this->view->evidencePackage = $dataTable;
+
+        // Build the Evidence Package approval history
+        $approvalHistory = array();
+        for ($i = $this->view->finding->FindingEvaluations->count(); $i > 0; $i--) {
+            $findingEvaluation = $this->view->finding->FindingEvaluations->get($i - 1);
+            if ($findingEvaluation->Evaluation->approvalGroup != 'evidence'):
+                continue;
+            endif;
+            $approvalHistory[] = $findingEvaluation;
+        }
+        $this->view->approvalHistory = $approvalHistory;
     }
 
     /**
@@ -1130,13 +1135,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_helper->layout()->disableLayout();
         $id = $this->_request->getParam('id');
-        $finding = $this->_getSubject($id);
-        $currentPrecedence = $finding->CurrentEvaluation->precedence;
-        $evaluationQuery = Doctrine_Query::create()
-                               ->from('Evaluation e')
-                               ->where('e.approvalgroup LIKE ?', 'evidence')
-                               ->andWhere('e.precedence < ?', $currentPrecedence);
-        $this->view->previousEvaluations = $evaluationQuery->execute();
+        $previousEvaluationsQuery = Doctrine::getTable('Evaluation')->getPreviousEvaluationsQuery($id);
+        $this->view->previousEvaluations = $previousEvaluationsQuery->execute();
     }
 
     /**

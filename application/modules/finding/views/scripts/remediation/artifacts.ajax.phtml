@@ -1,35 +1,18 @@
 <?php
 Fisma_Format_Section::startSection('Evidence Package');
-echo "<div class='findingStatus'><b>Status: </b><span>";
-switch ($this->finding->status) {
-    case 'NEW':
-        echo "Awaiting Mitigation Strategy";
-        break;
-    case 'DRAFT':
-        echo "Awaiting Mitigation Strategy Submission";
-        break;
-    case 'MSA':
-        echo "Awaiting Mitigation Strategy Approval";
-        break;
-    case 'EN':
-        echo "Awaiting Evidence Package Submission";
-        break;
-    case 'EA':
-        echo "Awaiting {$activeEvaluation->name}";
-        break;
-    case 'CLOSED':
-        echo "Finding Officially Closed.";
-        break;
-    default:
-        echo "Unknown Status";
-}
-echo "</span></div>";
+?>
+<div class='findingStatus'>
+    <b>Status: </b>
+    <span><?php echo $this->escape($this->finding->getLongStatus()); ?></span>
+</div>
 
+<div class='buttonBar'>
+<?php
 if (!(
     $this->finding->isDeleted() ||
     !in_array($this->finding->status, array('EN', 'EA')) ||
     !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)
-)):
+)): // [Upload Evidence] during EN and EA phases
     $uploadEvidenceButton = new Fisma_Yui_Form_Button(
         'uploadEvidenceButton',
         array(
@@ -38,7 +21,8 @@ if (!(
         )
     );
     echo $this->escape($uploadEvidenceButton, 'none');
-    if ($this->finding->status == 'EN'):
+
+    if ($this->finding->status == 'EN'): // [Submit Evidence] during EN phase
         $submitEvidenceButton = new Fisma_Yui_Form_Button_Link(
             'submitEvidenceButton',
             array(
@@ -54,10 +38,10 @@ $activeEvaluation = $this->finding->CurrentEvaluation;
 if (
     $this->finding->status == 'EA' &&
     $this->acl()->hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)
-):
-   echo $this->escape('<input type="hidden" name="comment" value="" />', 'none');
-   echo $this->escape('<input type="hidden" name="decision" value="APPROVED" />', 'none');
-   $warningMessage = 'WARNING: You are about to approve the evidence package. This action cannot be undone.'
+): // [APPROVE] and [REJECT] buttons during EA
+    echo $this->escape('<input type="hidden" name="comment" value="" />', 'none');
+    echo $this->escape('<input type="hidden" name="decision" value="APPROVED" />', 'none');
+    $warningMessage = 'WARNING: You are about to approve the evidence package. This action cannot be undone.'
                     . ' Are you sure that you want to continue?';
     $approveButton = new Fisma_Yui_Form_Button(
         'approveButton',
@@ -89,15 +73,21 @@ if (
     );
     echo $this->escape($denyButton, 'none');
 endif;
+?>
+</div> <!-- end of div.buttonBar -->
 
-echo "</div>";
-
+<?php
 // Print the evidence packaqe table (if not empty)
 if ($this->finding->Attachments->count() > 0):
     echo $this->escape($this->evidencePackage, 'none');
 endif;
 
-$approvalHistory = '';
+// Print the history table (if not empty)
+if (!empty($this->approvalHistory)):
+?>
+<div class='approvalHeader'><b>Approval History</b></div>
+<div class='approval'>
+<?php
 $decidedTypes = array(); // Hightlight only the latest decision of each approval type
 for ($i = $this->finding->FindingEvaluations->count(); $i > 0; $i--): // Reversed chronological order
     $findingEvaluation = $this->finding->FindingEvaluations->get($i - 1);
@@ -112,25 +102,27 @@ for ($i = $this->finding->FindingEvaluations->count(); $i > 0; $i--): // Reverse
     endif;
 
     $user = $findingEvaluation->User;
-    $fullName = $user->nameFirst . ' ' . $user->nameLast;
+    $userHTML = $this->userInfo($user->nameFirst . ' ' . $user->nameLast, $user->username);
     $decision = $findingEvaluation->decision;
     $spanClass = strtolower($decision);
-    $approvalHistory .=
-        "<div class='approvalStep{$highlighted}'>" .
-                "<b>{$this->escape($findingEvaluation->Evaluation->name)}</b>" .
-                "<span class='{$this->escape($spanClass)}'>" .
-                    "<b>{$this->escape($decision)}</b>" .
-                    $this->escape($this->userInfo($fullName, $user->username), 'none') .
-                    "at {$this->escape($findingEvaluation->createdTs)}" .
-                "</span>";
-    if (!empty($findingEvaluation->comment)):
-        $approvalHistory .= $this->escape($this->textToHtml($this->escape($findingEvaluation->comment)), 'none');
-    endif;
-    $approvalHistory .= "</div>";
+    $comment = (!empty($findingEvaluation->comment)) ?
+               $this->textToHtml($this->escape($findingEvaluation->comment)) :
+               "";
+?>
+    <div class='approvalStep<?php echo $this->escape($highlighted); ?>'>
+        <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?></b>
+        <span class='<?php echo $this->escape($spanClass); ?>'>
+            <b><?php echo $this->escape($decision); ?></b>
+            by <?php echo $this->escape($userHTML, 'none'); ?>
+            at <?php echo $this->escape($findingEvaluation->createdTs); ?>
+        </span>
+        <?php echo $this->escape($comment, 'none'); ?>
+    </div>
+<?php
 endfor;
-if (!empty($approvalHistory)):
-    echo "<div class='approvalHeader'><b>Approval History</b></div>";
-    echo "<div class='approval'>{$approvalHistory}</div>";
+?>
+</div> <!-- end of div.approval -->
+<?php
 endif;
 
 Fisma_Format_Section::stopSection();

@@ -4,34 +4,34 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
- * FindingTable 
- * 
+ * FindingTable
+ *
  * @uses Fisma_Doctrine_Table
- * @package Model 
+ * @package Model
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
                                                            Fisma_Search_CustomChunkSize_Interface
 {
     /**
-     * Because the finding model is quite complex, it has a smaller-than-normal index chunk size which 
+     * Because the finding model is quite complex, it has a smaller-than-normal index chunk size which
      * uses less memory and should provide a more responsive UI.
-     * 
+     *
      * @var int
      */
     const INDEX_CHUNK_SIZE = 20;
@@ -47,7 +47,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'ID',
                 'sortable' => true,
                 'type' => 'integer'
-            ), 
+            ),
             'organization' => array(
                 'initiallyVisible' => true,
                 'extraCriteria' => array(
@@ -70,7 +70,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'Organization/System',
                 'join' => array(
                     'model' => 'Organization',
-                    'relation' => 'Organization', 
+                    'relation' => 'Organization',
                     'field' => 'nickname'
                 ),
                 'sortable' => true,
@@ -81,7 +81,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'Source',
                 'join' => array(
                     'model' => 'Source',
-                    'relation' => 'Source', 
+                    'relation' => 'Source',
                     'field' => 'nickname'
                 ),
                 'sortable' => true,
@@ -92,25 +92,25 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'Creation Date',
                 'sortable' => true,
                 'type' => 'datetime'
-            ), 
+            ),
             'discoveredDate' => array(
                 'initiallyVisible' => true,
                 'label' => 'Discovered Date',
                 'sortable' => true,
                 'type' => 'date'
-            ), 
+            ),
             'nextDueDate' => array(
                 'initiallyVisible' => true,
                 'label' => 'Next Due Date',
                 'sortable' => true,
                 'type' => 'date'
-            ), 
+            ),
             'closedTs' => array(
                 'initiallyVisible' => false,
                 'label' => 'Closed Date',
                 'sortable' => true,
                 'type' => 'datetime'
-            ), 
+            ),
             'legacyFindingKey' => array(
                 'initiallyVisible' => false,
                 'label' => 'Legacy Finding Key',
@@ -198,7 +198,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'Security Control',
                 'join' => array(
                     'model' => 'SecurityControl',
-                    'relation' => 'SecurityControl', 
+                    'relation' => 'SecurityControl',
                     'field' => 'code'
                 ),
                 'sortable' => true,
@@ -209,7 +209,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'Created By User',
                 'join' => array(
                     'model' => 'User',
-                    'relation' => 'CreatedBy', 
+                    'relation' => 'CreatedBy',
                     'field' => 'username'
                 ),
                 'sortable' => true,
@@ -220,7 +220,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'Point Of Contact',
                 'join' => array(
                     'model' => 'Poc',
-                    'relation' => 'PointOfContact', 
+                    'relation' => 'PointOfContact',
                     'field' => 'username'
                 ),
                 'sortable' => true,
@@ -240,7 +240,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'POC Organization',
                 'join' => array(
                     'model' => 'Organization',
-                    'relation' => 'PointOfContact.ReportingOrganization', 
+                    'relation' => 'PointOfContact.ReportingOrganization',
                     'field' => 'nickname'
                 ),
                 'sortable' => true,
@@ -258,17 +258,17 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'hidden' => true,
                 'join' => array(
                     'model' => 'Organization',
-                    'relation' => 'PointOfContact.ReportingOrganization', 
+                    'relation' => 'PointOfContact.ReportingOrganization',
                     'field' => 'id'
                 ),
                 'type' => 'integer'
             )
         );
     }
-    
+
     /**
      * Return a list of fields which are used for access control
-     * 
+     *
      * @return array
      */
     public function getAclFields()
@@ -278,18 +278,18 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
 
     /**
      * Provide ID list for ACL filter
-     * 
+     *
      * @return array
      */
     static function getOrganizationIds()
     {
         $currentUser = CurrentUser::getInstance();
-        
+
         $organizationIds = $currentUser->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id');
 
         return $organizationIds;
     }
-    
+
     /**
      * Implement required interface for custom chunk size.
      *
@@ -298,5 +298,22 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
     public function getIndexChunkSize()
     {
         return self::INDEX_CHUNK_SIZE;
+    }
+
+    /**
+     * Return the query to fetch one attachment (if any) from a finding
+     *
+     * @param int $findingId THe id of the Finding to get
+     * @param int $attachmentId The id of the Attachment to get
+     *
+     * @return Doctrine_Query
+     */
+    public static function getAttachmentQuery($findingId, $attachmentId)
+    {
+        return Doctrine_Query::create()
+               ->from('Finding f')
+               ->leftJoin('f.Attachments a')
+               ->where('f.id = ?', $findingId)
+               ->andWhere('a.id = ?', $attachmentId);
     }
 }

@@ -827,4 +827,29 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             $this->denormalizedStatus = $this->status;
         }
     }
+
+    /**
+     * Return a user-friendly status
+     *
+     * @return String
+     */
+    public function getLongStatus()
+    {
+        $activeEvaluation = $this->CurrentEvaluation;
+        switch ($this->status) {
+            case 'NEW':
+                return "Awaiting Mitigation Strategy";
+            case 'DRAFT':
+                return "Awaiting Mitigation Strategy Submission";
+            case 'MSA':
+            case 'EA':
+                return "Awaiting {$activeEvaluation->name}";
+            case 'EN':
+                return "Awaiting Evidence Package Submission";
+            case 'CLOSED':
+                return "Finding Officially Closed";
+            default:
+                return "Unknown Status";
+        }
+    }
 }
