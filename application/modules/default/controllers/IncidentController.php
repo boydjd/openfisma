@@ -89,6 +89,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->getHelper('AjaxContext')
                       ->addActionContext('list-categories', 'html')
                       ->initContext();
+
+        $this->_helper->fismaContextSwitch()
+                      ->addActionContext('add-user', 'json')
+                      ->addActionContext('remove-user', 'json')
+                      ->initContext();
     }
 
    /**
@@ -785,56 +790,35 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $actorRows = array();
 
         foreach ($actors as $actor) {
-            $actorUsername   = $this->view->userInfo($actor['a_username']);
-            $actorFirstName  = $actor['a_nameFirst'];
-            $actorLastName   = $actor['a_nameLast'];
-            $actorRemoveLink = '<a href=/incident/remove-user/incidentId/' . $this->view->escape($id)
-                             . '/userId/' . $actor['a_id'] . '>Remove</a>';
-
-            $actorColumns = array($actorUsername, $actorFirstName, $actorLastName, $actorRemoveLink);
+            $actorColumns = array(
+                $actor['i_id'],
+                $actor['a_id'],
+                $actor['a_username'],
+                $actor['a_nameFirst'],
+                $actor['a_nameLast'],
+                null // This is for the delete column
+            );
 
             $actorRows[] = $updateIncidentPrivilege ? $actorColumns : array_pop($actorColumns);
         }
 
-        $actorDataTable = new Fisma_Yui_DataTable_Local();
+        $actorTable = new Fisma_Yui_DataTable_Local();
+        $actorTable->setRegistryName('actorTable');
 
-        $actorDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'Username',
-                true,
-                'Fisma.TableFormat.formatHtml',
-                null,
-                'username'
-            )
-        );
-
-        $actorDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'First Name',
-                true,
-                null,
-                null,
-                'firstName'
-            )
-        );
-
-        $actorDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'Last Name',
-                true,
-                null,
-                null,
-                'lastName'
-            )
-        );
+        $col = "Fisma_Yui_DataTable_Column";
+        $actorTable->addColumn(new $col('Incident ID', true, 'Fisma.TableFormat.formatHtml', null, 'incidentId', true))
+                   ->addColumn(new $col('User ID', true, 'Fisma.TableFormat.formatHtml', null, 'userId', true))
+                   ->addColumn(new $col('Username', true, 'Fisma.TableFormat.formatHtml', null, 'username'))
+                   ->addColumn(new $col('First Name', true, null, null, 'nameFirst'))
+                   ->addColumn(new $col('Last Name', true, null, null, 'nameLast'));
 
         if ($updateIncidentPrivilege) {
-            $actorDataTable->addColumn(new Fisma_Yui_DataTable_Column('Remove', true, 'Fisma.TableFormat.formatHtml'));
+            $actorTable->addColumn(new $col('', true, 'Fisma.TableFormat.remover', null, 'remover'));
         }
 
-        $actorDataTable->setData($actorRows);
+        $actorTable->setData($actorRows);
 
-        $this->view->actorDataTable = $actorDataTable;
+        $this->view->actorDataTable = $actorTable;
 
         // Get list of observers
         $observerQuery = Doctrine_Query::create()
@@ -850,62 +834,34 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $observerRows = array();
 
         foreach ($observers as $observer) {
-            $observerUsername   = $this->view->userInfo($observer['o_username']);
-            $observerFirstName  = $observer['o_nameFirst'];
-            $observerLastName   = $observer['o_nameLast'];
-            $observerRemoveLink = '<a href=/incident/remove-user/incidentId/' . $this->view->escape($id)
-                                . '/userId/' . $observer['o_id'] . '>Remove</a>';
-
-            $observerColumns = array($observerUsername, $observerFirstName, $observerLastName, $observerRemoveLink);
+            $observerColumns = array(
+                $observer['i_id'],
+                $observer['o_id'],
+                $observer['o_username'],
+                $observer['o_nameFirst'],
+                $observer['o_nameLast'],
+                null // This is for the delete column
+            );
 
             $observerRows[] = $updateIncidentPrivilege ? $observerColumns : array_pop($observerColumns);
         }
 
-        $observerDataTable = new Fisma_Yui_DataTable_Local();
+        $observerTable = new Fisma_Yui_DataTable_Local();
+        $observerTable->setRegistryName('observerTable');
 
-        $observerDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'Username',
-                true,
-                'Fisma.TableFormat.formatHtml',
-                null,
-                'username'
-            )
-        );
-
-        $observerDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'First Name',
-                true,
-                null,
-                null,
-                'firstName'
-            )
-        );
-
-        $observerDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'Last Name',
-                true,
-                null,
-                null,
-                'lastName'
-            )
-        );
+        $observerTable->addColumn(new $col('Incident ID', true, 'Fisma.TableFormat.formatHtml', null, 'incidentId', true))
+                      ->addColumn(new $col('User ID', true, 'Fisma.TableFormat.formatHtml', null, 'userId', true))
+                      ->addColumn(new $col('Username', true, 'Fisma.TableFormat.formatHtml', null, 'username'))
+                      ->addColumn(new $col('First Name', true, null, null, 'nameFirst'))
+                      ->addColumn(new $col('Last Name', true, null, null, 'nameLast'));
 
         if ($updateIncidentPrivilege) {
-            $observerDataTable->addColumn(
-                new Fisma_Yui_DataTable_Column(
-                    'Remove',
-                    true,
-                    'Fisma.TableFormat.formatHtml'
-                )
-            );
+            $observerTable->addColumn(new $col('', true, 'Fisma.TableFormat.remover', null, 'remover'));
         }
 
-        $observerDataTable->setData($observerRows);
+        $observerTable->setData($observerRows);
 
-        $this->view->observerDataTable = $observerDataTable;
+        $this->view->observerDataTable = $observerTable;
 
         // Create autocomplete for actors
         $this->view->actorAutocomplete = new Fisma_Yui_Form_AutoComplete(
@@ -916,13 +872,19 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'xhr' => "/incident/get-eligible-users/id/$id",
                 'hiddenField' => 'actorId',
                 'queryPrepend' => '/query/',
-                'containerId' => 'actorAutocompleteContainer'
+                'containerId' => 'actorAutocompleteContainer',
+                'enterKeyEventHandler' => 'Fisma.Incident.handleAutocompleteEnterKey',
+                'enterKeyEventArgs' => 'actor'
             )
         );
 
-        $this->view->addActorButton = new Fisma_Yui_Form_Button_Submit(
+        $this->view->addActorButton = new Fisma_Yui_Form_Button(
             'addActor',
-            array('label' => 'Add Actor')
+            array(
+                'label' => 'Add Actor',
+                'onClickFunction' => 'Fisma.Incident.addUser',
+                'onClickArgument' => array('type' => 'actor', 'incidentId' => $id)
+            )
         );
 
         // Create autocomplete for observers
@@ -934,23 +896,32 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'xhr' => "/incident/get-eligible-users/id/$id",
                 'hiddenField' => 'observerId',
                 'queryPrepend' => '/query/',
-                'containerId' => 'observerAutocompleteContainer'
+                'containerId' => 'observerAutocompleteContainer',
+                'enterKeyEventHandler' => 'Fisma.Incident.handleAutocompleteEnterKey',
+                'enterKeyEventArgs' => 'observer'
             )
         );
 
-        $this->view->addObserverButton = new Fisma_Yui_Form_Button_Submit(
+        $this->view->addObserverButton = new Fisma_Yui_Form_Button(
             'addObserver',
-            array('label' => 'Add Observer')
+            array(
+                'label' => 'Add Observer',
+                'onClickFunction' => 'Fisma.Incident.addUser',
+                'onClickArgument' => array('type' => 'observer', 'incidentId' => $id)
+            )
         );
     }
 
     /**
-     * Add a user as an actor or observer to the specified incident
+     * Add a user as an actor or observer to the specified incident.
+     *
+     * This is called asynchronously from Fisma.Incident.addUser().
      */
     public function addUserAction()
     {
-        $incidentId = $this->getRequest()->getParam('id');
-        $incident = Doctrine::getTable('Incident')->find($incidentId);
+        $response = new Fisma_AsyncResponse;
+
+        $incidentId = $this->getRequest()->getParam('incidentId');
 
         $this->_assertCurrentUserCanUpdateIncident($incidentId);
 
@@ -960,42 +931,24 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             throw new Fisma_Zend_Exception("Invalid incident user type: '$type'");
         }
 
-        // The user ID is passed as observerId or actorId depending on which type is being submitted
-        if ('actor' == $type) {
-            $userId = $this->getRequest()->getParam('actorId');
-        } else {
-            $userId = $this->getRequest()->getParam('observerId');
-        }
+        $userId = $this->getRequest()->getParam('userId');
+        $username = $this->getRequest()->getParam('username');
 
         /*
          * User ID is supplied by an autocomplete. If the user did not use autocomplete, then check to see if the
          * username can be looked up.
          */
-        if (empty($userId)) {
-
-            $username = ($type == 'actor')
-                      ? $this->getRequest()->getParam('actorAutocomplete')
-                      : $this->getRequest()->getParam('observerAutocomplete');
-
-            $user = Doctrine::getTable('User')->findOneByUsername($username);
-
-            if (!$user) {
-                $error = "No user exists with the username \"$username\"";
-                $this->view->priorityMessenger($error, 'warning');
-            } else {
-                $userId = $user->id;
-            }
+        if (strlen($userId) > 0) {
+            $user = Doctrine::getTable('User')->find($userId, Doctrine::HYDRATE_ARRAY);
+        } elseif (strlen($username) > 0) {
+            $user = Doctrine::getTable('User')->findOneByUsername($username, Doctrine::HYDRATE_ARRAY);
         }
 
-        /*
-         * User ID may have been missing in the form submission, but found by looking up the username, so we need to
-         * verify that userId is set before creating the link and sending the e-mail.
-         */
-        if (!empty($userId)) {
+        if ($user) {
             // Create the requested link
             $incidentActor = new IrIncidentUser();
 
-            $incidentActor->userId = $userId;
+            $incidentActor->userId = $user['id'];
             $incidentActor->incidentId = $incidentId;
             $incidentActor->accessType = strtoupper($type);
 
@@ -1005,8 +958,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $portableCode = $e->getPortableCode();
 
                 if (Doctrine::ERR_ALREADY_EXISTS == $portableCode) {
-                    $message = 'A user cannot have both the actor and observer role for the same incident.';
-                    $this->view->priorityMessenger($message, 'warning');
+                    $message = 'That user is already an actor or an observer on this incident.';
+                    $response->fail($message);
                 } else {
                     throw $e;
                 }
@@ -1015,9 +968,21 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             // Send e-mail
             $mail = new Fisma_Zend_Mail();
             $mail->IRAssign($userId, $incidentId);
+        } else {
+            $response->fail("No user found with that name.");
         }
 
-        $this->_redirect("/incident/view/id/$incidentId");
+        if ($response->success) {
+            $this->view->user = array(
+                'userId' => $user['id'],
+                'incidentId' => $incidentId,
+                'username' => $user['username'],
+                'nameFirst' => $user['nameFirst'],
+                'nameLast' => $user['nameLast']
+            );
+        }
+
+        $this->view->response = $response;
     }
 
     /**
@@ -1025,6 +990,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function removeUserAction()
     {
+        $response = new Fisma_AsyncResponse;
+
         $incidentId = $this->getRequest()->getParam('incidentId');
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
@@ -1033,10 +1000,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Remove the specified user from this incident
         $userId = $this->getRequest()->getParam('userId');
 
-        $incident->unlink('Users', array($userId));
-        $incident->save();
+        Doctrine_Query::create()->delete()->from('IrIncidentUser iu')
+                                          ->where('iu.userId = ? AND iu.incidentId = ?', array($userId, $incidentId))
+                                          ->execute();
 
-        $this->_redirect("/incident/view/id/$incidentId");
+        $this->view->response = $response;
     }
 
     /**
@@ -1763,15 +1731,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function getEligibleUsersAction()
     {
-        $id = $this->getRequest()->getParam('id');
+        $id = Inspekt::getInt($this->getRequest()->getParam('id'));
         $queryString = $this->getRequest()->getParam('query');
 
         $userQuery = Doctrine_Query::create()
                      ->select('u.username')
                      ->from('User u')
-                     ->leftJoin('u.Incidents i')
+                     ->leftJoin("u.IrIncidentUser iu ON u.id = iu.userId AND iu.incidentId = $id")
                      ->where("u.username like ?", "%$queryString%")
-                     ->andWhere('i.id IS NULL OR i.id <> ?', $id)
+                     ->andWhere('iu.incidentId IS NULL')
+                     ->orderBy('u.username')
                      ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         $users = $userQuery->execute();

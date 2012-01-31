@@ -16,7 +16,7 @@
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
- * @fileoverview AutoComplete namespace 
+ * @fileoverview AutoComplete namespace
  *
  * @author    Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -33,18 +33,18 @@ Fisma.AutoComplete = function() {
          * Used for tracking if there are any open requests.
          */
         requestCount : 0,
-        
+
         /**
          * Used for tracking if any results have been populated
          */
         resultsPopulated : false,
-        
+
         /**
          * Initializes the AutoComplete widget
          *
          * @param oEvent
          * @param aArgs
-         * @param {Array} params 
+         * @param {Array} params
          */
         init : function(oEvent, aArgs, params) {
             var acRDS = new YAHOO.widget.DS_XHR(params.xhr, params.schema);
@@ -73,12 +73,12 @@ Fisma.AutoComplete = function() {
              */
             ac.dataReturnEvent.subscribe(function () {
                 Fisma.AutoComplete.requestCount--;
-                
+
                 if (0 === Fisma.AutoComplete.requestCount) {
                     spinnerImage.style.visibility = "hidden";
                 }
             });
-            
+
             /**
              * Re-display the autocomplete menu if the text field loses and then regains focus
              */
@@ -87,7 +87,7 @@ Fisma.AutoComplete = function() {
                     ac.expandContainer();
                 }
             };
-            
+
             /**
              * Record the fact that the results have been retrieved
              */
@@ -104,7 +104,7 @@ Fisma.AutoComplete = function() {
             ac.generateRequest = function(query) {
                 return params.queryPrepend + query;
             };
-            
+
             /**
              * Overridable method that returns HTML markup for one result to be populated
              * as innerHTML of an <li> element.
@@ -117,7 +117,7 @@ Fisma.AutoComplete = function() {
              */
             ac.formatResult = function(oResultData, sQuery, sResultMatch) {
                 var sMarkup = (sResultMatch) ? PHP_JS().htmlspecialchars(sResultMatch) : "";
-                
+
                 // Create a regex to match the query case insensitively
                 var regex = new RegExp('\\b(' + sQuery + ')', 'i');
                 sResultMatch = sResultMatch.replace(regex, "<em>$1</em>");
@@ -126,15 +126,36 @@ Fisma.AutoComplete = function() {
             };
 
             ac.itemSelectEvent.subscribe(
-                Fisma.AutoComplete.updateHiddenField, 
+                Fisma.AutoComplete.updateHiddenField,
                 params.hiddenFieldId
             );
 
             ac.selectionEnforceEvent.subscribe(
-                Fisma.AutoComplete.clearHiddenField, 
+                Fisma.AutoComplete.clearHiddenField,
                 params.hiddenFieldId
             );
-            
+
+            /* If 'enterKeyEventHandler' is specified, then the input field will not submit a
+             * form when the user presses return or enter. Instead, it will call the specified function.
+             * If set to false, the form will not submit but not handler will be called. If unset or set
+             * to true, then the default event handling will takel place.
+             */
+            if (params.hasOwnProperty('enterKeyEventHandler')) {
+                YAHOO.util.Event.on(ac.getInputEl(), "keydown", function (e) {
+                    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                        YAHOO.util.Event.preventDefault(e);
+
+                        if (!YAHOO.lang.isNull(params.enterKeyEventHandler)) {
+                            var enterKeyEventHandler = Fisma.Util.getObjectFromName(params.enterKeyEventHandler);
+
+                            if (enterKeyEventHandler) {
+                                enterKeyEventHandler(ac, params.enterKeyEventArgs);
+                            }
+                        }
+                    }
+                });
+            }
+
             // Call the setup callback, if it is defined. This allows an implementer to tweak the autocomplete object.
             if (YAHOO.lang.isValue(params.setupCallback)) {
                 var setupCallback = Fisma.Util.getObjectFromName(params.setupCallback);
@@ -154,7 +175,7 @@ Fisma.AutoComplete = function() {
             document.getElementById(hiddenFieldId).value = aArgs[2][1]['id'];
             $('#' + hiddenFieldId).trigger('change');
         },
-        
+
         /**
          * Clears the value of the hidden field
          *
@@ -164,7 +185,7 @@ Fisma.AutoComplete = function() {
          */
         clearHiddenField : function (sType, aArgs, hiddenFieldId) {
             document.getElementById(hiddenFieldId).value = null;
-            $('#' + hiddenFieldId).trigger('change');            
+            $('#' + hiddenFieldId).trigger('change');
         }
     };
 }();

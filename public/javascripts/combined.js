@@ -3405,7 +3405,7 @@ Fisma.AutoComplete=function(){return{requestCount:0,resultsPopulated:false,init:
  * You should have received a copy of the GNU General Public License
  * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
  *
- * @fileoverview AutoComplete namespace 
+ * @fileoverview AutoComplete namespace
  *
  * @author    Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
@@ -3422,18 +3422,18 @@ Fisma.AutoComplete = function() {
          * Used for tracking if there are any open requests.
          */
         requestCount : 0,
-        
+
         /**
          * Used for tracking if any results have been populated
          */
         resultsPopulated : false,
-        
+
         /**
          * Initializes the AutoComplete widget
          *
          * @param oEvent
          * @param aArgs
-         * @param {Array} params 
+         * @param {Array} params
          */
         init : function(oEvent, aArgs, params) {
             var acRDS = new YAHOO.widget.DS_XHR(params.xhr, params.schema);
@@ -3462,12 +3462,12 @@ Fisma.AutoComplete = function() {
              */
             ac.dataReturnEvent.subscribe(function () {
                 Fisma.AutoComplete.requestCount--;
-                
+
                 if (0 === Fisma.AutoComplete.requestCount) {
                     spinnerImage.style.visibility = "hidden";
                 }
             });
-            
+
             /**
              * Re-display the autocomplete menu if the text field loses and then regains focus
              */
@@ -3476,7 +3476,7 @@ Fisma.AutoComplete = function() {
                     ac.expandContainer();
                 }
             };
-            
+
             /**
              * Record the fact that the results have been retrieved
              */
@@ -3493,7 +3493,7 @@ Fisma.AutoComplete = function() {
             ac.generateRequest = function(query) {
                 return params.queryPrepend + query;
             };
-            
+
             /**
              * Overridable method that returns HTML markup for one result to be populated
              * as innerHTML of an <li> element.
@@ -3506,7 +3506,7 @@ Fisma.AutoComplete = function() {
              */
             ac.formatResult = function(oResultData, sQuery, sResultMatch) {
                 var sMarkup = (sResultMatch) ? PHP_JS().htmlspecialchars(sResultMatch) : "";
-                
+
                 // Create a regex to match the query case insensitively
                 var regex = new RegExp('\\b(' + sQuery + ')', 'i');
                 sResultMatch = sResultMatch.replace(regex, "<em>$1</em>");
@@ -3515,15 +3515,36 @@ Fisma.AutoComplete = function() {
             };
 
             ac.itemSelectEvent.subscribe(
-                Fisma.AutoComplete.updateHiddenField, 
+                Fisma.AutoComplete.updateHiddenField,
                 params.hiddenFieldId
             );
 
             ac.selectionEnforceEvent.subscribe(
-                Fisma.AutoComplete.clearHiddenField, 
+                Fisma.AutoComplete.clearHiddenField,
                 params.hiddenFieldId
             );
-            
+
+            /* If 'enterKeyEventHandler' is specified, then the input field will not submit a
+             * form when the user presses return or enter. Instead, it will call the specified function.
+             * If set to false, the form will not submit but not handler will be called. If unset or set
+             * to true, then the default event handling will takel place.
+             */
+            if (params.hasOwnProperty('enterKeyEventHandler')) {
+                YAHOO.util.Event.on(ac.getInputEl(), "keydown", function (e) {
+                    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                        YAHOO.util.Event.preventDefault(e);
+
+                        if (!YAHOO.lang.isNull(params.enterKeyEventHandler)) {
+                            var enterKeyEventHandler = Fisma.Util.getObjectFromName(params.enterKeyEventHandler);
+
+                            if (enterKeyEventHandler) {
+                                enterKeyEventHandler(ac, params.enterKeyEventArgs);
+                            }
+                        }
+                    }
+                });
+            }
+
             // Call the setup callback, if it is defined. This allows an implementer to tweak the autocomplete object.
             if (YAHOO.lang.isValue(params.setupCallback)) {
                 var setupCallback = Fisma.Util.getObjectFromName(params.setupCallback);
@@ -3543,7 +3564,7 @@ Fisma.AutoComplete = function() {
             document.getElementById(hiddenFieldId).value = aArgs[2][1]['id'];
             $('#' + hiddenFieldId).trigger('change');
         },
-        
+
         /**
          * Clears the value of the hidden field
          *
@@ -3553,7 +3574,7 @@ Fisma.AutoComplete = function() {
          */
         clearHiddenField : function (sType, aArgs, hiddenFieldId) {
             document.getElementById(hiddenFieldId).value = null;
-            $('#' + hiddenFieldId).trigger('change');            
+            $('#' + hiddenFieldId).trigger('change');
         }
     };
 }();
@@ -8148,7 +8169,7 @@ Fisma.HtmlPanel = function() {
         }
     };
 }();
-Fisma.Incident={commentTable:null,attachArtifactCallback:function(a){window.location.href=window.location.href},commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable=Fisma.Registry.get("comments");this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("incidentCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()},getIncidentStepParentElement:function(b){var c=b.parentNode.parentNode.parentNode;var a=1;if(!(a==c.nodeType&&"TR"==c.tagName)){throw"Cannot locate the parent element for this incident step."}return c},getIncidentStepNumber:function(e){var d=e.firstChild;var b=1;if(!(b==d.nodeType&&"TD"==d.tagName)){throw"Cannot locate the table data (td) element for this incident step."}var a=d.firstChild.nodeValue;var c=a.match(/\d+/);if(c.length!=1){throw"Not able to locate the step number in the incident step label."}return c[0]},renumberAllIncidentSteps:function(b){var c=YAHOO.util.Dom.getElementsByClassName("incidentStep","tr",b);var a=1;for(var d in c){var e=c[d];e.firstChild.firstChild.nodeValue="Step "+a+":";a++}},addIncidentStepAbove:function(c){var b=this.getIncidentStepParentElement(c);var d=this.generateTextareaId(b.parentNode);var a=this.generateIncidentStep(b,d);b.parentNode.insertBefore(a,b);tinyMCE.execCommand("mceAddControl",false,d);this.renumberAllIncidentSteps(b.parentNode);return false},addIncidentStepBelow:function(c){var b=this.getIncidentStepParentElement(c);var d=this.generateTextareaId(b.parentNode);var a=this.generateIncidentStep(b,d);if(b.nextSibling){b.parentNode.insertBefore(a,b.nextSibling)}else{b.parentNode.appendChild(a)}tinyMCE.execCommand("mceAddControl",false,d);this.renumberAllIncidentSteps(b.parentNode);return false},removeIncidentStep:function(b){var a=this.getIncidentStepParentElement(b);a.parentNode.removeChild(a);this.renumberAllIncidentSteps(a.parentNode);return false},generateIncidentStep:function(p,g){var o=p.cloneNode(false);var s=p.parentNode;var b=document.createElement("td");b.innerHTML="Step : ";o.appendChild(b);var n=document.createElement("td");o.appendChild(n);var e=YAHOO.util.Dom.getLastChild(p);var t=YAHOO.util.Dom.getFirstChild(e);var i=t.cloneNode(true);var r=YAHOO.util.Dom.getNextSibling(t);var a=r.cloneNode(true);n.appendChild(i);n.appendChild(a);var q=document.createElement("p");q.innerHTML="Description: ";var h=YAHOO.util.Dom.getNextSibling(r);var j=YAHOO.util.Dom.getFirstChild(h);var l=YAHOO.util.Dom.getAttribute(j,"rows");var m=YAHOO.util.Dom.getAttribute(j,"cols");var d=YAHOO.util.Dom.getAttribute(j,"name");var k;if(YAHOO.env.ua.ie){k=document.createElement("<textarea name='"+d+"'></textarea>")}else{k=document.createElement("textarea")}k.setAttribute("id",g);k.setAttribute("rows",l);k.setAttribute("cols",m);k.setAttribute("name",d);q.appendChild(k);n.appendChild(q);var c=YAHOO.util.Dom.getNextSibling(h);var f=c.cloneNode(true);n.appendChild(f);return o},generateTextareaId:function(c){var b=YAHOO.util.Dom.getElementsByClassName("incidentStep","tr",c);var a=1+b.length;var d="textareaid"+a;return d}};/**
+YAHOO.util.Event.onDOMReady(function(){var a=document.getElementById("incident_wizard");if(a){YAHOO.util.Event.on(a,"keypress",function(c){if((c.which&&c.which==13)||(c.keyCode&&c.keyCode==13)){var b=document.getElementById("irReportForwards-button");if(b){b.click();YAHOO.util.Event.preventDefault(c)}}})}});Fisma.Incident={commentTable:null,attachArtifactCallback:function(a){window.location.href=window.location.href},commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable=Fisma.Registry.get("comments");this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("incidentCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()},getIncidentStepParentElement:function(b){var c=b.parentNode.parentNode.parentNode;var a=1;if(!(a==c.nodeType&&"TR"==c.tagName)){throw"Cannot locate the parent element for this incident step."}return c},getIncidentStepNumber:function(e){var d=e.firstChild;var b=1;if(!(b==d.nodeType&&"TD"==d.tagName)){throw"Cannot locate the table data (td) element for this incident step."}var a=d.firstChild.nodeValue;var c=a.match(/\d+/);if(c.length!=1){throw"Not able to locate the step number in the incident step label."}return c[0]},renumberAllIncidentSteps:function(b){var c=YAHOO.util.Dom.getElementsByClassName("incidentStep","tr",b);var a=1;for(var d in c){var e=c[d];e.firstChild.firstChild.nodeValue="Step "+a+":";a++}},addIncidentStepAbove:function(c){var b=this.getIncidentStepParentElement(c);var d=this.generateTextareaId(b.parentNode);var a=this.generateIncidentStep(b,d);b.parentNode.insertBefore(a,b);tinyMCE.execCommand("mceAddControl",false,d);this.renumberAllIncidentSteps(b.parentNode);return false},addIncidentStepBelow:function(c){var b=this.getIncidentStepParentElement(c);var d=this.generateTextareaId(b.parentNode);var a=this.generateIncidentStep(b,d);if(b.nextSibling){b.parentNode.insertBefore(a,b.nextSibling)}else{b.parentNode.appendChild(a)}tinyMCE.execCommand("mceAddControl",false,d);this.renumberAllIncidentSteps(b.parentNode);return false},removeIncidentStep:function(b){var a=this.getIncidentStepParentElement(b);a.parentNode.removeChild(a);this.renumberAllIncidentSteps(a.parentNode);return false},generateIncidentStep:function(p,g){var o=p.cloneNode(false);var s=p.parentNode;var b=document.createElement("td");b.innerHTML="Step : ";o.appendChild(b);var n=document.createElement("td");o.appendChild(n);var e=YAHOO.util.Dom.getLastChild(p);var t=YAHOO.util.Dom.getFirstChild(e);var i=t.cloneNode(true);var r=YAHOO.util.Dom.getNextSibling(t);var a=r.cloneNode(true);n.appendChild(i);n.appendChild(a);var q=document.createElement("p");q.innerHTML="Description: ";var h=YAHOO.util.Dom.getNextSibling(r);var j=YAHOO.util.Dom.getFirstChild(h);var l=YAHOO.util.Dom.getAttribute(j,"rows");var m=YAHOO.util.Dom.getAttribute(j,"cols");var d=YAHOO.util.Dom.getAttribute(j,"name");var k;if(YAHOO.env.ua.ie){k=document.createElement("<textarea name='"+d+"'></textarea>")}else{k=document.createElement("textarea")}k.setAttribute("id",g);k.setAttribute("rows",l);k.setAttribute("cols",m);k.setAttribute("name",d);q.appendChild(k);n.appendChild(q);var c=YAHOO.util.Dom.getNextSibling(h);var f=c.cloneNode(true);n.appendChild(f);return o},generateTextareaId:function(c){var b=YAHOO.util.Dom.getElementsByClassName("incidentStep","tr",c);var a=1+b.length;var d="textareaid"+a;return d},confirmReject:function(b){var a={text:"Are you sure you want to reject this incident? This action can NOT be undone.",func:function(){var d=document.getElementById("incident_detail");var c=document.createElement("input");c.type="hidden";c.name="reject";c.value="reject";d.appendChild(c);d.submit()}};Fisma.Util.showConfirmDialog(b,a)},addUser:function(f,g){var d=g.type;var e=g.incidentId;var c=document.getElementById(d+"Id").value;var h=document.getElementById(d+"Autocomplete").value;var a=Fisma.Util.convertObjectToPostData({csrf:document.getElementById("incident_detail").elements.csrf.value,userId:c,username:h,incidentId:e,type:d});var b=this;b.set("disabled",true);YAHOO.util.Connect.asyncRequest("POST","/incident/add-user/format/json",{success:function(p){b.set("disabled",false);var k,j,i;try{k=YAHOO.lang.JSON.parse(p.responseText);j=k.response;i=k.user}catch(n){j={success:false,message:"invalid response from server"}}if(j.success){var m;if(d=="actor"){m=Fisma.Registry.get("actorTable")}else{m=Fisma.Registry.get("observerTable")}Fisma.Incident.addUserToTable(i,m);Fisma.Registry.get("messageBoxStack").peek().hide()}else{var l="Cannot add actor or observer: "+j.message;Fisma.Registry.get("messageBoxStack").peek().setMessage(l).show()}},failure:function(j){b.set("disabled",false);var i="Cannot add actor or observer: "+j.statusText;Fisma.Registry.get("messageBoxStack").peek().setMessage(i).show()}},a)},addUserToTable:function(a,b){b.addRow(a,0);b.set("sortedBy",null);var c=new Fisma.Blinker(100,6,function(){b.highlightRow(0)},function(){b.unhighlightRow(0)});c.start()},removeUser:function(d,b,c){var a=Fisma.Util.convertObjectToPostData({incidentId:d,userId:b});YAHOO.util.Connect.asyncRequest("POST","/incident/remove-user/format/json",{success:function(i){var f;try{f=YAHOO.lang.JSON.parse(i.responseText).response}catch(h){f={success:false,message:"invalid response from server"}}if(f.success){Fisma.Incident.removeUserFromTable(b,c);Fisma.Registry.get("messageBoxStack").peek().hide()}else{var g="Cannot remove actor or observer: "+f.message;Fisma.Registry.get("messageBoxStack").peek().setMessage(g).show()}},failure:function(f){var e="Cannot remove actor or observer: "+f.statusText;Fisma.Registry.get("messageBoxStack").peek().setMessage(e).show()}},a)},removeUserFromTable:function(c,e){var d=e.getRecordSet();for(var b=0;b<d.getLength();b++){var a=d.getRecord(b);if(a.getData("userId")==c){d.deleteRecord(d.getRecordIndex(a));e.render();return}}}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -8478,6 +8499,190 @@ Fisma.Incident = {
         };
 
         Fisma.Util.showConfirmDialog(e, confirmation);
+    },
+
+    /**
+     * Add an actor or observer to a specified incident.
+     *
+     * Because this is coming from PHP, we can only pass 1 argument, so the argument is a dictionary containing:
+     *
+     * type: either 'actor' or 'observer'
+     * incidentId: the ID of the incident to add the person to
+     *
+     * @param {YAHOO.util.Event} event
+     * @param {Object} arguments
+     */
+    addUser: function(event, arguments) {
+        var type = arguments.type;
+        var incidentId = arguments.incidentId;
+        var userId = document.getElementById(type + "Id").value;
+        var username = document.getElementById(type + "Autocomplete").value;
+
+        var postData = Fisma.Util.convertObjectToPostData({
+            csrf: document.getElementById('incident_detail').elements['csrf'].value,
+            userId: userId,
+            username: username,
+            incidentId: incidentId,
+            type: type
+        });
+
+        // Put button in the closure scope
+        var button = this;
+        button.set('disabled', true);
+
+        YAHOO.util.Connect.asyncRequest(
+            'POST',
+            '/incident/add-user/format/json',
+            {
+                success: function(o) {
+                    button.set('disabled', false);
+
+                    var parsed, response, user;
+
+                    try {
+                        parsed = YAHOO.lang.JSON.parse(o.responseText);
+                        response = parsed.response;
+                        user = parsed.user;
+                    } catch (e) {
+                        response = {success: false, message: "invalid response from server"};
+                    }
+
+                    if (response.success) {
+                        var dataTable;
+
+                        if (type == 'actor') {
+                            dataTable = Fisma.Registry.get('actorTable');
+                        } else {
+                            dataTable = Fisma.Registry.get('observerTable');
+                        }
+
+                        Fisma.Incident.addUserToTable(user, dataTable);
+                        Fisma.Registry.get('messageBoxStack').peek().hide();
+                    } else {
+                        var message = "Cannot add actor or observer: " + response.message;
+                        Fisma.Registry.get('messageBoxStack').peek().setMessage(message).show();
+                    }
+                },
+
+                failure: function(o) {
+                    button.set('disabled', false);
+
+                    var message = 'Cannot add actor or observer: ' + o.statusText;
+                    Fisma.Registry.get('messageBoxStack').peek().setMessage(message).show();
+                }
+            },
+            postData
+
+        );
+    },
+
+    /**
+     * Add a user (actor or observer) to a data table.
+     *
+     * @param {Object} user
+     * @param {YAHOO.widget.DataTable} table
+     */
+    addUserToTable: function (user, table) {
+        table.addRow(user, 0);
+        table.set("sortedBy", null)
+
+        // Highlight the added row so the user can see that it worked
+        var blinker = new Fisma.Blinker(
+            100,
+            6,
+            function () {
+                table.highlightRow(0);
+            },
+            function () {
+                table.unhighlightRow(0);
+            }
+        );
+
+        blinker.start();
+    },
+
+    /**
+     * Remove a user (actor or observer) from an incident.
+     *
+     * @param {Integer} incidentId
+     * @param {Integer} userId
+     * @param {YAHOO.widget.DataTable} table
+     */
+    removeUser: function (incidentId, userId, table) {
+        var postData = Fisma.Util.convertObjectToPostData({
+            incidentId: incidentId,
+            userId: userId
+        });
+
+        YAHOO.util.Connect.asyncRequest(
+            'POST',
+            '/incident/remove-user/format/json',
+            {
+                success: function(o) {
+                    var response;
+
+                    try {
+                        response = YAHOO.lang.JSON.parse(o.responseText).response;
+                    } catch (e) {
+                        response = {success: false, message: "invalid response from server"};
+                    }
+
+                    if (response.success) {
+                        Fisma.Incident.removeUserFromTable(userId, table);
+                        Fisma.Registry.get('messageBoxStack').peek().hide();
+                    } else {
+                        var message = "Cannot remove actor or observer: " + response.message;
+                        Fisma.Registry.get('messageBoxStack').peek().setMessage(message).show();
+                    }
+                },
+
+                failure: function(o) {
+                    var message = 'Cannot remove actor or observer: ' + o.statusText;
+                    Fisma.Registry.get('messageBoxStack').peek().setMessage(message).show();
+                }
+            },
+            postData
+        );
+    },
+
+    /**
+     * Remove a user row from a data table
+     *
+     * @param {Integer} userId
+     * @param {YAHOO.widget.DataTable} table
+     */
+    removeUserFromTable: function (userId, table) {
+        var recordSet = table.getRecordSet();
+
+        // There doesn't seem to be an easy way to get a particular record from a click event, so loop over the table
+        // to find the matching record.
+        for (var i = 0; i < recordSet.getLength(); i++) {
+            var record = recordSet.getRecord(i);
+
+            if (record.getData('userId') == userId) {
+                recordSet.deleteRecord(recordSet.getRecordIndex(record));
+                table.render();
+                return;
+            }
+        }
+    },
+
+    /**
+     * This is called when a user presses enter on an incident actor or observer autocomplete field.
+     *
+     * It responds by triggering the "add actor" or "add observer" button click event.
+     *
+     * @param {Fisma.AutoComplete} ac
+     * @param {String} type Either "actor" or "observer"
+     */
+    handleAutocompleteEnterKey: function (ac, type) {
+        if (!ac.isContainerOpen()) {
+            var button = document.getElementById('add' + $P.ucfirst(type) + "-button");
+
+            if (button) {
+                button.click();
+            }
+        }
     }
 };
 Fisma.Ldap={validateLdapBusy:false,validateLdapConfiguration:function(){if(Fisma.Ldap.validateLdapBusy){return}Fisma.Ldap.validateLdapBusy=true;var c=document.location;var f=document.location.pathname.split("/");var b=null;for(pieceIndex in f){var d=f[pieceIndex];if("id"==d){b=f[parseInt(pieceIndex,10)+1];break}}var a=document.getElementById("validateLdap");a.className="yui-button yui-push-button yui-button-disabled";var g=new Fisma.Spinner(a.parentNode);g.show();var e=document.getElementById("ldapUpdate");YAHOO.util.Connect.setForm(e);YAHOO.util.Connect.asyncRequest("POST","/config/validate-ldap/format/json/id/"+b,{success:function(i){var h=YAHOO.lang.JSON.parse(i.responseText);Fisma.Util.message(h.msg,h.type,true);a.className="yui-button yui-push-button";Fisma.Ldap.validateLdapBusy=false;g.hide()},failure:function(h){Fisma.Util.message("Validation failed: "+h.statusText,"warning",true);g.hide()}})}};/**
@@ -8655,7 +8860,7 @@ Fisma.Ldap = {
         }
     };
 })();
-(function(){var a=function(b){var d=this;if(!YAHOO.lang.isValue(b)){throw"Container must be an HTML element object."}while(b.childNodes.length>0){b.removeChild(b.firstChild)}this._container=b;this.setErrorLevel(a.ERROR_LEVEL.WARN);this.hide();var c="✗";if(YAHOO.env.ua.ie===7){c="x"}var e=document.createElement("div");e.className="closeControl";e.appendChild(document.createTextNode(c));this._container.appendChild(e);YAHOO.util.Event.addListener(e,"click",function(){this.hide()},this,true);this._subcontainer=document.createElement("div");this._container.appendChild(this._subcontainer)};a.ERROR_LEVEL={WARN:0,INFO:1};a.prototype={_container:null,_subcontainer:null,_errorLevel:null,addMessage:function(b){this._subcontainer.innerHTML+=b},setMessage:function(b){this._subcontainer.innerHTML=b},setErrorLevel:function(b){switch(b){case a.ERROR_LEVEL.WARN:this._container.className="messageBox warn";break;case a.ERROR_LEVEL.INFO:this._container.className="messageBox info";break;default:throw"Invalid error level specified ("+b+")."}this._errorLevel=b},getErrorLevel:function(){return this._errorLevel},show:function(){YAHOO.util.Dom.removeClass(this._container,"hide")},hide:function(){YAHOO.util.Dom.addClass(this._container,"hide")}};Fisma.MessageBox=a})();/**
+(function(){var a=function(b){var d=this;if(!YAHOO.lang.isValue(b)){throw"Container must be an HTML element object."}while(b.childNodes.length>0){b.removeChild(b.firstChild)}this._container=b;this.setErrorLevel(a.ERROR_LEVEL.WARN);this.hide();var c="✗";if(YAHOO.env.ua.ie===7){c="x"}var e=document.createElement("div");e.className="closeControl";e.appendChild(document.createTextNode(c));this._container.appendChild(e);YAHOO.util.Event.addListener(e,"click",function(){this.hide()},this,true);this._subcontainer=document.createElement("div");this._container.appendChild(this._subcontainer)};a.ERROR_LEVEL={WARN:0,INFO:1};a.prototype={_container:null,_subcontainer:null,_errorLevel:null,addMessage:function(b){this._subcontainer.innerHTML+=b;return this},setMessage:function(b){this._subcontainer.innerHTML=b;return this},setErrorLevel:function(b){switch(b){case a.ERROR_LEVEL.WARN:this._container.className="messageBox warn";break;case a.ERROR_LEVEL.INFO:this._container.className="messageBox info";break;default:throw"Invalid error level specified ("+b+")."}this._errorLevel=b;return this},getErrorLevel:function(){return this._errorLevel},show:function(){YAHOO.util.Dom.removeClass(this._container,"hide");return this},hide:function(){YAHOO.util.Dom.addClass(this._container,"hide");return this}};Fisma.MessageBox=a})();/**
  * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -8681,7 +8886,7 @@ Fisma.Ldap = {
 (function() {
     /**
      * A box that is used to display error or success messages to the user.
-     * 
+     *
      * @namespace Fisma
      * @class MessageBox
      * @extends n/a
@@ -8700,7 +8905,7 @@ Fisma.Ldap = {
         }
 
         this._container = container;
-        
+
         // Default error level is "warn" for legacy compatibility
         this.setErrorLevel(MB.ERROR_LEVEL.WARN);
         this.hide();
@@ -8718,7 +8923,7 @@ Fisma.Ldap = {
         this._container.appendChild(closeControl);
 
         YAHOO.util.Event.addListener(closeControl, "click", function () {this.hide();}, this, true);
-        
+
         // Add the subcontainer
         this._subcontainer = document.createElement('div');
         this._container.appendChild(this._subcontainer);
@@ -8726,7 +8931,7 @@ Fisma.Ldap = {
 
     /**
      * An enumeration of error levels
-     * 
+     *
      * @static
      */
     MB.ERROR_LEVEL = {
@@ -8737,47 +8942,54 @@ Fisma.Ldap = {
     MB.prototype = {
         /**
          * A reference to the HTML container that this is rendered inside of.
-         * 
+         *
          * @param HTMLElement
          */
         _container: null,
 
         /**
          * A subcontainer that is used to hold the message (since the main container also has a "close" control)
-         * 
+         *
          * @param HTMLElement
          */
         _subcontainer: null,
-        
+
         /**
          * The criticality or error level for this message
          */
         _errorLevel: null,
-        
+
         /**
          * Append new message text to the existing message box
-         * 
+         *
          * @param message {String}
+         * @return {Fisma.MessageBox} Fluent Interface
          */
         addMessage: function (message) {
             this._subcontainer.innerHTML += message;
+
+            return this;
         },
-        
+
         /**
          * Set the message text (overwriting what was previously there)
-         * 
+         *
          * @param message {String}
-         */        
+         * @return {Fisma.MessageBox} Fluent Interface
+         */
         setMessage: function (message) {
             this._subcontainer.innerHTML = message;
+
+            return this;
         },
-        
+
         /**
          * Set the error level for this box.
-         * 
+         *
          * This affects appearance but in the future may also affect behavior.
-         * 
+         *
          * @param level {MessageBar.ERROR_LEVEL}
+         * @return {Fisma.MessageBox} Fluent Interface
          */
         setErrorLevel: function (level) {
             switch (level) {
@@ -8792,11 +9004,13 @@ Fisma.Ldap = {
             }
 
             this._errorLevel = level;
+
+            return this;
         },
 
         /**
          * Return the current error level.
-         * 
+         *
          * @return {MessageBar.ERROR_LEVEL}
          */
         getErrorLevel: function () {
@@ -8805,16 +9019,24 @@ Fisma.Ldap = {
 
         /**
          * Show the message box
+         *
+         * @return {Fisma.MessageBox} Fluent Interface
          */
         show: function () {
             YAHOO.util.Dom.removeClass(this._container, "hide");
+
+            return this;
         },
-        
+
         /**
          * Hide the message box
+         *
+         * @return {Fisma.MessageBox} Fluent Interface
          */
         hide: function () {
             YAHOO.util.Dom.addClass(this._container, "hide");
+
+            return this;
         }
     };
 
@@ -14002,7 +14224,7 @@ Fisma.TabView.Roles = function() {
         }
     };
 }();
-Fisma.TableFormat={greenColor:"lightgreen",yellowColor:"yellow",redColor:"pink",green:function(a){a.style.backgroundColor=Fisma.TableFormat.greenColor},yellow:function(a){a.style.backgroundColor=Fisma.TableFormat.yellowColor},red:function(a){a.style.backgroundColor=Fisma.TableFormat.redColor},securityAuthorization:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){authorizedDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-30);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-36);if(authorizedDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(authorizedDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},selfAssessment:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){assessmentDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-8);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-12);if(assessmentDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(assessmentDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},contingencyPlanTest:function(b,a,c,d){Fisma.TableFormat.selfAssessment(b,a,c,d)},yesNo:function(b,a,c,d){b.innerHTML=d;if("YES"==d){Fisma.TableFormat.green(b.parentNode)}else{if("NO"==d){Fisma.TableFormat.red(b.parentNode)}}},editControl:function(d,c,e,f){var a=document.createElement("img");a.src="/images/edit.png";var b=document.createElement("a");b.href=f;b.appendChild(a);d.appendChild(b)},deleteControl:function(d,c,e,f){var a=document.createElement("img");a.src="/images/del.png";var b=document.createElement("a");b.href=f;b.appendChild(a);d.appendChild(b)},formatHtml:function(a,b,c,d){YAHOO.widget.DataTable.formatDefault.apply(this,arguments)},overdueFinding:function(i,k,f,b){overdueFindingSearchUrl="/finding/remediation/list?q=";var a=k.getData("System");if(a){a=$P.html_entity_decode(a);overdueFindingSearchUrl+="/organization/textExactMatch/"+encodeURIComponent(a)}var d=k.getData("Status");if(d){d=PHP_JS().html_entity_decode(d);overdueFindingSearchUrl+="/denormalizedStatus/textExactMatch/"+encodeURIComponent(d)}var j=f.formatterParameters;if(j.source){overdueFindingSearchUrl+="/source/textExactMatch/"+encodeURIComponent(j.source)}var h=null;if(j.from){fromDate=new Date();fromDate.setDate(fromDate.getDate()-parseInt(j.from,10));h=fromDate.getFullYear()+"-"+(fromDate.getMonth()+1)+"-"+fromDate.getDate()}var g=null;if(j.to){toDate=new Date();toDate.setDate(toDate.getDate()-parseInt(j.to,10));g=toDate.getFullYear()+"-"+(toDate.getMonth()+1)+"-"+toDate.getDate()}if(h&&g){overdueFindingSearchUrl+="/nextDueDate/dateBetween/"+encodeURIComponent(g)+"/"+encodeURIComponent(h)}else{if(h){overdueFindingSearchUrl+="/nextDueDate/dateBefore/"+encodeURIComponent(h)}else{var e=new Date();e.setDate(e.getDate()-1);var c=e.getFullYear();c+="-";c+=(e.getMonth()+1);c+="-";c+=e.getDate();overdueFindingSearchUrl+="/nextDueDate/dateBefore/"+encodeURIComponent(c)}}i.innerHTML='<a href="'+overdueFindingSearchUrl+'">'+b+"</a>"},completeDocTypePercentage:function(b,a,c,d){percentage=parseInt(d,10);if(d!==null){b.innerHTML=d+"%";if(percentage>=95&&percentage<=100){Fisma.TableFormat.green(b.parentNode)}else{if(percentage>=80&&percentage<95){Fisma.TableFormat.yellow(b.parentNode)}else{if(percentage>=0&&percentage<80){Fisma.TableFormat.red(b.parentNode)}}}}},incompleteDocumentType:function(c,b,d,e){var a="";if(e.length>0){a+="<ul><li>";a+=e.replace(/,/g,"</li><li>");a+="</li></ul>"}c.innerHTML=a},formatCheckbox:function(c,a,d,e){if(a.getData("deleted_at")){c.parentNode.style.backgroundColor="pink"}else{var b=document.createElement("input");b.type="checkbox";b.className=YAHOO.widget.DataTable.CLASS_CHECKBOX;b.checked=e;if(c.firstChild){c.removeChild(el.firstChild)}c.appendChild(b)}},formatFileSize:function(c,b,d,e){var a=e*1;if(YAHOO.lang.isNumber(a)){if(a<1024){a=a+" bytes"}else{if(a<(1024*1024)){a=(a/1024).toFixed(1)+" KB"}else{if(a<(1024*1024*1024)){a=(a/(1024*1024)).toFixed(1)+" MB"}else{a=(a/(1024*1024*1024)).toFixed(1)+" GB"}}}c.innerHTML=a}}};/**
+Fisma.TableFormat={greenColor:"lightgreen",yellowColor:"yellow",redColor:"pink",green:function(a){a.style.backgroundColor=Fisma.TableFormat.greenColor},yellow:function(a){a.style.backgroundColor=Fisma.TableFormat.yellowColor},red:function(a){a.style.backgroundColor=Fisma.TableFormat.redColor},securityAuthorization:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){authorizedDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-30);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-36);if(authorizedDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(authorizedDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},selfAssessment:function(b,a,c,d){b.innerHTML=d;dateParts=d.split("-");if(3==dateParts.length){assessmentDate=new Date(dateParts[0],dateParts[1],dateParts[2]);greenDate=new Date();greenDate.setMonth(greenDate.getMonth()-8);yellowDate=new Date();yellowDate.setMonth(yellowDate.getMonth()-12);if(assessmentDate>=greenDate){Fisma.TableFormat.green(b.parentNode)}else{if(assessmentDate>=yellowDate){Fisma.TableFormat.yellow(b.parentNode)}else{Fisma.TableFormat.red(b.parentNode)}}}},contingencyPlanTest:function(b,a,c,d){Fisma.TableFormat.selfAssessment(b,a,c,d)},yesNo:function(b,a,c,d){b.innerHTML=d;if("YES"==d){Fisma.TableFormat.green(b.parentNode)}else{if("NO"==d){Fisma.TableFormat.red(b.parentNode)}}},editControl:function(d,c,e,f){var a=document.createElement("img");a.src="/images/edit.png";var b=document.createElement("a");b.href=f;b.appendChild(a);d.appendChild(b)},deleteControl:function(d,c,e,f){var a=document.createElement("img");a.src="/images/del.png";var b=document.createElement("a");b.href=f;b.appendChild(a);d.appendChild(b)},formatHtml:function(a,b,c,d){YAHOO.widget.DataTable.formatDefault.apply(this,arguments)},overdueFinding:function(i,k,f,b){overdueFindingSearchUrl="/finding/remediation/list?q=";var a=k.getData("System");if(a){a=$P.html_entity_decode(a);overdueFindingSearchUrl+="/organization/textExactMatch/"+encodeURIComponent(a)}var d=k.getData("Status");if(d){d=PHP_JS().html_entity_decode(d);overdueFindingSearchUrl+="/denormalizedStatus/textExactMatch/"+encodeURIComponent(d)}var j=f.formatterParameters;if(j.source){overdueFindingSearchUrl+="/source/textExactMatch/"+encodeURIComponent(j.source)}var h=null;if(j.from){fromDate=new Date();fromDate.setDate(fromDate.getDate()-parseInt(j.from,10));h=fromDate.getFullYear()+"-"+(fromDate.getMonth()+1)+"-"+fromDate.getDate()}var g=null;if(j.to){toDate=new Date();toDate.setDate(toDate.getDate()-parseInt(j.to,10));g=toDate.getFullYear()+"-"+(toDate.getMonth()+1)+"-"+toDate.getDate()}if(h&&g){overdueFindingSearchUrl+="/nextDueDate/dateBetween/"+encodeURIComponent(g)+"/"+encodeURIComponent(h)}else{if(h){overdueFindingSearchUrl+="/nextDueDate/dateBefore/"+encodeURIComponent(h)}else{var e=new Date();e.setDate(e.getDate()-1);var c=e.getFullYear();c+="-";c+=(e.getMonth()+1);c+="-";c+=e.getDate();overdueFindingSearchUrl+="/nextDueDate/dateBefore/"+encodeURIComponent(c)}}i.innerHTML='<a href="'+overdueFindingSearchUrl+'">'+b+"</a>"},completeDocTypePercentage:function(b,a,c,d){percentage=parseInt(d,10);if(d!==null){b.innerHTML=d+"%";if(percentage>=95&&percentage<=100){Fisma.TableFormat.green(b.parentNode)}else{if(percentage>=80&&percentage<95){Fisma.TableFormat.yellow(b.parentNode)}else{if(percentage>=0&&percentage<80){Fisma.TableFormat.red(b.parentNode)}}}}},incompleteDocumentType:function(c,b,d,e){var a="";if(e.length>0){a+="<ul><li>";a+=e.replace(/,/g,"</li><li>");a+="</li></ul>"}c.innerHTML=a},formatCheckbox:function(c,a,d,e){if(a.getData("deleted_at")){c.parentNode.style.backgroundColor="pink"}else{var b=document.createElement("input");b.type="checkbox";b.className=YAHOO.widget.DataTable.CLASS_CHECKBOX;b.checked=e;if(c.firstChild){c.removeChild(el.firstChild)}c.appendChild(b)}},formatFileSize:function(c,b,d,e){var a=e*1;if(YAHOO.lang.isNumber(a)){if(a<1024){a=a+" bytes"}else{if(a<(1024*1024)){a=(a/1024).toFixed(1)+" KB"}else{if(a<(1024*1024*1024)){a=(a/(1024*1024)).toFixed(1)+" MB"}else{a=(a/(1024*1024*1024)).toFixed(1)+" GB"}}}c.innerHTML=a}},remover:function(d,c,e,f){var b=this;var a=document.createElement("img");a.src="/images/delete_row.png";YAHOO.util.Event.on(a,"click",function(){YAHOO.util.Event.removeListener(a,"click");a.src="/images/spinners/small.gif";Fisma.Incident.removeUser(c.getData("incidentId"),c.getData("userId"),b)});d.appendChild(a)}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -14231,10 +14453,10 @@ Fisma.TableFormat = {
         var organization = oRecord.getData('System');
 
         if (organization) {
-        
+
             // Since organization may be html-encoded, decode the html before (url)-escaping it
             organization = $P.html_entity_decode(organization);
-            
+
             overdueFindingSearchUrl += "/organization/textExactMatch/" + encodeURIComponent(organization);
         }
 
@@ -14259,7 +14481,7 @@ Fisma.TableFormat = {
         if (parameters.from) {
             fromDate = new Date();
             fromDate.setDate(fromDate.getDate() - parseInt(parameters.from, 10));
-            
+
             from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
         }
 
@@ -14268,12 +14490,12 @@ Fisma.TableFormat = {
         if (parameters.to) {
             toDate = new Date();
             toDate.setDate(toDate.getDate() - parseInt(parameters.to, 10));
-            
+
             to = toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate();
         }
 
         if (from && to) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + 
+            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" +
                                         encodeURIComponent(to) +
                                         "/" +
                                         encodeURIComponent(from);
@@ -14296,9 +14518,9 @@ Fisma.TableFormat = {
     },
 
     /**
-     * A formatter which colors the the percentage of the required documents 
+     * A formatter which colors the the percentage of the required documents
      * which system has completed in red, yellow, or green (or not at all)
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -14322,7 +14544,7 @@ Fisma.TableFormat = {
 
     /**
      * A formatter which displays the missing document type name
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -14338,10 +14560,10 @@ Fisma.TableFormat = {
 
         elCell.innerHTML = docTypeNames;
     },
-    
+
     /**
-     * Creates a checkbox element that can be used to select the record. If the model has soft delete and 
-     * any of the records are deleted, then the checkbox is replaced by an icon so that user's don't try to 
+     * Creates a checkbox element that can be used to select the record. If the model has soft delete and
+     * any of the records are deleted, then the checkbox is replaced by an icon so that user's don't try to
      * "re-delete" any already-deleted items.
      *
      * @param elCell Reference to a container inside the <td> element
@@ -14350,11 +14572,11 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     formatCheckbox : function (elCell, oRecord, oColumn, oData) {
-        
+
         if (oRecord.getData('deleted_at')) {
 
             elCell.parentNode.style.backgroundColor = "pink";
-            
+
         } else {
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
@@ -14362,11 +14584,11 @@ Fisma.TableFormat = {
             checkbox.checked = oData;
 
             if (elCell.firstChild) {
-                elCell.removeChild(el.firstChild);            
+                elCell.removeChild(el.firstChild);
             }
 
             elCell.appendChild(checkbox);
-        }        
+        }
     },
 
     /**
@@ -14394,6 +14616,38 @@ Fisma.TableFormat = {
 
             elCell.innerHTML = size;
         }
+    },
+
+    /**
+     * Show a control that can be used to remove the current record from the table.
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    remover: function (elCell, oRecord, oColumn, oData) {
+        // Put table in closure scope
+        var table = this;
+
+        var img = document.createElement('img');
+        img.src = '/images/delete_row.png';
+        YAHOO.util.Event.on(
+            img,
+            "click",
+            function () {
+                YAHOO.util.Event.removeListener(img, "click");
+                img.src = "/images/spinners/small.gif";
+
+                Fisma.Incident.removeUser(
+                    oRecord.getData('incidentId'),
+                    oRecord.getData('userId'),
+                    table
+                );
+            }
+        );
+
+        elCell.appendChild(img);
     }
 };
 (function(){var a=function(b,e,d){this._callbacks=e;var c=e.dragFinished&&YAHOO.lang.isFunction(e.dragFinished.fn)&&YAHOO.lang.isValue(e.dragFinished.context);if(!c){throw"Required callback 'dragFinished' is not specified or is not valid."}this._dragDropGroup=YAHOO.util.Dom.generateId;this._treeView=b;a.superclass.constructor.call(this,d,this._dragDropGroup,null);YAHOO.util.Dom.addClass(this.getDragEl(),"treeNodeDragProxy")};YAHOO.lang.extend(a,YAHOO.util.DDProxy,{_treeView:null,_currentDragTarget:null,_currentDragSuccessful:false,_dragDropGroup:null,_callbacks:null,startDrag:function(c,e){var b=this.getDragEl();var d=this.getEl();b.innerHTML=d.innerHTML;YAHOO.util.Dom.setStyle(b,"background","white");YAHOO.util.Dom.setStyle(b,"border","none")},endDrag:function(d,f){var b=this.getEl();var c=this.getDragEl();YAHOO.util.Dom.removeClass(this._currentDragTarget,"treeNodeDragAbove");YAHOO.util.Dom.removeClass(this._currentDragTarget,"treeNodeDragOnto");YAHOO.util.Dom.removeClass(this._currentDragTarget,"treeNodeDragBelow");if(!this._currentDragSuccessful){YAHOO.util.Dom.setStyle(c,"visibility","");var e=new YAHOO.util.Motion(c,{points:{to:YAHOO.util.Dom.getXY(b)}},0.2,YAHOO.util.Easing.easeOut);e.onComplete.subscribe(function(){YAHOO.util.Dom.setStyle(c.id,"visibility","hidden")});e.animate();this._currentDragSuccessful=false}},onDragOver:function(b,g){var f=this._getDragLocation(g,b);this._currentDragTarget=YAHOO.util.Dom.get(g);YAHOO.util.Dom.removeClass(this._currentDragTarget,"treeNodeDragAbove");YAHOO.util.Dom.removeClass(this._currentDragTarget,"treeNodeDragOnto");YAHOO.util.Dom.removeClass(this._currentDragTarget,"treeNodeDragBelow");var d=this._treeView.getNodeByElement(this.getEl());var e=this._treeView.getNodeByElement(document.getElementById(g));if(this._callbacks.testDragTargetDelegate){var c=this._callbacks.testDragTargetDelegate.fn.call(this._callbacks.testDragTargetDelegate.context,d,e,f);if(c===false){return}}if(f==a.DRAG_LOCATION.ABOVE){YAHOO.util.Dom.addClass(this._currentDragTarget,"treeNodeDragAbove")}else{if(f==a.DRAG_LOCATION.ONTO){YAHOO.util.Dom.addClass(this._currentDragTarget,"treeNodeDragOnto")}else{YAHOO.util.Dom.addClass(this._currentDragTarget,"treeNodeDragBelow")}}},onDragOut:function(b,c){YAHOO.util.Dom.removeClass(this._currentDragTarget,"treeNodeDragAbove");YAHOO.util.Dom.removeClass(this._currentDragTarget,"treeNodeDragOnto");YAHOO.util.Dom.removeClass(this._currentDragTarget,"treeNodeDragBelow")},onDragDrop:function(b,h){var d=this._treeView.getNodeByElement(this.getEl());var f=this._treeView.getNodeByElement(document.getElementById(h));var g=this._getDragLocation(h,b);if(this._callbacks.testDragTargetDelegate){var c=this._callbacks.testDragTargetDelegate.fn.call(this._testDragTargetDelegateContext,d,f,g);if(c===false){return}}var e=this._callbacks.dragFinished.fn.call(this._callbacks.dragFinished.context,this,d,f,g);this._currentDragSuccessful=e},completeDragDrop:function(b,c,d){this._treeView.popNode(b);switch(d){case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ABOVE:b.insertBefore(c);break;case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ONTO:b.appendTo(c);break;case Fisma.TreeNodeDragBehavior.DRAG_LOCATION.BELOW:b.insertAfter(c);break;default:throw"Invalid drag location parameter";break}this._treeView.getRoot().refresh();Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(this._treeView,this._callbacks)},_getDragLocation:function(c,f){var g=YAHOO.util.Dom.getRegion(c);var b=g.bottom-g.top;var e=YAHOO.util.Event.getPageY(f)-g.top;var d=e/b;if(d<0.25){return a.DRAG_LOCATION.ABOVE}else{if(d<0.75){return a.DRAG_LOCATION.ONTO}else{return a.DRAG_LOCATION.BELOW}}}});a.makeTreeViewDraggable=function(d,f){var c=d.getNodesBy(function(h){return true});for(var g in c){var e=c[g];var b=new a(d,f,e.contentElId,this._dragDropGroup)}};a.DRAG_LOCATION={ABOVE:0,ONTO:1,BELOW:2};Fisma.TreeNodeDragBehavior=a})();/**
@@ -15248,7 +15502,7 @@ Fisma.User = {
         form.submit();
     }
 };
-Fisma.Util={escapeRegexValue:function(b){var a=new RegExp("[.*+?|()\\[\\]{}\\\\]","g");return b.replace(a,"\\$&")},getObjectFromName:function(c){var b=c.split(".");var a=window;for(piece in b){a=a[b[piece]];if(a==undefined){throw"Specified object does not exist: "+c}}return a},positionPanelRelativeToElement:function(b,c){var a=5;b.cfg.setProperty("context",[c,YAHOO.widget.Overlay.TOP_LEFT,YAHOO.widget.Overlay.BOTTOM_LEFT,null,[0,a]])},getTimestamp:function(){var b=new Date();var a=b.getHours()+"";if(a.length==1){a="0"+a}var c=b.getMinutes()+"";if(c.length==1){c="0"+c}var d=b.getSeconds()+"";if(d.length==1){d="0"+d}return a+":"+c+":"+d},showConfirmDialog:function(c,a){var d=Fisma.Util.getDialog();var b=[{text:"Yes",handler:function(){if(a.url){document.location=a.url}else{if(a.func){var e=Fisma.Util.getObjectFromName(a.func);if(YAHOO.lang.isFunction(e)){if(a.args){e.apply(this,a.args)}else{e.call()}}}}this.destroy()}},{text:"No",handler:function(){this.destroy()}}];d.setHeader("Are you sure?");d.setBody(a.text);d.cfg.queueProperty("buttons",b);if(a.width){d.cfg.setProperty("width",a.width)}d.render(document.body);d.show();if(a.isLink){YAHOO.util.Event.preventDefault(c)}},showAlertDialog:function(e,b){var a=Fisma.Util.getDialog();var d=function(){this.destroy()};var c=[{text:"Ok",handler:d}];a.setHeader("WARNING");a.setBody(e);a.cfg.queueProperty("buttons",c);if(!YAHOO.lang.isUndefined(b)&&b.width){a.cfg.setProperty("width",b.width)}if(!YAHOO.lang.isUndefined(b)&&b.zIndex){a.cfg.setProperty("zIndex",b.zIndex)}a.render(document.body);a.show()},getDialog:function(){var a=new YAHOO.widget.SimpleDialog("warningDialog",{width:"400px",fixedcenter:true,visible:false,close:true,modal:true,icon:YAHOO.widget.SimpleDialog.ICON_WARN,constraintoviewport:true,draggable:false});return a},message:function(e,c,a){a=a||false;e=$P.stripslashes(e);var b=Fisma.Registry.get("messageBoxStack");var d=b.peek();if(d){if(a){d.setMessage(e)}else{d.addMessage(e)}if(c=="warning"){d.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN)}else{d.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO)}d.show()}},updateTimeField:function(b){var c=document.getElementById(b);var h=document.getElementById(b+"Hour");var i=document.getElementById(b+"Minute");var a=document.getElementById(b+"Ampm");var f=h.value;var e=i.value;var g=a.value;if("PM"==g){f=parseInt(f)+12}f=$P.str_pad(f,2,"0","STR_PAD_LEFT");e=$P.str_pad(e,2,"0","STR_PAD_LEFT");var d=f+":"+e+":00";c.value=d}};/**
+Fisma.Util={escapeRegexValue:function(b){var a=new RegExp("[.*+?|()\\[\\]{}\\\\]","g");return b.replace(a,"\\$&")},getObjectFromName:function(c){var b=c.split(".");var a=window;for(piece in b){a=a[b[piece]];if(a==undefined){throw"Specified object does not exist: "+c}}return a},positionPanelRelativeToElement:function(b,c){var a=5;b.cfg.setProperty("context",[c,YAHOO.widget.Overlay.TOP_LEFT,YAHOO.widget.Overlay.BOTTOM_LEFT,null,[0,a]])},getTimestamp:function(){var b=new Date();var a=b.getHours()+"";if(a.length==1){a="0"+a}var c=b.getMinutes()+"";if(c.length==1){c="0"+c}var d=b.getSeconds()+"";if(d.length==1){d="0"+d}return a+":"+c+":"+d},showConfirmDialog:function(c,a){var d=Fisma.Util.getDialog();var b=[{text:"Yes",handler:function(){if(a.url){document.location=a.url}else{if(a.func){var e=a.func;if(!YAHOO.lang.isFunction(e)){e=Fisma.Util.getObjectFromName(a.func)}if(YAHOO.lang.isFunction(e)){if(a.args){e.apply(this,a.args)}else{e.call()}}}}this.destroy()}},{text:"No",handler:function(){this.destroy()}}];d.setHeader("Are you sure?");d.setBody(a.text);d.cfg.queueProperty("buttons",b);if(a.width){d.cfg.setProperty("width",a.width)}d.render(document.body);d.show();if(a.isLink){YAHOO.util.Event.preventDefault(c)}},showAlertDialog:function(e,b){var a=Fisma.Util.getDialog();var d=function(){this.destroy()};var c=[{text:"Ok",handler:d}];a.setHeader("WARNING");a.setBody(e);a.cfg.queueProperty("buttons",c);if(!YAHOO.lang.isUndefined(b)&&b.width){a.cfg.setProperty("width",b.width)}if(!YAHOO.lang.isUndefined(b)&&b.zIndex){a.cfg.setProperty("zIndex",b.zIndex)}a.render(document.body);a.show()},getDialog:function(){var a=new YAHOO.widget.SimpleDialog("warningDialog",{width:"400px",fixedcenter:true,visible:false,close:true,modal:true,icon:YAHOO.widget.SimpleDialog.ICON_WARN,constraintoviewport:true,draggable:false});return a},message:function(e,c,a){a=a||false;e=$P.stripslashes(e);var b=Fisma.Registry.get("messageBoxStack");var d=b.peek();if(d){if(a){d.setMessage(e)}else{d.addMessage(e)}if(c=="warning"){d.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN)}else{d.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO)}d.show()}},updateTimeField:function(b){var c=document.getElementById(b);var h=document.getElementById(b+"Hour");var i=document.getElementById(b+"Minute");var a=document.getElementById(b+"Ampm");var f=h.value;var e=i.value;var g=a.value;if("PM"==g){f=parseInt(f)+12}f=$P.str_pad(f,2,"0","STR_PAD_LEFT");e=$P.str_pad(e,2,"0","STR_PAD_LEFT");var d=f+":"+e+":00";c.value=d},convertObjectToPostData:function(d){var a="";for(var b in d){var c=d[b];a+=encodeURIComponent(b)+"="+encodeURIComponent(c)+"&"}return a}};/**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
@@ -15471,10 +15725,10 @@ Fisma.Util = {
     },
 
     /**
-     * I've refactored this slightly by moving most of the logic into MessageBox.js and MessageBoxStack.js, and moving 
-     * the styles into MessageBox.css. I've kept this global method in place to avoid breaking the API right before a 
+     * I've refactored this slightly by moving most of the logic into MessageBox.js and MessageBoxStack.js, and moving
+     * the styles into MessageBox.css. I've kept this global method in place to avoid breaking the API right before a
      * release (which would require diff'ing a lot of lines of code.)
-     * 
+     *
      * @param msg {String} the message to display
      * @param model {String} either "info" or "warning" -- this affects the color scheme used to display the message
      * @param clear {Boolean} If true, new message will replace existing message. If false, new message will be
@@ -15494,7 +15748,7 @@ Fisma.Util = {
             } else {
                 messageBox.addMessage(msg);
             }
-            
+
             if (model == 'warning') {
                 messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN);
             } else {
@@ -15507,7 +15761,7 @@ Fisma.Util = {
 
     /**
      * To format time on the hidden element by id
-     * 
+     *
      * @param id
      */
     updateTimeField: function (id) {
@@ -15515,20 +15769,41 @@ Fisma.Util = {
         var hourEl = document.getElementById(id + 'Hour');
         var minuteEl = document.getElementById(id + 'Minute');
         var ampmEl = document.getElementById(id + 'Ampm');
-        
+
         var hour = hourEl.value;
         var minute = minuteEl.value;
         var ampm = ampmEl.value;
-        
+
         if ('PM' == ampm) {
             hour = parseInt(hour) + 12;
         }
-        
+
         hour = $P.str_pad(hour, 2, '0', 'STR_PAD_LEFT');
-        minute = $P.str_pad(minute, 2, '0', 'STR_PAD_LEFT');    
-        
+        minute = $P.str_pad(minute, 2, '0', 'STR_PAD_LEFT');
+
         var time = hour + ':' + minute + ':00';
         hiddenEl.value = time;
+    },
+
+    /**
+     * Convert a hash array into an application/x-www-form-urlencoded string.
+     *
+     * This only supports scalar values.
+     *
+     * @param {Object} params
+     * @return {string}
+     * @static
+     */
+    convertObjectToPostData: function (params) {
+        var postData = '';
+
+        for (var key in params) {
+            var value = params[key];
+
+            postData += encodeURIComponent(key) + "=" + encodeURIComponent(value) + "&";
+        }
+
+        return postData;
     }
 };
 Fisma.Vulnerability={commentTable:null,commentCallback:function(f,b){var d=this;var c={timestamp:f.createdTs,username:f.username,comment:f.comment};this.commentTable=Fisma.Registry.get("comments");this.commentTable.addRow(c);this.commentTable.sortColumn(this.commentTable.getColumn(0),YAHOO.widget.DataTable.CLASS_DESC);var a=new Fisma.Blinker(100,6,function(){d.commentTable.highlightRow(0)},function(){d.commentTable.unhighlightRow(0)});a.start();var e=document.getElementById("vulnerabilityCommentsCount").firstChild;e.nodeValue++;b.hide();b.destroy()}};/**

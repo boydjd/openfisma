@@ -226,27 +226,6 @@
     </table>
     <?php
     Fisma_Format_Section::stopSection();
-    ?>
-</div>
-<div class="column right">
-    <?php
-    Fisma_Format_Section::startSection('Description');
-    ?>
-        <div name="incident[additionalInfo]"
-             id="additionalInfo"
-             <?php
-             if ($this->updateIncidentPrivilege):
-             ?>
-                 class="editable"
-                 type="textarea"
-                 target="additionalInfo"
-             <?php
-             endif;
-             ?>>
-            <?php echo $this->escape($this->incident['additionalInfo'], 'none'); ?>&nbsp;
-        </div>
-    <?php
-    Fisma_Format_Section::stopSection();
     Fisma_Format_Section::startSection('Reported By');
     ?>
     <table class="keyValues">
@@ -415,6 +394,27 @@
             </td>
         </tr>
     </table>
+    <?php
+    Fisma_Format_Section::stopSection();
+    ?>
+</div>
+<div class="column right">
+    <?php
+    Fisma_Format_Section::startSection('Description');
+    ?>
+        <div name="incident[additionalInfo]"
+             id="additionalInfo"
+             <?php
+             if ($this->updateIncidentPrivilege):
+             ?>
+                 class="editable"
+                 type="textarea"
+                 target="additionalInfo"
+             <?php
+             endif;
+             ?>>
+            <?php echo $this->escape($this->incident['additionalInfo'], 'none'); ?>&nbsp;
+        </div>
     <?php
     Fisma_Format_Section::stopSection();
     Fisma_Format_Section::startSection('Location');

@@ -11,8 +11,8 @@
         <tbody>
             <?php foreach ($this->data as $row): ?>
                 <tr>
-                    <?php 
-                    foreach ($row = array_values($row) as $key => $cell) : 
+                    <?php
+                    foreach ($row = array_values($row) as $key => $cell) :
                         if (
                             !empty($this->columnDefinitions[$key]['formatter']) &&
                             $this->columnDefinitions[$key]['formatter'] == 'Fisma.TableFormat.formatHtml'
@@ -33,13 +33,13 @@
 
         var columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
 
-        /* 
-         * Column definitions are defined in JSON, which cannot embed object references such as formatters. So 
+        /*
+         * Column definitions are defined in JSON, which cannot embed object references such as formatters. So
          * loop over the definitions and convert any names of formatters into references to those actual objects.
          */
         for (index in columnDefs) {
             var columnDef = columnDefs[index];
-            
+
             if (columnDef['formatter']) {
                 columnDef['formatter'] = Fisma.Util.getObjectFromName(columnDef['formatter']);
             }
@@ -52,9 +52,9 @@
         dataSource.responseSchema = <?php echo $this->escape($this->responseSchema, 'json'); ?>;
 
         var dataTable = new YAHOO.widget.GroupedDataTable(
-            "<?php echo $this->escape($this->containerId, 'javascript'); ?>", 
-            columnDefs, 
-            dataSource, 
+            "<?php echo $this->escape($this->containerId, 'javascript'); ?>",
+            columnDefs,
+            dataSource,
             {
                 <?php if (!empty($this->groupBy)): ?>
                 groupBy: "<?php echo $this->escape($this->groupBy, 'none'); ?>"
@@ -62,10 +62,10 @@
             }
         );
 
-        Fisma.Registry.set("<?php echo $this->escape($this->actionName, 'none') ?>", dataTable);
+        Fisma.Registry.set("<?php echo $this->escape($this->registryName, 'none') ?>", dataTable);
 
         // Enable row highlighting for mouse over events
-        dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow); 
+        dataTable.subscribe("rowMouseoverEvent", dataTable.onEventHighlightRow);
         dataTable.subscribe("rowMouseoutEvent", dataTable.onEventUnhighlightRow);
 
         // Enable other events triggered from the data-table
@@ -76,6 +76,6 @@
             var eventHandler = Fisma.Util.getObjectFromName(eventListeners[eventName]);
             dataTable.subscribe(eventName, eventHandler);
         }
-        
+
     });
 </script>
