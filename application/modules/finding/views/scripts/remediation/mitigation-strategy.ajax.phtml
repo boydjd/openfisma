@@ -131,8 +131,8 @@ foreach ($array as $row) {
         continue;
     }
 }
-$warning = "WARNING: You are about to submit mitigation strategy. This action cannot be undone. "
-           . 'Please click "YES" to confirm your action or click "No" to stop.';
+
+$warning = 'WARNING: This action cannot be undone. Please click "Yes" to confirm your action or click "No" to stop.';
 $url = "$postAction/do/submitmitigation";
 
 if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
@@ -243,8 +243,8 @@ if ($finding->status != 'NEW'
             echo $this->escape('<input type="hidden" name="comment" value="" />', 'none');
             echo $this->escape('<input type="hidden" name="decision" value="APPROVED" />', 'none');
 
-            $message = 'WARNING: You are about to approve the mitigation strategy. This action cannot be undone.'
-                      . ' Are you sure that you want to continue?';
+            $message = 'WARNING: This action cannot be undone. Please click "Yes" to confirm your action'
+                       . ' or click "No" to stop.';
     
             $approveButton = new Fisma_Yui_Form_Button(
                 'approveButton',
@@ -261,8 +261,8 @@ if ($finding->status != 'NEW'
             );
             echo $this->escape($approveButton, 'none');
     
-            $message = 'WARNING: You are about to deny the mitigation strategy. This action cannot be undone.'
-                      . ' Are you sure that you want to continue?';
+            $message = 'WARNING: This action cannot be undone. Please click "Yes" to confirm your action'
+                       . ' or click "No" to stop.';
             $denyButton = new Fisma_Yui_Form_Button(
                 'denyButton',
                 array(
