@@ -89,12 +89,7 @@ if (!empty($this->approvalHistory)):
 <div class='approval'>
 <?php
 $decidedTypes = array(); // Hightlight only the latest decision of each approval type
-for ($i = $this->finding->FindingEvaluations->count(); $i > 0; $i--): // Reversed chronological order
-    $findingEvaluation = $this->finding->FindingEvaluations->get($i - 1);
-    if ($findingEvaluation->Evaluation->approvalGroup != 'evidence'):
-        continue;
-    endif;
-
+foreach ($this->approvalHistory as $findingEvaluation):
     $highlighted = '';
     if (!in_array($findingEvaluation->Evaluation->id, $decidedTypes)):
         $decidedTypes[] = $findingEvaluation->Evaluation->id;
@@ -119,7 +114,7 @@ for ($i = $this->finding->FindingEvaluations->count(); $i > 0; $i--): // Reverse
         <?php echo $this->escape($comment, 'none'); ?>
     </div>
 <?php
-endfor;
+endforeach;
 ?>
 </div> <!-- end of div.approval -->
 <?php
