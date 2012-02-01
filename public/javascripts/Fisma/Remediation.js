@@ -145,7 +145,7 @@ Fisma.Remediation = {
      * Handle onclick event of the button on the Evidence upload form
      * to attach one more file
      */
-    addUploadEvidence : function(event) {
+    addUploadEvidence : function() {
         var file_list = document.getElementById('evidence_upload_file_list');
 
         var new_upload = document.createElement('input');
@@ -154,7 +154,7 @@ Fisma.Remediation = {
         new_upload.multiple = true;
         file_list.appendChild(new_upload);
 
-        YAHOO.util.Event.preventDefault(event);
+        return false;
     },
 
     /**
