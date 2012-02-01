@@ -129,6 +129,8 @@ table.jqplot-threat-legend td{border-style:none;padding:0;}
 .yui-skin-sam .yui-dt tr.dragging-over.yui-dt-odd td,.yui-skin-sam .yui-dt tr.dragging-over.yui-dt-even td{border-bottom:2px solid red;}
 .yui-skin-sam .yui-dt tr.dragging-over.group td{background-color:#fdd;}
 .yui-skin-sam .yui-dt .drag-source-row td{opacity:.3;background-color:#eee;}
+.hideFromIE{display:none;}
+form#finding_detail_upload_evidence button{display:inline;}
 .jqplot-target{position:relative;color:#000;font-family:"Trebuchet MS",Arial,Helvetica,sans-serif;font-size:1em;}
 .jqplot-axis{font-size:.75em;}
 .jqplot-xaxis{margin-top:10px;}

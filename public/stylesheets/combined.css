@@ -970,6 +970,56 @@ table.jqplot-threat-legend td {
     opacity: 0.3;
     background-color: #eee;
 }
+/*******************************************************************************
+ *
+ * ie9hacks.css
+ *
+ * Copyright (c) 2012 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ *******************************************************************************
+ *
+ * Contains CSS hacks targeted at IE9 only. This script is conditionally
+ * inserted into pages using the following syntax:
+ *
+ * <!--[if IE 9]>
+ * <link rel="stylesheet" type="text/css" href="/stylesheets/ie9hacks.css">
+ * <![endif]-->
+ *
+ * See: http://msdn.microsoft.com/en-us/library/ms537512.aspx
+ *
+ * Author:    Duy K. Bui <duy.bui@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ * Version:   $Id$
+ *
+ *******************************************************************************
+ */
+
+/* A class that will hide anything that uses it from IE users. Used for hiding IE-incompatible (chart-)features */
+.hideFromIE {
+    display: none;
+}
+
+/* Because IE9 hasn't supported multiple attribute of input[type=file], a button is used to reproduce that behavior */
+form#finding_detail_upload_evidence button {
+    display: inline;
+}
+
 /**
  * jquery.jqplot.css
  * This file, slightly altered by Endeavor is copyrighted under the MIT licence
