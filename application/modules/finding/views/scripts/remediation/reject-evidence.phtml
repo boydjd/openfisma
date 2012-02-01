@@ -12,11 +12,18 @@
     <p>
         <input type="radio" name="target_status" value="0" checked> Evidence Needed (EN)<br/>
     <?php
-        foreach($this->previousEvaluations as $evaluation)
-        {
+        foreach ($this->previousEvaluations as $evaluation) {
             $id = $evaluation->id;
-            echo "<input type='radio' name='target_status' value='{$id}' id='target_status_{$id}'> "
-               . "<label for='target_status_{$id}'>{$evaluation->name} ($evaluation->nickname)</label><br/>";
+    ?>
+        <input type='radio'
+            name='target_status'
+            value='<?php echo $this->escape($id); ?>'
+            id='target_status_<?php echo $this->escape($id); ?>'/>
+        <label for='target_status_<?php echo $this->escape($id); ?>'>
+            <?php echo $this->escape($evaluation->name . " " . $evaluation->nickname); ?>
+        </label>
+        <br/>
+    <?php
         }
     ?>
     </p>

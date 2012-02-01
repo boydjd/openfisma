@@ -97,7 +97,7 @@ foreach ($this->approvalHistory as $findingEvaluation):
     endif;
 
     $user = $findingEvaluation->User;
-    $userHTML = $this->userInfo($user->nameFirst . ' ' . $user->nameLast, $user->username);
+    $userHtml = $this->userInfo($user->nameFirst . ' ' . $user->nameLast, $user->username);
     $decision = $findingEvaluation->decision;
     $spanClass = strtolower($decision);
     $comment = (!empty($findingEvaluation->comment)) ?
@@ -108,7 +108,7 @@ foreach ($this->approvalHistory as $findingEvaluation):
         <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?></b>
         <span class='<?php echo $this->escape($spanClass); ?>'>
             <b><?php echo $this->escape($decision); ?></b>
-            by <?php echo $this->escape($userHTML, 'none'); ?>
+            by <?php echo $this->escape($userHtml, 'none'); ?>
             at <?php echo $this->escape($findingEvaluation->createdTs); ?>
         </span>
         <?php echo $this->escape($comment, 'none'); ?>
