@@ -3216,15 +3216,16 @@ Fisma.AttachArtifacts = {
                 '/artifact/upload-progress/format/json/id/' + this.apcId,
                 {
                     success : function (asyncResponse) {
-
+                        var response;
                         // Parse server response
                         try {
-                            var response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+                            response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
                         } catch (e) {
                             if (e instanceof SyntaxError) {
                                 // Handle a JSON syntax error by constructing a fake response object with progress=false
-                                response = new Object();
-                                response.progress = false;
+                                response = {
+                                    progress : false
+                                };
                             } else {
                                 throw e;
                             }
@@ -3279,16 +3280,17 @@ Fisma.AttachArtifacts = {
      * @param asyncResponse Response object from YUI connection
      */
     handleUploadComplete : function (asyncResponse) {
-
+        var responseStatus;
         // Check response status and display error message if necessary
         try {
-            var responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+            responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
         } catch (e) {
             if (e instanceof SyntaxError) {
                 // Handle a JSON syntax error by constructing a fake response object
-                responseStatus = new Object();
-                responseStatus.success = false;
-                responseStatus.message = "Invalid response from server.";
+                responseStatus = {
+                    success : false,
+                    message : "Invalid response from server."
+                };
             } else {
                 throw e;
             }
@@ -3333,11 +3335,11 @@ Fisma.AttachArtifacts = {
          */
         var callbackObject = Fisma[this.config.callback.object];
 
-        if (typeof callbackObject != "Undefined") {
+        if (typeof callbackObject !== "Undefined") {
             
             var callbackMethod = callbackObject[this.config.callback.method];
             
-            if (typeof callbackMethod == "function") {
+            if (typeof callbackMethod === "function") {
                 
                 /**
                  * Passing callbackObject to call() will make that the scope for the called method, which gives "this"
@@ -3391,7 +3393,7 @@ Fisma.AttachArtifacts = {
  * @requires  Fisma
  */
 
-Fisma.AutoComplete = function() {
+Fisma.AutoComplete = (function() {
     return {
         /**
          * Used for tracking if there are any open requests.
@@ -3515,7 +3517,7 @@ Fisma.AutoComplete = function() {
          * @param hiddenFieldId {String} The ID of the hidden field
          */
         updateHiddenField : function(sType, aArgs, hiddenFieldId) {
-            document.getElementById(hiddenFieldId).value = aArgs[2][1]['id'];
+            document.getElementById(hiddenFieldId).value = aArgs[2][1].id;
             $('#' + hiddenFieldId).trigger('change');
         },
         
@@ -3531,7 +3533,7 @@ Fisma.AutoComplete = function() {
             $('#' + hiddenFieldId).trigger('change');            
         }
     };
-}();
+}());
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -3687,13 +3689,13 @@ Fisma.Blinker.prototype.cycle = function () {
 
             var handleSelect = function (type, args, obj) {
                 var dateParts = args[0][0]; 
-                var year = dateParts[0], month = "" + dateParts[1], day = "" + dateParts[2];
+                var year = dateParts[0], month = dateParts[1].toString(), day = dateParts[2].toString();
 
-                if (1 == month.length) {
+                if (1 === month.length) {
                     month = "0" + month;
                 }
 
-                if (1 == day.length) {
+                if (1 === day.length) {
                     day = "0" + day;
                 }
 
@@ -6477,7 +6479,7 @@ Fisma.CheckboxTree = {
         var nextCheckbox = topListItem.nextSibling.childNodes[0];
         if (nextCheckbox.getAttribute('nestedLevel') > clickedBox.getAttribute('nestedLevel')) {
             var minLevel = clickedBox.getAttribute('nestedlevel');
-            var checkboxArray = new Array();
+            var checkboxArray = [];
             var allChildNodesChecked = true;
 
             // Loop through all of the subnodes and see which ones are already checked
@@ -6506,7 +6508,8 @@ Fisma.CheckboxTree = {
             }
             
             // Now iterate through child nodes and update them
-            for (var i in checkboxArray) {
+            var i;
+            for (i = 0; i < checkboxArray.length; i++) {
                 var checkbox = checkboxArray[i];
                 
                 if (allChildNodesChecked) {
@@ -6655,9 +6658,10 @@ Fisma.Commentable = {
          } catch (e) {
              if (e instanceof SyntaxError) {
                  // Handle a JSON syntax error by constructing a fake response object
-                 responseStatus = new Object();
-                 responseStatus.success = false;
-                 responseStatus.message = "Invalid response from server.";
+                 responseStatus = {
+                     success : false,
+                     message : "Invalid response from server."
+                 };
              } else {
                  throw e;
              }
@@ -6679,11 +6683,11 @@ Fisma.Commentable = {
           */
          var callbackObject = Fisma[this.config.callback.object];
 
-         if (typeof callbackObject != "Undefined") {
+         if (typeof callbackObject !== "Undefined") {
 
              var callbackMethod = callbackObject[this.config.callback.method];
 
-             if (typeof callbackMethod == "function") {
+             if (typeof callbackMethod === "function") {
 
                  /**
                   * Passing callbackObject to call() will make that the scope for the called method, which gives "this"

@@ -201,10 +201,6 @@
             dialog.show();
         }
     };
-<<<<<<< HEAD
 
     Fisma.Calendar = Calendar;
 })();
-=======
-}());
->>>>>>> origin/ofj1658
