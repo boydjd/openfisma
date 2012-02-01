@@ -344,6 +344,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                         ->orderBy('label')
                         ->execute()
                         ->toKeyValueArray('id', 'label');
+
+                    $organizationSelect->addMultiOption(0, "I don't know");
                     $organizationSelect->addMultiOptions($organizations);
 
                     // Load incident categories for authenticated users only
@@ -405,6 +407,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function reviewReportAction()
     {
+        if (!$this->_me) {
+            $this->_helper->layout->setLayout('anonymous');
+        }
+
         // Fetch the incident report draft from the session
         $session = Fisma::getSession();
         if (isset($session->irDraft)) {

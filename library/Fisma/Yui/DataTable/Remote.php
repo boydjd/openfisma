@@ -148,7 +148,7 @@ class Fisma_Yui_DataTable_Remote extends Fisma_Yui_DataTable_Abstract
             'dataUrl' => $this->_dataUrl,
             'deferData' => $this->_deferData,
             'initialSortColumn' => $this->_initialSortColumn,
-            'registryName' => $this->getRegistryName,
+            'registryName' => $this->getRegistryName(),
             'renderEventFunction' => $this->_renderEventFunction,
             'requestConstructor' => $this->_requestConstructor,
             'resultVariable' => $this->_resultVariable,

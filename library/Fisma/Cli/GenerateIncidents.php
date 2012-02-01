@@ -181,7 +181,7 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
                     $i->categoryId = $this->_getRandomSubCategoryId();
 
                     // Complete a random number of steps on this incident
-                    $stepsToComplete = rand(0, $i->Category->Workflow->Steps->count() - 1);
+                    $stepsToComplete = rand(0, $i->Category->Workflow->Steps->count());
                     while ($stepsToComplete--) {
                         $i->completeStep("Step completed automatically by generate-incidents.php script.");
                     }
