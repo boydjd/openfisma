@@ -113,6 +113,7 @@ Fisma.AttachArtifacts = {
             {
                 success: function(o) {
                     o.argument.setBody(o.responseText);
+                    new YAHOO.widget.Button(YAHOO.util.Selector.query("input[type=submit]", o.argument.body, true));
                     o.argument.center();
                 },
 
