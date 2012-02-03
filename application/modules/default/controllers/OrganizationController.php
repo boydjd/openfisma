@@ -297,6 +297,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display organization properties such as name, creation date, etc.
      *
+     * @GETAllowed
      * @return void
      */
     public function organizationAction()
