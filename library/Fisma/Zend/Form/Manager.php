@@ -128,7 +128,8 @@ class Fisma_Zend_Form_Manager
             }
             // Add decorator for select element
             if ($element->getType() == 'Zend_Form_Element_Select') {
-                $element->addDecorator(new Fisma_Zend_Form_Decorator_YuiSelect);
+                $element->viewScript = 'yui/select-menu.phtml';
+                $element->addDecorator('ViewScript', array('placement' => false));
             }
         }
         return $form;
