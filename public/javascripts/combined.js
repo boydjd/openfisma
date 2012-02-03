@@ -8648,12 +8648,12 @@ Fisma.Ldap = {
             closeCharacter = "x";
         }
 
-        var closeControl = document.createElement('div');
-        closeControl.className = "closeControl";
-        closeControl.appendChild(document.createTextNode(closeCharacter));
-        this._container.appendChild(closeControl);
+        this._closeContainer = document.createElement('div');
+        this._closeContainer.className = "closeControl";
+        this._closeContainer.appendChild(document.createTextNode(closeCharacter));
+        this._container.appendChild(this._closeContainer);
 
-        YAHOO.util.Event.addListener(closeControl, "click", function () {this.hide();}, this, true);
+        YAHOO.util.Event.addListener(this._closeContainer, "click", function () {this.hide();}, this, true);
         
         // Add the subcontainer
         this._subcontainer = document.createElement('div');
@@ -8689,7 +8689,12 @@ Fisma.Ldap = {
          * The criticality or error level for this message
          */
         _errorLevel: null,
-        
+
+        /**
+         * A container of close element
+         */
+        _closeContainer: null,
+
         /**
          * Append new message text to the existing message box
          * 
@@ -8744,6 +8749,8 @@ Fisma.Ldap = {
          */
         show: function () {
             YAHOO.util.Dom.removeClass(this._container, "hide");
+
+            this._setClosedIconToVerticalCenter();
         },
         
         /**
@@ -8751,6 +8758,16 @@ Fisma.Ldap = {
          */
         hide: function () {
             YAHOO.util.Dom.addClass(this._container, "hide");
+        },
+
+        /**
+         * Set the close icon to vertical center of message box
+         */
+        _setClosedIconToVerticalCenter: function () {
+            var msgbarRegion = YAHOO.util.Dom.getRegion(this._container);
+            var closeRegion = YAHOO.util.Dom.getRegion(this._closeContainer);
+            var closeTop = msgbarRegion.top + Math.round(msgbarRegion.height - closeRegion.height)/2;
+            YAHOO.util.Dom.setY(this._closeContainer, closeTop);
         }
     };
 

@@ -378,6 +378,9 @@ tr.incidentStep {
     cursor: pointer;
 }
 
+#msgbar p {
+    margin: 0px;
+}
 /**
  * The module screen is used to enable/disable individual components in OpenFISMA
  */

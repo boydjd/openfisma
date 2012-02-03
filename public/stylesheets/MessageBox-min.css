@@ -4,3 +4,4 @@
 .messageBox.attention{color:#9f6000;background-color:#feefb3;border-color:#9f6000;}
 .messageBox.hide{display:none;}
 .messageBox .closeControl{position:absolute;top:-6px;right:0;padding:3px;font-size:1.5em;font-weight:normal;cursor:pointer;}
+#msgbar p{margin:0;}

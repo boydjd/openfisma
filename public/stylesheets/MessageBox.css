@@ -77,3 +77,6 @@
     cursor: pointer;
 }
 
+#msgbar p {
+    margin: 0px;
+}
