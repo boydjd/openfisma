@@ -173,10 +173,6 @@ fieldset#evidence_upload_file_list input {
     display: block;
     margin-bottom: 4px;
 }
-
-form#finding_detail_upload_evidence button {
-    display: none;
-}
 /*******************************************************************************
  *
  * Incident.css
@@ -1893,6 +1889,11 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 /* Style for the td of table on /role/right/id/# page */
 #assign_right td {
     border-style: none;
+}
+
+/* hide elements when not using IE (ie7hacks undoes this) */
+.ie7-only {
+    display: none;
 }
 body, td, pre {
     font: 13px/1.231 arial,helvetica,clean,sans-serif !important;
