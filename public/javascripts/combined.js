@@ -4730,6 +4730,7 @@ Fisma.Chart = {
                 var thisChartId = chartParamsObj.uniqueid;
                 var topLegendOnDOM = document.getElementById(thisChartId + 'toplegend');
                 topLegendOnDOM.appendChild(threatTable);
+                topLegendOnDOM.style.display = 'block';
             }
         }        
     },
