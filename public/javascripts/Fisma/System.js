@@ -3,28 +3,28 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
- * 
+ *
  * @fileoverview Provides client-side behavior for the AttachArtifacts behavior
- * 
+ *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
  */
- 
+
 Fisma.System = {
     /**
      * Called when a system document finishes uploading
-     * 
+     *
      * Eventually it would be nifty to refresh the YUI table but for now we will just refresh the entire page
      */
     uploadDocumentCallback : function (yuiPanel) {
@@ -32,10 +32,10 @@ Fisma.System = {
     },
 
     /**
-     * removeSelectedUsers 
-     * 
-     * @param event $event 
-     * @param config $config 
+     * removeSelectedUsers
+     *
+     * @param event $event
+     * @param config $config
      * @access public
      * @return void
      */
@@ -66,10 +66,10 @@ Fisma.System = {
     },
 
     /**
-     * addUser 
-     * 
-     * @param event $event 
-     * @param config $config 
+     * addUser
+     *
+     * @param event $event
+     * @param config $config
      * @access public
      * @return void
      */
@@ -93,10 +93,10 @@ Fisma.System = {
     },
 
     /**
-     * addSelectedUsers 
-     * 
-     * @param event $event 
-     * @param config $config 
+     * addSelectedUsers
+     *
+     * @param event $event
+     * @param config $config
      * @access public
      * @return void
      */
@@ -126,20 +126,20 @@ Fisma.System = {
             }
         });
     },
-    
+
     /**
      * Triggers a pop-up confirmation asking if the user truly wants to convert the current
      * system/organization to an organization/system, and if yes, redirects to the proper action.
-     * 
-     * @param event $event 
-     * @param config $config 
+     *
+     * @param event $event
+     * @param config $config
      * @access public
      * @return void
      */
     convertToOrgOrSystem : function (event, config) {
-    
+
         Fisma.Util.showConfirmDialog(
-            event, 
+            event,
             {
                 text: config.text,
                 func: config.func,
@@ -147,9 +147,9 @@ Fisma.System = {
             }
         );
     },
-    
+
     /**
-     * Shows an input dialog for the user to input the needed information for 
+     * Shows an input dialog for the user to input the needed information for
      * a Oranization-t-o-System conversion (the system FIPS-199 and FISMA Data).
      * After input, will redirect the user to /organization/convert-to-system/~
      *
@@ -170,7 +170,7 @@ Fisma.System = {
                 } catch (e) {
                     var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
                     Fisma.Util.showAlertDialog(message);
-                } 
+                }
             }
 
             // The tool tips will display underneath the modal dialog mask, so we'll move them up to a higher layer.
@@ -215,7 +215,7 @@ Fisma.System = {
                 } catch (e) {
                     var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
                     Fisma.Util.showAlertDialog(message);
-                } 
+                }
             }
         };
         var panelConfig = {width : "40em", modal : true};
@@ -230,14 +230,14 @@ Fisma.System = {
     },
 
     /**
-     * Creates and HTML input form which asks for the requiered information needed to 
+     * Creates and HTML input form which asks for the requiered information needed to
      * convert an organization to a system
-     * 
+     *
      * @access public
      * @return void
      */
     getSystemConversionForm : function (sysId) {
-    
+
         var addInputRowOnTable = function (addToTable, descriptionText, opts) {
 
             var myRow = document.createElement('tr');
@@ -277,13 +277,13 @@ Fisma.System = {
         myDialogForm.id = 'sysConversionForm';
         myDialogForm.method = 'post';
         myDialogForm.action = '/organization/convert-to-system/id/' + sysId;
-        
+
         var dialogHead = document.createElement('div');
         dialogHead.className = 'hd';
         dialogHead.appendChild(document.createTextNode('System information'));
         var dialogBody = document.createElement('div');
         dialogBody.className = 'bd';
-        
+
         var msg = document.createTextNode("Please input the needed system information in order to complete conversion.");
         dialogBody.appendChild(msg);
         dialogBody.appendChild(document.createElement('br'));
@@ -307,10 +307,10 @@ Fisma.System = {
         myDialogForm.appendChild(csrf);
         return myDialogForm;
     },
-    
+
     /**
      * Shows YUI wait panel on the DOM. Use when navigating away from this page.
-     * 
+     *
      * @access public
      * @return void
      */

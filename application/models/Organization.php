@@ -477,4 +477,21 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             throw $e;
         }
     }
+
+    /**
+     * Check whether an organization has associated findings whose status are not ClOSED
+     *
+     * @return boolean
+     */
+    public function hasOpenFindings()
+    {
+        $findings = Doctrine_Query::create()
+            ->from('Finding f')
+            ->where('f.responsibleOrganizationId = ?', $this->id)
+            ->andWhere('f.status != ?', 'CLOSED')
+            ->count();
+
+        return $findings == 0 ? false : true;
+    }
+
 }
