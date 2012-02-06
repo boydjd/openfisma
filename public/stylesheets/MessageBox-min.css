@@ -1,6 +1,0 @@
-.messageBox{border:1px solid black;margin-top:10px;text-align:center;font-weight:bold;position:relative;padding:.5em;}
-.messageBox.warn{color:red;background-color:pink;border-color:red;}
-.messageBox.info{color:green;background-color:lightgreen;border-color:green;}
-.messageBox.attention{color:#9f6000;background-color:#feefb3;border-color:#9f6000;}
-.messageBox.hide{display:none;}
-.messageBox .closeControl{position:absolute;top:-6px;right:0;padding:3px;font-size:1.5em;font-weight:normal;cursor:pointer;}

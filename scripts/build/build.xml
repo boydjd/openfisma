@@ -32,7 +32,7 @@
     <target name="-js.minify" depends="-js.concat">
         <echo message="Minifying JavaScript..."/>
         <apply executable="java" parallel="false">
-            <fileset dir="${location.js}" includes="**/*.js" excludes="**/tiny_mce/**,**/*-min.js,**/*.min.js"/>
+            <fileset dir="${location.js}" includes="combined.js,excanvas.js"/>
             <arg line="-jar"/>
             <arg path="bin/yuicompressor.jar"/>
             <srcfile/>
@@ -46,7 +46,7 @@
     <target name="-css.minify" depends="-css.concat">
         <echo message="Minifying stylesheets..."/>
         <apply executable="java" parallel="false">
-            <fileset dir="${location.css}" includes="*.css" excludes="**/*-min.css"/>
+            <fileset dir="${location.css}" includes="combined.css,*hacks.css"/>
             <arg line="-jar"/>
             <arg path="bin/yuicompressor.jar"/>
             <arg line="--line-break 0"/>
