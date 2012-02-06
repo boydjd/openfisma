@@ -8,3 +8,4 @@ form#searchForm input#keywords{position:relative;top:0;}
 div.searchCriteria input[type='text']{position:relative;top:-1px;}
 span.searchQueryButtons button{height:24px;}
 form#finding_detail_upload_evidence button{display:inline;}
+dl{margin:0;}
