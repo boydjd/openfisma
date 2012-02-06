@@ -3668,7 +3668,7 @@ Fisma.Blinker.prototype.cycle = function () {
         addCalendarPopupToTextField: function (textEl) {
             var popupCalendarDiv = document.createElement('div');
             popupCalendarDiv.style.position = 'absolute';
-            popupCalendarDiv.style.zIndex = 99;
+            popupCalendarDiv.style.zIndex = 1000;
             textEl.parentNode.appendChild(popupCalendarDiv);
 
             var textFieldPosition = YAHOO.util.Dom.getRegion(textEl);
@@ -3714,7 +3714,7 @@ Fisma.Blinker.prototype.cycle = function () {
          * @param event {String} The name of the event
          * @param ele {String} The element id
          */
-        callCalendar: function(evt, ele) {alert('testa');
+        callCalendar: function(evt, ele) {
             this.showCalendar(ele, ele+'_show');
         },
 
@@ -3729,9 +3729,6 @@ Fisma.Blinker.prototype.cycle = function () {
             var Event = YAHOO.util.Event, Dom = YAHOO.util.Dom, dialog, calendar;
 
             var showBtn = Dom.get(trigger);
-
-            var dialog;
-            var calendar;
 
             /*
              * Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners,
