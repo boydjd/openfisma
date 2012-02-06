@@ -17,7 +17,7 @@
  */
 
 /**
- * Application_Migration_021700_ConsolidateFileUpload
+ * Migration for new file upload logic.
  *
  * @uses Fisma_Migration_Abstract
  * @package Migration
@@ -28,12 +28,14 @@
 class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration_Abstract
 {
     /**
-     * migrate
+     * Main migration function called by migration script.
      *
      * @return void
      */
     public function migrate()
     {
+        echo "This migration may take some time on installations with large numbers of uploaded documents.\n";
+
         $this->createNewStuff();
         $this->migrateIncidents();
         $this->migrateSystemDocuments();
@@ -41,6 +43,11 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         $this->dropOldStuff();
     }
 
+    /**
+     * Migrate System Documents
+     *
+     * @return void
+     */
     public function migrateSystemDocuments()
     {
         $path = Fisma::getPath('uploads') . '/system-document/%s/';
@@ -52,16 +59,12 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         foreach ($documents as $document) {
             $filepath = sprintf($path, $document->oid) . $document->filename;
             $hash = $fm->store($filepath);
-            $uid = $this->getHelper()->insert(
-                'upload',
-                array(
-                    'createdts' => $document->createdts,
-                    'filename' => $document->filename,
-                    'filehash' => $hash,
-                    'userid' => $document->userid,
-                    'description' => $document->description,
-                    'updated_at' => Fisma::now()
-                )
+            $uid = $this->_insertUpload(
+                $document->createdts,
+                $document->filename,
+                $hash,
+                $document->userid,
+                $document->description
             );
             $this->getHelper()->update(
                 'system_document',
@@ -76,16 +79,12 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         foreach ($documents as $document) {
             $filepath = sprintf($path, $document->oid) . $document->filename;
             $hash = $fm->store($filepath);
-            $uid = $this->getHelper()->insert(
-                'upload',
-                array(
-                    'createdts' => $document->createdts,
-                    'filename' => $document->filename,
-                    'filehash' => $hash,
-                    'userid' => $document->userid,
-                    'description' => $document->description,
-                    'updated_at' => Fisma::now()
-                )
+            $uid = $this->_insertUpload(
+                $document->createdts,
+                $document->filename,
+                $hash,
+                $document->userid,
+                $document->description
             );
             $this->getHelper()->update(
                 'system_document_version',
@@ -96,6 +95,11 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
 
     }
 
+    /**
+     * Migrate Incidents
+     *
+     * @return void
+     */
     public function migrateIncidents()
     {
         $incidentsPath = Fisma::getPath('uploads') . '/incident_artifact/%s/';
@@ -104,16 +108,12 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         foreach ($artifacts as $artifact) {
             $filepath = sprintf($incidentsPath, $artifact->objectid) . $artifact->filename;
             $hash = $fm->store($filepath);
-            $uid = $this->getHelper()->insert(
-                'upload',
-                array(
-                    'createdts' => $artifact->createdts,
-                    'filename' => $artifact->filename,
-                    'filehash' => $hash,
-                    'userid' => $artifact->userid,
-                    'description' => $artifact->comment,
-                    'updated_at' => Fisma::now()
-                )
+            $uid = $this->_insertUpload(
+                $artifact->createdts,
+                $artifact->filename,
+                $hash,
+                $artifact->userid,
+                $artifact->comment
             );
             $this->getHelper()->insert(
                 'incident_upload',
@@ -122,6 +122,11 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         }
     }
 
+    /**
+     * Migrate Finding Evidence
+     *
+     * @return void
+     */
     public function migrateFindingEvidence()
     {
         $evidencePath = Fisma::getPath('uploads') . '/evidence/%s/';
@@ -135,16 +140,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         foreach ($results as $evidence) {
             $filepath = sprintf($evidencePath, $evidence->findingid) . $evidence->filename;
             $hash = file_exists($filepath) ? $fm->store($filepath) : null;
-            $uid = $this->getHelper()->insert(
-                'upload',
-                array(
-                    'createdts' => $evidence->createdts,
-                    'filename' => $evidence->filename,
-                    'filehash' => $hash,
-                    'userid' => $evidence->userid,
-                    'updated_at' => Fisma::now()
-                )
-            );
+            $uid = $this->_insertUpload($evidence->createdts, $evidence->filename, $hash, $evidence->userid, "");
             if ($evidence->denied == 0) {
                 // link the finding to the upload
                 $this->getHelper()->insert(
@@ -166,6 +162,11 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
 
     }
 
+    /**
+     * Create new tables and columns.
+     *
+     * @return void
+     */
     public function createNewStuff()
     {
         $columns = array(
@@ -214,6 +215,11 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         );
     }
 
+    /**
+     * Drop old tables and columns.
+     *
+     * @return void
+     */
     public function dropOldStuff()
     {
         $this->getHelper()->dropTable('incident_artifact');
@@ -246,5 +252,30 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
             . 'DROP INDEX `evidenceid_idx`;'
         );
         $this->getHelper()->dropTable('evidence');
+    }
+
+    /**
+     * Insert an Upload record.
+     *
+     * @param string $created
+     * @param string $filename
+     * @param string $hash
+     * @param int $userId
+     * @param string $description
+     * @return int ID of the inserted record.
+     */
+    protected function _insertUpload($created, $filename, $hash, $userId, $description)
+    {
+        return $this->getHelper()->insert(
+            'upload',
+            array(
+                'createdts' => $created,
+                'filename' => $filename,
+                'filehash' => $hash,
+                'userid' => $userId,
+                'description' => $description,
+                'updated_at' => Fisma::now()
+            )
+        );
     }
 }
