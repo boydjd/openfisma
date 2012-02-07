@@ -46,7 +46,7 @@
     <target name="-css.minify" depends="-css.concat">
         <echo message="Minifying stylesheets..."/>
         <apply executable="java" parallel="false">
-            <fileset dir="${location.css}" includes="combined.css,*hacks.css"/>
+            <fileset dir="${location.css}" includes="combined.css,login.css,print.css,*hacks.css"/>
             <arg line="-jar"/>
             <arg path="bin/yuicompressor.jar"/>
             <arg line="--line-break 0"/>
