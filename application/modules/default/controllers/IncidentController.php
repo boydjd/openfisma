@@ -817,8 +817,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $actorTable->setRegistryName('actorTable');
 
         $col = "Fisma_Yui_DataTable_Column";
-        $actorTable->addColumn(new $col('Incident ID', true, 'Fisma.TableFormat.formatHtml', null, 'incidentId', true))
-                   ->addColumn(new $col('User ID', true, 'Fisma.TableFormat.formatHtml', null, 'userId', true))
+        $actorTable->addColumn(new $col('', true, 'Fisma.TableFormat.formatHtml', null, 'incidentId', true))
+                   ->addColumn(new $col('', true, 'Fisma.TableFormat.formatHtml', null, 'userId', true))
                    ->addColumn(new $col('Username', true, 'Fisma.TableFormat.formatHtml', null, 'username'))
                    ->addColumn(new $col('First Name', true, null, null, 'nameFirst'))
                    ->addColumn(new $col('Last Name', true, null, null, 'nameLast'));
@@ -860,8 +860,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $observerTable = new Fisma_Yui_DataTable_Local();
         $observerTable->setRegistryName('observerTable');
 
-        $observerTable->addColumn(new $col('Incident ID', true, 'Fisma.TableFormat.formatHtml', null, 'incidentId', true))
-                      ->addColumn(new $col('User ID', true, 'Fisma.TableFormat.formatHtml', null, 'userId', true))
+        $observerTable->addColumn(new $col('', true, 'Fisma.TableFormat.formatHtml', null, 'incidentId', true))
+                      ->addColumn(new $col('', true, 'Fisma.TableFormat.formatHtml', null, 'userId', true))
                       ->addColumn(new $col('Username', true, 'Fisma.TableFormat.formatHtml', null, 'username'))
                       ->addColumn(new $col('First Name', true, null, null, 'nameFirst'))
                       ->addColumn(new $col('Last Name', true, null, null, 'nameLast'));
@@ -1434,7 +1434,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $mail = new Fisma_Zend_Mail;
                 $mail->IRAssign($newValues['pocId'], $incident->id);
 
-                $this->view->priorityMessenger('A notification has been sent to the new Point Of Contact.' , 'notice');
+                $this->view->priorityMessenger('A notification has been sent to the new Point Of Contact.', 'notice');
             }
         } catch (Doctrine_Validator_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');

@@ -309,8 +309,12 @@ class Fisma_Migration_Helper
             }
         }
 
+        $backquoteFunction = function ($v) {
+            return "`$v`";
+        };
+
         if (is_array($columns)) {
-            $view->columns = implode(', ', array_map(function($v) {return "`$v`";}, $columns));
+            $view->columns = implode(', ', array_map($backquoteFunction, $columns));
         } else {
             $view->columns = "`$columns`";
         }
@@ -350,7 +354,7 @@ class Fisma_Migration_Helper
      * @param string $refTable The name of the table that the constraint references.
      * @param string $refColumn The column that the constraint references.
      */
-    public function addForeignKey($table, $name = null, $column, $refTable, $refColumn)
+    public function addForeignKey($table, $name, $column, $refTable, $refColumn)
     {
         $view = $this->_createView();
 
