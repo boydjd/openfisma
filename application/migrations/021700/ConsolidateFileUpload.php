@@ -154,8 +154,8 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
 
         // output audit log messages for delted uploads
         foreach ($deletedUploads as $findingId => $uploadIds) {
-            $msg = '(Upgrade) The following Upload IDs have been removed from this finding: '
-                   . implode(', ', $uploadIds);
+            $msg = 'Rejected files have been automatically hidden during the upgrade to release 2.17. '
+                   . '(' . implode(', ', $uploadIds) . ')';
             $this->getHelper()->insert(
                 'finding_audit_log',
                 array('createdts' => Fisma::now(), 'message' => $msg, 'objectid' => $findingId)
