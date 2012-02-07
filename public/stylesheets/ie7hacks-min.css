@@ -9,3 +9,5 @@ div.searchCriteria input[type='text']{position:relative;top:-1px;}
 span.searchQueryButtons button{height:24px;}
 form#finding_detail_upload_evidence button{display:inline;}
 dl{margin:0;}
+div.yui-calcontainer>div.title{zoom:normal;}
+#TabView_FindingView_TabViewContainer div.section{position:static;}

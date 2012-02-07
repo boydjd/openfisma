@@ -873,7 +873,7 @@ function setupEditFields() {
                  textEl.style.width = (oldWidth - 10) + "px";
                  if (eclass == 'date') {
                      var target = document.getElementById(t_name);
-                     target.onfocus = function () {Fisma.Calendar.showCalendar(t_name, t_name+'_show');};
+                     Fisma.Calendar.addCalendarPopupToTextField(target);
                  }
              } else if( type == 'textarea' ) {
                  var row = target.getAttribute('rows');
@@ -902,21 +902,6 @@ function setupEditFields() {
              }
         }
     });
-}
-
-function validateEcd() {
-    var obj = document.getElementById('expectedCompletionDate');
-    var inputDate = obj.value;
-    var oDate= new Date();
-    var Year = oDate.getFullYear();
-    var Month = oDate.getMonth();
-    Month = Month + 1;
-    if (Month < 10) {Month = '0'+Month;}
-    var Day = oDate.getDate();
-    if (Day < 10) {Day = '0' + Day;}
-    if (inputDate.replace(/\-/g, "") <= parseInt(""+Year+""+Month+""+Day)) {
-        alert("Warning: You entered an ECD date in the past.");
-    }
 }
 
 if (window.HTMLElement) {
@@ -3637,22 +3622,6 @@ Fisma.Blinker.prototype.cycle = function () {
  */
 (function() {
     /**
-     * Instantiate a global Fisma.Calendar.callCalendar on the elements' date style classes.
-     */
-    YAHOO.util.Event.onDOMReady(function () {
-        var calendars = YAHOO.util.Selector.query('.date');
-
-        for(var i = 0; i < calendars.length; i ++) {
-            YAHOO.util.Event.on(
-                calendars[i].getAttribute('id')+'_show',
-               'click',
-               Fisma.Calendar.callCalendar,
-               calendars[i].getAttribute('id')
-            );
-        }
-    });
-
-    /**
      * Provides calendar related functionality
      *
      * @namespace Fisma
@@ -3679,7 +3648,7 @@ Fisma.Blinker.prototype.cycle = function () {
 
             YAHOO.util.Dom.setXY(popupCalendarDiv, calendarPosition);
 
-            var calendar = new YAHOO.widget.Calendar(popupCalendarDiv, {close : true});
+            var calendar = new YAHOO.widget.Calendar(popupCalendarDiv, {close : true, title : 'Pick A Date'});
             calendar.hide();
 
             // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
@@ -3699,118 +3668,17 @@ Fisma.Blinker.prototype.cycle = function () {
                     day = "0" + day;
                 }
 
-                textEl.value = year + '-' + month + '-' + day;
+                var selectDate = year + '-' + month + '-' + day;
+                if ('finding[currentEcd]' == textEl.name && !Fisma.Finding.validateEcd(selectDate)) {
+                    Fisma.Util.showAlertDialog("Warning: You entered an ECD date in the past.");
+                } else {
+                    textEl.value = selectDate;
+                }
 
                 calendar.hide();
             };
 
             calendar.selectEvent.subscribe(handleSelect, calendar, true);
-        },
-
-        /**
-         * Use to call showCalendar function
-         *
-         * @method Calendar.callCalendar
-         * @param event {String} The name of the event
-         * @param ele {String} The element id
-         */
-        callCalendar: function(evt, ele) {
-            this.showCalendar(ele, ele+'_show');
-        },
-
-        /**
-         * Display a calendar to the element id
-         *
-         * @method Calendar.typeHandle
-         * @param block {String} The element id
-         * @param trigger {Array} The element id
-         */
-        showCalendar: function (block, trigger) {
-            var Event = YAHOO.util.Event, Dom = YAHOO.util.Dom, dialog, calendar;
-
-            var showBtn = Dom.get(trigger);
-
-            /*
-             * Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners,
-             * until the first time the button is clicked.
-             */
-            if (!dialog) {
-                function resetHandler() {
-                    Dom.get(block).value = '';
-                    closeHandler();
-                }
-
-                function closeHandler() {
-                    dialog.hide();
-                }
-
-                dialog = new YAHOO.widget.Dialog("container", {
-                    visible:false,
-                    context:[block, "tl", "bl"],
-                    draggable:true,
-                    close:true
-                });
-
-                dialog.setHeader('Pick A Date');
-                dialog.setBody('<div id="cal"></div><div class="clear"></div>');
-                dialog.render(document.body);
-
-                dialogEl = document.getElementById('container');
-                dialogEl.style.padding = "0px"; // doesn't format itself correctly in safari, for some reason
-
-                dialog.showEvent.subscribe(function() {
-                    if (YAHOO.env.ua.ie) {
-                        // Since we're hiding the table using yui-overlay-hidden, we
-                        // want to let the dialog know that the content size has changed, when
-                        // shown
-                        dialog.fireEvent("changeContent");
-                    }
-                });
-            }
-
-            // Lazy Calendar Creation - Wait to create the Calendar until the first time the button is clicked.
-            if (!calendar) {
-
-                calendar = new YAHOO.widget.Calendar("cal", {
-                    iframe:false,          // Turn iframe off, since container has iframe support.
-                    hide_blank_weeks:true  // Enable, to demonstrate how we handle changing height, using changeContent
-                });
-                calendar.render();
-
-                calendar.selectEvent.subscribe(function() {
-                    if (calendar.getSelectedDates().length > 0) {
-                        var selDate = calendar.getSelectedDates()[0];
-                        // Pretty Date Output, using Calendar's Locale values: Friday, 8 February 2008
-                        //var wStr = calendar.cfg.getProperty("WEEKDAYS_LONG")[selDate.getDay()];
-                        var dStr = (selDate.getDate() < 10) ? '0'+selDate.getDate() : selDate.getDate();
-                        var mStr = (selDate.getMonth()+1 < 10) ? '0'+(selDate.getMonth()+1) : (selDate.getMonth()+1);
-                        var yStr = selDate.getFullYear();
-
-                        Dom.get(block).value = yStr + '-' + mStr + '-' + dStr;
-                    } else {
-                        Dom.get(block).value = "";
-                    }
-                    dialog.hide();
-                    if ('finding[currentEcd]' == Dom.get(block).name) {
-                        validateEcd();
-                    }
-                });
-
-                calendar.renderEvent.subscribe(function() {
-                    // Tell Dialog it's contents have changed, which allows
-                    // container to redraw the underlay (for IE6/Safari2)
-                    dialog.fireEvent("changeContent");
-                });
-            }
-
-            var seldate = calendar.getSelectedDates();
-
-            if (seldate.length > 0) {
-                // Set the pagedate to show the selected date if it exists
-                calendar.cfg.setProperty("pagedate", seldate[0]);
-                calendar.render();
-            }
-            dialog.show();
         }
     };
 
@@ -7275,6 +7143,27 @@ Fisma.Finding = {
      */
     setupSecurityControlAutocomplete : function (autocomplete, params) {
         autocomplete.itemSelectEvent.subscribe(Fisma.Finding.handleSecurityControlSelection);
+    },
+
+    /**
+     * Validates ECD date
+     * 
+     * @param selectDate {String} The selected expected completion date
+     */
+    validateEcd: function (selectDate) {
+        selectDate = selectDate.replace(/\-/g, "");
+        var oDate= new Date();
+        var Year = oDate.getFullYear();
+        var Month = oDate.getMonth();
+        Month = Month + 1;
+        if (Month < 10) {Month = '0' + Month;}
+        var Day = oDate.getDate();
+        if (Day < 10) {Day = '0' + Day;}
+        if (parseInt(selectDate, 10) <= parseInt(Year + Month + Day, 10)) {
+            return false;
+        } else {
+            return true;
+        }
     }
 };
 /**
