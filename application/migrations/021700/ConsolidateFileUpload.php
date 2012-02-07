@@ -124,8 +124,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
 
     /**
      * Migrate Finding Evidence
-     *
-     * @return void
+     * * @return void
      */
     public function migrateFindingEvidence()
     {
@@ -137,6 +136,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
                 . 'FROM evidence e LEFT JOIN finding_evaluation fe ON fe.evidenceid = e.id '
                 . 'GROUP BY e.id';
         $results = $this->getHelper()->execute($query);
+        $deletedUploads = array();
         foreach ($results as $evidence) {
             $filepath = sprintf($evidencePath, $evidence->findingid) . $evidence->filename;
             $hash = file_exists($filepath) ? $fm->store($filepath) : null;
@@ -148,16 +148,18 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
                     array('uploadid' => $uid, 'objectid' => $evidence->findingid)
                 );
             } else {
-                // make a note in the audit log
-                $this->getHelper()->insert(
-                    'finding_audit_log',
-                    array(
-                        'createdts' => Fisma::now(),
-                        'message' => 'Denied evidence deleted (upload ID ' . $uid . ')',
-                        'objectid' => $evidence->findingid
-                    )
-                );
+                $deletedUploads[$evidence->findingid][] = $uid;
             }
+        }
+
+        // output audit log messages for delted uploads
+        foreach ($deletedUploads as $findingId => $uploadIds) {
+            $msg = '(Upgrade) The following Upload IDs have been removed from this finding: '
+                   . implode(', ', $uploadIds);
+            $this->getHelper()->insert(
+                'finding_audit_log',
+                array('createdts' => Fisma::now(), 'message' => $msg, 'objectid' => $findingId)
+            );
         }
 
     }
