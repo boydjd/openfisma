@@ -58,6 +58,7 @@ class Incident extends BaseIncident
 
         $this->hasMutator('categoryId', 'setCategoryId');
         $this->hasMutator('hostIp', 'setHostIp');
+        $this->hasMutator('organizationId', 'setOrganizationId');
         $this->hasMutator('pocId', 'setPocId');
         $this->hasMutator('reporterEmail', 'setReporterEmail');
         $this->hasMutator('ReportingUser', 'setReportingUser');
@@ -187,6 +188,21 @@ class Incident extends BaseIncident
         }
 
         $this->getAuditLog()->write('Changed Category: ' .  $category->name);
+    }
+
+    /**
+     * Set the organization ID.
+     *
+     * @param int $organizationId
+     */
+    public function setOrganizationId($organizationId)
+    {
+        if ($organizationId === '0') {
+            // This is the "I don't know" category in the report wizard
+            $this->_set('organizationId', null);
+        } else {
+            $this->_set('organizationId', $organizationId);
+        }
     }
 
     /**

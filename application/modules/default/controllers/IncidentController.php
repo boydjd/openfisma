@@ -165,14 +165,17 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             return;
         } elseif (!$incident->isValid()) {
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
-        } elseif (!$subFormValid) {
-            $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
-
-            $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
         } else {
             // The user can move forwards or backwards
             if ($this->getRequest()->getParam('irReportForwards')) {
-                $step++;
+
+                // Only validate the form when moving forward
+                if (!$subFormValid) {
+                    $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
+                    $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
+                } else {
+                    $step++;
+                }
             } elseif ($this->getRequest()->getParam('irReportBackwards')) {
                 $step--;
             } else {
@@ -344,6 +347,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                         ->orderBy('label')
                         ->execute()
                         ->toKeyValueArray('id', 'label');
+
+                    $organizationSelect->addMultiOption(0, "I don't know");
                     $organizationSelect->addMultiOptions($organizations);
 
                     // Load incident categories for authenticated users only
@@ -406,6 +411,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function reviewReportAction()
     {
+        if (!$this->_me) {
+            $this->_helper->layout->setLayout('anonymous');
+        }
+
         // Fetch the incident report draft from the session
         $session = Fisma::getSession();
         if (isset($session->irDraft)) {
@@ -434,14 +443,17 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 }
 
                 if ($columnDef) {
-                    $logicalName = stripslashes($columnDef['extra']['logicalName']);
-                    $incidentReview[$logicalName] = stripslashes($value);
-                    // we need to know, in the view, which fields are rich-text
-                    if (!empty($columnDef['extra']['purify'])) {
-                        $richColumns[$logicalName] = $columnDef['extra']['purify'];
+                    if (isset($columnDef['extra']['logicalName'])) {
+                        $logicalName = stripslashes($columnDef['extra']['logicalName']);
+                        $incidentReview[$logicalName] = stripslashes($value);
+
+                        // we need to know, in the view, which fields are rich-text
+                        if (!empty($columnDef['extra']['purify'])) {
+                            $richColumns[$logicalName] = $columnDef['extra']['purify'];
+                        }
                     }
                 } else {
-                    throw new Fisma_Zend_Exception("Column ($key) does not have a logical name");
+                    throw new Fisma_Zend_Exception("Column ($key) is not defined");
                 }
             }
         }
