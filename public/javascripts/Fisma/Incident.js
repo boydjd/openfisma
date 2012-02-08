@@ -440,7 +440,8 @@ Fisma.Incident = {
     removeUser: function (incidentId, userId, table) {
         var postData = Fisma.Util.convertObjectToPostData({
             incidentId: incidentId,
-            userId: userId
+            userId: userId,
+            csrf: document.getElementById('incident_detail').elements['csrf'].value
         });
 
         YAHOO.util.Connect.asyncRequest(

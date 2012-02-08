@@ -8,10 +8,10 @@ Fisma_Format_Section::startSection("Incident Report Submitted");
 
 <?php
 if ($this->viewIncidentButton):
-    echo($this->escape($this->viewIncidentButton, 'none'));
+    echo $this->escape($this->viewIncidentButton, 'none');
 endif;
 
-echo($this->escape($this->createNewButton, 'none'));
+echo $this->escape($this->createNewButton, 'none');
 
 Fisma_Format_Section::stopSection();
 ?>

@@ -299,6 +299,8 @@ Fisma.Util = {
             postData += encodeURIComponent(key) + "=" + encodeURIComponent(value) + "&";
         }
 
+        postData = postData.substring(0, postData.length - 1);
+
         return postData;
     }
 };
