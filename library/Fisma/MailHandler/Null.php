@@ -30,6 +30,8 @@ class Fisma_MailHandler_Null extends Fisma_MailHandler_Abstract
 {
     /**
      * Send nothing
+     * 
+     * @return void
      */
     public function send()
     {

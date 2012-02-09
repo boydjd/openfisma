@@ -27,7 +27,7 @@
  */
 class Fisma_MailHandler_Queue extends Fisma_MailHandler_Abstract
 {
-    /*
+    /**
      * Save mail to mail table
      * 
      * @return void

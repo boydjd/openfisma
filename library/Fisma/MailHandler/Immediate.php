@@ -27,7 +27,7 @@
  */
 class Fisma_MailHandler_Immediate extends Fisma_MailHandler_Abstract
 {
-    /*
+    /**
      * Send mail immediately
      * 
      * @return void
