@@ -17,31 +17,31 @@
  */
 
 /**
- * This migration adds the queue mail table.
+ * This migration adds the migration table.
  *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_021700_AddQueueMailTable extends Fisma_Migration_Abstract
+class Application_Migration_021700_AddMailTable extends Fisma_Migration_Abstract
 {
     /**
-     * Create the new queue mail table
+     * Create the mail table
      */
     public function migrate()
     {
         $columns = array(
             'id'            => "bigint(20) NOT NULL AUTO_INCREMENT",
             'recipient'     => "varchar(255) NOT NULL COMMENT 'The recipient email address'",
-            'recipientName' => "varchar(255) DEFAULT NULL COMMENT 'The recipient name'",
+            'recipientName' => "varchar(255) DEFAULT NULL COMMENT 'The recipient name.'",
             'sender'        => "varchar(255) DEFAULT NULL COMMENT 'The sender email address'",
             'senderName'    => "varchar(255) DEFAULT NULL COMMENT 'The name for sender mail'",
-            'subject'       => "varchar(255) NOT NULL COMMENT 'The subject for mail'",
-            'body'          => "text NOT NULL COMMENT 'Email body text'"
+            'subject'       => "varchar(255) NOT NULL COMMENT 'The subject for mail.'",
+            'body'          => "varchar(255) NOT NULL COMMENT 'Email body text.'"
         );
 
-        echo "Creating queue mail table…\n";
-        $this->getHelper()->createTable('queue_mail', $columns, 'id');
+        echo "Creating mail table…\n";
+        $this->getHelper()->createTable('mail', $columns, 'id');
     }
 }

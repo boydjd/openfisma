@@ -17,7 +17,7 @@
  */
 
 /**
- * A mail handler implementation which saves to queuemail table
+ * A mail handler implementation which saves to mail table
  * 
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
@@ -28,17 +28,12 @@
 class Fisma_MailHandler_Queue extends Fisma_MailHandler_Abstract
 {
     /*
-     * Save mail to queue mail table
+     * Save mail to mail table
+     * 
+     * @return void
      */
-    protected function _send()
+    public function send()
     {
-        $mail = New QueueMail();
-        $mail->recipient     = $this->getMail()->recipient;
-        $mail->recipientName = $this->getMail()->recipientName;
-        $mail->sender        = $this->getMail()->sender;
-        $mail->senderName    = $this->getMail()->senderName;
-        $mail->subject       = $this->getMail()->subject;
-        $mail->body          = $this->getMail()->body;
-        $mail->save();
+        $this->getMail()->save();
     }
 }

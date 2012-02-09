@@ -35,8 +35,8 @@ class Fisma_Cli_SendMails extends Fisma_Cli_Abstract
      */
     public function _run()
     {
-        // Get all queue mail
-        $mails = Doctrine::getTable('QueueMail')->findAll()->toArray();
+        // Get all mail
+        $mails = Doctrine::getTable('Mail')->findAll()->toArray();
 
         // Send mail immediately and delete mail after send successful
         $conn = Doctrine_Manager::connection();
@@ -45,15 +45,13 @@ class Fisma_Cli_SendMails extends Fisma_Cli_Abstract
             $conn->beginTransaction();
 
             foreach ($mails as $mail) {
-                $this->_sendMail($mail);
+                $this->_sendMail($mail['id']);
                 $this->_purgeMail($mail['id']);
             }
 
             $conn->commit();
         } catch (Exception $e) {
-            if ($e instanceof Doctrine_Exception) {
-                $conn->rollback();
-            }
+            $conn->rollback();
 
             throw $e;
         }
@@ -62,33 +60,34 @@ class Fisma_Cli_SendMails extends Fisma_Cli_Abstract
     /**
      * Send mail immediately to recipient.
      * 
-     * @param array $mailData A row from the queue mail table
+     * @param integer $id mail id
      * @return void
      */
-    private function _sendMail($mailData)
+    private function _sendMail($id)
     {
-        $mail = new Fisma_Mail($mailData);
+        $mail = Doctrine::getTable('Mail')->find($id);
 
         try {
             $mailHandler = new Fisma_MailHandler_Immediate();
             $mailHandler->setMail($mail)->send();
-            echo Fisma::now() . " Email was sent to {$mailData['recipient']}\n";
+
+            echo Fisma::now() . " Email was sent to {$mail->recipient}\n";
         } catch (Zend_Mail_Exception $e) {
-            echo "Failed Sending Email: " . $e->getMessage(). "\n";
+            throw new Fisma_Zend_Exception_User("Failed Sending Email: " . $e->getMessage());
         }
     }
 
     /**
-     * Remove mail from the queue mail table.
+     * Remove mail from the mail table.
      * 
-     * @param integer $id A queue mail id
+     * @param integer $id A mail id
      * @return void
      */
     private function _purgeMail($id)
     {
         Doctrine_Query::create()
             ->delete()
-            ->from('QueueMail')
+            ->from('Mail')
             ->where('id = ?', $id)
             ->execute();
     }

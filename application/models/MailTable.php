@@ -17,7 +17,7 @@
  */
 
  /**
- * QueueMailTable
+ * MailTable
  *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
@@ -25,7 +25,7 @@
  * @package    Model
  * @uses       Fisma_Doctrine_Table
  */
-class QueueMailTable extends Fisma_Doctrine_Table
+class MailTable extends Fisma_Doctrine_Table
 {
 
 }

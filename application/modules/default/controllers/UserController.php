@@ -203,12 +203,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             // Just send out email when create a new account or change password by admin user,
             // and it does not sent out email when the root user changes his own password.
-            $mailData = array();
-            $mailData['recipient']     = $subject->email;
-            $mailData['recipientName'] = $subject->nameFirst . ' ' . $subject->nameLast;
+            $mail = new Mail();
+            $mail->recipient     = $subject->email;
+            $mail->recipientName = $subject->nameFirst . ' ' . $subject->nameLast;
             $systemName = Fisma::configuration()->getConfig('system_name');
             if ('create' === $actionName) {
-                $mailData['subject'] = "Your new account for $systemName has been created";
                 $options = array(
                     'systemName' => $systemName,
                     'username' => $subject->username,
@@ -216,20 +215,23 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     'authType' => Fisma::configuration()->getConfig('auth_type')
                 );
 
-                $mail = new Fisma_Mail($mailData, 'sendAccountInfo', $options);
+                $mail->subject = "Your new account for $systemName has been created";
+                $mail->mailTemplate('send_account_info', $options);
+
                 Zend_Registry::get('mail_handler')->setMail($mail)->send();
             } else if ('view' === $actionName
                        && !empty($values['password'])
                        && ('root' !== $subject->username || $this->_me->username !== 'root')) {
 
-                $mailData['subject'] = "Your password for $systemName has been changed";
                 $options = array(
                     'systemName' => $systemName,
                     'plainTextPassword' => $subject->plainTextPassword,
                     'host' => Fisma_Url::baseUrl()
                 );
 
-                $mail = new Fisma_Mail($mailData, 'sendPassword', $options);
+                $mail->subject = "Your password for $systemName has been changed";
+                $mail->mailTemplate('send_password', $options);
+
                 Zend_Registry::get('mail_handler')->setMail($mail)->send();
             }
 

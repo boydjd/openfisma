@@ -46,10 +46,12 @@ class Test_Library_Fisma_MailHandler_Immediate extends Test_Case_Unit
 
     /**
      * Test case for mail data by parameter
+     * 
+     * @return void
      */
     public function testMail()
     {
-        $mail = new Fisma_Mail;
+        $mail = new Mail;
         $mail->recipient     = 'recipient@example.com';
         $mail->recipientName = 'recipient';
         $mail->sender        = 'testmail@example.com';
@@ -70,8 +72,10 @@ class Test_Library_Fisma_MailHandler_Immediate extends Test_Case_Unit
 
     /**
      * Test case for transport
+     * 
+     * @return void
      */
-    public function testGetTransport()
+    public function testTransport()
     {
         $mailHandler = new Fisma_MailHandler_Immediate;
         $transport = $mailHandler->getTransport();
@@ -88,16 +92,7 @@ class Test_Library_Fisma_MailHandler_Immediate extends Test_Case_Unit
 
         // Parameter is smtp object
         $smtp = new Zend_Mail_Transport_Smtp();
-        $transport = $mailHandler->getTransport($smtp);
-        $this->assertEquals('Zend_Mail_Transport_Smtp', get_class($transport));
-
-        // the parameter is empty object
-        $object = $this->getMock('Mock_Blank');
-        try {
-            $transport = $mailHandler->getTransport($object);
-            $this->fail('Parameter is not instance from Zend_Mail_Transport_Abstract, should have thrown an exception');
-        } catch (Exception $e) {
-            $this->assertTrue(true);
-        }
+        $transport = $mailHandler->setTransport($smtp);
+        $this->assertEquals('Zend_Mail_Transport_Smtp', get_class($mailHandler->getTransport()));
     }
 }

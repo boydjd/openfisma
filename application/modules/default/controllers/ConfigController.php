@@ -519,16 +519,19 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                          . " administrator to determine if the e-mail configuration is" 
                          . " working correctly. There is no need to reply to this e-mail.";
 
+            $transport = $this->_getTransportFromPost($emailConfiguration);
+
             // Send email
-            $mail = new Fisma_Mail();
+            $mail = new Mail();
             $mail->recipient = $emailConfiguration['recipient'];
             $mail->sender    = $emailConfiguration['sender'];
             $mail->subject   = $emailConfiguration['subject'];
             $mail->body      = $mailContent;
-            $mail->transport = $this->_getTransportFromPost($emailConfiguration);
 
             $mailHandler = new Fisma_MailHandler_Immediate();
-            $mailHandler->setMail($mail)->send();
+            $mailHandler->setMail($mail)
+                        ->setTransport($transport)
+                        ->send();
 
             $type = 'message';
             $msg  = 'Sent test email to ' . $emailConfiguration['recipient'] . ' successfully !';
@@ -675,5 +678,4 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         return $transport;
     }
-    
 }

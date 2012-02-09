@@ -28,19 +28,26 @@
 abstract class Fisma_MailHandler_Abstract
 {
     /**
-     * A Fisma_Mail instance
+     * A Mail instance
      * 
-     * @var Fisma_Mail
+     * @var Mail
      */
     private $_mail;
 
     /**
+     * Zend mail transport
+     * 
+     *@var Zend_Mail_Transport_Abstract
+     */
+    private $_transport;
+
+    /**
      * Set mail object.
      *
-     * @param Fisma_Mail $mail
+     * @param Mail $mail
      * @return this
      */
-    public function setMail(Fisma_Mail $mail)
+    public function setMail(Mail $mail)
     {
         $this->_mail = $mail;
 
@@ -57,29 +64,33 @@ abstract class Fisma_MailHandler_Abstract
 
     /**
      * Send mail store to mail table or send email immediately
-     */
-    public function send()
-    {
-        $this->_send();
-    }
-
-    /**
-     * Subclasses must implement this method to do their work
      * 
      * @return void
      */
-    abstract protected function _send();
+    abstract public function send();
+
+    /**
+     * Set mail transport
+     * 
+     * @param  Zend_Mail_Transport_Abstract $transport
+     * @return this
+     */
+    public function setTransport(Zend_Mail_Transport_Abstract $transport)
+    {
+        $this->_transport = $transport;
+
+        return $this;
+    }
 
     /**
      * Return the appropriate Zend_Mail_Transport subclass, based on the system's configuration
      * 
-     * @param  Zend_Mail_Transport_Abstract $transport
-     * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail The initialized email sender
+     * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail
      */
-    public function getTransport(Zend_Mail_Transport_Abstract $transport = null)
+    public function getTransport()
     {
-        if ($transport) {
-            return $transport;
+        if ($this->_transport) {
+            return $this->_transport;
         } else {
             if ('smtp' == Fisma::configuration()->getConfig('send_type')) {
                 $username = Fisma::configuration()->getConfig('smtp_username');
@@ -87,6 +98,7 @@ abstract class Fisma_MailHandler_Abstract
                 $port     = Fisma::configuration()->getConfig('smtp_port');
                 $tls      = Fisma::configuration()->getConfig('smtp_tls');
                 $host     = Fisma::configuration()->getConfig('smtp_host');
+
                 if (empty($username) && empty($password)) {
                     //Un-authenticated SMTP configuration
                     $config = array('port' => $port);
@@ -99,13 +111,11 @@ abstract class Fisma_MailHandler_Abstract
                         $config['ssl'] = 'tls';
                     }
                 }
-                $transport = new Zend_Mail_Transport_Smtp($host, $config);
+
+                return  new Zend_Mail_Transport_Smtp($host, $config);
             } else {
-                $transport = new Zend_Mail_Transport_Sendmail();
+                return new Zend_Mail_Transport_Sendmail();
             }
         }
-
-        return $transport;
     }
 }
-

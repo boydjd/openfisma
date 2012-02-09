@@ -247,12 +247,12 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
-     * Instantiate a mail hanlder
+     * Instantiate a mail handler
      * 
      * @access protected
      * @return void
      */
-    protected function _initMailHanlder()
+    protected function _initMailHandler()
     {
         $mailHandler = new Fisma_MailHandler_Queue();
 

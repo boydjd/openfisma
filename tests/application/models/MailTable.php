@@ -16,24 +16,27 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
+require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
+
 /**
- * A concrete implementation of the mail handler interface sending nothing
- * This implementation is ideal for run CLI purposes
+ * Test_Application_Models_MailTable 
  * 
- * @author     Ben Zheng <ben.zheng@reyosoft.com>
- * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
- * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Fisma
- * @subpackage Fisma_MailHandler
+ * @uses Test_Case_Unit
+ * @package Test
+ * @copyright (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
+ * @author Ben Zheng <ben.zheng@reyosoft.com>
+ * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_MailHandler_Null extends Fisma_MailHandler_Abstract
+class Test_Application_Models_MailTable extends Test_Case_Unit
 {
     /**
-     * Send nothing
+     * testClassExists 
+     * 
+     * @access public
+     * @return void
      */
-    public function send()
+    public function testClassExists()
     {
-
+        $this->assertTrue(class_exists('MailTable'));
     }
 }
-

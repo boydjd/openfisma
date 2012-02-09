@@ -103,25 +103,27 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
      * stored in the 0 row of $notifications.
      * 
      * @param array $notifications A group of rows from the notification table
-     * @param Fisma_MailHandler_Abstract $mailHanlder
+     * @param Fisma_MailHandler_Abstract $mailHandler
      * @return void
      */
-    function sendNotificationEmail($notifications, $mailHanlder = null) 
+    function sendNotificationEmail($notifications, $mailHandler = null) 
     {
         $user = $notifications[0]->User;
 
-        $mailData = array();
-        $mailData['recipient']     = $user->email;
-        $mailData['recipientName'] = $user->nameFirst . ' ' . $user->nameLast;
-        $mailData['subject']       = "Your notifications for " . Fisma::configuration()->getConfig('system_name');
         $options = array('notifyData' => $notifications);
 
-        $mail = new Fisma_Mail($mailData, 'notification', $options);
+        $mail = new Mail();
+
+        $mail->recipient     = $user->email;
+        $mail->recipientName = $user->nameFirst . ' ' . $user->nameLast;
+        $mail->subject       = "Your notifications for " . Fisma::configuration()->getConfig('system_name');
+
+        $mail->mailTemplate('notification', $options);
 
         try {
-            $handler = (isset($mailHanlder)) ? $mailHanlder : new Fisma_MailHandler_Immediate();
+            $handler = (isset($mailHandler)) ? $mailHandler : new Fisma_MailHandler_Immediate();
             $handler->setMail($mail)->send();
-            echo Fisma::now() . " Email was sent to {$mailData['recipient']}\n";
+            echo Fisma::now() . " Email was sent to {$user->email}\n";
         } catch (Zend_Mail_Exception $e) {
             echo "Failed Sending Email: " . $e->getMessage(). "\n";
         }

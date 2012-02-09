@@ -42,54 +42,58 @@ class Test_Library_Fisma_MailHandler_Queue extends Test_Case_Unit
         Fisma::configuration()->setConfig('sender', 'test@openfisma.org');
         Fisma::configuration()->setConfig('system_name', 'OpenFISMA');
 
-        $this->configs = array(
-            'recipient'     => 'recipient@example.com',
-            'recipientName' => 'recipient',
-            'sender'        => 'testmail@example.com',
-            'senderName'    => 'testmail',
-            'subject'       => 'my subject',
-            'body'          => 'test mail'
-        );
+        $mail = new Mail();
+        $mail->recipient     = 'recipient@example.com';
+        $mail->recipientName = 'recipient';
+        $mail->subject       = 'my subject';
+        $mail->body          = 'test mail';
+
+        $this->mail = $mail;
 
         $this->queue = new Fisma_MailHandler_Queue;
     }
 
-
     /**
      * Test case for getting mail sender and send name from parameter
+     * 
+     * @return void
      */
     public function testGetSenderAndSenderNameFromParameter()
     {
-        $mail = new Fisma_Mail($this->configs);
-        $this->queue->setMail($mail);
+        $this->mail->sender        = 'testmail@example.com';
+        $this->mail->senderName    = 'testmail';
 
-        $this->assertEquals('recipient@example.com', $this->queue->getMail()->recipient);
-        $this->assertEquals('recipient', $this->queue->getMail()->recipientName);
-        $this->assertEquals('testmail@example.com', $this->queue->getMail()->sender);
-        $this->assertEquals('testmail', $this->queue->getMail()->senderName);
-        $this->assertEquals('my subject', $this->queue->getMail()->subject);
-        $this->assertEquals('test mail', $this->queue->getMail()->body);
+        $this->queue->setMail($this->mail);
+
+        $mail = $this->queue->getMail();
+
+        $this->assertEquals('recipient@example.com', $mail->recipient);
+        $this->assertEquals('recipient', $mail->recipientName);
+        $this->assertEquals('testmail@example.com', $mail->sender);
+        $this->assertEquals('testmail', $mail->senderName);
+        $this->assertEquals('my subject', $mail->subject);
+        $this->assertEquals('test mail', $mail->body);
     }
 
     /**
      * Test case for getting mail sender and send name from configuration
+     * 
+     * @return void
      */
     public function testGetSenderAndSenderNameFromConfig()
     {
-        $this->configs['sender'] = null;
-        $this->configs['senderName'] = null;
+        $this->queue->setMail($this->mail);
 
-        $mail = new Fisma_Mail($this->configs);
-        $this->queue->setMail($mail);
+        $mail = $this->queue->getMail();
 
-        $this->assertEquals('recipient@example.com', $this->queue->getMail()->recipient);
-        $this->assertEquals('recipient', $this->queue->getMail()->recipientName);
-        $this->assertEquals('my subject', $this->queue->getMail()->subject);
-        $this->assertEquals('test mail', $this->queue->getMail()->body);
+        $this->assertEquals('recipient@example.com', $mail->recipient);
+        $this->assertEquals('recipient', $mail->recipientName);
+        $this->assertEquals('my subject', $mail->subject);
+        $this->assertEquals('test mail', $mail->body);
 
         // Default sender and senderName from configuration
-        $this->assertEquals('test@openfisma.org', $this->queue->getMail()->sender);
-        $this->assertEquals('OpenFISMA', $this->queue->getMail()->senderName);
+        $this->assertEquals('test@openfisma.org', $mail->sender);
+        $this->assertEquals('OpenFISMA', $mail->senderName);
     }
 }
 
