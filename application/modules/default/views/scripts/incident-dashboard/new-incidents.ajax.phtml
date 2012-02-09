@@ -104,10 +104,8 @@ Fisma_Format_Section::startSection("New Incidents <span id='newIncidentsFound'><
         var menuItem = eventArgs[1];
         var actionUrl = '';
 
-        /** 
-         * When view over a table inside data row, it gets the wrong row element by using getTrEl(targetElement).
-         * It needs to traver further to get right <tr> dom for getting row record.
-         */
+        // When view over a table inside data row, it gets the wrong row element by using getTrEl(targetElement).
+        // It needs to traver further to get right <tr> dom for getting row record.
         if (YAHOO.lang.isNull(rowRecord)) {
             var oElement = $(targetElement).parents("tr.yui-dt-rec").first();
             rowRecord = myDataTable.getRecord(oElement[0]);
