@@ -30,7 +30,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 class Test_Library_Fisma_MailHandler_Queue extends Test_Case_Unit
 {
     /**
-     * setUp 
+     * Set up configuration items by sender and system_name
      * 
      * @access public
      * @return void
@@ -54,11 +54,11 @@ class Test_Library_Fisma_MailHandler_Queue extends Test_Case_Unit
     }
 
     /**
-     * Test case for getting mail sender and send name from parameter
+     * Test case for getting mail sender and send name
      * 
      * @return void
      */
-    public function testGetSenderAndSenderNameFromParameter()
+    public function testGetSenderAndSenderName()
     {
         $this->mail->sender        = 'testmail@example.com';
         $this->mail->senderName    = 'testmail';

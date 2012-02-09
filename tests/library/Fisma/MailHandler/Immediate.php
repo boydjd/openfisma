@@ -30,7 +30,7 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 class Test_Library_Fisma_MailHandler_Immediate extends Test_Case_Unit
 {
     /**
-     * setUp 
+     * Set up configuration items by sender, system_name and send_type
      * 
      * @access public
      * @return void

@@ -1147,7 +1147,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $mail->recipientName = $user['u_name'];
                 $mail->subject       = "A workflow step has been completed";
 
-                $mail->mailTemplate('IRStep', $options);
+                $mail->mailTemplate('ir_step', $options);
 
                 Zend_Registry::get('mail_handler')->setMail($mail)->send();
             }
