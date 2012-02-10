@@ -68,12 +68,7 @@
                     day = "0" + day;
                 }
 
-                var selectDate = year + '-' + month + '-' + day;
-                if ('finding[currentEcd]' == textEl.name && !Fisma.Finding.validateEcd(selectDate)) {
-                    Fisma.Util.showAlertDialog("Warning: You entered an ECD date in the past.");
-                } else {
-                    textEl.value = selectDate;
-                }
+                textEl.value = year + '-' + month + '-' + day;
 
                 calendar.hide();
             };

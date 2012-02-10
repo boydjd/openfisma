@@ -3668,12 +3668,7 @@ Fisma.Blinker.prototype.cycle = function () {
                     day = "0" + day;
                 }
 
-                var selectDate = year + '-' + month + '-' + day;
-                if ('finding[currentEcd]' == textEl.name && !Fisma.Finding.validateEcd(selectDate)) {
-                    Fisma.Util.showAlertDialog("Warning: You entered an ECD date in the past.");
-                } else {
-                    textEl.value = selectDate;
-                }
+                textEl.value = year + '-' + month + '-' + day;
 
                 calendar.hide();
             };
@@ -7143,27 +7138,6 @@ Fisma.Finding = {
      */
     setupSecurityControlAutocomplete : function (autocomplete, params) {
         autocomplete.itemSelectEvent.subscribe(Fisma.Finding.handleSecurityControlSelection);
-    },
-
-    /**
-     * Validates ECD date
-     * 
-     * @param selectDate {String} The selected expected completion date
-     */
-    validateEcd: function (selectDate) {
-        selectDate = selectDate.replace(/\-/g, "");
-        var oDate= new Date();
-        var Year = oDate.getFullYear();
-        var Month = oDate.getMonth();
-        Month = Month + 1;
-        if (Month < 10) {Month = '0' + Month;}
-        var Day = oDate.getDate();
-        if (Day < 10) {Day = '0' + Day;}
-        if (parseInt(selectDate, 10) <= parseInt(Year + Month + Day, 10)) {
-            return false;
-        } else {
-            return true;
-        }
     }
 };
 /**
