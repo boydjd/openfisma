@@ -3216,15 +3216,16 @@ Fisma.AttachArtifacts = {
                 '/artifact/upload-progress/format/json/id/' + this.apcId,
                 {
                     success : function (asyncResponse) {
-
+                        var response;
                         // Parse server response
                         try {
-                            var response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+                            response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
                         } catch (e) {
                             if (e instanceof SyntaxError) {
                                 // Handle a JSON syntax error by constructing a fake response object with progress=false
-                                response = new Object();
-                                response.progress = false;
+                                response = {
+                                    progress : false
+                                };
                             } else {
                                 throw e;
                             }
@@ -3279,16 +3280,17 @@ Fisma.AttachArtifacts = {
      * @param asyncResponse Response object from YUI connection
      */
     handleUploadComplete : function (asyncResponse) {
-
+        var responseStatus;
         // Check response status and display error message if necessary
         try {
-            var responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+            responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
         } catch (e) {
             if (e instanceof SyntaxError) {
                 // Handle a JSON syntax error by constructing a fake response object
-                responseStatus = new Object();
-                responseStatus.success = false;
-                responseStatus.message = "Invalid response from server.";
+                responseStatus = {
+                    success : false,
+                    message : "Invalid response from server."
+                };
             } else {
                 throw e;
             }
@@ -3333,11 +3335,11 @@ Fisma.AttachArtifacts = {
          */
         var callbackObject = Fisma[this.config.callback.object];
 
-        if (typeof callbackObject != "Undefined") {
+        if (typeof callbackObject !== "Undefined") {
             
             var callbackMethod = callbackObject[this.config.callback.method];
             
-            if (typeof callbackMethod == "function") {
+            if (typeof callbackMethod === "function") {
                 
                 /**
                  * Passing callbackObject to call() will make that the scope for the called method, which gives "this"
@@ -3391,7 +3393,7 @@ Fisma.AttachArtifacts = {
  * @requires  Fisma
  */
 
-Fisma.AutoComplete = function() {
+Fisma.AutoComplete = (function() {
     return {
         /**
          * Used for tracking if there are any open requests.
@@ -3515,7 +3517,7 @@ Fisma.AutoComplete = function() {
          * @param hiddenFieldId {String} The ID of the hidden field
          */
         updateHiddenField : function(sType, aArgs, hiddenFieldId) {
-            document.getElementById(hiddenFieldId).value = aArgs[2][1]['id'];
+            document.getElementById(hiddenFieldId).value = aArgs[2][1].id;
             $('#' + hiddenFieldId).trigger('change');
         },
         
@@ -3531,7 +3533,7 @@ Fisma.AutoComplete = function() {
             $('#' + hiddenFieldId).trigger('change');            
         }
     };
-}();
+}());
 /**
  * Copyright (c) 2008 Endeavor Systems, Inc.
  *
@@ -3652,7 +3654,7 @@ Fisma.Blinker.prototype.cycle = function () {
 
     /**
      * Provides calendar related functionality
-     * 
+     *
      * @namespace Fisma
      * @class Calendar
      */
@@ -3666,7 +3668,7 @@ Fisma.Blinker.prototype.cycle = function () {
         addCalendarPopupToTextField: function (textEl) {
             var popupCalendarDiv = document.createElement('div');
             popupCalendarDiv.style.position = 'absolute';
-            popupCalendarDiv.style.zIndex = 99;
+            popupCalendarDiv.style.zIndex = 1000;
             textEl.parentNode.appendChild(popupCalendarDiv);
 
             var textFieldPosition = YAHOO.util.Dom.getRegion(textEl);
@@ -3679,21 +3681,21 @@ Fisma.Blinker.prototype.cycle = function () {
 
             var calendar = new YAHOO.widget.Calendar(popupCalendarDiv, {close : true});
             calendar.hide();
-            
+
             // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
             setTimeout(function () {calendar.render();}, 0);
 
             textEl.onfocus = function () { calendar.show(); };
 
             var handleSelect = function (type, args, obj) {
-                var dateParts = args[0][0]; 
-                var year = dateParts[0], month = "" + dateParts[1], day = "" + dateParts[2];
+                var dateParts = args[0][0];
+                var year = dateParts[0], month = dateParts[1].toString(), day = dateParts[2].toString();
 
-                if (1 == month.length) {
+                if (1 === month.length) {
                     month = "0" + month;
                 }
 
-                if (1 == day.length) {
+                if (1 === day.length) {
                     day = "0" + day;
                 }
 
@@ -3712,7 +3714,7 @@ Fisma.Blinker.prototype.cycle = function () {
          * @param event {String} The name of the event
          * @param ele {String} The element id
          */
-        callCalendar: function(evt, ele) {alert('testa');
+        callCalendar: function(evt, ele) {
             this.showCalendar(ele, ele+'_show');
         },
 
@@ -3728,13 +3730,10 @@ Fisma.Blinker.prototype.cycle = function () {
 
             var showBtn = Dom.get(trigger);
 
-            var dialog;
-            var calendar;
-
             /*
-             * Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners, 
+             * Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners,
              * until the first time the button is clicked.
-             */ 
+             */
             if (!dialog) {
                 function resetHandler() {
                     Dom.get(block).value = '';
@@ -3751,7 +3750,7 @@ Fisma.Blinker.prototype.cycle = function () {
                     draggable:true,
                     close:true
                 });
-                
+
                 dialog.setHeader('Pick A Date');
                 dialog.setBody('<div id="cal"></div><div class="clear"></div>');
                 dialog.render(document.body);
@@ -3761,7 +3760,7 @@ Fisma.Blinker.prototype.cycle = function () {
 
                 dialog.showEvent.subscribe(function() {
                     if (YAHOO.env.ua.ie) {
-                        // Since we're hiding the table using yui-overlay-hidden, we 
+                        // Since we're hiding the table using yui-overlay-hidden, we
                         // want to let the dialog know that the content size has changed, when
                         // shown
                         dialog.fireEvent("changeContent");
@@ -3798,7 +3797,7 @@ Fisma.Blinker.prototype.cycle = function () {
                 });
 
                 calendar.renderEvent.subscribe(function() {
-                    // Tell Dialog it's contents have changed, which allows 
+                    // Tell Dialog it's contents have changed, which allows
                     // container to redraw the underlay (for IE6/Safari2)
                     dialog.fireEvent("changeContent");
                 });
@@ -4728,6 +4727,7 @@ Fisma.Chart = {
                 var thisChartId = chartParamsObj.uniqueid;
                 var topLegendOnDOM = document.getElementById(thisChartId + 'toplegend');
                 topLegendOnDOM.appendChild(threatTable);
+                topLegendOnDOM.style.display = 'block';
             }
         }        
     },
@@ -6477,7 +6477,7 @@ Fisma.CheckboxTree = {
         var nextCheckbox = topListItem.nextSibling.childNodes[0];
         if (nextCheckbox.getAttribute('nestedLevel') > clickedBox.getAttribute('nestedLevel')) {
             var minLevel = clickedBox.getAttribute('nestedlevel');
-            var checkboxArray = new Array();
+            var checkboxArray = [];
             var allChildNodesChecked = true;
 
             // Loop through all of the subnodes and see which ones are already checked
@@ -6506,7 +6506,8 @@ Fisma.CheckboxTree = {
             }
             
             // Now iterate through child nodes and update them
-            for (var i in checkboxArray) {
+            var i;
+            for (i = 0; i < checkboxArray.length; i++) {
                 var checkbox = checkboxArray[i];
                 
                 if (allChildNodesChecked) {
@@ -6655,9 +6656,10 @@ Fisma.Commentable = {
          } catch (e) {
              if (e instanceof SyntaxError) {
                  // Handle a JSON syntax error by constructing a fake response object
-                 responseStatus = new Object();
-                 responseStatus.success = false;
-                 responseStatus.message = "Invalid response from server.";
+                 responseStatus = {
+                     success : false,
+                     message : "Invalid response from server."
+                 };
              } else {
                  throw e;
              }
@@ -6679,11 +6681,11 @@ Fisma.Commentable = {
           */
          var callbackObject = Fisma[this.config.callback.object];
 
-         if (typeof callbackObject != "Undefined") {
+         if (typeof callbackObject !== "Undefined") {
 
              var callbackMethod = callbackObject[this.config.callback.method];
 
-             if (typeof callbackMethod == "function") {
+             if (typeof callbackMethod === "function") {
 
                  /**
                   * Passing callbackObject to call() will make that the scope for the called method, which gives "this"
@@ -9586,7 +9588,7 @@ Fisma.Module = {
             }
             Fisma.Storage.onReady(function() {
                 var uri = '/storage/sync/format/json',
-                    csrfInputs = YAHOO.util.Selector.query('input[name^=csrf]'),
+                    csrfInputs = $('[name="csrf"]').val();
                     callback = {
                         scope: this,
                         success: function(response) {
@@ -9606,7 +9608,7 @@ Fisma.Module = {
                         }
                     },
                     postData = $.param({
-                        csrf: (YAHOO.lang.isArray(csrfInputs) && csrfInputs.length > 0) ? csrfInputs[0].value : '',
+                        csrf: csrfInputs,
                         namespace: this.namespace,
                         updates: YAHOO.lang.JSON.stringify(this._modified),
                         reply: reply ? YAHOO.lang.JSON.stringify(reply) : null
@@ -10170,93 +10172,219 @@ Fisma.Module = {
 Fisma.Remediation = {
     /**
      * Popup a panel for upload evidence
-     * 
+     *
      * @return {Boolean} False to interrupt consequent operations
      */
-    upload_evidence : function() {
-
+    uploadEvidence : function() {
         Fisma.UrlPanel.showPanel(
-            'Upload Evidence', 
-            '/finding/remediation/upload-form', 
-            Fisma.Remediation.upload_evidence_form_init);
+            'Upload Evidence',
+            '/finding/remediation/upload-form',
+            function() {
+                // Initialize form action from finding_detail.action since they are separated forms and the form from
+                // from the panel belongs to document body rather than the form document.finding_detail.But they should
+                // have same target action. So set the latter`s action with the former`s.
+                document.finding_detail_upload_evidence.action = document.finding_detail.action;
+            }
+        );
+        return false;
+    },
+
+   /**
+     * Popup a panel to approve or deny mitigation strategy or evidence
+     *
+     * @param {Event} event     The event object
+     * @param {Object} args     The actual argument array in an object form
+     * {String} args.action     The action name: APPROVED or DENIED
+     * {String} args.formId     The HTML id of the original form
+     * {String} args.panelTitle The text shown on the panel
+     * {int}    args.findingId  The id of the current finding
+     */
+    remediationAction : function(event, args) {
+        var action = args.action;
+        var formId = args.formId;
+        var panelTitle = args.panelTitle;
+        var findingId = args.findingId;
+
+        if ('REJECTED' === action) {
+            var panel = Fisma.UrlPanel.showPanel(
+                panelTitle,
+                '/finding/remediation/reject-evidence/id/' + findingId,
+                function(){
+                    document.finding_detail_reject_evidence.action = document.finding_detail.action;
+                    document.getElementById('dialog_close').onclick = function (){
+                        panel.destroy();
+                        return false;
+                    }
+                }
+            );
+        } else {
+            var content = document.createElement('div');
+            var warning = document.createElement('div');
+            warning.className = 'messageBox attention';
+            var warn_message = 'WARNING: This action cannot be undone.';
+            warning.appendChild(document.createTextNode(warn_message));
+            content.appendChild(warning);
+            var p = document.createElement('p');
+            var c_title;
+            if ('APPROVED' === action) {
+                c_title = document.createTextNode('Comments (OPTIONAL):');
+            } else {
+                c_title = document.createTextNode('Comments:');
+            }
+            p.appendChild(c_title);
+            content.appendChild(p);
+            var textarea = document.createElement('textarea');
+            textarea.id = 'dialog_comment';
+            textarea.name = 'comment';
+            textarea.rows = 5;
+            textarea.cols = 60;
+            content.appendChild(textarea);
+            var div = document.createElement('div');
+            div.className = 'buttonBar';
+            content.appendChild(div);
+            var confirmButton = document.createElement('button');
+            confirmButton.id = 'dialog_continue';
+            confirmButton.appendChild(document.createTextNode('Confirm'));
+            div.appendChild(confirmButton);
+            var cancelButton = document.createElement('button');
+            cancelButton.id = 'dialog_close';
+            cancelButton.style.marginLeft = '5px';
+            cancelButton.appendChild(document.createTextNode('Cancel'));
+            div.appendChild(cancelButton);
+
+            var panel = Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
+
+            document.getElementById('dialog_continue').onclick = function (){
+                var form2 = document.getElementById(formId);
+                var comment = document.getElementById('dialog_comment').value;
+
+                if ('DENIED' === action) {
+                    if (comment.match(/^\s*$/)) {
+                        var alertMessage = 'Comments are required.';
+                        var config = {zIndex : 10000};
+                        Fisma.Util.showAlertDialog(alertMessage, config);
+                        return;
+                    }
+                }
+
+                form2.elements['comment'].value = comment;
+                form2.elements['decision'].value = action;
+
+                var sub = document.createElement('input');
+                sub.type = 'hidden';
+                sub.name = 'submit_msa';
+                sub.value = action;
+                form2.appendChild(sub);
+                form2.submit();
+                return;
+            };
+
+            document.getElementById('dialog_close').onclick = function (){
+                panel.destroy();
+                return false;
+            }
+        }
+        return true;
+    },
+
+    /**
+     * Handle onclick event of the button on the Evidence upload form
+     * to attach one more file
+     */
+    addUploadEvidence : function() {
+        var file_list = document.getElementById('evidence_upload_file_list');
+
+        var new_upload = document.createElement('input');
+        new_upload.type = 'file';
+        new_upload.name = 'evidence[]';
+        new_upload.multiple = true;
+        file_list.appendChild(new_upload);
 
         return false;
     },
 
     /**
-     * Initialize another form finding_detail_upload_evidence after panel loaded
+     * Validate the reject_evidence form for required field(s)
      */
-    upload_evidence_form_init : function() {
-        // Initialize form action from finding_detail.action since they are separated forms and the form from
-        // from the panel belongs to document body rather than the form document.finding_detail.But they should
-        // have same target action. So set the latter`s action with the former`s.
-        document.finding_detail_upload_evidence.action = document.finding_detail.action;
+    rejectEvidenceValidate : function() {
+        if (document.finding_detail_reject_evidence.comment.value.match(/^\s*$/)) {
+            var alertMessage = 'Comments are required.';
+            var config = {zIndex : 10000};
+            Fisma.Util.showAlertDialog(alertMessage, config);
+            return false;
+        }
+        return true;
     },
 
-   /**
-     * To approve or deny mitigation strategy or evidence with comment
-     * 
-     * @param {String} action The action name: APPROVED or DENIED
-     * @param {String} formId 
-     * @param {String} panelTitle the text shows on the panel.
+    /**
+     * Validate the upload_evidence form to check for duplicated uploads
      */
-    remediationAction : function(action, formId, panelTitle) {
-
-        var content = document.createElement('div');
-        var p = document.createElement('p');
-        var c_title;
-        if ('APPROVED' === action) {
-            c_title = document.createTextNode('Comments (OPTIONAL):');
-        } else {
-            c_title = document.createTextNode('Comments:');
+    uploadEvidenceValidate : function() {
+        if (document.finding_detail_upload_evidence.forceSubmit) {
+            return true;
         }
-        p.appendChild(c_title);
-        content.appendChild(p);
-        var textarea = document.createElement('textarea');
-        textarea.id = 'dialog_comment';
-        textarea.name = 'comment';
-        textarea.rows = 5;
-        textarea.cols = 60;
-        content.appendChild(textarea);
-        var div = document.createElement('div');
-        div.style.height = '20px';
-        content.appendChild(div);
-        var button = document.createElement('input');
-        button.type = 'button';
-        button.id = 'dialog_continue';
-        button.value = 'Continue';
-        content.appendChild(button);
-       
-        Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
+        var duplicationDetected = false;
+        var message = "WARNING: The following file(s) will be replaced: <ul>";
 
-        document.getElementById('dialog_continue').onclick = function (){
-            var form2 = document.getElementById(formId);
-            var comment = document.getElementById('dialog_comment').value;
+        for (var i = 0; i < document.links.length; i++) {
+            var link = document.links[i];
 
-            if ('DENIED' === action) { 
-                if (comment.match(/^\s*$/)) {
-                    var alertMessage = 'Comments are required in order to submit.';
-                    var config = {zIndex : 10000};
-                    Fisma.Util.showAlertDialog(alertMessage, config);
-                    return;
+            if (link.href.indexOf('downloadevidence') >= 0 && link.lastChild.nodeName == 'DIV') {
+                var files = document.finding_detail_upload_evidence['evidence[]'].files;
+                if (!files) // this ugly chunk is the workaround for IE7
+                {
+                    var elements = document.finding_detail_upload_evidence.elements;
+                    for (var j = 0; j < elements.length; j++) {
+                        if (elements[j].name == 'forceSubmit') {
+                            return true;
+                        }
+                        if (elements[j].name == 'evidence[]') {
+                            var fileName = elements[j].value;
+                            fileName = fileName.slice(fileName.lastIndexOf('\\')+1);
+                            if (fileName == link.lastChild.innerHTML) {
+                                duplicationDetected = true;
+                                message += "<li>" + fileName + "</li>";
+                            }
+                        }
+                    }
+                } else {
+                    for (var j = 0; j < files.length; j++) {
+                        if (files[j].fileName == link.lastChild.innerHTML) {
+                            duplicationDetected = true;
+                            message += "<li>" + files[j].fileName + "</li>";
+                            break;
+                        }
+                    }
                 }
             }
+        }
 
-            form2.elements['comment'].value = comment;
-            form2.elements['decision'].value = action;
+        message += "</ul>Do you want to continue?";
+        if (duplicationDetected) {
+            Fisma.Util.showConfirmDialog(
+                event,
+                {
+                    text:message,
+                    func:'Fisma.Remediation.uploadEvidenceConfirm'
+                }
+            );
+            return false;
+        } else {
+            return true;
+        }
+    },
 
-            var sub = document.createElement('input');
-            sub.type = 'hidden';
-            sub.name = 'submit_msa';
-            sub.value = action;
-            form2.appendChild(sub);
-            form2.submit();
-            return;
-        };
-        
-        return true;
+    /**
+     * Force the submission of upload_evidence form
+     */
+    uploadEvidenceConfirm : function() {
+        var forcedIndicator = document.createElement('input');
+        forcedIndicator.type = 'hidden';
+        forcedIndicator.name = 'forceSubmit';
+        forcedIndicator.value = true;
+        document.finding_detail_upload_evidence.appendChild(forcedIndicator);
+        document.finding_detail_upload_evidence.upload_evidence.click();
     }
-
 };
 /**
  * Copyright (c) 2011 Endeavor Systems, Inc.

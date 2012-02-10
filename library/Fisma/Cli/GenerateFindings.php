@@ -176,31 +176,23 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
                 $f->merge($finding);
                 $f->CreatedBy = $this->_getRandomUser();
                 $f->pocId = $this->_getRandomPoc()->id;
-                $f->save();
-                
+
                 if ($f->status == 'MSA') {
                     $f->updateDenormalizedStatus();
-                    $f->save();
 
                     if (rand(0, 1)) {
                         $f->approve($this->_getRandomUser(), 'Approved by generate-findings.php script.');
                     }
                 } elseif ($f->status == 'EA') {
                     // Create a sample piece of evidence
-                    $evidence = new Evidence();
-                    $evidence->Finding = $f;
-
-                    $evidence->Attachments[] = $this->_getSampleAttachment();
-                    $evidence->save();
-
+                    $f->Attachments[] = $this->_getSampleAttachment();
                     $f->updateDenormalizedStatus();
-                    $f->save();
 
                     if (rand(0, 1)) {
                         $f->approve($this->_getRandomUser(), 'Approved by generate-findings.php script.');
                     }
                 }
-
+                $f->save();
                 $f->free();
                 unset($f);
 

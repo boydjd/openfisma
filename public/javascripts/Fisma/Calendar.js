@@ -39,7 +39,7 @@
 
     /**
      * Provides calendar related functionality
-     * 
+     *
      * @namespace Fisma
      * @class Calendar
      */
@@ -53,7 +53,7 @@
         addCalendarPopupToTextField: function (textEl) {
             var popupCalendarDiv = document.createElement('div');
             popupCalendarDiv.style.position = 'absolute';
-            popupCalendarDiv.style.zIndex = 99;
+            popupCalendarDiv.style.zIndex = 1000;
             textEl.parentNode.appendChild(popupCalendarDiv);
 
             var textFieldPosition = YAHOO.util.Dom.getRegion(textEl);
@@ -66,21 +66,21 @@
 
             var calendar = new YAHOO.widget.Calendar(popupCalendarDiv, {close : true});
             calendar.hide();
-            
+
             // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
             setTimeout(function () {calendar.render();}, 0);
 
             textEl.onfocus = function () { calendar.show(); };
 
             var handleSelect = function (type, args, obj) {
-                var dateParts = args[0][0]; 
-                var year = dateParts[0], month = "" + dateParts[1], day = "" + dateParts[2];
+                var dateParts = args[0][0];
+                var year = dateParts[0], month = dateParts[1].toString(), day = dateParts[2].toString();
 
-                if (1 == month.length) {
+                if (1 === month.length) {
                     month = "0" + month;
                 }
 
-                if (1 == day.length) {
+                if (1 === day.length) {
                     day = "0" + day;
                 }
 
@@ -99,7 +99,7 @@
          * @param event {String} The name of the event
          * @param ele {String} The element id
          */
-        callCalendar: function(evt, ele) {alert('testa');
+        callCalendar: function(evt, ele) {
             this.showCalendar(ele, ele+'_show');
         },
 
@@ -115,13 +115,10 @@
 
             var showBtn = Dom.get(trigger);
 
-            var dialog;
-            var calendar;
-
             /*
-             * Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners, 
+             * Lazy Dialog Creation - Wait to create the Dialog, and setup document click listeners,
              * until the first time the button is clicked.
-             */ 
+             */
             if (!dialog) {
                 function resetHandler() {
                     Dom.get(block).value = '';
@@ -138,7 +135,7 @@
                     draggable:true,
                     close:true
                 });
-                
+
                 dialog.setHeader('Pick A Date');
                 dialog.setBody('<div id="cal"></div><div class="clear"></div>');
                 dialog.render(document.body);
@@ -148,7 +145,7 @@
 
                 dialog.showEvent.subscribe(function() {
                     if (YAHOO.env.ua.ie) {
-                        // Since we're hiding the table using yui-overlay-hidden, we 
+                        // Since we're hiding the table using yui-overlay-hidden, we
                         // want to let the dialog know that the content size has changed, when
                         // shown
                         dialog.fireEvent("changeContent");
@@ -185,7 +182,7 @@
                 });
 
                 calendar.renderEvent.subscribe(function() {
-                    // Tell Dialog it's contents have changed, which allows 
+                    // Tell Dialog it's contents have changed, which allows
                     // container to redraw the underlay (for IE6/Safari2)
                     dialog.fireEvent("changeContent");
                 });

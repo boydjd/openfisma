@@ -1,8 +1,8 @@
 /*******************************************************************************
  *
- * ie8hacks.css
+ * ie9hacks.css
  *
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -21,29 +21,34 @@
  *
  *******************************************************************************
  *
- * Contains CSS hacks targeted at IE8 only. This script is conditionally
+ * Contains CSS hacks targeted at IE9 only. This script is conditionally
  * inserted into pages using the following syntax:
  *
- * <!--[if IE 8]>
- * <link rel="stylesheet" type="text/css" href="/stylesheets/ie8hacks.css">
+ * <!--[if IE 9]>
+ * <link rel="stylesheet" type="text/css" href="/stylesheets/ie9hacks.css">
  * <![endif]-->
  *
  * See: http://msdn.microsoft.com/en-us/library/ms537512.aspx
  *
- * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
- * Copyright: (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
+ * Author:    Duy K. Bui <duy.bui@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
  * License:   http://www.openfisma.org/content/license
  * Version:   $Id$
  *
  *******************************************************************************
  */
- 
- /* A class that will hide anything that uses it from IE users. Used for hiding IE-incompatible (chart-)features */
- .hideFromIE {
- 	display: none;
+
+/* A class that will hide anything that uses it from IE users. Used for hiding IE-incompatible (chart-)features */
+.hideFromIE {
+    display: none;
 }
 
+/* Because IE9 hasn't supported multiple attribute of input[type=file], a button is used to reproduce that behavior */
 form#finding_detail_upload_evidence button {
     display: inline;
 }
 
+/* For fixing OFJ-1569 */
+dl {
+  margin : 0  
+}

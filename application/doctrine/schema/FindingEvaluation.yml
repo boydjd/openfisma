@@ -4,9 +4,6 @@ FindingEvaluation:
         findingId:
             type: integer
             comment: Foreign key to the finding which this evaluation is against (optional, this is mutually exclusive with evidenceId)
-        evidenceId:
-            type: integer
-            comment: Foreign key to the evidence which this evaluation is against (optional, this is mutually exclusive with findingId)
         evaluationId:
             type: integer
             comment: Foreign key to the type of evaluation which this represents against the finding
@@ -24,10 +21,6 @@ FindingEvaluation:
     relations:
         Finding:
             local: findingId
-            foreign: id
-            foreignAlias: FindingEvaluations
-        Evidence:
-            local: evidenceId
             foreign: id
             foreignAlias: FindingEvaluations
         Evaluation:

@@ -82,3 +82,12 @@ div.searchCriteria input[type='text'] {
 span.searchQueryButtons button {
     height: 24px;
 }
+
+form#finding_detail_upload_evidence button {
+    display: inline;
+}
+
+/* For fixing OFJ-1569 */
+dl {
+  margin : 0  
+}

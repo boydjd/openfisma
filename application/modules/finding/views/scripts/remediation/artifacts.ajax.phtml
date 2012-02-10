@@ -1,65 +1,124 @@
-<?php 
-Fisma_Format_Section::startSection('Artifacts (' . $this->artifacts->count() . ')');
-
-if (count($this->artifacts) == 0):
-    echo $this->escape('<p><i>There are no artifacts for this finding.</i></p>', 'none');
-else:
-    // Each artifact block is rendered in a partial view.
-    foreach ($this->artifacts as $index => $artifact):
-    
-        // The first artifact is the one which is currently being evaluated if the finding is in EA status.
-        $currentArtifact = (0 == $index && 'EA' == $this->finding->status);
-        
-        if ($currentArtifact):
-            echo $this->partial(
-                'remediation/artifact-current-item.phtml', 
-                'finding',
-                array(
-                    'finding' => $this->finding,
-                    'artifact' => $artifact,
-                    'activeArtifact' => true,
-                    'evaluations' => $this->evaluations
-                )
-            );        
-        else:
-            echo $this->partial(
-                'remediation/artifact-old-item.phtml', 
-                'finding',
-                array(
-                    'finding' => $this->finding,
-                    'artifact' => $artifact,
-                    'evaluations' => $this->evaluations
-                )
-            );
-        endif;
-    endforeach;
-endif;
-
-$message = "WARNING: You are about to upload evidence. This action cannot be undone."
-           . ' Please click "Yes" to confirm your action or click "No" to stop.';
-$uploadEvidenceButton = new Fisma_Yui_Form_Button(
-    'uploadEvidenceButton',
-    array(
-          'label' => 'Upload Evidence', 
-          'onClickFunction' => 'Fisma.Util.showConfirmDialog',
-          'onClickArgument' => array(
-                  'text' => $message, 
-                  'func' => 'Fisma.Remediation.upload_evidence'
-              )
-        )
-    );
-
-if (
-    $this->finding->isDeleted() || 
-    'EN' != $this->finding->status || 
-    !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)
-):
-    $uploadEvidenceButton->readOnly = true;
-endif;
+<?php
+Fisma_Format_Section::startSection('Evidence Package');
 ?>
-
-<p>Evidence can only be uploaded if the finding is in 'EN' status and if you have the required role.</p>
+<div class='findingStatus'>
+    <b>Status: </b>
+    <span><?php echo $this->escape($this->finding->getLongStatus()); ?></span>
+</div>
 
 <div class='buttonBar'>
-    <?php echo $this->escape($uploadEvidenceButton, 'none');?>
-</div>
+<?php
+if (!(
+    $this->finding->isDeleted() ||
+    !in_array($this->finding->status, array('EN', 'EA')) ||
+    !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)
+)): // [Upload Evidence] during EN and EA phases
+    $uploadEvidenceButton = new Fisma_Yui_Form_Button(
+        'uploadEvidenceButton',
+        array(
+          'label' => 'Upload Evidence',
+          'onClickFunction' => 'Fisma.Remediation.uploadEvidence'
+        )
+    );
+    echo $this->escape($uploadEvidenceButton, 'none');
+
+    if ($this->finding->status == 'EN'): // [Submit Evidence] during EN phase
+        $submitEvidenceButton = new Fisma_Yui_Form_Button_Link(
+            'submitEvidenceButton',
+            array(
+                'value' => 'Submit Evidence Package',
+                'href' => "/finding/remediation/submit-evidence/id/{$this->finding->id}"
+            )
+        );
+        echo $this->escape($submitEvidenceButton, 'none');
+    endif;
+endif;
+
+$activeEvaluation = $this->finding->CurrentEvaluation;
+if (
+    $this->finding->status == 'EA' &&
+    $this->acl()->hasPrivilegeForObject($activeEvaluation->Privilege->action, $this->finding)
+): // [APPROVE] and [REJECT] buttons during EA
+    echo $this->escape('<input type="hidden" name="comment" value="" />', 'none');
+    echo $this->escape('<input type="hidden" name="decision" value="APPROVED" />', 'none');
+    $warningMessage = 'WARNING: You are about to approve the evidence package. This action cannot be undone.'
+                    . ' Are you sure that you want to continue?';
+    $approveButton = new Fisma_Yui_Form_Button(
+        'approveButton',
+        array(
+            'label' => 'APPROVE',
+            'onClickFunction' => 'Fisma.Remediation.remediationAction',
+            'onClickArgument' => array(
+                'action' => "APPROVED",
+                'formId' => "finding_detail",
+                'panelTitle' => "Evidence Approval",
+                'findingId' => $this->finding->id
+            )
+        )
+    );
+    echo $this->escape($approveButton, 'none');
+
+    $denyButton = new Fisma_Yui_Form_Button(
+        'denyButton',
+        array(
+            'label' => 'REJECT',
+            'onClickFunction' => 'Fisma.Remediation.remediationAction',
+            'onClickArgument' => array(
+                'action' => "REJECTED",
+                'formId' => "finding_detail",
+                'panelTitle' => "Evidence Denial",
+                'findingId' => $this->finding->id
+            )
+        )
+    );
+    echo $this->escape($denyButton, 'none');
+endif;
+?>
+</div> <!-- end of div.buttonBar -->
+
+<?php
+// Print the evidence packaqe table (if not empty)
+if ($this->finding->Attachments->count() > 0):
+    echo $this->escape($this->evidencePackage, 'none');
+endif;
+
+// Print the history table (if not empty)
+if (!empty($this->approvalHistory)):
+?>
+<div class='approvalHeader'><b>Approval History</b></div>
+<div class='approval'>
+<?php
+$decidedTypes = array(); // Hightlight only the latest decision of each approval type
+foreach ($this->approvalHistory as $findingEvaluation):
+    $highlighted = '';
+    if (!in_array($findingEvaluation->Evaluation->id, $decidedTypes)):
+        $decidedTypes[] = $findingEvaluation->Evaluation->id;
+        $highlighted = ' highlight';
+    endif;
+
+    $user = $findingEvaluation->User;
+    $userHtml = $this->userInfo($user->nameFirst . ' ' . $user->nameLast, $user->username);
+    $decision = $findingEvaluation->decision;
+    $spanClass = strtolower($decision);
+    $comment = (!empty($findingEvaluation->comment)) ?
+               $this->textToHtml($this->escape($findingEvaluation->comment)) :
+               "";
+?>
+    <div class='approvalStep<?php echo $this->escape($highlighted); ?>'>
+        <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?></b>
+        <span class='<?php echo $this->escape($spanClass); ?>'>
+            <b><?php echo $this->escape($decision); ?></b>
+            by <?php echo $this->escape($userHtml, 'none'); ?>
+            at <?php echo $this->escape($findingEvaluation->createdTs); ?>
+        </span>
+        <?php echo $this->escape($comment, 'none'); ?>
+    </div>
+<?php
+endforeach;
+?>
+</div> <!-- end of div.approval -->
+<?php
+endif;
+
+Fisma_Format_Section::stopSection();
+?>

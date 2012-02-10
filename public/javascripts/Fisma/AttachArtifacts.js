@@ -270,15 +270,16 @@ Fisma.AttachArtifacts = {
                 '/artifact/upload-progress/format/json/id/' + this.apcId,
                 {
                     success : function (asyncResponse) {
-
+                        var response;
                         // Parse server response
                         try {
-                            var response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+                            response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
                         } catch (e) {
                             if (e instanceof SyntaxError) {
                                 // Handle a JSON syntax error by constructing a fake response object with progress=false
-                                response = new Object();
-                                response.progress = false;
+                                response = {
+                                    progress : false
+                                };
                             } else {
                                 throw e;
                             }
@@ -333,16 +334,17 @@ Fisma.AttachArtifacts = {
      * @param asyncResponse Response object from YUI connection
      */
     handleUploadComplete : function (asyncResponse) {
-
+        var responseStatus;
         // Check response status and display error message if necessary
         try {
-            var responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
+            responseStatus = YAHOO.lang.JSON.parse(asyncResponse.responseText);
         } catch (e) {
             if (e instanceof SyntaxError) {
                 // Handle a JSON syntax error by constructing a fake response object
-                responseStatus = new Object();
-                responseStatus.success = false;
-                responseStatus.message = "Invalid response from server.";
+                responseStatus = {
+                    success : false,
+                    message : "Invalid response from server."
+                };
             } else {
                 throw e;
             }
@@ -387,11 +389,11 @@ Fisma.AttachArtifacts = {
          */
         var callbackObject = Fisma[this.config.callback.object];
 
-        if (typeof callbackObject != "Undefined") {
+        if (typeof callbackObject !== "Undefined") {
             
             var callbackMethod = callbackObject[this.config.callback.method];
             
-            if (typeof callbackMethod == "function") {
+            if (typeof callbackMethod === "function") {
                 
                 /**
                  * Passing callbackObject to call() will make that the scope for the called method, which gives "this"

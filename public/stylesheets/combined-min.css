@@ -13,6 +13,10 @@ div.dashboardRed{border-color:#daaeb5;background-color:pink;}
 div.dashboardChart{margin:2em 0;text-align:center;font-weight:bold;}
 div#findingSecurityControlSearch{display:none;background-color:white;border:1px solid #d3d3d3;padding:10px;margin-top:10px;}
 .pocNotMatched{border:1px solid #ff982f;background-color:#f5d3c5;margin-top:5px;margin-right:10px;padding:8px;}
+fieldset#evidence_upload_file_list{border:1px solid;padding-top:8px;padding-right:24px;padding-bottom:4px;padding-left:16px;margin-top:8px;margin-bottom:8px;}
+fieldset#evidence_upload_file_list legend{font-weight:bold;}
+fieldset#evidence_upload_file_list input{width:100%;display:block;margin-bottom:4px;}
+form#finding_detail_upload_evidence button{display:none;}
 span#irReportForwardsContainer{position:relative;left:245px;}
 span#irReportSaveContainer{position:relative;left:260px;}
 span#irReportBackwardsContainer{position:relative;left:-110px;}
@@ -31,6 +35,7 @@ tr.incidentStep{border-top:1px dotted silver;}
 .messageBox{border:1px solid black;margin-top:10px;text-align:center;font-weight:bold;position:relative;padding:.5em;}
 .messageBox.warn{color:red;background-color:pink;border-color:red;}
 .messageBox.info{color:green;background-color:lightgreen;border-color:green;}
+.messageBox.attention{color:#9f6000;background-color:#feefb3;border-color:#9f6000;}
 .messageBox.hide{display:none;}
 .messageBox .closeControl{position:absolute;top:-6px;right:0;padding:3px;font-size:1.5em;font-weight:normal;cursor:pointer;}
 table.modules{margin-left:auto;margin-right:auto;}
@@ -195,13 +200,17 @@ table.keyValues td:first-child{font-weight:bold;text-align:right;}
 table.keyValues th{text-align:center;font-weight:bold;font-style:normal;padding:5px;}
 div.buttonBar{margin-bottom:10px;}
 .editable{background:url(/images/edit.png) no-repeat top right;padding-right:20px;margin-right:10px;cursor:pointer;}
-div.approval{background-color:#efefef;border:1px solid #cecece;padding:3px;margin-bottom:10px;}
-div.approvalHeader{background-color:#cecece;border:1px solid #cecece;padding:3px 8px;}
-div.approvalStep{border-top:2px dashed #cecece;}
+div.approval{border:1px solid #cecece;padding:3px;margin-bottom:24px;}
+div.approvalHeader{background-color:#cecece;border:1px solid #cecece;padding:3px 8px;margin-top:8px;}
+div.approvalStep{background-color:#efefef;border-top:2px dashed #cecece;padding-left:3px;padding-bottom:8px;padding-top:8px;}
+div.approvalStep p{margin-bottom:0;}
 div.approvalStep:first-child{border-top:none;}
 div.approval b{margin-right:10px;}
 div.approval span.approved{background-color:lightgreen;padding:3px;}
 div.approval span.denied{background-color:#fcc;padding:3px;}
+div.approvalStep.highlight{background-color:#FEFEFE;}
+div.findingStatus{margin-bottom:10px;margin-left:5px;}
+div.findingStatus span{font-style:italic;}
 div.formValue{background-color:#EBEBE4;border:1px solid #bebebe;padding:5px;color:#404040;font-weight:normal;}
 div.subform{margin:15px 0;float:left;}
 table.fisma_crud{margin:0 15px;background-color:#f0f0f0;border:1px dotted #c0c0c0;}

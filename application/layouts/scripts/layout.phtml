@@ -7,7 +7,7 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 
-    <?php 
+    <?php
     echo $this->partial('partial/title.phtml');
 
     $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'container', 'json', 'cookie', 'get', 'dragdrop',
@@ -23,6 +23,7 @@
     $this->injectAsset('/javascripts/combined.js', 'js', true);
     $this->injectAsset('/stylesheets/combined.css', 'css', true);
     $this->injectAsset('/stylesheets/print.css', 'css', false, 'print');
+    $this->injectAsset('/stylesheets/ie9hacks.css', 'css', false, 'screen', 'IE 9');
     $this->injectAsset('/stylesheets/ie8hacks.css', 'css', false, 'screen', 'IE 8');
     $this->injectAsset('/stylesheets/ie7hacks.css', 'css', false, 'screen', 'IE 7');
     $this->injectAsset('/stylesheets/ie6hacks.css', 'css', false, 'screen', 'IE 6');
@@ -53,18 +54,18 @@
         </div>
 
         <div class="externalMediaMarking">
-            WARNING: This document is for internal, official use only.  This document contains sensitive computer 
-            security related information. Public disclosure of this information would risk circumvention of the 
-            law. Recipients of this document must not, under any circumstances, show or release its contents for 
-            purposes other than official action. This document must be safeguarded to prevent improper disclosure. 
+            WARNING: This document is for internal, official use only.  This document contains sensitive computer
+            security related information. Public disclosure of this information would risk circumvention of the
+            law. Recipients of this document must not, under any circumstances, show or release its contents for
+            purposes other than official action. This document must be safeguarded to prevent improper disclosure.
             Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.
         </div>
-    
+
         <a name="contentStart"></a>
         <div id='content'>
                 <?php echo $this->escape($this->layout()->content, 'none'); ?>
         </div>
-        
+
         <div id='footer'>
                 <?php
                     if (Zend_Auth::getInstance()->hasIdentity()) {

@@ -47,3 +47,8 @@ div.approvalStep {
 select {
   font-family: Verdana;
 }
+
+form#finding_detail_upload_evidence button {
+    display: inline;
+}
+

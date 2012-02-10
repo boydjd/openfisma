@@ -31,12 +31,12 @@ class Test_Library_Fisma_Doctrine_Cli extends Test_Case_Unit
 {
     /**
      * setup before each test
-     * 
+     *
      * @return void
      * @requires CliDummy because the only method in source class is protected
      */
     public function setup()
-    { 
+    {
         require_once(realpath(dirname(__FILE__) . '/CliDummy.php'));
     }
     /**

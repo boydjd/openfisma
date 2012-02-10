@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -28,27 +28,27 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
-     * 
+     *
      * This model is the main subject which the controller operates on.
-     * 
+     *
      * @var string
      */
     protected $_modelName = 'Finding';
 
     /**
      * The orgSystems which are belongs to current user.
-     * 
+     *
      * @var Doctrine_Collection
      */
     protected $_organizations = null;
-    
+
     /**
      * The preDispatch hook is used to split off poam modify actions, mitigation approval actions, and evidence
      * approval actions into separate controller actions.
-     * 
+     *
      * @return void
      */
-    public function preDispatch() 
+    public function preDispatch()
     {
         parent::preDispatch();
 
@@ -57,7 +57,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $request = $this->getRequest();
         $this->_paging['startIndex'] = $request->getParam('startIndex', 0);
         if ('modify' == $request->getActionName()) {
-            // If this is a mitigation, evidence approval, or evidence upload, then redirect to the 
+            // If this is a mitigation, evidence approval, or evidence upload, then redirect to the
             // corresponding controller action
             if (isset($_POST['submit_msa'])) {
                 $request->setParam('sub', null);
@@ -67,14 +67,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 $this->_forward('evidence');
             } elseif (isset($_POST['upload_evidence'])) {
                 $request->setParam('sub', null);
-                $this->_forward('uploadevidence');
+                $this->_forward('upload-evidence');
+            } elseif (isset($_POST['reject_evidence'])) {
+                $request->setParam('sub', null);
+                $this->_forward('evidence');
             }
         }
     }
 
     /**
      * Create contexts for printable tab views.
-     * 
+     *
      * @return void
      */
     public function init()
@@ -91,10 +94,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         parent::init();
     }
-    
+
     /**
      * Default action.
-     * 
+     *
      * It combines the searching and summary into one page.
      * 
      * @GETAllowed
@@ -103,17 +106,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function indexAction()
     {
         $this->_acl->requirePrivilegeForClass('read', 'Finding');
-        
+
         $this->_helper->actionStack('searchbox', 'Remediation');
         $this->_helper->actionStack('summary', 'Remediation');
     }
 
-    /** 
+    /**
      * Overriding Hooks
-     * 
+     *
      * @param Zend_Form $form The specified form to save
      * @param Doctrine_Record|null $subject The subject model related to the form
-     * @return integer ID of the object 
+     * @return integer ID of the object
      * @throws Fisma_Zend_Exception if the subject is not null or the organization of the finding associated
      * to the subject doesn`t exist
      */
@@ -132,7 +135,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $finding->merge($values);
-        
+
         $organization = Doctrine::getTable('Organization')->find($values['responsibleOrganizationId']);
 
         if ($organization !== false) {
@@ -184,7 +187,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $systems = $this->_me->getOrganizationsByPrivilege('finding', 'create');
         $selectArray = $this->view->systemSelect($systems);
         $form->getElement('responsibleOrganizationId')->addMultiOptions($selectArray);
-        
+
         // If the user can't create a POC object, then don't set up the POC create form
         if (!$this->_acl->hasPrivilegeForClass('create', 'Poc')) {
             $form->getElement('pocAutocomplete')->setAttrib('setupCallback', null);
@@ -203,7 +206,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     protected function setForm($subject, $form)
     {
         parent::setForm($subject, $form);
-        
+
         $values = $this->getRequest()->getPost();
 
         // Set default value for security control autocomplete
@@ -228,11 +231,13 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $id = $this->_request->getParam('id');
 
-        $finding = $this->_getSubject($id);
+        $finding = Doctrine_Query::create()
+            ->from('Finding f')->leftJoin('f.Attachments')->where('f.id = ?', $id)
+            ->fetchOne();
         $this->view->finding = $finding;
-        
+
         $this->_acl->requirePrivilegeForObject('read', $finding);
-        
+
         // Put a span around the comment count so that it can be updated from Javascript
         $commentCount = '<span id=\'findingCommentsCount\'>' . $finding->getComments()->count() . '</span>';
 
@@ -244,7 +249,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id/format/html");
         $tabView->addTab("Comments ($commentCount)", "/finding/remediation/comments/id/$id/format/html");
         $tabView->addTab(
-            "Artifacts (" . $finding->Evidence->count() . ")",
+            "Evidence (" . $finding->Attachments->count() . ")",
             "/finding/remediation/artifacts/id/$id/format/html"
         );
         $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id/format/html");
@@ -265,7 +270,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
                 $args = array(null, '/finding/remediation/delete/', $id);
                 $buttons['delete'] = new Fisma_Yui_Form_Button(
-                    'deleteFinding', 
+                    'deleteFinding',
                     array(
                           'label' => 'Delete Finding',
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
@@ -278,21 +283,21 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     )
                 );
             }
-            
+
             // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
             if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
                 $discardChangesButtonConfig = array(
                     'value' => 'Discard Changes',
                     'href' => '/finding/remediation/view/id/' . $finding->id
                 );
-                
+
                 $buttons['discard'] = new Fisma_Yui_Form_Button_Link(
-                    'discardChanges', 
+                    'discardChanges',
                     $discardChangesButtonConfig
                 );
-            
+
                 $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
-                    'saveChanges', 
+                    'saveChanges',
                     array('label' => 'Save Changes')
                 );
             }
@@ -389,9 +394,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->view->commentDataTable = $dataTable;
 
         $commentButton = new Fisma_Yui_Form_Button(
-            'commentButton', 
+            'commentButton',
             array(
-                'label' => 'Add Comment', 
+                'label' => 'Add Comment',
                 'onClickFunction' => 'Fisma.Commentable.showPanel',
                 'onClickArgument' => array(
                     'id' => $id,
@@ -410,17 +415,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->commentButton = $commentButton;
     }
-    
+
     /**
      * Modify the finding
-     * 
+     *
      * @return void
      */
     public function modifyAction()
     {
         // ACL for finding objects is handled inside the finding listener, because it has to do some
         // very fine-grained error checking
-        
+
         $id = $this->_request->getParam('id');
         $findingData = $this->_request->getPost('finding', array());
         $findingSecurityControlId = $this->getRequest()->getPost('securityControlId');
@@ -446,7 +451,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 return;
             }
         }
-        
+
         if (isset($findingData['threatLevel']) && $findingData['threatLevel'] === '') {
             $error = 'Threat Level is a required field.';
             $this->view->priorityMessenger($error, 'warning');
@@ -454,14 +459,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         if (
-            isset($findingData['countermeasuresEffectiveness']) && 
+            isset($findingData['countermeasuresEffectiveness']) &&
             $findingData['countermeasuresEffectiveness'] === ''
         ) {
             $error = 'Countermeasures Effectiveness is a required field.';
             $this->view->priorityMessenger($error, 'warning');
             return;
         }
-        
+
         $finding = $this->_getSubject($id);
 
         // Security control is a hidden field. If it is blank, that means the user did not submit it, and it needs to
@@ -491,7 +496,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Mitigation Strategy Approval Process
-     * 
+     *
      * @return void
      */
     public function msaAction()
@@ -530,7 +535,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         } catch (Doctrine_Connection_Exception $e) {
             Doctrine_Manager::connection()->rollback();
             $message = 'Failure in this operation. '
-                     . $e->getPortableMessage() 
+                     . $e->getPortableMessage()
                      . ' ('
                      . $e->getPortableCode()
                      . ')';
@@ -546,83 +551,172 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Upload evidence
-     * 
+     *
      * @return void
      */
-    public function uploadevidenceAction()
+    public function uploadEvidenceAction()
     {
         $id = $this->_request->getParam('id');
-        $finding = $this->_getSubject($id);
+        $finding = Doctrine_Query::create()
+            ->from('Finding f')->leftJoin('f.Attachments')->where('f.id = ?', $id)
+            ->fetchOne();
 
         if ($finding->isDeleted()) {
             $message = "Evidence cannot be uploaded to a deleted finding.";
-            throw new Fisma_Zend_Exception($message);
+            throw new Fisma_Zend_Exception_User($message);
         }
 
         $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
 
-        define('EVIDENCE_PATH', Fisma::getPath('data') . '/uploads/evidence');
-        $file = $_FILES['evidence'];
-
         try {
-            if ($file['error'] != UPLOAD_ERR_OK) {
-              if ($file['error'] == UPLOAD_ERR_INI_SIZE) {
-                $message = "The uploaded file is larger than is allowed by the server.";
-              } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {
-                $message = "The uploaded file was only partially received.";
-              } else {
-                $message = "An error occurred while processing the uploaded file.";
-              }
-              throw new Fisma_Zend_Exception($message);
+            $auditMessages = array();
+            $errorMessages = "";
+            for ($i = 0; $i<count($_FILES['evidence']['name']); $i++) {
+                // PHP handles multiple uploads as $_FILES['element_name']['attribute'][idx]
+                // instead of $_FILES['element_name'][idx]['attribute'], so we need to manually remap it
+                $file = array();
+                foreach ($_FILES['evidence'] as $index => $value) {
+                    $file[$index] = $value[$i];
+                }
+
+                if (!empty($file['name'])) {
+                    if ($file['error'] != UPLOAD_ERR_OK) {
+                      if ($file['error'] == UPLOAD_ERR_INI_SIZE) {
+                        $errorMessages .= "The uploaded file {$file['name']} is too large.\n";
+                      } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {
+                        $errorMessages .= "The uploaded file {$file['name']} was only partially received.\n";
+                      } else {
+                        $errorMessages .= "An error occurred while processing the uploaded file {$file['name']}.\n";
+                      }
+                    } else {
+                        $duplicated = false;
+                        foreach ($finding->Attachments as $index => $attachment) {
+                            if ($attachment->fileName == $file['name']) {
+                                $auditMessages[] = "Evidence replaced: {$attachment->fileName} (#{$attachment->id})";
+                                $finding->Attachments->remove($index);
+                                $duplicated = true;
+                                break;
+                            }
+                        }
+                        if (!$duplicated) {
+                            $auditMessages[] = "Evidence uploaded: \"{$file['name']}\"";
+                        }
+                        $finding->attach($file);
+                    }
+                }
             }
 
-            if (!$file['name']) {
-                $message = "You did not select a file to upload. Please select a file and try again.";
-                throw new Fisma_Zend_Exception($message);
+            // If no uploaded files were successful processed, throw a fatal error
+            if (count($auditMessages)==0) {
+                $message = "You did not select any file to upload. Please select a file and try again.";
+                throw new Fisma_Zend_Exception_User($message);
             }
 
-            $evidence = new Evidence();
-            $evidence->attach($file);
-            $finding->submitEvidence($evidence);
-        } catch (Fisma_Zend_Exception $e) {
+            $finding->save();
+
+            foreach ($auditMessages as $auditMessage) {
+                $finding->getAuditLog()->write($auditMessage);
+            }
+
+            // Throw non-fatal error(s) after saving the Finding
+            if (!empty($errorMessages)) {
+                throw new Fisma_Zend_Exception_User(implode("\n", $errorMessages));
+            }
+        } catch (Fisma_Zend_Exception_User $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
 
         $this->_redirect("/finding/remediation/view/id/$id");
     }
-    
+
     /**
      * Download evidence
      * 
      * @GETAllowed
      * @return void
      */
-    public function downloadevidenceAction()
+    public function downloadEvidenceAction()
     {
         $id = $this->_request->getParam('id');
+        $attachmentId = $this->_request->getParam('attachmentId');
 
-        $artifactsQuery = Doctrine_Query::create()
-                          ->from('Evidence e')
-                          ->leftJoin('e.Finding f')
-                          ->leftJoin('e.Attachments a')
-                          ->where('e.id = ?', $id);
+        $finding = Doctrine::getTable('Finding')->getAttachmentQuery($id, $attachmentId)->execute()->getLast();
 
-        $evidence = $artifactsQuery->execute()->getLast();
-
-        if (empty($evidence)) {
-            throw new Fisma_Zend_Exception('Invalid evidence ID');
+        if (empty($finding)) {
+            throw new Fisma_Zend_Exception_User('Invalid finding ID');
+        }
+        if ($finding->Attachments->count() <= 0) {
+            throw new Fisma_Zend_Exception_User('Invalid evidence ID');
         }
 
         // There is no ACL defined for evidence objects, access is only based on the associated finding:
-        $this->_acl->requirePrivilegeForObject('read', $evidence->Finding);
+        $this->_acl->requirePrivilegeForObject('read', $finding);
 
-        $upload = $evidence->Attachments[0];
-        $this->_helper->downloadAttachment($upload->fileHash, $upload->fileName);
+        $attachment = $finding->Attachments[0];
+        $this->_helper->downloadAttachment($attachment->fileHash, $attachment->fileName);
     }
-    
+
+    /**
+     * Delete evidence
+     *
+     * @return void
+     */
+    public function deleteEvidenceAction()
+    {
+        $id = $this->_request->getParam('id');
+        $attachmentId = $this->_request->getParam('attachmentId');
+
+        $finding = Doctrine::getTable('Finding')->getAttachmentQuery($id, $attachmentId)->execute()->getLast();
+
+        if (empty($finding)) {
+            throw new Fisma_Zend_Exception_User('Invalid finding ID');
+        }
+        if ($finding->Attachments->count() <= 0) {
+            throw new Fisma_Zend_Exception_User('Invalid evidence ID');
+        }
+
+        // There is no ACL defined for evidence objects, access is only based on the associated finding:
+        $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
+
+        $message = "Evidence deleted: {$finding->Attachments[0]->fileName} (#{$finding->Attachments[0]->id})";
+        $finding->Attachments->remove(0);
+        $finding->save();
+
+        $finding->getAuditLog()->write($message);
+
+        $this->_redirect("/finding/remediation/view/id/{$id}");
+    }
+
+    /**
+     * Handle the submit evidence package action
+     *
+     * @return void
+     */
+    public function submitEvidenceAction()
+    {
+        $id = $this->_request->getParam('id');
+        $finding = $this->_getSubject($id);
+
+        if ($finding->isDeleted()) {
+            $message = "Evidence cannot be uploaded to a deleted finding.";
+            throw new Fisma_Zend_Exception_User($message);
+        }
+
+        $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
+
+        try {
+            $finding->submitEvidence();
+        } catch (Fisma_Zend_Exception $e) {
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
+        }
+
+        $this->_redirect("/finding/remediation/view/id/$id");
+
+    }
+
     /**
      * Handle the evidence evaluations
-     * 
+     *
      * @return void
      */
     public function evidenceAction()
@@ -638,14 +732,19 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         try {
             Doctrine_Manager::connection()->beginTransaction();
+            $comment = $this->_request->getParam('comment');
+
             if ('APPROVED' == $decision) {
-                $comment = $this->_request->getParam('comment');
                 $finding->approve(CurrentUser::getInstance(), $comment);
             }
 
             if ('DENIED' == $decision) {
-                $comment = $this->_request->getParam('comment');
                 $finding->deny(CurrentUser::getInstance(), $comment);
+            }
+
+            if ('REJECTED' == $decision) {
+                $targetStatus = $this->_request->getPost('target_status');
+                $finding->rejectTo(CurrentUser::getInstance(), $comment, $targetStatus);
             }
             Doctrine_Manager::connection()->commit();
         } catch (Doctrine_Exception $e) {
@@ -654,6 +753,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             }
+            $model = 'warning';
+            $this->view->priorityMessenger($message, $model);
+        } catch (Fisma_Zend_Exception_User $e) {
+            $message = $e->getMessage();
             $model = 'warning';
             $this->view->priorityMessenger($message, $model);
         }
@@ -684,11 +787,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 throw new Fisma_Zend_Exception("The Threat or Countermeasures Information is not "
                     ."completed. An analysis of risk cannot be generated, unless these values are defined.");
             }
-            
+
             $system = $finding->Organization->System;
             if (NULL == $system->fipsCategory) {
                 throw new Fisma_Zend_Exception('The security categorization for ' .
-                     '(' . $finding->responsibleOrganizationId . ')' . 
+                     '(' . $finding->responsibleOrganizationId . ')' .
                      $finding->Organization->name . ' is not defined. An analysis of ' .
                      'risk cannot be generated unless these values are defined.');
             }
@@ -707,31 +810,31 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                ->initContext();
         $this->view->finding = $finding;
     }
-    
+
     /**
      * Display basic data about the finding and the affected asset
      * 
      * @GETAllowed
      * @return void
      */
-    function findingAction() 
+    function findingAction()
     {
         $this->_viewFinding();
         $table = Doctrine::getTable('Finding');
-     
+
         $finding = $this->view->finding;
         $organization = $finding->Organization;
 
         // For users who can view organization or system URLs, construct that URL
         $controller = ($organization->OrganizationType->nickname == 'system' ? 'system' : 'organization');
         $idParameter = ($organization->OrganizationType->nickname == 'system' ? 'oid' : 'id');
-         
-        $this->view->isLegacyFindingKeyEditable = $this->_isEditable('legacyFindingKey', $table, $finding); 
-        $this->view->isPocEditable = $this->_isEditable('pocId', $table, $finding); 
-        $this->view->isSourceEditable = $this->_isEditable('sourceId', $table, $finding); 
-        $this->view->isOrganizationEditable = $this->_isEditable('responsibleOrganizationId', $table, $finding); 
-        $this->view->isDescriptionEditable = $this->_isEditable('description', $table, $finding); 
-        $this->view->isRecommendationEditable = $this->_isEditable('description', $table, $finding); 
+
+        $this->view->isLegacyFindingKeyEditable = $this->_isEditable('legacyFindingKey', $table, $finding);
+        $this->view->isPocEditable = $this->_isEditable('pocId', $table, $finding);
+        $this->view->isSourceEditable = $this->_isEditable('sourceId', $table, $finding);
+        $this->view->isOrganizationEditable = $this->_isEditable('responsibleOrganizationId', $table, $finding);
+        $this->view->isDescriptionEditable = $this->_isEditable('description', $table, $finding);
+        $this->view->isRecommendationEditable = $this->_isEditable('description', $table, $finding);
 
         $this->view->organizationViewUrl = "/$controller/view/$idParameter/$organization->id";
 
@@ -744,16 +847,16 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      * @GETAllowed
      * @return void
      */
-    function mitigationStrategyAction() 
+    function mitigationStrategyAction()
     {
         $this->_viewFinding();
         $finding = $this->view->finding;
         $table = Doctrine::getTable('Finding');
 
-        $this->view->isTypeEditable = $this->_isEditable('type', $table, $finding); 
-        $this->view->isMitigationStrategyEditable = $this->_isEditable('mitigationStrategy', $table, $finding); 
-        $this->view->isResourcesEditable = $this->_isEditable('resourcesRequired', $table, $finding); 
-        $this->view->isThreatLevelEditable = $this->_isEditable('threatLevel', $table, $finding); 
+        $this->view->isTypeEditable = $this->_isEditable('type', $table, $finding);
+        $this->view->isMitigationStrategyEditable = $this->_isEditable('mitigationStrategy', $table, $finding);
+        $this->view->isResourcesEditable = $this->_isEditable('resourcesRequired', $table, $finding);
+        $this->view->isThreatLevelEditable = $this->_isEditable('threatLevel', $table, $finding);
 
     }
 
@@ -763,7 +866,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      * @GETAllowed
      * @return void
      */
-    function riskAnalysisAction() 
+    function riskAnalysisAction()
     {
         $this->_viewFinding();
         $this->view->keywords = $this->_request->getParam('keywords');
@@ -771,36 +874,36 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $finding = $this->view->finding;
         $table = Doctrine::getTable('Finding');
 
-        $this->view->isThreatLevelEditable = $this->_isEditable('threatLevel', $table, $finding); 
-        $this->view->isThreatEditable = $this->_isEditable('threat', $table, $finding); 
-        $this->view->isCountermeasuresEditable = $this->_isEditable('countermeasures', $table, $finding); 
+        $this->view->isThreatLevelEditable = $this->_isEditable('threatLevel', $table, $finding);
+        $this->view->isThreatEditable = $this->_isEditable('threat', $table, $finding);
+        $this->view->isCountermeasuresEditable = $this->_isEditable('countermeasures', $table, $finding);
         $this->view->isCountermeasuresEffectivenessEditable = $this->_isEditable(
-                                                                                 'countermeasuresEffectiveness', 
-                                                                                 $table, 
-                                                                                 $finding); 
+                                                                                 'countermeasuresEffectiveness',
+                                                                                 $table,
+                                                                                 $finding);
     }
 
     /**
      * Display fields related to risk analysis such as threats and countermeasures
      * 
+     * Display evidence package and evaluations
+     *
      * @GETAllowed
      * @return void
      */
-    function artifactsAction() 
+    function artifactsAction()
     {
         $this->_viewFinding();
 
         // Get a list of artifacts related to this finding
         $artifactsQuery = Doctrine_Query::create()
-                          ->from('Evidence e')
-                          ->leftJoin('e.Attachments a')
-                          ->leftJoin('e.FindingEvaluations fe')
-                          ->leftJoin('e.User u1')
+                          ->from('Finding f')
+                          ->leftJoin('f.Attachments a')
+                          ->leftJoin('f.FindingEvaluations fe')
                           ->leftJoin('fe.User u2')
-                          ->where('e.findingId = ?', $this->view->finding->id)
-                          ->orderBy('e.createdTs DESC');
+                          ->where('f.id = ?', $this->view->finding->id);
 
-        $this->view->artifacts = $artifactsQuery->execute();
+        $this->view->finding = $artifactsQuery->fetchOne();
 
         // Get a list of all evaluations so that the ones which are skipped or pending can still be rendered.
         $evaluationsQuery = Doctrine_Query::create()
@@ -809,18 +912,121 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                             ->orderBy('e.precedence');
 
         $this->view->evaluations = $evaluationsQuery->execute();
+
+        // Build the Evidence Package table
+        $attachmentCollection = $this->view->finding->Attachments;
+        $attachmentRows = array();
+
+        foreach ($attachmentCollection as $attachment) {
+            $baseUrl = '/finding/remediation/';
+            $currentUrl = '/id/' . $this->view->finding->id . '/attachmentId/' . $attachment->id;
+            $attachmentRows[] = array(
+                'iconUrl'  => "<a href={$baseUrl}download-evidence{$currentUrl}>"
+                            . "<img src={$attachment->getIconUrl()}></a>",
+                'fileName' => "<a href={$baseUrl}download-evidence{$currentUrl}><div>"
+                            . $this->view->escape($attachment->fileName) . "</div></a>",
+                'fileSize' => $attachment->getFileSize(),
+                'user'     => $this->view->userInfo($attachment->User->username),
+                'date'     => $attachment->createdTs,
+                'action'   => "<a href={$baseUrl}delete-evidence{$currentUrl}>Delete</a>"
+            );
+        }
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Icon',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'icon'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'fileName'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Size',
+                true,
+                'Fisma.TableFormat.formatFileSize',
+                null,
+                'size',
+                false,
+                'number'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Uploaded By',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'uploadedBy'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Upload Date',
+                true,
+                null,
+                null,
+                'uploadDate'
+            )
+        );
+
+        if (
+            $this->_acl->hasPrivilegeForObject('upload_evidence', $this->view->finding) &&
+            !$this->view->finding->isDeleted() &&
+            in_array($this->view->finding->status, array('EN', 'EA'))
+        ):
+            $dataTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'Action',
+                    true,
+                    'Fisma.TableFormat.formatHtml',
+                    null,
+                    null
+                )
+            );
+        endif;
+
+        $dataTable->setData($attachmentRows);
+        $this->view->evidencePackage = $dataTable;
+
+        // Build the Evidence Package approval history
+        $approvalHistory = array();
+        for ($i = $this->view->finding->FindingEvaluations->count(); $i > 0; $i--) {
+            $findingEvaluation = $this->view->finding->FindingEvaluations->get($i - 1);
+            if ($findingEvaluation->Evaluation->approvalGroup != 'evidence'):
+                continue;
+            endif;
+            $approvalHistory[] = $findingEvaluation;
+        }
+        $this->view->approvalHistory = $approvalHistory;
     }
-        
+
     /**
      * Display the audit log associated with a finding
      * 
      * @GETAllowed
      * @return void
      */
-    function auditLogAction() 
+    function auditLogAction()
     {
         $this->_viewFinding();
-        
+
         $logs = $this->view->finding->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
 
         $logRows = array();
@@ -876,10 +1082,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      * @GETAllowed
      * @return void
      */
-    function securityControlAction() 
+    function securityControlAction()
     {
         $this->_viewFinding();
-        
+
         $form = Fisma_Zend_Form_Manager::loadForm('finding_security_control');
 
         // Set up the available and default values for the form
@@ -891,7 +1097,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $form->getElement('securityControlId')->setValue($scId);
             $form->getElement('securityControlAutocomplete')->setValue($name);
         }
-        
+
         $form->setDefaults($this->getRequest()->getParams());
 
         // Don't want any form markup (since this is being embedded into an existing form), just the form elements
@@ -901,11 +1107,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 array('HtmlTag', array('tag' => 'span'))
             )
         );
-            
+
         $form->setElementDecorators(array('RenderSelf', 'Label'), array('securityControlAutocomplete'));
 
         $this->view->form = $form;
-        
+
         $securityControlSearchButton = new Fisma_Yui_Form_Button(
             'securityControlSearchButton',
             array(
@@ -913,7 +1119,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 'onClickFunction' => 'Fisma.Finding.showSecurityControlSearch'
             )
         );
-        
+
         if ($this->view->finding->isDeleted()) {
             $securityControlSearchButton->readOnly = true;
         }
@@ -921,24 +1127,37 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         if ($this->view->finding->status != 'NEW' &&  $this->view->finding->status != 'DRAFT') {
             $securityControlSearchButton->readOnly = true;
         }
-        
+
         $this->view->securityControlSearchButton = $securityControlSearchButton;
     }
-    
-    /** 
+
+    /**
      * Renders the form for uploading artifacts.
      * 
      * @GETAllowed
      * @return void
      */
-    function uploadFormAction() 
+    function uploadFormAction()
     {
         $this->_helper->layout()->disableLayout();
     }
 
     /**
+     * Renders the form for rejecting evidence.
+     *
+     * @return void
+     */
+    function rejectEvidenceAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $id = $this->_request->getParam('id');
+        $previousEvaluationsQuery = Doctrine::getTable('Evaluation')->getPreviousEvaluationsQuery($id);
+        $this->view->previousEvaluations = $previousEvaluationsQuery->execute();
+    }
+
+    /**
      * Get the finding and assign it to view
-     * 
+     *
      * @return void
      */
     private function _viewFinding()
@@ -962,7 +1181,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         parent::createAction();
 
-        $systemCount = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')->count(); 
+        $systemCount = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'create')->count();
         if (0 === $systemCount) {
             $message = "There are no organizations or systems to create findings for. "
                      . "Please create an organization or system first.";
@@ -971,12 +1190,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Check whether a field is editable by its column metadata of requiredPrivilege and/or requiredUpdateStatus.   
-     * 
+     * Check whether a field is editable by its column metadata of requiredPrivilege and/or requiredUpdateStatus.
+     *
      * @param string $column The column name.
-     * @param Doctrine_Table $table The finding table object. 
-     * @param Doctrine_Record $finding The finding object. 
-     * @return bool  
+     * @param Doctrine_Table $table The finding table object.
+     * @param Doctrine_Record $finding The finding object.
+     * @return bool
      */
     private function _isEditable($column, $table, $finding)
     {
@@ -984,28 +1203,28 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $fieldDefinition = $table->getDefinitionOf($column);
 
-        if (isset($fieldDefinition['extra'])                      
+        if (isset($fieldDefinition['extra'])
              && isset ($fieldDefinition['extra']['requiredUpdateStatus'])) {
 
-            $updateStatus = $fieldDefinition['extra']['requiredUpdateStatus'];                     
+            $updateStatus = $fieldDefinition['extra']['requiredUpdateStatus'];
         }
 
-        if (isset($fieldDefinition['extra'])                      
+        if (isset($fieldDefinition['extra'])
              && isset ($fieldDefinition['extra']['requiredPrivilege'])) {
 
-            $updatePrivilege = $fieldDefinition['extra']['requiredPrivilege'];                     
+            $updatePrivilege = $fieldDefinition['extra']['requiredPrivilege'];
         }
 
         if (!$finding->isDeleted()
             && isset($updatePrivilege) && $this->_acl->hasPrivilegeForObject($updatePrivilege, $finding)) {
-            
+
             // Some fields might not need to check status such as POC
             if (!isset($updateStatus) || (isset($updateStatus) && in_array($finding->status, $updateStatus))) {
                 $editable = true ;
             }
-        }  
+        }
 
         return $editable;
     }
-    
+
 }
