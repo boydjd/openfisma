@@ -1,0 +1,61 @@
+########################################################################################################################
+#
+# Copyright (c) 2012 Endeavor Systems, Inc.
+#
+# This file is part of OpenFISMA.
+#
+# OpenFISMA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# OpenFISMA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY# without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+#
+########################################################################################################################
+#
+# Custom validation messages for model validation.
+#
+# %f is expanded to the name of the field that caused the validation error. %v is expanded to the value of the field
+# that caused the error.
+#
+# See Fisma_Doctrine_Record for details.
+#
+# Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+# Copyright: (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
+# License:   http://www.openfisma.org/content/license
+#
+########################################################################################################################
+
+messages:
+    country: %f is not a valid country code (%v)
+    date: %f is not a valid date (%v)
+    future: %f must be a date in the future (%v)
+    email: %f does not contain a valid e-mail address (%v)
+
+    control: >
+        The organization manages information system accounts, including establishing, activating, modifying,
+        reviewing, disabling, and removing accounts. The organization reviews information system accounts
+        [<em>Assignment: organization-defined frequency</em>].
+
+    ip: >
+        %v is not a valid IPv4 or IPv6 address. A valid IPv4 address must be in the form of
+        n.n.n.n, where n is a number from 0-255, for example, 192.168.0.100. A valid IPv6 address should be
+        in the form of xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx:xxxx, where xxxx can be a number or letter
+        from A to F, for example, 2001:0db8:85a3:0000:0000:8a2e:0370:7334. RFC-3513 short IPv6 addresses
+        are also supported, such as the loopback address ::1.
+
+    notblank: %f is required
+    notnull: %f is required
+    past: %f must be a date in the past (%v)
+    readonly: %f is a read-only field
+    time: %f is not a valid time value (%v)
+    timestamp: %f is not a valid timestamp value (%v)
+    unique: An object already exists with the same %f
+    url: %f is not a valid URL
+    usstate: $f does not contain a valid U.S. state code (%v)

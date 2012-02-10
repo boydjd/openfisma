@@ -12,7 +12,7 @@
 
 elements.instructions.type = "Element_ConstantText"
 elements.instructions.options.label = "Instructions"
-elements.instructions.options.value = "<p>Personally Identifiable Information, or PII, is data that might be used to unique identify an individual. Such data may include (but is not limited to) social security numbers, names, addresses, and phone numbers. If PII may have been compromised, then you will need to answer some additional questions.</p>"
+elements.instructions.options.value = "<p>Personally Identifiable Information, or PII, is data that might be used to unique identify an individual. Such data may include (but is not limited to) social security numbers, names, addresses, and phone numbers. If PII may have been compromised, then you will need to answer some additional questions.</p><p>The following information is optional and not required to submit an incident report, if you do not have this information available please click continue.</p>"
 displayGroups.help.elements.instructions = "instructions"
 
 elements.piiInvolved.type="select"
