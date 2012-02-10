@@ -39,3 +39,49 @@ fieldset#evidence_upload_file_list input {
 form#finding_detail_upload_evidence button {
     display: none;
 }
+
+div#changeQueue {
+    float: right;
+    width: 30%;
+}
+
+div#changeQueue .messageBox ul {
+    text-align: left;
+    margin-left: 2px;
+}
+
+div.stepBlock {
+    width: 60%;
+}
+
+div.stepBlock h1 {
+    margin-top: 0;
+}
+
+div.stepBlock table td:first-child {
+    width: 110px;
+    vertical-align: top;
+}
+
+ul.dragList {
+    margin-left: 0;
+}
+
+ul.dragList.enabled li {
+    border-left: 10px solid;
+    cursor: move;
+}
+
+ul.dragList li {
+    list-style-type: none;
+    padding: 10px;
+    border: thin solid;
+    background-color: white;
+    margin-top: 5px;
+    margin-bottom: 8px;
+    margin-left: 0px;
+    cursor: default;
+}
+ul.dragList li span.linkBar {
+    float: right;
+}

@@ -213,6 +213,7 @@ p.stacktrace {
 div#footer {
     margin: 10px 0px;
     padding: 3px;
+    clear: both;
 }
 
 /* The footer links are aligned in the bottom-right corner */

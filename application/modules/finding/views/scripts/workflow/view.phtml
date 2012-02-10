@@ -1,0 +1,310 @@
+<?php
+$editMode = (
+    $this->acl()->hasPrivilegeForClass('create', 'Evaluation') ||
+    $this->acl()->hasPrivilegeForClass('update', 'Evaluation') ||
+    $this->acl()->hasPrivilegeForClass('delete', 'Evaluation')
+);
+
+if ($editMode):
+    $saveButton = new Fisma_Yui_Form_Button(
+        'saveButton',
+        array(
+            'label' => 'Save',
+            'onClickFunction' => 'Fisma.Remediation.remediationAction'
+        )
+    );
+    $cancelButton = new Fisma_Yui_Form_Button_Link(
+        'cancelButton',
+        array(
+            'value' => 'Cancel',
+            'href' => '/finding/workflow/view'
+        )
+    );
+endif;
+?>
+
+<!-- This form only contains a few hidden inputs, so it doesn't need to be a Zend_Form -->
+<form id='finding-config-workflow' name='finding-config-workflow'>
+
+<?php if ($editMode): ?>
+<div class='buttonBar'>
+    <?php echo $this->escape($saveButton, 'none'); ?>
+    <?php echo $this->escape($cancelButton, 'none'); ?>
+</div>
+<?php endif; ?>
+
+<?php Fisma_Format_Section::startSection('Finding Workflow'); ?>
+
+<?php if ($editMode): ?>
+<div id='changeQueue'>
+    <div class='messageBox attention'>
+        <ul>
+            <li>You are editing a workow, your changes may affect other users of the application.</li>
+            <li>Changes you make cannot be undone.</li>
+            <li>Changes will not take affect until you click the "Save" button.</li>
+            <li>You may cancel your changes if you do not wish to save them.</li>
+        </ul>
+    </div>
+
+    <div class='approvalHeader'><b>Change Window</b></div>
+    <div class='approval'>
+        <div class='approvalStep highlight'>
+            <input type='hidden' name='changeQueue' />
+            You have made the following change(s), please review before saving:
+        </div>
+        <div class='approvalStep'>
+            test
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<div class='stepBlock incidentStep completedIncidentStep'>
+    <div class='incidentCardinality'>1</div><h1>NEW</h1>
+    <table>
+        <tr><td>Status Message:</td><td>Awaiting Mitigation Strategy</td></tr>
+        <tr>
+            <td>Description:</td>
+            <td>The finding has been created, but nobody has started composing a mitigation strategy for it.</td>
+        </tr>
+    </table>
+</div>
+
+<div class='stepBlock incidentStep completedIncidentStep'>
+    <div class='incidentCardinality'>2</div>
+    <h1>DRAFT</h1>
+    <table>
+        <tr><td>Status Message:</td><td>Awaiting Mitigation Strategy Submission</td></tr>
+        <tr>
+            <td>Description:</td>
+            <td>A mitigation strategy is being composed and has not yet submitted.</td>
+        </tr>
+    </table>
+</div>
+
+<div class='stepBlock incidentStep currentIncidentStep'>
+    <div class='incidentCardinality'>3</div>
+    <h1>MSA - Mitigation Strategy Approval</h1>
+    <ul id="msList" class="dragList<?php if ($editMode): ?> enabled<?php endif; ?>">
+    <?php foreach ($this->msList as $step): ?>
+        <li id="ms_<?php echo $this->escape($step->id); ?>">
+            <?php echo $this->escape($step->name); ?>
+            <span class='linkBar'>
+                <?php if ($editMode): ?>
+                    <a href='#'>[Edit Details]</a>
+                    <a href='#'>[Delete]</a>
+                <?php else: ?>
+                    <a href='#'>[View Details]</a>
+                <?php endif; ?>
+            </span>
+        </li>
+    <?php endforeach; ?>
+    </ul>
+    <a href='#'>[Add a Step]</a>
+</div>
+
+<?php if ($editMode): ?>
+<script type="text/javascript">
+
+(function() {
+
+var Dom = YAHOO.util.Dom;
+var Event = YAHOO.util.Event;
+var DDM = YAHOO.util.DragDropMgr;
+
+//////////////////////////////////////////////////////////////////////////////
+// example app
+//////////////////////////////////////////////////////////////////////////////
+YAHOO.example.DDApp = {
+    init: function() {
+
+        new YAHOO.util.DDTarget("msList");
+        new YAHOO.util.DDTarget("evList");
+
+    <?php foreach ($this->msList as $step): ?>
+        new YAHOO.example.DDList("ms_<?php echo $this->escape($step->id); ?>");
+    <?php endforeach; ?>
+
+        Event.on("showButton", "click", this.showOrder);
+    },
+
+    showOrder: function() {
+        var parseList = function(ul, title) {
+            var items = ul.getElementsByTagName("li");
+            var out = title + ": ";
+            for (i=0;i<items.length;i=i+1) {
+                out += items[i].id + " ";
+            }
+            return out;
+        };
+    }
+};
+
+//////////////////////////////////////////////////////////////////////////////
+// custom drag and drop implementation
+//////////////////////////////////////////////////////////////////////////////
+
+YAHOO.example.DDList = function(id, sGroup, config) {
+
+    YAHOO.example.DDList.superclass.constructor.call(this, id, sGroup, config);
+
+    this.logger = this.logger || YAHOO;
+    var el = this.getDragEl();
+    Dom.setStyle(el, "opacity", 0.67); // The proxy is slightly transparent
+
+    this.goingUp = false;
+    this.lastY = 0;
+};
+
+YAHOO.extend(YAHOO.example.DDList, YAHOO.util.DDProxy, {
+
+    startDrag: function(x, y) {
+        this.logger.log(this.id + " startDrag");
+
+        // make the proxy look like the source element
+        var dragEl = this.getDragEl();
+        var clickEl = this.getEl();
+        Dom.setStyle(clickEl, "visibility", "hidden");
+
+        dragEl.innerHTML = clickEl.innerHTML;
+
+        Dom.setStyle(dragEl, "color", Dom.getStyle(clickEl, "color"));
+        Dom.setStyle(dragEl, "backgroundColor", Dom.getStyle(clickEl, "backgroundColor"));
+        Dom.setStyle(dragEl, "border", "2px solid gray");
+    },
+
+    endDrag: function(e) {
+
+        var srcEl = this.getEl();
+        var proxy = this.getDragEl();
+
+        // Show the proxy element and animate it to the src element's location
+        Dom.setStyle(proxy, "visibility", "");
+        var a = new YAHOO.util.Motion(
+            proxy, {
+                points: {
+                    to: Dom.getXY(srcEl)
+                }
+            },
+            0.2,
+            YAHOO.util.Easing.easeOut
+        );
+        var proxyid = proxy.id;
+        var thisid = this.id;
+
+        // Hide the proxy and show the source element when finished with the animation
+        a.onComplete.subscribe(function() {
+                Dom.setStyle(proxyid, "visibility", "hidden");
+                Dom.setStyle(thisid, "visibility", "");
+            });
+        a.animate();
+    },
+
+    onDragDrop: function(e, id) {
+
+        // If there is one drop interaction, the li was dropped either on the list,
+        // or it was dropped on the current location of the source element.
+        if (DDM.interactionInfo.drop.length === 1) {
+
+            // The position of the cursor at the time of the drop (YAHOO.util.Point)
+            var pt = DDM.interactionInfo.point;
+
+            // The region occupied by the source element at the time of the drop
+            var region = DDM.interactionInfo.sourceRegion;
+
+            // Check to see if we are over the source element's location.  We will
+            // append to the bottom of the list once we are sure it was a drop in
+            // the negative space (the area of the list without any list items)
+            if (!region.intersect(pt)) {
+                var destEl = Dom.get(id);
+                var destDD = DDM.getDDById(id);
+                destEl.appendChild(this.getEl());
+                destDD.isEmpty = false;
+                DDM.refreshCache();
+            }
+
+        }
+    },
+
+    onDrag: function(e) {
+
+        // Keep track of the direction of the drag for use during onDragOver
+        var y = Event.getPageY(e);
+
+        if (y < this.lastY) {
+            this.goingUp = true;
+        } else if (y > this.lastY) {
+            this.goingUp = false;
+        }
+
+        this.lastY = y;
+    },
+
+    onDragOver: function(e, id) {
+
+        var srcEl = this.getEl();
+        var destEl = Dom.get(id);
+
+        // We are only concerned with list items, we ignore the dragover
+        // notifications for the list.
+        if (destEl.nodeName.toLowerCase() == "li") {
+            var orig_p = srcEl.parentNode;
+            var p = destEl.parentNode;
+
+            if (this.goingUp) {
+                p.insertBefore(srcEl, destEl); // insert above
+            } else {
+                p.insertBefore(srcEl, destEl.nextSibling); // insert below
+            }
+
+            DDM.refreshCache();
+        }
+    }
+});
+
+Event.onDOMReady(YAHOO.example.DDApp.init, YAHOO.example.DDApp, true);
+
+})();
+</script>
+<?php endif; ?>
+
+<div class='stepBlock incidentStep completedIncidentStep'>
+    <div class='incidentCardinality'>4</div>
+    <h1>EN - Evidence Needed</h1>
+    <table>
+        <tr><td>Status Message:</td><td>Awaiting Evidence Package Submission</td></tr>
+        <tr>
+            <td>Description:</td>
+            <td>
+                The mitigation strategy has been approved. Evidence is now gathered to either support the decision
+                of the mitigation strategy or to prove that the strategy has been implemented.
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class='stepBlock incidentStep currentIncidentStep'>
+    <div class='incidentCardinality'>5</div>
+    <h1>EA - Evidence Approval</h1>
+    <ul id="evList" class="dragList">
+    </ul>
+</div>
+
+<div class='stepBlock incidentStep completedIncidentStep'>
+    <div class='incidentCardinality'>6</div>
+    <h1>CLOSED</h1>
+    <table>
+        <tr><td>Status Message:</td><td>Finding Officially Closed</td></tr>
+        <tr>
+            <td>Description:</td>
+            <td>
+                The mitigation strategy has been approved and implemented.
+                Evidence has been submitted and approved.
+                No further changes can be made to this finding anymore.
+            </td>
+        </tr>
+    </table>
+</div>
+
+<?php Fisma_Format_Section::stopSection(); ?>
+</form>
