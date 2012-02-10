@@ -77,8 +77,8 @@ Fisma_Format_Section::startSection("New Incidents <span id='newIncidentsFound'><
 
             // See the comment at the contextMenuHandler() below. 
             if (YAHOO.lang.isNull(oRecord)) {
-                var oElement = $(elTarget).parents("tr.yui-dt-rec").first();
-                oRecord = myDataTable.getRecord(oElement[0]);
+                var oElement = YAHOO.util.Dom.getAncestorByClassName(elTarget, "yui-dt-rec");
+                oRecord = myDataTable.getRecord(oElement);
             } 
 
             document.location = "/incident/view/id/" + oRecord.getData("id");
@@ -107,8 +107,8 @@ Fisma_Format_Section::startSection("New Incidents <span id='newIncidentsFound'><
         // When view over a table inside data row, it gets the wrong row element by using getTrEl(targetElement).
         // It needs to traver further to get right <tr> dom for getting row record.
         if (YAHOO.lang.isNull(rowRecord)) {
-            var oElement = $(targetElement).parents("tr.yui-dt-rec").first();
-            rowRecord = myDataTable.getRecord(oElement[0]);
+            var oElement = YAHOO.util.Dom.getAncestorByClassName(targetElement, "yui-dt-rec");
+            rowRecord = myDataTable.getRecord(oElement);
         } 
         
         switch (menuItem.index) {
