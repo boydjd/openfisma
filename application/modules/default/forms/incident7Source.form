@@ -12,7 +12,7 @@
 
 elements.instructions.type = "Element_ConstantText"
 elements.instructions.options.label = "Instructions"
-elements.instructions.options.value = "<p>Provide a characterization of the source of this incident: who was involved, where it originated from, etc. The origin can be geographical or virtual, e.g. a street address or an IP address.</p>"
+elements.instructions.options.value = "<p>Provide a characterization of the source of this incident: who was involved, where it originated from, etc. The origin can be geographical or virtual, e.g. a street address or an IP address.</p><p>The following information is optional and not required to submit an incident report, if you do not have this information available please click continue.</p>"
 displayGroups.help.elements.instructions = "instructions"
 
 elements.sourceIp.type="text"

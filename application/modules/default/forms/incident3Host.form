@@ -12,7 +12,7 @@
 
 elements.instructions.type = "Element_ConstantText"
 elements.instructions.options.label = "Instructions"
-elements.instructions.options.value = "<p>If this incident involves a computer workstation, server, or other computer asset, please describe that asset as fully as possible on this page.</p><p>This section is <i>optional.</i></p>"
+elements.instructions.options.value = "<p>If this incident involves a computer workstation, server, or other computer asset, please describe that asset as fully as possible on this page.</p><p>The following information is optional and not required to submit an incident report, if you do not have this information available please click continue.</p>"
 displayGroups.help.elements.instructions = "instructions"
 
 elements.hostName.type="text"
