@@ -26,7 +26,7 @@
  * @package    Fisma
  * @subpackage Fisma_Cli
  */
-class Fisma_Cli_SendMails extends Fisma_Cli_Abstract
+class Fisma_Cli_SendMail extends Fisma_Cli_Abstract
 {
     /**
      * Iterate through send the mail.
@@ -36,7 +36,7 @@ class Fisma_Cli_SendMails extends Fisma_Cli_Abstract
     public function _run()
     {
         // Get all mail
-        $mails = Doctrine::getTable('Mail')->findAll()->toArray();
+        $allMail = Doctrine::getTable('Mail')->findAll()->toArray();
 
         // Send mail immediately and delete mail after send successful
         $conn = Doctrine_Manager::connection();
@@ -44,7 +44,7 @@ class Fisma_Cli_SendMails extends Fisma_Cli_Abstract
         try {
             $conn->beginTransaction();
 
-            foreach ($mails as $mail) {
+            foreach ($allMail as $mail) {
                 $this->_sendMail($mail['id']);
                 $this->_purgeMail($mail['id']);
             }

@@ -19,5 +19,5 @@
 
 require_once(realpath(dirname(__FILE__) . '/bootstrap.php'));
 
-$cli = new Fisma_Cli_SendMails();
+$cli = new Fisma_Cli_SendMail();
 exit($cli->run());
