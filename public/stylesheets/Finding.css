@@ -87,11 +87,29 @@ ul.dragList li span.linkBar, div#dragListProxy span.linkBar {
     float: right;
 }
 
-ul.dragList div.stepDetail, div#dragListProxy div.stepDetail {
-    display:none;
+div.stepDetail {
+    display: none;
+    margin-top: 6px;
+    margin-left: 24px;
+    margin-right: 24px;
+    margin-bottom: 0;
+    border: dashed thin;
+    border-top: none;
+    padding: 12px;
 }
 
 div#changeQueue div.approval {
     height: 500px;
     overflow: auto;
+}
+
+div.stepDetail td{
+    border: none;
+}
+
+div.stepDetail table {
+    width: 100%;
+}
+div.stepDetail td input {
+    width: 100%;
 }

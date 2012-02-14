@@ -7,10 +7,10 @@ $enabledStyle = ($this->enabled) ? " enabled" : "";
 >
 <?php
 $count = 1;
-foreach ($this->items as $childHTML):
+foreach ($this->items as $childHtml):
 ?>
     <li id='<?php echo $this->escape($this->id . 'Item' . $count); ?>'>
-        <?php echo $this->escape($childHTML, 'none'); ?>
+        <?php echo $this->escape($childHtml, 'none'); ?>
     </li>
 <?php
         $count++;
@@ -39,7 +39,7 @@ for ($i = 1; $i <= count($this->items); $i++):
         else:
             $firstHandler = false;
         endif;
-        echo $this->escape("'{$event}' : {$handler}");
+        echo $this->escape("'{$event}' : {$handler}", 'none');
     endforeach;
 ?>
             },
@@ -52,5 +52,5 @@ endfor;
 ?>
     });
 </script>
-<a href='#'>[Add a Step]</a>
+<a href='javascript:alert("Feature not yet implemented")'>[Add a Step]</a>
 <?php endif; ?>

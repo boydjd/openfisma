@@ -35,6 +35,8 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
     {
         $this->view->msList = Doctrine_Query::create()
                                   ->from('Evaluation e')
+                                  ->leftJoin('e.Privilege p')
+                                  ->leftJoin('p.Roles')
                                   ->where('approvalGroup = ?', 'action')
                                   ->execute();
         $this->view->evList = Doctrine_Query::create()

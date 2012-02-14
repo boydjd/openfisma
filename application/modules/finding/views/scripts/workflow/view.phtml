@@ -84,23 +84,76 @@ endif;
     <div class='incidentCardinality'>3</div>
     <h1>MSA - Mitigation Strategy Approval</h1>
 <?php
+    $disabled = ($editMode) ? "" : "disabled='true'";
+    $hidden = ($editMode) ? "" : "type='hidden'";
+
     $msListItems = array(); // The innerHTML of each list item in the InteractiveOrderedList
     foreach ($this->msList as $step):
+        $roleHtml = "";
+        foreach ($step->Privilege->Roles as $role):
+            $roleHtml .= "{$role->nickname}<br/>";
+        endforeach;
+
         $msListItems[] =
             $step->name  .
             "<span class='linkBar'>" .
             (($editMode) ?
                 "<a href='#' onclick='return Fisma.FindingWorkflow.toggleDetailPanel(this);'>[Edit Details]</a>
-                <a href='#'>[Delete]</a>"
+                <a href='javascript:alert(\"Feature not yet implemented\")'>[Delete]</a>"
             :
                 "<a href='#' onclick='return Fisma.FindingWorkflow.toggleDetailPanel(this);'>[View Details]</a>"
             ) .
             "</span>
             <div class='stepDetail'>
                 <input
+                    {$hidden}
                     name='msList_{$step->id}_precedence'
                     value='{$step->precedence}'
-                />
+                /><br/>
+                <table>
+                    <tr>
+                        <td><label for='msList_{$step->id}_name'>Workflow Title:</label></td>
+                        <td><input
+                            type='text'
+                            {$disabled}
+                            name='ms_List_{$step->id}_name'
+                            value='{$step->name}'
+                        /></td>
+                    </tr>
+                    <tr>
+                        <td><label for='msList_{$step->id}_nickname'>Chart Label:</label></td>
+                        <td><input
+                            type='text'
+                            {$disabled}
+                            name='ms_List_{$step->id}_nickname'
+                            value='{$step->nickname}'
+                        /></td>
+                    </tr>
+                    <tr>
+                        <td>Status Message:</td>
+                        <td><input
+                            type='text'
+                            disabled='true'
+                            value='Awaiting {$step->name}'
+                        /></td>
+                    </tr>
+                    <tr>
+                        <td><label for='msList_{$step->id}_description'>Description:</label></td>
+                        <td><input
+                            type='text'
+                            {$disabled}
+                            name='ms_List_{$step->id}_description'
+                            value='{$step->description}'
+                        /></td>
+                    </tr>
+                    <tr>
+                        <td>Assigned role(s):</td>
+                        <td>
+                            {$roleHtml}
+                            <a href='javascript:alert(\"Feature not yet implemented\")'>[Assign more roles]</a>
+                        </td>
+                    </tr>
+                    </table>
             </div>"
         ;
     endforeach;

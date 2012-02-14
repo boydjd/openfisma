@@ -59,7 +59,23 @@ Fisma.FindingWorkflow = {
      * @param (HTMLElement) element The element that triggers the event
      */
     toggleDetailPanel : function(element) {
-        jQuery(element).parents("span").next(".stepDetail").toggle("fast");
+        jQuery(element).parents("span").next(".stepDetail").fadeToggle("fast");
+
+        if (jQuery(element).text().indexOf('Edit') >= 0) {
+            jQuery(element).text('[Save Details]');
+        } else if (jQuery(element).text().indexOf('Save') >= 0) {
+            jQuery(element).text('[Edit Details]');
+
+            var logMessage = Fisma.FindingWorkflow.getSelfText(jQuery(element).parents("li")) + ' modified.';
+            Fisma.FindingWorkflow.addChangeLogEntry(logMessage);
+
+            // @TODO Record in change queue
+        } else if  (jQuery(element).text().indexOf('View') >= 0) {
+            jQuery(element).text('[Close Details]');
+        } else if (jQuery(element).text().indexOf('Close') >= 0) {
+            jQuery(element).text('[View Details]');
+        }
+
         return false;
     },
 
@@ -71,11 +87,7 @@ Fisma.FindingWorkflow = {
      */
     endDragHandler : function(source, moved) {
         if (moved) {
-            var source = jQuery(source).clone();
-            source.children('span, div').remove();
-            var message = source.text() + ' moved';
-            source.remove();
-            Fisma.FindingWorkflow.addChangeLogEntry(message);
+            Fisma.FindingWorkflow.addChangeLogEntry(Fisma.FindingWorkflow.getSelfText(source) + ' moved.');
         }
     },
 
@@ -88,6 +100,22 @@ Fisma.FindingWorkflow = {
         var entry = document.createElement("div");
         entry.appendChild(document.createTextNode(message));
         entry.className = 'approvalStep';
+        entry.style.display = 'none';
         jQuery('#changeQueue div.approval').append(entry);
+        jQuery(entry).slideToggle("fast");
+    },
+
+    /**
+     * Return the content of the element in plain text EXCLUDING the descendants' contents
+     *
+     * @param (HTMLElement) element
+     * @return string
+     */
+    getSelfText : function(element) {
+        var source = jQuery(element).clone();
+        source.children().remove();
+        var message = source.text();
+        source.remove();
+        return message;
     }
 };
