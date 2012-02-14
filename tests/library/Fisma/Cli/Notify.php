@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * Test suite for /library/Fisma/Cli/Notify.php. Due to the use of Zend_Console_Getopt, this test must be run 
+ * Test suite for /library/Fisma/Cli/Notify.php. Due to the use of Zend_Console_Getopt, this test must be run
  * without any options for phpunit.
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
@@ -30,6 +30,19 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
  */
 class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
 {
+    /**
+     * setUp
+     *
+     * @access public
+     * @return void
+     */
+    public function setUp()
+    {
+        Fisma::setConfiguration(new Fisma_Configuration_Array(), true);
+
+        Fisma::configuration()->setConfig('system_name', 'OpenFISMA');
+    }
+
     /**
      * Test the main function
      * @return void
@@ -42,7 +55,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
         $job1 = $this->getMock('Mock_Blank');
         $job1->userId = 1;
         $job1->User = $user;
-        
+
         $job2 = $this->getMock('Mock_Blank');
         $job2->userId = 1;
         $job2->User = $user;
@@ -74,7 +87,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
 
     /**
      * Test the query to getNotification
-     * 
+     *
      * @return void
      * @todo pending on the re-implementation of source method
      */
@@ -91,30 +104,30 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
 
     /**
      * Test the sending of notifications (in a very simple way)
-     * 
+     *
      * @return void
      */
     public function testSendMail()
     {
-        $mail = $this->getMock('Mock_Blank', array('sendNotification'));
-        $mail->expects($this->once())->method('sendNotification');
+        $mail = $this->getMock('Mock_Blank', array('send', 'setMail'));
+        $mail->expects($this->once())->method('setMail')->will($this->returnSelf());
+        $mail->expects($this->once())->method('send');
 
         $notify = new Fisma_Cli_Notify();
-        $notify->sendNotificationEmail(null, $mail);
+        $notify->sendNotificationEmail(array(), $mail);
     }
 
     /**
      * Test the execution (useless, put in to get 100% cover)
-     * 
-     * @return void 
+     *
+     * @return void
      */
     public function testPurgeNotifications()
     {
         $notification = $this->getMock('Mock_Blank', array('delete'));
         $notification->expects($this->once())->method('delete');
         $notify = new Fisma_Cli_Notify();
-        $query = $notify->getNotificationQuery()->getSql();
-        $notify->purgeNotifications(array($notification), $query);
+        $notify->purgeNotifications(array($notification));
     }
 }
 

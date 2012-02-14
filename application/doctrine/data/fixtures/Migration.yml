@@ -4,3 +4,8 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: BootstrapMigration
+    021700_Add_Mail_Table:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: AddMailTable
