@@ -1,0 +1,23 @@
+<?php echo $this->partial('object/view.phtml', $this->getVars()); ?>
+<div id="stepTemplate" style="display:none;">
+<table><tbody>
+    <tr class="incidentStep">
+        <td></td>
+        <td>
+            <p>Name:&nbsp;<input size="80" name="stepName[]" type="text" /></p>
+            <p>Role:&nbsp;<select name="stepRole[]"></select></p>
+            <p>Description:&nbsp;<textarea name="stepDescription[]" rows=8 cols=100></textarea></p>
+            <p>
+                <button>Add Step Above</button>
+                <button>Add Step Below</button>
+                <button>Delete Step</button>
+            </p>
+        </td>
+    </tr>
+</tbody></table>
+</div>
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function() {
+    new Fisma.IncidentWorkflow(<?php echo $this->escape($this->stepsData, 'json'); ?>, "stepTemplate");
+});
+</script>
