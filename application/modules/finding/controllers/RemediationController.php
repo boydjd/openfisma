@@ -658,11 +658,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Delete evidence
-     *
-     * @return void
      */
     public function deleteEvidenceAction()
     {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
         $id = $this->_request->getParam('id');
         $attachmentId = $this->_request->getParam('attachmentId');
 
@@ -683,8 +684,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $finding->save();
 
         $finding->getAuditLog()->write($message);
-
-        $this->_redirect("/finding/remediation/view/id/{$id}");
     }
 
     /**
@@ -921,14 +920,16 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $baseUrl = '/finding/remediation/';
             $currentUrl = '/id/' . $this->view->finding->id . '/attachmentId/' . $attachment->id;
             $attachmentRows[] = array(
-                'iconUrl'  => "<a href={$baseUrl}download-evidence{$currentUrl}>"
-                            . "<img src={$attachment->getIconUrl()}></a>",
-                'fileName' => "<a href={$baseUrl}download-evidence{$currentUrl}><div>"
-                            . $this->view->escape($attachment->fileName) . "</div></a>",
-                'fileSize' => $attachment->getFileSize(),
-                'user'     => $this->view->userInfo($attachment->User->username),
-                'date'     => $attachment->createdTs,
-                'action'   => "<a href={$baseUrl}delete-evidence{$currentUrl}>Delete</a>"
+                'iconUrl'      => "<a href={$baseUrl}download-evidence{$currentUrl}>"
+                                 . "<img src={$attachment->getIconUrl()}></a>",
+                'fileName'     => "<a href={$baseUrl}download-evidence{$currentUrl}><div>"
+                                . $this->view->escape($attachment->fileName) . "</div></a>",
+                'fileSize'     => $attachment->getFileSize(),
+                'user'         => $this->view->userInfo($attachment->User->username),
+                'date'         => $attachment->createdTs,
+                'action'       => 'Delete',
+                'id'           => $this->view->finding->id,
+                'attachmentId' => $attachment->id
             );
         }
 
@@ -995,11 +996,35 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 new Fisma_Yui_DataTable_Column(
                     'Action',
                     true,
-                    'Fisma.TableFormat.formatHtml',
+                    'YAHOO.widget.DataTable.formatButton',
                     null,
                     null
                 )
             );
+
+            $dataTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'id',
+                    null,
+                    null,
+                    null,
+                    null,
+                    true
+                )
+            );
+
+            $dataTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'attachmentId',
+                    null,
+                    null,
+                    null,
+                    null,
+                    true
+                )
+            );
+
+            $dataTable->addEventListener("buttonClickEvent", 'Fisma.Finding.deleteEvidence');
         endif;
 
         $dataTable->setData($attachmentRows);
@@ -1145,6 +1170,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Renders the form for rejecting evidence.
      *
+     * @GETAllowed
      * @return void
      */
     function rejectEvidenceAction()

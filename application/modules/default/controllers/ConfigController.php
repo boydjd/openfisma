@@ -136,18 +136,16 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             );
             
             $editUrl = "/config/update-ldap/id/{$ldapConfig['id']}";
-            $deleteButton = 'Delete';
-            $ldapId = $ldapConfig['id'];        
+            $deleteUrl = "javascript:Fisma.Util.formPostAction('', '/config/delete-ldap/', " . $ldapConfig['id'] . ')';
 
-            $ldapList[] = array($url, $editUrl, $deleteButton, $ldapId);
+            $ldapList[] = array($url, $editUrl, $deleteUrl);
         }
 
         $dataTable = new Fisma_Yui_DataTable_Local();
             
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Connection', false, 'YAHOO.widget.DataTable.formatText'))
                   ->addColumn(new Fisma_Yui_DataTable_Column('Edit', false, 'Fisma.TableFormat.editControl'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('Delete', false, 'YAHOO.widget.DataTable.formatButton'))
-                  ->addColumn(new Fisma_Yui_DataTable_Column('LdapId', null, null, null, null, true))
+                  ->addColumn(new Fisma_Yui_DataTable_Column('Delete', false, 'Fisma.TableFormat.deleteControl'))
                   ->setData($ldapList);
 
         $dataTable->addEventListener("buttonClickEvent", 'Fisma.Ldap.deleteLdap'); 
@@ -280,14 +278,17 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Delete a Ldap configuration
+     *
+     * @return void
      */
     public function deleteLdapAction()
     {        
-        $this->_helper->layout->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
-
         $id = $this->getRequest()->getParam('id');
         Doctrine::getTable('LdapConfig')->find($id)->delete();
+
+        $msg = "Ldap Server deleted successfully.";
+        $this->view->priorityMessenger($msg, 'notice');
+        $this->_redirect('/config/list-ldap');
     }
 
     /**
