@@ -1,0 +1,56 @@
+<?php
+$enabledStyle = ($this->enabled) ? " enabled" : "";
+?>
+<ul
+    id='<?php echo $this->escape($this->id); ?>Container'
+    class='dragList<?php echo $this->escape($enabledStyle); ?>'
+>
+<?php
+$count = 1;
+foreach ($this->items as $childHTML):
+?>
+    <li id='<?php echo $this->escape($this->id . 'Item' . $count); ?>'>
+        <?php echo $this->escape($childHTML, 'none'); ?>
+    </li>
+<?php
+        $count++;
+    endforeach;
+?>
+</ul>
+<?php if ($this->enabled): ?>
+<script type='text/javascript'>
+    YAHOO.util.Event.onDOMReady(function() {
+        new YAHOO.util.DDTarget(
+            '<?php echo $this->escape($this->id); ?>Container',
+            '<?php echo $this->escape($this->id); ?>'
+        );
+<?php
+for ($i = 1; $i <= count($this->items); $i++):
+?>
+        new Fisma.InteractiveOrderedListItem(
+            '<?php echo $this->escape($this->id . 'Item' . $i); ?>',
+            '<?php echo $this->escape($this->id); ?>',
+            {
+<?php
+    $firstHandler = true;
+    foreach ($this->jsHandlers as $event => $handler):
+        if (!$firstHandler):
+            echo $this->escape(',');
+        else:
+            $firstHandler = false;
+        endif;
+        echo $this->escape("'{$event}' : {$handler}");
+    endforeach;
+?>
+            },
+            {
+                dragElId : 'dragListProxy'
+            }
+        );
+<?php
+endfor;
+?>
+    });
+</script>
+<a href='#'>[Add a Step]</a>
+<?php endif; ?>

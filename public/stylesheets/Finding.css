@@ -67,7 +67,7 @@ ul.dragList {
     margin-left: 0;
 }
 
-ul.dragList.enabled li {
+ul.dragList.enabled li, div#dragListProxy {
     border-left: 10px solid;
     cursor: move;
 }
@@ -82,6 +82,16 @@ ul.dragList li {
     margin-left: 0px;
     cursor: default;
 }
-ul.dragList li span.linkBar {
+
+ul.dragList li span.linkBar, div#dragListProxy span.linkBar {
     float: right;
+}
+
+ul.dragList div.stepDetail, div#dragListProxy div.stepDetail {
+    display:none;
+}
+
+div#changeQueue div.approval {
+    height: 500px;
+    overflow: auto;
 }
