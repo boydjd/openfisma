@@ -146,4 +146,14 @@ abstract class Fisma_Migration_Abstract
         return new Fisma_FileManager(Fisma::getPath('fileStorage'), new finfo(FILEINFO_MIME));
     }
 
+    /**
+     * Pretty-print messages to the user.
+     *
+     * @param string $message
+     * @return void
+     */
+    public function message($message)
+    {
+        echo preg_replace('/^/m', '> ', rtrim($message)) . PHP_EOL;
+    }
 }

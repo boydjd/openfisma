@@ -34,7 +34,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
      */
     public function migrate()
     {
-        echo "This migration may take some time on installations with large numbers of uploaded documents.\n";
+        $this->message("This migration may take some time on installations with large numbers of uploaded documents.");
 
         $this->createNewStuff();
         $this->migrateIncidents();
