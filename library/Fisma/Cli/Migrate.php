@@ -268,24 +268,9 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
         echo "Migrate: $version $name\n";
 
         if (!$this->_dryRun) {
-            ob_start();
-
             $migrationId = $this->_insertMigration($migration);
             $migration->migrate();
             $this->_completeMigration($migrationId);
-
-            $output = ob_get_clean();
-
-            // Make migration messages look pretty.
-            if (strlen($output) > 0) {
-                $output = preg_replace('/^/m', '> ', $output);
-
-                if ($output[strlen($output) - 1] != "\n") {
-                    $output .= "\n";
-                }
-
-                echo $output;
-            }
 
             // Separate each migration with an additional blank line
             echo "\n";
