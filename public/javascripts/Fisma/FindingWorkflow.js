@@ -32,7 +32,7 @@ Fisma.FindingWorkflow = {
      * @param (boolean)     goingUp     Whether the source comes from below or above the destination
      */
     dragOverHandler : function(source, destination, goingUp) {
-        if (goingUp) {
+        /*if (goingUp) {
             if (jQuery(destination).prevAll('li').length < 1) { // first of the list
                 precedence = parseFloat(jQuery(destination).find('input[name$="precedence"]').val()) - 1;
             } else {
@@ -50,7 +50,7 @@ Fisma.FindingWorkflow = {
                 precedence = (previousPrecedence + nextPrecedence) / 2;
             }
             jQuery(source).find('input[name$="precedence"]').val(precedence);
-        }
+        }*/
     },
 
     /**
@@ -61,16 +61,11 @@ Fisma.FindingWorkflow = {
     toggleDetailPanel : function(element) {
         jQuery(element).parents("span").next(".stepDetail").fadeToggle("fast");
 
-        if (jQuery(element).text().indexOf('Edit') >= 0) {
-            jQuery(element).text('[Save Details]');
-        } else if (jQuery(element).text().indexOf('Save') >= 0) {
-            jQuery(element).text('[Edit Details]');
-
+        /*if (edited) {
             var logMessage = Fisma.FindingWorkflow.getSelfText(jQuery(element).parents("li")) + ' modified.';
             Fisma.FindingWorkflow.addChangeLogEntry(logMessage);
-
-            // @TODO Record in change queue
-        } else if  (jQuery(element).text().indexOf('View') >= 0) {
+        }*/
+        if (jQuery(element).text().indexOf('View') >= 0) {
             jQuery(element).text('[Close Details]');
         } else if (jQuery(element).text().indexOf('Close') >= 0) {
             jQuery(element).text('[View Details]');

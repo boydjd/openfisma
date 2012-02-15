@@ -6,11 +6,11 @@ $editMode = (
 );
 
 if ($editMode):
-    $saveButton = new Fisma_Yui_Form_Button(
+    $saveButton = new Fisma_Yui_Form_Button_Submit(
         'saveButton',
         array(
-            'label' => 'Save',
-            'onClickFunction' => 'Fisma.Remediation.remediationAction'
+            'label' => 'Save'//,
+//            'onClickFunction' => 'Fisma.Remediation.remediationAction'
         )
     );
     $cancelButton = new Fisma_Yui_Form_Button_Link(
@@ -24,7 +24,7 @@ endif;
 ?>
 
 <!-- This form only contains a few hidden inputs, so it doesn't need to be a Zend_Form -->
-<form id='finding-config-workflow' name='finding-config-workflow'>
+<form id='finding-workflow' name='finding-workflow' action='/finding/workflow/modify' method='post'>
 
 <?php if ($editMode): ?>
 <div class='buttonBar'>
@@ -99,36 +99,39 @@ endif;
 
         $msListItems[] =
             $step->name  .
-            "<span class='linkBar'>" .
+            "<span class='linkBar'>
+                <a href='#' onclick='return Fisma.FindingWorkflow.toggleDetailPanel(this);'>[View Details]</a>" .
             (($editMode) ?
-                "<a href='#' onclick='return Fisma.FindingWorkflow.toggleDetailPanel(this);'>[Edit Details]</a>
-                <a href='javascript:alert(\"Feature not yet implemented\")'>[Delete]</a>"
-            :
-                "<a href='#' onclick='return Fisma.FindingWorkflow.toggleDetailPanel(this);'>[View Details]</a>"
+                " <a href='javascript:alert(\"Feature not yet implemented\")'>[Delete]</a>"
+            : ""
             ) .
             "</span>
             <div class='stepDetail'>
                 <input
-                    {$hidden}
-                    name='msList_{$step->id}_precedence'
-                    value='{$step->precedence}'
-                /><br/>
+                    type='hidden'
+                    name='msList_{$step->id}_databaseId'
+                    value='{$step->id}'
+                />
                 <table>
                     <tr>
-                        <td><label for='msList_{$step->id}_name'>Workflow Title:</label></td>
+                        <td>Workflow Title:</td>
                         <td><input
                             type='text'
                             {$disabled}
-                            name='ms_List_{$step->id}_name'
+                            name='msList_{$step->id}_name'
                             value='{$step->name}'
                         /></td>
                     </tr>
                     <tr>
-                        <td><label for='msList_{$step->id}_nickname'>Chart Label:</label></td>
+                        <td>" . new Fisma_Yui_Tooltip(
+                            "msList_{$step->id}_chartlabel",
+                            'Chart Label',
+                            'This label is shown on chart and also used for searching.'
+                        ) . "</td>
                         <td><input
                             type='text'
                             {$disabled}
-                            name='ms_List_{$step->id}_nickname'
+                            name='msList_{$step->id}_nickname'
                             value='{$step->nickname}'
                         /></td>
                     </tr>
@@ -141,11 +144,11 @@ endif;
                         /></td>
                     </tr>
                     <tr>
-                        <td><label for='msList_{$step->id}_description'>Description:</label></td>
+                        <td>Description:</td>
                         <td><input
                             type='text'
                             {$disabled}
-                            name='ms_List_{$step->id}_description'
+                            name='msList_{$step->id}_description'
                             value='{$step->description}'
                         /></td>
                     </tr>
