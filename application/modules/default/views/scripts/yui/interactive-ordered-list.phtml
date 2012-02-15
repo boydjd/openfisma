@@ -50,6 +50,13 @@ for ($i = 1; $i <= count($this->items); $i++):
 <?php
 endfor;
 ?>
+        // This unfortunate hack is to get around YAHOO DragDrop onMouseDown handler shadowing over onClick
+        var inputs = YAHOO.util.Selector.query('div.stepDetail input[type=text]');
+        for (var i in inputs) {
+            YAHOO.util.Event.on(inputs[i], 'click', function(clickEvent) {
+                clickEvent.target.focus()
+            });
+        }
     });
 </script>
 <a href='javascript:alert("Feature not yet implemented")'>[Add a Step]</a>

@@ -84,7 +84,7 @@ endif;
     <div class='incidentCardinality'>3</div>
     <h1>MSA - Mitigation Strategy Approval</h1>
 <?php
-    $disabled = ($editMode) ? "" : "disabled='true'";
+    $disabled = ($editMode) ? "" : "readonly";
     $hidden = ($editMode) ? "" : "type='hidden'";
 
     $msListItems = array(); // The innerHTML of each list item in the InteractiveOrderedList
@@ -93,6 +93,9 @@ endif;
         foreach ($step->Privilege->Roles as $role):
             $roleHtml .= "{$role->nickname}<br/>";
         endforeach;
+        if ($editMode):
+            $roleHtml .= "<a href='javascript:alert(\"Feature not yet implemented\")'>[Assign more roles]</a>";
+        endif;
 
         $msListItems[] =
             $step->name  .
@@ -133,7 +136,7 @@ endif;
                         <td>Status Message:</td>
                         <td><input
                             type='text'
-                            disabled='true'
+                            readonly
                             value='Awaiting {$step->name}'
                         /></td>
                     </tr>
@@ -150,7 +153,6 @@ endif;
                         <td>Assigned role(s):</td>
                         <td>
                             {$roleHtml}
-                            <a href='javascript:alert(\"Feature not yet implemented\")'>[Assign more roles]</a>
                         </td>
                     </tr>
                     </table>

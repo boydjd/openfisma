@@ -40,6 +40,7 @@ form#finding_detail_upload_evidence button {
     display: none;
 }
 
+/* Finding Workflow elements */
 div#changeQueue {
     float: right;
     width: 30%;
@@ -61,30 +62,6 @@ div.stepBlock h1 {
 div.stepBlock table td:first-child {
     width: 110px;
     vertical-align: top;
-}
-
-ul.dragList {
-    margin-left: 0;
-}
-
-ul.dragList.enabled li, div#dragListProxy {
-    border-left: 10px solid;
-    cursor: move;
-}
-
-ul.dragList li {
-    list-style-type: none;
-    padding: 10px;
-    border: thin solid;
-    background-color: white;
-    margin-top: 5px;
-    margin-bottom: 8px;
-    margin-left: 0px;
-    cursor: default;
-}
-
-ul.dragList li span.linkBar, div#dragListProxy span.linkBar {
-    float: right;
 }
 
 div.stepDetail {
@@ -110,6 +87,46 @@ div.stepDetail td{
 div.stepDetail table {
     width: 100%;
 }
+
+/* Overriding default text input look-and-feel */
 div.stepDetail td input {
     width: 100%;
+    border: solid thin white;
+    padding: 2px;
+}
+
+div.stepDetail td input:hover {
+    border: solid thin black;
+    background: #FFFF99;
+}
+
+div.stepDetail td input[readonly] {
+    color: black ! important;
+    background: white ! important;
+    border: none;
+}
+
+/* Overall InteractiveOrderedList styling */
+ul.dragList {
+    margin-left: 0;
+}
+
+ul.dragList.enabled li, div#dragListProxy {
+    border-left: 10px solid;
+    cursor: move;
+}
+
+ul.dragList li {
+    list-style-type: none;
+    padding: 10px;
+    border: thin solid;
+    background-color: white;
+    margin-top: 5px;
+    margin-bottom: 8px;
+    margin-left: 0px;
+    cursor: default;
+}
+
+span.linkBar {
+    float: right;
 }
