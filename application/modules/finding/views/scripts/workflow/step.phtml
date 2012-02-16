@@ -1,0 +1,81 @@
+<?php
+// Fetch data
+$step = (empty($this->step)) ? new Evaluation() : $this->step;
+$editMode = $this->editMode;
+$list = $this->list;
+
+// Prepare HTML snippets
+$disabled = ($editMode) ? "" : "readonly";
+$prefix = uniqid($list. "_") . "_";
+?>
+
+<span class='linkBar'>
+    <a href='#' onclick='return Fisma.FindingWorkflow.toggleDetailPanel(this);'>[View Details]</a>
+<?php if ($editMode): ?>
+    <a href='javascript:alert(\"Feature not yet implemented\")'>[Delete]</a>
+<?php endif; ?>
+</span>
+
+<span class='stepName'>
+    <?php echo $this->escape($step->name); ?>
+</span>
+
+<div class='stepDetail'>
+    <input
+        type='hidden'
+        name='<?php echo $this->escape($prefix); ?>databaseId'
+        value='<?php echo $this->escape($step->id); ?>'
+    />
+    <table>
+        <tr>
+            <td>Workflow Title:</td>
+            <td><input
+                type='text'
+                <?php echo $this->escape($disabled); ?>
+                name='<?php echo $this->escape($prefix); ?>name'
+                value='<?php echo $this->escape($step->name); ?>'
+                onChange='Fisma.FindingWorkflow.titleChangeHandler(this)'
+            /></td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(new Fisma_Yui_Tooltip(
+                    $prefix . "chartlabel",
+                    'Chart Label',
+                    'This label is shown on chart and also used for searching.'
+                ), 'none');
+            ?></td>
+            <td><input
+                type='text'
+                <?php echo $this->escape($disabled); ?>
+                name='<?php echo $this->escape($prefix); ?>nickname'
+                value='<?php echo $this->escape($step->nickname); ?>'
+            /></td>
+        </tr>
+        <tr>
+            <td>Status Message:</td>
+            <td>Awaiting <span class='stepName'><?php echo $this->escape($step->name); ?></span></td>
+        </tr>
+        <tr>
+            <td>Description:</td>
+            <td><input
+                type='text'
+                <?php echo $this->escape($disabled); ?>
+                name='<?php echo $this->escape($prefix); ?>description'
+                value='<?php echo $this->escape($step->description); ?>'
+            /></td>
+        </tr>
+        <tr>
+            <td>Assigned role(s):</td>
+            <td><?php
+                foreach ($step->Privilege->Roles as $role):
+                    echo $this->escape($role->nickname);
+                    ?><br/><?php
+                endforeach;
+                if ($editMode):
+                    ?><a href='javascript:alert(\"Feature not yet implemented\")'>[Assign more roles]</a><?php
+                endif;
+            ?></td>
+        </tr>
+        </table>
+</div>

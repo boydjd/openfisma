@@ -114,7 +114,16 @@ ul.dragList {
     margin-left: 0;
 }
 
-ul.dragList.enabled li, div#dragListProxy {
+#dragListProxy {
+    border: thin solid ! important;
+    border-left: 10px solid ! important;
+    padding-top: 2px;
+    padding-bottom: 0px;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+ul.dragList.enabled li, #dragListProxy {
     border-left: 10px solid;
     cursor: move;
 }
@@ -132,4 +141,8 @@ ul.dragList li {
 
 span.linkBar {
     float: right;
+}
+
+ul.dragList li:first-child {
+    display: none;
 }

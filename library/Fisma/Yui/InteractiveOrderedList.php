@@ -7,25 +7,24 @@
  */
 class Fisma_Yui_InteractiveOrderedList
 {
-    protected $_id;
-    protected $_items;
-    protected $_enabled;
-    protected $_jsHandlers;
-
     /**
      * @phpdoc: short description.
      *
-     * @param string $id            The HTML id of the UL
-     * @param array  $items         The array of items' innerHTML
-     * @param bool   $enabled       Whether the list is editable
-     * @param string $jsHandlers    The name of the extra JS function that handles the onDragDrop event
+     * @param string    $id                 The HTML id of the UL
+     * @param string    $contentModule      The module of the view script for each item in the list
+     * @param string    $contentScript      The link to the view script for each item in the list
+     * @param array     $dataList           The array of objects to pass to each item's view script
+     * @param bool      $enabled            Whether the list is editable
+     * @param string    $jsHandlers         The name of the extra JS function that handles the onDragDrop event
      */
-    public function __construct($id, $items, $enabled, $jsHandlers)
+    public function __construct($id, $contentModule, $contentScript, $dataList, $enabled, $jsHandlers)
     {
-        $this->_id = $id;
-        $this->_items = $items;
-        $this->_enabled = $enabled;
-        $this->_jsHandlers = $jsHandlers;
+        $this->id = $id;
+        $this->contentModule = $contentModule;
+        $this->contentScript = $contentScript;
+        $this->dataList = $dataList;
+        $this->enabled = $enabled;
+        $this->jsHandlers = $jsHandlers;
     }
     /**
      * Constructing the HTML markup of the whole list
@@ -38,14 +37,14 @@ class Fisma_Yui_InteractiveOrderedList
         $layout = (!isset($layout)) ? Zend_Layout::getMvcInstance() : $layout;
         $view = $layout->getView();
 
-        $data = array(
+        /*$data = array(
             'id' => $this->_id,
             'items' => $this->_items,
             'enabled' => $this->_enabled,
             'jsHandlers' => $this->_jsHandlers
-        );
+        );*/
 
-        return $view->partial('yui/interactive-ordered-list.phtml', 'default', $data);
+        return $view->partial('yui/interactive-ordered-list.phtml', 'default', $this);
     }
 
     /**

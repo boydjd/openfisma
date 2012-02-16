@@ -6,11 +6,11 @@ $editMode = (
 );
 
 if ($editMode):
-    $saveButton = new Fisma_Yui_Form_Button_Submit(
+    $saveButton = new Fisma_Yui_Form_Button(
         'saveButton',
         array(
-            'label' => 'Save'//,
-//            'onClickFunction' => 'Fisma.Remediation.remediationAction'
+            'label' => 'Save',
+            'onClickFunction' => 'Fisma.FindingWorkflow.forceSubmit'
         )
     );
     $cancelButton = new Fisma_Yui_Form_Button_Link(
@@ -23,8 +23,14 @@ if ($editMode):
 endif;
 ?>
 
-<!-- This form only contains a few hidden inputs, so it doesn't need to be a Zend_Form -->
-<form id='finding-workflow' name='finding-workflow' action='/finding/workflow/modify' method='post'>
+<form
+    id='finding-workflow'
+    name='finding-workflow'
+    action='/finding/workflow/modify'
+    onsubmit='Fisma.FindingWorkflow.submitHandler'
+    method='post'
+>
+<input type='hidden' name='forceSubmit' value='false' />
 
 <?php if ($editMode): ?>
 <div class='buttonBar'>
@@ -83,96 +89,19 @@ endif;
 <div class='stepBlock incidentStep currentIncidentStep'>
     <div class='incidentCardinality'>3</div>
     <h1>MSA - Mitigation Strategy Approval</h1>
-<?php
-    $disabled = ($editMode) ? "" : "readonly";
-    $hidden = ($editMode) ? "" : "type='hidden'";
-
-    $msListItems = array(); // The innerHTML of each list item in the InteractiveOrderedList
-    foreach ($this->msList as $step):
-        $roleHtml = "";
-        foreach ($step->Privilege->Roles as $role):
-            $roleHtml .= "{$role->nickname}<br/>";
-        endforeach;
-        if ($editMode):
-            $roleHtml .= "<a href='javascript:alert(\"Feature not yet implemented\")'>[Assign more roles]</a>";
-        endif;
-
-        $msListItems[] =
-            $step->name  .
-            "<span class='linkBar'>
-                <a href='#' onclick='return Fisma.FindingWorkflow.toggleDetailPanel(this);'>[View Details]</a>" .
-            (($editMode) ?
-                " <a href='javascript:alert(\"Feature not yet implemented\")'>[Delete]</a>"
-            : ""
-            ) .
-            "</span>
-            <div class='stepDetail'>
-                <input
-                    type='hidden'
-                    name='msList_{$step->id}_databaseId'
-                    value='{$step->id}'
-                />
-                <table>
-                    <tr>
-                        <td>Workflow Title:</td>
-                        <td><input
-                            type='text'
-                            {$disabled}
-                            name='msList_{$step->id}_name'
-                            value='{$step->name}'
-                        /></td>
-                    </tr>
-                    <tr>
-                        <td>" . new Fisma_Yui_Tooltip(
-                            "msList_{$step->id}_chartlabel",
-                            'Chart Label',
-                            'This label is shown on chart and also used for searching.'
-                        ) . "</td>
-                        <td><input
-                            type='text'
-                            {$disabled}
-                            name='msList_{$step->id}_nickname'
-                            value='{$step->nickname}'
-                        /></td>
-                    </tr>
-                    <tr>
-                        <td>Status Message:</td>
-                        <td><input
-                            type='text'
-                            readonly
-                            value='Awaiting {$step->name}'
-                        /></td>
-                    </tr>
-                    <tr>
-                        <td>Description:</td>
-                        <td><input
-                            type='text'
-                            {$disabled}
-                            name='msList_{$step->id}_description'
-                            value='{$step->description}'
-                        /></td>
-                    </tr>
-                    <tr>
-                        <td>Assigned role(s):</td>
-                        <td>
-                            {$roleHtml}
-                        </td>
-                    </tr>
-                    </table>
-            </div>"
-        ;
-    endforeach;
-    $msList = new Fisma_Yui_InteractiveOrderedList(
-        "msList",
-        $msListItems,
-        $editMode,
-        array(
-            'dragOver' => "Fisma.FindingWorkflow.dragOverHandler",
-            'endDrag' => "Fisma.FindingWorkflow.endDragHandler"
-        )
-    );
-    echo $this->escape($msList, 'none');
-?>
+    <?php
+        echo $this->escape(new Fisma_Yui_InteractiveOrderedList(
+            "action",
+            "finding",
+            "workflow/step.phtml",
+            $this->msList,
+            $editMode,
+            array(
+                'onAppend' => "Fisma.FindingWorkflow.appendHandler",
+                'endDrag' => "Fisma.FindingWorkflow.endDragHandler"
+            )
+        ), 'none');
+    ?>
 </div>
 
 <div class='stepBlock incidentStep completedIncidentStep'>
@@ -193,8 +122,19 @@ endif;
 <div class='stepBlock incidentStep currentIncidentStep'>
     <div class='incidentCardinality'>5</div>
     <h1>EA - Evidence Approval</h1>
-    <ul id="evList" class="dragList enabled">
-    </ul>
+    <?php
+        echo $this->escape(new Fisma_Yui_InteractiveOrderedList(
+            "evidence",
+            "finding",
+            "workflow/step.phtml",
+            $this->evList,
+            $editMode,
+            array(
+                'onAppend' => "Fisma.FindingWorkflow.appendHandler",
+                'endDrag' => "Fisma.FindingWorkflow.endDragHandler"
+            )
+        ), 'none');
+    ?>
 </div>
 
 <div class='stepBlock incidentStep completedIncidentStep'>

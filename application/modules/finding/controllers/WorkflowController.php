@@ -40,6 +40,13 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                                   ->where('e.approvalGroup = ?', 'action')
                                   ->orderBy('e.precedence')
                                   ->execute();
+        $this->view->evList = Doctrine_Query::create()
+                                  ->from('Evaluation e')
+                                  ->leftJoin('e.Privilege p')
+                                  ->leftJoin('p.Roles')
+                                  ->where('e.approvalGroup = ?', 'evidence')
+                                  ->orderBy('e.precedence')
+                                  ->execute();
     }
 
     /**
@@ -50,6 +57,8 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
     public function modifyAction()
     {
         $msg = '';
+        $debug = true;
+        $debug = false;
 
         $lists = array();
 
@@ -68,28 +77,34 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
         // @TODO process all REMOVE's
 
         // Process all records
-        $stepIndices = array_keys($lists['msList']); // Needs to go this way because the indices are strings
-        for ($count = 0; $count < count($stepIndices); $count++) {
-            $step = $lists['msList'][$stepIndices[$count]];
+        foreach ($lists as $list) {
+            $stepIndices = array_keys($list); // Needs to go this way because the indices are strings
+            for ($count = 0; $count < count($stepIndices); $count++) {
+                $msg .= $stepIndices[$count] . " : ";
+                $step = $list[$stepIndices[$count]];
+                $msg .= $step['databaseId'] . " : ";
 
-            // @TODO recalculate nextId & precedence
-            $step['precedence'] = $count;
-            $step['nextId'] = $lists['msList'][$stepIndices[$count+1]]['databaseId'];
+                // @TODO recalculate nextId & precedence
+                $step['precedence'] = $count;
+                $step['nextId'] = $list[$stepIndices[$count+1]]['databaseId'];
+                $msg .= $step['precedence'] . " : ";
 
-            // Update all records
-            $updateQuery = Doctrine_Query::create()
-                ->update('Evaluation e')
-                ->set('e.name', '?', $step['name'])
-                ->set('e.nickname', '?', $step['nickname'])
-                ->set('e.description', '?', $step['description'])
-                ->set('e.precedence', '?', $step['precedence'])
-                ->set('e.nextId', ($step['nextId']) ? '?' : 'null', $step['nextId'])
-                ->where('e.id = ?', $step['databaseId']);
-            $updateQuery->execute();
+                // Update all records
+                $updateQuery = Doctrine_Query::create()
+                    ->update('Evaluation e')
+                    ->set('e.name', '?', $step['name'])
+                    ->set('e.nickname', '?', $step['nickname'])
+                    ->set('e.description', '?', $step['description'])
+                    ->set('e.precedence', '?', $step['precedence'])
+                    ->set('e.nextId', ($step['nextId']) ? '?' : 'null', $step['nextId'])
+                    ->where('e.id = ?', $step['databaseId']);
+                $msg .= $updateQuery->execute();
+                $msg .= '<br/>';
+            }
         }
 
-        if (!empty($msg)) {
-            throw new Exception($msg);
+        if ($debug) {
+            throw new Exception("<br/>$msg<br/>");
         } else {
             $this->_redirect('/finding/workflow/view');
         }

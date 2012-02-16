@@ -25,32 +25,37 @@
 
 Fisma.FindingWorkflow = {
     /**
-     * Prepend the handling of InteractiveOrderedList drag-drop event
+     * Customizing the new item
      *
-     * @param (HTMLElement) source      The <li> element being dragged
-     * @param (HTMLElement) destination The <li> element being dragged over
-     * @param (boolean)     goingUp     Whether the source comes from below or above the destination
+     * @param string listId The logic id of the list. (htmlId = logicId + 'Container')
+     * @param strong itemId The HTML id of the <li> item.
      */
-    dragOverHandler : function(source, destination, goingUp) {
-        /*if (goingUp) {
-            if (jQuery(destination).prevAll('li').length < 1) { // first of the list
-                precedence = parseFloat(jQuery(destination).find('input[name$="precedence"]').val()) - 1;
-            } else {
-                previousPrecedence = parseFloat(jQuery(destination).prev('li').find('input[name$="precedence"]').val());
-                nextPrecedence = parseFloat(jQuery(destination).find('input[name$="precedence"]').val());
-                precedence = (previousPrecedence + nextPrecedence) / 2;
-            }
-            jQuery(source).find('input[name$="precedence"]').val(precedence);
-        } else {
-            if (jQuery(destination).nextAll('li').length < 1) { // last of the list
-                precedence = parseFloat(jQuery(destination).find('input[name$="precedence"]').val()) + 1;
-            } else {
-                previousPrecedence = parseFloat(jQuery(destination).find('input[name$="precedence"]').val());
-                nextPrecedence = parseFloat(jQuery(destination).next('li').find('input[name$="precedence"]').val());
-                precedence = (previousPrecedence + nextPrecedence) / 2;
-            }
-            jQuery(source).find('input[name$="precedence"]').val(precedence);
-        }*/
+    appendHandler : function(listId, itemId) {
+        var newItem = jQuery('#' + itemId);
+
+        newItem.find('span.stepName').text('(new step)');
+        newItem.find('input[name$="_name"]').val('(new step)');
+        newItem.find('input').attr('name', function(index, oldId) {
+            return oldId.replace(/.*_.*_/, itemId + '_');
+        });
+
+        Fisma.FindingWorkflow.toggleDetailPanel(newItem.find('span.linkBar > a').get(0));
+
+        return false;
+    },
+
+    submitHandler : function() {
+        return document.forms['finding-workflow'].forceSubmit = true;
+    },
+
+    forceSubmit : function() {
+        document.forms['finding-workflow'].forceSubmit = true;
+        document.forms['finding-workflow'].submit();
+    },
+
+    titleChangeHandler : function(element) {
+        title = jQuery(element).val();parentElement.find('input[name$="_name"]').val();
+        jQuery(element).parents('li').find('span.stepName').text(title).hide().fadeIn();
     },
 
     /**
@@ -59,8 +64,7 @@ Fisma.FindingWorkflow = {
      * @param (HTMLElement) element The element that triggers the event
      */
     toggleDetailPanel : function(element) {
-        jQuery(element).parents("span").next(".stepDetail").fadeToggle("fast");
-
+        parentElement = jQuery(element).parents('li');
         /*if (edited) {
             var logMessage = Fisma.FindingWorkflow.getSelfText(jQuery(element).parents("li")) + ' modified.';
             Fisma.FindingWorkflow.addChangeLogEntry(logMessage);
@@ -71,6 +75,7 @@ Fisma.FindingWorkflow = {
             jQuery(element).text('[View Details]');
         }
 
+        parentElement.find('div.stepDetail').fadeToggle('fast');
         return false;
     },
 
@@ -82,7 +87,8 @@ Fisma.FindingWorkflow = {
      */
     endDragHandler : function(source, moved) {
         if (moved) {
-            Fisma.FindingWorkflow.addChangeLogEntry(Fisma.FindingWorkflow.getSelfText(source) + ' moved.');
+            title = jQuery(source).find('.stepName').first().text();
+            Fisma.FindingWorkflow.addChangeLogEntry(title + ' moved.');
         }
     },
 
@@ -98,19 +104,5 @@ Fisma.FindingWorkflow = {
         entry.style.display = 'none';
         jQuery('#changeQueue div.approval').append(entry);
         jQuery(entry).slideToggle("fast");
-    },
-
-    /**
-     * Return the content of the element in plain text EXCLUDING the descendants' contents
-     *
-     * @param (HTMLElement) element
-     * @return string
-     */
-    getSelfText : function(element) {
-        var source = jQuery(element).clone();
-        source.children().remove();
-        var message = source.text();
-        source.remove();
-        return message;
     }
-};
+}

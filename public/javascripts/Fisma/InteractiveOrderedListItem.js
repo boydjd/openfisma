@@ -52,9 +52,13 @@ YAHOO.extend(Fisma.InteractiveOrderedListItem, YAHOO.util.DDProxy, {
 
         dragEl.innerHTML = clickEl.innerHTML;
 
-        YAHOO.util.Dom.setStyle(dragEl, "color", YAHOO.util.Dom.getStyle(clickEl, "color"));
+        /*YAHOO.util.Dom.setStyle(dragEl, "color", YAHOO.util.Dom.getStyle(clickEl, "color"));
         YAHOO.util.Dom.setStyle(dragEl, "backgroundColor", YAHOO.util.Dom.getStyle(clickEl, "backgroundColor"));
-        YAHOO.util.Dom.setStyle(dragEl, "border", YAHOO.util.Dom.getStyle(clickEl, "border"));
+
+        var borderFormat = YAHOO.util.Dom.getStyle(clickEl, "border");
+        if (borderFormat != null) { // In IE7 it's null
+            YAHOO.util.Dom.setStyle(dragEl, "border", borderFormat);
+        }*/
 
         this.nextId = jQuery(clickEl).next('li').attr('id');
     },
@@ -88,29 +92,6 @@ YAHOO.extend(Fisma.InteractiveOrderedListItem, YAHOO.util.DDProxy, {
         animator.animate();
     },
 
-    /*onDragDrop: function(e, id) {
-        // If there is one drop interaction, the li was dropped either on the list,
-        // or it was dropped on the current location of the source element.
-        if (YAHOO.util.DragDropMgr.interactionInfo.drop.length === 1) {
-            // The position of the cursor at the time of the drop (YAHOO.util.Point)
-            var pt = YAHOO.util.DragDropMgr.interactionInfo.point;
-
-            // The region occupied by the source element at the time of the drop
-            var region = YAHOO.util.DragDropMgr.interactionInfo.sourceRegion;
-
-            // Check to see if we are over the source element's location.  We will
-            // append to the bottom of the list once we are sure it was a drop in
-            // the negative space (the area of the list without any list items)
-            if (!region.intersect(pt)) {
-                var destEl = YAHOO.util.Dom.get(id);
-                var destDD = YAHOO.util.DragDropMgr.getDDById(id);
-                destEl.appendChild(this.getEl());
-                destDD.isEmpty = false;
-                YAHOO.util.DragDropMgr.refreshCache();
-            }
-        }
-    },*/
-
     onDrag: function(e) {
         // Keep track of the direction of the drag for use during onDragOver
         var y = YAHOO.util.Event.getPageY(e);
@@ -134,8 +115,6 @@ YAHOO.extend(Fisma.InteractiveOrderedListItem, YAHOO.util.DDProxy, {
             var orig_p = srcEl.parentNode;
             var p = destEl.parentNode;
 
-            this.extraHandlers.dragOver(srcEl, destEl, this.goingUp);
-
             if (this.goingUp) {
                 p.insertBefore(srcEl, destEl); // insert above
             } else {
@@ -146,3 +125,36 @@ YAHOO.extend(Fisma.InteractiveOrderedListItem, YAHOO.util.DDProxy, {
         }
     }
 });
+
+Fisma.InteractiveOrderedListItem.appendNewTo = function(listId, jsHandlers) {
+    var list = jQuery('ul#' + listId + 'Container');
+    var defaultItem = list.children('#' + listId + 'Skeleton');
+
+    var newItem = defaultItem.clone();
+    var newId = listId + '_' + list.children('li').length;
+    newItem.attr('id', newId);
+    newItem.appendTo(list);
+
+    new Fisma.InteractiveOrderedListItem(
+        newId,
+        listId,
+        jsHandlers,
+        {
+            dragElId : 'dragListProxy'
+        }
+    );
+
+    // This unfortunate hack is to get around YAHOO DragDrop onMouseDown handler shadowing over onClick
+    var inputs = YAHOO.util.Selector.query('li#' + newId + ' input[type=text]');
+    for (var i in inputs) {
+        YAHOO.util.Event.on(inputs[i], 'click', function(clickEvent) {
+            if (clickEvent.target) {
+                clickEvent.target.focus();
+            } else {
+                clickEvent.srcElement.focus();
+            }
+        });
+    }
+
+    return jsHandlers.onAppend(listId, newId);
+}
