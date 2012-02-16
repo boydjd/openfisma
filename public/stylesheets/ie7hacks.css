@@ -91,3 +91,13 @@ form#finding_detail_upload_evidence button {
 dl {
   margin : 0  
 }
+
+/* For fixing the calendar background problem */
+div.yui-calcontainer > div.title {
+    zoom: normal;
+}
+
+/* For fixing section div block calendar problem */
+#TabView_FindingView_TabViewContainer div.section {
+    position: static;
+}
