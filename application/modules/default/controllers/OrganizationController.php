@@ -635,14 +635,14 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             
             $openFinding = $organization->getOpenFindings();
             if ($openFinding > 0 && 'disposal' == $form->getElement('sdlcPhase')->getValue()) {
+
                 /**
                  * @TODO English
                  */ 
-                $this->view->priorityMessenger($msg, 'warning');
-                $msg  = $openFinding == 1 ? 'There is an open finding' : 'There are open findings'; 
+                $plural  = $openFinding == 1 ? 'There is an open finding' : 'There are open findings'; 
                 $msg = 'Unable to convert Organization to System with SDLC Phase of disposal:<br>'
-                       . $msg
-                       . ' associated with this system.';
+                       . $plural
+                       . ' associated with this organization.';
                 
                 $this->view->priorityMessenger($msg, 'warning');
                 $this->_redirect('/organization/view/id/' . $id);
