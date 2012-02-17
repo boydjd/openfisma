@@ -76,12 +76,12 @@ class Vm_View_Helper_CvssColors extends Zend_View_Helper_Abstract
         
     public function cvssColors($type, $vector, $value) 
     {
-        if ($type == 'base' && self::$_baseVectorColors[$vector][$value] != null) {
-               return self::$_baseVectorColors[$vector][$value];
+        if ($type == 'base' && isset(self::$_baseVectorColors[$vector][$value])) {
+            return self::$_baseVectorColors[$vector][$value];
         }
-        
+
         if ($type == 'score' && ($value >= 0 && $value <= 10)) {
-           return $this->baseVectorScoreColors($value);
+            return $this->baseVectorScoreColors($value);
         }
     }
 }
