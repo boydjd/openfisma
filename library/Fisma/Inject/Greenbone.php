@@ -66,7 +66,7 @@ class Fisma_Inject_Greenbone extends Fisma_Inject_Abstract
             // The elements of the XML that we care about don't occur until we reach a depth of 1
             if ($oXml->depth >= 1 && $oXml->nodeType == XMLReader::ELEMENT) {
                 if ($oXml->name == 'scan_start') {
-                    $discoveredDate = $oXml->readString();
+                    $scanDate = $oXml->readString();
                 }
 
                 if ($oXml->name == 'result') {
@@ -132,7 +132,7 @@ class Fisma_Inject_Greenbone extends Fisma_Inject_Abstract
                 $findingInstance = array();
                 $findingInstance['uploadId'] = (int) $uploadId;
                 $discoveredDate = new Zend_Date(
-                    strtotime($discoveredDate),
+                    strtotime($scanDate),
                     Zend_Date::TIMESTAMP
                 );
                 $findingInstance['discoveredDate'] = (!empty($discoveredDate)) ? 
