@@ -68,26 +68,58 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                 $type = $chunks[0];
                 $id = $chunks[1];
                 $attr = $chunks[2];
-                $lists[$type][$id][$attr] = $val;
+
+                if ($id != 'skeleton') {
+                    $lists[$type][$id][$attr] = $val;
+                }
             }
         }
 
         // @TODO process all ADD's
+        foreach ($lists as $listName => &$list) {
+            foreach ($list as &$step) {
+                if (empty($step['databaseId'])) {
+                    $newStep = new Evaluation();
 
-        // @TODO process all REMOVE's
+                    $newStep->name = $step['name'];
+                    $newStep->nickname = $step['nickname'];
+                    $newStep->precedence = 0;//$step['precedence'];
+                    $newStep->description = $step['description'];
+                    $newStep->approvalGroup = $listName;
 
-        // Process all records
-        foreach ($lists as $list) {
+                    $newStep->Event = new Event();
+                    $newStep->Event->name = $step['nickname'];
+                    $newStep->Event->description = $step['name'];
+                    $newStep->Event->privilegeId = 2; // @TODO fetch the privilegeId from database
+
+                    $newStep->Privilege = new Privilege();
+                    $newStep->Privilege->resource = 'finding';
+                    $newStep->Privilege->action = $step['nickname'];
+                    $newStep->Privilege->description = $step['nickname'] . " Approval";
+
+                    $newStep->save(); // precedence & nextId are temporary and must be updated later
+                    $step['databaseId'] = $newStep->id; // this is why nextId's must be calculated after all insertions
+                }
+            }
+        }
+
+        /* @TODO process all REMOVE's
+        foreach ($lists as $listName => $list) {
             $stepIndices = array_keys($list); // Needs to go this way because the indices are strings
             for ($count = 0; $count < count($stepIndices); $count++) {
-                $msg .= $stepIndices[$count] . " : ";
                 $step = $list[$stepIndices[$count]];
-                $msg .= $step['databaseId'] . " : ";
+            }
+        }*/
 
-                // @TODO recalculate nextId & precedence
+        // Process all records
+        foreach ($lists as $listName => &$list) {
+            $stepIndices = array_keys($list); // Needs to go this way because the indices are strings
+            for ($count = 0; $count < count($stepIndices); $count++) {
+                $step = &$list[$stepIndices[$count]];
+
+                // recalculate nextId & precedence
                 $step['precedence'] = $count;
                 $step['nextId'] = $list[$stepIndices[$count+1]]['databaseId'];
-                $msg .= $step['precedence'] . " : ";
 
                 // Update all records
                 $updateQuery = Doctrine_Query::create()

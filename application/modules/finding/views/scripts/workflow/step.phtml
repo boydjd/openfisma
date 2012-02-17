@@ -6,7 +6,7 @@ $list = $this->list;
 
 // Prepare HTML snippets
 $disabled = ($editMode) ? "" : "readonly";
-$prefix = uniqid($list. "_") . "_";
+$prefix = (empty($this->step->name)) ? $list . "_skeleton_" : uniqid($list . "_") . "_";
 ?>
 
 <span class='linkBar'>
