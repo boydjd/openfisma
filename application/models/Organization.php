@@ -479,11 +479,11 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     }
 
     /**
-     * Check whether an organization has associated findings whose status are not ClOSED
+     * Get the number of open finding associated with this finding
      *
-     * @return boolean
+     * @return integer The number of open finding associated with this finding.
      */
-    public function hasOpenFindings()
+    public function getOpenFindings()
     {
         $findings = Doctrine_Query::create()
             ->from('Finding f')
@@ -491,7 +491,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             ->andWhere('f.status != ?', 'CLOSED')
             ->count();
 
-        return $findings == 0 ? false : true;
+        return $findings;
     }
 
 }

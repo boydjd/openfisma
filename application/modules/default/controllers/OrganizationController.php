@@ -632,6 +632,22 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $form = $this->getForm('organization_converttosystem');
         if ($form->isValid($this->getRequest()->getPost())) {
             $organization = Doctrine::getTable('Organization')->find($id);
+            
+            $openFinding = $organization->getOpenFindings();
+            if ($openFinding > 0 && 'disposal' == $form->getElement('sdlcPhase')->getValue()) {
+                /**
+                 * @TODO English
+                 */ 
+                $this->view->priorityMessenger($msg, 'warning');
+                $msg  = $openFinding == 1 ? 'There is an open finding' : 'There are open findings'; 
+                $msg = 'Unable to convert Organization to System with SDLC Phase of disposal:<br>'
+                       . $msg
+                       . ' associated with this system.';
+                
+                $this->view->priorityMessenger($msg, 'warning');
+                $this->_redirect('/organization/view/id/' . $id);
+            } 
+
             $organization->convertToSystem(
                 $form->getElement('type')->getValue(),
                 $form->getElement('sdlcPhase')->getValue(),
@@ -663,11 +679,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         if (!$organization) {
             throw new Fisma_Zend_Exception("Invalid Organization ID");
-        }
-
-        // Do not show the disposal option if the organization has open finding.
-        if ($organization->hasOpenFindings()) {
-            $form->getElement('sdlcPhase')->removeMultiOption('disposal');
         }
 
         $this->view->form = $form;
