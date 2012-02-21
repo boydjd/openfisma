@@ -48,7 +48,7 @@ Fisma.Search.CriteriaRenderer = function () {
             container.appendChild(text);
 
             var highEnd = document.createElement('input');
-            
+
             if (operands && operands.length > 1) {
                 highEnd.value = operands[1];
             }
@@ -246,7 +246,7 @@ Fisma.Search.CriteriaRenderer = function () {
                 var enumValue = enumValues[index];
 
                 menuItem = {
-                    text : enumValue,
+                    text : $P.htmlentities(enumValue),
                     value : enumValue,
                     onclick : {fn : handleEnumSelectionEvent}
                 };
