@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * A wrapper for YUI's data table column
- * 
+ *
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -29,23 +29,23 @@ class Fisma_Yui_DataTable_Column
 {
     /**
      * The logical (human-friendly) name for this column. It is displayed in the table header.
-     * 
+     *
      * Also, if _name is not specified, then _label will be used to automatically generate a _name value.
-     * 
+     *
      * @var string
      */
     private $_label;
-    
+
     /**
      * Whether this column is sortable or not
-     * 
+     *
      * @var bool
      */
     private $_sortable;
-    
+
     /**
      * A formatter for this column
-     * 
+     *
      * @var Fisma_Yui_DataTable_ColumnFormatter
      */
     private $_formatter;
@@ -59,28 +59,35 @@ class Fisma_Yui_DataTable_Column
 
     /**
      * A parser for this column
-     * 
+     *
      * @var string
      */
     private $_parser;
 
     /**
      * A javascript-friendly name for this column. If not specified, this is automatically derived from the _label.
-     * 
+     *
      * @var string
      */
     private $_name;
 
     /**
      * Whether this column is hidden or not
-     * 
+     *
      * @var bool
      */
     private $_hidden;
 
     /**
+     * The (hidden) field holding the plaintext content of this field
+     *
+     * @var string
+     */
+    private $_sortField;
+
+    /**
      * Create a column with a human-friendly name
-     * 
+     *
      * @param string $label A human-friendly label for this column
      * @param bool $sortable
      * @param Fisma_Yui_DataTable_ColumnFormatter $formatter
@@ -89,13 +96,14 @@ class Fisma_Yui_DataTable_Column
      * @param bool $hidden Whether column should be hidden
      * @param string $parser The name of a javascript parser function to use on this column.
      */
-    public function __construct($label, 
-                                $sortable, 
-                                $formatter = null, 
-                                $formatterParams = null, 
-                                $name = null, 
+    public function __construct($label,
+                                $sortable,
+                                $formatter = null,
+                                $formatterParams = null,
+                                $name = null,
                                 $hidden = false,
-                                $parser = 'string')
+                                $parser = 'string',
+                                $sortField = null)
     {
         $this->_label = $label;
         $this->_sortable = $sortable;
@@ -103,17 +111,27 @@ class Fisma_Yui_DataTable_Column
         $this->_formatterParameters = $formatterParams;
         $this->_hidden = $hidden;
         $this->_parser = $parser;
-        
+        $this->_sortField = $sortField;
+
         if (is_null($name)) {
             $this->_name = Fisma_String::convertToJavascriptName($label);
         } else {
             $this->_name = $name;
         }
     }
-    
+
+    /**
+     * Getter for sortField
+     *
+     * @return string
+     */
+    public function getSortField()
+    {
+        return $this->_sortField;
+    }
     /**
      * Getter for label
-     * 
+     *
      * @return string
      */
     public function getLabel()
@@ -128,10 +146,10 @@ class Fisma_Yui_DataTable_Column
     {
         return $this->_sortable;
     }
-    
+
     /**
      * Accessor for $_formatter
-     * 
+     *
      * @return Fisma_Yui_DataTable_ColumnFormatter
      */
     public function getFormatter()
@@ -151,7 +169,7 @@ class Fisma_Yui_DataTable_Column
 
     /**
      * Accessor for $_parser
-     * 
+     *
      * @return string
      */
     public function getParser()
@@ -161,7 +179,7 @@ class Fisma_Yui_DataTable_Column
 
     /**
      * Accessor for name
-     * 
+     *
      * @return string
      */
     public function getName()
@@ -171,7 +189,7 @@ class Fisma_Yui_DataTable_Column
 
     /**
      * True if this column is hidden, false otherwise
-     * 
+     *
      * @return bool
      */
     public function getHidden()
