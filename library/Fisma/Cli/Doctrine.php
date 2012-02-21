@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Doctrine cli tasks dispatcher
- * 
+ *
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -29,7 +29,7 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 {
     /**
      * List of doctrine tasks
-     * 
+     *
      * @var array
      */
     private $_doctrineTasks = array(
@@ -41,7 +41,7 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 
     /**
      * Configure the arguments accepted for this CLI program
-     * 
+     *
      * @return array An array containing getopt long syntax
      */
     public function getArgumentsDefinitions()
@@ -120,26 +120,26 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 
         // Remove sample data build directory if it exists
         if (isset($sampleDataBuildPath) && is_dir($sampleDataBuildPath)) {
-            print "Removing Sample Data build directory\n";
+            $this->_log->info("Removing Sample Data build directory");
             Fisma_FileSystem::recursiveDelete($sampleDataBuildPath);
         }
     }
 
     /**
      * Copy fixture YAML files to sample build directory, combine fixture files with sample data
-     * 
+     *
      * @param string $sampleDataBuildPath
      * @return void
      */
     protected function loadFixtureFilesWithSampleData($sampleDataBuildPath)
     {
-        print "Using Sample Data\n";
-    
+        $this->_log->info("Using Sample Data");
+
         // If build directory already exists (e.g. from a failed prior run), then try removing it
         $sampleDataBuildPath = Fisma::getPath('sampleDataBuild');
         if (is_dir($sampleDataBuildPath)) {
             $result = Fisma_FileSystem::recursiveDelete($sampleDataBuildPath);
-            
+
             if (!$result) {
                 throw new Fisma_Zend_Exception_User("Could not remove directory for sample data build. Maybe it has"
                                              . " bad permissions? ($sampleDataBuildPath)");
@@ -148,7 +148,7 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 
         // Create a build directory
         if (!mkdir($sampleDataBuildPath)) {
-            throw new Fisma_Zend_Exception_User('Could not create directory for sample data build. Maybe it has bad' 
+            throw new Fisma_Zend_Exception_User('Could not create directory for sample data build. Maybe it has bad'
                                          . " permissions? ($sampleDataBuildPath)");
         }
 
@@ -174,27 +174,27 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 
     /**
      * Combine fixture files with sample data or merge them
-     * 
+     *
      * @param string $sampleDataBuildPath
      * @return void
      */
     protected function combineFixtureFilesWithSampleData($sampleDataBuildPath)
     {
-        // Copy files from sample data into build directory. If a fixture already exists, then we need to merge the 
+        // Copy files from sample data into build directory. If a fixture already exists, then we need to merge the
         // YAML files together.
         $samplePath = Fisma::getPath('sampleData');
         $sampleDir = opendir($samplePath);
-        
+
         while ($sampleFile = readdir($sampleDir)) {
             // Skip hidden files
             if ('.' == $sampleFile{0}) {
                 continue;
             }
-            
+
             $source = "$samplePath/$sampleFile";
             $target = "$sampleDataBuildPath/$sampleFile";
 
-            // When combining fixture files with sample data, we need to strip the YAML 
+            // When combining fixture files with sample data, we need to strip the YAML
             // header off of the sample data file
             $stripYamlHeader = file_exists($target);
 
@@ -234,7 +234,7 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 
     /**
      * Get the task name from arguments. Throw exception if there is no or more than one options
-     *  
+     *
      * @return string $taskName The doctrine task
      * @throws Fisma_Zend_Exception_User
      */

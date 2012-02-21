@@ -4,28 +4,28 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Add a file to OpenFISMA repository (without registering it to the database)
- * 
+ *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Cli
  */
- 
+
 class Fisma_Cli_AddFile extends Fisma_Cli_Abstract
 {
     /**
@@ -55,15 +55,15 @@ class Fisma_Cli_AddFile extends Fisma_Cli_Abstract
         $u->uploadIp = '127.0.0.1';
         $u->save();
 
-        print("Target file successfully stored into OpenFISMA repository as Upload ID = {$u->id}\n" .
-              "To access it with the copy-file script, please use the following SHA1 hash:\n{$u->fileHash}\n");
+        $this->_log->info("Target file successfully stored into OpenFISMA repository as Upload ID = {$u->id}.");
+        $this->_log->info("To access it with the copy-file script, use the following SHA1 hash: {$u->fileHash}.");
     }
 
     /**
      * Store the file using Fisma_FileManager
      *
      * Extracted out for convenient unit testing
-     * 
+     *
      * @return string
      */
     protected function _store()
