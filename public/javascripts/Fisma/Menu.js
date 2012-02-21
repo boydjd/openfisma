@@ -48,16 +48,17 @@
                 contentDiv = document.createElement("div"),
                 errorDiv = document.createElement("div"),
                 form = document.createElement('form'),
-                textField = document.createElement('input'),
-                button = document.createElement('input');
-            Dom.setAttribute(textField, "type", "text");
-            Dom.setAttribute(button, "type", "submit");
-            Dom.setAttribute(button, "value", "Go");
-            form.innerHTML = "ID: ";
-            form.appendChild(textField);
-            form.appendChild(button);
+                textField = $('<input type="text"/>').get(0),
+                button = $('<input type="submit" value="Go"/>').get(0),
+                table = $('<table class="fisma_crud"><tbody><tr><td>ID: </td><td></td><td></td></tr></tbody></table>');
+            table.appendTo(form);
+            $("td", table).get(1).appendChild(textField);
+            $("td", table).get(2).appendChild(button);
             contentDiv.appendChild(errorDiv);
             contentDiv.appendChild(form);
+
+            // Make Go button YUI widget
+            button = new YAHOO.widget.Button(button);
 
             // Add event listener
             var fn = function(ev, obj) {
