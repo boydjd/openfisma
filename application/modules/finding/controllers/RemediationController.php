@@ -665,6 +665,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         if (empty($finding)) {
             throw new Fisma_Zend_Exception_User('Invalid finding ID');
         }
+
+        if (!in_array($finding->status, array('EN', 'EA'))) {
+            $message = "Evidence Package can only be modified in EN and EA status.";
+            throw new Fisma_Zend_Exception_User($message);
+        }
+
         if ($finding->Attachments->count() <= 0) {
             throw new Fisma_Zend_Exception_User('Invalid evidence ID');
         }
