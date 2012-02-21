@@ -92,15 +92,19 @@ div.stepDetail table {
 div.stepDetail td:first-child {
     padding-top: 8px;
 }
-div.stepDetail td input {
+div.stepDetail td input, div.stepDetail td div, div.stepDetail td textarea {
     width: 100%;
     border: solid thin white;
     padding: 2px;
 }
 
-div.stepDetail td input:hover {
+div.stepDetail td input:hover, div.stepDetail td textarea:hover {
     border: solid thin black;
     background: #FFFF99;
+}
+
+div.stepDetail textarea {
+    height: 48px;
 }
 
 div.stepDetail td input[readonly] {

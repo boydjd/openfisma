@@ -56,10 +56,6 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
      */
     public function modifyAction()
     {
-        $msg = '';
-        $debug = true;
-        $debug = false;
-
         $lists = array();
 
         foreach ($_POST as $arg => $val) {
@@ -112,13 +108,28 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                 }
             }
 
-            /* @TODO Process all REMOVE's
-            foreach ($lists as $listName => $list) {
+            // Process all REMOVE's
+            $removedSteps = array();
+            foreach ($lists as $listName => &$list) {
                 $stepIndices = array_keys($list); // Needs to go this way because the indices are strings
                 for ($count = 0; $count < count($stepIndices); $count++) {
-                    $step = $list[$stepIndices[$count]];
+                    $step = &$list[$stepIndices[$count]];
+                    if (!empty($step['destinationId'])) {
+                        $findings = Doctrine_Query::create()
+                            ->from('Finding f')
+                            ->where('f.currentEvaluationId = ?', $step['databaseId'])
+                            ->execute();
+                        foreach ($findings as &$finding) {
+                            $finding->currentEvaluationId = $list[$step['destinationId']]['databaseId'];
+                            $finding->setStatus($finding->status);
+                        }
+                        $findings->save();
+
+                        $removedSteps[] = $step['databaseId'];
+                        unset($list[$stepIndices[$count]]);
+                    }
                 }
-            }*/
+            }
 
             // Update all records
             foreach ($lists as $listName => &$list) {
@@ -160,6 +171,13 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                 }
             }
 
+            // Remove orphan records
+            Doctrine_Query::create()
+                ->delete('Evaluation e')
+                ->whereIn('e.id', $removedSteps)
+                ->execute();
+
+            // Commit
             Doctrine_Manager::connection()->commit();
         } catch (Doctrine_Exception $e) {
             // We cannot access the view script from here (for priority messenger), so rethrow after roll-back

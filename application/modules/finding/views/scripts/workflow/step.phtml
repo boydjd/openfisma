@@ -58,16 +58,17 @@ $prefix = (empty($this->step->name)) ? $list . "_skeleton_" : uniqid($list . "_"
         </tr>
         <tr>
             <td>Status Message:</td>
-            <td>Awaiting <span class='stepName'><?php echo $this->escape($step->name); ?></span></td>
+            <td><div>Awaiting <span class='stepName'><?php echo $this->escape($step->name); ?></span></div></td>
         </tr>
         <tr>
             <td>Description:</td>
-            <td><input
-                type='text'
-                <?php echo $this->escape($disabled); ?>
-                name='<?php echo $this->escape($prefix); ?>description'
-                value='<?php echo $this->escape($step->description); ?>'
-            /></td>
+            <td>
+                <textarea
+                    class='plaintext'
+                    <?php echo $this->escape($disabled); ?>
+                    name='<?php echo $this->escape($prefix); ?>description'
+                ><?php echo $this->escape($step->description); ?></textarea>
+            </td>
         </tr>
         <tr>
             <td>Assigned role(s):</td>
@@ -90,5 +91,12 @@ $prefix = (empty($this->step->name)) ? $list . "_skeleton_" : uniqid($list . "_"
                 <?php endif; ?>
             </td>
         </tr>
-        </table>
+        <tr>
+            <td>On Time:</td>
+            <td><div>
+                The item remains on time if a decision is made within
+                <?php echo $this->escape($step->daysUntilDue); ?> days.
+            </div></td>
+        </tr>
+    </table>
 </div>
