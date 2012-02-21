@@ -181,4 +181,14 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
             ->from('Role')
             ->execute();
     }
+
+    /**
+     * @phpdoc: short description.
+     *
+     * @return @phpdoc
+     */
+    public function removeStepAction()
+    {
+        $this->_helper->layout()->disableLayout();
+    }
 }

@@ -40,22 +40,34 @@ Fisma.FindingWorkflow = {
         });
 
         Fisma.FindingWorkflow.toggleDetailPanel(newItem.find('span.linkBar > a').get(0));
+        Fisma.FindingWorkflow.addChangeLogEntry('(new step) added.');
 
         return false;
     },
 
+    /**
+     * Only allow submission if triggered by the "Save" button
+     */
     submitHandler : function() {
-        return document.forms['finding-workflow'].forceSubmit = true;
+        return (document.forms['finding-workflow'].forceSubmit = true);
     },
 
+    /**
+     * Register the submission as triggered by the "Save" button
+     */
     forceSubmit : function() {
         document.forms['finding-workflow'].forceSubmit = true;
         document.forms['finding-workflow'].submit();
     },
 
+    /**
+     * Handle the onChange of "title" input and reflect the change
+     */
     titleChangeHandler : function(element) {
-        title = jQuery(element).val();parentElement.find('input[name$="_name"]').val();
-        jQuery(element).parents('li').find('span.stepName').text(title).hide().fadeIn();
+        var newTitle = jQuery(element).val();
+        var oldTitle = jQuery(element).parents('li').children('.stepName').text();
+        jQuery(element).parents('li').find('.stepName').text(newTitle).hide().fadeIn();
+        Fisma.FindingWorkflow.addChangeLogEntry(oldTitle + ' renamed to ' + newTitle + ".");
     },
 
     /**
@@ -109,13 +121,12 @@ Fisma.FindingWorkflow = {
     showRoleDialog : function(linkElement) {
         var panel = Fisma.UrlPanel.showPanel(
                 'Select Roles',
-                linkElement.href,
+                '/finding/workflow/select-roles',
                 function(){
                     var roles = jQuery(linkElement).next().val().split('|');
                     for (var role in roles) {
                         jQuery('#finding_workflow_select_roles input[name="' + roles[role] + '"]').attr('checked', true);
                     }
-
 
                     document.getElementById('dialog_close').onclick = function (){
                         panel.destroy();
@@ -130,12 +141,83 @@ Fisma.FindingWorkflow = {
                         jQuery.each(inputs, function(i, e){roles += e.name + "|";});
                         jQuery(linkElement).next().val(roles);
 
+                        var stepName = jQuery(linkElement).parents('li').children('.stepName').text();
+                        Fisma.FindingWorkflow.addChangeLogEntry(stepName + " role assignment updated.");
+
                         panel.destroy();
                         return false;
                     }
                 }
             );
 
+        return false;
+    },
+
+    showRemoveStepDialog : function(linkElement) {
+        if (jQuery(linkElement).parents('ul.dragList').find('input[name$="destinationId"]').filter(function(i, e){
+            return (jQuery(e).val() == '' && e.name.indexOf('skeleton') < 0);
+        }).length <= 1) { // Only 1 remaining step
+            Fisma.Util.showAlertDialog("There must be at least one approval for this workflow step.");
+            return false;
+        } else {
+        var panel = Fisma.UrlPanel.showPanel(
+                'Remove Step',
+                '/finding/workflow/remove-step',
+                function(){
+                    // Construct step list from client state
+                    var steps = jQuery(linkElement).parents('ul.dragList').find('li');
+                    jQuery.each(steps.children('.stepName'), function(index, element){
+                        var isSkeleton = (jQuery(element).parents('li').attr('id').indexOf('Skeleton') >= 0);
+                        var isDeleted = (jQuery(element).parents('li')
+                                            .find('input[name$="destinationId"]').val() != "");
+                        if (!isSkeleton && !isDeleted) {
+                            var stepName = jQuery(element).text();
+                            var stepId = steps.eq(index).find('input[name$="databaseId"]').attr('name').split('_')[1];
+                            var stepList = document.getElementById('step_list');
+                            var currentStepName = jQuery(linkElement).parents('li').children('.stepName').text();
+
+                            if (currentStepName != stepName) {
+                                var stepRadio = document.createElement("input");
+                                stepRadio.type = "radio";
+                                stepRadio.name = "target_step";
+                                stepRadio.value = stepId;
+
+                                var stepLabel = document.createElement("span");
+                                stepLabel.appendChild(document.createTextNode(stepName));
+
+                                stepList.appendChild(stepRadio);
+                                stepList.appendChild(stepLabel);
+                                stepList.appendChild(document.createElement("br"));
+                            }
+                        }
+                    });
+                    jQuery('#step_list > input:first-child').attr('checked', true);
+
+                    // Add handler for Cancel button
+                    document.getElementById('dialog_close').onclick = function (){
+                        panel.destroy();
+                        return false;
+                    }
+
+                    // Add handler for Confirm button
+                    document.getElementById('dialog_confirm').onclick = function (){
+                        var input = jQuery('input[name="target_step"]:checked');
+
+                        jQuery(linkElement).parents('li').find('input[name$="destinationId"]').val(input.val());
+                        jQuery(linkElement).parents('li').fadeOut("slow");
+
+                        var stepName = jQuery(linkElement).parents('li').children('.stepName').text();
+                        var destinationName = jQuery(linkElement).parents('ul').find(
+                                'input[name$="' + input.val() + '_name"]'
+                            ).val();
+                        Fisma.FindingWorkflow.addChangeLogEntry(stepName + " migrated to " + destinationName + ".");
+                        panel.destroy();
+
+                        return false;
+                    }
+                }
+            );
+        }
         return false;
     }
 }

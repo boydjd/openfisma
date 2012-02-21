@@ -12,7 +12,7 @@ $prefix = (empty($this->step->name)) ? $list . "_skeleton_" : uniqid($list . "_"
 <span class='linkBar'>
     <a href='#' onclick='return Fisma.FindingWorkflow.toggleDetailPanel(this);'>[View Details]</a>
 <?php if ($editMode): ?>
-    <a href='javascript:alert("Feature not yet implemented")'>[Delete]</a>
+    <a href='#' onclick='return Fisma.FindingWorkflow.showRemoveStepDialog(this);'>[Delete]</a>
 <?php endif; ?>
 </span>
 
@@ -25,6 +25,10 @@ $prefix = (empty($this->step->name)) ? $list . "_skeleton_" : uniqid($list . "_"
         type='hidden'
         name='<?php echo $this->escape($prefix); ?>databaseId'
         value='<?php echo $this->escape($step->id); ?>'
+    />
+    <input
+        type='hidden'
+        name='<?php echo $this->escape($prefix); ?>destinationId'
     />
     <table>
         <tr>
@@ -78,11 +82,7 @@ $prefix = (empty($this->step->name)) ? $list . "_skeleton_" : uniqid($list . "_"
                 ?></div>
 
                 <?php if ($editMode): ?>
-                <a
-                    href='/finding/workflow/select-roles'
-                    onclick='return Fisma.FindingWorkflow.showRoleDialog(this);'
-                    >[Assign roles]
-                </a>
+                <a href='#' onclick='return Fisma.FindingWorkflow.showRoleDialog(this);'>[Assign roles]</a>
                 <input
                     type='hidden'
                     name='<?php echo $this->escape($prefix); ?>roles'
