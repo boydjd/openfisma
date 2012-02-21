@@ -183,7 +183,7 @@ Fisma.Remediation = {
         for (var i = 0; i < document.links.length; i++) {
             var link = document.links[i];
 
-            if (link.href.indexOf('downloadevidence') >= 0 && link.lastChild.nodeName == 'DIV') {
+            if (link.href.indexOf('download-evidence') >= 0 && link.lastChild.nodeName == 'DIV') {
                 var files = document.finding_detail_upload_evidence['evidence[]'].files;
                 if (!files) // this ugly chunk is the workaround for IE7
                 {
