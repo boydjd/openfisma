@@ -12,7 +12,7 @@ $prefix = (empty($this->step->name)) ? $list . "_skeleton_" : uniqid($list . "_"
 <span class='linkBar'>
     <a href='#' onclick='return Fisma.FindingWorkflow.toggleDetailPanel(this);'>[View Details]</a>
 <?php if ($editMode): ?>
-    <a href='javascript:alert(\"Feature not yet implemented\")'>[Delete]</a>
+    <a href='javascript:alert("Feature not yet implemented")'>[Delete]</a>
 <?php endif; ?>
 </span>
 
@@ -67,15 +67,28 @@ $prefix = (empty($this->step->name)) ? $list . "_skeleton_" : uniqid($list . "_"
         </tr>
         <tr>
             <td>Assigned role(s):</td>
-            <td><?php
+            <td>
+                <div><?php
+                $rolesString = "";
                 foreach ($step->Privilege->Roles as $role):
                     echo $this->escape($role->nickname);
+                    $rolesString .= $role->id . '|';
                     ?><br/><?php
                 endforeach;
-                if ($editMode):
-                    ?><a href='javascript:alert(\"Feature not yet implemented\")'>[Assign more roles]</a><?php
-                endif;
-            ?></td>
+                ?></div>
+
+                <?php if ($editMode): ?>
+                <a
+                    href='/finding/workflow/select-roles'
+                    onclick='return Fisma.FindingWorkflow.showRoleDialog(this);'
+                    >[Assign roles]
+                </a>
+                <input
+                    type='hidden'
+                    name='<?php echo $this->escape($prefix); ?>roles'
+                    value='<?php echo $this->escape($rolesString); ?>'/>
+                <?php endif; ?>
+            </td>
         </tr>
         </table>
 </div>

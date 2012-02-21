@@ -104,5 +104,38 @@ Fisma.FindingWorkflow = {
         entry.style.display = 'none';
         jQuery('#changeQueue div.approval').append(entry);
         jQuery(entry).slideToggle("fast");
+    },
+
+    showRoleDialog : function(linkElement) {
+        var panel = Fisma.UrlPanel.showPanel(
+                'Select Roles',
+                linkElement.href,
+                function(){
+                    var roles = jQuery(linkElement).next().val().split('|');
+                    for (var role in roles) {
+                        jQuery('#finding_workflow_select_roles input[name="' + roles[role] + '"]').attr('checked', true);
+                    }
+
+
+                    document.getElementById('dialog_close').onclick = function (){
+                        panel.destroy();
+                        return false;
+                    }
+                    document.getElementById('dialog_confirm').onclick = function (){
+                        var inputs = jQuery('#finding_workflow_select_roles input:checked');
+
+                        jQuery(linkElement).prev().html(inputs.parents('span').text().replace(/.\n/g, '<br/>'));
+
+                        var roles = "";
+                        jQuery.each(inputs, function(i, e){roles += e.name + "|";});
+                        jQuery(linkElement).next().val(roles);
+
+                        panel.destroy();
+                        return false;
+                    }
+                }
+            );
+
+        return false;
     }
 }

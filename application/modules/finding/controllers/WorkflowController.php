@@ -75,70 +75,110 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
             }
         }
 
-        // @TODO process all ADD's
-        foreach ($lists as $listName => &$list) {
-            foreach ($list as &$step) {
-                if (empty($step['databaseId'])) {
-                    $newStep = new Evaluation();
+        $notificationPrivilege = Doctrine_Query::create()
+                                     ->from('Privilege p')
+                                     ->where('p.resource = ?', 'notification')
+                                     ->andWhere('p.action = ?', 'finding')
+                                     ->execute()
+                                     ->getFirst();
+        try {
+            Doctrine_Manager::connection()->beginTransaction();
 
-                    $newStep->name = $step['name'];
-                    $newStep->nickname = $step['nickname'];
-                    $newStep->precedence = 0;//$step['precedence'];
-                    $newStep->description = $step['description'];
-                    $newStep->approvalGroup = $listName;
+            // Process all ADD's
+            foreach ($lists as $listName => &$list) {
+                foreach ($list as &$step) {
+                    if (empty($step['databaseId'])) {
+                        $newStep = new Evaluation();
 
-                    $newStep->Event = new Event();
-                    $newStep->Event->name = $step['nickname'];
-                    $newStep->Event->description = $step['name'];
-                    $newStep->Event->privilegeId = 2; // @TODO fetch the privilegeId from database
+                        $newStep->name = $step['name'];
+                        $newStep->nickname = $step['nickname'];
+                        $newStep->precedence = 0; // temporary value
+                        $newStep->description = $step['description'];
+                        $newStep->approvalGroup = $listName;
 
-                    $newStep->Privilege = new Privilege();
-                    $newStep->Privilege->resource = 'finding';
-                    $newStep->Privilege->action = $step['nickname'];
-                    $newStep->Privilege->description = $step['nickname'] . " Approval";
+                        $newStep->Event = new Event();
+                        $newStep->Event->name = $step['nickname'];
+                        $newStep->Event->description = $step['name'];
+                        $newStep->Event->Privilege = $notificationPrivilege;
 
-                    $newStep->save(); // precedence & nextId are temporary and must be updated later
-                    $step['databaseId'] = $newStep->id; // this is why nextId's must be calculated after all insertions
+                        $newStep->Privilege = new Privilege();
+                        $newStep->Privilege->resource = 'finding';
+                        $newStep->Privilege->action = $step['nickname'];
+                        $newStep->Privilege->description = $step['nickname'] . " Approval";
+
+                        $newStep->save(); // precedence & nextId must be updated after save() ...
+                        $step['databaseId'] = $newStep->id; // ... in order to fetch all databaseId's
+                    }
                 }
             }
-        }
 
-        /* @TODO process all REMOVE's
-        foreach ($lists as $listName => $list) {
-            $stepIndices = array_keys($list); // Needs to go this way because the indices are strings
-            for ($count = 0; $count < count($stepIndices); $count++) {
-                $step = $list[$stepIndices[$count]];
+            /* @TODO Process all REMOVE's
+            foreach ($lists as $listName => $list) {
+                $stepIndices = array_keys($list); // Needs to go this way because the indices are strings
+                for ($count = 0; $count < count($stepIndices); $count++) {
+                    $step = $list[$stepIndices[$count]];
+                }
+            }*/
+
+            // Update all records
+            foreach ($lists as $listName => &$list) {
+                $stepIndices = array_keys($list); // Needs to go this way because the indices are uniqid()'s
+                for ($count = 0; $count < count($stepIndices); $count++) {
+                    $step = &$list[$stepIndices[$count]];
+
+                    // recalculate nextId & precedence
+                    $step['precedence'] = $count;
+                    $step['nextId'] = ($count<count($stepIndices)-1) // if not last
+                                    ? $list[$stepIndices[$count+1]]['databaseId'] // this->nextId = next->databaseId
+                                    : null; // else this->nextId = null
+
+                    // Update Evaluation metadata
+                    $evaluation = Doctrine::getTable('Evaluation')->find($step['databaseId']);
+
+                    $evaluation->name = $step['name'];
+                    $evaluation->nickname = $step['nickname'];
+                    $evaluation->description = $step['description'];
+                    $evaluation->precedence = $step['precedence'];
+                    $evaluation->nextId = $step['nextId'];
+
+                    $evaluation->save();
+
+                    // Update all roles
+                    $newRoles = explode('|', $step['roles'], -1);
+
+                    Doctrine_Query::create()
+                        ->delete('RolePrivilege r')
+                        ->andWhere('r.privilegeId = ?', $evaluation->Privilege->id)
+                        ->execute();
+
+                    $evaluation->Privilege->refresh();
+
+                    foreach ($newRoles as $roleId) {
+                        $evaluation->Privilege->Roles[] = Doctrine::getTable('Role')->find($roleId);
+                    }
+                    $evaluation->Privilege->save();
+                }
             }
-        }*/
 
-        // Process all records
-        foreach ($lists as $listName => &$list) {
-            $stepIndices = array_keys($list); // Needs to go this way because the indices are strings
-            for ($count = 0; $count < count($stepIndices); $count++) {
-                $step = &$list[$stepIndices[$count]];
-
-                // recalculate nextId & precedence
-                $step['precedence'] = $count;
-                $step['nextId'] = $list[$stepIndices[$count+1]]['databaseId'];
-
-                // Update all records
-                $updateQuery = Doctrine_Query::create()
-                    ->update('Evaluation e')
-                    ->set('e.name', '?', $step['name'])
-                    ->set('e.nickname', '?', $step['nickname'])
-                    ->set('e.description', '?', $step['description'])
-                    ->set('e.precedence', '?', $step['precedence'])
-                    ->set('e.nextId', ($step['nextId']) ? '?' : 'null', $step['nextId'])
-                    ->where('e.id = ?', $step['databaseId']);
-                $msg .= $updateQuery->execute();
-                $msg .= '<br/>';
-            }
+            Doctrine_Manager::connection()->commit();
+        } catch (Doctrine_Exception $e) {
+            // We cannot access the view script from here (for priority messenger), so rethrow after roll-back
+            Doctrine_Manager::connection()->rollback();
+            throw $e;
         }
+        $this->_redirect('/finding/workflow/view');
+    }
 
-        if ($debug) {
-            throw new Exception("<br/>$msg<br/>");
-        } else {
-            $this->_redirect('/finding/workflow/view');
-        }
+    /**
+     * @phpdoc: short description.
+     *
+     * @return @phpdoc
+     */
+    public function selectRolesAction()
+    {
+        $this->_helper->layout()->disableLayout();
+        $this->view->roles = Doctrine_Query::create()
+            ->from('Role')
+            ->execute();
     }
 }
