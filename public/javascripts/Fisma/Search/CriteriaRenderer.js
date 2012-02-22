@@ -255,7 +255,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             // If an operand is supplied, that is the default value. Otherwise the default is the first enum value.
-            var defaultValue = (operands && operands.length > 0) ? operands[0] : enumValues[0];
+            var defaultValue = $P.htmlentities((operands && operands.length > 0) ? operands[0] : enumValues[0]);
 
             // Render menu button
             var menuButton = new YAHOO.widget.Button({
