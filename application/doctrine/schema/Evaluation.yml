@@ -47,3 +47,6 @@ Evaluation:
             local: privilegeId
             foreign: id
             foreignAlias: Evaluations
+
+    actAs:
+        SoftDelete: true

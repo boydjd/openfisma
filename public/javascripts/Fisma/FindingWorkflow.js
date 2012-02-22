@@ -56,6 +56,16 @@ Fisma.FindingWorkflow = {
      * Register the submission as triggered by the "Save" button
      */
     forceSubmit : function() {
+        var alertMessage = "Processing changes may take up to several minutes, please be patient."
+                         + "<p style='text-align:center'><img src='/images/loading_bar.gif' /></p>";
+        var alertDialog = Fisma.Util.getDialog(false);
+
+        alertDialog.setHeader("WARNING");
+        alertDialog.setBody(alertMessage);
+
+        alertDialog.render(document.body);
+        alertDialog.show();
+
         document.forms['finding-workflow'].forceSubmit = true;
         document.forms['finding-workflow'].submit();
     },
@@ -204,7 +214,10 @@ Fisma.FindingWorkflow = {
                         var input = jQuery('input[name="target_step"]:checked');
 
                         jQuery(linkElement).parents('li').find('input[name$="destinationId"]').val(input.val());
-                        jQuery(linkElement).parents('li').fadeOut("slow");
+                        jQuery(linkElement).parents('li').fadeOut("slow", function(){
+                            // Move the step to the end of the stack (to ensure the order of deletions)
+                            jQuery(linkElement).parents('ul').append(jQuery(linkElement).parents('li'));
+                        });
 
                         var stepName = jQuery(linkElement).parents('li').children('.stepName').text();
                         var destinationName = jQuery(linkElement).parents('ul').find(

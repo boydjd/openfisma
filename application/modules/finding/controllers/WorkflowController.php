@@ -171,11 +171,17 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                 }
             }
 
-            // Remove orphan records
-            Doctrine_Query::create()
-                ->delete('Evaluation e')
-                ->whereIn('e.id', $removedSteps)
-                ->execute();
+            // Remove orphan records (if any)
+            if (count($removedSteps) > 0) {
+                Doctrine_Query::create()
+                    ->delete('FindingEvaluation fe')
+                    ->whereIn('fe.evaluationId', $removedSteps)
+                    ->execute();
+                Doctrine_Query::create()
+                    ->delete('Evaluation e')
+                    ->whereIn('e.id', $removedSteps)
+                    ->execute();
+            }
 
             // Commit
             Doctrine_Manager::connection()->commit();
