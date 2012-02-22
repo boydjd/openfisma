@@ -36,7 +36,7 @@ class View_Helper_InjectAsset
 {
     public $view;
     private static $_depMap = array(
-                                '/javascripts/combined.js' => 
+                                '/javascripts/combined.js' =>
                                 array('/javascripts/php.js',
                                       '/javascripts/tiny_mce_config.js',
                                       '/javascripts/selectallselectnone.js',
@@ -57,6 +57,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/HtmlPanel.js',
                                       '/javascripts/Fisma/Incident.js',
                                       '/javascripts/Fisma/Ldap.js',
+                                      '/javascripts/Fisma/ImagePicker.js',
                                       '/javascripts/Fisma/Menu.js',
                                       '/javascripts/Fisma/MessageBox.js',
                                       '/javascripts/Fisma/MessageBoxStack.js',
@@ -110,6 +111,7 @@ class View_Helper_InjectAsset
                                       '/stylesheets/chart.css',
                                       '/stylesheets/Dashboard.css',
                                       '/stylesheets/Finding.css',
+                                      '/stylesheets/ImagePicker.css',
                                       '/stylesheets/Incident.css',
                                       '/stylesheets/jquery_jqplot.css',
                                       '/stylesheets/MessageBox.css',
@@ -149,7 +151,7 @@ class View_Helper_InjectAsset
      * @return void
      */
     public function injectAsset($asset, $type, $combo = FALSE,
-        $media = 'screen', $conditional = FALSE) 
+        $media = 'screen', $conditional = FALSE)
     {
         /**
          * This asset is a Combo, and the application is in debug mode, so we need to output

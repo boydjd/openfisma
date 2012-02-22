@@ -1,11 +1,7 @@
 System:
     listeners: [IndexListener]
-    
-    columns:    
-        type:
-            type: enum
-            values: [gss, major, minor]
-            comment: General Support System, Major Application, or Minor Application
+
+    columns:
         sdlcPhase:
             type: enum
             values: [initiation, development, implementation, operations, disposal]
@@ -17,6 +13,7 @@ System:
             values: [NA, LOW, MODERATE, HIGH]
             comment: The FIPS-199 confidentiality impact
         aggregateSystemId: integer
+        systemTypeId: integer
         confidentialityDescription:
             type: string
             extra:
@@ -41,7 +38,7 @@ System:
             type: enum
             values: [LOW, MODERATE, HIGH]
             comment: The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above
-        
+
         # FISMA Report Criteria:
         controlledBy:
             type: enum
@@ -82,7 +79,7 @@ System:
             comment: A URL pointing to the System Of Record Notice
         uniqueProjectId:
             type: string(23)
-            comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"        
+            comment: The Unique Project Identifier (UPI) correlates information systems to their corresponding fiscal budget items. The UPI always has the following format: "xxx-xx-xx-xx-xx-xxxx-xx"
 
     relations:
         AggregateSystem:
@@ -91,3 +88,8 @@ System:
             foreign: id
             foreignAlias: AggregatedSystems
             onDelete: SET NULL
+
+        SystemType:
+            local: systemTypeId
+            foreign: id
+            foreignAlias: Systems

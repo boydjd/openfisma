@@ -24,7 +24,7 @@
 (function() {
     /**
      * A widget that displays finding summary data in a tree table widget.
-     * 
+     *
      * @namespace Fisma
      * @class TreeTable
      * @constructor
@@ -35,46 +35,46 @@
      */
     var FS = function(dataUrl, numberColumns, msApprovals, evApprovals) {
         FS.superclass.constructor.call(this, dataUrl, numberColumns);
-        
+
         this._msApprovals = msApprovals;
         this._evApprovals = evApprovals;
 
         this._columnLabels = Array();
         this._columnLabels = this._columnLabels.concat(
-            FS.MITIGATION_COLUMNS, 
-            msApprovals, 
-            FS.EVIDENCE_COLUMNS, 
-            evApprovals, 
+            FS.MITIGATION_COLUMNS,
+            msApprovals,
+            FS.EVIDENCE_COLUMNS,
+            evApprovals,
             FS.AGGREGATE_COLUMNS
         );
     };
-    
+
     /**
      * The labels for mitigation columns (not including approvals)
-     * 
+     *
      * @static
      */
     FS.MITIGATION_COLUMNS = ["NEW", "DRAFT"];
 
     /**
      * The labels for evidence columns (not including approvals)
-     * 
+     *
      * @static
      */
     FS.EVIDENCE_COLUMNS = ["EN"];
-    
+
     /**
      * The labels for aggregate columns
-     * 
+     *
      * @static
      */
     FS.AGGREGATE_COLUMNS = ["OPEN", "CLOSED", "TOTAL"];
-    
+
     /**
      * The options for the summary type menu.
-     * 
+     *
      * The key is the string that gets passed to the server. The value is the string that gets displayed to the user.
-     * 
+     *
      * @static
      */
     FS.SUMMARY_TYPES = {
@@ -82,15 +82,15 @@
         pointOfContact: "Point Of Contact",
         systemAggregation: "System Aggregation"
     };
-    
+
     /**
      * The default view to display.
-     * 
+     *
      * @see Fisma.FindingSummary.SUMMARY_TYPES
      * @static
      */
     FS.DEFAULT_VIEW = "organizationHierarchy";
-    
+
     YAHOO.lang.extend(FS, Fisma.TreeTable, {
         /**
          * An array of the mitigation strategy approval levels.
@@ -106,18 +106,18 @@
          * The columns labels (not including the first column)
          */
         _columnLabels: null,
-        
+
         /**
          * The view type currently selected.
-         * 
+         *
          * @see Fisma.FindingSummary.SUMMARY_TYPES
          * @param {String}
          */
         _currentViewType: null,
-        
+
         /**
          * An event that fires when the view type changes.
-         * 
+         *
          * @param {YAHOO.util.CustomEvent}
          */
         onViewTypeChange: new YAHOO.util.CustomEvent("onViewTypeChange"),
@@ -133,20 +133,20 @@
 
         /**
          * Override to insert custom parameters into the query string.
-         * 
+         *
          * @return {String}
          */
         _getDataUrl: function () {
             var url = FS.superclass._getDataUrl.call(this)
-                    + '/summaryType/' 
+                    + '/summaryType/'
                     + (this._currentViewType || FS.DEFAULT_VIEW);
-            
+
             return url;
         },
 
         /**
          * Render a customized header for this tree table.
-         * 
+         *
          * @param rows {Array} An array of TR elements to render the header inside of.
          */
         _renderHeader: function (rows) {
@@ -157,7 +157,7 @@
 
         /**
          * Render the first row of the header
-         * 
+         *
          * @param row {HTMLElement} A TR element to render into.
          */
         _renderHeaderRow1: function(row) {
@@ -172,7 +172,7 @@
             var firstCellSpan = document.createElement('span');
             firstCell.appendChild(firstCellSpan);
             firstCellSpan.appendChild(document.createTextNode("View By: "))
-            
+
             if (YAHOO.lang.isValue(this._tooltips.viewBy)) {
                 firstCellSpan.className = "tooltip";
 
@@ -187,7 +187,7 @@
                         effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
                         width: "50%"
                     }
-                );   
+                );
             }
 
             var select = document.createElement("select");
@@ -195,11 +195,11 @@
 
             for (var optionKey in FS.SUMMARY_TYPES) {
                 var option = new Option(FS.SUMMARY_TYPES[optionKey], optionKey)
-                
+
                 if (option.value == this._currentViewType) {
                     option.selected = true;
                 }
-                
+
                 // Workaround for IE7:
                 if (YAHOO.env.ua.ie == 7) {
                     select.add(option, select.options[null]);
@@ -214,7 +214,7 @@
             mitigationCell.colSpan = FS.MITIGATION_COLUMNS.length + this._msApprovals.length;
             mitigationCell.style.borderBottom = "none";
             row.appendChild(mitigationCell);
-            
+
             var mitigationCellSpan = document.createElement('span');
             mitigationCell.appendChild(mitigationCellSpan);
             mitigationCellSpan.appendChild(document.createTextNode("Mitigation Strategy"));
@@ -269,10 +269,10 @@
             blankCell.rowSpan = 2;
             row.appendChild(blankCell);
         },
-        
+
         /**
          * Render the second row of the header
-         * 
+         *
          * @param row {HTMLElement} A TR element to render into.
          */
         _renderHeaderRow2: function(row) {
@@ -299,7 +299,7 @@
 
         /**
          * Render the second row of the header
-         * 
+         *
          * @param row {HTMLElement} A TR element to render into.
          */
         _renderHeaderRow3: function(row) {
@@ -310,7 +310,7 @@
             for (var index in this._columnLabels) {
                 cell = document.createElement('th');
                 cell.style.borderBottom = "none";
-                
+
                 label = this._columnLabels[index];
 
                 link = document.createElement('a');
@@ -321,7 +321,7 @@
                     // Pass a blank query, otherwise the saved settings of previous search will be used
                     link.href = "/finding/remediation/list?q=/denormalizedStatus/textContains/";
                 } else {
-                    link.href = "/finding/remediation/list?q=/denormalizedStatus/textExactMatch/" 
+                    link.href = "/finding/remediation/list?q=/denormalizedStatus/textExactMatch/"
                               + encodeURIComponent(label);
                 }
                 link.appendChild(document.createTextNode(label));
@@ -332,7 +332,7 @@
 
         /**
          * Aggregate data from leaf nodes up to root nodes.
-         * 
+         *
          * @param node {Array}
          */
         _preprocessTreeData: function(node) {
@@ -346,12 +346,12 @@
 
             for (var i in this._columnLabels) {
                 var column = $P.urlencode(this._columnLabels[i]);
-                
+
                 if (column === 'CLOSED' || column === 'TOTAL') {
                     // These columns don't distinguish ontime from overdue (they're handled above)
                     continue;
                 }
-                
+
                 nodeData.aggregate["ontime_" + column] = nodeData["ontime_" + column] || 0;
                 nodeData.aggregate["overdue_" + column] = nodeData["overdue_" + column] || 0;
             }
@@ -361,12 +361,12 @@
                 for (var i in node.children) {
                     var child = node.children[i];
                     var childData = child.nodeData;
-                    
+
                     this._preprocessTreeData(child);
-                    
+
                     nodeData.aggregate.total += childData.aggregate.total;
                     nodeData.aggregate.closed += childData.aggregate.closed;
-                    
+
                     for (var i in this._columnLabels) {
                         var column = $P.urlencode(this._columnLabels[i]);
 
@@ -384,7 +384,7 @@
 
         /**
          * Render cells in this finding summary table.
-         * 
+         *
          * @param container {HTMLElement} The parent container to render cell content inside of.
          * @param nodeData {Object} Data related to this node.
          * @param columnNumber {Integer} The [zero-indexed] column which needs to be rendered.
@@ -396,16 +396,20 @@
                 container.style.height = "2.5em";
                 container.style.overflow = "hidden";
 
-                // The node icon is a graphical representation of what type of node this is: agency, bureau, etc.          
+                // The node icon is a graphical representation of what type of node this is: agency, bureau, etc.
                 var nodeIcon = document.createElement('img');
                 nodeIcon.className = "icon";
-                nodeIcon.src = "/images/" + nodeData.icon + ".png";
+                if (nodeData.iconId) {
+                    nodeIcon.src = "/icon/get/id/" + nodeData.iconId;
+                } else {
+                    nodeIcon.src = "/images/" + nodeData.icon + ".png";
+                }
                 container.appendChild(nodeIcon);
 
                 // Add text to the cell
                 container.appendChild(document.createTextNode(nodeData.label));
                 container.appendChild(document.createElement('br'));
-                container.appendChild(document.createTextNode(nodeData.typeLabel));                    
+                container.appendChild(document.createTextNode(nodeData.typeLabel));
             } else {
                 var completedCount;
 
@@ -439,7 +443,7 @@
 
                     if (ontime == 0 && overdue == 0) {
                         container.className = "ontime";
-                        container.appendChild(document.createTextNode('-'));                    
+                        container.appendChild(document.createTextNode('-'));
                     } else if (ontime > 0 && overdue == 0) {
                         container.className = "ontime";
                         container.appendChild(link);
@@ -459,10 +463,10 @@
                 }
             }
         },
-        
+
         /**
          * Render a cell that shows both ontime and overdue numbers.
-         * 
+         *
          * @param container {HTMLElement}
          * @param ontime {Integer} The number to display in the ontime part of the split
          * @param ontimeUrl {String}
@@ -478,13 +482,13 @@
             container.appendChild(innerTable);
 
             var ontimeRow = innerTable.insertRow(innerTable.rows.length);
-            
+
             var ontimeCell = document.createElement('td');
             ontimeRow.appendChild(ontimeCell);
             ontimeCell.style.borderWidth = "0px";
             ontimeCell.style.borderBottomWidth = "1px";
             ontimeCell.className = "ontime";
-            
+
             var ontimeLink = document.createElement("a");
             ontimeCell.appendChild(ontimeLink);
             ontimeLink.appendChild(document.createTextNode(ontime));
@@ -502,10 +506,10 @@
             overdueLink.appendChild(document.createTextNode(overdue));
             overdueLink.href = overdueUrl;
         },
-        
+
         /**
          * The event handler for the view type menu.
-         * 
+         *
          * @param event {Event}
          * @param select {HTMLElement} The select element that changed
          */
@@ -514,12 +518,12 @@
             this.onViewTypeChange.fire(this._currentViewType);
             this.reloadData();
         },
-        
+
         /**
-         * Set the view type for this object. 
-         * 
+         * Set the view type for this object.
+         *
          * (Notice that this doesn't take effect until the table is rendered).
-         * 
+         *
          * @param viewType {FS.SUMMARY_TYPES}
          */
         setViewType: function (viewType) {
@@ -529,24 +533,24 @@
                 throw "Unexpected view type: (" + viewType + ")";
             }
         },
-        
+
         /**
          * This summary has a 3-level header.
-         * 
+         *
          * @return {Integer}
          */
         _getNumberHeaderRows: function () {
             return 3;
         },
-        
+
         /**
          * Make a URL for a cell based on ontime/overdue, finding status, node state, and organization.
-         * 
+         *
          * This function also incorporates filter state to build URLs.
-         * 
+         *
          * @param ontime {Boolean} True if ontime, false if overdue.
          * @param status {String}
-         * @param nodeState {Fisma.TreeTable.NodeState} 
+         * @param nodeState {Fisma.TreeTable.NodeState}
          * @param rowLabel {String}
          * @param searchKey {String} The search parameter to search for the rowLabel in.
          * @return {String}
@@ -563,7 +567,7 @@
             } else if (status == "OPEN"){
                 url += "/denormalizedStatus/textNotExactMatch/CLOSED";
             }
-            
+
             // Add organization/POC criterion
             if (nodeState == Fisma.TreeTable.NodeState.COLLAPSED) {
                 if (this._currentViewType == "systemAggregation") {
@@ -583,10 +587,10 @@
                 if (ontime) {
                     url += "/nextDueDate/dateAfter/" + todayString;
                 } else {
-                    url += "/nextDueDate/dateBefore/" + todayString;                    
-                }                
+                    url += "/nextDueDate/dateBefore/" + todayString;
+                }
             }
-            
+
             // Add filter criteria
             msSelect = this._filters.mitigationType.select;
             msValue = msSelect.options[msSelect.selectedIndex].value;
@@ -603,7 +607,7 @@
 
             return url;
         },
-        
+
         /**
          * Set the value of a tooltip. Tooltips must be set rendering the table.
          */

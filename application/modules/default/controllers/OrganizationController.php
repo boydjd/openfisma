@@ -101,7 +101,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             }
 
             // The type menu should display all types of organization EXCEPT system
-            $orgTypeArray = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
+            $orgTypeArray = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray();
             $form->getElement('orgTypeId')->addMultiOptions($orgTypeArray);
         }
 
@@ -408,9 +408,10 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function getOrganizationTree($includeDisposal = false)
     {
         $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read', $includeDisposal);
-        $userOrgQuery->select('o.name, o.nickname, ot.nickname, s.type, s.sdlcPhase')
+        $userOrgQuery->select('o.name, o.nickname, ot.nickname, st.name, s.sdlcPhase')
                      ->leftJoin('o.OrganizationType ot')
                      ->leftJoin('o.System s')
+                     ->leftJoin('s.SystemType st')
                      ->orderBy('o.lft');
 
         $orgTree = Doctrine::getTable('Organization')->getTree();
@@ -476,6 +477,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $item['level'] -= $rootLevel;
                 $item['label'] = $item['nickname'] . ' - ' . $item['name'];
                 $item['orgType'] = $node->getType();
+                $item['iconId'] = $node->getIconId();
                 $item['orgTypeLabel'] = $node->getOrgTypeLabel();
                 $item['children'] = array();
 
@@ -632,21 +634,21 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $form = $this->getForm('organization_converttosystem');
         if ($form->isValid($this->getRequest()->getPost())) {
             $organization = Doctrine::getTable('Organization')->find($id);
-            
+
             $openFinding = $organization->getOpenFindings();
             if ($openFinding > 0 && 'disposal' == $form->getElement('sdlcPhase')->getValue()) {
 
                 /**
                  * @TODO English
-                 */ 
-                $plural  = $openFinding == 1 ? 'There is an open finding' : 'There are open findings'; 
+                 */
+                $plural  = $openFinding == 1 ? 'There is an open finding' : 'There are open findings';
                 $msg = 'Unable to convert Organization to System with SDLC Phase of disposal:<br>'
                        . $plural
                        . ' associated with this organization.';
-                
+
                 $this->view->priorityMessenger($msg, 'warning');
                 $this->_redirect('/organization/view/id/' . $id);
-            } 
+            }
 
             $organization->convertToSystem(
                 $form->getElement('type')->getValue(),

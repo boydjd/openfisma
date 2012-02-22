@@ -69,13 +69,13 @@ Privilege:
         resource: finding
         action: read
         description: View Findings
-    # findings_update: 
+    # findings_update:
         # ACL for findings is more fine-grained than for other objects, so there is no "update" action. See below.
     findings_delete:
         resource: finding
         action: delete
         description: Delete Findings
-                    
+
     # Granular finding privileges
     findings_inject:
         resource: finding
@@ -181,7 +181,7 @@ Privilege:
         resource: vulnerability
         action: read
         description: View Vulnerabilities
-    vulnerability_update: 
+    vulnerability_update:
         resource: vulnerability
         action: update
         description: Edit Vulnerabilities
@@ -238,7 +238,7 @@ Privilege:
         resource: user
         action: delete
         description: Delete Users
-    
+
     # Organizations CRUD
     organization_create:
         resource: organization
@@ -274,7 +274,7 @@ Privilege:
         resource: poc
         action: delete
         description: Delete Points of Contact
- 
+
     # Products CRUD
     product_create:
         resource: product
@@ -292,7 +292,7 @@ Privilege:
         resource: product
         action: delete
         description: Delete Products
-    
+
     # Finding Sources CRUD
     source_create:
         resource: source
@@ -310,7 +310,7 @@ Privilege:
         resource: source
         action: delete
         description: Delete Finding Sources
-    
+
     # Roles CRUD
     roles_create:
         resource: role
@@ -350,7 +350,7 @@ Privilege:
         resource: network
         action: delete
         description: Delete Networks
-    
+
     # Vulnerability Resolution CRUD
     vulnerability_resolution_create:
         resource: vulnerability_resolution
@@ -368,7 +368,7 @@ Privilege:
         resource: vulnerability_resolution
         action: delete
         description: Delete Resolution
-    
+
     # Notification privileges
     notification_admin:
         resource: notification
@@ -488,3 +488,21 @@ Privilege:
         resource: organization_type
         action: delete
         description: Delete Organization Type
+
+    # System Type CRUD
+    system_type_create:
+        resource: system_type
+        action: create
+        description: Create System Type
+    system_type_read:
+        resource: system_type
+        action: read
+        description: View System Type
+    system_type_update:
+        resource: system_type
+        action: update
+        description: Edit System Type
+    system_type_delete:
+        resource: system_type
+        action: delete
+        description: Delete System Type

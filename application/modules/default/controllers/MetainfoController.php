@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -29,7 +29,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Initialization
-     * 
+     *
      * @return void
      */
     public function init()
@@ -41,7 +41,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * List meta data on the remediation detail page
-     * 
+     *
      * @return void
      */
     public function listAction()
@@ -128,13 +128,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             );
             $this->view->selected = isset($list[$this->view->selected]) ? $list[$this->view->selected] : 'YES';
         } elseif ($module == 'systemType') {
-            $list = array(
-                "gss" => "General Support System",
-                "major"  => "Major Application",
-                "minor"  => "Minor Application"
-            );
-            $selected = urldecode($this->getRequest()->getParam('value'));
-            $this->view->selected = $list[array_search($selected, $list)];
+            $list = Doctrine::getTable('SystemType')->getTypeList();
         } elseif ($module == 'systemSdlcPhase') {
             $list = System::getSdlcPhaseMap();
             $selected = $this->getRequest()->getParam('value');
@@ -143,7 +137,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             $sources = Doctrine::getTable('Source')->getSources();
             $list = $this->view->sourceSelect($sources);
         } elseif ($module == 'organizationType') {
-            $list = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
+            $list = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray();
         }
 
         $this->view->list = $list;
