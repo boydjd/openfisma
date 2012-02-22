@@ -280,6 +280,8 @@ class Fisma_Menu
         }
         $preferences->add(new Fisma_Yui_MenuItem('E-mail Notifications', '/user/notification'));
 
+        $preferences->add(new Fisma_Yui_MenuItem('Online Help', 'http://manual.openfisma.org/', null, '_blank'));
+
         $preferences->add(new Fisma_Yui_MenuItem('Profile', '/user/profile'));
         
         $mainMenuBar->add($preferences);
