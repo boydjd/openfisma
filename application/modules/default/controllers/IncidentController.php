@@ -343,7 +343,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                         ->getOrganizationsQuery()
                         ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
                         ->leftJoin('o.System s')
-                        ->andWhere('s.sdlcPhase <> ?', 'disposal')
+                        ->andWhere('s.sdlcPhase IS NULL OR s.sdlcPhase <> ?', 'disposal')
                         ->orderBy('label')
                         ->execute()
                         ->toKeyValueArray('id', 'label');
@@ -1430,7 +1430,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             }
 
              // If the POC changed, then send the POC an e-mail.
-            if (isset($newValues['pocId'])) {
+            if (isset($newValues['pocId']) && !empty($newValues['pocId'])) {
                 $mail = new Fisma_Zend_Mail;
                 $mail->IRAssign($newValues['pocId'], $incident->id);
 
