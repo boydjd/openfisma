@@ -3,20 +3,28 @@
 <?php
 Fisma_Format_Section::startSection($this->cacheType . ' Cache Summary');
 ?>
-    
+
     <table class="keyValues">
         <?php
         foreach ($this->cacheSummary as $key => $value):
         ?>
             <tr>
                 <td><?php echo $this->escape($key)?></td>
-                <td><?php echo $this->escape($value)?></td>
+                <td>
+                    <?php
+                    if (is_array($value)):
+                        echo $this->escape(print_r($value, true));
+                    else:
+                        echo $this->escape($value);
+                    endif;
+                    ?>
+                </td>
             </tr>
         <?php
         endforeach;
         ?>
     </table>
-    
+
 <?php
 Fisma_Format_Section::stopSection();
 Fisma_Format_Section::startSection($this->cacheType . ' Cache Items');
@@ -33,7 +41,7 @@ if (isset($this->cacheItems)):
             endforeach;
             ?>
         </tr>
-        
+
         <?php
         foreach ($this->cacheItems as $cacheItem):
         ?>
@@ -50,7 +58,7 @@ if (isset($this->cacheItems)):
         endforeach;
         ?>
     </table>
-    
+
 <?php
 endif;
 
