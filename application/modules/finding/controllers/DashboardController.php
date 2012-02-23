@@ -1028,7 +1028,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $basicSearchLink .= '/denormalizedStatus/enumIsNot/CLOSED';
             $basicSearchLink .= '/denormalizedStatus/enumIsNot/EN';
             foreach ($this->_getEvaluationNames() as $thisStatus) {
-                $basicSearchLink .= '/denormalizedStatus/enumIsNot/' . $thisStatus;
+                $basicSearchLink .= '/denormalizedStatus/enumIsNot/' . rawurlencode($thisStatus);
             }
 
             // Remembers links for a non-stacked bar chart in the even the user is querying "totals"
