@@ -134,7 +134,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $subject The specified subject model
-     * @return integer ID of the object saved.
+     * @return Fisma_Doctrine_Record The saved record
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
@@ -217,15 +217,13 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 }
                 $organization->save();
             }
-
-            $objectId = $organization->id;
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
 
             $this->view->priorityMessenger("Unable to save: $errorString", 'warning');
         }
 
-        return $objectId;
+        return $organization;
     }
 
     public function _isDeletable()

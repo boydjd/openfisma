@@ -62,13 +62,14 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $workflowDefinition The specified subject model
-     * @return integer ID of the object saved.
+     * @return Fisma_Doctrine_Record The saved record
      */
     protected function saveValue($form, $workflowDefinition = null)
     {
         Doctrine_Manager::connection()->beginTransaction();
 
-        $workflowId = parent::saveValue($form, $workflowDefinition);
+        $workflow = parent::saveValue($form, $workflowDefinition);
+        $workflowId = $workflow->id;
 
         // Handle special cases of merging workflow steps
         $post = $this->getRequest()->getPost();
@@ -94,7 +95,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
                 // If the user posts more steps than the workflow has, then create new steps
                 if (isset($steps[$index])) {
                     $currentStep = $steps[$index];
-                    
+
                     $steps->remove($index);
                 } else {
                     $currentStep = new IrStep();
@@ -126,7 +127,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
 
         Doctrine_Manager::connection()->commit();
 
-        return $workflowId;
+        return $workflow;
     }
 
     /**
@@ -175,9 +176,9 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
             $stepElement->setValue($step);
             $stepElement->setRoles($roles);
             $stepElement->setDefaultRole($step->roleId);
-          
-            $resource = $this->getAclResourceName(); 
-            if ($this->_enforceAcl && !$this->_acl->hasPrivilegeForClass('update', $resource)) { 
+
+            $resource = $this->getAclResourceName();
+            if ($this->_enforceAcl && !$this->_acl->hasPrivilegeForClass('update', $resource)) {
                 $stepElement->readOnly = true;
             }
 
@@ -186,7 +187,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
 
         return $parentForm;
     }
-    
+
     protected function _isDeletable()
     {
         return false;

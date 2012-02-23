@@ -427,7 +427,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      * @param Zend_Form $form
      * @param Doctrine_Record $system
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
-     * @returns integer Organization id of new system
+     * @return Fisma_Doctrine_Record The saved record
      */
     protected function saveValue($form, $system=null)
     {
