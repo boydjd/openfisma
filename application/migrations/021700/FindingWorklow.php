@@ -25,7 +25,7 @@
  * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Application_Migration_021700_UpdateEvaluationNames extends Fisma_Migration_Abstract
+class Application_Migration_021700_FindingWorkflow extends Fisma_Migration_Abstract
 {
     /**
      * migrate
