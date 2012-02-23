@@ -43,6 +43,11 @@
     display: none;
 }
 
+/* only show the element in IE9 */
+.ie9-only {
+    display: inline;
+}
+
 /* Because IE9 hasn't supported multiple attribute of input[type=file], a button is used to reproduce that behavior */
 form#finding_detail_upload_evidence button {
     display: inline;
