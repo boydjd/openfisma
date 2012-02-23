@@ -70,8 +70,7 @@ div.stepDetail {
     margin-left: 24px;
     margin-right: 24px;
     margin-bottom: 0;
-    border: dashed thin;
-    border-top: none;
+    border: none;
     padding: 12px;
 }
 

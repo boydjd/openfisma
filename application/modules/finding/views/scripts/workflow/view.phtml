@@ -123,7 +123,11 @@ $onTime = 'The on time period sets the number of calendar days that the workflow
         </tr>
         <tr>
             <td>Description</td>
-            <td>The finding has been created, but nobody has started composing a mitigation strategy for it.</td>
+            <td>
+                The finding has been created but nobody has determined an effective mitigation strategy.
+                Once a user picks a mitigation strategy the finding will move from NEW to DRAFT.
+                You have 30 days to choose a mitigation strategy before this item becomes overdue.
+            </td>
         </tr>
     </table>
 </div>
@@ -173,7 +177,11 @@ $onTime = 'The on time period sets the number of calendar days that the workflow
         </tr>
         <tr>
             <td>Description</td>
-            <td>A mitigation strategy is being composed and has not yet submitted.</td>
+            <td>
+                The finding is awaiting a completed mitigation strategy. Once a user submits the mitigation strategy
+                for approval the finding will move from DRAFT to mitigation strategy approval.
+                You have 30 days to define and submit a mitigation strategy.
+            </td>
         </tr>
     </table>
 </div>
@@ -229,8 +237,9 @@ $onTime = 'The on time period sets the number of calendar days that the workflow
         <tr>
             <td>Description</td>
             <td>
-                The mitigation strategy has been approved. Evidence is now gathered to either support the decision
-                of the mitigation strategy or to prove that the strategy has been implemented.
+                The finding is in progress and will become overdue if the Estimated Completion Date has passed.
+                Once the user gathers sufficient evidence to prove the finding was remediated according to
+                the mitigation strategy it may be submitted for approval.
             </td>
         </tr>
     </table>
@@ -287,9 +296,7 @@ $onTime = 'The on time period sets the number of calendar days that the workflow
         <tr>
             <td>Description</td>
             <td>
-                The mitigation strategy has been approved and implemented.
-                Evidence has been submitted and approved.
-                No further changes can be made to this finding anymore.
+                The finding is officially closed and cannot be edited.
             </td>
         </tr>
     </table>
