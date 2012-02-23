@@ -92,6 +92,11 @@ div.stepDetail table {
 div.stepDetail td:first-child {
     padding-top: 8px;
 }
+
+form#finding_workflow td:first-child{
+    width:150px;
+}
+
 div.stepDetail td input, div.stepDetail td div, div.stepDetail td textarea {
     width: 100%;
     border: solid thin white;

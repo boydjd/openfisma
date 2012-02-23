@@ -49,7 +49,7 @@ Fisma.FindingWorkflow = {
      * Only allow submission if triggered by the "Save" button
      */
     submitHandler : function() {
-        return (document.forms['finding-workflow'].forceSubmit = true);
+        return (document.forms['finding_workflow'].forceSubmit = true);
     },
 
     /**
@@ -66,8 +66,8 @@ Fisma.FindingWorkflow = {
         alertDialog.render(document.body);
         alertDialog.show();
 
-        document.forms['finding-workflow'].forceSubmit = true;
-        document.forms['finding-workflow'].submit();
+        document.forms['finding_workflow'].forceSubmit = true;
+        document.forms['finding_workflow'].submit();
     },
 
     /**

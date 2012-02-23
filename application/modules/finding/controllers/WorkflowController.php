@@ -121,7 +121,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                             ->execute();
                         foreach ($findings as &$finding) {
                             $finding->currentEvaluationId = $list[$step['destinationId']]['databaseId'];
-                            $finding->setStatus($finding->status);
+                            $finding->setStatus($finding->status); // updating denormalizedStatus & NextDueDate
                         }
                         $findings->save();
 
@@ -152,6 +152,13 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                     $evaluation->precedence = $step['precedence'];
                     $evaluation->nextId = $step['nextId'];
 
+                    $updateDeadline = false;
+
+                    if ($step['due'] != $evaluation->daysUntilDue) {
+                        $evaluation->daysUntilDue = $step['due'];
+                        $updateDeadline = true;
+                    }
+
                     $evaluation->save();
 
                     // Update all roles
@@ -168,6 +175,19 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                         $evaluation->Privilege->Roles[] = Doctrine::getTable('Role')->find($roleId);
                     }
                     $evaluation->Privilege->save();
+
+                    // Update deadline
+                    if ($updateDeadline) {
+                        $findings = Doctrine_Query::create()
+                            ->from('Finding f')
+                            ->where('f.currentEvaluationId = ?', $step['databaseId'])
+                            ->andWhereIn('f.status', array('EA', 'MSA'))
+                            ->execute();
+                        foreach ($findings as $finding) {
+                            $finding->setStatus($finding->status); //updating denormalizedStatus & nextDueDate
+                        }
+                        $findings->save();
+                    }
                 }
             }
 
