@@ -27,6 +27,7 @@
  */
 class Fisma_Inject_Factory
 {
+
     /**
      * Create a Fisma_Inject object of the specified type with the specified data. 
      * 
@@ -53,7 +54,7 @@ class Fisma_Inject_Factory
             $parent = $class->getParentClass();
             
             if (!empty($parent->name) && $parent->name == 'Fisma_Inject_Abstract') { 
-                return new $pluginClass($data['filepath'], $data['network']);
+                return new $pluginClass($data['filepath'], $data['networkId'], $data['orgSystemId']);
             }
 
             throw new Fisma_Inject_Exception($type . ' is not a valid injection plugin.');
@@ -99,6 +100,8 @@ class Fisma_Inject_Factory
             return 'Retina';
         } elseif (stristr($contents, 'SAINTwriter')) {
             return 'Saint';
+        } elseif (stristr($contents, 'Nmap')) {
+            return 'Asset';
         } else {
             return FALSE;
         }

@@ -87,6 +87,28 @@ abstract class Fisma_Inject_Abstract
      */
     protected $_uploadId;
 
+    /**
+     * Collection of messages 
+     * 
+     * @var array
+     */
+
+    protected $_messages = array();
+
+    /**
+     * Number of items imported 
+     * 
+     * @var int 
+     */
+    protected $_numImported = 0;
+
+    /**
+     * Number of items suppressed
+     * 
+     * @var int 
+     */
+    protected $_numSuppressed = 0;
+
     /** 
      * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and 
      * then _commit() to commit to database.
@@ -123,10 +145,11 @@ abstract class Fisma_Inject_Abstract
      * @param string $systemId The specified organization id
      * @param string $findingSourceId The specified finding source id
      */
-    public function __construct($file, $networkId) 
+    public function __construct($file, $networkId, $orgSystemId = null) 
     {
-        $this->_file            = $file;
-        $this->_networkId       = $networkId;
+        $this->_file        = $file;
+        $this->_networkId   = $networkId;
+        $this->_orgSystemId = $orgSystemId;
     }
 
     /**
@@ -275,6 +298,21 @@ abstract class Fisma_Inject_Abstract
             }
 
             Doctrine_Manager::connection()->commit();
+
+            $createdWord = ($this->created > 1 || $this->created === 0)               
+                  ?  ' vulnerabilities were' : ' vulnerability was' ;
+                    $reopenedWord = ($this->reopened > 1 || $this->reopened  === 0)           
+                        ? ' vulnerabilities were' : ' vulnerability was' ;                        
+                    $suppressedWord = ($this->suppressed > 1 || $this->suppressed === 0)      
+                        ? ' vulnerabilities were' : ' vulnerability was' ;                        
+            
+                    $message = 'Your scan report was successfully uploaded.<br>'                  
+                             . $this->created . $createdWord . ' created.<br>'
+                             . $this->reopened . $reopenedWord . ' reopened.<br>'               
+                             . $this->suppressed . $suppressedWord . ' suppressed.';    
+
+           $this->_setMessage($message);
+
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollBack();
             throw $e;
@@ -448,5 +486,26 @@ abstract class Fisma_Inject_Abstract
         }
 
         return $id;
+    }
+
+    /**
+     * Return array of messages. 
+     * 
+     * @return array 
+     */
+    public function getMessages()
+    {
+        return $this->_messages;
+    }
+
+    /**
+     * Add a new message
+     * 
+     * @param string $err 
+     * @return void
+     */
+    protected function _setMessage($msg)
+    {
+        $this->_messages[] = $msg;
     }
 }

@@ -149,27 +149,17 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                 $newName = str_replace($originalName, $originalName . '_' . $dateTime, basename($filePath));
                 rename($filePath, $filePath = dirname($filePath) . '/' . $newName);
 
-                $values['filePath'] = $filePath;
+                $values['filepath'] = $filePath;
 
                 $upload = new Upload();
                 $upload->userId = $this->_me->id;
                 $upload->fileName = basename($filePath);
                 $upload->save();
-                    
-                $import = Fisma_Import_Factory::create('asset', $values);
-                $success = $import->parse();
+                   
+                $import = Fisma_Inject_Factory::create('Asset', $values);
+                $import->parse($upload->id);
 
-                if (!$success) {
-                    foreach ($import->getErrors() as $error)
-                        $msgs[] = array('warning' => $error);
-
-                    $err = TRUE;
-                } else {
-                    $numCreated = $import->getNumImported();
-                    $numSuppressed = $import->getNumSuppressed();
-                    $msgs[] = array('notice' => "{$numCreated} asset(s) were imported successfully.");
-                    $msgs[] = array('notice' => "{$numSuppressed} asset(s) were not imported.");
-                }
+                $msgs[] = $import->getMessages();
             }
 
             if ($err) {
@@ -178,8 +168,9 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                     $upload->delete();
                 }
 
-                if (!$msgs) 
+                if (!$msgs) { 
                     $msgs[] = array('notice' => 'An unrecoverable error has occured.');
+                }
             }
 
             $this->view->priorityMessenger($msgs);
