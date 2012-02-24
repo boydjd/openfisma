@@ -95,11 +95,15 @@
             // clone new TR from template and set up values
             var newTr = this._stepTemplate.clone(),
                 buttons = $("button", newTr).get(),
+                textareaId = tinyMCE.DOM.uniqueId(),
+                newTextarea = $('<textarea name="stepDescription[]" rows="8" cols="100" />'),
                 fn;
+            $("span.templateDescription", newTr).replaceWith(newTextarea);
+            newTextarea.attr("id", textareaId);
             if (data) {
                 $("input", newTr).val(data.name);
                 $("select", newTr).val(data.roleId);
-                $("textarea", newTr).val(data.description);
+                newTextarea.val(data.description);
             }
 
             fn = function() { this.addStepAbove(newTr); };
@@ -113,6 +117,8 @@
 
             // add it to the table
             $(tr).after(newTr);
+            // tell tinyMCE to render it now
+            tinyMCE.execCommand ('mceAddControl', false, textareaId);
             this._renumberSteps();
         },
 

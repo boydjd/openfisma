@@ -43,10 +43,6 @@
  	display: none;
 }
 
-form#finding_detail_upload_evidence button {
-    display: inline;
-}
-
 /* only show the element in IE8 */
 .ie8-only {
     display: inline;
