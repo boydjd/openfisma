@@ -41,7 +41,7 @@ class Application_Migration_021700_AddMailTable extends Fisma_Migration_Abstract
             'body'          => "varchar(255) NOT NULL COMMENT 'Email body text.'"
         );
 
-        echo "Creating mail table…\n";
+        $this->message("Creating mail table…");
         $this->getHelper()->createTable('mail', $columns, 'id');
     }
 }
