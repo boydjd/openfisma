@@ -7,7 +7,7 @@
     YAHOO.util.Event.onDOMReady(function () {
         var tabViewStorage = new Fisma.Storage("yui.tabview");
         Fisma.Storage.onReady(function() {
-        
+
             var tabView = new YAHOO.widget.TabView();
             var tabViewContainerId = "<?php echo $this->escape($this->tabViewContainer, 'javascript') ?>";
             var selectedTabCookie = "<?php echo $this->escape($this->selectedTabCookie, 'javascript') ?>";
@@ -16,7 +16,7 @@
 
             var prepareTab = function(args) {
                 // Adds the style and event handlers required for editable fields
-                setupEditFields();
+                Fisma.Editable.setupEditFields();
 
                 // Notice that we are eval'ing any script nodes loaded into this tab. This is only safe as long as
                 // we know exactly which URLs we are loading into the tabview. Otherwise we might inadertently execute
@@ -30,7 +30,7 @@
                         } catch (e) {
                             var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
                             Fisma.Util.showAlertDialog(message);
-                        } 
+                        }
                         // Set a flag that prevents this script from being executed more than once
                         scriptNodes[i].setAttribute('executeFlag', 'true');
                     }
@@ -73,7 +73,7 @@
                     tab = tabViewStorage.get(selectedTabCookie);
                 } else {
                     tabViewStorage.set(objectIdCookie, objectId);
-                    tabViewStorage.set(selectedTabCookie, 0); 
+                    tabViewStorage.set(selectedTabCookie, 0);
                     tab = 0;
                 }
             }
