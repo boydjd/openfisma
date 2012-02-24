@@ -33,14 +33,14 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
      * 
      * @var array
      */
-    private $_assets;
+    private $_assets = array();
 
     /**
      * Array of products 
      * 
      * @var array
      */
-    private $_products;
+    private $_products = array();
 
     /**
      * Parse assets out of the imported file 
@@ -170,7 +170,6 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
             Doctrine_Manager::connection()->commit();
             return TRUE;
         } catch (Exception $e) {
-            echo $e->getMessage();
             Doctrine_Manager::connection()->rollBack();
             return FALSE;
         }

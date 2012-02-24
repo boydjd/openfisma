@@ -142,10 +142,9 @@ abstract class Fisma_Inject_Abstract
      * 
      * @param string $file The specified xml file path
      * @param string $networkId The specified network id
-     * @param string $systemId The specified organization id
-     * @param string $findingSourceId The specified finding source id
+     * @param string $orgSystemId The specified organization id
      */
-    public function __construct($file, $networkId, $orgSystemId = null) 
+    public function __construct($file, $networkId, $orgSystemId) 
     {
         $this->_file        = $file;
         $this->_networkId   = $networkId;
@@ -299,19 +298,16 @@ abstract class Fisma_Inject_Abstract
 
             Doctrine_Manager::connection()->commit();
 
-            $createdWord = ($this->created > 1 || $this->created === 0)               
-                  ?  ' vulnerabilities were' : ' vulnerability was' ;
-                    $reopenedWord = ($this->reopened > 1 || $this->reopened  === 0)           
-                        ? ' vulnerabilities were' : ' vulnerability was' ;                        
-                    $suppressedWord = ($this->suppressed > 1 || $this->suppressed === 0)      
-                        ? ' vulnerabilities were' : ' vulnerability was' ;                        
+            $createdWord    = $this->created > 1 ? ' vulnerabilities were' : ' vulnerability was';
+            $reopenedWord   = $this->reopened > 1 ? ' vulnerabilities were' : ' vulnerability was';
+            $suppressedWord = $this->suppressed > 1 ? ' vulnerabilities were' : ' vulnerability was';
             
-                    $message = 'Your scan report was successfully uploaded.<br>'                  
-                             . $this->created . $createdWord . ' created.<br>'
-                             . $this->reopened . $reopenedWord . ' reopened.<br>'               
-                             . $this->suppressed . $suppressedWord . ' suppressed.';    
+            $message = 'Your scan report was successfully uploaded.<br>'                  
+                . $this->created . $createdWord . ' created.<br>'
+                . $this->reopened . $reopenedWord . ' reopened.<br>'               
+                . $this->suppressed . $suppressedWord . ' suppressed.';    
 
-           $this->_setMessage($message);
+           $this->_setMessage(array('notice' => $message));
 
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollBack();

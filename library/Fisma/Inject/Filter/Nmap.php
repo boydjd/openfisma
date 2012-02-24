@@ -63,7 +63,7 @@ class Fisma_Inject_Filter_Nmap
      * @param int $networkId 
      * @return void|boolean
      */
-    public function __construct($filePath, $orgSystemId,  $networkId)
+    public function __construct($filePath, $orgSystemId, $networkId)
     {
         $this->_filePath = $filePath;
         $this->_orgSystemId = $orgSystemId;
