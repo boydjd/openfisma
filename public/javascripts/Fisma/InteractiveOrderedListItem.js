@@ -52,14 +52,6 @@ YAHOO.extend(Fisma.InteractiveOrderedListItem, YAHOO.util.DDProxy, {
 
         dragEl.innerHTML = clickEl.innerHTML;
 
-        /*YAHOO.util.Dom.setStyle(dragEl, "color", YAHOO.util.Dom.getStyle(clickEl, "color"));
-        YAHOO.util.Dom.setStyle(dragEl, "backgroundColor", YAHOO.util.Dom.getStyle(clickEl, "backgroundColor"));
-
-        var borderFormat = YAHOO.util.Dom.getStyle(clickEl, "border");
-        if (borderFormat != null) { // In IE7 it's null
-            YAHOO.util.Dom.setStyle(dragEl, "border", borderFormat);
-        }*/
-
         this.nextId = jQuery(clickEl).next('li').attr('id');
     },
 
@@ -145,7 +137,8 @@ Fisma.InteractiveOrderedListItem.appendNewTo = function(listId, jsHandlers) {
     );
 
     // This unfortunate hack is to get around YAHOO DragDrop onMouseDown handler shadowing over onClick
-    var inputs = YAHOO.util.Selector.query('li#' + newId + ' input[type=text]');
+    var selector = 'li#' + newId + ' input[type=text], li#' + newId + ' textarea, li#' + newId + ' select';
+    var inputs = YAHOO.util.Selector.query(selector);
     for (var i in inputs) {
         YAHOO.util.Event.on(inputs[i], 'click', function(clickEvent) {
             if (clickEvent.target) {

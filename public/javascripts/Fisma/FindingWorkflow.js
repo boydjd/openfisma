@@ -35,7 +35,7 @@ Fisma.FindingWorkflow = {
 
         newItem.find('span.stepName').text('(new step)');
         newItem.find('input[name$="_name"]').val('(new step)');
-        newItem.find('input').attr('name', function(index, oldId) {
+        newItem.find('input, textarea, select').attr('name', function(index, oldId) {
             return oldId.replace(/.*_.*_/, itemId + '_');
         });
 
