@@ -26,7 +26,7 @@
  */
 
 (function() {
-    // Extending HTML Elementh
+    // Extending HTML Element
     if (window.HTMLElement) {
         Object.defineProperty(window.HTMLElement.prototype, "canHaveChildren", {
             get: function() {
