@@ -117,40 +117,4 @@ div.stepDetail td input[readonly] {
     border: none;
 }
 
-/* Overall InteractiveOrderedList styling */
-ul.dragList {
-    margin-left: 0;
-}
 
-#dragListProxy {
-    border: thin solid ! important;
-    border-left: 10px solid ! important;
-    padding-top: 2px;
-    padding-bottom: 0px;
-    padding-left: 10px;
-    padding-right: 10px;
-}
-
-ul.dragList.enabled li, #dragListProxy {
-    border-left: 10px solid;
-    cursor: move;
-}
-
-ul.dragList li {
-    list-style-type: none;
-    padding: 10px;
-    border: thin solid;
-    background-color: white;
-    margin-top: 5px;
-    margin-bottom: 8px;
-    margin-left: 0px;
-    cursor: default;
-}
-
-span.linkBar {
-    float: right;
-}
-
-ul.dragList li:first-child {
-    display: none;
-}
