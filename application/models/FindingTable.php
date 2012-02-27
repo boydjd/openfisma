@@ -125,10 +125,11 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'enum'
             ),
             'denormalizedStatus' => array(
+                'enumValues' => Finding::getAllStatuses(),
                 'initiallyVisible' => true,
                 'label' => 'Status',
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'enum'
             ),
             'description' => array(
                 'initiallyVisible' => true,
