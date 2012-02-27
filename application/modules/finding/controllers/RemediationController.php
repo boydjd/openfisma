@@ -171,6 +171,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $form->getElement('sourceId')->addMultiOptions(array('' => null));
 
+        // Add an option to add Finding source on the fly
+        $form->getElement('sourceId')->addMultiOptions(array('new' => '-- Add New Finding Source --'));
+        $form->getElement('sourceId')->setOptions(array('onChange' => 'Fisma.Remediation.displaySourcePanel(this)'));
+
         foreach ($sources as $source) {
             $form->getElement('sourceId')
                  ->addMultiOptions(array($source['id'] => html_entity_decode($source['name'])));
