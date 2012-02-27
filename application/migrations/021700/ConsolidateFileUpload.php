@@ -40,6 +40,8 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         $this->migrateIncidents();
         $this->migrateSystemDocuments();
         $this->migrateFindingEvidence();
+        $this->migrateOrphans(Fisma::getPath('uploads') . '/scanreports/');
+        $this->migrateOrphans(Fisma::getPath('uploads') . '/spreadsheets/');
         $this->dropOldStuff();
     }
 
@@ -92,6 +94,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
                 array('id' => $document->id, 'version' => $document->version)
             );
         }
+        $this->rrmdir(Fisma::getPath('uploads') . '/system-document');
 
     }
 
@@ -120,6 +123,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
                 array('uploadid' => $uid, 'objectid' => $artifact->id)
             );
         }
+        $this->rrmdir(Fisma::getPath('uploads') . '/incident_artifact');
     }
 
     /**
@@ -161,7 +165,51 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
                 array('createdts' => Fisma::now(), 'message' => $msg, 'objectid' => $findingId)
             );
         }
+        $this->rrmdir(Fisma::getPath('uploads') . '/evidence');
+    }
 
+    /**
+     * Migrate orphaned files from the given path
+     * @param string $path Path in which to search for orphans
+     * @return void
+     */
+    public function migrateOrphans($path)
+    {
+        $fm = $this->getFileManager();
+
+        // return if directory doesn't exist
+        if (!is_dir($path)) {
+            return;
+        }
+        // get a list of files from the directory
+        $files = scandir($path);
+        // remove "dot" files
+        foreach ($files as $key => $value) {
+            if ($value{0} == '.') {
+                unset($files[$key]);
+            }
+        }
+        $files = array_values($files);
+
+        // if no files, nothing to do
+        if (count($files) === 0) {
+            return;
+        }
+
+        $query = "SELECT * FROM upload "
+                 . "WHERE filehash IS NULL "
+                 . "AND filename IN (" . implode(',', array_fill(0, count($files), '?')) . ")";
+        $results = $this->getHelper()->execute($query, $files);
+        foreach ($results as $record) {
+            $hash = $fm->store($path . $record->filename);
+            $this->getHelper()->update(
+                'upload',
+                array('filehash' => $hash),
+                array('id' => $record->id)
+            );
+            unlink($path . $record->filename);
+        }
+        $this->rrmdir($path);
     }
 
     /**
@@ -279,5 +327,30 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
                 'updated_at' => Fisma::now()
             )
         );
+    }
+
+    /**
+     * Recursively remove a directory.  WARNING! Very dangerous, use with caution.
+     * Adapted from commons on http://us2.php.net/manual/en/function.rmdir.php
+     *
+     * @param string $dir Directory to delete
+     * @return void
+     */
+    public function rrmdir($dir)
+    {
+        if (is_dir($dir)) {
+            $objects = scandir($dir);
+            foreach ($objects as $object) {
+                if ($object != "." && $object != "..") {
+                    if (filetype($dir."/".$object) == "dir") {
+                        $this->rrmdir($dir."/".$object);
+                    } else {
+                        unlink($dir."/".$object);
+                    }
+                }
+            }
+            reset($objects);
+            rmdir($dir);
+        }
     }
 }
