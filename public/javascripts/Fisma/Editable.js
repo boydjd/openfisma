@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -21,7 +21,7 @@
  *               handler to all of the editable fields.
  *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @copyright (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
  */
 
@@ -49,28 +49,6 @@
                 return true;
             }
         });
-        Object.defineProperty(window.HTMLElement.prototype, "outerHTML", {
-            set: function(sHTML) {
-                var r=this.ownerDocument.createRange();
-                r.setStartBefore(this);
-                var df=r.createContextualFragment(sHTML);
-                this.parentNode.replaceChild(df,this);
-                return sHTML;
-            },
-            get: function() {
-                var attr;
-                var attrs=this.attributes;
-                var str="<"+this.tagName.toLowerCase();
-                for(var i=0;i<attrs.length;i++){
-                    attr=attrs[i];
-                    if(attr.specified)
-                        str+=" "+attr.name+'="'+attr.value+'"';
-                    }
-                if(!this.canHaveChildren)
-                    return str+">";
-                return str+">"+this.innerHTML+"</"+this.tagName.toLowerCase()+">";
-            }
-        });
     }
 
 
@@ -95,8 +73,8 @@
                 var cur_val = target.innerText ? target.innerText : target.textContent;
                 var cur_html = target.innerHTML;
                 if (type == 'text') {
-                    target.outerHTML = '<input length="50" name="' + name
-                                     + '" id="'+t_name+'" class="' + eclass+'" type="text" />';
+                    jQuery(target).replaceWith('<input length="50" name="' + name
+                                             + '" id="'+t_name+'" class="' + eclass+'" type="text" />');
                     textEl = document.getElementById(t_name);
                     // set value attribute using JS call instead of string concatenation
                     // so we don't have to worry about escaping special characters
@@ -112,8 +90,8 @@
                 } else if( type == 'textarea' ) {
                     var row = target.getAttribute('rows');
                     var col = target.getAttribute('cols');
-                    target.outerHTML = '<textarea id="'+name+'" rows="'+row+'" cols="'+col
-                                     + '" name="' + name + '"></textarea>';
+                    jQuery(target).replaceWith('<textarea id="'+name+'" rows="'+row+'" cols="'+col
+                                             + '" name="' + name + '"></textarea>');
                     var textareaEl = document.getElementById(name);
                     textareaEl.value = cur_html;
                     textareaEl.style.width = oldWidth + "px";
@@ -129,7 +107,7 @@
                     YAHOO.util.Connect.asyncRequest('GET', url+'value/'+cur_val.trim(), {
                         success: function(o) {
                             if(type == 'select'){
-                                target.outerHTML = '<select name="'+name+'">'+o.responseText+'</select>';
+                                jQuery(target).replaceWith('<select name="'+name+'">'+o.responseText+'</select>');
                             }
                         },
                         failure: function(o) {alert('Failed to load the specified panel.');}
