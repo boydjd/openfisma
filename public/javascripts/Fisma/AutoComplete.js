@@ -27,7 +27,7 @@
  * @requires  Fisma
  */
 
-Fisma.AutoComplete = function() {
+Fisma.AutoComplete = (function() {
     return {
         /**
          * Used for tracking if there are any open requests.
@@ -172,7 +172,7 @@ Fisma.AutoComplete = function() {
          * @param hiddenFieldId {String} The ID of the hidden field
          */
         updateHiddenField : function(sType, aArgs, hiddenFieldId) {
-            document.getElementById(hiddenFieldId).value = aArgs[2][1]['id'];
+            document.getElementById(hiddenFieldId).value = aArgs[2][1].id;
             $('#' + hiddenFieldId).trigger('change');
         },
 
@@ -188,4 +188,4 @@ Fisma.AutoComplete = function() {
             $('#' + hiddenFieldId).trigger('change');
         }
     };
-}();
+}());

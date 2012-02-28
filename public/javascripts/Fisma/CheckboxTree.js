@@ -52,7 +52,7 @@ Fisma.CheckboxTree = {
         var nextCheckbox = topListItem.nextSibling.childNodes[0];
         if (nextCheckbox.getAttribute('nestedLevel') > clickedBox.getAttribute('nestedLevel')) {
             var minLevel = clickedBox.getAttribute('nestedlevel');
-            var checkboxArray = new Array();
+            var checkboxArray = [];
             var allChildNodesChecked = true;
 
             // Loop through all of the subnodes and see which ones are already checked
@@ -81,7 +81,8 @@ Fisma.CheckboxTree = {
             }
             
             // Now iterate through child nodes and update them
-            for (var i in checkboxArray) {
+            var i;
+            for (i = 0; i < checkboxArray.length; i++) {
                 var checkbox = checkboxArray[i];
                 
                 if (allChildNodesChecked) {

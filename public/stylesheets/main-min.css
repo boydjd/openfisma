@@ -34,13 +34,17 @@ table.keyValues td:first-child{font-weight:bold;text-align:right;}
 table.keyValues th{text-align:center;font-weight:bold;font-style:normal;padding:5px;}
 div.buttonBar{margin-bottom:10px;}
 .editable{background:url(/images/edit.png) no-repeat top right;padding-right:20px;margin-right:10px;cursor:pointer;}
-div.approval{background-color:#efefef;border:1px solid #cecece;padding:3px;margin-bottom:10px;}
-div.approvalHeader{background-color:#cecece;border:1px solid #cecece;padding:3px 8px;}
-div.approvalStep{border-top:2px dashed #cecece;}
+div.approval{border:1px solid #cecece;padding:3px;margin-bottom:24px;}
+div.approvalHeader{background-color:#cecece;border:1px solid #cecece;padding:3px 8px;margin-top:8px;}
+div.approvalStep{background-color:#efefef;border-top:2px dashed #cecece;padding-left:3px;padding-bottom:8px;padding-top:8px;}
+div.approvalStep p{margin-bottom:0;}
 div.approvalStep:first-child{border-top:none;}
 div.approval b{margin-right:10px;}
 div.approval span.approved{background-color:lightgreen;padding:3px;}
 div.approval span.denied{background-color:#fcc;padding:3px;}
+div.approvalStep.highlight{background-color:#FEFEFE;}
+div.findingStatus{margin-bottom:10px;margin-left:5px;}
+div.findingStatus span{font-style:italic;}
 div.formValue{background-color:#EBEBE4;border:1px solid #bebebe;padding:5px;color:#404040;font-weight:normal;}
 div.subform{margin:15px 0;float:left;}
 table.fisma_crud{margin:0 15px;background-color:#f0f0f0;border:1px dotted #c0c0c0;}
@@ -108,3 +112,6 @@ table.keyValues>tbody>tr>td,table.keyValues>tbody>tr>th,table.fisma_crud>tbody>t
 #event_form td{border-style:none;}
 #assign_right td{border-style:none;}
 .yui-button.yui-menu-button button{min-width:100px;}
+.ie7-only{display:none;}
+.ie8-only{display:none;}
+.ie9-only{display:none;}

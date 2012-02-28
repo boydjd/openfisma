@@ -30,7 +30,7 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 class Test_Application_Models_SystemDocument extends Test_Case_Unit
 {
     /**
-     * testGetSizeKb 
+     * For files
      * 
      * @access public
      * @return void
@@ -39,7 +39,9 @@ class Test_Application_Models_SystemDocument extends Test_Case_Unit
     {
         $doc = new SystemDocument();
 
-        $doc->size = 10485760;
+        @$upload = $this->getMock('Upload', array('getFileSize')); // Bypassing the error "Mock Table does not exist"
+        $upload->expects($this->once())->method('getFileSize')->will($this->returnValue(10485760));
+        $doc->Upload = $upload;
 
         $this->assertEquals('10240 KB', $doc->getSizeKb());
     }
@@ -54,7 +56,9 @@ class Test_Application_Models_SystemDocument extends Test_Case_Unit
     {
         $doc = new SystemDocument();
 
-        $doc->fileName = 'lolwat';
+        $upload = new Upload();
+        $upload->fileName = 'lolwat';
+        $doc->Upload = $upload;
 
         $this->assertEquals('/images/mimetypes/unknown.png', $doc->getIconUrl());
     }
@@ -69,7 +73,9 @@ class Test_Application_Models_SystemDocument extends Test_Case_Unit
     {
         $doc = new SystemDocument();
 
-        $doc->fileName = 'lolwat.doc';
+        $upload = new Upload();
+        $upload->fileName = 'lolwat.doc';
+        $doc->Upload = $upload;
 
         $this->assertEquals('/images/mimetypes/doc.png', $doc->getIconUrl());
     }

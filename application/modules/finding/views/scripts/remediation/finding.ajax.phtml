@@ -1,4 +1,4 @@
-<?php 
+<?php
     $finding = $this->finding;
     $orgId = $finding->Organization->nickname;
     $status  = $finding->getStatus();
@@ -16,16 +16,16 @@
             <tr>
                 <td>Legacy Finding Key:</td>
                 <td>
-                    <span 
+                    <span
                         <?php
                         if ($this->isLegacyFindingKeyEditable) {
                         ?>
-                            id="legacyFindingKey" 
-                            class="editable" 
-                            target="legacyFindingKey" 
-                            name="finding[legacyFindingKey]" 
+                            id="legacyFindingKey"
+                            class="editable"
+                            target="legacyFindingKey"
+                            name="finding[legacyFindingKey]"
                             type="text"
-                        <?php 
+                        <?php
                         }
                         ?>>
                         <?php echo $this->escape($finding->legacyFindingKey); ?>&nbsp;
@@ -47,8 +47,8 @@
             <tr>
                 <td>Point Of Contact:</td>
                 <td>
-                <span id="pointOfContact" 
-                      type="autocomplete" 
+                <span id="pointOfContact"
+                      type="autocomplete"
                       xhr="/poc/autocomplete/format/json"
                       queryPrepend="/keyword/"
                       schemaObject="pointsOfContact"
@@ -64,21 +64,21 @@
                       value="<?php echo $this->escape($finding->pocId); ?>"
                       defaultValue="<?php echo $this->escape($finding->PointOfContact->username); ?>">
 
-                     <?php echo $this->escape($this->userInfo($finding->PointOfContact->username), 'none');?> 
+                     <?php echo $this->escape($this->userInfo($finding->PointOfContact->username), 'none');?>
                 </span>
 
                 <?php
                 if ($this->isPocEditable):
                 ?>
                     <span class="editable" target="pointOfContact">&nbsp;</span>
-                <?php 
-                endif; 
+                <?php
+                endif;
                 ?>
             </tr>
             <tr>
                 <td>Date Closed:</td>
                 <td>
-                    <?php 
+                    <?php
                     if (!is_null($finding->closedTs)) {
                         echo $this->escape($finding->closedTs);
                     } else {
@@ -90,9 +90,9 @@
             <tr>
                 <td>Source:</td>
                 <td>
-                    <span id="source" 
-                          type="select" 
-                          name="finding[sourceId]" 
+                    <span id="source"
+                          type="select"
+                          name="finding[sourceId]"
                           href="/metainfo/list/o/source/format/html/"
                           value="<?php echo $this->escape($finding->Source->id); ?>">
                           <?php
@@ -113,10 +113,10 @@
                     if ($this->isSourceEditable):
                     ?>
                         <span class="editable" target="source">&nbsp;</span>
-                    <?php 
+                    <?php
                     endif;
                     ?>
-                    
+
                 <?php if ($finding->uploadId): ?>
                     <br><?php echo $this->escape($finding->Upload->fileName)?>
                 <?php endif; ?>
@@ -124,14 +124,16 @@
             </tr>
             <tr>
                 <td>Status:</td>
-                <td><?php echo $this->escape($status)?></td>
+                <td title="<?php echo $this->escape($status); ?>">
+                    <?php echo $this->escape($finding->getLongStatus()); ?>
+                </td>
             </tr>
-            <?php 
-            if ($status != 'CLOSED') { 
+            <?php
+            if ($status != 'CLOSED') {
             ?>
             <tr>
                 <td>On Time:</td>
-                <td>                    
+                <td>
                 <?php if (is_null($finding->nextDueDate)): ?>
                     N/A
                 <?php elseif (time() <= strtotime($finding->nextDueDate)): ?>
@@ -141,8 +143,8 @@
                 <?php endif; ?>
                 </td>
             </tr>
-            <?php 
-            } 
+            <?php
+            }
             ?>
             <tr>
                 <td>
@@ -151,13 +153,13 @@
                     </div>
                 </td>
                 <td>
-                    <span id="organization" 
-                          type="select" 
-                          name="finding[responsibleOrganizationId]" 
+                    <span id="organization"
+                          type="select"
+                          name="finding[responsibleOrganizationId]"
                           href="/metainfo/list/o/system/format/html/"
                           value="<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
                     <a href="<?php echo $this->escape($this->organizationViewUrl); ?>">
-                         <?php echo $this->escape($finding->Organization->nickname);?> 
+                         <?php echo $this->escape($finding->Organization->nickname);?>
                          - <?php echo $this->escape($finding->Organization->name);?>
                     </a>
                     </span>
@@ -166,8 +168,8 @@
                     if ($this->isOrganizationEditable):
                     ?>
                         <span class="editable" target="organization">&nbsp;</span>
-                    <?php 
-                    endif; 
+                    <?php
+                    endif;
                     ?>
                 </td>
             </tr>
@@ -180,14 +182,14 @@
 </div>
 <div class="column right">
 
-    <?php 
+    <?php
     if ($this->isDescriptionEditable) {
         Fisma_Format_Section::startSection('Description', 'finding_description');
     } else {
         Fisma_Format_Section::startSection('Description');
     }
     ?>
-    <div name="finding[description]" id="finding_description" type="textarea" rows="3" cols="160"> 
+    <div name="finding[description]" id="finding_description" type="textarea" rows="3" cols="160">
         <?php echo $this->escape($finding->description, 'none'); ?>
     </div>
     <?php Fisma_Format_Section::stopSection(); ?>

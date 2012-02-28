@@ -114,8 +114,7 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
         $db->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
-           ->with($this->matchesRegularExpression('/drop\s+table\s+`Foo`/Usi'))
-           ->will($this->returnValue(true));
+           ->with($this->matchesRegularExpression('/drop\s+table/Usi'));
 
         // The real meaning in this test is in the with() calls, so no assertions performed here.
         $helper = new Fisma_Migration_Helper($db);
@@ -134,8 +133,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
         $db->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
-           ->with($this->matchesRegularExpression('/drop\s+table\s+`Foo`/Usi'))
-           ->will($this->returnValue(false));
+           ->with($this->matchesRegularExpression('/drop\s+table/Usi'))
+           ->will($this->returnValue(FALSE));
 
         $helper = new Fisma_Migration_Helper($db);
         $helper->dropTable('Foo');

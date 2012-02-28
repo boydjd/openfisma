@@ -68,7 +68,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
         $notify->expects($this->exactly(2))->method('sendNotificationEmail');
         $notify->expects($this->exactly(2))->method('purgeNotifications');
         $notify->expects($this->once())->method('getNotificationQuery')->will($this->returnValue($query));
-
+        Fisma::initialize(Fisma::RUN_MODE_TEST);
         $notify->run();
     }
 
@@ -113,6 +113,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
         $notification = $this->getMock('Mock_Blank', array('delete'));
         $notification->expects($this->once())->method('delete');
         $notify = new Fisma_Cli_Notify();
+        $query = $notify->getNotificationQuery()->getSql();
         $notify->purgeNotifications(array($notification), $query);
     }
 }

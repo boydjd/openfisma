@@ -72,6 +72,7 @@ Fisma.Commentable = {
              {
                  success: function(o) {
                      o.argument.setBody(o.responseText);
+                     new YAHOO.widget.Button(YAHOO.util.Selector.query("input[type=submit]", o.argument.body, true));
                      o.argument.center();
                  },
 
@@ -135,9 +136,10 @@ Fisma.Commentable = {
          } catch (e) {
              if (e instanceof SyntaxError) {
                  // Handle a JSON syntax error by constructing a fake response object
-                 responseStatus = new Object();
-                 responseStatus.success = false;
-                 responseStatus.message = "Invalid response from server.";
+                 responseStatus = {
+                     success : false,
+                     message : "Invalid response from server."
+                 };
              } else {
                  throw e;
              }
@@ -159,11 +161,11 @@ Fisma.Commentable = {
           */
          var callbackObject = Fisma[this.config.callback.object];
 
-         if (typeof callbackObject != "Undefined") {
+         if (typeof callbackObject !== "Undefined") {
 
              var callbackMethod = callbackObject[this.config.callback.method];
 
-             if (typeof callbackMethod == "function") {
+             if (typeof callbackMethod === "function") {
 
                  /**
                   * Passing callbackObject to call() will make that the scope for the called method, which gives "this"

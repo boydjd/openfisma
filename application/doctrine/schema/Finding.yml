@@ -278,3 +278,5 @@ Finding:
         Fisma_Doctrine_Behavior_Commentable: true
 
         SoftDelete: true
+
+        Fisma_Doctrine_Behavior_HasAttachments: true

@@ -82,3 +82,9 @@ div.searchCriteria input[type='text'] {
 span.searchQueryButtons button {
     height: 24px;
 }
+
+/* only show the element in IE7 */
+.ie7-only {
+    display: inline;
+}
+
