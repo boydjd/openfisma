@@ -49,13 +49,17 @@ Fisma.FindingWorkflow = {
      * Only allow submission if triggered by the "Save" button
      */
     submitHandler : function() {
-        return (document.forms['finding_workflow'].forceSubmit = true);
+        return (jQuery('input[name="forceSubmit"]').val() = true);
     },
 
     /**
      * Register the submission as triggered by the "Save" button
      */
     forceSubmit : function() {
+        if (!Fisma.FindingWorkflow.validateForm()) {
+            return false;
+        }
+
         var alertMessage = "Processing changes may take up to several minutes, please be patient."
                          + "<p style='text-align:center'><img src='/images/loading_bar.gif' /></p>";
         var alertDialog = Fisma.Util.getDialog(false);
@@ -66,8 +70,49 @@ Fisma.FindingWorkflow = {
         alertDialog.render(document.body);
         alertDialog.show();
 
-        document.forms['finding_workflow'].forceSubmit = true;
+        jQuery('input[name="forceSubmit"]').val(true);
         document.forms['finding_workflow'].submit();
+    },
+
+    /**
+     * Validate the form
+     */
+    validateForm : function() {
+        var message = "Validation failed:<br/>";
+        var error = false;
+        // Empty workflow already validated by titleChangeHandler
+
+        // Validate Chart Label
+        var emptyLabels = jQuery('input[name$="nickname"]').filter('[value=""]').not('[name*="skeleton"]');
+        jQuery.each(emptyLabels, function(index, element) {
+            var name = jQuery(element).parents('li').children('span.stepName').text();
+            message += "Chart Label for " + name + " cannot be empty.<br/>";
+            error = true;
+        });
+
+        // Validate On Time
+        var onTimes = jQuery('input[name$="due"]');
+        jQuery.each(onTimes, function(index, element) {
+            var name = jQuery(element).parents('li').children('span.stepName').text();
+            if (jQuery(element).val() == '') {
+                message += "On Time period for " + name + " cannot be empty.<br/>";
+                error = true;
+            } else if (isNaN(parseInt(jQuery(element).val(), 10))) {
+                message += "On Time period for " + name + " must be a whole number.<br/>";
+                error = true;
+            } else if (parseInt(jQuery(element).val(), 10) < 0) {
+                message += "On Time period for " + name + " cannot be negative.<br/>";
+                error = true;
+            }
+
+            jQuery(element).val(parseInt(jQuery(element).val(), 10));
+        });
+
+        if (error) {
+            Fisma.Util.message(message, 'warning', true);
+        }
+
+        return !error;
     },
 
     /**
@@ -75,7 +120,12 @@ Fisma.FindingWorkflow = {
      */
     titleChangeHandler : function(element) {
         var newTitle = jQuery(element).val();
-        var oldTitle = jQuery(element).parents('li').children('.stepName').text();
+        var oldTitle = jQuery(element).parents('li').children('.stepName').text().trim();
+        if (newTitle == '') {
+            jQuery(element).val(oldTitle);
+            Fisma.Util.showAlertDialog('Workflow Title cannot be blank.');
+            return false;
+        }
         jQuery(element).parents('li').find('.stepName').text(newTitle).hide().fadeIn();
         Fisma.FindingWorkflow.addChangeLogEntry(oldTitle + ' renamed to ' + newTitle + ".");
     },
