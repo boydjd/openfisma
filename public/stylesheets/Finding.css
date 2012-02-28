@@ -111,7 +111,7 @@ div.stepDetail textarea {
     height: 48px;
 }
 
-div.stepDetail td input[readonly] {
+div.stepDetail td input[readonly], div.stepDetail td textarea[readonly] {
     color: black ! important;
     background: white ! important;
     border: none;

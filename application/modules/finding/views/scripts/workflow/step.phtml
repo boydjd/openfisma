@@ -98,6 +98,7 @@ $onTime = 'The on time period sets the number of calendar days that the workflow
             ?></td>
             <td><input
                 type='text'
+                <?php echo $this->escape($disabled); ?>
                 name='<?php echo $this->escape($prefix); ?>due'
                 value='<?php echo $this->escape($step->daysUntilDue); ?>'
             /></td>
