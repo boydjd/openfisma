@@ -14,3 +14,8 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: ConsolidateFileUpload
+    021700_ipv6:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: Ipv6
