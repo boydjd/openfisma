@@ -173,7 +173,7 @@ Fisma.Remediation = {
     /**
      * Validate the upload_evidence form to check for duplicated uploads
      */
-    uploadEvidenceValidate : function() {
+    uploadEvidenceValidate : function(event) {
         if (document.finding_detail_upload_evidence.forceSubmit) {
             return true;
         }
@@ -183,7 +183,7 @@ Fisma.Remediation = {
         for (var i = 0; i < document.links.length; i++) {
             var link = document.links[i];
 
-            if (link.href.indexOf('downloadevidence') >= 0 && link.lastChild.nodeName == 'DIV') {
+            if (link.href.indexOf('download-evidence') >= 0 && link.lastChild.nodeName == 'DIV') {
                 var files = document.finding_detail_upload_evidence['evidence[]'].files;
                 if (!files) // this ugly chunk is the workaround for IE7
                 {
@@ -203,9 +203,10 @@ Fisma.Remediation = {
                     }
                 } else {
                     for (var j = 0; j < files.length; j++) {
-                        if (files[j].fileName == link.lastChild.innerHTML) {
+                        var fileName = (!files[j].fileName) ? files[j].name : files[j].fileName;
+                        if (fileName == link.lastChild.innerHTML) {
                             duplicationDetected = true;
-                            message += "<li>" + files[j].fileName + "</li>";
+                            message += "<li>" + fileName + "</li>";
                             break;
                         }
                     }
