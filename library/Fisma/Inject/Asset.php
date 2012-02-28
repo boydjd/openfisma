@@ -88,8 +88,14 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
             return FALSE;
         } else {
             
-            $this->_setMessage(array('notice' => $this->_numImported . ' asset(s) were imported successfully.'));
-            $this->_setMessage(array('notice' => $this->_numSuppressed . ' asset(s) were not imported.'));
+            if ($this->_numImported > 0) {
+                $this->_setMessage(array('notice' => $this->_numImported . ' asset(s) were imported successfully.'));
+            }
+
+            if ($this->_numSuppressed > 0) {
+                $this->_setMessage(array('notice' => $this->_numSuppressed . ' asset(s) were not imported.'));
+            }
+
             return TRUE;
         }
     }
