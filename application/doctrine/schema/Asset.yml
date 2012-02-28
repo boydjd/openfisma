@@ -23,7 +23,7 @@ Asset:
                 notify: true
             comment: Whether this asset was created manually or by an automated scanner
         addressIp:
-            type: string(15)
+            type: string(39)
             Fisma_Doctrine_Validator_Ip: true
             extra:
                 logicalName: IP Address
