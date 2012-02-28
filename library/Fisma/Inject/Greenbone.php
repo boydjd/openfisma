@@ -80,8 +80,6 @@ class Fisma_Inject_Greenbone extends Fisma_Inject_Abstract
                     } else {
                         $parsedData[$hostCounter]['port'] = null;
                     }
-                } elseif ($oXml->name == 'name') {
-                    $parsedData[$hostCounter]['threat'] = $oXml->readString();
                 } elseif ($oXml->name == 'cvss_base') {
                     $parsedData[$hostCounter]['cvssBaseScore'] = $oXml->readString();
                 } elseif ($oXml->name == 'risk_factor') {
@@ -142,9 +140,6 @@ class Fisma_Inject_Greenbone extends Fisma_Inject_Abstract
                 $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
                 $findingInstance['description'] = (!empty($host['description'])) ? 
                     Fisma_String::textToHtml($host['description']) : NULL;
-
-                $findingInstance['threat'] = (!empty($host['threat'])) ? 
-                    Fisma_String::textToHtml($host['threat']) : NULL;
 
                 $findingInstance['threatLevel'] = (!empty($host['severity'])) ? $host['severity'] 
                     : NULL;
