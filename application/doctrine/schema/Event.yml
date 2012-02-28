@@ -9,6 +9,9 @@ Event:
         privilegeId: 
             type: integer
             comment: The privilege which is required in order to receive this event notification
+        urlPath: 
+            type: string(255)
+            comment: The url path used for constructing url in the notification email.        
         
     relations:
         Privilege:

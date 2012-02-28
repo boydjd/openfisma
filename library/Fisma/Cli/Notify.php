@@ -47,7 +47,7 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
                                new Doctrine_Expression("DATE_SUB(NOW(), INTERVAL u.notifyFrequency HOUR)"))
                     ->orderBy('n.userId');*/
         $query = new Doctrine_RawSql();
-        $query->select('{n.eventtext}, {n.createdts}, {u.email}, {u.nameFirst}, {u.nameLast}')
+        $query->select('{n.eventtext}, {n.createdts}, {n.url}, {u.email}, {u.nameFirst}, {u.nameLast}')
               ->addComponent('n', 'Notification n')
               ->addComponent('u', 'n.User u')
               ->from('poc u INNER JOIN notification n on u.id = n.userid')

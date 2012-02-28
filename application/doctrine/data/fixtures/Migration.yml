@@ -14,3 +14,8 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: ConsolidateFileUpload
+    021700_AddUrlToNotificationEmail:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: AddUrlToNotificationEmail

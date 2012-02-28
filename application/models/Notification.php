@@ -81,12 +81,25 @@ class Notification extends BaseNotification
 
         $userEvents = $eventsQuery->execute();
 
+        $baseUrl = rtrim(Fisma_Url::baseUrl(), '/');
+        $urlPath = $event->urlPath;
+        $url = '';
+
+        if (isset($record) && $urlPath) {
+            if (strstr($urlPath, 'view')) {
+                $url = $baseUrl . $urlPath . $record->id;
+            } else {
+                $url = $baseUrl . $urlPath;
+            }
+        }
+
         $notifications = new Doctrine_Collection('Notification');
         foreach ($userEvents as $userEvent) {
             $notification = new Notification();
             $notification->eventId   = $userEvent['e_id'];
             $notification->userId    = $userEvent['u_id'];
             $notification->eventText = $eventText;
+            $notification->url = $url;
             $notifications[] = $notification;
         }
 
