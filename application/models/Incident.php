@@ -177,14 +177,14 @@ class Incident extends BaseIncident
             $iw->description = $step->description;
             $iw->cardinality = $step->cardinality + $baseCardinality;
 
-            $iw->save();
-
             if ($firstLoop) {
                 $firstLoop = false;
 
                 $iw->status = 'current';
                 $this->CurrentWorkflowStep = $iw;
             }
+
+            $iw->save();
         }
 
         $this->getAuditLog()->write('Changed Category: ' .  $category->name);

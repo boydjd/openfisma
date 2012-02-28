@@ -184,7 +184,7 @@ Fisma.AutoComplete = function() {
          * @param hiddenFieldId {String} The ID of the hidden field
          */
         clearHiddenField : function (sType, aArgs, hiddenFieldId) {
-            document.getElementById(hiddenFieldId).value = null;
+            document.getElementById(hiddenFieldId).value = "";
             $('#' + hiddenFieldId).trigger('change');
         }
     };
