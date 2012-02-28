@@ -17,7 +17,7 @@
  */
 
 /**
- * Application_Migration_021700_FindingWorkflow
+ * Migration for the Finding Workflow Administrative phase 1
  *
  * @uses Fisma_Migration_Abstract
  * @package Migration
@@ -28,7 +28,7 @@
 class Application_Migration_021700_FindingWorkflow extends Fisma_Migration_Abstract
 {
     /**
-     * migrate
+     * Turn on "SoftDelete" behavior and add a "description" column to Evaluation model
      *
      * @return void
      */
