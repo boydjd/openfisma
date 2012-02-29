@@ -17,7 +17,7 @@
  */
 
 /**
- * This migration adds the migration table.
+ * This migration adds urlPath column and data to event table and url column to notification table.
  *
  * @author     Mark Ma <mark.ma@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
@@ -27,7 +27,7 @@
 class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migration_Abstract
 {
     /**
-     * Main migration function called by migration script
+     * Call three functions to add urlPath column and data to event table and url column to notification table.
      *
      * @return void
      */
@@ -39,7 +39,7 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
     }
 
     /**
-     * Add urlPath column to Event table
+     * Add urlPath column to Event table.
      *
      * @return void
      */
@@ -52,7 +52,7 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
     }
 
     /**
-     * Add data of urlPath 
+     * Add data of urlPath to Event table.
      *
      * @return void
      */
@@ -84,7 +84,7 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
             'MITIGATION_IVV'                => '/finding/remediation/view/id/',
             'EVIDENCE_ISSO'                 => '/finding/remediation/view/id/',
             'EVIDENCE_IVV'                  => '/finding/remediation/view/id/',
-            'USER_CREATED'                  => '/user/profile',
+            'USER_CREATED'                  => '/user/view/id/',
             'USER_UPDATED'                  => '/user/profile',
             'POC_CREATED'                   => '/poc/view/id/',
             'POC_UPDATED'                   => '/poc/view/id/',

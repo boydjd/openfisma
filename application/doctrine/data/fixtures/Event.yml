@@ -9,7 +9,6 @@ Event:
         name: FINDING_DELETED
         description: Finding Deleted
         Privilege: notification_finding
-        urlPath: 
         
     FINDING_INJECTED:
         name: FINDING_INJECTED
@@ -45,7 +44,6 @@ Event:
         name: ASSET_DELETED
         description: Asset Deleted
         Privilege: notification_asset
-        urlPath: 
 
     UPDATE_MITIGATION_TYPE:
         name: UPDATE_MITIGATION_TYPE
@@ -165,7 +163,7 @@ Event:
         name: USER_CREATED
         description: Account Created
         Privilege: notification_admin
-        urlPath: /user/profile
+        urlPath: /user/view/id/
         
     USER_UPDATED:
         name: USER_UPDATED
@@ -177,7 +175,6 @@ Event:
         name: USER_DELETED
         description: Account Deleted
         Privilege: notification_admin
-        urlPath:
 
     POC_CREATED:
         name: POC_CREATED
@@ -195,7 +192,6 @@ Event:
         name: POC_DELETED
         description: POC Deleted
         Privilege: notification_admin
-        urlPath: 
 
     ORGANIZATION_CREATED:
         name: ORGANIZATION_CREATED
@@ -213,13 +209,11 @@ Event:
         name: ORGANIZATION_DELETED
         description: Organization Deleted
         Privilege: notification_admin
-        urlPath: 
         
     SYSTEM_DELETED:
         name: SYSTEM_DELETED
         description: System Deleted
         Privilege: notification_admin
-        urlPath:
 
     SYSTEM_UPDATED:
         name: SYSTEM_UPDATED
@@ -249,7 +243,6 @@ Event:
         name: PRODUCT_DELETED
         description: Product Deleted
         Privilege: notification_admin
-        urlPath: 
 
     ROLE_CREATED:
         name: ROLE_CREATED
@@ -261,7 +254,6 @@ Event:
         name: ROLE_DELETED
         description: Role Deleted
         Privilege: notification_admin
-        urlPath: 
 
     ROLE_UPDATED:
         name: ROLE_UPDATED
@@ -285,7 +277,6 @@ Event:
         name: SOURCE_DELETED
         description: Finding Source Deleted
         Privilege: notification_admin
-        urlPath: 
 
     NETWORK_UPDATED:
         name: NETWORK_UPDATED
@@ -303,7 +294,6 @@ Event:
         name: NETWORK_DELETED
         description: Network Deleted
         Privilege: notification_admin
-        urlPath: 
 
     CONFIGURATION_UPDATED:
         name: CONFIGURATION_UPDATED
@@ -411,7 +401,6 @@ Event:
         name: DOCUMENT_TYPE_DELETED
         description: Document Type Deleted
         Privilege: notification_admin
-        urlPath: 
 
     ORGANIZATION_TYPE_UPDATED:
         name: ORGANIZATION_TYPE_UPDATED
@@ -429,4 +418,3 @@ Event:
         name: ORGANIZATION_TYPE_DELETED
         description: Organization Type Deleted
         Privilege: notification_admin
-        urlPath: 
