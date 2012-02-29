@@ -106,7 +106,7 @@ class Fisma_Zend_Form_Manager
                 $form = $prepareForm->getForm();
                 unset($prepareForm);
             }
-        } catch (Exception $e) {
+        } catch (ErrorException $e) {
             // exception expected, moving on...
         }
 
