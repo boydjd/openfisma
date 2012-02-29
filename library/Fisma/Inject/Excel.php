@@ -280,12 +280,16 @@ class Fisma_Inject_Excel
 
             $poam['description'] = "<p>{$finding['findingDescription']}</p>";
 
-            $poam['recommendation'] = $finding['findingRecommendation'];
+            if (!empty($finding['findingRecommendation'])) {
+                $poam['recommendation'] = $finding['findingRecommendation'];
+            }
+
             if (empty($finding['findingType'])) {
                 $poam['type'] = 'NONE';
             } else {
                 $poam['type'] = $finding['findingType'];
             }
+
             if (!empty($finding['findingMitigationStrategy'])) {
                 $poam['mitigationStrategy'] = $finding['findingMitigationStrategy'];
             }
@@ -305,12 +309,15 @@ class Fisma_Inject_Excel
             } else {
                 $poam['threatLevel'] = $finding['threatLevel'];
             }
+
             if (!empty($finding['threatDescription'])) {
                 $poam['threat'] = $finding['threatDescription'];
             }
+
             if (!empty($finding['countermeasuresEffectiveness'])) {
                 $poam['countermeasuresEffectiveness'] = $finding['countermeasuresEffectiveness'];
             }
+
             if (!empty($finding['countermeasureDescription'])) {
                 $poam['countermeasures'] = $finding['countermeasureDescription'];
             }
