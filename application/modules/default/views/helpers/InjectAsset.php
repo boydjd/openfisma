@@ -56,6 +56,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Highlighter.js',
                                       '/javascripts/Fisma/HtmlPanel.js',
                                       '/javascripts/Fisma/Incident.js',
+                                      '/javascripts/Fisma/IncidentWorkflow.js',
                                       '/javascripts/Fisma/Ldap.js',
                                       '/javascripts/Fisma/Menu.js',
                                       '/javascripts/Fisma/MessageBox.js',
