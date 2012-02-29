@@ -40,5 +40,8 @@ class Application_Migration_021700_Ipv6 extends Fisma_Migration_Abstract
         $this->getHelper()->exec(
             "ALTER TABLE `poc` MODIFY COLUMN `lastloginip` varchar(39) NULL AFTER `failurecount`;"
         );
+        $this->getHelper()->exec(
+            "ALTER TABLE `incident` MODIFY COLUMN `hostip` varchar(39) NULL AFTER `piishipmenttrackingnumbers`;"
+        );
     }
 }

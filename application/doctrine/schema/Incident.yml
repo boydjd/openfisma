@@ -230,7 +230,7 @@ Incident:
                 logicalName: Shipment Tracking Numbers
 
         hostIp:
-            type: string(15)
+            type: string(39)
             Fisma_Doctrine_Validator_Ip: true
             extra:
                 auditLog: true
