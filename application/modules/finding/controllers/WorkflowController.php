@@ -152,6 +152,11 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                     $evaluation->precedence = $step['precedence'];
                     $evaluation->nextId = $step['nextId'];
 
+                    $evaluation->Event->name = $step['nickname'];
+                    $evaluation->Event->description = $step['name'];
+
+                    $evaluation->Privilege->description = $step['nickname'] . " Approval";
+
                     $updateDeadline = false;
 
                     if ($step['due'] != $evaluation->daysUntilDue) {
