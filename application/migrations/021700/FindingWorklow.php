@@ -39,6 +39,14 @@ class Application_Migration_021700_FindingWorkflow extends Fisma_Migration_Abstr
             . 'ADD COLUMN `description` text NULL AFTER `nickname`, '
             . 'ADD COLUMN `deleted_at` datetime NULL AFTER `daysuntildue`;'
         );
+        $this->getHelper()->exec(
+            'ALTER TABLE `event` '
+            . 'ADD COLUMN `deleted_at` datetime NULL AFTER `daysuntildue`;'
+        );
+        $this->getHelper()->exec(
+            'ALTER TABLE `privilege` '
+            . 'ADD COLUMN `deleted_at` datetime NULL AFTER `daysuntildue`;'
+        );
     }
 }
 

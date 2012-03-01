@@ -22,3 +22,6 @@ Event:
             local: eventId
             foreign: userId
             refClass: UserEvent
+
+    actAs:
+        SoftDelete: true

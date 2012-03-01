@@ -202,10 +202,17 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                     ->delete('FindingEvaluation fe')
                     ->whereIn('fe.evaluationId', $removedSteps)
                     ->execute();
-                Doctrine_Query::create()
-                    ->delete('Evaluation e')
+                $evaluations = Doctrine_Query::create()
+                    ->from('Evaluation e')
                     ->whereIn('e.id', $removedSteps)
                     ->execute();
+                foreach ($evaluations as $evaluation) {
+                    $privilege = $evaluation->Privilege;
+                    $event = $evaluation->Event;
+                    $evaluation->delete();
+                    $event->delete();
+                    $privilege->delete();
+                }
             }
 
             // Commit

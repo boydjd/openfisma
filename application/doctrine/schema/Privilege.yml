@@ -20,4 +20,6 @@ Privilege:
             local: privilegeId
             foreign: roleId
             refClass: RolePrivilege
-            
+
+    actAs:
+        SoftDelete: true
