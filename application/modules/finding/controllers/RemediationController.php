@@ -964,19 +964,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'File Name',
-                true,
-                'Fisma.TableFormat.formatHtml',
-                null,
-                'fileNameLink',
-                false,
-                'string',
-                'fileName'
-            )
-        );
-
-        $dataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
                 'Size',
                 true,
                 'Fisma.TableFormat.formatFileSize',

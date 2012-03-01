@@ -86,7 +86,6 @@ Fisma.Incident = {
         // Hide YUI dialog
         yuiPanel.hide();
         yuiPanel.destroy();
-<<<<<<< HEAD
     },
     
     /**
