@@ -99,6 +99,8 @@ class Fisma_Inject_Factory
             return 'Retina';
         } elseif (stristr($contents, 'SAINTwriter')) {
             return 'Saint';
+        } elseif (stristr($contents, 'report') && stristr($contents, 'format_id')) {
+            return 'Greenbone';
         } else {
             return FALSE;
         }
