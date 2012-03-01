@@ -77,7 +77,11 @@ Fisma.UrlPanel = function() {
                     argument : panel
                 }, null);
             }
-            
+
+            panel.hideEvent.subscribe(function (e) {
+                setTimeout(function () {panel.destroy();},0);
+            });
+
             return panel;
         }
     };
