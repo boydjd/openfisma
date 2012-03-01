@@ -1,0 +1,12 @@
+This is an automatically generated message, please do not reply to this address.
+
+Your <?php echo $this->escape($this->systemName, 'none') ?> account has been created.
+
+Login: <?php echo $this->escape($this->username, 'none')?>
+
+<?php if ($this->authType == 'ldap'): ?>
+Password: <Same as your network password>
+<?php else: ?>
+Temporary Password: <?php echo $this->escape($this->plainTextPassword, 'none')?>
+
+<?php endif; ?>

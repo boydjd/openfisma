@@ -117,16 +117,16 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         // URLs for "Alerts" panel
         $baseUrl = '/finding/remediation/list?q=';
 
-        $this->view->newFindingUrl = $baseUrl . '/denormalizedStatus/textExactMatch/NEW';
-        $this->view->draftFindingUrl = $baseUrl . '/denormalizedStatus/textExactMatch/DRAFT';
+        $this->view->newFindingUrl = $baseUrl . '/denormalizedStatus/enumIs/NEW';
+        $this->view->draftFindingUrl = $baseUrl . '/denormalizedStatus/enumIs/DRAFT';
 
         $today = Zend_Date::now()->toString('yyyy-MM-dd');
         $this->view->evidenceNeededOntimeUrl = $baseUrl
-                                             . '/denormalizedStatus/textExactMatch/EN'
+                                             . '/denormalizedStatus/enumIs/EN'
                                              . '/nextDueDate/dateAfter/'
                                              . $today;
         $this->view->evidenceNeededOverdueUrl = $baseUrl
-                                             . '/denormalizedStatus/textExactMatch/EN'
+                                             . '/denormalizedStatus/enumIs/EN'
                                              . '/nextDueDate/dateBefore/'
                                              . $today;
 
@@ -272,7 +272,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
             // Make each area of the chart link
             $basicLink = '/finding/remediation/list?q=' .
-                '/denormalizedStatus/textExactMatch/#ColumnLabel#';
+                '/denormalizedStatus/enumIs/#ColumnLabel#';
             $nonStackedLinks[] = $basicLink;
             $stackedLinks = array(
                 '',

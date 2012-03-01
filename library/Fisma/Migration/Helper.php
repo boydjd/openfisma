@@ -60,6 +60,35 @@ class Fisma_Migration_Helper
     }
 
     /**
+     * Execute an SQL statement
+     *
+     * @param string $sql
+     * @return bool|int Number of modified records
+     */
+    public function exec($sql)
+    {
+        if (($rval = $this->_db->exec($sql)) === FALSE) {
+            throw new Fisma_Zend_Exception_Migration("Not able to execute query: " . $sql);
+        }
+        return $rval;
+    }
+
+    /**
+     * Execute an SQL query
+     *
+     * @param string $sql
+     * @return array Query results
+     */
+    public function execute($sql, $params = array())
+    {
+        $stmt = $this->_db->prepare($sql);
+        if ($stmt->execute($params) === FALSE) {
+            throw new Fisma_Zend_Exception_Migration("Not able to execute query: " . $sql);
+        }
+        return $stmt->fetchAll(PDO::FETCH_OBJ);
+    }
+
+    /**
      * Check whether a table exists with the specified name.
      *
      * @param string $tableName
@@ -90,7 +119,7 @@ class Fisma_Migration_Helper
 
         $view->tableName = $tableName;
         $view->columns = $columns;
-        $view->primaryKey = $primaryKey;
+        $view->primaryKey = implode((array)$primaryKey, '`,`');
 
         $createTableSql = $view->render('create_table.phtml');
 
@@ -115,4 +144,52 @@ class Fisma_Migration_Helper
         }
     }
 
+    /**
+     * Inserts a record into a table
+     *
+     * @param string $table Table
+     * @param array $fields Associative array of field => value pairs
+     * @return int Auto-generated idea of the new record
+     */
+    public function insert($table, $fields)
+    {
+        $fieldNames = array_keys($fields);
+        $fieldValues = array_values($fields);
+        $fieldList = implode($fieldNames, ',');
+        $valueList = implode(array_fill(0, count($fieldValues), '?'), ',');
+        $sql = sprintf('INSERT INTO %s (%s) VALUES(%s)', $table, $fieldList, $valueList);
+        $stmt = $this->_db->prepare($sql);
+        if (!$stmt->execute($fieldValues)) {
+            throw new Exception('Unable to insert record.');
+        }
+        return $this->_db->lastInsertId();
+    }
+
+    /**
+     * Update fields on one or more records
+     *
+     * @param string $table Name of the table on which the update is to be performed
+     * @param array $fields An array of field => value pairs to be set
+     * @param array $where  An array of field => value pairs to use to constrain the update.  By default, all records
+     *                      will be updated.
+     */
+    public function update($table, $fields, $where)
+    {
+        $setArray = array_keys($fields);
+        foreach ($setArray as &$f) {
+            $f .= ' = ?';
+        }
+        $setClause = implode($setArray, ', ');
+        $whereArray = array_keys($where);
+        foreach ($whereArray as &$w) {
+            $w .= ' = ?';
+        }
+        $whereClause = implode($whereArray, ' AND ');
+        $update = 'UPDATE %s SET %s WHERE %s';
+        $sql = sprintf($update, $table, $setClause, $whereClause);
+        $stmt = $this->_db->prepare($sql);
+        $params = array_values($fields);
+        array_splice($params, count($params), 0, array_values($where));
+        $stmt->execute($params);
+    }
 }

@@ -73,6 +73,13 @@ Fisma_Format_Section::startSection("Incidents Updated In Last 48 Hours <span id=
         function (oArgs) {
             var elTarget = oArgs.target;
             var oRecord = this.getRecord(elTarget);
+
+            // See the comment at the contextMenuHandler() below. 
+            if (YAHOO.lang.isNull(oRecord)) {
+                var oElement = YAHOO.util.Dom.getAncestorByClassName(elTarget, "yui-dt-rec");
+                oRecord = myDataTable.getRecord(oElement);
+            } 
+
             document.location = "/incident/view/id/" + oRecord.getData("id");
         }
     );
@@ -95,6 +102,14 @@ Fisma_Format_Section::startSection("Incidents Updated In Last 48 Hours <span id=
         var rowRecord = myDataTable.getRecord(rowElement);
         var menuItem = eventArgs[1];
         var actionUrl = '';
+
+        // When view over a table inside data row, it gets the wrong row element by using getTrEl(targetElement).
+        // It needs to traver further to get right <tr> dom for getting row record.
+        if (YAHOO.lang.isNull(rowRecord)) {
+            var oElement = YAHOO.util.Dom.getAncestorByClassName(targetElement, "yui-dt-rec");
+            rowRecord = myDataTable.getRecord(oElement);
+        } 
+
         switch (menuItem.index) {
             case 0 :
                 actionUrl = "/incident/view/id/" + rowRecord.getData("id");

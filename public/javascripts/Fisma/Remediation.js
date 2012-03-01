@@ -33,11 +33,24 @@ Fisma.Remediation = {
         Fisma.UrlPanel.showPanel(
             'Upload Evidence',
             '/finding/remediation/upload-form',
-            function() {
+            function(panel) {
                 // Initialize form action from finding_detail.action since they are separated forms and the form from
                 // from the panel belongs to document body rather than the form document.finding_detail.But they should
                 // have same target action. So set the latter`s action with the former`s.
                 document.finding_detail_upload_evidence.action = document.finding_detail.action;
+                // make the add another upload button YUI
+                new YAHOO.widget.Button("add-another-file-button"),
+                // YUI strips away the classes, replace them
+                YAHOO.util.Dom.addClass("add-another-file-button", "ie7-only");
+                // add the appropriate event listener to the button
+                YAHOO.util.Event.addListener("add-another-file-button", "click", Fisma.Remediation.addUploadEvidence);
+                // make the submit button a YUI widget
+                var inputs = panel.body.getElementsByTagName("input");
+                for (var i in inputs) {
+                    if (inputs[i].type === 'submit') {
+                        new YAHOO.widget.Button(inputs[i]);
+                    }
+                }
             }
         );
         return false;
@@ -65,10 +78,11 @@ Fisma.Remediation = {
                 '/finding/remediation/reject-evidence/id/' + findingId,
                 function(){
                     document.finding_detail_reject_evidence.action = document.finding_detail.action;
-                    document.getElementById('dialog_close').onclick = function (){
+                    new YAHOO.widget.Button(YAHOO.util.Selector.query("input[type=submit]", "finding_detail_reject_evidence", true));
+                    var closeDialogFunction = function() {
                         panel.destroy();
-                        return false;
-                    }
+                    };
+                    new YAHOO.widget.Button("dialog_close", {onclick: {fn: closeDialogFunction}});
                 }
             );
         } else {
@@ -108,7 +122,7 @@ Fisma.Remediation = {
 
             var panel = Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 
-            document.getElementById('dialog_continue').onclick = function (){
+            new YAHOO.widget.Button("dialog_continue", {onclick: {fn: function () {
                 var form2 = document.getElementById(formId);
                 var comment = document.getElementById('dialog_comment').value;
 
@@ -131,12 +145,12 @@ Fisma.Remediation = {
                 form2.appendChild(sub);
                 form2.submit();
                 return;
-            };
+            }}});
 
-            document.getElementById('dialog_close').onclick = function (){
+            new YAHOO.widget.Button("dialog_close", {onclick: {fn: function () {
                 panel.destroy();
                 return false;
-            }
+            }}});
         }
         return true;
     },
@@ -173,7 +187,7 @@ Fisma.Remediation = {
     /**
      * Validate the upload_evidence form to check for duplicated uploads
      */
-    uploadEvidenceValidate : function() {
+    uploadEvidenceValidate : function(event) {
         if (document.finding_detail_upload_evidence.forceSubmit) {
             return true;
         }
@@ -183,7 +197,7 @@ Fisma.Remediation = {
         for (var i = 0; i < document.links.length; i++) {
             var link = document.links[i];
 
-            if (link.href.indexOf('downloadevidence') >= 0 && link.lastChild.nodeName == 'DIV') {
+            if (link.href.indexOf('download-evidence') >= 0 && link.lastChild.nodeName == 'DIV') {
                 var files = document.finding_detail_upload_evidence['evidence[]'].files;
                 if (!files) // this ugly chunk is the workaround for IE7
                 {
@@ -203,9 +217,10 @@ Fisma.Remediation = {
                     }
                 } else {
                     for (var j = 0; j < files.length; j++) {
-                        if (files[j].fileName == link.lastChild.innerHTML) {
+                        var fileName = (!files[j].fileName) ? files[j].name : files[j].fileName;
+                        if (fileName == link.lastChild.innerHTML) {
                             duplicationDetected = true;
-                            message += "<li>" + files[j].fileName + "</li>";
+                            message += "<li>" + fileName + "</li>";
                             break;
                         }
                     }

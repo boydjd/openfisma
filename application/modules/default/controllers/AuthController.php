@@ -119,7 +119,7 @@ class AuthController extends Zend_Controller_Action
                 throw new Zend_Auth_Exception(self::CREDENTIAL_ERROR_MESSAGE);
             }
 
-            $msgs = $this->_getLastLoginMessage($user);
+            $msgs = $this->_getFailedLoginMessage($user);
             if (!empty($msgs)) {
                 $this->view->priorityMessenger($msgs);
             }
@@ -323,39 +323,19 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
-     * Get the last login messages which would show on the Dashboard page.
+     * Get the failed login messages.
      *
      * @param user object
-     * @return array The messages are shown at the message box on the Dashboard page.
+     * @return array The messages are shown at the message box.
      */
-    private function _getLastLoginMessage($user)
+    private function _getFailedLoginMessage($user)
     {
         $msgs = array();
-        if (isset($user->lastLoginTs)) {
-
-            $lastLoginDate = new Zend_Date($user->lastLoginTs, Zend_Date::ISO_8601);
-            $msg = 'Last successful login at '
-                   . $lastLoginDate->toString(Fisma_Date::FORMAT_WEEKDAY_MONTH_NAME_SHORT_DAY_TIME)
-                   . ' from IP address '
-                   . $user->lastLoginIp
-                   . '.';
-
-            if ('database' == Fisma::configuration()->getConfig('auth_type')) {
-                if ($user->failureCount > 0) {
-                    $attempt = (1==$user->failureCount) ? 'attempt' : 'attempts';
-                    $be = (1==$user->failureCount) ? 'was' : 'were';
-                    $warningMsg = "There $be "
-                                  . $user->failureCount
-                                  . " bad login $attempt since your last login.";
-
-                    $msgs[] = array('warning' => $warningMsg);
-                    $msgs[] = array('warning' => $msg);
-                } else {
-                    $msgs[] = array('notice' => $msg);
-                }
-            } else {
-                $msgs[] = array('notice' => $msg);
-            }
+        if ('database' == Fisma::configuration()->getConfig('auth_type') && $user->failureCount > 0) {
+            $attempt = (1==$user->failureCount) ? 'attempt' : 'attempts';
+            $be = (1==$user->failureCount) ? 'was' : 'were';
+            $warningMsg = "There $be " . $user->failureCount . " bad login $attempt since your last login.";
+            $msgs[] = array('warning' => $warningMsg);
         }
 
        return $msgs;
