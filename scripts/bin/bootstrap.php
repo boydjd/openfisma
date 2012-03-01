@@ -46,6 +46,7 @@ Fisma::setAppConfig($application->getOptions());
 Fisma::initialize(Fisma::RUN_MODE_COMMAND_LINE);
 $application->bootstrap(array('Db', 'SearchEngine', 'RegisterLogger'));
 Fisma::setConfiguration(new Fisma_Configuration_Database);
+Zend_Registry::set('mail_handler', new Fisma_MailHandler_Null());
 
 // Warning message if somebody tries to run the bootstrap file directly
 if (basename(__FILE__) == $_SERVER['SCRIPT_NAME']) {

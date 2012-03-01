@@ -477,4 +477,21 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             throw $e;
         }
     }
+
+    /**
+     * Get the number of open finding associated with this finding
+     *
+     * @return integer The number of open finding associated with this finding.
+     */
+    public function getOpenFindings()
+    {
+        $findings = Doctrine_Query::create()
+            ->from('Finding f')
+            ->where('f.responsibleOrganizationId = ?', $this->id)
+            ->andWhere('f.status != ?', 'CLOSED')
+            ->count();
+
+        return $findings;
+    }
+
 }

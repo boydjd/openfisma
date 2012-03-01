@@ -52,7 +52,7 @@ function setupEditFields() {
                  textEl.style.width = (oldWidth - 10) + "px";
                  if (eclass == 'date') {
                      var target = document.getElementById(t_name);
-                     target.onfocus = function () {Fisma.Calendar.showCalendar(t_name, t_name+'_show');};
+                     Fisma.Calendar.addCalendarPopupToTextField(target);
                  }
              } else if( type == 'textarea' ) {
                  var row = target.getAttribute('rows');
@@ -81,21 +81,6 @@ function setupEditFields() {
              }
         }
     });
-}
-
-function validateEcd() {
-    var obj = document.getElementById('expectedCompletionDate');
-    var inputDate = obj.value;
-    var oDate= new Date();
-    var Year = oDate.getFullYear();
-    var Month = oDate.getMonth();
-    Month = Month + 1;
-    if (Month < 10) {Month = '0'+Month;}
-    var Day = oDate.getDate();
-    if (Day < 10) {Day = '0' + Day;}
-    if (inputDate.replace(/\-/g, "") <= parseInt(""+Year+""+Month+""+Day)) {
-        alert("Warning: You entered an ECD date in the past.");
-    }
 }
 
 if (window.HTMLElement) {

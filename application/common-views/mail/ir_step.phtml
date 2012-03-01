@@ -1,6 +1,3 @@
-<?php
-    $incidentUrl = Fisma_Url::baseUrl() . '/incident/view/id/' . $this->escape($this->incidentId, 'none');
-?>
 This is an automatically generated message, please do not reply to this address.
 
 The following workflow step has been completed for incident #<?php echo $this->escape($this->incidentId, 'none') ?>:
@@ -11,4 +8,4 @@ This step was completed by <?php echo $this->escape($this->workflowCompletedBy, 
 
 You can view the incident at:
 
-<?php echo $this->escape($incidentUrl, 'none');?>
+<?php echo $this->escape($this->incidentUrl, 'none');?>
