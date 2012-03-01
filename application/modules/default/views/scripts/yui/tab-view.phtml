@@ -67,16 +67,31 @@
             // Tab is selected based on the numerical hash appended to the URL, or if no hash is present,
             // then by the cookie.
             var tab = location.hash.substring(1); // Strip the "#" off of the hash
+            var countTabs = <?php echo $this->escape(count($this->tabs), 'none') ?>;
 
-            if (!tab || tab < 0 || tab >= <?php echo $this->escape(count($this->tabs), 'none') ?>) {
+            if (!tab || tab < 0 || tab >= countTabs) {
                 if (tabViewStorage.get(objectIdCookie) == objectId) {
                     tab = tabViewStorage.get(selectedTabCookie);
+
+                    // Reset tab to 0 when change from multiple tabs to one tab.
+                    if (countTabs == 1) {
+                        tabViewStorage.set(objectIdCookie, objectId);
+                        tabViewStorage.set(selectedTabCookie, 0);
+                        tab = 0;
+                    }
                 } else {
                     tabViewStorage.set(objectIdCookie, objectId);
                     tabViewStorage.set(selectedTabCookie, 0);
                     tab = 0;
                 }
             }
+
+            if (YAHOO.lang.isNull(tab)) {
+                tabViewStorage.set(objectIdCookie, objectId);
+                tabViewStorage.set(selectedTabCookie, 0);
+                tab = 0;    
+            }
+
             tabView.selectTab(tab);
             Fisma.tabView = tabView;
             Fisma.prepareTab = prepareTab;
