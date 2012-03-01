@@ -47,7 +47,8 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
     {
         $this->getHelper()->exec(
             'ALTER TABLE `event` '
-            . 'ADD COLUMN `urlpath` varchar(255) NULL AFTER `privilegeid`'
+            . 'ADD COLUMN `urlpath` varchar(255) NULL '
+            . "COMMENT 'The url path used for constructing url in the notification email.' AFTER `privilegeid`"
         );
     }
 
@@ -132,7 +133,7 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
     {
         $this->getHelper()->exec(
             'ALTER TABLE `notification` '
-            . 'ADD COLUMN `url` varchar(255) NULL AFTER `userid`'
+            . "ADD COLUMN `url` varchar(255) NULL COMMENT 'the url which is sent to the user' AFTER `userid`"
         );
     }
 }
