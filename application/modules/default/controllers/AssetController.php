@@ -132,7 +132,14 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $filesReceived = ($uploadForm->selectFile->receive()) ? TRUE: FALSE;
 
             if (!$uploadForm->isValid($postValues)) {
-                $msgs[] = array('warning' => Fisma_Zend_Form_Manager::getErrors($uploadForm));
+                $errorString = Fisma_Zend_Form_Manager::getErrors($uploadForm);
+               
+                // Customize error message, see the attachments on OFJ-1693
+                if ($errorString && stristr($errorString, 'selectFile') && stristr($errorString, 'few')) {
+                    $msgs[] = array('warning' => 'No file selected. Please select at least one file to upload.');
+                } else {
+                    $msgs[] = array('warning' => $errorString);
+                }
                 $err = TRUE;
             } elseif (!$filesReceived) {
                 $msgs[] = array('warning' => "File not received.");
@@ -149,27 +156,17 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                 $newName = str_replace($originalName, $originalName . '_' . $dateTime, basename($filePath));
                 rename($filePath, $filePath = dirname($filePath) . '/' . $newName);
 
-                $values['filePath'] = $filePath;
+                $values['filepath'] = $filePath;
 
                 $upload = new Upload();
                 $upload->userId = $this->_me->id;
                 $upload->fileName = basename($filePath);
                 $upload->save();
-                    
-                $import = Fisma_Import_Factory::create('asset', $values);
-                $success = $import->parse();
+                   
+                $import = Fisma_Inject_Factory::create('Asset', $values);
+                $import->parse($upload->id);
 
-                if (!$success) {
-                    foreach ($import->getErrors() as $error)
-                        $msgs[] = array('warning' => $error);
-
-                    $err = TRUE;
-                } else {
-                    $numCreated = $import->getNumImported();
-                    $numSuppressed = $import->getNumSuppressed();
-                    $msgs[] = array('notice' => "{$numCreated} asset(s) were imported successfully.");
-                    $msgs[] = array('notice' => "{$numSuppressed} asset(s) were not imported.");
-                }
+                $msgs[] = $import->getMessages();
             }
 
             if ($err) {
@@ -178,8 +175,9 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                     $upload->delete();
                 }
 
-                if (!$msgs) 
+                if (!$msgs) { 
                     $msgs[] = array('notice' => 'An unrecoverable error has occured.');
+                }
             }
 
             $this->view->priorityMessenger($msgs);
