@@ -277,6 +277,10 @@ Fisma.Remediation = {
 
             Fisma.Remediation.createSourcePanel.subscribe("hide", function() {
                 Fisma.Registry.get("messageBoxStack").pop();
+                setTimeout(function () {
+                    Fisma.Remediation.createSourcePanel.destroy();
+                    Fisma.Remediation.createSourcePanel = null;
+                }, 0);
             }, this, true);
         }
     },
