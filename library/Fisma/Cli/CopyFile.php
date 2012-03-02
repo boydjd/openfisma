@@ -57,7 +57,7 @@ class Fisma_Cli_CopyFile extends Fisma_Cli_Abstract
         }
 
         $this->_copy();
-        $this->_log->info("Target file successfully copied from OpenFISMA repository!");
+        $this->getLog()->info("Target file successfully copied from OpenFISMA repository!");
         return true;
     }
 

@@ -71,7 +71,7 @@ class Fisma_Cli_SendMail extends Fisma_Cli_Abstract
             $mailHandler = new Fisma_MailHandler_Immediate();
             $mailHandler->setMail($mail)->send();
 
-            $this->_log->info(Fisma::now() . " Email was sent to {$mail->recipient}\n");
+            $this->getLog()->info(Fisma::now() . " Email was sent to {$mail->recipient}\n");
         } catch (Zend_Mail_Exception $e) {
             throw new Fisma_Zend_Exception_User("Failed Sending Email: " . $e->getMessage());
         }

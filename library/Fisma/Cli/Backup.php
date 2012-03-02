@@ -61,7 +61,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
 
         // config vars
         $this->_appRoot = realpath(APPLICATION_PATH . '/../');
-        $this->_log->info("Application directory is " . $this->_appRoot);
+        $this->getLog()->info("Application directory is " . $this->_appRoot);
 
         if (is_null($this->getOption('dir'))) {
             throw new Fisma_Zend_Exception_User ("Target directory (-d) is required.");
@@ -84,7 +84,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
             throw Fisma_Zend_Exception_User("Could not create backup directory ($this->_backupDir)");
             return false;
         }
-        $this->_log->info("Backup directory is $this->_backupDir");
+        $this->getLog()->info("Backup directory is $this->_backupDir");
 
         // Remove outdated backups
         $this->_pruneBackups();
@@ -98,7 +98,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         // compress backup this directory is the settings say so
         $this->_compressBackup();
 
-        $this->_log->info("Backup completed successfully!");
+        $this->getLog()->info("Backup completed successfully!");
         return true;
     }
 
@@ -109,11 +109,11 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
      */
     private function _copyApplication()
     {
-        $this->_log->info("Backing up application, please wait…");
-        $this->_log->info("   Copying $this->_appRoot to $this->_backupDir…");
+        $this->getLog()->info("Backing up application, please wait…");
+        $this->getLog()->info("   Copying $this->_appRoot to $this->_backupDir…");
         mkdir($this->_backupDir);
         $this->_recursiveCopy($this->_appRoot, $this->_backupDir, "   ");
-        $this->_log->info("   done.");
+        $this->getLog()->info("   done.");
     }
 
     /**
@@ -128,16 +128,16 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         if (!is_null($optCompress) && $optCompress === true) {
 
             $zipPath = realpath($this->_backupRoot) . '/' . $this->_myTimeStamp . ".zip";
-            $this->_log->info("Compressing backup into " . $zipPath);
+            $this->getLog()->info("Compressing backup into " . $zipPath);
             chdir($this->_backupRoot);
 
             if (!$this->_createZip($this->_myTimeStamp . '/', $zipPath)) {
-                $this->_log->info("   compression failed.");
+                $this->getLog()->info("   compression failed.");
                 return false;
             } else {
                 $this->_removeDirectory($this->_myTimeStamp . '/');
             }
-            $this->_log->info("   done.");
+            $this->getLog()->info("   done.");
             return true;
         }
 
@@ -155,7 +155,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
 
         $dirHandle = @opendir($dirSource);
         if ($dirHandle === false) {
-            $this->_log->info($debugIndent . "copy failed for directory: $dirSource");
+            $this->getLog()->info($debugIndent . "copy failed for directory: $dirSource");
             return false;
         }
 
@@ -168,7 +168,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
                     $copyFrom = $dirSource . "/" . $file;
                     $copyTo = $dirDest . "/" . $dirname . "/" . $file;
                     if (!copy($copyFrom, $copyTo)) {
-                        $this->_log->info($debugIndent . "copy failed for $copyFrom > $copyTo");
+                        $this->getLog()->info($debugIndent . "copy failed for $copyFrom > $copyTo");
                     }
                 } else {
                     $dirDest1 = $dirDest . "/" . $dirname;
@@ -193,9 +193,9 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         $dbPass = $db['password'];
         $dbSchema = $db['schema'];
 
-        $this->_log->info("Backing up schema, please wait…");
+        $this->getLog()->info("Backing up schema, please wait…");
         $backupFileSql = $this->_backupDir . "schema.sql";
-        $this->_log->info("   Target file will be $backupFileSql");
+        $this->getLog()->info("   Target file will be $backupFileSql");
 
         $mySqlDumpCmd =
             "mysqldump --user=" . $dbUser .
@@ -206,7 +206,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
 
         $rtnShell = shell_exec($mySqlDumpCmd);
 
-        $this->_log->info("   done.");
+        $this->getLog()->info("   done.");
     }
 
     /**
@@ -219,7 +219,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
     {
         $toReturn  = array();
 
-        $this->_log->info("Removing outdated backups…");
+        $this->getLog()->info("Removing outdated backups…");
 
         // Are we are given an age in which older backups should be removed?
         if (is_null($this->getOption('age'))) {
@@ -227,7 +227,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         }
 
         $retentionPeriod = $this->getOption('age');
-        $this->_log->info('   Backups older than ' . $retentionPeriod . " days will be removed");
+        $this->getLog()->info('   Backups older than ' . $retentionPeriod . " days will be removed");
 
         // Is this age valid?
         if (!is_numeric($retentionPeriod)) {
@@ -258,21 +258,21 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
 
                     if (is_dir($oldBackupName)) {
 
-                        $this->_log->info("   Removing old backup directory: " . basename($oldBackupName));
+                        $this->getLog()->info("   Removing old backup directory: " . basename($oldBackupName));
 
                         $s = $this->_removeDirectory($oldBackupName);
                         if (file_exists("$oldBackupName")) {
-                            $this->_log->err("   directory deletion failed: " . $oldBackupName);
+                            $this->getLog()->err("   directory deletion failed: " . $oldBackupName);
                         } else {
                             $toReturn[] = $oldBackupName;
                         }
 
                     } else {
 
-                        $this->_log->info("   Removing old backup archive: " . basename($oldBackupName));
+                        $this->getLog()->info("   Removing old backup archive: " . basename($oldBackupName));
 
                         if (!unlink($oldBackupName)) {
-                            $this->_log->info("   archive deletion failed: " . $oldBackupName);
+                            $this->getLog()->info("   archive deletion failed: " . $oldBackupName);
                         } else {
                             $toReturn[] = $oldBackupName;
                         }
@@ -281,7 +281,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
             }
         }
 
-        $this->_log->info("   done");
+        $this->getLog()->info("   done");
         return $toReturn;
     }
 

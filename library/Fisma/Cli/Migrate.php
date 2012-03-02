@@ -71,6 +71,12 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
      */
     protected function _run()
     {
+        // Log all migration messages to a dedicated migration log.
+        $fileWriter = new Zend_Log_Writer_Stream(Fisma::getPath('log') . '/migration.log');
+        $fileWriter->setFormatter(new Zend_Log_Formatter_Simple("[%timestamp%] %message%\n"));
+
+        parent::getLog()->addWriter($fileWriter);
+
         // Process arguments
         $this->_dryRun = $this->getOption('dry-run') === true;
 
@@ -91,14 +97,14 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
     private function _doInfo()
     {
         if (!$this->_migrationTableExists()) {
-            $this->_log->info("* The migration table DOES NOT exist.");
+            $this->getLog()->info("* The migration table DOES NOT exist.");
         } else {
-            $this->_log->info("* The migration table exists.");
+            $this->getLog()->info("* The migration table exists.");
 
             $availableMigrations = $this->_getAvailableMigrations(Fisma::getPath('migration'));
             $completedMigrations = $this->_getCompletedMigrations();
 
-            $this->_log->info(
+            $this->getLog()->info(
                  "* There are "
                  . count($availableMigrations)
                  . " migrations available and your system has completed "
@@ -109,11 +115,11 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
             $completedSql = "SELECT * FROM migration ORDER BY majorversion, minorversion, tagnumber, startedts";
             $completedMigrations = $this->_db->query($completedSql)->fetchAll();
 
-            $this->_log->info("* The following migrations have been executed already:");
+            $this->getLog()->info("* The following migrations have been executed already:");
 
             $formatString = "%-10s| %-60s| %-20s| %-20s";
-            $this->_log->info(sprintf($formatString, "VERSION", "NAME", "STARTED", "COMPLETED"));
-            $this->_log->info(str_repeat('-', 116));
+            $this->getLog()->info(sprintf($formatString, "VERSION", "NAME", "STARTED", "COMPLETED"));
+            $this->getLog()->info(str_repeat('-', 116));
 
             foreach ($completedMigrations as $migration) {
                 $versionString = "{$migration['majorversion']}.{$migration['minorversion']}.{$migration['tagnumber']}";
@@ -123,7 +129,7 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
                       ? $migration['completedts']
                       : (isset($migration['startedts']) ? 'DID NOT FINISH' : 'BUILT IN');
 
-                $this->_log->info(sprintf($formatString, $versionString, $migration['name'], $start, $stop));
+                $this->getLog()->info(sprintf($formatString, $versionString, $migration['name'], $start, $stop));
             }
         }
     }
@@ -159,10 +165,10 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
         $numberMigrations = count($migrationsToRun);
 
         if (count($migrationsToRun) > 0) {
-            $this->_log->info("Planning to run $numberMigrations migration" . ($numberMigrations > 1 ? 's' : ''));
+            $this->getLog()->info("Planning to run $numberMigrations migration" . ($numberMigrations > 1 ? 's' : ''));
             $this->_runMigrationSet($migrationsToRun);
         } else {
-            $this->_log->info("Migrations are up-to-date.");
+            $this->getLog()->info("Migrations are up-to-date.");
         }
     }
 
@@ -240,7 +246,7 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
      */
     private function _bootstrapMigrationTable()
     {
-        $this->_log->info("BOOTSTRAP:\nAttempting to bootstrap migrations…");
+        $this->getLog()->info("BOOTSTRAP:\nAttempting to bootstrap migrations…");
 
         $bootstrapMigration = new Application_Migration_021700_BootstrapMigration;
         $bootstrapMigration->setDb($this->_db);
@@ -267,11 +273,11 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
         $version = $migration->getVersion()->getDottedString();
         $name = $migration->getName();
 
-        $this->_log->info("Migrate: $version $name");
+        $this->getLog()->info("Migrate: $version $name");
 
         if (!$this->_dryRun) {
             $migrationId = $this->_insertMigration($migration);
-            $migration->setLog($this->_log);
+            $migration->setLog($this->getLog());
             $migration->migrate();
             $this->_completeMigration($migrationId);
         }
@@ -419,22 +425,5 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
         }
 
         return $migrationSet;
-    }
-
-    /**
-     * Override parent in order to stream log messages to a log file
-     *
-     * @return Zend_Log
-     */
-    protected function _createLog()
-    {
-        $log = parent::_createLog();
-
-        $fileWriter = new Zend_Log_Writer_Stream(Fisma::getPath('log') . '/migration.log');
-        $fileWriter->setFormatter(new Zend_Log_Formatter_Simple("[%timestamp%] %message%\n"));
-
-        $log->addWriter($fileWriter);
-
-        return $log;
     }
 }

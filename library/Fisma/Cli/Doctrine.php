@@ -120,7 +120,7 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
 
         // Remove sample data build directory if it exists
         if (isset($sampleDataBuildPath) && is_dir($sampleDataBuildPath)) {
-            $this->_log->info("Removing Sample Data build directory");
+            $this->getLog()->info("Removing Sample Data build directory");
             Fisma_FileSystem::recursiveDelete($sampleDataBuildPath);
         }
     }
@@ -133,7 +133,7 @@ class Fisma_Cli_Doctrine extends Fisma_Cli_Abstract
      */
     protected function loadFixtureFilesWithSampleData($sampleDataBuildPath)
     {
-        $this->_log->info("Using Sample Data");
+        $this->getLog()->info("Using Sample Data");
 
         // If build directory already exists (e.g. from a failed prior run), then try removing it
         $sampleDataBuildPath = Fisma::getPath('sampleDataBuild');

@@ -68,8 +68,8 @@ class Fisma_Cli_ConvertCpeDictionary extends Fisma_Cli_Abstract
             if (Fisma::debug()) {
                 throw $e;
             } else {
-                $this->_log->err("Error parsing XML file '$dictionary'");
-                $this->_log->err($e->getMessage());
+                $this->getLog()->err("Error parsing XML file '$dictionary'");
+                $this->getLog()->err($e->getMessage());
             }
         }
 
@@ -77,7 +77,7 @@ class Fisma_Cli_ConvertCpeDictionary extends Fisma_Cli_Abstract
         $outputHandle = fopen($output, 'w');
 
         if ($outputHandle === false) {
-            $this->_log->err("Unable to open output file ($output) for writing");
+            $this->getLog()->err("Unable to open output file ($output) for writing");
 
             return;
         }

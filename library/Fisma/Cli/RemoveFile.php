@@ -55,12 +55,12 @@ class Fisma_Cli_RemoveFile extends Fisma_Cli_Abstract
             print("This action is not undo-able. Are you sure you want to continue? (y/n): ");
             $confirm = fgets(STDIN);
             if (!in_array(trim($confirm), array('y', 'yes'))) {
-                $this->_log->info("No changes have been made to the repository.");
+                $this->getLog()->info("No changes have been made to the repository.");
             }
         }
 
         $this->_remove();
-        $this->_log->info("Target file successfully removed from OpenFISMA repository!");
+        $this->getLog()->info("Target file successfully removed from OpenFISMA repository!");
         return true;
     }
 

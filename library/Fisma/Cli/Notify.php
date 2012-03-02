@@ -123,10 +123,10 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
         try {
             $handler = (isset($mailHandler)) ? $mailHandler : new Fisma_MailHandler_Immediate();
             $handler->setMail($mail)->send();
-            $this->_log->info(Fisma::now() . " Email was sent to {$user->email}");
+            $this->getLog()->info(Fisma::now() . " Email was sent to {$user->email}");
         } catch (Zend_Mail_Exception $e) {
-            $this->_log->err("Failed Sending Email");
-            $this->_log->err($e);
+            $this->getLog()->err("Failed Sending Email");
+            $this->getLog()->err($e);
         }
     }
 

@@ -75,7 +75,7 @@ abstract class Fisma_Cli_Abstract
      *
      * @var Zend_log
      */
-    protected $_log;
+    private $_log;
 
     /**
      * Subclasses may override this method to set their console options
@@ -150,8 +150,6 @@ abstract class Fisma_Cli_Abstract
     {
         $start = time();
 
-        $this->_log = $this->_createLog();
-
         // Get options from the command line
         $argumentsDefinitions = $this->getArgumentsDefinitions();
         $argumentsDefinitions = array_merge($this->_defaultArgumentsDefinitions, $argumentsDefinitions);
@@ -160,16 +158,16 @@ abstract class Fisma_Cli_Abstract
             $this->_cliArguments = new Zend_Console_Getopt($argumentsDefinitions);
             $this->_cliArguments->parse();
 
-            $this->_log->debug("Script arguments: " . $this->_cliArguments);
+            $this->getLog()->debug("Script arguments: " . $this->_cliArguments);
 
             // If help is requested, then display help text and exit out
             $help = $this->_cliArguments->getOption('h');
             if ($help) {
-                $this->_log->info($this->getHelpText());
+                $this->getLog()->info($this->getHelpText());
                 return self::EXIT_SUCCESS;
             }
         } catch (Zend_Console_Getopt_Exception $e) {
-            $this->_log->info($e->getUsageMessage());
+            $this->getLog()->info($e->getUsageMessage());
 
             if (Fisma::RUN_MODE_TEST != Fisma::mode()) {
                 return self::EXIT_BAD_ARGS;
@@ -181,15 +179,15 @@ abstract class Fisma_Cli_Abstract
             $this->_run();
         } catch (Zend_Config_Exception $zce) {
             // A zend config exception indicates that the application may not be installed properly
-            $this->_log->err('The application is not installed correctly.');
-            $this->_log->err($zce);
+            $this->getLog()->err('The application is not installed correctly.');
+            $this->getLog()->err($zce);
             return;
         } catch (Exception $e) {
-            $this->_log->err($e->getMessage());
+            $this->getLog()->err($e->getMessage());
 
             // Don't print stack traces for user-level exceptions.
             if (!($e instanceof Fisma_Zend_Exception_User)) {
-                $this->_log->err($e);
+                $this->getLog()->err($e);
             }
 
             return self::EXIT_UNHANDLED_EXCEPTION;
@@ -201,7 +199,7 @@ abstract class Fisma_Cli_Abstract
         $minutes = floor($elapsed / 60);
         $seconds = $elapsed - ($minutes * 60);
 
-        $this->_log->info("Finished in $minutes minutes and $seconds seconds.\n");
+        $this->getLog()->info("Finished in $minutes minutes and $seconds seconds.\n");
 
         return self::EXIT_SUCCESS;
     }
@@ -233,34 +231,46 @@ abstract class Fisma_Cli_Abstract
     }
 
     /**
-     * Configure default logging options for CLI scripts.
+     * Set the logger used by this command line script.
+     *
+     * @param Zend_Log $log
+     */
+    public function setLog(Zend_Log $log)
+    {
+        $this->_log = $log;
+    }
+
+    /**
+     * Get the log instance (or create a default one if none exists).
      *
      * @return Zend_Log
      */
-    protected function _createLog()
+    public function getLog()
     {
-        // STDOUT shows INFO only in production mode, but shows INFO and DEBUG in debug mode
-        $stdoutWriter = new Zend_Log_Writer_Stream("php://stdout");
+        if (!$this->_log) {
+            // STDOUT shows INFO only in production mode, but shows INFO and DEBUG in debug mode
+            $stdoutWriter = new Zend_Log_Writer_Stream("php://stdout");
 
-        if (Fisma::debug()) {
-            $stdoutWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::INFO, "=="));
-        } else {
-            $stdoutWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::INFO, ">="));
+            if (Fisma::debug()) {
+                $stdoutWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::INFO, "=="));
+            } else {
+                $stdoutWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::INFO, ">="));
+            }
+
+            // STDERR shows NOTICE, WARN, ERR, CRIT, ALERT, and EMERG
+            $stderrWriter = new Zend_Log_Writer_Stream("php://stderr");
+            $stderrWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::NOTICE, "<="));
+
+            // The format for STDOUT and STDERR is no frills:
+            $formatter = new Zend_Log_Formatter_Simple("%message%\n");
+            $stdoutWriter->setFormatter($formatter);
+            $stderrWriter->setFormatter($formatter);
+
+            $this->_log = new Zend_Log;
+            $this->_log->addWriter($stdoutWriter);
+            $this->_log->addWriter($stderrWriter);
         }
 
-        // STDERR shows NOTICE, WARN, ERR, CRIT, ALERT, and EMERG
-        $stderrWriter = new Zend_Log_Writer_Stream("php://stderr");
-        $stderrWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::NOTICE, "<="));
-
-        // The format for STDOUT and STDERR is no frills:
-        $formatter = new Zend_Log_Formatter_Simple("%message%\n");
-        $stdoutWriter->setFormatter($formatter);
-        $stderrWriter->setFormatter($formatter);
-
-        $log = new Zend_Log;
-        $log->addWriter($stdoutWriter);
-        $log->addWriter($stderrWriter);
-
-        return $log;
+        return $this->_log;
     }
 }

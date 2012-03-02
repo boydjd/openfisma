@@ -55,8 +55,8 @@ class Fisma_Cli_AddFile extends Fisma_Cli_Abstract
         $u->uploadIp = '127.0.0.1';
         $u->save();
 
-        $this->_log->info("Target file successfully stored into OpenFISMA repository as Upload ID = {$u->id}.");
-        $this->_log->info("To access it with the copy-file script, use the following SHA1 hash: {$u->fileHash}.");
+        $this->getLog()->info("Target file successfully stored into OpenFISMA repository as Upload ID = {$u->id}.");
+        $this->getLog()->info("To access it with the copy-file script, use the following SHA1 hash: {$u->fileHash}.");
     }
 
     /**

@@ -98,7 +98,7 @@ class Fisma_Cli_FuzzDoctrine extends Fisma_Cli_Abstract
         $modelDirectory = opendir(Fisma::getPath('model'));
 
         if (!$modelDirectory) {
-            $this->_log->err("Model directory ($modelDirectory) cannot be opened.");
+            $this->getLog()->err("Model directory ($modelDirectory) cannot be opened.");
 
             return;
         }
@@ -136,7 +136,7 @@ class Fisma_Cli_FuzzDoctrine extends Fisma_Cli_Abstract
             $currentRow = 0;
             $rowCount = count($rows);
 
-            $this->_log->info("$modelName: $rowCount records");
+            $this->getLog()->info("$modelName: $rowCount records");
 
             $progressBar = new Zend_ProgressBar(new Zend_ProgressBar_Adapter_Console, 0, $rowCount);
 
@@ -186,8 +186,8 @@ class Fisma_Cli_FuzzDoctrine extends Fisma_Cli_Abstract
                 try {
                     $row->save();
                 } catch (Exception $e) {
-                    $this->_log->err("An error occurred during fuzzing.");
-                    $this->_log->err($e);
+                    $this->getLog()->err("An error occurred during fuzzing.");
+                    $this->getLog()->err($e);
                 }
 
                 $progressBar->update($currentRow);
