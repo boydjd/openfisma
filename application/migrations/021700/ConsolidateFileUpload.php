@@ -94,7 +94,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
                 array('id' => $document->id, 'version' => $document->version)
             );
         }
-        $this->rrmdir(Fisma::getPath('uploads') . '/system-document');
+        Fisma_FileSystem::recursiveDelete(Fisma::getPath('uploads') . '/system-document');
 
     }
 
@@ -123,7 +123,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
                 array('uploadid' => $uid, 'objectid' => $artifact->id)
             );
         }
-        $this->rrmdir(Fisma::getPath('uploads') . '/incident_artifact');
+        Fisma_FileSystem::recursiveDelete(Fisma::getPath('uploads') . '/incident_artifact');
     }
 
     /**
@@ -165,7 +165,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
                 array('createdts' => Fisma::now(), 'message' => $msg, 'objectid' => $findingId)
             );
         }
-        $this->rrmdir(Fisma::getPath('uploads') . '/evidence');
+        Fisma_FileSystem::recursiveDelete(Fisma::getPath('uploads') . '/evidence');
     }
 
     /**
@@ -209,7 +209,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
             );
             unlink($path . $record->filename);
         }
-        $this->rrmdir($path);
+        Fisma_FileSystem::recursiveDelete($path);
     }
 
     /**
@@ -327,30 +327,5 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
                 'updated_at' => Fisma::now()
             )
         );
-    }
-
-    /**
-     * Recursively remove a directory.  WARNING! Very dangerous, use with caution.
-     * Adapted from commons on http://us2.php.net/manual/en/function.rmdir.php
-     *
-     * @param string $dir Directory to delete
-     * @return void
-     */
-    public function rrmdir($dir)
-    {
-        if (is_dir($dir)) {
-            $objects = scandir($dir);
-            foreach ($objects as $object) {
-                if ($object != "." && $object != "..") {
-                    if (filetype($dir."/".$object) == "dir") {
-                        $this->rrmdir($dir."/".$object);
-                    } else {
-                        unlink($dir."/".$object);
-                    }
-                }
-            }
-            reset($objects);
-            rmdir($dir);
-        }
     }
 }
