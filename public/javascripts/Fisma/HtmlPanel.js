@@ -61,11 +61,7 @@ Fisma.HtmlPanel = function() {
                 panel.setBody(html);
                 panel.center();
             }
-
-            panel.hideEvent.subscribe(function (e) {
-                setTimeout(function () {panel.destroy();},0);
-            });
-
+            
             return panel;
         }
     };
