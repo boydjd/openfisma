@@ -1110,11 +1110,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         // Compare two arrays of organizationIds in each role.
         for ($i = 0; $i < count($originalData); $i++) {
+
+            // Do not need to sort and compare original and posted data if one has data and the other one doesn't. 
+            if (isset($originalData[$i]) Xor isset($postData[$i])) { 
+                return true;
+            } 
+
             sort($originalData[$i]);
             sort($postData[$i]);
             if ($originalData[$i] != $postData[$i]) {
                 return true;
-            } 
+            }
         }
         return false;
     }
