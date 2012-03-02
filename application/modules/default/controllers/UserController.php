@@ -1112,8 +1112,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         for ($i = 0; $i < count($originalData); $i++) {
 
             // Do not need to sort and compare original and posted data if one has data and the other one doesn't. 
-            if ((isset($originalData[$i]) && !isset($postData[$i])) 
-               || (!isset($originalData[$i]) && isset($postData[$i]))) {
+            if (isset($originalData[$i]) Xor isset($postData[$i])) { 
                 return true;
             } 
 
