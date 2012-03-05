@@ -28,7 +28,6 @@
 tinyMCE.init({
 	theme : "advanced",
 	mode : "textareas",
-	invalid_elements : "span",
 	element_format : "html",
 	plugins : "paste, spellchecker, searchreplace, insertdatetime, print, fullscreen, table",
 	plugin_insertdate_dateFormat : "%Y-%m-%d",

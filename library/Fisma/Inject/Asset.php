@@ -25,8 +25,9 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_Import_Asset extends Fisma_Import_Abstract
+class Fisma_Inject_Asset extends Fisma_Inject_Abstract
 {
+
     /**
      * Array of assets 
      * 
@@ -46,13 +47,19 @@ class Fisma_Import_Asset extends Fisma_Import_Abstract
      * 
      * @return boolean 
      */
-    public function parse()
+    protected function _parse($uploadId)
     {
-        //@TODO: Detect type of file and create filter of appropriate type or return an error.
-        $filter = new Fisma_Import_Filter_Nmap($this->_filePath, $this->_orgSystemId, $this->_networkId);
+        $type = self::_detectFilterType($this->_file);
+        if (!$type || !is_string($type)) {
+            $this->_setMessage(array('warning' => 'The uploaded file is not a supported file format.'));
+            return FALSE;
+        }
+
+        $filterClass = 'Fisma_Inject_Filter_' . $type;
+        $filter = new $filterClass($this->_file, $this->_orgSystemId, $this->_networkId);
 
         if (!$this->_assets = $filter->getAssets()) {
-            $this->_setError('Unable to load assets from XML.');
+            $this->_setMessage(array('warning' => 'Unable to load assets from XML.'));
             return FALSE;
         }
 
@@ -61,24 +68,34 @@ class Fisma_Import_Asset extends Fisma_Import_Abstract
             if ($this->_getDuplicateAsset($asset)) {
                 $asset['duplicate'] = TRUE;
             } else {
-                $this->_products[$key] = $asset['Product'];
+                if (isset($asset['Product'])) {
+                    $this->_products[$key] = $asset['Product'];
+                    unset($asset['Product']);
+                }
+
                 $asset['duplicate'] = FALSE;
-                unset($asset['Product']);
             }
         }
 
         if (!$this->_saveProducts()) {
-            $this->_setError('Unable to save products.');
+            $this->_setMessage(array('warning' => 'Unable to save products.'));
             return FALSE;
         } elseif (!$this->_save()) {
-            $this->_setError('Unable to save assets.');
+            $this->_setMessage(array('warning' => 'Unable to save assets.'));
             return FALSE;
         } elseif (!$this->_commit()) {
-            $this->_setError('Unable to commit assets.');
-            return FALSE;
-        } elseif ($this->getErrors()) {
+            $this->_setMessage(array('warning' => 'Unable to commit assets.'));
             return FALSE;
         } else {
+            
+            if ($this->_numImported > 0) {
+                $this->_setMessage(array('notice' => $this->_numImported . ' asset(s) were imported successfully.'));
+            }
+
+            if ($this->_numSuppressed > 0) {
+                $this->_setMessage(array('notice' => $this->_numSuppressed . ' asset(s) were not imported.'));
+            }
+
             return TRUE;
         }
     }
@@ -93,24 +110,26 @@ class Fisma_Import_Asset extends Fisma_Import_Abstract
         // Save products and assign product id to appropriate asset
         Doctrine_Manager::connection()->beginTransaction();
         try {
-            foreach ($this->_products as $key => &$product) {
-                if (!$existingId = $this->_getDuplicateProduct($product)) {
-                    $p = new Product();
-                    $p->merge($product);
-                    $p->save();
-                    $existingId = $p->id;
-                    $p->free();
-                    unset($p);
+            if (!empty($this->_products)) {
+                foreach ($this->_products as $key => &$product) {
+                    if (!$existingId = $this->_getDuplicateProduct($product)) {
+                        $p = new Product();
+                        $p->merge($product);
+                        $p->save();
+                        $existingId = $p->id;
+                        $p->free();
+                        unset($p);
+                    }
+                    $this->_assets[$key]['productId'] = $existingId;
                 }
-                $this->_assets[$key]['productId'] = $existingId;
             }
+
             Doctrine_Manager::connection()->commit();
             return TRUE;
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollBack();
             return FALSE;
         }
-
     }
 
     /**
@@ -144,7 +163,7 @@ class Fisma_Import_Asset extends Fisma_Import_Abstract
     protected function _commit()
     {
         Doctrine_Manager::connection()->beginTransaction();
-
+         
         try {
             foreach ($this->_assets as &$asset) {
                 if (!is_array($asset)) {
@@ -203,7 +222,6 @@ class Fisma_Import_Asset extends Fisma_Import_Abstract
             ->select('a.id')
             ->from('Asset a')
             ->where('addressIp = ?', $asset['addressIp'])
-            ->andWhere('orgSystemId = ?', $this->_orgSystemId)
             ->andWhere('networkId = ?', $this->_networkId)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
@@ -213,8 +231,33 @@ class Fisma_Import_Asset extends Fisma_Import_Abstract
             $duplicateAssets->andWhere('addressPort = ?', $asset['addressPort']);
         }
 
+        if (empty($asset['orgSystemId'])) {
+            $duplicateAssets->andWhere('orgSystemId IS NULL');
+        } else {
+            $duplicateAssets->andWhere('orgSystemId = ?', $asset['orgSystemId']);
+        }
+
         $duplicateAssets = $duplicateAssets->execute();
 
         return ($duplicateAssets) ? TRUE : FALSE;
+    }
+
+    /**
+     * Attempt to detect the type of the file uploaded 
+     * 
+     * @param string $filename 
+     * @return string|boolean 
+     */
+    private static function _detectFilterType($filename)
+    {
+        $handle = fopen($filename, "rb");
+        $contents = fread($handle, 128);
+        fclose($handle);
+
+        if (stristr($contents, 'Nmap')) {
+            return 'Nmap';
+        } else {
+            return FALSE;
+        }
     }
 }
