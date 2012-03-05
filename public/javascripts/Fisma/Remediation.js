@@ -209,7 +209,7 @@ Fisma.Remediation = {
                         if (elements[j].name == 'evidence[]') {
                             var fileName = elements[j].value;
                             fileName = fileName.slice(fileName.lastIndexOf('\\')+1);
-                            if (fileName == link.lastChild.innerHTML) {
+                            if (fileName == link.lastChild.data) {
                                 duplicationDetected = true;
                                 message += "<li>" + fileName + "</li>";
                             }
