@@ -83,13 +83,14 @@ span.searchQueryButtons button {
     height: 24px;
 }
 
-form#finding_detail_upload_evidence button {
+/* only show the element in IE7 */
+.ie7-only {
     display: inline;
 }
 
 /* For fixing OFJ-1569 */
 dl {
-  margin : 0  
+  margin : 0
 }
 
 /* For fixing the calendar background problem */

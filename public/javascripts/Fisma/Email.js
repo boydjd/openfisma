@@ -81,8 +81,8 @@ Fisma.Email = function() {
                 null,
                 panelConfig);
 
-            // Set onclick handler to handle dialog_recipient
-            document.getElementById('dialogRecipientSendBtn').onclick = Fisma.Email.sendTestEmail;
+            // Make button a YUI widget and set up onclick event
+            new YAHOO.widget.Button("dialogRecipientSendBtn", {onclick: {fn: Fisma.Email.sendTestEmail}});
         },
 
         /**

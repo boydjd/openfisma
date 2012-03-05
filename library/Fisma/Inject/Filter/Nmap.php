@@ -24,7 +24,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Fisma_Import_Filter_Nmap
+class Fisma_Inject_Filter_Nmap
 {
     /**
      * Path to file 
@@ -132,7 +132,11 @@ class Fisma_Import_Filter_Nmap
                         $this->_report->getAttribute('product');
                     $parsedData[$hostCounter]['ports'][$portCounter]['version'] =
                         $this->_report->getAttribute('version');
-                    $parsedData[$hostCounter]['ports'][$portCounter]['name'] = $this->_report->getAttribute('name');
+                    if ($this->_report->getAttribute('name') != 'unknown') {
+                        $parsedData[$hostCounter]['ports'][$portCounter]['name'] = $this->_report->getAttribute('name');
+                    }
+                } elseif ($this->_report->name == 'cpe') {
+                    $parsedData[$hostCounter]['ports'][$portCounter]['cpe'] = $this->_report->readString();
                 } elseif ($this->_report->name == 'osmatch') {
                     $parsedData[$hostCounter]['os'] = $this->_report->getAttribute('name');
                 }
@@ -154,7 +158,7 @@ class Fisma_Import_Filter_Nmap
                 $assets[$keyPtr]['name'] = $host['ip'];
                 $assets[$keyPtr]['source'] = 'scan';
                 $assets[$keyPtr]['addressIp'] = $host['ip'];
-                $assets[$keyPtr]['orgSystemId'] = $this->_orgSystemId;
+                $assets[$keyPtr]['orgSystemId'] = !empty($this->_orgSystemId) ? (int) $this->_orgSystemId : NULL;
                 $assets[$keyPtr]['networkId'] = $this->_networkId;
                 $assets[$keyPtr]['Product']['name'] = $host['os'];
                 $keyPtr++;
@@ -166,7 +170,7 @@ class Fisma_Import_Filter_Nmap
                 $assets[$keyPtr]['source'] = 'scan';
                 $assets[$keyPtr]['addressIp'] = $host['ip'];
                 $assets[$keyPtr]['addressPort'] = $port['port'];
-                $assets[$keyPtr]['orgSystemId'] = $this->_orgSystemId;
+                $assets[$keyPtr]['orgSystemId'] = !empty($this->_orgSystemId) ? (int) $this->_orgSystemId : NULL;
                 $assets[$keyPtr]['networkId'] = $this->_networkId;
 
                 // Handle create of the product name, since it's built from different report fields depending on 
@@ -189,6 +193,10 @@ class Fisma_Import_Filter_Nmap
 
                 if (!empty($port['version'])) {
                     $assets[$keyPtr]['Product']['version'] = $port['version'];
+                }
+
+                if (!empty($port['cpe'])) {
+                    $assets[$keyPtr]['Product']['cpeName'] = $port['cpe'];
                 }
 
                 $keyPtr++;
