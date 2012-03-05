@@ -60,7 +60,6 @@ elements.recommendation.options.validators.mce.validator = "MceNotEmpty"
 elements.recommendation.options.label = "Recommendation"
 elements.recommendation.options.cols = "100"
 elements.recommendation.options.rows = "8"
-elements.recommendation.options.required = true
 displayGroups.finding.elements.recommendation = "recommendation"
 
 elements.securityControlAutocomplete.type = "Form_AutoComplete"
@@ -72,7 +71,6 @@ elements.securityControlAutocomplete.options.attribs.hiddenField = "securityCont
 elements.securityControlAutocomplete.options.attribs.queryPrepend = "/keyword/"
 elements.securityControlAutocomplete.options.attribs.containerId = "securityControlAutocompleteContainer"
 elements.securityControlAutocomplete.options.tooltip = "<b>Security Control</b><p>This is an autocomplete field. Start typing the name of the control or related keywords, and a list will pop up with matching NIST 800-53 security controls. You must select a control from that list.</p>"
-elements.securityControlAutocomplete.options.required = true
 displayGroups.finding.elements.securityControlAutocomplete = "securityControlAutocomplete"
 elements.securityControlId.type = "hidden"
 elements.securityControlId.options.id = "securityControlId"
@@ -88,7 +86,6 @@ elements.threat.type = "textarea"
 elements.threat.options.label = "Threat Description"
 elements.threat.options.cols = "100"
 elements.threat.options.rows = "8"
-elements.threat.options.required = true
 elements.threat.options.validators.mce.validator = "MceNotEmpty"
 displayGroups.finding.elements.threat = "threat"
 
