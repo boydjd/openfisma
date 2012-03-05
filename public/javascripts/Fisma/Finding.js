@@ -295,7 +295,14 @@ Fisma.Finding = {
                 panelConfig
             );
 
-            Fisma.Finding.createPocPanel.subscribe("hide", this.removePocMessageBox, this, true);            
+            Fisma.Finding.createPocPanel.subscribe("hide", this.removePocMessageBox, this, true);
+
+            Fisma.Finding.createPocPanel.hideEvent.subscribe(function (e) {
+                setTimeout(function () {
+                    Fisma.Finding.createPocPanel.destroy();
+                    Fisma.Finding.createPocPanel = null;
+                }, 0);
+            });
         } else {
             // Handle OFJ-1579 IE7 bug.
             if (YAHOO.env.ua.ie === 7) {
