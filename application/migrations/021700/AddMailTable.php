@@ -34,11 +34,11 @@ class Application_Migration_021700_AddMailTable extends Fisma_Migration_Abstract
         $columns = array(
             'id'            => "bigint(20) NOT NULL AUTO_INCREMENT",
             'recipient'     => "varchar(255) NOT NULL COMMENT 'The recipient email address'",
-            'recipientName' => "varchar(255) DEFAULT NULL COMMENT 'The recipient name.'",
+            'recipientname' => "varchar(255) DEFAULT NULL COMMENT 'The recipient name.'",
             'sender'        => "varchar(255) DEFAULT NULL COMMENT 'The sender email address'",
-            'senderName'    => "varchar(255) DEFAULT NULL COMMENT 'The name for sender mail'",
+            'sendername'    => "varchar(255) DEFAULT NULL COMMENT 'The name for sender mail'",
             'subject'       => "varchar(255) NOT NULL COMMENT 'The subject for mail.'",
-            'body'          => "varchar(255) NOT NULL COMMENT 'Email body text.'"
+            'body'          => "text NOT NULL COMMENT 'Email body text.'"
         );
 
         $this->message("Creating mail table…");

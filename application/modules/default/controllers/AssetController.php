@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -23,31 +23,31 @@
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
- * 
+ *
  * @see        Zend_View_Helper_Abstract
  */
 class AssetController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
-     * 
+     *
      * This model is the main subject which the controller operates on.
-     * 
+     *
      * @var string
      */
     protected $_modelName = 'Asset';
 
     /**
      * Invokes a contract with Fisma_Zend_Controller_Action_Object regarding privileges.
-     * 
+     *
      * @var string
      * @link http://jira.openfisma.org/browse/OFJ-24
      */
     protected $_organizations = '*';
-    
+
     /**
      * Hooks for manipulating the values before setting to a form
-     * 
+     *
      * @param Doctrine_Record $subject The specified subject model
      * @param Zend_Form $form The specified form
      * @return Zend_Form The manipulated form
@@ -56,7 +56,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     {
         $product = $subject->Product;
 
-        if ($this->getRequest()->getParam('sub') != 'edit') 
+        if ($this->getRequest()->getParam('sub') != 'edit')
             $form->getElement('product')->setAttrib('readonly', true);
 
         $form->getElement('productId')->setValue($subject->productId);
@@ -121,7 +121,6 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
         // Configure the file select
         $uploadForm->setAttrib('enctype', 'multipart/form-data');
-        $uploadForm->selectFile->setDestination(Fisma::getPath('data') . '/uploads/scanreports');
 
         $this->view->assign('uploadForm', $uploadForm);
 
@@ -129,11 +128,11 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         if ($postValues = $this->_request->getPost()) {
             $msgs = array();
             $err = FALSE;
-            $filesReceived = ($uploadForm->selectFile->receive()) ? TRUE: FALSE;
+            $filesReceived = ($uploadForm->selectFile->receive()) ? TRUE : FALSE;
 
             if (!$uploadForm->isValid($postValues)) {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($uploadForm);
-               
+
                 // Customize error message, see the attachments on OFJ-1693
                 if ($errorString && stristr($errorString, 'selectFile') && stristr($errorString, 'few')) {
                     $msgs[] = array('warning' => 'No file selected. Please select at least one file to upload.');
@@ -150,19 +149,12 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
                 // get original file name
                 $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);
-                // get current time and set to a format like '20090504_112202'
-                $dateTime = Zend_Date::now()->toString(Fisma_Date::FORMAT_FILENAME_DATETIMESTAMP);
-                // define new file name
-                $newName = str_replace($originalName, $originalName . '_' . $dateTime, basename($filePath));
-                rename($filePath, $filePath = dirname($filePath) . '/' . $newName);
-
-                $values['filepath'] = $filePath;
+                $values['filePath'] = $filePath;
 
                 $upload = new Upload();
-                $upload->userId = $this->_me->id;
-                $upload->fileName = basename($filePath);
+                $upload->instantiate($file);
                 $upload->save();
-                   
+
                 $import = Fisma_Inject_Factory::create('Asset', $values);
                 $import->parse($upload->id);
 
@@ -175,7 +167,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                     $upload->delete();
                 }
 
-                if (!$msgs) { 
+                if (!$msgs) {
                     $msgs[] = array('notice' => 'An unrecoverable error has occured.');
                 }
             }
