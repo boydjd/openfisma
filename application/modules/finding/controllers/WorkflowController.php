@@ -234,7 +234,8 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
     {
         $this->_helper->layout()->disableLayout();
         $this->view->roles = Doctrine_Query::create()
-            ->from('Role')
+            ->from('Role r')
+            ->orderBy('r.nickname')
             ->execute();
     }
 

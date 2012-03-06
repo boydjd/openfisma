@@ -201,11 +201,14 @@ Fisma.FindingWorkflow = {
                         jQuery('#finding_workflow_select_roles input[name="' + roles[role] + '"]').attr('checked', true);
                     }
 
-                    document.getElementById('dialog_close').onclick = function (){
+                    new YAHOO.widget.Button('dialog_close');
+                    YAHOO.util.Event.addListener("dialog_close", "click", function (){
                         panel.destroy();
                         return false;
-                    }
-                    document.getElementById('dialog_confirm').onclick = function (){
+                    });
+
+                    new YAHOO.widget.Button('dialog_confirm');
+                    YAHOO.util.Event.addListener("dialog_confirm", "click", function (){
                         var inputs = jQuery('#finding_workflow_select_roles input:checked');
 
                         jQuery(linkElement).prev().html(inputs.parents('span').text().replace(/.\n/g, '<br/>'));
@@ -219,7 +222,8 @@ Fisma.FindingWorkflow = {
 
                         panel.destroy();
                         return false;
-                    }
+                    });
+
                 }
             );
 
