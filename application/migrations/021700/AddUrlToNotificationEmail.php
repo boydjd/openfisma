@@ -60,31 +60,10 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
     public function addUrlPathData()
     {
         $updates = array(
-            'FINDING_CREATED'               => '/finding/remediation/view/id/',
-            'FINDING_INJECTED'              => '/finding/remediation/view/id/',
             'VULNERABILITY_CREATED'         => '/vm/vulnerability/view/id/',
             'VULNERABILITY_INJECTED'        => '/vm/vulnerability/view/id/',
             'ASSET_CREATED'                 => '/asset/view/id/',
             'ASSET_UPDATED'                 => '/asset/view/id/',
-            'UPDATE_MITIGATION_TYPE'        => '/finding/remediation/view/id/',
-            'UPDATE_COURSE_OF_ACTION'       => '/finding/remediation/view/id/',
-            'UPDATE_RESPONSIBLE_SYSTEM'     => '/finding/remediation/view/id/',
-            'UPDATE_DESCRIPTION'            => '/finding/remediation/view/id/',
-            'UPDATE_SECURITY_CONTROL'       => '/finding/remediation/view/id/',
-            'UPDATE_COUNTERMEASURES'        => '/finding/remediation/view/id/',
-            'UPDATE_THREAT'                 => '/finding/remediation/view/id/',
-            'UPDATE_RECOMMENDATION'         => '/finding/remediation/view/id/',
-            'UPDATE_RESOURCES_REQUIRED'     => '/finding/remediation/view/id/',
-            'UPDATE_ECD'                    => '/finding/remediation/view/id/',
-            'UPDATE_LOCKED_ECD'             => '/finding/remediation/view/id/',
-            'UPDATE_LEGACY_FINDING_KEY'     => '/finding/remediation/view/id/',
-            'UPDATE_FINDING_SOURCE'         => '/finding/remediation/view/id/',
-            'FINDING_CLOSED'                => '/finding/remediation/view/id/',
-            'EVIDENCE_UPLOADED'             => '/finding/remediation/view/id/',
-            'MITIGATION_ISSO'               => '/finding/remediation/view/id/',
-            'MITIGATION_IVV'                => '/finding/remediation/view/id/',
-            'EVIDENCE_ISSO'                 => '/finding/remediation/view/id/',
-            'EVIDENCE_IVV'                  => '/finding/remediation/view/id/',
             'USER_CREATED'                  => '/user/view/id/',
             'USER_UPDATED'                  => '/user/profile',
             'POC_CREATED'                   => '/poc/view/id/',
@@ -103,21 +82,27 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
             'NETWORK_UPDATED'               => '/network/view/id/',
             'CONFIGURATION_UPDATED'         => '/config/general',
             'USER_UPDATED'                  => '/user/profile',
-            'ECD_EXPIRES_TODAY'             => '/finding/remediation/view/id/',
-            'ECD_EXPIRES_7_DAYS'            => '/finding/remediation/view/id/',
-            'ECD_EXPIRES_14_DAYS'           => '/finding/remediation/view/id/',
-            'ECD_EXPIRES_21_DAYS'           => '/finding/remediation/view/id/',
-            'APPROVAL_DENIED'               => '/finding/remediation/view/id/',
             'USER_LOCKED'                   => '/user/view/id/',
-            'MITIGATION_APPROVED'           => '/finding/remediation/view/id/',
-            'MITIGATION_REVISE'             => '/finding/remediation/view/id/',
             'SYSTEM_DOCUMENT_UPDATED'       => '/system/view/id/',
             'SYSTEM_DOCUMENT_CREATED'       => '/system/view/id/',
             'DOCUMENT_TYPE_CREATED'         => '/document-type/view/id/',
             'DOCUMENT_TYPE_UPDATED'         => '/document-type/view/id/',
             'ORGANIZATION_TYPE_CREATED'     => '/organization-type/view/id/',
             'ORGANIZATION_TYPE_UPDATED'     => '/organization-type/view/id/'
-        );
+        ); 
+
+        // Since some event's names associated with finding action might be different in the user's  database,  
+        // it's better update urlpath with privilegeid of finding action instead of event name.
+        $privileges = $this->getHelper()->execute(
+            'SELECT p.id FROM privilege p WHERE p.resource = "notification" AND p.action = "finding"');
+
+        foreach ($privileges as $privilege) {
+            $this->getHelper()->exec(
+                "UPDATE `event` SET `urlpath` = '/finding/remediation/view/id/' WHERE `privilegeid` ="
+                . $privilege->id
+                . " AND `name` NOT LIKE '%_deleted'" 
+                );
+        }
 
         foreach ($updates as $where => $to) {
             $this->getHelper()->update('event', array('urlpath' => $to), array('name' => $where));
