@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -20,7 +20,7 @@
  * View and edit the finding workflow
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
  */
@@ -61,11 +61,11 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
         foreach ($_POST as $arg => $val) {
             $chunks = explode("_", $arg);
             if (count($chunks) >= 3) {
-                $type = $chunks[0];
-                $id = $chunks[1];
-                $attr = $chunks[2];
+                $type = array_shift($chunks);
+                $id = array_shift($chunks);
+                $attr = implode("_", $chunks);
 
-                if ($id != 'skeleton') {
+                if ($id != 'skeleton') { //skeleton set is the blank set of inputs used to clone other sets dynamically
                     $lists[$type][$id][$attr] = $val;
                 }
             }
@@ -210,10 +210,6 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
 
             // Remove orphan records (if any)
             if (count($removedSteps) > 0) {
-                Doctrine_Query::create()
-                    ->delete('FindingEvaluation fe')
-                    ->whereIn('fe.evaluationId', $removedSteps)
-                    ->execute();
                 $evaluations = Doctrine_Query::create()
                     ->from('Evaluation e')
                     ->whereIn('e.id', $removedSteps)
