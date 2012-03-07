@@ -201,8 +201,8 @@ Fisma.Util = {
      * @param (boolean) closable Whether to show a close button AND allow closing the dialog
      * @return a YUI SimpleDialog
      */
-    getDialog : function(closable) {
-        closable = (typeof closable == "undefined")?true:closable;
+    getDialog : function (closable) {
+        closable = (typeof closable == "undefined") ? true : closable;
 
         var dialog =
             new YAHOO.widget.SimpleDialog("warningDialog",

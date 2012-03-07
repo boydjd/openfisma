@@ -75,4 +75,29 @@ class RoleTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
     {
         return array();
     }
+
+    /**
+     * Return a collection of all available roles
+     *
+     * @param Doctrine_Query $query Optional, defaults to null.
+     *
+     * @return Doctrine_Collection
+     */
+    public function getAllRoles(Doctrine_Query $query = null)
+    {
+        $query = (empty($query)) ? $this->getAllRolesQuery() : $query;
+        return $query->execute();
+    }
+
+    /**
+     * Construct a query to get all available roles
+     *
+     * @return Doctrine_Query
+     */
+    public function getAllRolesQuery()
+    {
+        return Doctrine_Query::create()
+            ->from('Role r')
+            ->orderBy('r.nickname');
+    }
 }

@@ -104,7 +104,6 @@ YAHOO.extend(Fisma.InteractiveOrderedListItem, YAHOO.util.DDProxy, {
         // We are only concerned with list items, we ignore the dragover
         // notifications for the list.
         if (destEl.nodeName.toLowerCase() == "li") {
-            var orig_p = srcEl.parentNode;
             var p = destEl.parentNode;
 
             if (this.goingUp) {

@@ -97,9 +97,21 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                         $newStep->Event->description = $step['name'];
                         $newStep->Event->Privilege = $notificationPrivilege;
 
-                        $newStep->Privilege = new Privilege();
-                        $newStep->Privilege->resource = 'finding';
-                        $newStep->Privilege->action = $step['nickname'];
+                        $privilege = Doctrine_Query::create()
+                            ->from('Privilege p')
+                            ->where('p.resource = ?', 'finding')
+                            ->andWhere('p.action = ?', $step['nickname'])
+                            ->andWhere('p.deleted_at is not ?', null)
+                            ->execute()
+                            ->getFirst();
+                        if (empty($privilege)) {
+                            $newStep->Privilege = new Privilege();
+                            $newStep->Privilege->resource = 'finding';
+                            $newStep->Privilege->action = $step['nickname'];
+                        } else {
+                            $newStep->Privilege = $privilege;
+                            $newStep->Privilege->deleted_at = null;
+                        }
                         $newStep->Privilege->description = $step['nickname'] . " Approval";
 
                         $newStep->save(); // precedence & nextId must be updated after save() ...
@@ -171,7 +183,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
 
                     Doctrine_Query::create()
                         ->delete('RolePrivilege r')
-                        ->andWhere('r.privilegeId = ?', $evaluation->Privilege->id)
+                        ->where('r.privilegeId = ?', $evaluation->Privilege->id)
                         ->execute();
 
                     $evaluation->Privilege->refresh();
@@ -226,23 +238,20 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
     }
 
     /**
-     * @phpdoc: short description.
+     * Renders the list of roles to choose in a panel
      *
-     * @return @phpdoc
+     * @return void
      */
     public function selectRolesAction()
     {
         $this->_helper->layout()->disableLayout();
-        $this->view->roles = Doctrine_Query::create()
-            ->from('Role r')
-            ->orderBy('r.nickname')
-            ->execute();
+        $this->view->roles = Doctrine::getTable('Role')->getAllRoles();
     }
 
     /**
-     * @phpdoc: short description.
+     * Renders the remove-step panel
      *
-     * @return @phpdoc
+     * @return void
      */
     public function removeStepAction()
     {
