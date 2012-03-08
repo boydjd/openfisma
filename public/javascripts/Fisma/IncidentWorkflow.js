@@ -3,17 +3,17 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
- * 
+ *
  * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
@@ -97,11 +97,13 @@
                 buttons = $("button", newTr).get(),
                 textareaId = tinyMCE.DOM.uniqueId(),
                 newTextarea = $('<textarea name="stepDescription[]" rows="8" cols="100" />'),
+                selectButton = $("input[type='button']", newTr).get(),
+                selectMenu = $("select", newTr).get(),
                 fn;
             $("span.templateDescription", newTr).replaceWith(newTextarea);
             newTextarea.attr("id", textareaId);
             if (data) {
-                $("input", newTr).val(data.name);
+                $("input:firstChild", newTr).val(data.name);
                 $("select", newTr).val(data.roleId);
                 newTextarea.val(data.description);
             }
@@ -115,8 +117,30 @@
             fn = function() { this.removeStep(newTr); };
             new YAHOO.widget.Button(buttons[2], {onclick: {fn: fn, scope: this}});
 
+            $(selectMenu).attr('id', textareaId + '_menu');
+            $(selectButton).attr('id', textareaId + '_button');
             // add it to the table
             $(tr).after(newTr);
+
+            // Fetch currently selected item
+            var selectedLabel = (data) ? $("option:selected", selectMenu).text() : '';
+
+            // Create a Button using an existing <input> and <select> element
+            var oMenuButton = new YAHOO.widget.Button(textareaId + '_button', {
+                label: selectedLabel,
+                type: "menu",
+                menu: textareaId + '_menu'
+            });
+
+            // Register "click" event listener for the Button's Menu instance
+            oMenuButton.getMenu().subscribe("click", function (p_sType, p_aArgs) {
+                var oEvent = p_aArgs[0],       // DOM event
+                    oMenuItem = p_aArgs[1]; // MenuItem target of the event
+                if (oMenuItem) {
+                    oMenuButton.set('label', oMenuItem.cfg.getProperty("text"));
+                }
+            });
+
             // tell tinyMCE to render it now
             tinyMCE.execCommand ('mceAddControl', false, textareaId);
             this._renumberSteps();
