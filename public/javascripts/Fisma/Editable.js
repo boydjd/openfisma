@@ -106,8 +106,33 @@
                     }
                     YAHOO.util.Connect.asyncRequest('GET', url+'value/'+cur_val.trim(), {
                         success: function(o) {
-                            if(type == 'select'){
-                                jQuery(target).replaceWith('<select name="'+name+'">'+o.responseText+'</select>');
+                            if(type == 'select') {
+                                targetHTML = '<input type="button" id="' + name + '-button"/>'
+                                           + '<select id="' + name + '-select" name="' + name + '">'
+                                           + o.responseText + '</select>';
+                                jQuery(target).replaceWith(targetHTML);
+
+                                YAHOO.util.Event.onContentReady(name + "-button", function () {
+                                    // Fetch currently selected item
+                                    var selectElement = document.getElementById(name + '-select');
+                                    var selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
+
+                                    // Create a Button using an existing <input> and <select> element
+                                    var oMenuButton = new YAHOO.widget.Button(name + "-button", {
+                                        label: selectedLabel,
+                                        type: "menu",
+                                        menu: name + "-select"
+                                    });
+
+                                    // Register "click" event listener for the Button's Menu instance
+                                    oMenuButton.getMenu().subscribe("click", function (p_sType, p_aArgs) {
+                                        var oEvent = p_aArgs[0],       // DOM event
+                                            oMenuItem = p_aArgs[1]; // MenuItem target of the event
+                                        if (oMenuItem) {
+                                            oMenuButton.set('label', oMenuItem.cfg.getProperty("text"));
+                                        }
+                                    });
+                                });
                             }
                         },
                         failure: function(o) {alert('Failed to load the specified panel.');}
