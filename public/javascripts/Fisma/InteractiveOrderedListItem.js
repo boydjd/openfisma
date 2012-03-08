@@ -43,6 +43,7 @@ Fisma.InteractiveOrderedListItem = function(id, listName, extraHandlers, config)
     this.lastY = 0;
 };
 
+// This chunk of code is copied from YUI example, go ask them (even the comments are theirs too).
 YAHOO.extend(Fisma.InteractiveOrderedListItem, YAHOO.util.DDProxy, {
     startDrag: function(x, y) {
         // make the proxy look like the source element
@@ -116,6 +117,14 @@ YAHOO.extend(Fisma.InteractiveOrderedListItem, YAHOO.util.DDProxy, {
         }
     }
 });
+
+/**
+ * Create a new item at the end of the list by cloning the "skeleton" item
+ *
+ * @param (string) listId       The name of the list to append to (this is an Item class, not a List class)
+ * @param (array)  jsHandlers   The associative array of functions to handle DragDrop events for the new item
+ * @return null
+ */
 
 Fisma.InteractiveOrderedListItem.appendNewTo = function(listId, jsHandlers) {
     var list = jQuery('ul#' + listId + 'Container');

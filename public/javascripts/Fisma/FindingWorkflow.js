@@ -135,7 +135,6 @@ Fisma.FindingWorkflow = {
      */
     chartLabelChangeHandler : function(element) {
         var newLabel = jQuery(element).val();
-        //alert('"' + newLabel + '"');
         if (jQuery('input[name$="nickname"]').filter('[value="' + newLabel + '"]').length > 1) {
             jQuery(element).val('');
             Fisma.Util.showAlertDialog('Chart Label must be unique.');
@@ -149,11 +148,7 @@ Fisma.FindingWorkflow = {
      * @param (HTMLElement) element The element that triggers the event
      */
     toggleDetailPanel : function(element) {
-        parentElement = jQuery(element).parents('li');
-        /*if (edited) {
-            var logMessage = Fisma.FindingWorkflow.getSelfText(jQuery(element).parents("li")) + ' modified.';
-            Fisma.FindingWorkflow.addChangeLogEntry(logMessage);
-        }*/
+        var parentElement = jQuery(element).parents('li');
         if (jQuery(element).text().indexOf('View') >= 0) {
             jQuery(element).text('[Close Details]');
         } else if (jQuery(element).text().indexOf('Close') >= 0) {
@@ -191,6 +186,12 @@ Fisma.FindingWorkflow = {
         jQuery(entry).slideToggle("fast");
     },
 
+    /**
+     * Pop-up a panel to select assigned roles
+     *
+     * @param linkElement The link that triggers this function, used as a reference point back to the step
+     * @return boolean  false, to prevent form submission
+     */
     showRoleDialog : function(linkElement) {
         var panel = Fisma.UrlPanel.showPanel(
                 'Select Roles',
@@ -230,6 +231,12 @@ Fisma.FindingWorkflow = {
         return false;
     },
 
+    /**
+     * Pop-up a panel to select a destination step to migrate findings from the deleted step
+     *
+     * @param linkElement The link that triggers this function, used as a reference point back to the step
+     * @return boolean  false, to prevent form submission
+     */
     showRemoveStepDialog : function(linkElement) {
         if (jQuery(linkElement).parents('ul.dragList').find('input[name$="destinationId"]').filter(function(i, e){
             return (jQuery(e).val() == '' && e.name.indexOf('skeleton') < 0);

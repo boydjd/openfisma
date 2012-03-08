@@ -27,6 +27,62 @@
 class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
 {
     /**
+     * Return HTML code for a span with the tooltip
+     *
+     * @param String $type Either workflowTitle, chartLabel, statusMessage, or onTime
+     * @param String $id   The prefix id to identify the unique element carrying the tooltip
+     *
+     * @return Fisma_Yui_Tooltip
+     */
+    public static function getWorkflowTooltip($type, $id)
+    {
+        $workflowTitle = 'The workflow title is used to distinguish the workflow step and to auto-create the status me'
+                       . 'ssage. The status message adds the word awaiting to the beginning of the workflow title. For'
+                       . ' example, if you create a workflow step called \\"CISO Approval of Evidence Package\\", the '
+                       . 'status message becomes \\"Awaiting CISO Approval of Evidence Package\\".';
+        $chartLabel = 'The chart label is used to designate the workflow step in short notation. The chart label is us'
+                    . 'ed for graphs, reports, and searching. For example, if the chart label for workflow step ISSO A'
+                    . 'pproval of Mitigation Strategy is set to \\"MS ISSO\\" then the graph will identify the workflo'
+                    . 'w step as \\"MS ISSO\\" and the user will be able to search for items currently in the \\"MS IS'
+                    . 'SO\\" status.';
+        $statusMessage = 'The status message is a brief synopsis of the current status used to give additional context'
+                       . ' to the user rather than showing them an acronym. For example, the status message \\"Awaitin'
+                       . 'g ISSO Approval of Mitigation Strategy\\" informs the user what has to happen before the sta'
+                       . 'tus is changed.';
+        $onTime = 'The on time period sets the number of calendar days that the workflow step is considered on time. O'
+                . 'nce the period has lapsed, the workflow step becomes overdue. For example, if the period is set to '
+                . '7, then the action will remain on-time for 7 calendar days.';
+
+        switch ($type) {
+        case 'workflowTitle':
+            return new Fisma_Yui_Tooltip(
+                "{$id}_workflowtitle",
+                'Workflow Title',
+                $workflowTitle
+            );
+        case 'chartLabel':
+            return new Fisma_Yui_Tooltip(
+                "{$id}_chartlabel",
+                'Chart Label',
+                $chartLabel
+            );
+        case 'statusMessage':
+            return new Fisma_Yui_Tooltip(
+                "{$id}_statusmessage",
+                'Status Message',
+                $statusMessage
+            );
+        case 'onTime':
+            return new Fisma_Yui_Tooltip(
+                "{$id}_ontime",
+                'On Time',
+                $onTime
+            );
+        default:
+            return "";
+        }
+    }
+    /**
      * Construct the workflow diagram
      *
      * @return void
@@ -47,6 +103,29 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                                   ->where('e.approvalGroup = ?', 'evidence')
                                   ->orderBy('e.precedence')
                                   ->execute();
+
+        $this->view->editMode = (
+            $this->_acl->hasPrivilegeForClass('create', 'Evaluation') ||
+            $this->_acl->hasPrivilegeForClass('update', 'Evaluation') ||
+            $this->_acl->hasPrivilegeForClass('delete', 'Evaluation')
+        );
+
+        if ($this->view->editMode) {
+            $this->view->saveButton = new Fisma_Yui_Form_Button(
+                'saveButton',
+                array(
+                    'label' => 'Save',
+                    'onClickFunction' => 'Fisma.FindingWorkflow.forceSubmit'
+                )
+            );
+            $this->view->cancelButton = new Fisma_Yui_Form_Button_Link(
+                'cancelButton',
+                array(
+                    'value' => 'Cancel',
+                    'href' => '/finding/workflow/view'
+                )
+            );
+        }
     }
 
     /**

@@ -7,22 +7,6 @@ $list = $this->list;
 // Prepare HTML snippets
 $disabled = ($editMode) ? "" : "readonly";
 $prefix = (empty($this->step->name)) ? $list . "_skeleton_" : uniqid($list . "_") . "_";
-
-// Hard-code Tooltips
-$workflowTitle = 'The workflow title is used to distinguish the workflow step and to auto-create the status message. '
-               . 'The status message adds the word awaiting to the beginning of the workflow title. For example, if '
-               . 'you create a workflow step called \\"CISO Approval of Evidence Package\\", the status message '
-               . 'becomes \\"Awaiting CISO Approval of Evidence Package\\".';
-$chartLabel = 'The chart label is used to designate the workflow step in short notation. The chart label is used for '
-            . 'graphs, reports, and searching. For example, if the chart label for workflow step ISSO Approval of '
-            . 'Mitigation Strategy is set to \\"MS ISSO\\" then the graph will identify the workflow step as \\"MS '
-            . 'ISSO\\" and the user will be able to search for items currently in the \\"MS ISSO\\" status.';
-$statusMessage = 'The status message is a brief synopsis of the current status used to give additional context to the '
-               . 'user rather than showing them an acronym. For example, the status message \\"Awaiting ISSO Approval '
-               . 'of Mitigation Strategy\\" informs the user what has to happen before the status is changed.';
-$onTime = 'The on time period sets the number of calendar days that the workflow step is considered on time. Once the '
-        . 'period has lapsed, the workflow step becomes overdue. For example, if the period is set to 7, then the '
-        . 'action will remain on-time for 7 calendar days.';
 ?>
 
 <span class='linkBar'>
@@ -49,11 +33,7 @@ $onTime = 'The on time period sets the number of calendar days that the workflow
     <table>
         <tr>
             <td><?php
-                echo $this->escape(new Fisma_Yui_Tooltip(
-                    $prefix . "workflowtitle",
-                    'Workflow Title',
-                    $workflowTitle
-                ), 'none');
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('workflowTitle', $prefix), 'none');
             ?></td>
             <td><input
                 type='text'
@@ -65,11 +45,7 @@ $onTime = 'The on time period sets the number of calendar days that the workflow
         </tr>
         <tr>
             <td><?php
-                echo $this->escape(new Fisma_Yui_Tooltip(
-                    $prefix . "chartlabel",
-                    'Chart Label',
-                    $chartLabel
-                ), 'none');
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('chartLabel', $prefix), 'none');
             ?></td>
             <td><input
                 type='text'
@@ -81,21 +57,13 @@ $onTime = 'The on time period sets the number of calendar days that the workflow
         </tr>
         <tr>
             <td><?php
-                echo $this->escape(new Fisma_Yui_Tooltip(
-                    $prefix . "statusmessage",
-                    'Status Message',
-                    $statusMessage
-                ), 'none');
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('statusMessage', $prefix), 'none');
             ?></td>
             <td><div>Awaiting <span class='stepName'><?php echo $this->escape($step->name); ?></span></div></td>
         </tr>
         <tr>
             <td><?php
-                echo $this->escape(new Fisma_Yui_Tooltip(
-                    $prefix . "ontime",
-                    'On Time',
-                    $onTime
-                ), 'none');
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('onTime', $prefix), 'none');
             ?></td>
             <td><input
                 type='text'
