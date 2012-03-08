@@ -97,13 +97,17 @@ class Fisma_Zend_Form_Manager
 
         $className = join("_", array_map("ucwords", explode('_', $options['formName'])));
 
-        if ((!empty($options['formName'])) && class_exists('Fisma_Zend_Form_Manager_' . $className)) {
-            $className = 'Fisma_Zend_Form_Manager_' . $className;
-            $prepareForm = new $className($options['view'], $options['request'], $options['acl'], $options['user']);
-            $prepareForm->setForm($form);
-            $prepareForm->prepareForm();
-            $form = $prepareForm->getForm();
-            unset($prepareForm);
+        try {
+            if ((!empty($options['formName'])) && class_exists('Fisma_Zend_Form_Manager_' . $className)) {
+                $className = 'Fisma_Zend_Form_Manager_' . $className;
+                $prepareForm = new $className($options['view'], $options['request'], $options['acl'], $options['user']);
+                $prepareForm->setForm($form);
+                $prepareForm->prepareForm();
+                $form = $prepareForm->getForm();
+                unset($prepareForm);
+            }
+        } catch (ErrorException $e) {
+            // exception expected, moving on...
         }
 
         $form = self::addDefaultElementDecorators($form);

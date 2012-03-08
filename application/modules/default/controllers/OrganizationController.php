@@ -633,6 +633,22 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $form = $this->getForm('organization_converttosystem');
         if ($form->isValid($this->getRequest()->getPost())) {
             $organization = Doctrine::getTable('Organization')->find($id);
+
+            $openFinding = $organization->getOpenFindings();
+            if ($openFinding > 0 && 'disposal' == $form->getElement('sdlcPhase')->getValue()) {
+
+                /**
+                 * @TODO English
+                 */
+                $plural  = $openFinding == 1 ? 'There is an open finding' : 'There are open findings';
+                $msg = 'Unable to convert Organization to System with SDLC Phase of disposal:<br>'
+                       . $plural
+                       . ' associated with this organization.';
+
+                $this->view->priorityMessenger($msg, 'warning');
+                $this->_redirect('/organization/view/id/' . $id);
+            }
+
             $organization->convertToSystem(
                 $form->getElement('type')->getValue(),
                 $form->getElement('sdlcPhase')->getValue(),
@@ -658,7 +674,15 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function convertToSystemFormAction()
     {
         $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
-        $this->view->form = $this->getForm('organization_converttosystem');
+        $form = $this->getForm('organization_converttosystem');
+
+        $organization = Doctrine::getTable('Organization')->findOneById($id);
+
+        if (!$organization) {
+            throw new Fisma_Zend_Exception("Invalid Organization ID");
+        }
+
+        $this->view->form = $form;
         $this->view->form->setAction('/organization/convert-to-system/id/' . $id);
     }
 }

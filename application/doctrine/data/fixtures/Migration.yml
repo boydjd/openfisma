@@ -4,6 +4,11 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: BootstrapMigration
+    021700_add_mail_table:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: AddMailTable
     021700_consolidate_file_upload:
         majorVersion: 2
         minorVersion: 17
@@ -14,3 +19,13 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: IncidentModelCleanup
+    021700_update_evaluation_names:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: UpdateEvaluationNames
+    021700_finding_workflow:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: FindingWorkflow

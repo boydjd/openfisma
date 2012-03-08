@@ -66,7 +66,8 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
             $upload = $uploadTable->find($history->uploadId);
             $downloadUrl = '/system-document/download/id/' . $history->id . '/version/' . $history->version;
             $historyRows[] = array(
-                'fileName' => "<a href=$downloadUrl>" . $this->view->escape($upload->fileName) . "</a>",
+                'fileName' => $this->view->escape($upload->fileName),
+                'fileNameLink' => "<a href=$downloadUrl>" . $this->view->escape($upload->fileName) . "</a>",
                 'version' => $history->version,
                 'description' => $this->view->textToHtml($this->view->escape($history->description)),
             );
@@ -80,6 +81,20 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
                 true,
                 'Fisma.TableFormat.formatHtml',
                 null,
+                'fileName',
+                true
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'fileNameLink',
+                false,
+                'string',
                 'fileName'
             )
         );

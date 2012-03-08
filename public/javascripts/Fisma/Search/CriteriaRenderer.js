@@ -48,7 +48,7 @@ Fisma.Search.CriteriaRenderer = function () {
             container.appendChild(text);
 
             var highEnd = document.createElement('input');
-            
+
             if (operands && operands.length > 1) {
                 highEnd.value = operands[1];
             }
@@ -246,7 +246,7 @@ Fisma.Search.CriteriaRenderer = function () {
                 var enumValue = enumValues[index];
 
                 menuItem = {
-                    text : enumValue,
+                    text : $P.htmlentities(enumValue),
                     value : enumValue,
                     onclick : {fn : handleEnumSelectionEvent}
                 };
@@ -255,7 +255,7 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             // If an operand is supplied, that is the default value. Otherwise the default is the first enum value.
-            var defaultValue = (operands && operands.length > 0) ? operands[0] : enumValues[0];
+            var defaultValue = $P.htmlentities((operands && operands.length > 0) ? operands[0] : enumValues[0]);
 
             // Render menu button
             var menuButton = new YAHOO.widget.Button({

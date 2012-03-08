@@ -165,6 +165,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             return;
         } elseif (!$incident->isValid()) {
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
+        } elseif (!$subFormValid) {
+            $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
+
+            $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
         } else {
             // The user can move forwards or backwards
             if ($this->getRequest()->getParam('irReportForwards')) {
@@ -277,7 +281,20 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     public function getFormPart($step)
     {
         $formPart = Fisma_Zend_Form_Manager::loadForm($this->_formParts[$step]['name']);
-        $formPart->setAttrib('id', 'incident_wizard');
+
+        /**
+         * Add buttons to the form. The continue button is added first so that it is the default submit button if
+         * the user presses the "enter" key. The buttons are re-arranged into a more logical order on the screen with
+         * CSS.
+         */
+        $forwardButton = new Fisma_Yui_Form_Button_Submit(
+            'irReportForwards',
+            array(
+                'label' => 'Continue',
+                'imageSrc' => $this->view->serverUrl("/images/right_arrow.png"),
+            )
+        );
+        $formPart->addElement($forwardButton);
 
         $cancelButton = new Fisma_Yui_Form_Button_Submit(
             'irReportCancel',
@@ -400,8 +417,58 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 break;
         }
 
-        $formPart = Fisma_Zend_Form_Manager::addDefaultElementDecorators($formPart);
         return $formPart;
+    }
+
+    /**
+     * Loads all form parts into a single form which can be rendered into a single page
+     *
+     * @return Zend_Form
+     */
+    public function getIncidentForm()
+    {
+        $form = new Fisma_Zend_Form();
+
+        // Load all form parts and append each one to the main form
+        $formParts = array_keys($this->_formParts);
+        foreach ($formParts as $part) {
+            // The first form only contains instructions... so skip it
+            if (0 == $part) {
+                continue;
+            }
+
+            // For remaining form parts, load them and remove the navigational buttons and instructions
+            $subform = $this->getFormPart($part);
+            $subform->removeElement('cancel');
+            $subform->removeElement('backwards');
+            $subform->removeElement('forwards');
+            $subform->removeElement('instructions');
+
+            $form->addSubForm($subform, $this->_formParts[$part]['name']);
+        }
+
+        // Add submit/reset/cancel buttons
+        $resetButton = new Fisma_Yui_Form_Button_Reset(
+            'reset',
+            array(
+                'label' => 'Reset'
+            )
+        );
+        $form->addElement($resetButton);
+
+        $saveButton = new Fisma_Yui_Form_Button_Submit(
+            'save',
+            array(
+                'label' => 'Save'
+            )
+        );
+        $form->addElement($saveButton);
+
+        // Setup decorators
+        $form->setSubFormDecorators(array(new Zend_Form_Decorator_FormElements()));
+        $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
+
+        return $form;
     }
 
     /**
@@ -520,8 +587,19 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Send emails to IRCs
         $coordinators = $this->_getIrcs();
         foreach ($coordinators as $coordinator) {
-            $mail = new Fisma_Zend_Mail();
-            $mail->IRReport($coordinator, $incident->id);
+            $options = array(
+                'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incident->id,
+                'incidentId' => $incident->id
+            );
+
+            $mail = new Mail();
+            $mail->recipient     = $coordinator['u_email'];
+            $mail->recipientName = $coordinator['u_name'];
+            $mail->subject       = "A new incident has been reported.";
+
+            $mail->mailTemplate('ir_reported', $options);
+
+            Zend_Registry::get('mail_handler')->setMail($mail)->send();
         }
 
         // Set the intial POC to one of the ISSOs (Yes, this code stinks, but the requirements lack
@@ -543,8 +621,19 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $incident->pocId = $issos[0]['id'];
                 $incident->save();
 
-                $mail = new Fisma_Zend_Mail;
-                $mail->IRAssign($incident->pocId, $incident->id);
+                $options = array(
+                    'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incident->id,
+                    'incidentId' => $incident->id
+                );
+
+                $mail = new Mail();
+                $mail->recipient     = $coordinator['u_email'];
+                $mail->recipientName = $coordinator['u_name'];
+                $mail->subject       = "You have been assigned to a new incident.";
+
+                $mail->mailTemplate('ir_assign', $options);
+
+                Zend_Registry::get('mail_handler')->setMail($mail)->send();
 
                 $message = "The ISSO ({$issos[0]['username']}) has been notified of this incident.";
                 $this->view->priorityMessenger($message, 'notice');
@@ -659,6 +748,40 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
         $this->view->lockIncidentPrivilege = $this->_acl->hasPrivilegeForClass('lock', 'Incident');
+
+        // Create toolbar buttons and form action
+        $this->view->discardChangesButton = new Fisma_Yui_Form_Button_Link(
+            'discardChanges',
+            array(
+                'value' => 'Discard Changes',
+                'href' => "/incident/view/id/$id"
+            )
+        );
+
+        $this->view->saveChangesButton = new Fisma_Yui_Form_Button_Submit(
+            'saveChanges',
+            array(
+                'label' => 'Save Changes'
+            )
+        );
+
+        $this->view->unlockButton = new Fisma_Yui_Form_Button_Link(
+            'unlock',
+            array(
+                'value' => 'Unlock Incident',
+                'href' => "/incident/unlock/id/$id"
+            )
+        );
+
+        $this->view->lockButton = new Fisma_Yui_Form_Button_Link(
+            'lock',
+            array(
+                'value' => 'Lock Incident',
+                'href' => "/incident/lock/id/$id"
+            )
+        );
+
+        $this->view->formAction = "/incident/update/id/$id";
 
         $orgId = $incident['Organization']['id'];
         $organization = Doctrine::getTable('Organization')->find($orgId);
@@ -978,8 +1101,21 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             }
 
             // Send e-mail
-            $mail = new Fisma_Zend_Mail();
-            $mail->IRAssign($userId, $incidentId);
+            $emailUser = Doctrine::getTable('User')->find($userId);
+
+            $options = array(
+                'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incidentId,
+                'incidentId' => $incidentId
+            );
+
+            $mail = new Mail();
+            $mail->recipient     = $emailUser->email;
+            $mail->recipientName = $emailUser->nameFirst . ' ' . $emailUser->nameLast;
+            $mail->subject       = "You have been assigned to a new incident.";
+
+            $mail->mailTemplate('ir_assign', $options);
+
+            Zend_Registry::get('mail_handler')->setMail($mail)->send();
         } else {
             $response->fail("No user found with that name.");
         }
@@ -1067,8 +1203,21 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $incident->completeStep($comment);
 
             foreach ($this->_getAssociatedUsers($incident->id) as $user) {
-                $mail = new Fisma_Zend_Mail();
-                $mail->IRStep($user['userId'], $incident->id, $currentStep->name, $currentStep->User->username);
+                $options = array(
+                    'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $id,
+                    'incidentId' => $id,
+                    'workflowStep' => $currentStep->name,
+                    'workflowCompletedBy' => $currentStep->User->username
+                );
+
+                $mail = new Mail();
+                $mail->recipient     = $user['u_email'];
+                $mail->recipientName = $user['u_name'];
+                $mail->subject       = "A workflow step has been completed";
+
+                $mail->mailTemplate('ir_step', $options);
+
+                Zend_Registry::get('mail_handler')->setMail($mail)->send();
             }
 
             $message = 'Workflow step completed. ';
@@ -1248,7 +1397,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $downloadUrl = '/incident/download-artifact/id/' . $id . '/artifactId/' . $artifact->id;
             $artifactRows[] = array(
                 'iconUrl'  => "<a href=$downloadUrl><img src=" . $this->view->escape($artifact->getIconUrl()) . "></a>",
-                'fileName' => "<a href=$downloadUrl><div>" . $this->view->escape($artifact->fileName) . "</div></a>",
+                'fileName' => $this->view->escape($artifact->fileName),
+                'fileNameLink' => "<a href=$downloadUrl>" . $this->view->escape($artifact->fileName) . "</a>",
                 'fileSize' => $artifact->getFileSize(),
                 'user'     => $this->view->userInfo($artifact->User->username),
                 'date'     => $artifact->createdTs,
@@ -1274,6 +1424,20 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 true,
                 'Fisma.TableFormat.formatHtml',
                 null,
+                'fileName',
+                true
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'fileNameLink',
+                false,
+                'string',
                 'fileName'
             )
         );
@@ -1667,26 +1831,18 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Get the user ids of all IRCs
-     *
-     * @return array
      */
     private function _getIrcs()
     {
         $query = Doctrine_Query::create()
-                 ->select('u.id')
+                 ->select("u.email as email, CONCAT(u.nameFirst, ' ', u.nameLast) as name")
                  ->from('User u')
                  ->innerJoin('u.Roles r')
                  ->where('r.nickname LIKE ?', 'IRC')
                  ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-        $ids = $query->execute();
+        $ircs = $query->execute();
 
-        // Massage results
-        $return = array();
-        foreach ($ids as $id) {
-            $return[] = $id['u_id'];
-        }
-
-        return $return;
+        return $ircs;
     }
 
     /**
@@ -1726,10 +1882,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     private function _getAssociatedUsers($incidentId)
     {
         $incidentUsersQuery = Doctrine_Query::create()
-                              ->select('u.userId')
-                              ->from('IrIncidentUser u')
-                              ->where('u.incidentId = ?', $incidentId)
-                              ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+                              ->select("u.email as email, CONCAT(u.nameFirst, ' ', u.nameLast) as name")
+                              ->from('IrIncidentUser iru')
+                              ->leftJoin('iru.User u')
+                              ->where('iru.incidentId = ?', $incidentId)
+                              ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $incidentUsers = $incidentUsersQuery->execute();
 

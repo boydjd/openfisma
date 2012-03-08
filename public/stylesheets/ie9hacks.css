@@ -47,3 +47,8 @@
 .ie9-only {
     display: inline;
 }
+
+/* For fixing OFJ-1569 */
+dl {
+  margin : 0  
+}

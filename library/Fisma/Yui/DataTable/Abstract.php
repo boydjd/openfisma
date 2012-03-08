@@ -102,6 +102,12 @@ abstract class Fisma_Yui_DataTable_Abstract
                 $columnDefinition['formatterParameters'] = $column->getFormatterParameters();
             }
 
+            // Add the sortOptions.field if set
+            $sortField = $column->getSortField();
+            if ($sortField) {
+                $columnDefinition['sortOptions'] = array('field' => $sortField);
+            }
+
             $columnDefinitions[] = $columnDefinition;
         }
 

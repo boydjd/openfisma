@@ -71,6 +71,13 @@ abstract class Fisma_Cli_Abstract
     abstract protected function _run();
 
     /**
+     * A log object for subclasses to write to.
+     *
+     * @var Zend_log
+     */
+    private $_log;
+
+    /**
      * Subclasses may override this method to set their console options
      *
      * @see http://framework.zend.com/manual/en/zend.console.getopt.rules.html
@@ -151,14 +158,17 @@ abstract class Fisma_Cli_Abstract
             $this->_cliArguments = new Zend_Console_Getopt($argumentsDefinitions);
             $this->_cliArguments->parse();
 
+            $this->getLog()->debug("Script arguments: " . $this->_cliArguments);
+
             // If help is requested, then display help text and exit out
             $help = $this->_cliArguments->getOption('h');
             if ($help) {
-                fwrite(STDOUT, $this->getHelpText());
+                $this->getLog()->info($this->getHelpText());
                 return self::EXIT_SUCCESS;
             }
         } catch (Zend_Console_Getopt_Exception $e) {
-            echo $e->getUsageMessage();
+            $this->getLog()->info($e->getUsageMessage());
+
             if (Fisma::RUN_MODE_TEST != Fisma::mode()) {
                 return self::EXIT_BAD_ARGS;
             }
@@ -169,19 +179,17 @@ abstract class Fisma_Cli_Abstract
             $this->_run();
         } catch (Zend_Config_Exception $zce) {
             // A zend config exception indicates that the application may not be installed properly
-            echo 'The application is not installed correctly.' . PHP_EOL;
-            echo 'Exception ' . get_class($zce) . ' Occurred: ' . $zce->getMessage() . PHP_EOL;
+            $this->getLog()->err('The application is not installed correctly.');
+            $this->getLog()->err($zce);
             return;
         } catch (Exception $e) {
-            $stderr = fopen('php://stderr', 'w');
-            fwrite($stderr, "ERROR: " . $e->getMessage() . "\n");
+            $this->getLog()->err($e->getMessage());
 
             // Don't print stack traces for user-level exceptions.
             if (!($e instanceof Fisma_Zend_Exception_User)) {
-                fwrite($stderr, $e->getTraceAsString() . "\n\n");
+                $this->getLog()->err($e);
             }
 
-            fclose($stderr);
             return self::EXIT_UNHANDLED_EXCEPTION;
         }
 
@@ -191,12 +199,12 @@ abstract class Fisma_Cli_Abstract
         $minutes = floor($elapsed / 60);
         $seconds = $elapsed - ($minutes * 60);
 
-        print "\nFinished in $minutes minutes and $seconds seconds.\n";
+        $this->getLog()->info("Finished in $minutes minutes and $seconds seconds.\n");
 
         return self::EXIT_SUCCESS;
     }
 
-    /*
+    /**
      * Check InnoDb whether is supported or not in mysql
      *
      * @return boolean
@@ -220,5 +228,49 @@ abstract class Fisma_Cli_Abstract
         }
 
         return !empty($innodb) && 'no' !== strtolower($innodb['Support']);
+    }
+
+    /**
+     * Set the logger used by this command line script.
+     *
+     * @param Zend_Log $log
+     */
+    public function setLog(Zend_Log $log)
+    {
+        $this->_log = $log;
+    }
+
+    /**
+     * Get the log instance (or create a default one if none exists).
+     *
+     * @return Zend_Log
+     */
+    public function getLog()
+    {
+        if (!$this->_log) {
+            // STDOUT shows INFO only in production mode, but shows INFO and DEBUG in debug mode
+            $stdoutWriter = new Zend_Log_Writer_Stream("php://stdout");
+
+            if (Fisma::debug()) {
+                $stdoutWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::INFO, "=="));
+            } else {
+                $stdoutWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::INFO, ">="));
+            }
+
+            // STDERR shows NOTICE, WARN, ERR, CRIT, ALERT, and EMERG
+            $stderrWriter = new Zend_Log_Writer_Stream("php://stderr");
+            $stderrWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::NOTICE, "<="));
+
+            // The format for STDOUT and STDERR is no frills:
+            $formatter = new Zend_Log_Formatter_Simple("%message%\n");
+            $stdoutWriter->setFormatter($formatter);
+            $stderrWriter->setFormatter($formatter);
+
+            $this->_log = new Zend_Log;
+            $this->_log->addWriter($stdoutWriter);
+            $this->_log->addWriter($stderrWriter);
+        }
+
+        return $this->_log;
     }
 }

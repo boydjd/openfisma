@@ -203,15 +203,37 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             // Just send out email when create a new account or change password by admin user,
             // and it does not sent out email when the root user changes his own password.
+            $mail = new Mail();
+            $mail->recipient     = $subject->email;
+            $mail->recipientName = $subject->nameFirst . ' ' . $subject->nameLast;
+            $systemName = Fisma::configuration()->getConfig('system_name');
             if ('create' === $actionName) {
-                $mail = new Fisma_Zend_Mail();
-                $mail->sendAccountInfo($subject);
-            } else if ('edit' === $actionName
+                $options = array(
+                    'systemName' => $systemName,
+                    'username' => $subject->username,
+                    'plainTextPassword' => $subject->plainTextPassword,
+                    'authType' => Fisma::configuration()->getConfig('auth_type')
+                );
+
+                $mail->subject = "Your new account for $systemName has been created";
+                $mail->mailTemplate('send_account_info', $options);
+
+                Zend_Registry::get('mail_handler')->setMail($mail)->send();
+            } else if ('view' === $actionName
                        && !empty($values['password'])
                        && ('root' !== $subject->username || $this->_me->username !== 'root')) {
-                $mail = new Fisma_Zend_Mail();
-                $mail->sendPassword($subject);
-            } 
+
+                $options = array(
+                    'systemName' => $systemName,
+                    'plainTextPassword' => $subject->plainTextPassword,
+                    'host' => Fisma_Url::baseUrl()
+                );
+
+                $mail->subject = "Your password for $systemName has been changed";
+                $mail->mailTemplate('send_password', $options);
+
+                Zend_Registry::get('mail_handler')->setMail($mail)->send();
+            }
 
             // do not need to audit log root user's role or organization
             if ('edit' === $actionName && ($roleChanged || $organizationChanged) && 'root' !== $subject->username) {
@@ -1088,11 +1110,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         // Compare two arrays of organizationIds in each role.
         for ($i = 0; $i < count($originalData); $i++) {
+
+            // Do not need to sort and compare original and posted data if one has data and the other one doesn't. 
+            if (isset($originalData[$i]) Xor isset($postData[$i])) { 
+                return true;
+            } 
+
             sort($originalData[$i]);
             sort($postData[$i]);
             if ($originalData[$i] != $postData[$i]) {
                 return true;
-            } 
+            }
         }
         return false;
     }

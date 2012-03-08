@@ -53,6 +53,13 @@ abstract class Fisma_Migration_Abstract
     private $_helper;
 
     /**
+     * A reference to a log object for recording migration messages.
+     *
+     * @var Zend_Log
+     */
+    protected $_log;
+
+    /**
      * Run this migration step.
      *
      * @param PDO
@@ -137,6 +144,16 @@ abstract class Fisma_Migration_Abstract
     }
 
     /**
+     * Set the logger.
+     *
+     * @param Zend_Log $log
+     */
+    public function setLog($log)
+    {
+        $this->_log = $log;
+    }
+
+    /**
      * Provides an instance of the FileManager
      *
      * @return Fisma_FileManager
@@ -146,4 +163,16 @@ abstract class Fisma_Migration_Abstract
         return new Fisma_FileManager(Fisma::getPath('fileStorage'), new finfo(FILEINFO_MIME));
     }
 
+    /**
+     * Pretty-print messages to the user.
+     *
+     * @param string $message
+     * @return void
+     */
+    public function message($message)
+    {
+        if ($this->_log) {
+            $this->_log->info(preg_replace('/^/m', '> ', rtrim($message)));
+        }
+    }
 }

@@ -4,31 +4,31 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
- * Bootstrap class for Zend_Application 
- * 
+ * Bootstrap class for Zend_Application
+ *
  * @uses Zend_Application_Bootstrap_Bootstrap
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstrap
 {
     /**
-     * Register shutdown function 
-     * 
+     * Register shutdown function
+     *
      * @access protected
      * @return void
      */
@@ -39,8 +39,8 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
-     * Initialize the error handler 
-     * 
+     * Initialize the error handler
+     *
      * @access protected
      * @return void
      */
@@ -62,8 +62,8 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
-     * Initialize configuration 
-     * 
+     * Initialize configuration
+     *
      * @access protected
      * @return void
      */
@@ -73,23 +73,23 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
-     * Initialize and connect to the database 
-     * 
+     * Initialize and connect to the database
+     *
      * @access protected
      * @return void
      */
     protected function _initDb()
     {
         $db = Fisma::$appConf['db'];
-        $connectString = $db['adapter'] 
-                       . '://' 
-                       . $db['username'] 
-                       . ':' 
-                       . $db['password'] 
-                       . '@' 
-                       . $db['host'] 
-                       . ($db['port'] ? ':' . $db['port'] : '') 
-                       . '/' 
+        $connectString = $db['adapter']
+                       . '://'
+                       . $db['username']
+                       . ':'
+                       . $db['password']
+                       . '@'
+                       . $db['host']
+                       . ($db['port'] ? ':' . $db['port'] : '')
+                       . '/'
                        . $db['schema'];
 
         Doctrine_Manager::connection($connectString);
@@ -117,7 +117,7 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         }
 
         Zend_Registry::set(
-            'doctrine_config', 
+            'doctrine_config',
             array(
                 'data_fixtures_path'  =>  Fisma::getPath('fixture'),
                 'models_path'         =>  Fisma::getPath('model'),
@@ -132,8 +132,8 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
-     * Instantiate a search engine and save it in the registry 
-     * 
+     * Instantiate a search engine and save it in the registry
+     *
      * @access protected
      * @return void
      */
@@ -147,8 +147,8 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
-     * _initRegisterLogger 
-     * 
+     * _initRegisterLogger
+     *
      * @access protected
      * @return void
      */
@@ -157,50 +157,13 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         $this->bootstrap('Log');
 
         $logger = $this->getResource('Log');
-        
+
         Zend_Registry::set('Zend_Log', $logger);
     }
 
     /**
-     * _initZfDebug 
-     * 
-     * @access protected
-     * @return void
-     */
-    protected function _initZfDebug()
-    {
-        $this->bootstrap('cachemanager');
-
-        $frontController = Zend_Controller_Front::getInstance();
-
-        if (Fisma::mode() == Fisma::RUN_MODE_WEB_APP && Fisma::debug()) {
-            $manager = $this->getResource('cachemanager');
-            $cache = $manager->getCache('default');
-
-            $zfDebugOptions = array(
-                                'jquery_path' => '/javascripts/jquery-min.js',
-                                'plugins' => array(
-                                    'Variables',
-                                    'Html',
-                                    'Danceric_Controller_Plugin_Debug_Plugin_Doctrine',
-                                    'File' => array('base_path' => APPLICATION_PATH . "/.."),
-                                    'Memory',
-                                    'Cache' => array('backend' => $cache->getBackend()),
-                                    'Time',
-                                    'Registry',
-                                    'Exception')
-                                );
-
-            $debug = new ZFDebug_Controller_Plugin_Debug($zfDebugOptions);
-            $debug->registerPlugin(new Fisma_ZfDebug_Plugin_YuiLogging);
-
-            $frontController->registerPlugin($debug);
-        }
-    }
-
-    /**
-     * _initHelperBroker 
-     * 
+     * _initHelperBroker
+     *
      * @access protected
      * @return void
      */
@@ -210,8 +173,8 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
-     * Initialize the layout 
-     * 
+     * Initialize the layout
+     *
      * @access protected
      * @return void
      */
@@ -226,8 +189,8 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
     }
 
     /**
-     * Configure the view 
-     * 
+     * Configure the view
+     *
      * @access protected
      * @return void
      */
@@ -258,5 +221,18 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
             'fileManager',
             new Fisma_FileManager(Fisma::getPath('fileStorage'), new finfo(FILEINFO_MIME))
         );
+    }
+
+    /**
+     * Instantiate a mail handler
+     *
+     * @access protected
+     * @return void
+     */
+    protected function _initMailHandler()
+    {
+        $mailHandler = new Fisma_MailHandler_Queue();
+
+        Zend_Registry::set('mail_handler', $mailHandler);
     }
 }
