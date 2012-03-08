@@ -32,7 +32,7 @@
     var FIW = function(data, templateId) {
         this._stepTemplate = $("#" + templateId + " tr").first();
         this._addOptionsToRoleSelect(data.roles);
-        var lastTr = $("table.fisma_crud tr:last-child").first(),
+        var lastTr = $("table.fisma_crud tr").first().siblings().last(),
             that = this;
         $.each(data.steps, function(index, value) {
             that.addStepBelow(lastTr, value);
