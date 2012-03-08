@@ -233,7 +233,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             ->from('Finding f')->leftJoin('f.Attachments')->where('f.id = ?', $id)
             ->fetchOne();
 
-        if (false == $finding) {
+        if (!$finding) {
              $msg = '%s (%d) not found. Make sure a valid ID is specified.';
              throw new Fisma_Zend_Exception_User(sprintf($msg, $this->_modelName, $id));
         }
