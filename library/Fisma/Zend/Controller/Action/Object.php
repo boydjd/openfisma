@@ -321,7 +321,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->form = $form;
 
         $this->view->modelName = $this->getSingularModelName();
-        $this->view->toolbarButtons = $this->getToolbarButtons($object);
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**

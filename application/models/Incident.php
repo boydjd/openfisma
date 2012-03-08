@@ -129,7 +129,7 @@ class Incident extends BaseIncident
         // Handle any pre-existing workflows (e.g. when changing from one category to another)
         $baseCardinality = 0;
 
-        if ($this->CurrentWorkflowStep) {
+        if ($this->currentWorkflowStepId) {
             if ($this->CurrentWorkflowStep->cardinality > 1) {
                 // The current workflow is already in progress so change the step to show that the workflow has changed
                 $changedWorkflowMessage = "<p>The category has been changed to \"{$category->name}\" and the workflow"
@@ -183,7 +183,10 @@ class Incident extends BaseIncident
                 $firstLoop = false;
 
                 $iw->status = 'current';
-                $this->CurrentWorkflowStep = $iw;
+                $iw->save();
+
+                $this->currentWorkflowStepId = $iw->id;
+                $this->save();
             }
         }
 

@@ -70,7 +70,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $subject The specified subject model
-     * @return integer Asset ID
+     * @return Fisma_Doctrine_Record The saved record
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
@@ -85,7 +85,8 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
         $subject->merge($values);
         $subject->save();
-        return $subject->id;
+
+        return $subject;
     }
 
     /**

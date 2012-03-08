@@ -70,13 +70,14 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $workflowDefinition The specified subject model
-     * @return integer ID of the object saved.
+     * @return Fisma_Doctrine_Record The saved record
      */
     protected function saveValue($form, $workflowDefinition = null)
     {
         Doctrine_Manager::connection()->beginTransaction();
 
-        $workflowId = parent::saveValue($form, $workflowDefinition);
+        $workflow = parent::saveValue($form, $workflowDefinition);
+        $workflowId = $workflow->id;
 
         // Handle special cases of merging workflow steps
         $post = $this->getRequest()->getPost();
@@ -134,7 +135,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
 
         Doctrine_Manager::connection()->commit();
 
-        return $workflowId;
+        return $workflow;
     }
 
     /**

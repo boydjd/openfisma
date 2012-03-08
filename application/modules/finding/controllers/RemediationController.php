@@ -115,7 +115,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      *
      * @param Zend_Form $form The specified form to save
      * @param Doctrine_Record|null $subject The subject model related to the form
-     * @return integer ID of the object
+     * @return Fisma_Doctrine_Record The saved record
      * @throws Fisma_Zend_Exception if the subject is not null or the organization of the finding associated
      * to the subject doesn`t exist
      */
@@ -148,7 +148,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $finding->save();
 
-        return $finding->id;
+        return $finding;
     }
 
     /**
