@@ -197,7 +197,7 @@ Fisma.Remediation = {
         for (var i = 0; i < document.links.length; i++) {
             var link = document.links[i];
 
-            if (link.href.indexOf('download-evidence') >= 0 && link.lastChild.nodeName == 'DIV') {
+            if (link.href.indexOf('download-evidence') >= 0 && link.lastChild.nodeName != 'IMG') {
                 var files = document.finding_detail_upload_evidence['evidence[]'].files;
                 if (!files) // this ugly chunk is the workaround for IE7
                 {
@@ -209,7 +209,7 @@ Fisma.Remediation = {
                         if (elements[j].name == 'evidence[]') {
                             var fileName = elements[j].value;
                             fileName = fileName.slice(fileName.lastIndexOf('\\')+1);
-                            if (fileName == link.lastChild.innerHTML) {
+                            if (fileName == link.lastChild.data) {
                                 duplicationDetected = true;
                                 message += "<li>" + fileName + "</li>";
                             }
@@ -218,7 +218,7 @@ Fisma.Remediation = {
                 } else {
                     for (var j = 0; j < files.length; j++) {
                         var fileName = (!files[j].fileName) ? files[j].name : files[j].fileName;
-                        if (fileName == link.lastChild.innerHTML) {
+                        if (fileName == link.lastChild.data) {
                             duplicationDetected = true;
                             message += "<li>" + fileName + "</li>";
                             break;
