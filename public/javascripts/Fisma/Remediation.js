@@ -170,6 +170,7 @@ Fisma.Remediation = {
         new_upload.multiple = true;
         file_list.appendChild(new_upload);
 
+        YAHOO.util.Event.preventDefault(event);
         return false;
     },
 
