@@ -241,7 +241,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
     public function selectRolesAction()
     {
         $this->_helper->layout()->disableLayout();
-        $this->view->roles = Doctrine::getTable('Role')->getAllRoles();
+        $this->view->roles = Doctrine::getTable('Role')->getAllRolesQuery()->execute();
     }
 
     /**
