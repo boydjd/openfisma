@@ -159,12 +159,15 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
                 $msgs[] = $import->getMessages();
 
-                // add the file to storage
+                // Add the file to storage
                 $upload->instantiate(array(
                     'tmp_name' => $filePath,
                     'name' => $originalName,
                     'type' => $uploadForm->selectFile->getMimeType()
                 ));
+           
+                // Need to save again after instantiate. 
+                $upload->save();
             }
 
             if ($err) {
