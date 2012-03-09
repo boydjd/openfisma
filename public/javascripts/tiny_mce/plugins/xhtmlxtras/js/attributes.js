@@ -71,7 +71,21 @@ function setAttrib(elm, attrib, value) {
 			value = valueElm.value;
 	}
 
-	dom.setAttrib(elm, attrib.toLowerCase(), value);
+	if (value != "") {
+		dom.setAttrib(elm, attrib.toLowerCase(), value);
+
+		if (attrib == "style")
+			attrib = "style.cssText";
+
+		if (attrib.substring(0, 2) == 'on')
+			value = 'return true;' + value;
+
+		if (attrib == "class")
+			attrib = "className";
+
+		elm[attrib]=value;
+	} else
+		elm.removeAttribute(attrib);
 }
 
 function setAllAttribs(elm) {
