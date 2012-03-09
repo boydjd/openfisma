@@ -162,6 +162,10 @@ Fisma.Util = {
         if (config.isLink) {
             YAHOO.util.Event.preventDefault(event);
         }
+
+        confirmDialog.hideEvent.subscribe(function (e) {
+            setTimeout(function () {confirmDialog.destroy();}, 0);
+        });
     },
 
     /**
@@ -193,6 +197,10 @@ Fisma.Util = {
 
         alertDialog.render(document.body);
         alertDialog.show();
+
+        alertDialog.hideEvent.subscribe(function (e) {
+            setTimeout(function () {alertDialog.destroy();}, 0);
+        });
     },
 
     /**
