@@ -64,7 +64,7 @@ div.yui-ac {
 
 /* A class that will hide anything that uses it from IE users. Used for hiding IE-incompatible (chart-)features */
 .hideFromIE {
-	display: none;
+    display: none;
 }
 
 /* Fix basic search rendering */
@@ -85,7 +85,7 @@ span.searchQueryButtons button {
 
 /* only show the element in IE7 */
 .ie7-only {
-    display: inline;
+    display: inline-block;
 }
 
 /* For fixing OFJ-1569 */
