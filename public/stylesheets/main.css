@@ -694,3 +694,18 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 #assign_right td {
     border-style: none;
 }
+
+/* hide elements when not using IE (ie7hacks undoes this) */
+.ie7-only {
+    display: none;
+}
+
+/* hide elements when not using IE (ie8hacks undoes this) */
+.ie8-only {
+    display: none;
+}
+
+/* hide elements when not using IE (ie9hacks undoes this) */
+.ie9-only {
+    display: none;
+}

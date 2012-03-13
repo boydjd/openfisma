@@ -10,6 +10,9 @@ Notification:
         userId:
             type: integer
             comment: Foreign key to the user who caused this notification
+        url:
+            type: string(255)
+            comment: the url which is sent to the user 
     relations:
         Event:
             local: eventId

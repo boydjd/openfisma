@@ -67,7 +67,7 @@ Fisma.UrlPanel = function() {
                         o.argument.center();
                         
                         if (typeof(callback) == "function") {
-                            callback();
+                            callback(o.argument);
                         }
                     },
                     failure : function(o) {

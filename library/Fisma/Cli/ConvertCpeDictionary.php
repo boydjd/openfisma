@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -20,7 +20,7 @@
  * Convert the CPE dictionary from XML format into a YAML format for Doctrine
  *
  * @see        http://nvd.nist.gov/cpe.cfm
- * 
+ *
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -31,7 +31,7 @@ class Fisma_Cli_ConvertCpeDictionary extends Fisma_Cli_Abstract
 {
     /**
      * Configure the arguments accepted for this CLI program
-     * 
+     *
      * @return array An array containing getopt long syntax
      */
     public function getArgumentsDefinitions()
@@ -40,11 +40,11 @@ class Fisma_Cli_ConvertCpeDictionary extends Fisma_Cli_Abstract
             'dictionary|d=s' => 'Path to XML CPE Dictionary',
             'output|o=s' => 'Name of file to write the YAML output to'
         );
-    }    
+    }
 
     /**
      * Run the command line application
-     * 
+     *
      * @param array $argv PHP's command line arguments
      * @throws Exception if fail to initialize SimpleXMLElement
      */
@@ -57,10 +57,10 @@ class Fisma_Cli_ConvertCpeDictionary extends Fisma_Cli_Abstract
         // Check required options
         if (empty($dictionary) || empty($output)) {
             throw new Fisma_Zend_Exception_User("Dictionary and Output are both required fields");
-            
+
             return;
         }
-        
+
         // Try opening XML file
         try {
             $xml = new SimpleXMLElement("file:///$dictionary", null, true);
@@ -68,25 +68,26 @@ class Fisma_Cli_ConvertCpeDictionary extends Fisma_Cli_Abstract
             if (Fisma::debug()) {
                 throw $e;
             } else {
-                fwrite(STDERR, "Error parsing XML file '$dictionary': {$e->getMessage()}\n");
+                $this->getLog()->err("Error parsing XML file '$dictionary'");
+                $this->getLog()->err($e->getMessage());
             }
         }
-        
+
         // Try opening output file
         $outputHandle = fopen($output, 'w');
-        
+
         if ($outputHandle === false) {
-            fwrite(STDERR, "Unable to open output file ($output) for writing\n");
-            
+            $this->getLog()->err("Unable to open output file ($output) for writing");
+
             return;
         }
-        
+
         // Write YAML file header
         fwrite($outputHandle, "Product:\n");
         fwrite($outputHandle, "    # Parsed from XML CPE Dictionary: ". basename($dictionary) . "\n");
-        fwrite($outputHandle, "    # Date: ". Fisma::now() . "\n");        
-        fwrite($outputHandle, "    # CPE Version: ". $xml->generator->schema_version . "\n"); 
-        fwrite($outputHandle, "    # Parsed by: ". $_SERVER['PHP_SELF'] . "\n"); 
+        fwrite($outputHandle, "    # Date: ". Fisma::now() . "\n");
+        fwrite($outputHandle, "    # CPE Version: ". $xml->generator->schema_version . "\n");
+        fwrite($outputHandle, "    # Parsed by: ". $_SERVER['PHP_SELF'] . "\n");
         fwrite($outputHandle, "\n");
 
         // Iterate over CPE items and write to YAML file
@@ -99,10 +100,10 @@ class Fisma_Cli_ConvertCpeDictionary extends Fisma_Cli_Abstract
                 fwrite($outputHandle, "        name: $data->title\n");
                 fwrite($outputHandle, "        vendor: $cpe->vendor\n");
                 fwrite($outputHandle, "        version: $cpe->version\n");
-                fwrite($outputHandle, "        cpeName: $cpe->cpeName\n");                
+                fwrite($outputHandle, "        cpeName: $cpe->cpeName\n");
             }
         }
-        
+
         fclose($outputHandle);
     }
 }

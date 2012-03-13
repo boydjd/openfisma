@@ -192,6 +192,10 @@ Fisma.System = {
             'convertToSystemPanel',
             panelConfig
         );
+
+        panel.hideEvent.subscribe(function (e) {
+            setTimeout(function () {panel.destroy();}, 0);
+        });
     },
 
     /**
@@ -227,6 +231,10 @@ Fisma.System = {
             'convertToOrganizationPanel',
             panelConfig
         );
+
+        panel.hideEvent.subscribe(function (e) {
+            setTimeout(function () {panel.destroy();}, 0);
+        });
     },
 
     /**

@@ -282,6 +282,8 @@ class Fisma_Menu
         }
         $preferences->add(new Fisma_Yui_MenuItem('E-mail Notifications', '/user/notification'));
 
+        $preferences->add(new Fisma_Yui_MenuItem('Online Help', 'http://manual.openfisma.org/', null, '_blank'));
+
         $preferences->add(new Fisma_Yui_MenuItem('Profile', '/user/profile'));
 
         $mainMenuBar->add($preferences);
@@ -293,7 +295,7 @@ class Fisma_Menu
             $debug->add(new Fisma_Yui_MenuItem('APC User Cache', '/debug/apc-cache/type/user'));
             $debug->add(new Fisma_Yui_MenuItem('Error log', '/debug/errorlog'));
             $debug->add(new Fisma_Yui_MenuItem('PHP Info', '/debug/phpinfo'));
-            $debug->add(new Fisma_Yui_MenuItem('PHP log', '/debug/phplog'));
+            $debug->add(new Fisma_Yui_MenuItem('PHP Log', '/debug/phplog'));
 
             $mainMenuBar->add($debug);
         }

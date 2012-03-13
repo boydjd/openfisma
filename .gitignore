@@ -8,3 +8,6 @@ clover-part1
 .project
 .settings
 *.swp
+_vti_cnf
+_vti_pvt
+desktop.ini
