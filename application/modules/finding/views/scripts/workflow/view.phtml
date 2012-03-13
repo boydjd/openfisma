@@ -1,0 +1,223 @@
+<?php
+$editMode = $this->editMode;
+?>
+
+<form
+    id='finding_workflow'
+    name='finding_workflow'
+    action='/finding/workflow/modify'
+    onsubmit='Fisma.FindingWorkflow.submitHandler'
+    method='post'
+>
+<input type='hidden' name='forceSubmit' value='false' />
+
+<?php if ($editMode): ?>
+<div class='buttonBar'>
+    <?php echo $this->escape($this->saveButton, 'none'); ?>
+    <?php echo $this->escape($this->cancelButton, 'none'); ?>
+    <img style='display:none' src='/images/loading_bar.gif' />
+</div>
+<?php endif; ?>
+
+<?php Fisma_Format_Section::startSection('Finding Workflow'); ?>
+
+<?php if ($editMode): ?>
+<div id='changeQueue'>
+    <div class='messageBox attention'>
+        <ul>
+            <li>You are editing a workow, your changes may affect other users of the application.</li>
+            <li>Changes you make cannot be undone.</li>
+            <li>Changes will not take affect until you click the "Save" button.</li>
+            <li>You may cancel your changes if you do not wish to save them.</li>
+        </ul>
+    </div>
+
+    <div class='approvalHeader'><b>Change Window</b></div>
+    <div class='approval'>
+        <div class='approvalStep highlight'>
+            <input type='hidden' name='changeQueue' />
+            You have made the following change(s), please review before saving:
+        </div>
+    </div>
+</div>
+<?php endif; ?>
+
+<div class='stepBlock incidentStep completedIncidentStep'>
+    <div class='incidentCardinality'>1</div>
+    <h1>NEW - New</h1>
+    <table>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('workflowTitle', 'new'), 'none');
+            ?></td>
+            <td>New</td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('chartLabel', 'new'), 'none');
+            ?></td>
+            <td>NEW</td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('statusMessage', 'new'), 'none');
+            ?></td>
+            <td>Awaiting Mitigation Strategy</td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('onTime', 'new'), 'none');
+            ?></td>
+            <td>30</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>
+                The finding has been created but nobody has determined an effective mitigation strategy.
+                Once a user picks a mitigation strategy the finding will move from NEW to DRAFT.
+                You have 30 days to choose a mitigation strategy before this item becomes overdue.
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class='stepBlock incidentStep completedIncidentStep'>
+    <div class='incidentCardinality'>2</div>
+    <h1>DRAFT - Draft</h1>
+    <table>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('workflowTitle', 'draft'), 'none');
+            ?></td>
+            <td>Draft</td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('chartLabel', 'draft'), 'none');
+            ?></td>
+            <td>DRAFT</td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('statusMessage', 'draft'), 'none');
+            ?></td>
+            <td>Awaiting Mitigation Strategy Submission</td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('onTime', 'draft'), 'none');
+            ?></td>
+            <td>30</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>
+                The finding is awaiting a completed mitigation strategy. Once a user submits the mitigation strategy
+                for approval the finding will move from DRAFT to mitigation strategy approval.
+                You have 30 days to define and submit a mitigation strategy.
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class='stepBlock incidentStep currentIncidentStep'>
+    <div class='incidentCardinality'>3</div>
+    <h1>MSA - Mitigation Strategy Approval</h1>
+    <?php
+        echo $this->escape(new Fisma_Yui_InteractiveOrderedList(
+            "action",
+            "finding",
+            "workflow/step.phtml",
+            $this->msList,
+            $editMode,
+            array(
+                'onAppend' => "Fisma.FindingWorkflow.appendHandler",
+                'endDrag' => "Fisma.FindingWorkflow.endDragHandler"
+            )
+        ), 'none');
+    ?>
+</div>
+
+<div class='stepBlock incidentStep completedIncidentStep'>
+    <div class='incidentCardinality'>4</div>
+    <h1>EN - Evidence Needed</h1>
+    <table>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('workflowTitle', 'en'), 'none');
+            ?></td>
+            <td>Evidence Needed</td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('chartLabel', 'en'), 'none');
+            ?></td>
+            <td>EN</td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('statusMessage', 'en'), 'none');
+            ?></td>
+            <td>Awaiting Evidence Package Submission</td></tr>
+        <tr>
+            <td>Description</td>
+            <td>
+                The finding is in progress and will become overdue if the Estimated Completion Date has passed.
+                Once the user gathers sufficient evidence to prove the finding was remediated according to
+                the mitigation strategy it may be submitted for approval.
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class='stepBlock incidentStep currentIncidentStep'>
+    <div class='incidentCardinality'>5</div>
+    <h1>EA - Evidence Approval</h1>
+    <?php
+        echo $this->escape(new Fisma_Yui_InteractiveOrderedList(
+            "evidence",
+            "finding",
+            "workflow/step.phtml",
+            $this->evList,
+            $editMode,
+            array(
+                'onAppend' => "Fisma.FindingWorkflow.appendHandler",
+                'endDrag' => "Fisma.FindingWorkflow.endDragHandler"
+            )
+        ), 'none');
+    ?>
+</div>
+
+<div class='stepBlock incidentStep completedIncidentStep'>
+    <div class='incidentCardinality'>6</div>
+    <h1>CLOSED - Closed</h1>
+    <table>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('workflowTitle', 'closed'), 'none');
+            ?></td>
+            <td>Closed</td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('chartLabel', 'closed'), 'none');
+            ?></td>
+            <td>CLOSED</td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('statusMessage', 'closed'), 'none');
+            ?></td>
+            <td>Finding Officially Closed</td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>
+                The finding is officially closed and cannot be edited.
+            </td>
+        </tr>
+    </table>
+</div>
+
+<?php Fisma_Format_Section::stopSection(); ?>
+</form>

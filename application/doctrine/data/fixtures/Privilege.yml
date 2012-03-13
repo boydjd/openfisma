@@ -60,6 +60,20 @@ Privilege:
         action: incident_report
         description: Incident Module Reports
 
+    # Evaluations CRUD
+    evaluation_create:
+        resource: evaluation
+        action: create
+        description: Create Evaluations
+    evaluation_update:
+        resource: evaluation
+        action: update
+        description: Update Evaluations
+    evaluation_delete:
+        resource: evaluation
+        action: delete
+        description: Delete Evaluations
+
     # Findings CRUD
     findings_create:
         resource: finding
@@ -69,13 +83,13 @@ Privilege:
         resource: finding
         action: read
         description: View Findings
-    # findings_update: 
+    # findings_update:
         # ACL for findings is more fine-grained than for other objects, so there is no "update" action. See below.
     findings_delete:
         resource: finding
         action: delete
         description: Delete Findings
-                    
+
     # Granular finding privileges
     findings_inject:
         resource: finding
@@ -158,19 +172,19 @@ Privilege:
     finding_mitigation_isso:
         resource: finding
         action: mitigation_isso
-        description: Mitigation Strategy - ISSO Approval
+        description: MS ISSO Approval
     finding_mitigation_ivv:
         resource: finding
         action: mitigation_ivv
-        description: Mitigation Strategy - IV&V Approval
+        description: MS IV&V Approval
     finding_evidence_isso:
         resource: finding
         action: evidence_isso
-        description: Evidence Artifacts - ISSO Approval
+        description: EV ISSO Approval
     finding_evidence_ivv:
         resource: finding
         action: evidence_ivv
-        description: Evidence Artifacts - IV&V Approval
+        description: EV IV&V Approval
 
     # Vulnerability CRUD
     vulnerability_create:
@@ -181,7 +195,7 @@ Privilege:
         resource: vulnerability
         action: read
         description: View Vulnerabilities
-    vulnerability_update: 
+    vulnerability_update:
         resource: vulnerability
         action: update
         description: Edit Vulnerabilities
@@ -238,7 +252,7 @@ Privilege:
         resource: user
         action: delete
         description: Delete Users
-    
+
     # Organizations CRUD
     organization_create:
         resource: organization
@@ -274,7 +288,7 @@ Privilege:
         resource: poc
         action: delete
         description: Delete Points of Contact
- 
+
     # Products CRUD
     product_create:
         resource: product
@@ -292,7 +306,7 @@ Privilege:
         resource: product
         action: delete
         description: Delete Products
-    
+
     # Finding Sources CRUD
     source_create:
         resource: source
@@ -310,7 +324,7 @@ Privilege:
         resource: source
         action: delete
         description: Delete Finding Sources
-    
+
     # Roles CRUD
     roles_create:
         resource: role
@@ -350,7 +364,7 @@ Privilege:
         resource: network
         action: delete
         description: Delete Networks
-    
+
     # Vulnerability Resolution CRUD
     vulnerability_resolution_create:
         resource: vulnerability_resolution
@@ -368,7 +382,7 @@ Privilege:
         resource: vulnerability_resolution
         action: delete
         description: Delete Resolution
-    
+
     # Notification privileges
     notification_admin:
         resource: notification

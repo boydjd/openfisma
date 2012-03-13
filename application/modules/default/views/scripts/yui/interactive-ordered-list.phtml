@@ -1,0 +1,86 @@
+<?php
+$enabledStyle = ($this->enabled) ? " enabled" : "";
+?>
+<ul
+    id='<?php echo $this->escape($this->id); ?>Container'
+    class='dragList<?php echo $this->escape($enabledStyle); ?>'
+>
+    <li id='<?php echo $this->escape($this->id); ?>Skeleton'>
+    <?php
+        $data = array(
+            'step' => null,
+            'editMode' => $this->enabled,
+            'list' => $this->id
+        );
+        echo $this->partial($this->contentScript, $this->contentModule, $data);
+    ?>
+    </li>
+<?php
+$count = 1;
+foreach ($this->dataList as $childData):
+?>
+    <li id='<?php echo $this->escape($this->id . 'Item' . $count); ?>'>
+    <?php
+        $data = array(
+            'step' => $childData,
+            'editMode' => $this->enabled,
+            'list' => $this->id
+        );
+        echo $this->partial($this->contentScript, $this->contentModule, $data);
+    ?>
+    </li>
+<?php
+    $count++;
+endforeach;
+?>
+</ul>
+<?php if ($this->enabled): ?>
+<script type='text/javascript'>
+    YAHOO.util.Event.onDOMReady(function() {
+        new YAHOO.util.DDTarget(
+            '<?php echo $this->escape($this->id); ?>Container',
+            '<?php echo $this->escape($this->id); ?>'
+        );
+<?php
+$jsHandlersHtml = "";
+foreach ($this->jsHandlers as $event => $handler):
+    if (!empty($jsHandlersHtml)):
+        $jsHandlersHtml .= ',';
+    endif;
+        $jsHandlersHtml .= "'{$event}' : {$handler}";
+endforeach;
+
+for ($i = 1; $i < $count; $i++):
+?>
+        new Fisma.InteractiveOrderedListItem(
+            '<?php echo $this->escape($this->id . 'Item' . $i); ?>',
+            '<?php echo $this->escape($this->id); ?>',
+            { <?php echo $this->escape($jsHandlersHtml, 'none'); ?> },
+            {'dragElId' : 'dragListProxy'}
+        );
+<?php
+endfor;
+?>
+        // This unfortunate hack is to get around YAHOO DragDrop onMouseDown handler shadowing over onClick
+        var inputs = YAHOO.util.Selector.query('div.stepDetail input[type=text], div.stepDetail textarea, div.stepDetail select');
+        for (var i in inputs) {
+            YAHOO.util.Event.on(inputs[i], 'click', function(clickEvent) {
+                if (clickEvent.target) {
+                    clickEvent.target.focus();
+                } else {
+                    clickEvent.srcElement.focus();
+                }
+            });
+        }
+    });
+</script>
+<a
+    href='#'
+    onclick="return Fisma.InteractiveOrderedListItem.appendNewTo('<?php
+            echo $this->escape($this->id);
+        ?>', {<?php
+            echo $this->escape($jsHandlersHtml, 'none');
+        ?>});"
+    >[Add new]
+</a>
+<?php endif; ?>

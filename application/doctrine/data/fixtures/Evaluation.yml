@@ -3,6 +3,7 @@ Evaluation:
         id: 1
         name: ISSO Approval of Mitigation Strategy
         nickname: MS ISSO
+        description: The Mitigation Strategy has been submitted and is awaiting approval from an ISSO.
         NextEvaluation: [MITIGATION IVV]
         precedence: 0
         approvalGroup: action
@@ -14,6 +15,7 @@ Evaluation:
         id: 2
         name: IV&V Approval of Mitigation Strategy
         nickname: MS IV&V
+        description: The Mitigation Strategy has been submitted and is awaiting approval from IV&V.
         precedence: 1
         approvalGroup: action
         Privilege: finding_mitigation_ivv
@@ -24,6 +26,7 @@ Evaluation:
         id: 3
         name: ISSO Approval of Evidence Package
         nickname: EV ISSO
+        description: The Evidence Package has been submitted and is awaiting approval from an ISSO.
         NextEvaluation: [EVIDENCE IVV]
         precedence: 0
         approvalGroup: evidence
@@ -35,6 +38,7 @@ Evaluation:
         id: 4
         name: IV&V Approval of Evidence Package
         nickname: EV IV&V
+        description: The Evidence Package has been submitted and is awaiting approval from IV&V.
         precedence: 1
         approvalGroup: evidence
         Privilege: finding_evidence_ivv
