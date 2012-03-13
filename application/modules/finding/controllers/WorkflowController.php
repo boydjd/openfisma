@@ -175,6 +175,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                         $newStep->Event->name = $step['nickname'];
                         $newStep->Event->description = $step['name'];
                         $newStep->Event->Privilege = $notificationPrivilege;
+                        $newStep->Event->urlPath = '/finding/remediation/view/id/';
 
                         $privilege = Doctrine_Query::create()
                             ->from('Privilege p')
