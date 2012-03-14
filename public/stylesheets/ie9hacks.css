@@ -45,10 +45,10 @@
 
 /* only show the element in IE9 */
 .ie9-only {
-    display: inline;
+    display: inline-block;
 }
 
 /* For fixing OFJ-1569 */
 dl {
-  margin : 0  
+  margin : 0
 }

@@ -1,15 +1,17 @@
 Evaluation:
     columns:
-        name: 
+        name:
             type: string(255)
             notnull: true
         nickname:
             type: string(255)
             notnull: true
-        nextId: 
+        description:
+            type: string
+        nextId:
             type: integer
             comment: Relates to itself and points to the next Evaluation record
-        precedence: 
+        precedence:
             type: integer
             notnull: true
             comment: The order in which this evaluation is positioned relative to the others in its group, starting at 0
@@ -45,3 +47,6 @@ Evaluation:
             local: privilegeId
             foreign: id
             foreignAlias: Evaluations
+
+    actAs:
+        SoftDelete: true

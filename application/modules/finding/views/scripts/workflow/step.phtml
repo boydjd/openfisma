@@ -1,0 +1,107 @@
+<?php
+// Fetch data
+$step = (empty($this->step)) ? new Evaluation() : $this->step;
+$editMode = $this->editMode;
+$list = $this->list;
+
+// Prepare HTML snippets
+$disabled = ($editMode) ? "" : "readonly";
+$prefix = (empty($this->step->name)) ? $list . "_skeleton_" : uniqid($list . "_") . "_";
+?>
+
+<span class='linkBar'>
+    <a href='#' onclick='return Fisma.FindingWorkflow.toggleDetailPanel(this);'>[View Details]</a>
+<?php if ($editMode): ?>
+    <a href='#' onclick='return Fisma.FindingWorkflow.showRemoveStepDialog(this);'>[Delete]</a>
+<?php endif; ?>
+</span>
+
+<span class='stepName'>
+    <?php echo $this->escape($step->name); ?>
+</span>
+
+<div class='stepDetail'>
+    <input
+        type='hidden'
+        name='<?php echo $this->escape($prefix); ?>databaseId'
+        value='<?php echo $this->escape($step->id); ?>'
+    />
+    <input
+        type='hidden'
+        name='<?php echo $this->escape($prefix); ?>destinationId'
+    />
+    <table>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('workflowTitle', $prefix), 'none');
+            ?></td>
+            <td><input
+                type='text'
+                <?php echo $this->escape($disabled); ?>
+                name='<?php echo $this->escape($prefix); ?>name'
+                value='<?php echo $this->escape($step->name); ?>'
+                onChange='Fisma.FindingWorkflow.titleChangeHandler(this)'
+            /></td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('chartLabel', $prefix), 'none');
+            ?></td>
+            <td><input
+                type='text'
+                <?php echo $this->escape($disabled); ?>
+                name='<?php echo $this->escape($prefix); ?>nickname'
+                value='<?php echo $this->escape($step->nickname); ?>'
+                onChange='Fisma.FindingWorkflow.chartLabelChangeHandler(this)'
+            /></td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('statusMessage', $prefix), 'none');
+            ?></td>
+            <td><div>Awaiting <span class='stepName'><?php echo $this->escape($step->name); ?></span></div></td>
+        </tr>
+        <tr>
+            <td><?php
+                echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('onTime', $prefix), 'none');
+            ?></td>
+            <td><input
+                type='text'
+                <?php echo $this->escape($disabled); ?>
+                name='<?php echo $this->escape($prefix); ?>due'
+                value='<?php echo $this->escape($step->daysUntilDue); ?>'
+            /></td>
+        </tr>
+        <tr>
+            <td>Description</td>
+            <td>
+                <textarea
+                    class='plaintext'
+                    <?php echo $this->escape($disabled); ?>
+                    name='<?php echo $this->escape($prefix); ?>description'
+                ><?php echo $this->escape($step->description); ?></textarea>
+            </td>
+        </tr>
+        <tr>
+            <td>Assigned role(s)</td>
+            <td>
+                <div><?php
+                $rolesString = "";
+                foreach ($step->Privilege->Roles as $role):
+                    echo $this->escape($role->nickname);
+                    $rolesString .= $role->id . '|';
+                    ?><br/><?php
+                endforeach;
+                ?></div>
+
+                <?php if ($editMode): ?>
+                <a href='#' onclick='return Fisma.FindingWorkflow.showRoleDialog(this);'>[Assign roles]</a>
+                <input
+                    type='hidden'
+                    name='<?php echo $this->escape($prefix); ?>roles'
+                    value='<?php echo $this->escape($rolesString); ?>'/>
+                <?php endif; ?>
+            </td>
+        </tr>
+    </table>
+</div>

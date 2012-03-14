@@ -71,6 +71,8 @@ class Fisma_Menu
 
             $findings->add(new Fisma_Yui_MenuItem('Dashboard', '/finding/dashboard'));
 
+            $findings->add(new Fisma_Yui_MenuItem('Workflow', '/finding/workflow/view'));
+
             // Finding Administration submenu
             if ($acl->hasArea('finding_admin')) {
                 $findingAdminSubmenu = new Fisma_Yui_Menu('Administration');

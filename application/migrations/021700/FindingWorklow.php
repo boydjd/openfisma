@@ -17,7 +17,7 @@
  */
 
 /**
- * Application_Migration_021700_FindingWorkflow
+ * Migration for the Finding Workflow Administrative phase 1
  *
  * @uses Fisma_Migration_Abstract
  * @package Migration
@@ -28,7 +28,7 @@
 class Application_Migration_021700_FindingWorkflow extends Fisma_Migration_Abstract
 {
     /**
-     * migrate
+     * Turn on "SoftDelete" behavior and add a "description" column to Evaluation model
      *
      * @return void
      */
@@ -37,6 +37,14 @@ class Application_Migration_021700_FindingWorkflow extends Fisma_Migration_Abstr
         $this->getHelper()->exec(
             'ALTER TABLE `evaluation` '
             . 'ADD COLUMN `description` text NULL AFTER `nickname`, '
+            . 'ADD COLUMN `deleted_at` datetime NULL AFTER `daysuntildue`;'
+        );
+        $this->getHelper()->exec(
+            'ALTER TABLE `event` '
+            . 'ADD COLUMN `deleted_at` datetime NULL AFTER `daysuntildue`;'
+        );
+        $this->getHelper()->exec(
+            'ALTER TABLE `privilege` '
             . 'ADD COLUMN `deleted_at` datetime NULL AFTER `daysuntildue`;'
         );
     }
