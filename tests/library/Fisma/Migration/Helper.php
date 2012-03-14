@@ -139,4 +139,135 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
         $helper = new Fisma_Migration_Helper($db);
         $helper->dropTable('Foo');
     }
+
+    /**
+     * Test the foreign key helper.
+     */
+    public function testAddForeignKeyWithName()
+    {
+        $db = $this->getMock('Mock_Pdo');
+
+        $addIndexRegex = '/alter\s+table\s+`footable`\s+add\s+index.*`foocolumn_idx`\s+\(`foocolumn`\)/Usi';
+        $addFkRegex = '/alter\s+table\s+`footable`\s+add\s+constraint.*foobar/Usi';
+
+        $db->expects($this->exactly(2))
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->logicalOr(
+                $this->matchesRegularExpression($addIndexRegex),
+                $this->matchesRegularExpression($addFkRegex)
+           ));
+
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addForeignKey('footable', 'foocolumn', 'bartable', 'barcolumn', 'foobar');
+    }
+
+    /**
+     * Test the foreign key helper's name creation.
+     */
+    public function testAddForeignKeyWithoutName()
+    {
+        $db = $this->getMock('Mock_Pdo');
+
+        $addIndexRegex = '/alter\s+table\s+`footable`\s+add\s+index.*`foocolumn_idx`\s+\(`foocolumn`\)/Usi';
+        $addFkRegex = '/alter\s+table\s+`footable`\s+add\s+constraint.*footable_foocolumn_bartable_barcolumn/Usi';
+
+        $db->expects($this->exactly(2))
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->logicalOr(
+                $this->matchesRegularExpression($addIndexRegex),
+                $this->matchesRegularExpression($addFkRegex)
+           ));
+
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addForeignKey('footable', 'foocolumn', 'bartable', 'barcolumn');
+    }
+
+    /**
+     * Test a unique key with one column.
+     */
+    public function testUniqueKeyWithOneColumn()
+    {
+        $db = $this->getMock('Mock_Pdo');
+        $db->expects($this->once())
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->matchesRegularExpression('/alter\s+table\s+`foo`\s+add\s+unique\s+`bar`\s+\(`bar`\)/Usi'));
+
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addUniqueKey('foo', 'bar');
+    }
+
+    /**
+     * Test a unique key with multiple columns.
+     */
+    public function testUniqueKeyWithMultipleColumns()
+    {
+        $db = $this->getMock('Mock_Pdo');
+        $db->expects($this->once())
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->matchesRegularExpression('/`my_idx`\s+\(`apple`,\s*`banana`\)/Usi'));
+
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addUniqueKey('foo', array('apple', 'banana'), 'my_idx');
+    }
+
+    /**
+     * Negative test: a unique key with multiple columns and no name.
+     *
+     * @expectedException Fisma_Zend_Exception_Migration
+     */
+    public function testUniqueKeyWithMultipleColumnsAndNoName()
+    {
+        $db = $this->getMock('Mock_Pdo');
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addUniqueKey('foo', array('apple', 'banana'));
+    }
+
+    /**
+     * Test adding a column at the end of a table.
+     */
+    public function testAddColumn()
+    {
+        $db = $this->getMock('Mock_Pdo');
+        $db->expects($this->once())
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->matchesRegularExpression('/alter\s+table\s+`foo`\s+add\s+column\s+`bar`\s+bigint/Usi'));
+
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addColumn('foo', 'bar', 'bigint(20) NOT NULL');
+    }
+
+    /**
+     * Test adding a column after another column.
+     */
+    public function testAddColumnAfterColumn()
+    {
+        $db = $this->getMock('Mock_Pdo');
+        $db->expects($this->once())
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->matchesRegularExpression('/add\s+column.*\s+after\s+`unladen_swallow`/Usi'));
+
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addColumn('foo', 'bar', 'bigint(20) NOT NULL', 'unladen_swallow');
+    }
+
+    /**
+     * Test dropping a column.
+     */
+    public function testDropColumn()
+    {
+        $db = $this->getMock('Mock_Pdo');
+        $db->expects($this->once())
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->matchesRegularExpression('/alter\s+table\s+`foo`\s+drop\s+column\s+`bar`/Usi'));
+
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->dropColumn('foo', 'bar');
+    }
 }

@@ -67,10 +67,18 @@ class Fisma_Migration_Helper
      */
     public function exec($sql)
     {
-        if (($rval = $this->_db->exec($sql)) === FALSE) {
-            throw new Fisma_Zend_Exception_Migration("Not able to execute query: " . $sql);
+        try {
+            $execResult = $this->_db->exec($sql);
+        } catch (PDOException $e) {
+            // If theres an exception while exec'ing, wrap it in a new exception that contains the full query
+            throw new Fisma_Zend_Exception_Migration("Not able to execute query:\n$sql", 0, $e);
         }
-        return $rval;
+
+        if ($execResult === FALSE) {
+            throw new Fisma_Zend_Exception_Migration("Exec returned false for this query:\n$sql");
+        }
+
+        return $execResult;
     }
 
     /**
@@ -79,7 +87,7 @@ class Fisma_Migration_Helper
      * @param string $sql
      * @return array Query results
      */
-    public function execute($sql, $params = array())
+    public function query($sql, $params = array())
     {
         $stmt = $this->_db->prepare($sql);
         if ($stmt->execute($params) === FALSE) {
@@ -191,5 +199,87 @@ class Fisma_Migration_Helper
         $params = array_values($fields);
         array_splice($params, count($params), 0, array_values($where));
         $stmt->execute($params);
+    }
+
+    /**
+     * Add a single foreign key between two columns in two tables.
+     *
+     * @param string $localTable
+     * @param string $localColumn
+     * @param string $remoteTable
+     * @param string $remoteColumn
+     * @param string $constraintName
+     */
+    public function addForeignKey($localTable, $localColumn, $remoteTable, $remoteColumn, $constraintName = null)
+    {
+        if (!$constraintName) {
+            $constraintName = "{$localTable}_{$localColumn}_{$remoteTable}_{$remoteColumn}";
+        }
+
+        // MySQL will implicitly add the correct index, but it uses a different naming convention than Doctrine,
+        // so we need to add the index explicitly using Doctrine's naming convention.
+        $this->exec("ALTER TABLE `$localTable` ADD INDEX `{$localColumn}_idx` (`$localColumn`)");
+
+        $this->exec("ALTER TABLE `$localTable` ADD CONSTRAINT `$constraintName`
+                     FOREIGN KEY `$constraintName` (`$localColumn`) REFERENCES `$remoteTable` (`$remoteColumn`)");
+    }
+
+    /**
+     * Add a unique key on a table.
+     *
+     * @param string $table
+     * @param string|array $columns The name or names of the columns included in the unique key.
+     * @param string $name The name of the index. It's optional for 1 column indexes.
+     */
+    public function addUniqueKey($table, $columns, $name = null)
+    {
+        if (is_array($columns)) {
+            if (!$name) {
+                throw new Fisma_Zend_Exception_Migration("Name is required for multi-column unique key.");
+            }
+
+            // Add backticks to each column name
+            $addBackticks = function ($column) {
+                return "`$column`";
+            };
+
+            $columns = array_map($addBackticks, $columns);
+            $columns = implode(',', $columns);
+        } else {
+            $name = $columns;
+            $columns = "`$columns`";
+        }
+
+        $this->exec("ALTER TABLE `$table` ADD UNIQUE `$name` ($columns)");
+    }
+
+    /**
+     * Add a column to a table
+     *
+     * @param string $table
+     * @param string $column
+     * @param string $definition
+     * @param string $after If specified, add this column immediately after the $after column.
+     */
+    public function addColumn($table, $column, $definition, $after = null)
+    {
+        $sql = "ALTER TABLE `$table` ADD COLUMN `$column` $definition";
+
+        if ($after) {
+            $sql .= " AFTER `$after`";
+        }
+
+        $this->exec($sql);
+    }
+
+    /**
+     * Drop a column from a table.
+     *
+     * @param string $table
+     * @param string $column
+     */
+    public function dropColumn($table, $column)
+    {
+        $this->exec("ALTER TABLE `$table` DROP COLUMN `$column`");
     }
 }

@@ -174,13 +174,7 @@ abstract class Fisma_Cli_Abstract
             return;
         } catch (Exception $e) {
             $stderr = fopen('php://stderr', 'w');
-            fwrite($stderr, "ERROR: " . $e->getMessage() . "\n");
-
-            // Don't print stack traces for user-level exceptions.
-            if (!($e instanceof Fisma_Zend_Exception_User)) {
-                fwrite($stderr, $e->getTraceAsString() . "\n\n");
-            }
-
+            fwrite($stderr, $this->_formatException($e));
             fclose($stderr);
             return self::EXIT_UNHANDLED_EXCEPTION;
         }
@@ -220,5 +214,32 @@ abstract class Fisma_Cli_Abstract
         }
 
         return !empty($innodb) && 'no' !== strtolower($innodb['Support']);
+    }
+
+    /**
+     * Formats an exception for display to the user.
+     *
+     * Also checks for nested exceptions and displays those as well.
+     *
+     * @param Exception $e
+     * @return string
+     */
+    private function _formatException($e)
+    {
+        $formatted = "ERROR: " . $e->getMessage() . "\n";
+
+        // Don't print stack traces for user-level exceptions.
+        if (!($e instanceof Fisma_Zend_Exception_User)) {
+            $formatted .= $e->getTraceAsString() . "\n\n";
+        }
+
+        // Check for a nested exception
+        $previous = $e->getPrevious();
+
+        if ($previous) {
+            $formatted .= "\nNESTED EXCEPTION:\n" . $this->_formatException($previous);
+        }
+
+        return $formatted;
     }
 }

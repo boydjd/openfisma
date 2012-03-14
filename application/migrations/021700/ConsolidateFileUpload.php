@@ -53,7 +53,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         $path = Fisma::getPath('uploads') . '/system-document/%s/';
 
         $fm = $this->getFileManager();
-        $documents = $this->getHelper()->execute(
+        $documents = $this->getHelper()->query(
             'SELECT d.*, o.id oid FROM system_document d LEFT JOIN organization o ON d.systemid = o.systemid'
         );
         foreach ($documents as $document) {
@@ -73,7 +73,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
             );
         }
         // again, but for document versions
-        $documents = $this->getHelper()->execute(
+        $documents = $this->getHelper()->query(
             'SELECT d.*, o.id oid FROM system_document_version d LEFT JOIN organization o ON d.systemid = o.systemid'
         );
         foreach ($documents as $document) {
@@ -104,7 +104,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
     {
         $incidentsPath = Fisma::getPath('uploads') . '/incident_artifact/%s/';
         $fm = $this->getFileManager();
-        $artifacts = $this->getHelper()->execute('SELECT * FROM incident_artifact');
+        $artifacts = $this->getHelper()->query('SELECT * FROM incident_artifact');
         foreach ($artifacts as $artifact) {
             $filepath = sprintf($incidentsPath, $artifact->objectid) . $artifact->filename;
             $hash = $fm->store($filepath);
@@ -135,7 +135,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         $query = "SELECT e.*, SUM(IF(fe.decision = 'DENIED', 1, 0)) AS denied "
                 . 'FROM evidence e LEFT JOIN finding_evaluation fe ON fe.evidenceid = e.id '
                 . 'GROUP BY e.id';
-        $results = $this->getHelper()->execute($query);
+        $results = $this->getHelper()->query($query);
         $deletedUploads = array();
         foreach ($results as $evidence) {
             $filepath = sprintf($evidencePath, $evidence->findingid) . $evidence->filename;
