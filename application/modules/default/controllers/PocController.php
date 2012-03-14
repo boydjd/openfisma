@@ -196,7 +196,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Poc');
 
-        $this->view->toolbarButtons = $this->getToolbarButtons(null);
+        $this->view->toolbarButtons = $this->getToolbarButtons();
 
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
         $this->view->toolbarButtons['list']->setValue("View POC List");

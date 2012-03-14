@@ -68,7 +68,6 @@ class Fisma_Zend_Form_Element_Time extends Zend_Form_Element
      */
     public function setValue($value)
     {
-        // throw new Exception;
         parent::setValue($value);
 
         $parts = explode(':', $value);

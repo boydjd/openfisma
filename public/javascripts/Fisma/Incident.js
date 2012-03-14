@@ -21,25 +21,6 @@
  * @license   http://www.openfisma.org/content/license
  */
 
-YAHOO.util.Event.onDOMReady(function () {
-    var form = document.getElementById("incident_wizard");
-
-    // IE will trigger the first submit button the page (which is "Cancel Report") if a user presses Enter, so we
-    // have this little hack to trigger the "Continue" button instead.
-    if (form) {
-        YAHOO.util.Event.on(form, "keypress", function (e) {
-            if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
-                var forwardButton = document.getElementById('irReportForwards-button');
-
-                if (forwardButton) {
-                    forwardButton.click();
-                    YAHOO.util.Event.preventDefault(e);
-                }
-            }
-        });
-    }
-});
-
 Fisma.Incident = {
     /**
      * A reference to a YUI table which contains comments for the current page
