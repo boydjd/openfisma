@@ -3,17 +3,17 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
- * 
+ *
  * @author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
@@ -106,17 +106,37 @@
                 newTextarea.val(data.description);
             }
 
-            fn = function() { this.addStepAbove(newTr); };
-            new YAHOO.widget.Button(buttons[0], {onclick: {fn: fn, scope: this}});
+            $(buttons[0]).attr('id', textareaId + "_addAbove");
+            new YAHOO.widget.Button(buttons[0]);
 
-            fn = function() { this.addStepBelow(newTr); };
-            new YAHOO.widget.Button(buttons[1], {onclick: {fn: fn, scope: this}});
+            $(buttons[1]).attr('id', textareaId + "_addBelow");
+            new YAHOO.widget.Button(buttons[1]);
 
-            fn = function() { this.removeStep(newTr); };
-            new YAHOO.widget.Button(buttons[2], {onclick: {fn: fn, scope: this}});
+            $(buttons[2]).attr('id', textareaId + "_remove");
+            new YAHOO.widget.Button(buttons[2]);
 
             // add it to the table
             $(tr).after(newTr);
+
+            YAHOO.util.Event.addListener(
+                textareaId + "_addAbove",
+                "click",
+                function() { this.addStepAbove(newTr); },
+                null,
+                this);
+            YAHOO.util.Event.addListener(
+                textareaId + "_addBelow",
+                "click",
+                function() { this.addStepBelow(newTr); },
+                null,
+                this);
+            YAHOO.util.Event.addListener(
+                textareaId + "_remove",
+                "click",
+                function() { this.removeStep(newTr); },
+                null,
+                this);
+
             // tell tinyMCE to render it now
             tinyMCE.execCommand ('mceAddControl', false, textareaId);
             this._renumberSteps();
