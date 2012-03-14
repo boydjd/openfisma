@@ -438,5 +438,32 @@ Fisma.Finding = {
      */
     setupSecurityControlAutocomplete : function (autocomplete, params) {
         autocomplete.itemSelectEvent.subscribe(Fisma.Finding.handleSecurityControlSelection);
+    },
+
+    /** 
+    * This takes a YUI datatable as parameters, delete a row, then refresh the table  
+    *    
+    * @param YUI datatable
+    */
+    deleteEvidence: function (oArgs) {
+        var oRecord = this.getRecord(oArgs.target);
+        var data = oRecord.getData();
+        var postData = new Object();
+
+        var that = this;
+        postData.id = data.id;
+        postData.attachmentId = data.attachmentId;
+        postData.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/finding/remediation/delete-evidence/',
+            data: postData,
+            dataType: "json",
+            success: function() {
+                that.deleteRow(oArgs.target);
+            }
+        });
     }
+
 };

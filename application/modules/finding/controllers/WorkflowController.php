@@ -85,6 +85,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
     /**
      * Construct the workflow diagram
      *
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -316,6 +317,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
     /**
      * Renders the list of roles to choose in a panel
      *
+     * @GETAllowed
      * @return void
      */
     public function selectRolesAction()
@@ -327,6 +329,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
     /**
      * Renders the remove-step panel
      *
+     * @GETAllowed
      * @return void
      */
     public function removeStepAction()

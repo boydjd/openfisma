@@ -59,6 +59,8 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
     /**
      * A bar chart which shows how many incidents were reported/resolved/rejected on a month-by-month basis
      * in recent history
+     *
+     * @GETAllowed
      */
     public function historyAction()
     {
@@ -162,6 +164,8 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * A pie chart which shows how many incidents of each category are open
+     *
+     * @GETAllowed
      */
     public function categoryAction()
     {
@@ -205,6 +209,8 @@ class IncidentChartController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * A bar chart which shows the number of incidents per bureau in the last 90 days
+     *
+     * @GETAllowed
      */
     public function bureauAction()
     {

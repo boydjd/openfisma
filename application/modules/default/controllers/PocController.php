@@ -97,6 +97,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * A helper action for autocomplete text boxes
+     *
+     * @GETAllowed
      */
     public function autocompleteAction()
     {
@@ -119,6 +121,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display the POC form without any layout
+     *
+     * @GETAllowed
      */
     public function formAction()
     {
@@ -145,7 +149,6 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         $this->_enforceAcl = false;
         parent::_viewObject();
         $this->_enforceAcl = true;
-        $this->view->links = parent::getViewLinks($this->view->subject);
     }
 
     /**
@@ -191,6 +194,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display organizations and POCs in tree mode for quick restructuring of the
      * POC hierarchy.
+     *
+     * @GETAllowed
      */
     public function treeAction()
     {
@@ -201,12 +206,15 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
         $this->view->toolbarButtons['list']->setValue("View POC List");
 
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
         // We're already on the tree screen, so don't show a "view tree" button
         unset($this->view->toolbarButtons['tree']);
     }
 
     /**
      * Returns a JSON object that describes the POC tree
+     *
+     * @GETAllowed
      */
     public function treeDataAction()
     {

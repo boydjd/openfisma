@@ -343,13 +343,10 @@
          * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} The drag target relative to destNode
          */        
         handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
-            // Set up the GET query string for this operation
-            var query = '/organization/move-node/src/' 
-                      + srcNode.data.organizationId 
-                      + '/dest/' 
-                      + destNode.data.organizationId 
-                      + '/dragLocation/' 
-                      + dragLocation;
+            // Set up the POST query string for this operation
+            var query = '/organization/move-node/';
+            var postData = 'src=' + srcNode.data.organizationId + '&dest=' + destNode.data.organizationId 
+                           + '&dragLocation=' + dragLocation + '&csrf=' + $('[name="csrf"]').val();
     
             // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
             // but it prevents the user from modifying the tree while an update is already pending.
@@ -374,7 +371,7 @@
             this._savePanel.show();
     
             YAHOO.util.Connect.asyncRequest(
-                'GET', 
+                'POST', 
                 query, 
                 {
                     success: function (event) {
@@ -400,7 +397,7 @@
                     },
                     scope: this
                 }, 
-                null
+                postData
             );
         },
 

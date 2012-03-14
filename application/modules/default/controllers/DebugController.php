@@ -40,7 +40,8 @@ class DebugController extends Zend_Controller_Action
 
     /**
      * Display phpinfo()
-     *
+     * 
+     * @GETAllowed
      * @return void
      */
     public function phpinfoAction()
@@ -50,6 +51,7 @@ class DebugController extends Zend_Controller_Action
     /**
      * Display error log
      *
+     * @GETAllowed
      * @return void
      */
     public function errorlogAction()
@@ -63,6 +65,7 @@ class DebugController extends Zend_Controller_Action
     /**
      * Display php log
      *
+     * @GETAllowed
      * @return void
      */
     public function phplogAction()
@@ -73,6 +76,8 @@ class DebugController extends Zend_Controller_Action
 
     /**
      * Display APC system cache info
+     *
+     * @GETAllowed
      */
     public function apcCacheAction()
     {
@@ -115,6 +120,8 @@ class DebugController extends Zend_Controller_Action
 
     /**
      * Invalidate APC cache
+     *
+     * @GETAllowed
      */
     public function invalidateApcCacheAction()
     {

@@ -40,6 +40,8 @@ class MetadataController extends Zend_Controller_Action
     
     /**
      * Return the enum values for a specified field in a specified model
+     *
+     * @GETAllowed
      */
     public function enumAction()
     {

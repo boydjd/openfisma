@@ -29,6 +29,7 @@ class RedirectController extends Zend_Controller_Action
     /**
      * Redirect to the specified URL
      * 
+     * @GETAllowed
      * @return void
      */
     public function redirectAction() 

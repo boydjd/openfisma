@@ -56,6 +56,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
     /**
      * Displays a (checkbox-)table of privileges associated with each role
      *
+     * @GETAllowed
      * @return void
      */
      public function viewMatrixAction()

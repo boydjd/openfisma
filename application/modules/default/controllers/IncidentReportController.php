@@ -58,6 +58,8 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * The rate of incident reports
+     *
+     * @GETAllowed
      */
     public function historyAction()
     {
@@ -182,6 +184,8 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         
     /**
      * Break down of all incidents by status
+     *
+     * @GETAllowed
      */
     public function categoryAction()
     {
@@ -247,6 +251,8 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * Show incidents by organization type
+     *
+     * @GETAllowed
      */
     public function organizationAction()
     {

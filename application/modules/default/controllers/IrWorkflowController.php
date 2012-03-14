@@ -59,6 +59,8 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override behavior from FZCAO so it renders our custom view script.
+     *
+     * @GETAllowed
      */
     public function viewAction()
     {

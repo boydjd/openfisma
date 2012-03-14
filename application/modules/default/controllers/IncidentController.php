@@ -119,6 +119,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * the user.
      *
      * Notice that this method is allowed for unauthenticated users
+     *
+     * @GETAllowed
      */
     public function reportAction()
     {
@@ -476,6 +478,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * Lets a user review the incident report in its entirety before submitting it.
      *
      * This action is available to unauthenticated users.
+     *
+     * @GETAllowed
      */
     public function reviewReportAction()
     {
@@ -539,6 +543,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      *
      * This action is available to unauthenticated users
      *
+     * @GETAllowed
      * @return string the rendered page
      */
     public function saveReportAction()
@@ -662,6 +667,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * Remove the serialized incident object from the session object.
      *
      * This action is available to unauthenticated users
+     *
+     * @GETAllowed
      */
     public function cancelReportAction()
     {
@@ -680,6 +687,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     /**
      * Displays information for editing or viewing a particular incident
      *
+     * @GETAllowed
      * @return string the rendered page
      */
     public function viewAction()
@@ -724,6 +732,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * Display incident details
      *
      * This is loaded into a tab view, so it has no layout
+     *
+     * @GETAllowed
      */
     public function incidentAction()
     {
@@ -766,19 +776,27 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
-        $this->view->unlockButton = new Fisma_Yui_Form_Button_Link(
+        $this->view->unlockButton = new Fisma_Yui_Form_Button(
             'unlock',
-            array(
-                'value' => 'Unlock Incident',
-                'href' => "/incident/unlock/id/$id"
+             array(
+                   'label' => 'UnLock Incident',
+                   'onClickFunction' => 'Fisma.Util.formPostAction',
+                   'onClickArgument' => array(
+                       'action' => '/incident/unlock/',
+                       'id' => $id
+                )
             )
         );
 
-        $this->view->lockButton = new Fisma_Yui_Form_Button_Link(
+        $this->view->lockButton = new Fisma_Yui_Form_Button(
             'lock',
-            array(
-                'value' => 'Lock Incident',
-                'href' => "/incident/lock/id/$id"
+             array(
+                   'label' => 'Lock Incident',
+                   'onClickFunction' => 'Fisma.Util.formPostAction',
+                   'onClickArgument' => array(
+                       'action' => '/incident/lock/',
+                       'id' => $id
+                )
             )
         );
 
@@ -837,6 +855,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display the audit log for an incident
+     *
+     * @GETAllowed
      */
     public function auditLogAction()
     {
@@ -899,6 +919,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display users with actor or observer privileges and provide controls to add/remove actors and observers
+     *
+     * @GETAllowed
      */
     public function usersAction()
     {
@@ -979,7 +1001,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 null // This is for the delete column
             );
 
-            $observerRows[] = $updateIncidentPrivilege ? $observerColumns : array_pop($observerColumns);
+            $observerRows[] = $observerColumns;
         }
 
         $observerTable = new Fisma_Yui_DataTable_Local();
@@ -1161,6 +1183,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      *
      * This actually forwards to one of several different views and doesn't render anything itself
      *
+     * @GETAllowed
+     *
      * @return string the rendered page
      */
     public function workflowAction()
@@ -1236,6 +1260,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Add a comment to a specified incident
+     *
      */
     public function addCommentAction()
     {
@@ -1258,6 +1283,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     /**
      * Displays the incident comment interface
      *
+     * @GETAllowed
      * @return Zend_Form
      */
     function commentsAction()
@@ -1344,6 +1370,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display file artifacts associated with an incident
+     *
+     * @GETAllowed
      */
     public function artifactsAction()
     {
@@ -1498,6 +1526,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * as JSON.
      *
      * Instead, we render an HTML view with the JSON-serialized response inside it.
+     *
+     * @GETAllowed
      */
     public function attachArtifactAction()
     {
@@ -1552,6 +1582,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Download an artifact to the user's browser
+     *
+     * @GETAllowed
      */
     public function downloadArtifactAction()
     {
@@ -1568,6 +1600,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->downloadAttachment($upload->fileHash, $upload->fileName);
     }
 
+    /**
+     * Update incident
+     */
     public function updateAction()
     {
         $id = $this->_request->getParam('id');
@@ -1898,6 +1933,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * List users eligible to be an actor or observer
      *
      * All users are eligible unless they are already an actor or observer for this incident.
+     *
+     * @GETAllowed
      */
     public function getEligibleUsersAction()
     {

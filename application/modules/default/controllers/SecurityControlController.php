@@ -56,6 +56,8 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * View information for a particular control
+     *
+     * @GETAllowed
      */
     public function viewAction()
     {
@@ -72,6 +74,8 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override parent to disable this action
+     *
+     * @GETAllowed
      */
     public function editAction()
     {
@@ -88,6 +92,8 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * A helper action for autocomplete text boxes
+     *
+     * @GETAllowed
      */
     public function autocompleteAction()
     {
@@ -113,6 +119,8 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
      * Render a single control as a table
      *
      * This view can also be invoked as a partial, so it can be embedded into other views or fetched with an XHR.
+     *
+     * @GETAllowed
      */
     public function singleControlAction()
     {

@@ -58,6 +58,8 @@ class AuthController extends Zend_Controller_Action
      * be performed against the database or LDAP provider, according to the application's
      * configuration. Also, it enforces the security policies set by the
      * application.
+     * 
+     * @GETAllowed
      *
      * @return void
      */
@@ -211,7 +213,8 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Returns a suitable authentication adapter based on system configuration and current user
-     *
+     * 
+     * @GETAllowed
      * @param User $user Authentication adapters may be different for different users
      * @param string $password The corresponding password of the specified user
      * @return Zend_Auth_Adapter_Interface The suitable authentication adapter
@@ -245,7 +248,8 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Close out the current user's session
-     *
+     * 
+     * @GETAllowed
      * @return void
      */
     public function logoutAction()
@@ -266,7 +270,8 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Display the system's privacy policy.
-     *
+     * 
+     * @GETAllowed
      * @return void
      * @todo the business logic is stored in the view instead of the controller
      */
@@ -276,7 +281,8 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Display the system's Rules Of Behavior.
-     *
+     * 
+     * @GETAllowed
      * @return void
      * @todo the business logic is stored in the view instead of the controller
      * @todo rename this function to rulesOfBehaviorAction -- that name is
@@ -307,6 +313,7 @@ class AuthController extends Zend_Controller_Action
     /**
      * A no-op action to continue the users' session
      *
+     * @GETAllowed
      * @return void
      */
     public function refreshSessionAction()

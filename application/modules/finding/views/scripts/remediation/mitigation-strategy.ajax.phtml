@@ -115,7 +115,6 @@
 
 <?php
 Fisma_Format_Section::startSection("Mitigation Strategy Approval");
-$postAction = "/finding/remediation/msa/id/" . $finding->id;
 
 $array = array('type'                   => $finding->type,
                'description'            => $finding->description,
@@ -136,8 +135,9 @@ foreach ($array as $row) {
     }
 }
 
-$warning = 'WARNING: This action cannot be undone. Please click "Yes" to confirm your action or click "No" to stop.';
-$url = "$postAction/do/submitmitigation";
+$warning = "WARNING: You are about to submit mitigation strategy. This action cannot be undone. "
+           . 'Please click "YES" to confirm your action or click "No" to stop.';
+$args = array(null, '/finding/remediation/msa/do/submitmitigation/id/', $finding->id);
 
 if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
     $submitMitigationButton = new Fisma_Yui_Form_Button(
@@ -146,8 +146,9 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
               'label' => 'Submit Mitigation Strategy',
               'onClickFunction' => 'Fisma.Util.showConfirmDialog',
               'onClickArgument' => array(
-                  'url' =>  $url,
-                  'text' => $warning
+                  'args' => $args,
+                  'func' => 'Fisma.Util.formPostAction',
+                  'text' => $warning 
               )
         )
     );
@@ -174,17 +175,17 @@ if (
 ) {
     $message = 'The revised mitigation strategy must be fully approved before evidence can be re-submitted.'
              . ' Are you sure that you want to continue?';
-    $url = "$postAction/do/revisemitigation";
+    $args = array(null, '/finding/remediation/msa/do/revisemitigation/id/', $finding->id);
     $reviseMitigationButton = new Fisma_Yui_Form_Button(
         'reviseMitigationButton',
         array(
               'label' => 'Revise Mitigation Strategy',
               'onClickFunction' => 'Fisma.Util.showConfirmDialog',
               'onClickArgument' => array(
-                  'url' =>  $url,
-                  'text' => $message,
-                  'isLink' => false
-              )
+                  'args' =>  $args,
+                  'func' => 'Fisma.Util.formPostAction',
+                  'text' => $message 
+            )
         )
     );
 ?>

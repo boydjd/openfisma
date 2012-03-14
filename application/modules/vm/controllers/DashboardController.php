@@ -42,6 +42,9 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->_acl->requireArea('vulnerability');
     }
 
+    /**
+     * @GETAllowed
+     */
     public function indexAction()
     {
     }

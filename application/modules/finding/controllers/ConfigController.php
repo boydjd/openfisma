@@ -55,6 +55,7 @@ class Finding_ConfigController extends Fisma_Zend_Controller_Action_Security
     /**
      * Display and update the persistent configurations
      * 
+     * @GETAllowed
      * @return void
      */
     public function generalAction()

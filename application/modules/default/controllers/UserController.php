@@ -272,6 +272,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Show audit logs for a given user
+     *
+     * @GETAllowed
      */
     public function logAction()
     {
@@ -335,6 +337,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display the user's "Edit Profile" page and handle its updating
      *
+     * @GETAllowed
      * @return void
      */
     public function profileAction()
@@ -376,6 +379,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * Change user's password
      *
+     * @GETAllowed
      * @return void
      */
     public function passwordAction()
@@ -439,6 +443,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * Set user's notification policy
      *
+     * @GETAllowed
      * @return void
      */
     public function notificationAction()
@@ -486,6 +491,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * Store user last accept rob and create a audit event
      *
+     * @GETAllowed
      * @return void
      */
     public function acceptRobAction()
@@ -531,6 +537,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Displays user info in a small pop-up box. No layout.
+     *
+     * @GETAllowed
      */
     public function infoAction()
     {
@@ -550,6 +558,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * Retrieve the organization subform
      *
+     * @GETAllowed
      * @return void
      */
     public function getOrganizationSubformAction()
@@ -610,6 +619,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override parent to add a link for audit logs
      *
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -661,6 +671,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override parent method
      *
+     * @GETAllowed
      * @return void
      */
     public function createAction()
@@ -682,6 +693,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * Generate a password that meet the application's password complexity requirements.
      *
+     * @GETAllowed
      * @return void
      */
     public function generatePasswordAction()
@@ -735,6 +747,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * Check if the specified LDAP distinguished name (Account) exists in the system's specified LDAP directory.
      *
+     * @GETAllowed
      * @return void
      */
     public function checkAccountAction()
@@ -816,6 +829,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Add a comment to a specified user
+     *
      */
     public function addCommentAction()
     {
@@ -836,6 +850,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * Displays the user comment interface
      *
+     * @GETAllowed
      * @return void
      */
     function commentsAction()
@@ -919,6 +934,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     /**
      * getUsersAction
      *
+     * @GETAllowed
      * @access public
      * @return void
      */

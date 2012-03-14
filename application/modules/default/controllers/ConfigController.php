@@ -48,6 +48,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                       ->addActionContext('test-email-config', 'json')
                       ->addActionContext('test-search', 'json')
                       ->addActionContext('validate-ldap', 'json')
+                      ->addActionContext('delete-ldap', 'json')
                       ->initContext();
     }
     
@@ -79,6 +80,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     /**
      * Display and update the persistent configurations
      * 
+     * @GETAllowed
      * @return void
      */
     public function generalAction()
@@ -110,6 +112,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     /**
      * Get Ldap configuration list
      * 
+     * @GETAllowed
      * @return void
      */
     public function listLdapAction()
@@ -121,7 +124,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                      
         $ldapConfigs = $ldapQuery->execute();
 
-        // Construct the table data for the LDAP list, including edit and delete icons
+        // Construct the table data for the LDAP list, including edit icon and delete button
         $ldapList = array();
 
         foreach ($ldapConfigs as $ldapConfig) {
@@ -133,8 +136,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             );
             
             $editUrl = "/config/update-ldap/id/{$ldapConfig['id']}";
-            $deleteUrl = "/config/delete-ldap/id/{$ldapConfig['id']}";
-                      
+            $deleteUrl = "javascript:Fisma.Util.formPostAction('', '/config/delete-ldap/', " . $ldapConfig['id'] . ')';
+
             $ldapList[] = array($url, $editUrl, $deleteUrl);
         }
 
@@ -145,7 +148,9 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                   ->addColumn(new Fisma_Yui_DataTable_Column('Delete', false, 'Fisma.TableFormat.deleteControl'))
                   ->setData($ldapList);
 
+        $dataTable->addEventListener("buttonClickEvent", 'Fisma.Ldap.deleteLdap'); 
         $this->view->dataTable = $dataTable;
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
     }
 
     /**
@@ -179,6 +184,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     /**
      * Add/Update Technical Contact Information configurations
      * 
+     * @GETAllowed
      * @return void
      */
     public function contactAction()
@@ -210,6 +216,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     /**
      * Add/Update LDAP configurations
      *
+     * @GETAllowed
      * @TODO Split this out into createLdapAction and updateLdapAction
      * @return void
      */
@@ -271,13 +278,14 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Delete a Ldap configuration
-     * 
+     *
      * @return void
      */
     public function deleteLdapAction()
     {        
-        $id = $this->_request->getParam('id');
+        $id = $this->getRequest()->getParam('id');
         Doctrine::getTable('LdapConfig')->find($id)->delete();
+
         $msg = "Ldap Server deleted successfully.";
         $this->view->priorityMessenger($msg, 'notice');
         $this->_redirect('/config/list-ldap');
@@ -288,6 +296,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      * 
      * This is only happens in ajax context
      * 
+     * @GETAllowed
      * @return void
      */
     public function validateLdapAction()
@@ -334,6 +343,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Display module status and controls to change module status
+     *
+     * @GETAllowed
      */
     public function modulesAction()
     {
@@ -360,7 +371,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 $module['control'] = 'This module cannot be disabled.';
             }
         }
-        
+
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
         $this->view->modules = $modules;
     }
     
@@ -436,6 +448,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     /**
      * Email event system base setting
      * 
+     * @GETAllowed
      * @return void
      */
     public function emailAction()
@@ -476,6 +489,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     /**
      * Validate the email configuration
      * 
+     * @GETAllowed
      * @return void
      */
     public function testEmailConfigAction()
@@ -546,6 +560,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Test search engine backend
+     *
+     * @GETAllowed
      */
     public function testSearchAction()
     {
@@ -569,6 +585,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     /**
      * Add/Update Privacy Policy configurations
      * 
+     * @GETAllowed
      * @return void
      */
     public function privacyAction()
@@ -600,6 +617,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     /**
      * Password Complexity Policy configurations
      * 
+     * @GETAllowed
      * @return void
      */
     public function passwordAction()
@@ -630,6 +648,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * Configurations related to searching
+     *
+     * @GETAllowed
      */
     public function searchAction()
     {
@@ -643,9 +663,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             )
         );
         
-        $this->view->csrfToken = Zend_Controller_Front::getInstance()
-                                 ->getPlugin('Fisma_Zend_Controller_Plugin_CsrfProtect')
-                                 ->getToken();
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
     }
 
     /**
