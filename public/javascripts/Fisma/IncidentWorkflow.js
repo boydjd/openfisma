@@ -94,7 +94,7 @@
         addStepBelow: function (tr, data) {
             // clone new TR from template and set up values
             var newTr = this._stepTemplate.clone(),
-                buttons = $("button", newTr).get(),
+                buttons = $("div.button", newTr).get(),
                 textareaId = tinyMCE.DOM.uniqueId(),
                 newTextarea = $('<textarea name="stepDescription[]" rows="8" cols="100" />'),
                 fn;
@@ -107,13 +107,13 @@
             }
 
             $(buttons[0]).attr('id', textareaId + "_addAbove");
-            new YAHOO.widget.Button(buttons[0]);
+            new YAHOO.widget.Button(buttons[0], {label: "Add Step Above"});
 
             $(buttons[1]).attr('id', textareaId + "_addBelow");
-            new YAHOO.widget.Button(buttons[1]);
+            new YAHOO.widget.Button(buttons[1], {label: "Add Step Below"});
 
             $(buttons[2]).attr('id', textareaId + "_remove");
-            new YAHOO.widget.Button(buttons[2]);
+            new YAHOO.widget.Button(buttons[2], {label: "Remove Step"});
 
             // add it to the table
             $(tr).after(newTr);
