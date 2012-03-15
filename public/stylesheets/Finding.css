@@ -36,10 +36,6 @@ fieldset#evidence_upload_file_list input {
     margin-bottom: 4px;
 }
 
-form#finding_detail_upload_evidence button {
-    display: none;
-}
-
 /* Finding Workflow elements */
 div#changeQueue {
     float: right;
