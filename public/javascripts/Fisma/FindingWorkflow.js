@@ -140,6 +140,13 @@ Fisma.FindingWorkflow = {
             Fisma.Util.showAlertDialog('Chart Label must be unique.');
             return false;
         }
+
+        var reserved = ['NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED'];
+        if (jQuery.inArray(newLabel, reserved) >= 0) {
+            jQuery(element).val('');
+            Fisma.Util.showAlertDialog('Chart Label ' + newLabel + ' has been reserved.');
+            return false;
+        }
     },
 
     /**
