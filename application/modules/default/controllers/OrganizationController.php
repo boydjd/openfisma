@@ -389,7 +389,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
-        $this->view->toolbarButtons = $this->getToolbarButtons(null);
+        $this->view->toolbarButtons = $this->getToolbarButtons();
 
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
         $this->view->toolbarButtons['list']->setValue("View Organization List");

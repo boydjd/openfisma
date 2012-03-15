@@ -86,10 +86,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     {
         parent::init();
 
-        $this->_helper->getHelper('AjaxContext')
-                      ->addActionContext('list-categories', 'html')
-                      ->initContext();
-
         $this->_helper->fismaContextSwitch()
                       ->addActionContext('add-user', 'json')
                       ->addActionContext('remove-user', 'json')

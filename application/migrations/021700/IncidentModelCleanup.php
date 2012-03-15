@@ -33,7 +33,7 @@ class Application_Migration_021700_IncidentModelCleanup extends Fisma_Migration_
      */
     public function migrate()
     {
-        echo "Adding POC field to Incident table…\n";
+        $this->message("Adding POC field to Incident table");
 
         $pocIdColumn = array(
             'type' => 'bigint(20)',
@@ -44,7 +44,7 @@ class Application_Migration_021700_IncidentModelCleanup extends Fisma_Migration_
         $this->getHelper()->addIndex('incident', 'pocid');
         $this->getHelper()->addForeignKey('incident', null, 'pocid', 'poc', 'id');
 
-        echo "Dropping the \"Actions Taken\" column from the Incident table…\n";
+        $this->message("Dropping the \"Actions Taken\" column from the Incident table");
 
         $this->getDb()->exec("UPDATE incident SET additionalInfo = CONCAT(additionalinfo, actionstaken)");
         $this->getHelper()->dropColumn('incident', 'actionstaken');

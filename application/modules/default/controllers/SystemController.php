@@ -861,7 +861,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
-        $this->view->toolbarButtons = $this->getToolbarButtons(null);
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**

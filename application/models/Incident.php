@@ -221,7 +221,7 @@ class Incident extends BaseIncident
         }
 
         // Update the completed step first
-        $completedStep = $this->CurrentWorkflowStep;
+        $completedStep = Doctrine::getTable('IrIncidentWorkflow')->find($this->currentWorkflowStepId);
         $completedStep->completeStep($comment);
         $this->save();
 
