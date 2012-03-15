@@ -1,18 +1,18 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2011 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -21,9 +21,9 @@ require_once(realpath(dirname(__FILE__) . '/../../../../Case/Unit.php'));
 /**
  * Tests for YUI data table with local data source
  * Employed to test Fisma_Yui_DataTabale_Abstract as well
- * 
- * @author     Mark E. Haase
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ *
+ * @author     Duy Bui <duy.bui@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Test
  * @subpackage Test_Library
@@ -45,13 +45,14 @@ class Test_Library_Fisma_Yui_DataTable_Remote extends Test_Case_Unit
         $table->setDataUrl('')
               ->setDeferData(false)
               ->setRenderEventFunction('')
-              ->setResultVariable('')                                                       
+              ->setResultVariable('')
               ->setRowCount(0)
               ->setInitialSortColumn('')
               ->setRequestConstructor('')
               ->setSortAscending(true)
               ->setClickEventBaseUrl('')
-              ->setClickEventVariableName('');
+              ->setClickEventVariableName('')
+              ->setRegistryName('foo');
 
         $layout = new RemoteTableMockLayout();
         $this->assertEquals('this is a dummy view', $table->render($layout));
@@ -88,7 +89,7 @@ class Test_Library_Fisma_Yui_DataTable_Remote extends Test_Case_Unit
               ->setResultVariable('')
               ->setRowCount(0)
               ->setInitialSortColumn('')
-              ->setSortAscending(true);        
+              ->setSortAscending(true);
         $this->setExpectedException('PHPUnit_Framework_Error', 'Table must contain at least one column.');
         $table->render();
 
@@ -117,10 +118,10 @@ class RemoteTableMockView
     public function __construct()
     {
         $this->tabs = array();
-    }   
+    }
 
     public function partial($viewscript, $option, $data)
-    {       
+    {
         $this->viewscript = $viewscript;
         $this->option = $option;
         $this->data = $data;
