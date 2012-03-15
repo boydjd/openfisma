@@ -152,10 +152,9 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                 $values['filepath'] = $filePath;
 
                 $upload = new Upload();
-                $upload->save();
 
                 $import = Fisma_Inject_Factory::create('Asset', $values);
-                $import->parse($upload->id);
+                $import->parse(null);
 
                 $msgs[] = $import->getMessages();
 
