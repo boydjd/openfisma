@@ -137,7 +137,7 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
      * 
      * @return boolean
      */
-    protected function _save()
+    protected function _save($findingData = NULL, $assetData = NULL, $productData = NULL)
     {
         try {
             foreach ($this->_assets as &$asset) {

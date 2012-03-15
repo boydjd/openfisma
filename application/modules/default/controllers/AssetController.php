@@ -153,16 +153,24 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
                 // get original file name
                 $originalName = pathinfo(basename($filePath), PATHINFO_FILENAME);
-                $values['filePath'] = $filePath;
+                $values['filepath'] = $filePath;
 
                 $upload = new Upload();
-                $upload->instantiate($file);
-                $upload->save();
 
                 $import = Fisma_Inject_Factory::create('Asset', $values);
-                $import->parse($upload->id);
+                $import->parse(null);
 
                 $msgs[] = $import->getMessages();
+
+                // Add the file to storage
+                $upload->instantiate(array(
+                    'tmp_name' => $filePath,
+                    'name' => $originalName,
+                    'type' => $uploadForm->selectFile->getMimeType()
+                ));
+           
+                // Need to save again after instantiate. 
+                $upload->save();
             }
 
             if ($err) {
