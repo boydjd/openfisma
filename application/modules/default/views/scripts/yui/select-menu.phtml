@@ -19,8 +19,14 @@
             menu: '<?php echo $this->escape($name); ?>'
         });
         oMenuButton.getMenu().subscribe('click', function (p_sType, p_aArgs) {
-            if (p_aArgs[1] && p_aArgs[1].srcElement.value) {
-                oMenuButton.set('label', p_aArgs[1].cfg.getProperty('text'));
+            if (p_aArgs[1]) {
+                if (p_aArgs[1].srcElement.value) {
+                    oMenuButton.set('label', p_aArgs[1].cfg.getProperty('text'));
+                } else {
+                    var firstChild = p_aArgs[1].cfg.getProperty('submenu').getItem(0);
+                    oMenuButton.set('selectedMenuItem', firstChild);
+                    oMenuButton.set('label', firstChild.cfg.getProperty('text'));
+                }
             }
         });
     });
