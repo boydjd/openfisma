@@ -37,11 +37,13 @@ class Evaluation extends BaseEvaluation
     public function setNickname($newValue)
     {
         $this->_set('nickname', $newValue);
-        $this->save();
-        foreach ($this->FindingEvaluations as $fe) {
-            $f = $fe->Finding;
-            $f->setStatus($f->status); //because updateDenormalizedStatus is not public)
-            $f->save();
+        if ($this->FindingEvaluations->count() > 0) {
+            $this->save();
+            foreach ($this->FindingEvaluations as $fe) {
+                $f = $fe->Finding;
+                $f->setStatus($f->status); //because updateDenormalizedStatus is not public)
+                $f->save();
+            }
         }
     }
 
@@ -55,11 +57,13 @@ class Evaluation extends BaseEvaluation
     public function setDaysUntilDue($newValue)
     {
         $this->_set('daysUntilDue', $newValue);
-        $this->save();
-        foreach ($this->FindingEvaluations as $fe) {
-            $f = $fe->Finding;
-            $f->setStatus($f->status); //because updateDueDate is not public)
-            $f->save();
+        if ($this->FindingEvaluations->count() > 0) {
+            $this->save();
+            foreach ($this->FindingEvaluations as $fe) {
+                $f = $fe->Finding;
+                $f->setStatus($f->status); //because updateDueDate is not public)
+                $f->save();
+            }
         }
     }
 }
