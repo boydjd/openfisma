@@ -243,6 +243,9 @@ Fisma.FindingWorkflow = {
         }).length <= 1) { // Only 1 remaining step
             Fisma.Util.showAlertDialog("There must be at least one approval for this workflow step.");
             return false;
+        } else if (!Fisma.FindingWorkflow.validateForm()) {
+            Fisma.Util.showAlertDialog("Please resolve validation error(s).");
+            return false;
         } else {
         var panel = Fisma.UrlPanel.showPanel(
                 'Remove Step',
