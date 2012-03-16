@@ -21,6 +21,8 @@
         oMenuButton.getMenu().subscribe('click', function (p_sType, p_aArgs) {
             if (p_aArgs[1] && p_aArgs[1].srcElement.value) {
                 oMenuButton.set('label', p_aArgs[1].cfg.getProperty('text'));
+            } else {
+                oMenuButton.getMenu().clearActiveItem();//YAHOO.util.Event.preventDefault(p_aArgs[0]);
             }
         });
     });
