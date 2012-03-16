@@ -128,7 +128,7 @@
                                     oMenuButton.getMenu().subscribe("click", function (p_sType, p_aArgs) {
                                         var oEvent = p_aArgs[0],       // DOM event
                                             oMenuItem = p_aArgs[1]; // MenuItem target of the event
-                                        if (oMenuItem) {
+                                        if (oMenuItem && oMenuItem.srcElement.value) {
                                             oMenuButton.set('label', oMenuItem.cfg.getProperty("text"));
                                         }
                                     });
