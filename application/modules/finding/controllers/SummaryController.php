@@ -228,9 +228,9 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                   ->groupBy('o.id')
                                   ->orderBy('o.lft');
 
-        $this->_addFindingStatusFields($userOrgQuery, $findingParams);
+        $this->_addFindingStatusFields($userOrgQuery);
 
-        $userOrgs = $userOrgQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+        $userOrgs = $userOrgQuery->execute($this->_setFindingStatusToArray(), Doctrine::HYDRATE_SCALAR);
         if (empty($userOrgs)) {
             return $userOrgs;
         }   
@@ -320,14 +320,14 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         $outerSystemsQuery->addSelect('0 AS level')->andWhere('s.aggregateSystemId IS NULL')->orderBy('o.nickname');
         $this->_addFindingStatusFields($outerSystemsQuery);
-        $outerSystems = $outerSystemsQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+        $outerSystems = $outerSystemsQuery->execute($this->_setFindingStatusToArray(), Doctrine::HYDRATE_SCALAR);
 
         $innerSystemsQuery->addSelect('1 AS level, s.aggregateSystemId')
                           ->innerJoin('s.AggregateSystem as')
                           ->innerJoin('as.Organization ao')
                           ->orderBy('ao.nickname, o.nickname');
         $this->_addFindingStatusFields($innerSystemsQuery);
-        $innerSystems = $innerSystemsQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+        $innerSystems = $innerSystemsQuery->execute($this->_setFindingStatusToArray(), Doctrine::HYDRATE_SCALAR);
 
         $disposalSystemIds = Doctrine_Query::create()
                              ->from('System')
@@ -477,7 +477,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                   ->orderBy('poc.id');
         
         $this->_addFindingStatusFields($findingQuery);
-        $tempFindings = $findingQuery->execute(null, Doctrine::HYDRATE_SCALAR);
+        $tempFindings = $findingQuery->execute($this->_setFindingStatusToArray(), Doctrine::HYDRATE_SCALAR);
         $findings = array();
         foreach ($tempFindings as $finding) {
             $findings[(int)$finding['poc_id']] = $finding;
@@ -556,13 +556,13 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
             $query->addSelect(
                 "SUM(
-                    IF(f.denormalizedStatus LIKE '$status' AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
+                    IF(f.denormalizedStatus LIKE ? AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
                 ) ontime_$statusName"
             );
             
             $query->addSelect(
                 "SUM(
-                    IF(f.denormalizedStatus LIKE '$status' AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
+                    IF(f.denormalizedStatus LIKE ? AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
                 ) overdue_$statusName"
             );
         }
@@ -582,5 +582,29 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         $query->addSelect("SUM(IF(f.denormalizedStatus LIKE 'CLOSED', 1, 0)) closed");
         $query->addSelect("SUM(IF(f.id IS NOT NULL, 1, 0)) total");
+    }
+
+    /**
+     * Set each finding status except 'CLOSED' to an array
+     * 
+     * @return array The list of finding status.
+     */
+    private function _setFindingStatusToArray()
+    {
+        $allStatus = Finding::getAllStatuses();
+        $findingStatus = array();
+
+        foreach ($allStatus as $status) {
+            if ($status === 'CLOSED') {
+                continue;
+            }
+
+            // Since there are two finding status in a query constructed at _addFindingStatusFields(),
+            // it needs to add the status twice accordingly.
+            array_push($findingStatus, $status);
+            array_push($findingStatus, $status);
+        }
+
+        return $findingStatus;
     }
 }
