@@ -127,7 +127,7 @@
                                     // Register "click" event listener for the Button's Menu instance
                                     oMenuButton.getMenu().subscribe('click', function (p_sType, p_aArgs) {
                                         if (p_aArgs[1]) {
-                                            if (p_aArgs[1].srcElement.value) {
+                                            if (p_aArgs[1].srcElement.value !== undefined) {
                                                 oMenuButton.set('label', p_aArgs[1].cfg.getProperty('text'));
                                             } else {
                                                 var firstChild = p_aArgs[1].cfg.getProperty('submenu').getItem(0);
