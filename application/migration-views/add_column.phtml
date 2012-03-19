@@ -4,6 +4,10 @@ ADD COLUMN `<?php echo $this->escape($this->column); ?>`
 
 <?php echo $this->escape($this->type); ?>
 
+<?php if ($this->signed === false): ?>
+    UNSIGNED
+<?php endif; ?>
+
 <?php if ($this->nullable === false): ?>
     NOT NULL
 <?php else: ?>

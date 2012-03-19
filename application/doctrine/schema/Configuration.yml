@@ -91,7 +91,7 @@ Configuration:
         contact_email:
             type: string(255)
             notblank: true
-            email: 
+            email:
                 check_mx: false
             comment: Technical support contact email address
             default: ""
@@ -189,3 +189,15 @@ Configuration:
             notblank: true
             comment: The ID of the default organization type which is used when the user does not explicitly organization type.
             default: 3
+        finding_new_due:
+            type: integer(2)
+            unsigned: true
+            notblank: true
+            comment: Number of days before a NEW finding becomes overdue
+            default: 30
+        finding_draft_due:
+            type: integer(2)
+            unsigned: true
+            notblank: true
+            comment: Number of days before a DRAFT finding becomes overdue
+            default: 30

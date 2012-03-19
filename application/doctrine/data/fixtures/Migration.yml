@@ -39,3 +39,8 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: Ipv6
+    021800_finding_worklow_extended:
+        majorVersion: 2
+        minorVersion: 18
+        tagNumber: 0
+        name: FindingWorkflowExtended
