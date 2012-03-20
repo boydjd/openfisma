@@ -130,7 +130,7 @@
                                         var oEvent = p_aArgs[0],       // DOM event
                                             oMenuItem = p_aArgs[1]; // MenuItem target of the event
                                         if (oMenuItem) {
-                                            oMenuButton.set('label', oMenuItem.cfg.getProperty("text"));
+                                            oMenuButton.set('label', oMenuItem.cfg.getProperty("text").replace(/&amp;/g, "&"));
                                         }
                                     });
                                 });
