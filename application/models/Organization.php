@@ -449,7 +449,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
 
             // create system row
             $newSystem = new System();
-            $newSystem->type = $type;
+            $newSystem->systemTypeId = $type;
             $newSystem->sdlcPhase = $sdlcPhase;
             $newSystem->confidentiality = $confidentiality;
             $newSystem->integrity = $integrity;

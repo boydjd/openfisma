@@ -217,6 +217,7 @@
             this._drawer.className = "imagePickerDrawer";
             this._drawerState = IP.DRAWER.CLOSED;
             YAHOO.util.Dom.setStyle(this._drawer, "opacity", 0);
+            YAHOO.util.Dom.setStyle(this._drawer, "display", "none");
             this._parent.appendChild(this._drawer);
 
             // Draw table grid with images
