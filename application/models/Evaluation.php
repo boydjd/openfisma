@@ -37,13 +37,13 @@ class Evaluation extends BaseEvaluation
     public function setNickname($newValue)
     {
         $this->_set('nickname', $newValue);
-        $this->save();
         $findings = Doctrine_Query::create()
             ->from('Finding f')
             ->leftJoin('f.CurrentEvaluation e')
             ->where('e.id = ?', $this->id)
             ->execute();
         if (count($findings) > 0) {
+            $this->save();
             foreach ($findings as $f) {
                 $f->setStatus($f->status); //because updateDenormalizedStatus is not public)
                 $f->save();
@@ -61,13 +61,13 @@ class Evaluation extends BaseEvaluation
     public function setDaysUntilDue($newValue)
     {
         $this->_set('daysUntilDue', $newValue);
-        $this->save();
         $findings = Doctrine_Query::create()
             ->from('Finding f')
             ->leftJoin('f.CurrentEvaluation e')
             ->where('e.id = ?', $this->id)
             ->execute();
         if (count($findings) > 0) {
+            $this->save();
             foreach ($findings as $f) {
                 $f->setStatus($f->status); //because updateDueDate is not public)
                 $f->save();
