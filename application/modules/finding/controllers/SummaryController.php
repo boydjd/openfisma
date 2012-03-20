@@ -230,7 +230,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         $this->_addFindingStatusFields($userOrgQuery);
 
-        $userOrgs = $userOrgQuery->execute($this->_setFindingStatusToArray(), Doctrine::HYDRATE_SCALAR);
+        $userOrgs = $userOrgQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
         if (empty($userOrgs)) {
             return $userOrgs;
         }   
@@ -320,14 +320,14 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         $outerSystemsQuery->addSelect('0 AS level')->andWhere('s.aggregateSystemId IS NULL')->orderBy('o.nickname');
         $this->_addFindingStatusFields($outerSystemsQuery);
-        $outerSystems = $outerSystemsQuery->execute($this->_setFindingStatusToArray(), Doctrine::HYDRATE_SCALAR);
+        $outerSystems = $outerSystemsQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
 
         $innerSystemsQuery->addSelect('1 AS level, s.aggregateSystemId')
                           ->innerJoin('s.AggregateSystem as')
                           ->innerJoin('as.Organization ao')
                           ->orderBy('ao.nickname, o.nickname');
         $this->_addFindingStatusFields($innerSystemsQuery);
-        $innerSystems = $innerSystemsQuery->execute($this->_setFindingStatusToArray(), Doctrine::HYDRATE_SCALAR);
+        $innerSystems = $innerSystemsQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
 
         $disposalSystemIds = Doctrine_Query::create()
                              ->from('System')
@@ -477,7 +477,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                   ->orderBy('poc.id');
         
         $this->_addFindingStatusFields($findingQuery);
-        $tempFindings = $findingQuery->execute($this->_setFindingStatusToArray(), Doctrine::HYDRATE_SCALAR);
+        $tempFindings = $findingQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
         $findings = array();
         foreach ($tempFindings as $finding) {
             $findings[(int)$finding['poc_id']] = $finding;
@@ -589,7 +589,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      * 
      * @return array The list of finding status.
      */
-    private function _setFindingStatusToArray()
+    private function _prepareSummaryQueryParameters()
     {
         $allStatus = Finding::getAllStatuses();
         $findingStatus = array();
