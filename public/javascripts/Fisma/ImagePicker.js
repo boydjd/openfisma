@@ -369,6 +369,14 @@
                 fileElement.setAttribute("accept", "image/*"); // not supported in IE or safari
                 fileForm.appendChild(fileElement);
 
+                var csrfElement = document.createElement("input");
+                csrfElement.type = "hidden";
+                csrfElement.name = "csrf";
+                csrfElement.value = document.getElementsByName("csrf")[0].value;
+                console.log(csrfElement.name);
+                console.log(csrfElement.value);
+                fileForm.appendChild(csrfElement);
+
                 var uploadButton = new YAHOO.widget.Button({
                     id: YAHOO.util.Dom.generateId(),
                     label: "Upload A New Image",
