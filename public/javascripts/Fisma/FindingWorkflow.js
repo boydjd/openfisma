@@ -144,7 +144,7 @@ Fisma.FindingWorkflow = {
         var reserved = ['NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED'];
         if (jQuery.inArray(newLabel, reserved) >= 0) {
             jQuery(element).val('');
-            Fisma.Util.showAlertDialog('Chart Label ' + newLabel + ' has been reserved.');
+            Fisma.Util.showAlertDialog('Chart Label "' + newLabel + '" cannot be used because it is reserved by the system.');
             return false;
         }
     },
