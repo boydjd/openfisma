@@ -44,7 +44,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                     . 'ed for graphs, reports, and searching. For example, if the chart label for workflow step ISSO A'
                     . 'pproval of Mitigation Strategy is set to \\"MS ISSO\\" then the graph will identify the workflo'
                     . 'w step as \\"MS ISSO\\" and the user will be able to search for items currently in the \\"MS IS'
-                    . 'SO\\" status. Please be noted that the chart label should always be in UPPERCASE.';
+                    . 'SO\\" status.';
         $statusMessage = 'The status message is a brief synopsis of the current status used to give additional context'
                        . ' to the user rather than showing them an acronym. For example, the status message \\"Awaitin'
                        . 'g ISSO Approval of Mitigation Strategy\\" informs the user what has to happen before the sta'
