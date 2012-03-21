@@ -373,8 +373,6 @@
                 csrfElement.type = "hidden";
                 csrfElement.name = "csrf";
                 csrfElement.value = document.getElementsByName("csrf")[0].value;
-                console.log(csrfElement.name);
-                console.log(csrfElement.value);
                 fileForm.appendChild(csrfElement);
 
                 var uploadButton = new YAHOO.widget.Button({
