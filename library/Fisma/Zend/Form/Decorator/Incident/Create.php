@@ -139,7 +139,7 @@ class Fisma_Zend_Form_Decorator_Incident_Create extends Fisma_Zend_Form_Decorato
                 . '</form>';
             }
         } else {
-            throw new Exception_General("The element to be rendered is an unknown"
+            throw new Fisma_Zend_Exception("The element to be rendered is an unknown"
                     . " class: "
                     . get_class($element));
         }
