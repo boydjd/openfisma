@@ -59,7 +59,12 @@ div.attachArtifactsProgressBar {
 
 /* Fix autocomplete rendering underneath other page elements */
 div.yui-ac {
-    z-index: 999;
+    z-index: 998;
+}
+
+/* Fix select menu rendering underneath autocomplete */
+div.yuimenu {
+    z-index: 999 !important;
 }
 
 /* A class that will hide anything that uses it from IE users. Used for hiding IE-incompatible (chart-)features */
