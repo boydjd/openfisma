@@ -218,8 +218,7 @@ Fisma.FindingWorkflow = {
                                 function(val) {
                                     return (val == '') ? null : $("<div>").text(val).html();
                                 }
-                            ).join("<br/>")
-                        );
+                            ).join("<br/>"));
 
                         var roles = "";
                         jQuery.each(inputs, function(i, e){roles += e.name + "|";});
