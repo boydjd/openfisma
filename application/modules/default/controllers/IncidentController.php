@@ -1201,8 +1201,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
             foreach ($this->_getAssociatedUsers($incident->id) as $user) {
                 $options = array(
-                    'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $id,
-                    'incidentId' => $id,
+                    'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incident->id,
+                    'incidentId' => $incident->id,
                     'workflowStep' => $currentStep->name,
                     'workflowCompletedBy' => $currentStep->User->username
                 );
