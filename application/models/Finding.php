@@ -838,9 +838,9 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $activeEvaluation = $this->CurrentEvaluation;
         switch ($this->status) {
             case 'NEW':
-                return "Awaiting Mitigation Strategy";
+                return "NEW: Awaiting Mitigation Strategy";
             case 'DRAFT':
-                return "Awaiting Mitigation Strategy Submission";
+                return "DRAFT: Awaiting Mitigation Strategy Submission";
             case 'MSA':
             case 'EA':
                 return "Awaiting {$activeEvaluation->name}";
