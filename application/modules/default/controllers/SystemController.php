@@ -506,7 +506,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $userRoles->save();
         }
 
-        return $system->id;
+        return $system;
     }
 
     /**
