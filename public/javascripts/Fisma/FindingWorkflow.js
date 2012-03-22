@@ -136,9 +136,10 @@ Fisma.FindingWorkflow = {
     chartLabelChangeHandler : function(element) {
         var newLabel = jQuery(element).val();
         jQuery(element).val(newLabel);
-        if (jQuery('input[name$="nickname"]').filter(function(i, e) {
+        var countDuplication = jQuery('input[name$="nickname"]').filter(function(i, e) {
             return (jQuery(e).val().toUpperCase() == newLabel.toUpperCase());
-        }).length > 1) {
+        }).length;
+        if (countDuplication > 1) {
             jQuery(element).val('');
             Fisma.Util.showAlertDialog('Chart Label must be unique regardless of letter case.');
             return false;
