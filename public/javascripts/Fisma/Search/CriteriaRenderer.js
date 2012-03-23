@@ -246,7 +246,7 @@ Fisma.Search.CriteriaRenderer = function () {
                 var enumValue = enumValues[index];
 
                 menuItem = {
-                    text : $P.htmlentities(enumValue),
+                    text : $P.htmlentities(enumValue, "ENT_NOQUOTES", "UTF-8"),
                     value : enumValue,
                     onclick : {fn : handleEnumSelectionEvent}
                 };
@@ -255,7 +255,8 @@ Fisma.Search.CriteriaRenderer = function () {
             }
 
             // If an operand is supplied, that is the default value. Otherwise the default is the first enum value.
-            var defaultValue = $P.htmlentities((operands && operands.length > 0) ? operands[0] : enumValues[0]);
+            var defaultValue = (operands && operands.length > 0) ? operands[0] : enumValues[0];
+            defaultValue =  jQuery('<div/>').text(defaultValue).html();
 
             // Render menu button
             var menuButton = new YAHOO.widget.Button({

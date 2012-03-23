@@ -126,11 +126,16 @@
                                     });
 
                                     // Register "click" event listener for the Button's Menu instance
-                                    oMenuButton.getMenu().subscribe("click", function (p_sType, p_aArgs) {
-                                        var oEvent = p_aArgs[0],       // DOM event
-                                            oMenuItem = p_aArgs[1]; // MenuItem target of the event
-                                        if (oMenuItem) {
-                                            oMenuButton.set('label', oMenuItem.cfg.getProperty("text").replace(/&amp;/g, "&"));
+                                    oMenuButton.getMenu().subscribe('click', function (p_sType, p_aArgs) {
+                                        if (p_aArgs[1]) {
+                                            var children = p_aArgs[1].cfg.getProperty('submenu');
+                                            if (!children) {
+                                                oMenuButton.set('label', p_aArgs[1].cfg.getProperty('text').replace(/&amp;/g, "&"));
+                                            } else {
+                                                var firstChild = children.getItem(0);
+                                                oMenuButton.set('selectedMenuItem', firstChild);
+                                                oMenuButton.set('label', firstChild.cfg.getProperty('text').replace(/&amp;/g, "&"));
+                                            }
                                         }
                                     });
                                 });

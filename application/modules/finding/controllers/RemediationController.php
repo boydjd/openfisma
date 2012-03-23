@@ -99,7 +99,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      * Default action.
      *
      * It combines the searching and summary into one page.
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -223,7 +223,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * View details of a finding object
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -282,10 +282,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
                               'args' => $args,
-                              'text' => "WARNING: You are about to delete the finding record. This action cannot be " 
+                              'text' => "WARNING: You are about to delete the finding record. This action cannot be "
                                         . "undone. Do you want to continue?",
                               'func' => 'Fisma.Util.formPostAction'
-                        ) 
+                        )
                     )
                 );
             }
@@ -323,7 +323,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Printer-friendly version of the finding view page.
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -637,7 +637,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Download evidence
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -779,7 +779,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      * Generate RAF report
      *
      * It can handle different format of RAF report.
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -824,7 +824,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display basic data about the finding and the affected asset
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -854,7 +854,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Fields for defining the mitigation strategy
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -873,7 +873,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display fields related to risk analysis such as threats and countermeasures
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -896,7 +896,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display fields related to risk analysis such as threats and countermeasures
-     * 
+     *
      * Display evidence package and evaluations
      *
      * @GETAllowed
@@ -932,10 +932,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $baseUrl = '/finding/remediation/';
             $currentUrl = '/id/' . $this->view->finding->id . '/attachmentId/' . $attachment->id;
             $attachmentRows[] = array(
-                'iconUrl'      => "<a href={$baseUrl}download-evidence{$currentUrl}>"
-                                 . "<img src={$attachment->getIconUrl()}></a>",
-                'fileName'     => "<a href={$baseUrl}download-evidence{$currentUrl}><div>"
-                                . $this->view->escape($attachment->fileName) . "</div></a>",
+                'iconUrl'      => "<a href=\"{$baseUrl}download-evidence{$currentUrl}\">"
+                                 . "<img src=\"{$attachment->getIconUrl()}\"></a>",
+                'fileName'     => $this->view->escape($attachment->fileName),
+                'fileNameLink' => "<a href=\"{$baseUrl}download-evidence{$currentUrl}\">"
+                                . $this->view->escape($attachment->fileName) . "</a>",
                 'fileSize'     => $attachment->getFileSize(),
                 'user'         => $this->view->userInfo($attachment->User->username),
                 'date'         => $attachment->createdTs,
@@ -965,6 +966,19 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 null,
                 'fileName',
                 true
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'fileNameLink',
+                false,
+                'string',
+                'fileName'
             )
         );
 
@@ -1057,7 +1071,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display the audit log associated with a finding
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -1116,7 +1130,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display the NIST SP 800-53 control mapping and related information
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -1171,7 +1185,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Renders the form for uploading artifacts.
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -1212,7 +1226,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override createAction() to show the warning message on the finding create page if there is no system.
-     * 
+     *
      * @GETAllowed
      * @return void
      */

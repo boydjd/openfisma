@@ -60,7 +60,7 @@ Fisma.FindingWorkflow = {
             return false;
         }
 
-        var alertMessage = "Processing changes may take up to several minutes, please be patient."
+        var alertMessage = "Processing changes... This may take up to several minutes. Please be patient."
                          + "<p style='text-align:center'><img src='/images/loading_bar.gif' /></p>";
         var alertDialog = Fisma.Util.getDialog(false);
 
@@ -138,6 +138,13 @@ Fisma.FindingWorkflow = {
         if (jQuery('input[name$="nickname"]').filter('[value="' + newLabel + '"]').length > 1) {
             jQuery(element).val('');
             Fisma.Util.showAlertDialog('Chart Label must be unique.');
+            return false;
+        }
+
+        var reserved = ['NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED'];
+        if (jQuery.inArray(newLabel, reserved) >= 0) {
+            jQuery(element).val('');
+            Fisma.Util.showAlertDialog('Chart Label "' + newLabel + '" cannot be used because it is reserved by the system.');
             return false;
         }
     },

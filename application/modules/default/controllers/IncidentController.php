@@ -163,10 +163,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             return;
         } elseif (!$incident->isValid()) {
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
-        } elseif (!$subFormValid) {
-            $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
-
-            $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
         } else {
             // The user can move forwards or backwards
             if ($this->getRequest()->getParam('irReportForwards')) {
@@ -279,20 +275,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     public function getFormPart($step)
     {
         $formPart = Fisma_Zend_Form_Manager::loadForm($this->_formParts[$step]['name']);
-
-        /**
-         * Add buttons to the form. The continue button is added first so that it is the default submit button if
-         * the user presses the "enter" key. The buttons are re-arranged into a more logical order on the screen with
-         * CSS.
-         */
-        $forwardButton = new Fisma_Yui_Form_Button_Submit(
-            'irReportForwards',
-            array(
-                'label' => 'Continue',
-                'imageSrc' => $this->view->serverUrl("/images/right_arrow.png"),
-            )
-        );
-        $formPart->addElement($forwardButton);
+        $formPart->setAttrib('id', 'incident_wizard');
 
         $cancelButton = new Fisma_Yui_Form_Button_Submit(
             'irReportCancel',
@@ -417,57 +400,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $formPart = Fisma_Zend_Form_Manager::addDefaultElementDecorators($formPart);
         return $formPart;
-    }
-
-    /**
-     * Loads all form parts into a single form which can be rendered into a single page
-     *
-     * @return Zend_Form
-     */
-    public function getIncidentForm()
-    {
-        $form = new Fisma_Zend_Form();
-
-        // Load all form parts and append each one to the main form
-        $formParts = array_keys($this->_formParts);
-        foreach ($formParts as $part) {
-            // The first form only contains instructions... so skip it
-            if (0 == $part) {
-                continue;
-            }
-
-            // For remaining form parts, load them and remove the navigational buttons and instructions
-            $subform = $this->getFormPart($part);
-            $subform->removeElement('cancel');
-            $subform->removeElement('backwards');
-            $subform->removeElement('forwards');
-            $subform->removeElement('instructions');
-
-            $form->addSubForm($subform, $this->_formParts[$part]['name']);
-        }
-
-        // Add submit/reset/cancel buttons
-        $resetButton = new Fisma_Yui_Form_Button_Reset(
-            'reset',
-            array(
-                'label' => 'Reset'
-            )
-        );
-        $form->addElement($resetButton);
-
-        $saveButton = new Fisma_Yui_Form_Button_Submit(
-            'save',
-            array(
-                'label' => 'Save'
-            )
-        );
-        $form->addElement($saveButton);
-
-        // Setup decorators
-        $form->setSubFormDecorators(array(new Zend_Form_Decorator_FormElements()));
-        $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
-
-        return $form;
     }
 
     /**
@@ -756,48 +688,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
         $this->view->lockIncidentPrivilege = $this->_acl->hasPrivilegeForClass('lock', 'Incident');
 
-        // Create toolbar buttons and form action
-        $this->view->discardChangesButton = new Fisma_Yui_Form_Button_Link(
-            'discardChanges',
-            array(
-                'value' => 'Discard Changes',
-                'href' => "/incident/view/id/$id"
-            )
-        );
-
-        $this->view->saveChangesButton = new Fisma_Yui_Form_Button_Submit(
-            'saveChanges',
-            array(
-                'label' => 'Save Changes'
-            )
-        );
-
-        $this->view->unlockButton = new Fisma_Yui_Form_Button(
-            'unlock',
-             array(
-                   'label' => 'UnLock Incident',
-                   'onClickFunction' => 'Fisma.Util.formPostAction',
-                   'onClickArgument' => array(
-                       'action' => '/incident/unlock/',
-                       'id' => $id
-                )
-            )
-        );
-
-        $this->view->lockButton = new Fisma_Yui_Form_Button(
-            'lock',
-             array(
-                   'label' => 'Lock Incident',
-                   'onClickFunction' => 'Fisma.Util.formPostAction',
-                   'onClickArgument' => array(
-                       'action' => '/incident/lock/',
-                       'id' => $id
-                )
-            )
-        );
-
-        $this->view->formAction = "/incident/update/id/$id";
-
         $orgId = $incident['Organization']['id'];
         $organization = Doctrine::getTable('Organization')->find($orgId);
 
@@ -997,7 +887,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 null // This is for the delete column
             );
 
-            $observerRows[] = $observerColumns;
+            $observerRows[] = $updateIncidentPrivilege ? $observerColumns : array_pop($observerColumns);
         }
 
         $observerTable = new Fisma_Yui_DataTable_Local();
@@ -1421,9 +1311,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         foreach ($artifactCollection as $artifact) {
             $downloadUrl = '/incident/download-artifact/id/' . $id . '/artifactId/' . $artifact->id;
             $artifactRows[] = array(
-                'iconUrl'  => "<a href=$downloadUrl><img src=" . $this->view->escape($artifact->getIconUrl()) . "></a>",
+                'iconUrl'  => "<a href=\"$downloadUrl\"><img src=\""
+                            . $this->view->escape($artifact->getIconUrl())
+                            . "\"></a>",
                 'fileName' => $this->view->escape($artifact->fileName),
-                'fileNameLink' => "<a href=$downloadUrl>" . $this->view->escape($artifact->fileName) . "</a>",
+                'fileNameLink' => "<a href=\"$downloadUrl\">" . $this->view->escape($artifact->fileName) . "</a>",
                 'fileSize' => $artifact->getFileSize(),
                 'user'     => $this->view->userInfo($artifact->User->username),
                 'date'     => $artifact->createdTs,
