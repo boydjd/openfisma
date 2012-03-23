@@ -541,7 +541,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         if ($incident->organizationId) {
             $issoQuery = Doctrine_Query::create()->from('User u')
                                                  ->select('u.id')
-                                                 ->select('u.username')
+                                                 ->addSelect('u.username')
                                                  ->innerJoin('u.UserRole ur')
                                                  ->innerJoin('ur.Role r')
                                                  ->innerJoin('ur.UserRoleOrganization uro')
@@ -555,19 +555,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $incident->pocId = $issos[0]['id'];
                 $incident->save();
 
-                $options = array(
-                    'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incident->id,
-                    'incidentId' => $incident->id
-                );
-
-                $mail = new Mail();
-                $mail->recipient     = $coordinator['u_email'];
-                $mail->recipientName = $coordinator['u_name'];
-                $mail->subject       = "You have been assigned to a new incident.";
-
-                $mail->mailTemplate('ir_assign', $options);
-
-                Zend_Registry::get('mail_handler')->setMail($mail)->send();
+                $mailSubject = "You have been assigned as the Point Of Contact for an incident.";
+                $this->_sendMailToAssignedUser($issos[0]['id'], $incident->id, $mailSubject);
 
                 $message = "The ISSO ({$issos[0]['username']}) has been notified of this incident.";
                 $this->view->priorityMessenger($message, 'notice');
@@ -988,7 +977,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $user = Doctrine::getTable('User')->findOneByUsername($username, Doctrine::HYDRATE_ARRAY);
         }
 
-        if ($user) {
+        if (isset($user) && !empty($user)) {
             // Create the requested link
             $incidentActor = new IrIncidentUser();
 
@@ -1010,21 +999,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             }
 
             // Send e-mail
-            $emailUser = Doctrine::getTable('User')->find($userId);
-
-            $options = array(
-                'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incidentId,
-                'incidentId' => $incidentId
-            );
-
-            $mail = new Mail();
-            $mail->recipient     = $emailUser->email;
-            $mail->recipientName = $emailUser->nameFirst . ' ' . $emailUser->nameLast;
-            $mail->subject       = "You have been assigned to a new incident.";
-
-            $mail->mailTemplate('ir_assign', $options);
-
-            Zend_Registry::get('mail_handler')->setMail($mail)->send();
+            $mailSubject = "You have been assigned to a new incident.";
+            $this->_sendMailToAssignedUser($userId, $incidentId, $mailSubject);
         } else {
             $response->fail("No user found with that name.");
         }
@@ -1115,8 +1091,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
             foreach ($this->_getAssociatedUsers($incident->id) as $user) {
                 $options = array(
-                    'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $id,
-                    'incidentId' => $id,
+                    'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incident->id,
+                    'incidentId' => $incident->id,
                     'workflowStep' => $currentStep->name,
                     'workflowCompletedBy' => $currentStep->User->username
                 );
@@ -1496,7 +1472,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incident = Doctrine::getTable('Incident')->find($id);
 
         if (!$incident) {
-            throw new Exception_General("Invalid Incident ID");
+            throw new Fisma_Zend_Exception_User("Invalid Incident ID");
         }
 
         if ($this->getRequest()->getPost('reject')) {
@@ -1518,8 +1494,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
              // If the POC changed, then send the POC an e-mail.
             if (isset($newValues['pocId']) && !empty($newValues['pocId'])) {
-                $mail = new Fisma_Zend_Mail;
-                $mail->IRAssign($newValues['pocId'], $incident->id);
+                $mailSubject = "You have been assigned as the Point Of Contact for an incident.";
+                $this->_sendMailToAssignedUser($newValues['pocId'], $incident->id, $mailSubject);
 
                 $this->view->priorityMessenger('A notification has been sent to the new Point Of Contact.', 'notice');
             }
@@ -1914,5 +1890,34 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         }
 
         return $buttons;
+    }
+    
+    /**
+     * Send email to the user who has been assigned an incident
+     * 
+     * @param integer $userId The id of user
+     * @param integer $incidentId The id of incident
+     * @param string $mailSubject The subject of mail
+     * 
+     * @return void
+     */
+    private function _sendMailToAssignedUser($userId, $incidentId, $mailSubject)
+    {
+        $user = Doctrine::getTable('Poc')->find($userId);
+
+        $options = array(
+            'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incidentId,
+            'incidentId' => $incidentId,
+            'isUser' => ($user instanceof User)
+        );
+
+        $mail = new Mail();
+        $mail->recipient     = $user->email;
+        $mail->recipientName = $user->nameFirst . ' ' . $user->nameLast;
+        $mail->subject       = $mailSubject;
+
+        $mail->mailTemplate('ir_assign', $options);
+
+        Zend_Registry::get('mail_handler')->setMail($mail)->send();
     }
 }

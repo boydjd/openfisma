@@ -6,3 +6,6 @@ You have been assigned to an incident (ID#<?php echo $this->escape($this->incide
 You can view the incident at:
 
 <?php echo $this->escape($this->incidentUrl, 'none'); ?>
+<?php else: ?>
+You do not have a login account, so you cannot directly view this incident.
+<?php endif;
