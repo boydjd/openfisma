@@ -119,7 +119,8 @@ Fisma.FindingWorkflow = {
      * Handle the onChange of "title" input and reflect the change
      */
     titleChangeHandler : function(element) {
-        var newTitle = jQuery(element).val();
+        var newTitle = jQuery(element).val().trim();
+        jQuery(element).val(newTitle);
         var oldTitle = jQuery(element).parents('li').children('.stepName').text().trim();
         if (newTitle == '') {
             jQuery(element).val(oldTitle);
@@ -134,7 +135,8 @@ Fisma.FindingWorkflow = {
      * Handle the onChange of "chart label" input and validate its uniqueness
      */
     chartLabelChangeHandler : function(element) {
-        var newLabel = jQuery(element).val();
+        var newLabel = jQuery(element).val().trim();
+        jQuery(element).val(newLabel);
         if (jQuery('input[name$="nickname"]').filter('[value="' + newLabel + '"]').length > 1) {
             jQuery(element).val('');
             Fisma.Util.showAlertDialog('Chart Label must be unique.');
