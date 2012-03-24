@@ -221,7 +221,14 @@ Fisma.FindingWorkflow = {
                     YAHOO.util.Event.addListener("dialog_confirm", "click", function (){
                         var inputs = jQuery('#finding_workflow_select_roles input:checked');
 
-                        jQuery(linkElement).prev().html(inputs.parents('span').text().replace(/.\n/g, '<br/>'));
+                        jQuery(linkElement).prev().html(
+                            jQuery.map(
+                                inputs.parents('span').text().split("\n"),
+                                function(val) {
+                                    return (val == '') ? null : $("<div>").text(val).html();
+                                }
+                            ).join("<br/>")
+                        );
 
                         var roles = "";
                         jQuery.each(inputs, function(i, e){roles += e.name + "|";});
