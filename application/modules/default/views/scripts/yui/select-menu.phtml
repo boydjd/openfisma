@@ -12,7 +12,10 @@
 <script>
     YAHOO.util.Event.onContentReady('<?php echo $this->escape($name); ?>-button', function () {
         var selectElement = document.getElementById('<?php echo $this->escape($name); ?>');
-        var selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
+        var selectedLabel = '';
+        if (selectElement.options.length > 0) {
+            selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
+        }
         var oMenuButton = new YAHOO.widget.Button('<?php echo $this->escape($name); ?>-button', {
             label: selectedLabel,
             type: 'menu',
