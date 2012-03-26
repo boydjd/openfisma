@@ -385,6 +385,16 @@ Fisma.Finding = {
         var button = this;
         var form = Fisma.Finding.createPocPanel.body.getElementsByTagName('form')[0];
 
+        // Since the form misses reportingOrganizationId element, it needs to get the value manually.
+        var menu = YAHOO.widget.Button.getButton('reportingOrganizationId-button').getMenu();
+        var reportingOrganization = YAHOO.lang.isNull(menu.activeItem) ? menu.srcElement.value : menu.activeItem.value;
+
+        var reportingOrgEle = document.createElement('input');
+        reportingOrgEle.type = 'hidden';
+        reportingOrgEle.name = 'reportingOrganizationId';
+        reportingOrgEle.value = reportingOrganization;
+        form.appendChild(reportingOrgEle);
+
         // Disable the submit button
         button.set("disabled", true);
 
