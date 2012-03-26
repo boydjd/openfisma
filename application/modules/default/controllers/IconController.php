@@ -99,10 +99,8 @@ class IconController extends Fisma_Zend_Controller_Action_Object
         $thirtyTwoImage->writeImage($thirtyTwoImagePath);
 
         $thirtyTwoImageUpload = new Upload;
-        $thirtyTwoImageUpload->instantiate(array(
-            "tmp_name" => $thirtyTwoImagePath,
-            "name" => $_FILES["imageUpload"]["name"]
-        ));
+        $_FILES["imageUpload"]["tmp_name"] = $thirtyTwoImagePath;
+        $thirtyTwoImageUpload->instantiate($_FILES["imageUpload"]);
         $thirtyTwoImageUpload->save();
 
         // Create the 16px image
@@ -114,10 +112,8 @@ class IconController extends Fisma_Zend_Controller_Action_Object
         $sixteenImage->writeImage($sixteenImagePath);
 
         $sixteenImageUpload = new Upload;
-        $sixteenImageUpload->instantiate(array(
-            "tmp_name" => $sixteenImagePath,
-            "name" => $_FILES["imageUpload"]["name"]
-        ));
+        $_FILES["imageUpload"]["tmp_name"] = $sixteenImagePath;
+        $thirtyTwoImageUpload->instantiate($_FILES["imageUpload"]);
         $sixteenImageUpload->save();
 
         // Create the Icon object
