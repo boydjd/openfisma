@@ -57,5 +57,8 @@ tinyMCE.init({
     setup : function(ed) {
         ed.onClick.add(Fisma.SessionManager.onActivityEvent);
         ed.onKeyPress.add(Fisma.SessionManager.onActivityEvent);
+    },
+    oninit : function() {
+        Fisma.TinyMCE.onInit();
     }
 });

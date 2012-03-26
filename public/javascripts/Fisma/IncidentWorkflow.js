@@ -32,7 +32,7 @@
     var FIW = function(data, templateId) {
         this._stepTemplate = $("#" + templateId + " tr").first();
         this._addOptionsToRoleSelect(data.roles);
-        var lastTr = $("table.fisma_crud tr:last-child").first(),
+        var lastTr = $("table.fisma_crud tr").first().siblings().last(),
             that = this;
         $.each(data.steps, function(index, value) {
             that.addStepBelow(lastTr, value);
@@ -94,7 +94,7 @@
         addStepBelow: function (tr, data) {
             // clone new TR from template and set up values
             var newTr = this._stepTemplate.clone(),
-                buttons = $("button", newTr).get(),
+                buttons = $("div.button", newTr).get(),
                 textareaId = tinyMCE.DOM.uniqueId(),
                 newTextarea = $('<textarea name="stepDescription[]" rows="8" cols="100" />'),
                 selectButton = $("input[type='button']", newTr).get(),
@@ -108,14 +108,14 @@
                 newTextarea.val(data.description);
             }
 
-            fn = function() { this.addStepAbove(newTr); };
-            new YAHOO.widget.Button(buttons[0], {onclick: {fn: fn, scope: this}});
+            $(buttons[0]).attr('id', textareaId + "_addAbove");
+            new YAHOO.widget.Button(buttons[0], {label: "Add Step Above"});
 
-            fn = function() { this.addStepBelow(newTr); };
-            new YAHOO.widget.Button(buttons[1], {onclick: {fn: fn, scope: this}});
+            $(buttons[1]).attr('id', textareaId + "_addBelow");
+            new YAHOO.widget.Button(buttons[1], {label: "Add Step Below"});
 
-            fn = function() { this.removeStep(newTr); };
-            new YAHOO.widget.Button(buttons[2], {onclick: {fn: fn, scope: this}});
+            $(buttons[2]).attr('id', textareaId + "_remove");
+            new YAHOO.widget.Button(buttons[2], {label: "Remove Step"});
 
             $(selectMenu).attr('id', textareaId + '_menu');
             $(selectButton).attr('id', textareaId + '_button');
@@ -140,6 +140,25 @@
                     oMenuButton.set('label', oMenuItem.cfg.getProperty("text"));
                 }
             });
+
+            YAHOO.util.Event.addListener(
+                textareaId + "_addAbove",
+                "click",
+                function() { this.addStepAbove(newTr); },
+                null,
+                this);
+            YAHOO.util.Event.addListener(
+                textareaId + "_addBelow",
+                "click",
+                function() { this.addStepBelow(newTr); },
+                null,
+                this);
+            YAHOO.util.Event.addListener(
+                textareaId + "_remove",
+                "click",
+                function() { this.removeStep(newTr); },
+                null,
+                this);
 
             // tell tinyMCE to render it now
             tinyMCE.execCommand ('mceAddControl', false, textareaId);

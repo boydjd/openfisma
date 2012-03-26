@@ -60,7 +60,7 @@ Fisma.FindingWorkflow = {
             return false;
         }
 
-        var alertMessage = "Processing changes may take up to several minutes, please be patient."
+        var alertMessage = "Processing changes... This may take up to several minutes. Please be patient."
                          + "<p style='text-align:center'><img src='/images/loading_bar.gif' /></p>";
         var alertDialog = Fisma.Util.getDialog(false);
 
@@ -119,7 +119,8 @@ Fisma.FindingWorkflow = {
      * Handle the onChange of "title" input and reflect the change
      */
     titleChangeHandler : function(element) {
-        var newTitle = jQuery(element).val();
+        var newTitle = jQuery(element).val().trim();
+        jQuery(element).val(newTitle);
         var oldTitle = jQuery(element).parents('li').children('.stepName').text().trim();
         if (newTitle == '') {
             jQuery(element).val(oldTitle);
@@ -134,7 +135,7 @@ Fisma.FindingWorkflow = {
      * Handle the onChange of "chart label" input and validate its uniqueness
      */
     chartLabelChangeHandler : function(element) {
-        var newLabel = jQuery(element).val();
+        var newLabel = jQuery(element).val().trim();
         jQuery(element).val(newLabel);
         var countDuplication = jQuery('input[name$="nickname"]').filter(function(i, e) {
             return (jQuery(e).val().toUpperCase() == newLabel.toUpperCase());
@@ -142,6 +143,13 @@ Fisma.FindingWorkflow = {
         if (countDuplication > 1) {
             jQuery(element).val('');
             Fisma.Util.showAlertDialog('Chart Label must be unique regardless of letter case.');
+            return false;
+        }
+
+        var reserved = ['NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED'];
+        if (jQuery.inArray(newLabel, reserved) >= 0) {
+            jQuery(element).val('');
+            Fisma.Util.showAlertDialog('Chart Label "' + newLabel + '" cannot be used because it is reserved by the system.');
             return false;
         }
     },
@@ -216,7 +224,14 @@ Fisma.FindingWorkflow = {
                     YAHOO.util.Event.addListener("dialog_confirm", "click", function (){
                         var inputs = jQuery('#finding_workflow_select_roles input:checked');
 
-                        jQuery(linkElement).prev().html(inputs.parents('span').text().replace(/.\n/g, '<br/>'));
+                        jQuery(linkElement).prev().html(
+                            jQuery.map(
+                                inputs.parents('span').text().split("\n"),
+                                function(val) {
+                                    return (val == '') ? null : $("<div>").text(val).html();
+                                }
+                            ).join("<br/>")
+                        );
 
                         var roles = "";
                         jQuery.each(inputs, function(i, e){roles += e.name + "|";});
