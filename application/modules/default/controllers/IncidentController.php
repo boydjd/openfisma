@@ -1893,14 +1893,14 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         return $buttons;
     }
-    
+
     /**
      * Send email to the user who has been assigned an incident
-     * 
+     *
      * @param integer $userId The id of user
      * @param integer $incidentId The id of incident
      * @param string $mailSubject The subject of mail
-     * 
+     *
      * @return void
      */
     private function _sendMailToAssignedUser($userId, $incidentId, $mailSubject)
