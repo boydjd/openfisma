@@ -107,9 +107,10 @@
                     YAHOO.util.Connect.asyncRequest('GET', url+'value/'+cur_val.trim(), {
                         success: function(o) {
                             if(type == 'select') {
+                                innerHTML = o.responseText.replace(/&lt;/g, "&amp;lt;");
                                 targetHTML = '<input type="button" id="' + name + '-button"/>'
                                            + '<select id="' + name + '-select" name="' + name + '">'
-                                           + o.responseText + '</select>';
+                                           + innerHTML + '</select>';
                                 jQuery(target).replaceWith(targetHTML);
 
                                 YAHOO.util.Event.onContentReady(name + "-button", function () {
@@ -119,7 +120,7 @@
 
                                     // Create a Button using an existing <input> and <select> element
                                     var oMenuButton = new YAHOO.widget.Button(name + "-button", {
-                                        label: selectedLabel,
+                                        label: selectedLabel.replace(/&amp;/g, "&"),
                                         type: "menu",
                                         menu: name + "-select"
                                     });
@@ -129,11 +130,11 @@
                                         if (p_aArgs[1]) {
                                             var children = p_aArgs[1].cfg.getProperty('submenu');
                                             if (!children) {
-                                                oMenuButton.set('label', p_aArgs[1].cfg.getProperty('text'));
+                                                oMenuButton.set('label', p_aArgs[1].cfg.getProperty('text').replace(/&amp;/g, "&"));
                                             } else {
                                                 var firstChild = children.getItem(0);
                                                 oMenuButton.set('selectedMenuItem', firstChild);
-                                                oMenuButton.set('label', firstChild.cfg.getProperty('text'));
+                                                oMenuButton.set('label', firstChild.cfg.getProperty('text').replace(/&amp;/g, "&"));
                                             }
                                         }
                                     });
