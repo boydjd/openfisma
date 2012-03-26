@@ -838,16 +838,16 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $activeEvaluation = $this->CurrentEvaluation;
         switch ($this->status) {
             case 'NEW':
-                return "NEW: Awaiting Mitigation Strategy";
+                return "{$this->denormalizedStatus}: Awaiting Mitigation Strategy";
             case 'DRAFT':
-                return "DRAFT: Awaiting Mitigation Strategy Submission";
+                return "{$this->denormalizedStatus}: Awaiting Mitigation Strategy Submission";
             case 'MSA':
             case 'EA':
-                return "Awaiting {$activeEvaluation->name}";
+                return "{$this->denormalizedStatus}: Awaiting {$activeEvaluation->name}";
             case 'EN':
-                return "Awaiting Evidence Package Submission";
+                return "{$this->denormalizedStatus}: Awaiting Evidence Package Submission";
             case 'CLOSED':
-                return "Finding Officially Closed";
+                return "{$this->denormalizedStatus}: Finding Officially Closed";
             default:
                 return "Unknown Status";
         }
