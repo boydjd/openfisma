@@ -353,12 +353,20 @@ Fisma.User = {
      * @return void
      */
     showCommentPanel : function () {
-        var lockedElement = YAHOO.util.Dom.get('locked');
+       
+        // The scope is the button that was clicked, so save it for closures
+        var button = this;
 
-        // Only show panel in locked status
-        if (lockedElement === null || parseInt(lockedElement.value, 10) === 0) {
-            YAHOO.util.Dom.getAncestorByTagName('save-button', 'form').submit();
-            return false;
+        var lockedElement = YAHOO.widget.Button.getButton('locked-button');
+        if (!YAHOO.lang.isUndefined(lockedElement)) {
+            var menu = lockedElement.getMenu();
+            var lockedValue = YAHOO.lang.isNull(menu.activeItem) ? menu.srcElement.value : menu.activeItem.value;
+        }
+
+        // Only show panel when status is locked
+        if (YAHOO.lang.isUndefined(lockedElement) || parseInt(lockedValue, 10) === 0) {
+            this.submitForm();
+            return;
         }
 
         // Create a panel
@@ -395,20 +403,14 @@ Fisma.User = {
 
         Fisma.HtmlPanel.showPanel('Add Comment', content);
 
-        submitButton.on('click', Fisma.User.submitUserForm);
+        submitButton.on('click', function() {
 
-        return true;
-    },
+            // Get commentTextArea value from panel and assign its value to comment element
+            var commentElement = YAHOO.util.Dom.get('commentTextArea').value;
+            YAHOO.util.Dom.get('comment').value = commentElement;
+            button.submitForm();
+        });
 
-    /*
-     * Submit user form after assign comment value to comment element
-     */
-    submitUserForm : function () {
-
-        // Get commentTextArea value from panel and assign its value to comment element
-        var commentElement = YAHOO.util.Dom.get('commentTextArea').value;
-        YAHOO.util.Dom.get('comment').value = commentElement;
-        var form = YAHOO.util.Dom.getAncestorByTagName('save-button', 'form');
-        form.submit();
+        return;
     }
 };
