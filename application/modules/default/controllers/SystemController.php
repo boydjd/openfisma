@@ -1034,7 +1034,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     {
         $form = parent::getForm($formName);
 
-        if ($formName == 'system') {
+        if (empty($formName) || $formName == 'system') {
             $systemTypeArray = Doctrine::getTable('SystemType')->getTypeList();
             $form->getElement('systemTypeId')->addMultiOptions($systemTypeArray);
         }

@@ -453,9 +453,9 @@
                                     return;
                                 }
 
-                                if (YAHOO.env.ua.ie && YAHOO.env.ua.ie <= 7) {
-                                    // IE7 doesn't support data URIs,
-                                    // so it needs to make a 2nd request to get the image
+                                if (YAHOO.env.ua.ie && YAHOO.env.ua.ie <= 8) {
+                                    // IE7 doesn't support data URIs, and IE8 doesn't support data
+                                    // URIs over 32k, so it needs to make a 2nd request to get the image
                                     this._addImage(response.identifier, response.imageUrl);
                                 } else {
                                     // Good browsers will display the data URI returned with the response

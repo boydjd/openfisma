@@ -88,38 +88,17 @@ class IconController extends Fisma_Zend_Controller_Action_Object
         $response = new Fisma_AsyncResponse;
         $this->view->response = $response;
 
-        $rawImagePath = $_FILES["imageUpload"]["tmp_name"];
+        // Create thumbnails
+        $thirtyTwoImage = $this->_makeThumbnail($_FILES['imageUpload'], 32, 32);
+        $thirtyTwoUpload = $this->_saveThumbnail($thirtyTwoImage, $_FILES['imageUpload']);
 
-        // Create the 32px image
-        $thirtyTwoImagePath = "{$rawImagePath}_32px.png";
-
-        $thirtyTwoImage = new Imagick($rawImagePath);
-        $thirtyTwoImage->resizeImage(32, 32, imagick::FILTER_LANCZOS, 1);
-        $thirtyTwoImage->setImageFormat('png');
-        $thirtyTwoImage->writeImage($thirtyTwoImagePath);
-
-        $thirtyTwoImageUpload = new Upload;
-        $_FILES["imageUpload"]["tmp_name"] = $thirtyTwoImagePath;
-        $thirtyTwoImageUpload->instantiate($_FILES["imageUpload"]);
-        $thirtyTwoImageUpload->save();
-
-        // Create the 16px image
-        $sixteenImagePath = "{$rawImagePath}_16px.png";
-
-        $sixteenImage = new Imagick($rawImagePath);
-        $sixteenImage->setFormat('png');
-        $sixteenImage->resizeImage(16, 16, imagick::FILTER_LANCZOS, 1);
-        $sixteenImage->writeImage($sixteenImagePath);
-
-        $sixteenImageUpload = new Upload;
-        $_FILES["imageUpload"]["tmp_name"] = $sixteenImagePath;
-        $thirtyTwoImageUpload->instantiate($_FILES["imageUpload"]);
-        $sixteenImageUpload->save();
+        $sixteenImage = $this->_makeThumbnail($_FILES['imageUpload'], 16, 16);
+        $sixteenUpload = $this->_saveThumbnail($sixteenImage, $_FILES['imageUpload']);
 
         // Create the Icon object
         $icon = new Icon;
-        $icon->LargeIconFile = $thirtyTwoImageUpload;
-        $icon->SmallIconFile = $sixteenImageUpload;
+        $icon->LargeIconFile = $thirtyTwoUpload;
+        $icon->SmallIconFile = $sixteenUpload;
         $icon->save();
 
         // Prepare the response
@@ -128,16 +107,57 @@ class IconController extends Fisma_Zend_Controller_Action_Object
         $response->imageUrl = "/icon/get/id/{$icon->id}/size/large";
     }
 
-     /**
-      * Create a data URL from a PNG image object.
-      *
-      * @param  Imagick $image
-      * @return string
-      */
-     private function _makeDataUri($image)
-     {
-         $uri = "data:image/png;base64," .  base64_encode((string)$image);
-
+    /**
+     * Create a data URL from a PNG image object.
+     *
+     * @param  Imagick $image
+     * @return string
+     */
+    private function _makeDataUri($image)
+    {
+        $uri = "data:image/png;base64," .  base64_encode((string)$image);
          return $uri;
-     }
+    }
+
+    /**
+     * Create a PNG thumbnail with the specified resolution.
+     *
+     * @param string $fileArray The PHP $_FILES array for the specified file.
+     * @param int $width
+     * @param int $height
+     * @return Imagick Returns the thumbnail image.
+     */
+    private function _makeThumbnail($fileArray, $width, $height)
+    {
+        $thumbnail = new Imagick($fileArray["tmp_name"]);
+        $thumbnail->resizeImage($width, $height, imagick::FILTER_LANCZOS, 1);
+        $thumbnail->setImageFormat('png');
+
+        return $thumbnail;
+    }
+
+    /**
+     * Save a thumbnail using the file manager.
+     *
+     * @param Imagick $image
+     * @param array $fileArray The $_FILES array for this image.
+     * @return Upload
+     */
+    private function _saveThumbnail($image, $fileArray)
+    {
+        $thumbnailPath = tempnam(sys_get_temp_dir(), "image_upload_");
+
+        if ($thumbnailPath === FALSE) {
+            throw new Fisma_Zend_Exception("Cannot create a temp file for storing the thumbnail.");
+        }
+
+        $image->writeImage($thumbnailPath);
+        $fileArray["tmp_name"] = $thumbnailPath;
+
+        $thumbnailUpload = new Upload;
+        $thumbnailUpload->instantiate($fileArray);
+        $thumbnailUpload->save();
+
+        return $thumbnailUpload;
+    }
 }
