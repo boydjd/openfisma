@@ -24,16 +24,11 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: UpdateEvaluationNames
-    021700_finding_workflow:
+    021700_FindingWorkflowAndNotificationEmail:
         majorVersion: 2
         minorVersion: 17
         tagNumber: 0
-        name: FindingWorkflow
-    021700_AddUrlToNotificationEmail:
-        majorVersion: 2
-        minorVersion: 17
-        tagNumber: 0
-        name: AddUrlToNotificationEmail
+        name: FindingWorkflowAndNotificationEmail
     021700_ipv6:
         majorVersion: 2
         minorVersion: 17
