@@ -134,7 +134,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $subject The specified subject model
-     * @return integer ID of the object saved.
+     * @return Fisma_Doctrine_Record The saved record
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
@@ -217,15 +217,13 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 }
                 $organization->save();
             }
-
-            $objectId = $organization->id;
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
 
             $this->view->priorityMessenger("Unable to save: $errorString", 'warning');
         }
 
-        return $objectId;
+        return $organization;
     }
 
     public function _isDeletable()
@@ -239,6 +237,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      * This is a temporary crutch because we have some bugs popping up with objects being viewed by the wrong
      * controller. It will write a log message for any bad URLs, so after some time in production we can see where
      * the other bad links are and eventually remove this crutch.
+     *
+     * @GETAllowed
      */
     public function viewAction()
     {
@@ -266,7 +266,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab($firstTab, "/organization/organization/id/$id");
         $tabView->addTab("Users", "/system/user/type/organization/id/$id");
 
-        $toolbarButtons = $this->getToolbarButtons();
+        $toolbarButtons = $this->getToolbarButtons($organization);
 
         if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
             $discardButton = new Fisma_Yui_Form_Button_Link(
@@ -295,6 +295,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display organization properties such as name, creation date, etc.
      *
+     * @GETAllowed
      * @return void
      */
     public function organizationAction()
@@ -381,6 +382,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      * Display organizations and systems in tree mode for quick restructuring of the
      * organizational hiearchy.
      *
+     * @GETAllowed
      * @return void
      */
     public function treeAction()
@@ -391,7 +393,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
         $this->view->toolbarButtons['list']->setValue("View Organization List");
-
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
+        
         // We're already on the tree screen, so don't show a "view tree" button
         unset($this->view->toolbarButtons['tree']);
 
@@ -425,6 +428,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Returns a JSON object that describes the organization tree, including systems
      *
+     * @GETAllowed
      * @return void
      */
     public function treeDataAction()
@@ -579,9 +583,10 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Add the "Organization Tree" button
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
         $buttons = array();
 
@@ -595,7 +600,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             );
         }
 
-        $buttons = array_merge($buttons, parent::getToolbarButtons());
+        $buttons = array_merge($buttons, parent::getToolbarButtons($record));
 
         $id = $this->getRequest()->getParam('id');
         if (
@@ -621,7 +626,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         return $buttons;
     }
-
+    
+    /**
+     * Convert an organization to system.
+     *
+     * @return void
+     */
     public function convertToSystemAction()
     {
         if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
@@ -670,6 +680,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     /**
      * AJAX action to render the form for converting an Organization to a System.
      *
+     * @GETAllowed
      * @return void
      */
     public function convertToSystemFormAction()

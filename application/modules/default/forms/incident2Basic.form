@@ -9,6 +9,10 @@
 ; Version   $Id: incident.form 2288 2009-09-23 08:41:02Z nathanrharris $
 
 [incident2Basic]
+elements.instructions.type = "Element_ConstantText"
+elements.instructions.options.label = "Instructions"
+elements.instructions.options.value = "<p>The only required field is the description. All other fields are optional.</p>"
+displayGroups.help.elements.instructions = "instructions"
 
 elements.incidentDate.type = "text"
 elements.incidentDate.options.label = "What date did the incident occur?"
@@ -25,8 +29,15 @@ elements.incidentTimezone.type = "select"
 elements.incidentTimezone.options.filters.stringtrim.filter = "StringTrim"
 elements.incidentTimezone.options.filters.null.filter = "Null"
 elements.incidentTimezone.options.label = "In what timezone did the incident occur?"
-
 displayGroups.incident.elements.incidentTimezone = "incidentTimezone"
+
+elements.organizationId.type = "select"
+elements.organizationId.options.label = "What Organization or System does it affect?"
+displayGroups.incident.elements.organizationId = "organizationId"
+
+elements.categoryId.type = "select"
+elements.categoryId.options.label = "What type of incident are you reporting?"
+displayGroups.incident.elements.categoryId = "categoryId"
 
 elements.locationBuilding.type = "text"
 elements.locationBuilding.options.label = "What building did the incident occur in?"
@@ -45,9 +56,3 @@ elements.additionalInfo.options.rows = "7"
 elements.additionalInfo.options.validators.mce.validator = "MceNotEmpty"
 elements.additionalInfo.options.required = true
 displayGroups.incident.elements.additionalInfo = "additionalInfo"
-
-elements.actionsTaken.type="textarea"
-elements.actionsTaken.options.label="Describe what actions have already been taken"
-elements.actionsTaken.options.cols = "70%"
-elements.actionsTaken.options.rows = "7"
-displayGroups.incident.elements.actionsTaken="actionsTaken"

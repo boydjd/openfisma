@@ -52,6 +52,8 @@ class OrganizationDashboardController extends Fisma_Zend_Controller_Action_Secur
 
     /**
      * Displays summary statistics and charts
+     *
+     * @GETAllowed
      */
     public function indexAction()
     {

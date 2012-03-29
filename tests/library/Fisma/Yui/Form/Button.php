@@ -51,14 +51,14 @@ class Test_Library_Fisma_Yui_Form_Button extends Test_Case_Unit
             }
             $onClickRender .= "},\n";
         }
-        
+
         $name = 'TestLink';
         $label = 'Test Link';
-        
+
         $fullrender = "<input type=\"button\" id=\"$name\" value=\"$label\" $disabled>
                    <script type='text/javascript'>
                        YAHOO.util.Event.onDOMReady(function() {
-                           var button = new YAHOO.widget.Button('$name', 
+                           var button = new YAHOO.widget.Button('$name',
                                {
                                    $checked
                                    onclick: {fn: {$onClickFunction}, obj: \"$onClickArgument\"}
@@ -68,7 +68,7 @@ class Test_Library_Fisma_Yui_Form_Button extends Test_Case_Unit
         $image = '/resources/icons/test';
         $fullrender .= "button._button.style.background = 'url($image) 10% 50% no-repeat';\n";
         $fullrender .= "button._button.style.paddingLeft = '3em';\n";
-    
+
         $fullrender .= "})</script>";
 
         $options = array(

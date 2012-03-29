@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -35,12 +35,12 @@ class Fisma_Inject_Excel
      * The name of the template file which gets sent to the client
      */
     const TEMPLATE_NAME = 'Finding_Upload_Template.xls';
-    
+
     /**
      * The template version is used to make sure that we don't try to process a template which was produced by a
      * previous version of OpenFISMA. This number should be incremented whenever the template file or processing code
      * is modified.
-     * 
+     *
      * Version history:
      * v1 2009-04-30 Introduce versioning of excel template
      * v2 2010-06-28 Add metadata regarding which security control catalog was used to produce the template
@@ -49,11 +49,11 @@ class Fisma_Inject_Excel
      * v5 2011-11-04 Remove contactInfo field
      */
     const TEMPLATE_VERSION = 5;
-    
+
     /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
      * column's logical names. Excel starts indexes at 1 instead of 0.
-     * 
+     *
      * @var array
      * @todo Move this definition and related items into a separate classs... this is too much stuff to put into the
      * controller
@@ -77,7 +77,7 @@ class Fisma_Inject_Excel
     /**
      * Indicates which columns are required in the excel template. Human readable names are included so that meaningful
      * error messages can be provided for missing columns.
-     * 
+     *
      * @var array
      */
     private $_requiredExcelTemplateColumns = array (
@@ -85,24 +85,22 @@ class Fisma_Inject_Excel
         'discoveredDate' => 'Date Discovered',
         'findingSource' => 'Finding Source',
         'findingDescription' => 'Finding Description',
-        'findingRecommendation' => 'Finding Recommendation',
         'threatLevel' => 'Threat Level',
-        'threatDescription' => 'Threat Description'
     );
 
     /**
      * The row to start on in the excel template. The template has 3 header rows, so start at the 4th row.
-     * 
+     *
      * @var int
      */
     private $_excelTemplateStartRow = 4;
-    
+
     /**
      * Holds the 800-53 catalog number that this spreadsheet was generated from
-     * 
+     *
      * This is used during parsing to lookup the corresponding security control, since the security control code
      * (e.g. AC-01) is not a unique key, but the pair (catalog, security control code) is a unique key.
-     * 
+     *
      * @var int
      */
     private $_securityControlCatalogId;
@@ -110,7 +108,7 @@ class Fisma_Inject_Excel
     /**
      * The primary key of the upload object associated with this spreadsheet. This is used to trace a particular
      * finding back to the file it came from.
-     * 
+     *
      * @var int
      */
     private $_uploadId;
@@ -118,15 +116,15 @@ class Fisma_Inject_Excel
     /**
      * Parses and loads the findings in the specified excel file. Expects XML spreadsheet format from Excel 2007.
      * Compatible with older versions of Excel through the Office Compatibility Pack.
-     * 
+     *
      * @param string $filePath The specified excel file path
      * @param string $uploadId The id of upload excel
      * @return int The number of findings processed in the file
-     * @throws Fisma_Zend_Exception_InvalidFileFormat if the file is not a valid Excel spreadsheet, 
-     * or the excel template is out-of-date or imcompatible, 
+     * @throws Fisma_Zend_Exception_InvalidFileFormat if the file is not a valid Excel spreadsheet,
+     * or the excel template is out-of-date or imcompatible,
      * or the some required or used columns are empty or invalid
      */
-    function inject($filePath, $uploadId) 
+    function inject($filePath, $uploadId)
     {
         // Parse the file using SimpleXML. The finding data is located on the first worksheet.
         $spreadsheet = @simplexml_load_file($filePath);
@@ -135,7 +133,7 @@ class Fisma_Inject_Excel
                 "The file is not a valid Excel spreadsheet. Make sure that the file is saved as an XML spreadsheet."
             );
         }
-        
+
         // Check that the template version matches the version of OpenFISMA which is running.
         $templateVersion = (int)$spreadsheet->CustomDocumentProperties->FismaTemplateVersion;
         if ($templateVersion != self::TEMPLATE_VERSION) {
@@ -144,10 +142,10 @@ class Fisma_Inject_Excel
                 . " version. Download a new copy of the template and transfer your data into it."
             );
         }
-        
+
         // Look up the control catalog ID for this template in the spreadsheet properties. This is used later.
         $this->_securityControlCatalogId = (int)$spreadsheet->CustomDocumentProperties->SecurityControlCatalogId;
-        
+
         $this->_uploadId = $uploadId;
 
         // Have to do some namespace manipulation to make the spreadsheet searchable by xpath.
@@ -159,19 +157,19 @@ class Fisma_Inject_Excel
                 "The file format is not recognized. Your version of Excel might be incompatible."
             );
         }
-        
+
         // $findingData is an array of rows in the first worksheet. The first three rows on this worksheet contain
         // headers, so skip them.
         array_shift($findingData);
         array_shift($findingData);
         array_shift($findingData);
-        
+
         // Now load the remaining rows into OpenFISMA
         Doctrine_Manager::connection()->beginTransaction();
         $originalIndexAutocommit = IndexListener::getAutocommitEnabled();
         IndexListener::setAutocommitEnabled(false);
-        
-        try {            
+
+        try {
             $findings = $this->_parseRowsIntoFindings($findingData);
             $findings->save();
         } catch (Exception $e) {
@@ -192,14 +190,14 @@ class Fisma_Inject_Excel
 
     /**
      * Convert row data (in array format) into new findings and return a collection of new findings
-     * 
+     *
      * @param array $findingData Associative array of finding data coming from excel
      * @return Doctrine_Collection Collection of Finding objects.
      */
     private function _parseRowsIntoFindings($findingData)
     {
         $findings = new Doctrine_Collection('Finding');
-        
+
         // Our array is offset from excel's row numbering, so we need to keep track of which row we are on in Excel's
         // representation, so if an error occurs we can provide a useful error message to the user.
         $currentExcelRowNumber = $this->_excelTemplateStartRow;
@@ -219,16 +217,16 @@ class Fisma_Inject_Excel
                 $finding[$this->_excelTemplateColumns[$column]] = $cellChildren->Data->asXml();
                 $column++;
             }
-            
+
             /**
              * @todo i realized that simplexml can not handle mixed content (an xml text node that also
              * contains xml tags)... so this whole thing needs to be re-written in DOM or some other API
              * that CAN read mixed content. until then -- formatting in excel is not preserved -- all
              * tags are stripped out and remaining special chars are encoded.
-             */                
+             */
             $finding = array_map('strip_tags', $finding);
             $finding = array_map('html_entity_decode', $finding);
-            
+
             // Validate that required row attributes are filled in:
             foreach ($this->_requiredExcelTemplateColumns as $columnName => $columnDescription) {
                 if (empty($finding[$columnName])) {
@@ -237,7 +235,7 @@ class Fisma_Inject_Excel
                     );
                 }
             }
-            
+
             // Map the row data into logical objects. Notice suppression is used heavily here to keep the code
             // from turning into spaghetti. When debugging this code, it will probably be helpful to remove these
             // suppressions.
@@ -251,7 +249,7 @@ class Fisma_Inject_Excel
                 );
             }
             $poam['responsibleOrganizationId'] = $organization->id;
-            
+
             $sourceTable = Doctrine::getTable('Source')->findOneByNickname($finding['findingSource']);
             if (!$sourceTable) {
                 throw new Fisma_Zend_Exception_InvalidFileFormat(
@@ -260,11 +258,11 @@ class Fisma_Inject_Excel
                 );
             }
             $poam['sourceId'] = $sourceTable->id;
-                        
+
             // Match controls by code (e.g. "AC-01") and security control catalog ID
             if (!empty($finding['securityControl'])) {
                 $securityControlTable = Doctrine::getTable('SecurityControl');
-                
+
                 $conditions = 'code = ? and securityControlCatalogId = ?';
                 $parameters = array($finding['securityControl'], $this->_securityControlCatalogId);
 
@@ -282,12 +280,16 @@ class Fisma_Inject_Excel
 
             $poam['description'] = "<p>{$finding['findingDescription']}</p>";
 
-            $poam['recommendation'] = $finding['findingRecommendation'];
+            if (!empty($finding['findingRecommendation'])) {
+                $poam['recommendation'] = $finding['findingRecommendation'];
+            }
+
             if (empty($finding['findingType'])) {
                 $poam['type'] = 'NONE';
             } else {
                 $poam['type'] = $finding['findingType'];
             }
+
             if (!empty($finding['findingMitigationStrategy'])) {
                 $poam['mitigationStrategy'] = $finding['findingMitigationStrategy'];
             }
@@ -307,26 +309,29 @@ class Fisma_Inject_Excel
             } else {
                 $poam['threatLevel'] = $finding['threatLevel'];
             }
+
             if (!empty($finding['threatDescription'])) {
                 $poam['threat'] = $finding['threatDescription'];
             }
+
             if (!empty($finding['countermeasuresEffectiveness'])) {
                 $poam['countermeasuresEffectiveness'] = $finding['countermeasuresEffectiveness'];
             }
+
             if (!empty($finding['countermeasureDescription'])) {
                 $poam['countermeasures'] = $finding['countermeasureDescription'];
             }
             $poam['resourcesRequired'] = 'None';
-            
+
             // Finally, create the finding
             $findingRecord = new Finding();
             $findingRecord->merge($poam);
             $findingRecord->CreatedBy = CurrentUser::getInstance();
             $findings[] = $findingRecord;
-            
+
             $currentExcelRowNumber++;
         }
-        
+
         return $findings;
     }
 }

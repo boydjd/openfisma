@@ -214,6 +214,9 @@ Role:
             - document_type_delete
             - document_type_read
             - document_type_update
+            - evaluation_create
+            - evaluation_update
+            - evaluation_delete
             - finding_admin_area
             - finding_area
             - finding_evidence_isso

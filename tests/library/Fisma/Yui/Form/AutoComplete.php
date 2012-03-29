@@ -39,13 +39,13 @@ class Test_Library_Fisma_Yui_Form_AutoComplete extends Test_Case_Unit
     {
         $readOnly = true;
         $disabled = $readOnly ? 'disabled="true"' : '';
- 
+
         $name = 'TestLink';
         $hiddenField = 'TestHidden';
         $hiddenValue = 'Test_AutoComplete_Hidden';
         $label = 'Test Link';
         $containerId = uniqid();
-        
+
         $resultsList = 'Test_AutoComplete';
         $fields = '{id, content}';
         $xhr = '/test/autocomplete';
@@ -53,15 +53,15 @@ class Test_Library_Fisma_Yui_Form_AutoComplete extends Test_Case_Unit
         $setupCallback = 'autocomplete_callback';
 
         $render  = "<div>
-                    <input type=\"text\" 
-                           name=\"$name\" 
-                           id=\"$name\" 
+                    <input type=\"text\"
+                           name=\"$name\"
+                           id=\"$name\"
                            value=\"$hiddenValue\"
                            $disabled>
                     <img class='spinner'
-                         id='{$containerId}Spinner' 
+                         id='{$containerId}Spinner'
                          src='/images/spinners/small.gif'>
-                    <div id=\"$containerId\"></div>                    
+                    <div id=\"$containerId\"></div>
                     </div>
                     <script type='text/javascript'>
                         YAHOO.util.Event.onDOMReady(Fisma.AutoComplete.init,
@@ -88,7 +88,7 @@ class Test_Library_Fisma_Yui_Form_AutoComplete extends Test_Case_Unit
         );
         $button = new Fisma_Yui_Form_AutoComplete($name, $options);
         $button->setDisplayText($label);
-        $this->assertEquals($render, $button->__toString());
+        $this->assertEquals($render, preg_replace('/\s+$/m', '', $button->__toString()));
     }
 }
 

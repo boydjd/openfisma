@@ -270,4 +270,106 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
         $helper = new Fisma_Migration_Helper($db);
         $helper->dropColumn('foo', 'bar');
     }
+
+    /**
+     * Test dropping a foreign key.
+     */
+    public function testDropForeignKey()
+    {
+        $db = $this->getMock('Mock_Pdo');
+        $db->expects($this->once())
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->matchesRegularExpression('/alter\s+table\s+`Foo`\s+drop\s+foreign\s+key\s+`bar`/Usi'));
+
+        // The real meaning in this test is in the with() calls, so no assertions performed here.
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->dropForeignKeys('Foo', array('bar'));
+    }
+
+    /**
+     * Test adding an index with one column.
+     */
+    public function testAddIndexWithOneColumn()
+    {
+        $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`bar`\s+\(`alpha`\)/Usi';
+
+        $db = $this->getMock('Mock_Pdo');
+        $db->expects($this->once())
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->matchesRegularExpression($regex));
+
+        // The real meaning in this test is in the with() calls, so no assertions performed here.
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addIndex('Foo', 'alpha', 'bar');
+    }
+
+    /**
+     * Test adding an index with multiple columns.
+     */
+    public function testAddIndexWithMultipleColumns()
+    {
+        $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`bar`\s+\(`alpha`,\s*`beta`\)/Usi';
+
+        $db = $this->getMock('Mock_Pdo');
+        $db->expects($this->once())
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->matchesRegularExpression($regex));
+
+        // The real meaning in this test is in the with() calls, so no assertions performed here.
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addIndex('Foo', array('alpha', 'beta'), 'bar');
+    }
+
+    /**
+     * Test adding an index where the index name is inferred from the single column in the index.
+     */
+    public function testAddIndexWithoutNameAndOneColumn()
+    {
+        $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`alpha_idx`\s+\(`alpha`\)/Usi';
+
+        $db = $this->getMock('Mock_Pdo');
+        $db->expects($this->once())
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->matchesRegularExpression($regex));
+
+        // The real meaning in this test is in the with() calls, so no assertions performed here.
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addIndex('Foo', 'alpha');
+    }
+
+    /**
+     * Test adding an index where the index name cannot be inferred because there is more than 1 column.
+     *
+     * @expectedException Fisma_Zend_Exception_Migration
+     */
+    public function testAddIndexWithoutNameAndMultipleColumns()
+    {
+        $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`alpha_idx`\s+\(`alpha`\)/Usi';
+
+        $db = $this->getMock('Mock_Pdo');
+
+        // The real meaning in this test is in the with() calls, so no assertions performed here.
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->addIndex('Foo', array('alpha', 'beta'));
+    }
+
+    /**
+     * Test dropping an index.
+     */
+    public function testDropIndex()
+    {
+        $db = $this->getMock('Mock_Pdo');
+        $db->expects($this->once())
+           ->method('exec')
+           // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
+           ->with($this->matchesRegularExpression('/alter\s+table\s+`Foo`\s+drop\s+index\s+`bar`/Usi'));
+
+        // The real meaning in this test is in the with() calls, so no assertions performed here.
+        $helper = new Fisma_Migration_Helper($db);
+        $helper->dropIndexes('Foo', array('bar'));
+    }
 }

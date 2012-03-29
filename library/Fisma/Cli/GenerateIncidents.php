@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Class description
- * 
+ *
  * @author     Mark E. Haase <mhaase@endeavorystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -135,8 +135,6 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
             $incident['sourceIp'] = $this->_getRandomIpAddress();
             $incident['sourceAdditional'] = Fisma_String::loremIpsum(rand(100, 200), 'html');
 
-            $incident['actionsTaken'] = Fisma_String::loremIpsum(rand(100, 200), 'html');
-            
             // Mischief. Randomly unset two fields. (Incident reports don't have required fields.)
             $nulls = array_rand($incident, 2);
             unset($incident[$nulls[0]]);
@@ -167,22 +165,21 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
                 }
 
                 $i->merge($incident);
+                $i->save();
 
                 // 50% are reported by a real user, 50% reported by an anonymous user
                 if (rand(1, 100) > 50) {
-                    $i->ReportingUser = $this->_getRandomUser();                    
+                    $i->ReportingUser = $this->_getRandomUser();
                 }
                 $i->Organization = $this->_getRandomOrganization();
 
-                $i->save();
+                $i->pocId = $this->_getRandomUser()->id;
 
                 // Auto approve 80% of the incidents, reject 10%, and leave 10% alone
                 $action = rand(1, 100);
                 if ($action <= 80) {
-                    $i->open($this->_getRandomSubCategory());
-                    // The first step always needs to be done, or else the incident won't look right
-                    $i->completeStep("Step completed automatically by generate-incidents.php script.");
-                    
+                    $i->categoryId = $this->_getRandomSubCategoryId();
+
                     // Complete a random number of steps on this incident
                     $stepsToComplete = rand(0, $i->Category->Workflow->Steps->count());
                     while ($stepsToComplete--) {
@@ -205,5 +202,29 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
             Doctrine_Manager::connection()->rollBack();
             throw $e;
         }
+    }
+
+    /**
+     * Return a random subcategory id
+     *
+     * @return int
+     */
+    protected function _getRandomSubCategoryId()
+    {
+        if (empty($this->_sampleSubCategories)) {
+            // Get some subcategories
+            $this->_sampleSubCategories = Doctrine_Query::create()
+                                          ->from('IrSubCategory c')
+                                          ->select('c.id')
+                                          ->limit(50)
+                                          ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                                          ->execute();
+
+            if (0 == count($this->_sampleSubCategories)) {
+                throw new Fisma_Exception("Cannot generate sample data because the application has no IR categories.");
+            }
+        }
+
+        return $this->_sampleSubCategories[rand(0, count($this->_sampleSubCategories) - 1)]['id'];
     }
 }

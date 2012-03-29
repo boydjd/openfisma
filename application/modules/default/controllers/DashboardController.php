@@ -63,20 +63,14 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * The user dashboard displays important system-wide metrics, charts, and graphs
-     *
+     * 
+     * @GETAllowed
      * @return void
      */
     public function indexAction()
     {
         $user = new User();
         $user = $user->getTable()->find($this->_me->id);
-        // Check to see if we got passed a "dismiss" parameter to dismiss notifications
-        $dismiss = $this->_request->getParam('dismiss');
-        if (isset($dismiss) && 'notifications' == $dismiss) {
-            $user->Notifications->delete();
-            $user->mostRecentNotifyTs = Fisma::now();
-            $user->save();
-        }
 
         // Calculate the dashboard statistics
         $totalFindingsQuery = Doctrine_Query::create()
@@ -123,22 +117,24 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         // URLs for "Alerts" panel
         $baseUrl = '/finding/remediation/list?q=';
 
-        $this->view->newFindingUrl = $baseUrl . '/denormalizedStatus/textExactMatch/NEW';
-        $this->view->draftFindingUrl = $baseUrl . '/denormalizedStatus/textExactMatch/DRAFT';
+        $this->view->newFindingUrl = $baseUrl . '/denormalizedStatus/enumIs/NEW';
+        $this->view->draftFindingUrl = $baseUrl . '/denormalizedStatus/enumIs/DRAFT';
 
         $today = Zend_Date::now()->toString('yyyy-MM-dd');
         $this->view->evidenceNeededOntimeUrl = $baseUrl
-                                             . '/denormalizedStatus/textExactMatch/EN'
+                                             . '/denormalizedStatus/enumIs/EN'
                                              . '/nextDueDate/dateAfter/'
                                              . $today;
         $this->view->evidenceNeededOverdueUrl = $baseUrl
-                                             . '/denormalizedStatus/textExactMatch/EN'
+                                             . '/denormalizedStatus/enumIs/EN'
                                              . '/nextDueDate/dateBefore/'
                                              . $today;
 
         if ($user->Notifications->count() > 0) {
             $this->view->notifications = $user->Notifications;
-            $this->view->dismissUrl = "/dashboard/index/dismiss/notifications";
+            $this->view->csrfToken = $this->_helper->csrf->getToken();
+            $this->view->submitUrl = "javascript:Fisma.Util.formPostAction('', '/dashboard/dismiss/', " 
+                                     . $this->_me->id . ')';
         }
 
         // left-side chart (bar) - Finding Status chart
@@ -175,6 +171,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
     /**
      * Calculate the finding statistics by status
      *
+     * @GETAllowed
      * @return void
      */
     public function chartFindingAction()
@@ -275,7 +272,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
             // Make each area of the chart link
             $basicLink = '/finding/remediation/list?q=' .
-                '/denormalizedStatus/textExactMatch/#ColumnLabel#';
+                '/denormalizedStatus/enumIs/#ColumnLabel#';
             $nonStackedLinks[] = $basicLink;
             $stackedLinks = array(
                 '',
@@ -347,7 +344,8 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Calculate the statistics by type
-     *
+     * 
+     * @GETAllowed
      * @return void
      */
     public function totalTypeAction()
@@ -414,5 +412,26 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
         // export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $thisChart->export('array');
+    }
+
+    /**
+     * Delete user's notification.
+     * 
+     * @return void
+     */
+    public function dismissAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+
+        $user = Doctrine::getTable('User')->find($id);
+        if (empty($user)) {
+            throw new Fisma_Zend_Exception('Invalid user ID');
+        }
+ 
+        $user->Notifications->delete();
+        $user->mostRecentNotifyTs = Fisma::now();
+        $user->save();
+
+        $this->_redirect("/index/index");
     }
 }

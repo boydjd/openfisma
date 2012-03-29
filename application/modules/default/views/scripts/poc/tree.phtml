@@ -16,6 +16,7 @@ Fisma_Format_Section::startSection("Points Of Contact: Hierarchy View");
     <button type="button" id="collapseAllButton">Collapse All</button>
 </p>
 
+<input name="csrf" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
 <div id="pocTreeContainer" class="draggableTreeContainer"></div>
 
 <script type="text/javascript">

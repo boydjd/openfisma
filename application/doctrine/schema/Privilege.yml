@@ -21,3 +21,5 @@ Privilege:
             foreign: roleId
             refClass: RolePrivilege
 
+    actAs:
+        SoftDelete: true

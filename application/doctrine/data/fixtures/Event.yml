@@ -3,6 +3,7 @@ Event:
         name: FINDING_CREATED
         description: Finding Created
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     FINDING_DELETED:
         name: FINDING_DELETED
@@ -13,26 +14,31 @@ Event:
         name: FINDING_INJECTED
         description: Security Scanner Finding Injected
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     VULNERABILITY_CREATED:
         name: VULNERABILITY_CREATED
         description: Vulnerability Created
         Privilege: notification_vulnerability
+        urlPath: /vm/vulnerability/view/id/
 
     VULNERABILITY_INJECTED:
         name: VULNERABILITY_INJECTED
         description: Security Scanner Vulnerability Injected
         Privilege: notification_vulnerability
+        urlPath: /vm/vulnerability/view/id/
 
     ASSET_CREATED:
         name: ASSET_CREATED
         description: Asset Created
         Privilege: notification_asset
+        urlPath: /asset/view/id/
 
     ASSET_UPDATED:
         name: ASSET_UPDATED
         description: Asset Modified
         Privilege: notification_asset
+        urlPath: /asset/view/id/
 
     ASSET_DELETED:
         name: ASSET_DELETED
@@ -43,106 +49,127 @@ Event:
         name: UPDATE_MITIGATION_TYPE
         description: Mitigation Type For Finding Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_COURSE_OF_ACTION:
         name: UPDATE_COURSE_OF_ACTION
         description: Mitigation Strategy Description For Finding Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_RESPONSIBLE_SYSTEM:
         name: UPDATE_RESPONSIBLE_SYSTEM
         description: Responsible System For Finding Re-assigned
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_DESCRIPTION:
         name: UPDATE_DESCRIPTION
         description: Finding Description Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_SECURITY_CONTROL:
         name: UPDATE_SECURITY_CONTROL
         description: Security Control For Finding Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_COUNTERMEASURES:
         name: UPDATE_COUNTERMEASURES
         description: Countermeasures Assessment For Finding Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_THREAT:
         name: UPDATE_THREAT
         description: Threat Assessment For Finding Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_RECOMMENDATION:
         name: UPDATE_RECOMMENDATION
         description: Recommendation For Finding Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_RESOURCES_REQUIRED:
         name: UPDATE_RESOURCES_REQUIRED
         description: Resources Required For Finding Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_ECD:
         name: UPDATE_ECD
         description: ECD For Finding Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_LOCKED_ECD:
         name: UPDATE_LOCKED_ECD
         description: A Locked ECD Was Overridden
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_LEGACY_FINDING_KEY:
         name: UPDATE_LEGACY_FINDING_KEY
         description: Legacy Finding Key For Finding Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     UPDATE_FINDING_SOURCE:
         name: UPDATE_FINDING_SOURCE
         description: Source For Finding Updated
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     FINDING_CLOSED:
         name: FINDING_CLOSED
         description: Finding Was Closed
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     EVIDENCE_UPLOADED:
         name: EVIDENCE_UPLOADED
         description: Evidence Uploaded For Finding
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     MITIGATION_ISSO:
         name: MITIGATION_ISSO
         description: Mitigation Strategy Submitted for ISSO Approval
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     MITIGATION_IVV:
         name: MITIGATION_IVV
         description: Mitigation Strategy Submitted for IV&V Approval
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     EVIDENCE_ISSO:
         name: EVIDENCE_ISSO
         description: Evidence Submitted for ISSO Approval
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     EVIDENCE_IVV:
         name: EVIDENCE_IVV
         description: Evidence Submitted for IV&V Approval
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     USER_CREATED:
         name: USER_CREATED
         description: Account Created
         Privilege: notification_admin
+        urlPath: /user/view/id/
 
     USER_UPDATED:
         name: USER_UPDATED
         description: Account Modified
         Privilege: notification_admin
+        urlPath: /user/profile
 
     USER_DELETED:
         name: USER_DELETED
@@ -153,11 +180,13 @@ Event:
         name: POC_CREATED
         description: POC Created
         Privilege: notification_admin
+        urlPath: /poc/view/id/
 
     POC_UPDATED:
         name: POC_UPDATED
         description: POC Modified
         Privilege: notification_admin
+        urlPath: /poc/view/id/
 
     POC_DELETED:
         name: POC_DELETED
@@ -168,11 +197,13 @@ Event:
         name: ORGANIZATION_CREATED
         description: Organization Created
         Privilege: notification_admin
+        urlPath: /organization/view/id/
 
     ORGANIZATION_UPDATED:
         name: ORGANIZATION_UPDATED
         description: Organization Modified
         Privilege: notification_admin
+        urlPath: /organization/view/id/
 
     ORGANIZATION_DELETED:
         name: ORGANIZATION_DELETED
@@ -188,21 +219,25 @@ Event:
         name: SYSTEM_UPDATED
         description: System Modified
         Privilege: notification_admin
+        urlPath: /system/view/id/
 
     SYSTEM_CREATED:
         name: SYSTEM_CREATED
         description: System Created
         Privilege: notification_admin
+        urlPath: /system/view/id/
 
     PRODUCT_CREATED:
         name: PRODUCT_CREATED
         description: Product Created
         Privilege: notification_admin
+        urlPath: /vm/product/view/id/
 
     PRODUCT_UPDATED:
         name: PRODUCT_UPDATED
         description: Product Modified
         Privilege: notification_admin
+        urlPath: /vm/product/view/id/
 
     PRODUCT_DELETED:
         name: PRODUCT_DELETED
@@ -213,6 +248,7 @@ Event:
         name: ROLE_CREATED
         description: Role Created
         Privilege: notification_admin
+        urlPath: /role/view/id/
 
     ROLE_DELETED:
         name: ROLE_DELETED
@@ -223,16 +259,19 @@ Event:
         name: ROLE_UPDATED
         description: Role Modified
         Privilege: notification_admin
+        urlPath: /role/view/id/
 
     SOURCE_CREATED:
         name: SOURCE_CREATED
         description: Finding Source Created
         Privilege: notification_admin
+        urlPath: /finding/source/view/id/
 
     SOURCE_UPDATED:
         name: SOURCE_UPDATED
         description: Finding Source Modified
         Privilege: notification_admin
+        urlPath: /finding/source/view/id/
 
     SOURCE_DELETED:
         name: SOURCE_DELETED
@@ -243,11 +282,13 @@ Event:
         name: NETWORK_UPDATED
         description: Network Modified
         Privilege: notification_admin
+        urlPath: /network/view/id/
 
     NETWORK_CREATED:
         name: NETWORK_CREATED
         description: Network Created
         Privilege: notification_admin
+        urlPath: /network/view/id/
 
     NETWORK_DELETED:
         name: NETWORK_DELETED
@@ -258,61 +299,73 @@ Event:
         name: CONFIGURATION_UPDATED
         description: System Configuration Modified
         Privilege: notification_admin
+        urlPath: /config/general
 
     LOGIN_SUCCESS:
         name: LOGIN_SUCCESS
         description: Login
         Privilege: notification_admin
+        urlPath:
 
     LOGIN_FAILURE:
         name: LOGIN_FAILURE
         description: Login FAILED
         Privilege: notification_admin
+        urlPath:
 
     LOGOUT:
         name: LOGOUT
         description: Account Logout
         Privilege: notification_admin
+        urlPath:
 
     ECD_EXPIRES_TODAY:
         name: ECD_EXPIRES_TODAY
         description: ECD Expires Today
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     ECD_EXPIRES_7_DAYS:
         name: ECD_EXPIRES_7_DAYS
         description: ECD Expires in 7 Days
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     ECD_EXPIRES_14_DAYS:
         name: ECD_EXPIRES_14_DAYS
         description: ECD Expires in 14 days
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     ECD_EXPIRES_21_DAYS:
         name: ECD_EXPIRES_21_DAYS
         description: ECD Expires in 21 days
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     APPROVAL_DENIED:
         name: APPROVAL_DENIED
         description: Approval Denied For Finding
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     USER_LOCKED:
         name: USER_LOCKED
         description: User Account Was Locked
         Privilege: notification_admin
+        urlPath: /user/view/id/
 
     MITIGATION_APPROVED:
         name: MITIGATION_APPROVED
         description: Mitigation Strategy Was Approved
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     MITIGATION_REVISE:
         name: MITIGATION_REVISE
         description: Mitigation Strategy Revised
         Privilege: notification_finding
+        urlPath: /finding/remediation/view/id/
 
     # System document is versionable. "CREATE" refers to version 1, and "UPDATE" refers to creating versions 2..n
     # There is no delete.
@@ -322,6 +375,7 @@ Event:
         # Obviously not ideal to tie this to a finding privilege, but we need to reorganize the notifications and that
         # is out of scope for the time being.
         Privilege: notification_finding
+        urlPath: /system/view/id/
 
     SYSTEM_DOCUMENT_UPDATED:
         name: SYSTEM_DOCUMENT_UPDATED
@@ -329,16 +383,19 @@ Event:
         # Obviously not ideal to tie this to a finding privilege, but we need to reorganize the notifications and that
         # is out of scope for the time being.
         Privilege: notification_finding
+        urlPath: /system/view/id/
 
     DOCUMENT_TYPE_UPDATED:
         name: DOCUMENT_TYPE_UPDATED
         description: Document Type Modified
         Privilege: notification_admin
+        urlPath: /document-type/view/id/
 
     DOCUMENT_TYPE_CREATED:
         name: DOCUMENT_TYPE_CREATED
         description: Document Type Created
         Privilege: notification_admin
+        urlPath: /document-type/view/id/
 
     DOCUMENT_TYPE_DELETED:
         name: DOCUMENT_TYPE_DELETED
@@ -349,11 +406,13 @@ Event:
         name: ORGANIZATION_TYPE_UPDATED
         description: Organization Type Modified
         Privilege: notification_admin
+        urlPath: /organization-type/view/id/
 
     ORGANIZATION_TYPE_CREATED:
         name: ORGANIZATION_TYPE_CREATED
         description: Organization Type Created
         Privilege: notification_admin
+        urlPath: /organization-type/view/id/
 
     ORGANIZATION_TYPE_DELETED:
         name: ORGANIZATION_TYPE_DELETED

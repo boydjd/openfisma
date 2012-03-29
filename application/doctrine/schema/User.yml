@@ -42,7 +42,7 @@ User:
             comment: How many times the user entered the wrong password before successfully logging in
 
         lastLoginIp:
-            type: string(15)
+            type: string(39)
             Fisma_Doctrine_Validator_Ip: true
         lastLoginTs: timestamp
 

@@ -47,6 +47,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
     /**
      * Allow the user to upload an XML Excel spreadsheet file containing finding data for multiple findings
      * 
+     * @GETAllowed
      * @return void
      */
     public function injectionAction()
@@ -128,6 +129,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
      * 
      * Systems, networks and sources are extracted from the database dynamically.
      * 
+     * @GETAllowed
      * @return void
      */
     public function templateAction()
@@ -215,6 +217,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
     /**
      * Forward to the remediation view action, since view isn't actually implemented in finding (wtf?). 
      * 
+     * @GETAllowed
      * @access public
      * @return void
      */
@@ -226,6 +229,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
     /**
      * Forward to the remediation list action. 
      * 
+     * @GETAllowed
      * @access public
      * @return void
      */

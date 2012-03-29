@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2010 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -80,11 +80,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     );
 
     /**
-     * Set up JSON context switch
+     * Set up context switches
      */
     public function init()
     {
         parent::init();
+
+        $this->_helper->fismaContextSwitch()
+                      ->addActionContext('add-user', 'json')
+                      ->addActionContext('remove-user', 'json')
+                      ->initContext();
     }
 
    /**
@@ -110,6 +115,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * the user.
      *
      * Notice that this method is allowed for unauthenticated users
+     *
+     * @GETAllowed
      */
     public function reportAction()
     {
@@ -131,7 +138,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $incident = new Incident();
         }
 
-        // Save the current form into the Incident and save the incident into the sesion
+        // Save the current form into the Incident and save the incident into the session
         if ($this->_request->isPost()) {
             if (!is_null($step) && $step != 0 && $step < 8) {
                 $subForm = $this->getFormPart($step);
@@ -156,14 +163,17 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             return;
         } elseif (!$incident->isValid()) {
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
-        } elseif (!$subFormValid) {
-            $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
-
-            $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
         } else {
             // The user can move forwards or backwards
             if ($this->getRequest()->getParam('irReportForwards')) {
-                $step++;
+
+                // Only validate the form when moving forward
+                if (!$subFormValid) {
+                    $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
+                    $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
+                } else {
+                    $step++;
+                }
             } elseif ($this->getRequest()->getParam('irReportBackwards')) {
                 $step--;
             } else {
@@ -265,20 +275,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     public function getFormPart($step)
     {
         $formPart = Fisma_Zend_Form_Manager::loadForm($this->_formParts[$step]['name']);
-
-        /**
-         * Add buttons to the form. The continue button is added first so that it is the default submit button if
-         * the user presses the "enter" key. The buttons are re-arranged into a more logical order on the screen with
-         * CSS.
-         */
-        $forwardButton = new Fisma_Yui_Form_Button_Submit(
-            'irReportForwards',
-            array(
-                'label' => 'Continue',
-                'imageSrc' => $this->view->serverUrl("/images/right_arrow.png"),
-            )
-        );
-        $formPart->addElement($forwardButton);
+        $formPart->setAttrib('id', 'incident_wizard');
 
         $cancelButton = new Fisma_Yui_Form_Button_Submit(
             'irReportCancel',
@@ -299,6 +296,15 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             );
             $formPart->addElement($backwardButton);
         }
+
+        $forwardButton = new Fisma_Yui_Form_Button_Submit(
+            'irReportForwards',
+            array(
+                'label' => 'Continue',
+                'imageSrc' => $this->view->serverUrl("/images/right_arrow.png"),
+            )
+        );
+        $formPart->addElement($forwardButton);
 
         // Assign decorators
         $formPart->setDisplayGroupDecorators(
@@ -326,6 +332,36 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $timestamp->addDecorator(new Fisma_Zend_Form_Decorator_Date);
                 $tz = $formPart->getElement('incidentTimezone');
                 $tz->addMultiOptions($this->_timezones);
+
+                if ($this->_me) {
+                    // Load data into organization/system field for authenticated users only
+                    $organizationSelect = $formPart->getElement('organizationId');
+
+                    $organizations  = CurrentUser::getInstance()
+                        ->getOrganizationsQuery()
+                        ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
+                        ->leftJoin('o.System s')
+                        ->andWhere('s.sdlcPhase IS NULL OR s.sdlcPhase <> ?', 'disposal')
+                        ->orderBy('label')
+                        ->execute()
+                        ->toKeyValueArray('id', 'label');
+
+                    $organizationSelect->addMultiOption(0, "I don't know");
+                    $organizationSelect->addMultiOptions($organizations);
+
+                    // Load incident categories for authenticated users only
+                    $categorySelect = $formPart->getElement('categoryId');
+
+                    $categorySelect->addMultiOption(0, "I don't know");
+                    $categorySelect->addMultiOptions(IrCategoryTable::getCategoriesForSelect());
+                } else {
+                    $formPart->removeElement('organizationId');
+                    $formPart->removeElement('categoryId');
+                }
+
+                // Remove the building/room fields
+                $formPart->removeElement('locationBuilding');
+                $formPart->removeElement('locationRoom');
                 break;
             case 3:
                 foreach ($this->_getOS() as $key => $os) {
@@ -362,67 +398,23 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 break;
         }
 
+        $formPart = Fisma_Zend_Form_Manager::addDefaultElementDecorators($formPart);
         return $formPart;
-    }
-
-    /**
-     * Loads all form parts into a single form which can be rendered into a single page
-     *
-     * @return Zend_Form
-     */
-    public function getIncidentForm()
-    {
-        $form = new Fisma_Zend_Form();
-
-        // Load all form parts and append each one to the main form
-        $formParts = array_keys($this->_formParts);
-        foreach ($formParts as $part) {
-            // The first form only contains instructions... so skip it
-            if (0 == $part) {
-                continue;
-            }
-
-            // For remaining form parts, load them and remove the navigational buttons and instructions
-            $subform = $this->getFormPart($part);
-            $subform->removeElement('cancel');
-            $subform->removeElement('backwards');
-            $subform->removeElement('forwards');
-            $subform->removeElement('instructions');
-
-            $form->addSubForm($subform, $this->_formParts[$part]['name']);
-        }
-
-        // Add submit/reset/cancel buttons
-        $resetButton = new Fisma_Yui_Form_Button_Reset(
-            'reset',
-            array(
-                'label' => 'Reset'
-            )
-        );
-        $form->addElement($resetButton);
-
-        $saveButton = new Fisma_Yui_Form_Button_Submit(
-            'save',
-            array(
-                'label' => 'Save'
-            )
-        );
-        $form->addElement($saveButton);
-
-        // Setup decorators
-        $form->setSubFormDecorators(array(new Zend_Form_Decorator_FormElements()));
-        $form->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
-
-        return $form;
     }
 
     /**
      * Lets a user review the incident report in its entirety before submitting it.
      *
      * This action is available to unauthenticated users.
+     *
+     * @GETAllowed
      */
     public function reviewReportAction()
     {
+        if (!$this->_me) {
+            $this->_helper->layout->setLayout('anonymous');
+        }
+
         // Fetch the incident report draft from the session
         $session = Fisma::getSession();
         if (isset($session->irDraft)) {
@@ -436,22 +428,32 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incidentReview = array();
         $richColumns = array();
         $incidentTable = Doctrine::getTable('Incident');
+
         foreach ($incidentReport as $key => &$value) {
             $cleanValue = trim(strip_tags($value));
             if (!empty($cleanValue)) {
                 $columnDef = $incidentTable->getDefinitionOf($key);
+
                 if ('boolean' == $columnDef['type']) {
                     $value = ($value == 1) ? 'YES' : 'NO';
                 }
+
+                if ($key == 'organizationId') {
+                    $value = "{$incident->Organization->nickname} - {$incident->Organization->name}";
+                }
+
                 if ($columnDef) {
-                    $logicalName = stripslashes($columnDef['extra']['logicalName']);
-                    $incidentReview[$logicalName] = stripslashes($value);
-                    // we need to know, in the view, which fields are rich-text
-                    if (!empty($columnDef['extra']['purify'])) {
-                        $richColumns[$logicalName] = $columnDef['extra']['purify'];
+                    if (isset($columnDef['extra']['logicalName'])) {
+                        $logicalName = stripslashes($columnDef['extra']['logicalName']);
+                        $incidentReview[$logicalName] = stripslashes($value);
+
+                        // we need to know, in the view, which fields are rich-text
+                        if (!empty($columnDef['extra']['purify'])) {
+                            $richColumns[$logicalName] = $columnDef['extra']['purify'];
+                        }
                     }
                 } else {
-                    throw new Fisma_Zend_Exception("Column ($key) does not have a logical name");
+                    throw new Fisma_Zend_Exception("Column ($key) is not defined");
                 }
             }
         }
@@ -469,6 +471,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      *
      * This action is available to unauthenticated users
      *
+     * @GETAllowed
      * @return string the rendered page
      */
     public function saveReportAction()
@@ -533,14 +536,56 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             Zend_Registry::get('mail_handler')->setMail($mail)->send();
         }
 
+        // Set the intial POC to one of the ISSOs (Yes, this code stinks, but the requirements lack
+        // specificity on this topic.)
+        if ($incident->organizationId) {
+            $issoQuery = Doctrine_Query::create()->from('User u')
+                                                 ->select('u.id')
+                                                 ->addSelect('u.username')
+                                                 ->innerJoin('u.UserRole ur')
+                                                 ->innerJoin('ur.Role r')
+                                                 ->innerJoin('ur.UserRoleOrganization uro')
+                                                 ->where('r.nickname LIKE ?', 'ISSO')
+                                                 ->andWhere('uro.organizationId = ?', $incident->organizationId)
+                                                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+
+            $issos = $issoQuery->execute();
+
+            if (count($issos) > 0) {
+                $incident->pocId = $issos[0]['id'];
+                $incident->save();
+
+                $mailSubject = "You have been assigned as the Point Of Contact for an incident.";
+                $this->_sendMailToAssignedUser($issos[0]['id'], $incident->id, $mailSubject);
+
+                $message = "The ISSO ({$issos[0]['username']}) has been notified of this incident.";
+                $this->view->priorityMessenger($message, 'notice');
+            }
+        }
+
         // Clear out serialized incident object
         unset($session->irDraft);
+
+        // Create buttons
+        if ($this->_me) {
+            $this->view->viewIncidentButton = new Fisma_Yui_Form_Button_Link(
+                'viewIncidentButton',
+                array('value' => 'View Incident', 'href' => "/incident/view/id/{$incident->id}")
+            );
+        }
+
+        $this->view->createNewButton = new Fisma_Yui_Form_Button_Link(
+            'createNewButton',
+            array('value' => 'Create New Incident', 'href' => '/incident/report')
+        );
     }
 
     /**
      * Remove the serialized incident object from the session object.
      *
      * This action is available to unauthenticated users
+     *
+     * @GETAllowed
      */
     public function cancelReportAction()
     {
@@ -559,6 +604,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     /**
      * Displays information for editing or viewing a particular incident
      *
+     * @GETAllowed
      * @return string the rendered page
      */
     public function viewAction()
@@ -595,14 +641,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab('Audit Log', "/incident/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
-
-        $this->view->toolbarButtons = $this->getToolbarButtons();
+        $this->view->formAction = "/incident/update/id/$id";
+        $this->view->toolbarButtons = $this->getToolbarButtons($incident);
     }
 
     /**
      * Display incident details
      *
      * This is loaded into a tab view, so it has no layout
+     *
+     * @GETAllowed
      */
     public function incidentAction()
     {
@@ -616,6 +664,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                          ->leftJoin('i.Organization o')
                          ->leftJoin('i.Category category')
                          ->leftJoin('i.ReportingUser reporter')
+                         ->leftJoin('i.PointOfContact poc')
                          ->where('i.id = ?', $id)
                          ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $results = $incidentQuery->execute();
@@ -627,40 +676,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
         $this->view->lockIncidentPrivilege = $this->_acl->hasPrivilegeForClass('lock', 'Incident');
-
-        // Create toolbar buttons and form action
-        $this->view->discardChangesButton = new Fisma_Yui_Form_Button_Link(
-            'discardChanges',
-            array(
-                'value' => 'Discard Changes',
-                'href' => "/incident/view/id/$id"
-            )
-        );
-
-        $this->view->saveChangesButton = new Fisma_Yui_Form_Button_Submit(
-            'saveChanges',
-            array(
-                'label' => 'Save Changes'
-            )
-        );
-
-        $this->view->unlockButton = new Fisma_Yui_Form_Button_Link(
-            'unlock',
-            array(
-                'value' => 'Unlock Incident',
-                'href' => "/incident/unlock/id/$id"
-            )
-        );
-
-        $this->view->lockButton = new Fisma_Yui_Form_Button_Link(
-            'lock',
-            array(
-                'value' => 'Lock Incident',
-                'href' => "/incident/lock/id/$id"
-            )
-        );
-
-        $this->view->formAction = "/incident/update/id/$id";
 
         $orgId = $incident['Organization']['id'];
         $organization = Doctrine::getTable('Organization')->find($orgId);
@@ -687,6 +702,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('lock', $incident);
         $incident->isLocked = TRUE;
         $incident->save();
+
+        $incident->getAuditLog()->write("The incident has been locked.");
+
         $this->_redirect("/incident/view/id/$id");
     }
 
@@ -704,11 +722,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('lock', $incident);
         $incident->isLocked = FALSE;
         $incident->save();
+
+        $incident->getAuditLog()->write("The incident has been unlocked.");
+
         $this->_redirect("/incident/view/id/$id");
     }
 
     /**
      * Display the audit log for an incident
+     *
+     * @GETAllowed
      */
     public function auditLogAction()
     {
@@ -771,6 +794,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display users with actor or observer privileges and provide controls to add/remove actors and observers
+     *
+     * @GETAllowed
      */
     public function usersAction()
     {
@@ -798,56 +823,35 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $actorRows = array();
 
         foreach ($actors as $actor) {
-            $actorUsername   = $this->view->userInfo($actor['a_username']);
-            $actorFirstName  = $actor['a_nameFirst'];
-            $actorLastName   = $actor['a_nameLast'];
-            $actorRemoveLink = '<a href=/incident/remove-user/incidentId/' . $this->view->escape($id)
-                             . '/userId/' . $actor['a_id'] . '>Remove</a>';
-
-            $actorColumns = array($actorUsername, $actorFirstName, $actorLastName, $actorRemoveLink);
+            $actorColumns = array(
+                $actor['i_id'],
+                $actor['a_id'],
+                $actor['a_username'],
+                $actor['a_nameFirst'],
+                $actor['a_nameLast'],
+                null // This is for the delete column
+            );
 
             $actorRows[] = $updateIncidentPrivilege ? $actorColumns : array_pop($actorColumns);
         }
 
-        $actorDataTable = new Fisma_Yui_DataTable_Local();
+        $actorTable = new Fisma_Yui_DataTable_Local();
+        $actorTable->setRegistryName('actorTable');
 
-        $actorDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'Username',
-                true,
-                'Fisma.TableFormat.formatHtml',
-                null,
-                'username'
-            )
-        );
-
-        $actorDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'First Name',
-                true,
-                null,
-                null,
-                'firstName'
-            )
-        );
-
-        $actorDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'Last Name',
-                true,
-                null,
-                null,
-                'lastName'
-            )
-        );
+        $col = "Fisma_Yui_DataTable_Column";
+        $actorTable->addColumn(new $col('', true, 'Fisma.TableFormat.formatHtml', null, 'incidentId', true))
+                   ->addColumn(new $col('', true, 'Fisma.TableFormat.formatHtml', null, 'userId', true))
+                   ->addColumn(new $col('Username', true, 'Fisma.TableFormat.formatHtml', null, 'username'))
+                   ->addColumn(new $col('First Name', true, null, null, 'nameFirst'))
+                   ->addColumn(new $col('Last Name', true, null, null, 'nameLast'));
 
         if ($updateIncidentPrivilege) {
-            $actorDataTable->addColumn(new Fisma_Yui_DataTable_Column('Remove', true, 'Fisma.TableFormat.formatHtml'));
+            $actorTable->addColumn(new $col('', true, 'Fisma.TableFormat.remover', null, 'remover'));
         }
 
-        $actorDataTable->setData($actorRows);
+        $actorTable->setData($actorRows);
 
-        $this->view->actorDataTable = $actorDataTable;
+        $this->view->actorDataTable = $actorTable;
 
         // Get list of observers
         $observerQuery = Doctrine_Query::create()
@@ -863,62 +867,34 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $observerRows = array();
 
         foreach ($observers as $observer) {
-            $observerUsername   = $this->view->userInfo($observer['o_username']);
-            $observerFirstName  = $observer['o_nameFirst'];
-            $observerLastName   = $observer['o_nameLast'];
-            $observerRemoveLink = '<a href=/incident/remove-user/incidentId/' . $this->view->escape($id)
-                                . '/userId/' . $observer['o_id'] . '>Remove</a>';
-
-            $observerColumns = array($observerUsername, $observerFirstName, $observerLastName, $observerRemoveLink);
+            $observerColumns = array(
+                $observer['i_id'],
+                $observer['o_id'],
+                $observer['o_username'],
+                $observer['o_nameFirst'],
+                $observer['o_nameLast'],
+                null // This is for the delete column
+            );
 
             $observerRows[] = $updateIncidentPrivilege ? $observerColumns : array_pop($observerColumns);
         }
 
-        $observerDataTable = new Fisma_Yui_DataTable_Local();
+        $observerTable = new Fisma_Yui_DataTable_Local();
+        $observerTable->setRegistryName('observerTable');
 
-        $observerDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'Username',
-                true,
-                'Fisma.TableFormat.formatHtml',
-                null,
-                'username'
-            )
-        );
-
-        $observerDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'First Name',
-                true,
-                null,
-                null,
-                'firstName'
-            )
-        );
-
-        $observerDataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'Last Name',
-                true,
-                null,
-                null,
-                'lastName'
-            )
-        );
+        $observerTable->addColumn(new $col('', true, 'Fisma.TableFormat.formatHtml', null, 'incidentId', true))
+                      ->addColumn(new $col('', true, 'Fisma.TableFormat.formatHtml', null, 'userId', true))
+                      ->addColumn(new $col('Username', true, 'Fisma.TableFormat.formatHtml', null, 'username'))
+                      ->addColumn(new $col('First Name', true, null, null, 'nameFirst'))
+                      ->addColumn(new $col('Last Name', true, null, null, 'nameLast'));
 
         if ($updateIncidentPrivilege) {
-            $observerDataTable->addColumn(
-                new Fisma_Yui_DataTable_Column(
-                    'Remove',
-                    true,
-                    'Fisma.TableFormat.formatHtml'
-                )
-            );
+            $observerTable->addColumn(new $col('', true, 'Fisma.TableFormat.remover', null, 'remover'));
         }
 
-        $observerDataTable->setData($observerRows);
+        $observerTable->setData($observerRows);
 
-        $this->view->observerDataTable = $observerDataTable;
+        $this->view->observerDataTable = $observerTable;
 
         // Create autocomplete for actors
         $this->view->actorAutocomplete = new Fisma_Yui_Form_AutoComplete(
@@ -929,13 +905,19 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'xhr' => "/incident/get-eligible-users/id/$id",
                 'hiddenField' => 'actorId',
                 'queryPrepend' => '/query/',
-                'containerId' => 'actorAutocompleteContainer'
+                'containerId' => 'actorAutocompleteContainer',
+                'enterKeyEventHandler' => 'Fisma.Incident.handleAutocompleteEnterKey',
+                'enterKeyEventArgs' => 'actor'
             )
         );
 
-        $this->view->addActorButton = new Fisma_Yui_Form_Button_Submit(
+        $this->view->addActorButton = new Fisma_Yui_Form_Button(
             'addActor',
-            array('label' => 'Add Actor')
+            array(
+                'label' => 'Add Actor',
+                'onClickFunction' => 'Fisma.Incident.addUser',
+                'onClickArgument' => array('type' => 'actor', 'incidentId' => $id)
+            )
         );
 
         // Create autocomplete for observers
@@ -947,23 +929,32 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'xhr' => "/incident/get-eligible-users/id/$id",
                 'hiddenField' => 'observerId',
                 'queryPrepend' => '/query/',
-                'containerId' => 'observerAutocompleteContainer'
+                'containerId' => 'observerAutocompleteContainer',
+                'enterKeyEventHandler' => 'Fisma.Incident.handleAutocompleteEnterKey',
+                'enterKeyEventArgs' => 'observer'
             )
         );
 
-        $this->view->addObserverButton = new Fisma_Yui_Form_Button_Submit(
+        $this->view->addObserverButton = new Fisma_Yui_Form_Button(
             'addObserver',
-            array('label' => 'Add Observer')
+            array(
+                'label' => 'Add Observer',
+                'onClickFunction' => 'Fisma.Incident.addUser',
+                'onClickArgument' => array('type' => 'observer', 'incidentId' => $id)
+            )
         );
     }
 
     /**
-     * Add a user as an actor or observer to the specified incident
+     * Add a user as an actor or observer to the specified incident.
+     *
+     * This is called asynchronously from Fisma.Incident.addUser().
      */
     public function addUserAction()
     {
-        $incidentId = $this->getRequest()->getParam('id');
-        $incident = Doctrine::getTable('Incident')->find($incidentId);
+        $response = new Fisma_AsyncResponse;
+
+        $incidentId = $this->getRequest()->getParam('incidentId');
 
         $this->_assertCurrentUserCanUpdateIncident($incidentId);
 
@@ -973,42 +964,24 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             throw new Fisma_Zend_Exception("Invalid incident user type: '$type'");
         }
 
-        // The user ID is passed as observerId or actorId depending on which type is being submitted
-        if ('actor' == $type) {
-            $userId = $this->getRequest()->getParam('actorId');
-        } else {
-            $userId = $this->getRequest()->getParam('observerId');
-        }
+        $userId = $this->getRequest()->getParam('userId');
+        $username = $this->getRequest()->getParam('username');
 
         /*
          * User ID is supplied by an autocomplete. If the user did not use autocomplete, then check to see if the
          * username can be looked up.
          */
-        if (empty($userId)) {
-
-            $username = ($type == 'actor')
-                      ? $this->getRequest()->getParam('actorAutocomplete')
-                      : $this->getRequest()->getParam('observerAutocomplete');
-
-            $user = Doctrine::getTable('User')->findOneByUsername($username);
-
-            if (!$user) {
-                $error = "No user exists with the username \"$username\"";
-                $this->view->priorityMessenger($error, 'warning');
-            } else {
-                $userId = $user->id;
-            }
+        if (strlen($userId) > 0) {
+            $user = Doctrine::getTable('User')->find($userId, Doctrine::HYDRATE_ARRAY);
+        } elseif (strlen($username) > 0) {
+            $user = Doctrine::getTable('User')->findOneByUsername($username, Doctrine::HYDRATE_ARRAY);
         }
 
-        /*
-         * User ID may have been missing in the form submission, but found by looking up the username, so we need to
-         * verify that userId is set before creating the link and sending the e-mail.
-         */
-        if (!empty($userId)) {
+        if (isset($user) && !empty($user)) {
             // Create the requested link
             $incidentActor = new IrIncidentUser();
 
-            $incidentActor->userId = $userId;
+            $incidentActor->userId = $user['id'];
             $incidentActor->incidentId = $incidentId;
             $incidentActor->accessType = strtoupper($type);
 
@@ -1018,32 +991,31 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $portableCode = $e->getPortableCode();
 
                 if (Doctrine::ERR_ALREADY_EXISTS == $portableCode) {
-                    $message = 'A user cannot have both the actor and observer role for the same incident.';
-                    $this->view->priorityMessenger($message, 'warning');
+                    $message = 'That user is already an actor or an observer on this incident.';
+                    $response->fail($message);
                 } else {
                     throw $e;
                 }
             }
 
             // Send e-mail
-            $emailUser = Doctrine::getTable('User')->find($userId);
-
-            $options = array(
-                'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incidentId,
-                'incidentId' => $incidentId
-            );
-
-            $mail = new Mail();
-            $mail->recipient     = $emailUser->email;
-            $mail->recipientName = $emailUser->nameFirst . ' ' . $emailUser->nameLast;
-            $mail->subject       = "You have been assigned to a new incident.";
-
-            $mail->mailTemplate('ir_assign', $options);
-
-            Zend_Registry::get('mail_handler')->setMail($mail)->send();
+            $mailSubject = "You have been assigned to a new incident.";
+            $this->_sendMailToAssignedUser($userId, $incidentId, $mailSubject);
+        } else {
+            $response->fail("No user found with that name.");
         }
 
-        $this->_redirect("/incident/view/id/$incidentId");
+        if ($response->success) {
+            $this->view->user = array(
+                'userId' => $user['id'],
+                'incidentId' => $incidentId,
+                'username' => $user['username'],
+                'nameFirst' => $user['nameFirst'],
+                'nameLast' => $user['nameLast']
+            );
+        }
+
+        $this->view->response = $response;
     }
 
     /**
@@ -1051,6 +1023,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function removeUserAction()
     {
+        $response = new Fisma_AsyncResponse;
+
         $incidentId = $this->getRequest()->getParam('incidentId');
         $incident = Doctrine::getTable('Incident')->find($incidentId);
 
@@ -1059,10 +1033,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Remove the specified user from this incident
         $userId = $this->getRequest()->getParam('userId');
 
-        $incident->unlink('Users', array($userId));
-        $incident->save();
+        Doctrine_Query::create()->delete()->from('IrIncidentUser iu')
+                                          ->where('iu.userId = ? AND iu.incidentId = ?', array($userId, $incidentId))
+                                          ->execute();
 
-        $this->_redirect("/incident/view/id/$incidentId");
+        $this->view->response = $response;
     }
 
     /**
@@ -1070,36 +1045,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      *
      * This actually forwards to one of several different views and doesn't render anything itself
      *
+     * @GETAllowed
+     *
      * @return string the rendered page
      */
     public function workflowAction()
-    {
-        $id = $this->_request->getParam('id');
-        $incident = Doctrine::getTable('Incident')->find($id);
-        $this->view->incident = $incident;
-
-        /** @todo move to ajax context */
-        $this->_helper->layout->disableLayout();
-
-        $this->_assertCurrentUserCanViewIncident($id);
-
-        switch ($incident->status) {
-            case 'new':
-                $this->_forward('classify-form');
-                break;
-            case 'open': // falls through
-            case 'closed':
-                $this->_forward('workflow-steps');
-                break;
-        }
-
-        $this->getHelper('viewRenderer')->setNoRender();
-    }
-
-    /**
-     * Displays the steps in the workflow associated with a particular incident
-     */
-    public function workflowStepsAction()
     {
         $id = $this->_request->getParam('id');
         $this->view->id = $id;
@@ -1120,21 +1070,18 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->updateIncidentPrivilege = $this->_currentUserCanUpdateIncident($id);
         $this->view->steps = $steps;
+
+        $this->_helper->layout->disableLayout();
     }
 
     /**
      * Updates an incident object by marking a step as completed
+     *
+     * @var Incident $incident
      */
-    public function completeWorkflowStepAction()
+    private function _completeWorkflowStep(Incident $incident)
     {
         try {
-            $id = $this->getRequest()->getParam('id');
-            $this->view->id = $id;
-
-            $incident = Doctrine::getTable('Incident')->find($id);
-
-            $this->_assertCurrentUserCanUpdateIncident($id);
-
             $comment = $this->getRequest()->getParam('comment');
 
             // Get reference to current step before marking it complete
@@ -1142,10 +1089,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
             $incident->completeStep($comment);
 
-            foreach ($this->_getAssociatedUsers($id) as $user) {
+            foreach ($this->_getAssociatedUsers($incident->id) as $user) {
                 $options = array(
-                    'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $id,
-                    'incidentId' => $id,
+                    'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incident->id,
+                    'incidentId' => $incident->id,
                     'workflowStep' => $currentStep->name,
                     'workflowCompletedBy' => $currentStep->User->username
                 );
@@ -1171,148 +1118,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         } catch (Fisma_Doctrine_Behavior_Lockable_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
-        $this->_redirect("/incident/view/id/$id");
-    }
-
-    /**
-     * Show an interface to classify an incident
-     */
-    public function classifyFormAction()
-    {
-        $id = $this->_request->getParam('id');
-        $incident = Doctrine::getTable('Incident')->find($id);
-        $this->view->incident = $incident;
-
-        $this->_assertCurrentUserCanViewIncident($id);
-
-        $this->view->classifyIncidentPrivilege = $this->_currentUserCanClassifyIncident($id);
-
-        $form = Fisma_Zend_Form_Manager::loadForm('incident_classify');
-
-        $form->setAction("/incident/classify/id/$id");
-
-        // Create the category menu
-        $categoryElement = $form->getElement('categoryId');
-        $categoryElement->addMultiOption('', '');
-        foreach ($this->_getCategories() as $key => $value) {
-            $categoryElement->addMultiOptions(array($key => $value));
-        }
-        $form->getElement('categoryId')->setValue($incident->categoryId);
-
-        Fisma_Zend_Form_Manager::prepareForm($form);
-        $this->view->assign('form', $form);
-    }
-
-    /**
-     * Updates incident to show it has been opened and assigned to a category
-     *
-     * @return Zend_Form
-     */
-    public function classifyAction()
-    {
-        $id = $this->_request->getParam('id');
-        $incident = Doctrine::getTable('Incident')->find($id);
-
-        $this->_acl->requirePrivilegeForObject('classify', $incident);
-
-        $comment = $this->_request->getParam('comment');
-
-        $conn = Doctrine_Manager::connection();
-        $conn->beginTransaction();
-
-        try {
-            // Validate that comment is not empty
-            if ('' == trim($comment)) {
-                throw new Fisma_Zend_Exception_User('You must provide a comment');
-            }
-
-            if ($this->_request->getParam('reject') == 'reject') {
-
-                // Handle incident rejection
-                $incident->reject($comment);
-                $incident->save();
-
-                $message = 'This incident has been marked as rejected.';
-                $this->view->priorityMessenger($message, 'notice');
-            } elseif ($this->_request->getParam('open') == 'open') {
-
-                // Opening an incident requires a subcategory to be assigned
-                $categoryId = $this->_request->getParam('categoryId');
-
-                if (empty($categoryId)) {
-                    throw new Fisma_Zend_Exception_User('You must select a category.');
-                }
-
-                $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
-
-                if (!$category) {
-                    throw new Fisma_Zend_Exception("No subcategory with id ($categoryId) found.");
-                }
-
-                $incident->open($category);
-                $incident->save();
-
-                // Assign privacy advocates and/or inspector general as actors if requested
-                $users = new Doctrine_Collection('User');
-
-                if (1 == $this->_request->getParam('pa')) {
-                    $users->merge($this->_getPrivacyAdvocates());
-                }
-
-                if (1 == $this->_request->getParam('oig')) {
-                    $users->merge($this->_getOigUsers());
-                }
-
-                foreach ($users as $user) {
-                    $incidentActor = new IrIncidentUser();
-
-                    $incidentActor->userId = $user->id;
-                    $incidentActor->incidentId = $incident->id;
-                    $incidentActor->accessType = 'ACTOR';
-
-                    $incidentActor->replace();
-                }
-
-                // Success message
-                $message = 'This incident has been opened and a workflow has been assigned. ';
-
-                // Get reference to current step before marking it complete
-                $currentStep = $incident->CurrentWorkflowStep;
-
-                $incident->completeStep($comment);
-
-                if (isset($currentStep)) {
-                    foreach ($this->_getAssociatedUsers($id) as $user) {
-                        $options = array(
-                            'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $id,
-                            'incidentId' => $id,
-                            'workflowStep' => $currentStep->name,
-                            'workflowCompletedBy' => $currentStep->User->username
-                        );
-
-                        $mail = new Mail();
-                        $mail->recipient     = $user['u_email'];
-                        $mail->recipientName = $user['u_name'];
-                        $mail->subject       = "A workflow step has been completed";
-
-                        $mail->mailTemplate('ir_step', $options);
-
-                        Zend_Registry::get('mail_handler')->setMail($mail)->send();
-                    }
-                }
-                $this->view->priorityMessenger($message, 'notice');
-            }
-
-            $conn->commit();
-        } catch (Fisma_Zend_Exception_User $e) {
-            $this->view->priorityMessenger($e->getMessage(), 'warning');
-        }
-
-        $this->_redirect("/incident/view/id/$id");
     }
 
     /**
      * Add a comment to a specified incident
+     *
      */
     public function addCommentAction()
     {
@@ -1335,6 +1145,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     /**
      * Displays the incident comment interface
      *
+     * @GETAllowed
      * @return Zend_Form
      */
     function commentsAction()
@@ -1421,6 +1232,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display file artifacts associated with an incident
+     *
+     * @GETAllowed
      */
     public function artifactsAction()
     {
@@ -1474,9 +1287,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         foreach ($artifactCollection as $artifact) {
             $downloadUrl = '/incident/download-artifact/id/' . $id . '/artifactId/' . $artifact->id;
             $artifactRows[] = array(
-                'iconUrl'  => "<a href=$downloadUrl><img src=" . $this->view->escape($artifact->getIconUrl()) . "></a>",
+                'iconUrl'  => "<a href=\"$downloadUrl\"><img src=\""
+                            . $this->view->escape($artifact->getIconUrl())
+                            . "\"></a>",
                 'fileName' => $this->view->escape($artifact->fileName),
-                'fileNameLink' => "<a href=$downloadUrl>" . $this->view->escape($artifact->fileName) . "</a>",
+                'fileNameLink' => "<a href=\"$downloadUrl\">" . $this->view->escape($artifact->fileName) . "</a>",
                 'fileSize' => $artifact->getFileSize(),
                 'user'     => $this->view->userInfo($artifact->User->username),
                 'date'     => $artifact->createdTs,
@@ -1575,6 +1390,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * as JSON.
      *
      * Instead, we render an HTML view with the JSON-serialized response inside it.
+     *
+     * @GETAllowed
      */
     public function attachArtifactAction()
     {
@@ -1629,6 +1446,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Download an artifact to the user's browser
+     *
+     * @GETAllowed
      */
     public function downloadArtifactAction()
     {
@@ -1645,6 +1464,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->downloadAttachment($upload->fileHash, $upload->fileName);
     }
 
+    /**
+     * Update incident
+     */
     public function updateAction()
     {
         $id = $this->_request->getParam('id');
@@ -1652,14 +1474,32 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incident = Doctrine::getTable('Incident')->find($id);
 
         if (!$incident) {
-            throw new Exception_General("Invalid Incident ID");
+            throw new Fisma_Zend_Exception_User("Invalid Incident ID");
+        }
+
+        if ($this->getRequest()->getPost('reject')) {
+            $incident->reject();
+            $incident->save();
+        }
+
+        if ($this->getRequest()->getPost('completeStep')) {
+            $this->_completeWorkflowStep($incident);
         }
 
         try {
+            // Update the incident's data
             $newValues = $this->getRequest()->getParam('incident');
             if (!empty($newValues)) {
                 $incident->merge($newValues);
                 $incident->save();
+            }
+
+             // If the POC changed, then send the POC an e-mail.
+            if (isset($newValues['pocId']) && !empty($newValues['pocId'])) {
+                $mailSubject = "You have been assigned as the Point Of Contact for an incident.";
+                $this->_sendMailToAssignedUser($newValues['pocId'], $incident->id, $mailSubject);
+
+                $this->view->priorityMessenger('A notification has been sent to the new Point Of Contact.', 'notice');
             }
         } catch (Doctrine_Validator_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
@@ -1890,38 +1730,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Returns all incident categories as a nested array, suitable for inserting into an HTML select
-     *
-     * The outer array contains categories (CAT0, CAT1, etc.) and the inner array contain subcategories.
-     *
-     * @return array
-     */
-    private function _getCategories()
-    {
-        $q = Doctrine_Query::create()
-             ->select('c.category, c.name, s.id, s.name')
-             ->from('IrCategory c')
-             ->innerJoin('c.SubCategories s')
-             ->orderBy("c.category, s.name")
-             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-        $categories = $q->execute();
-
-        // The categories need to be reformatted to use in a select menu. Zend Form Select has a weird format
-        // for select options
-        $selectOptions = array();
-        $outerCategory = '';
-        foreach ($categories as $category) {
-            $categoryLabel = "{$category['c_category']} - {$category['c_name']}";
-            $selectOptions[$categoryLabel][$category['s_id']] = $category['s_name'];
-        }
-
-        return $selectOptions;
-    }
-
-    /**
-     * Get the user email and name of all IRCs
-     *
-     * @return array
+     * Get the user ids of all IRCs
      */
     private function _getIrcs()
     {
@@ -1988,18 +1797,21 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * List users eligible to be an actor or observer
      *
      * All users are eligible unless they are already an actor or observer for this incident.
+     *
+     * @GETAllowed
      */
     public function getEligibleUsersAction()
     {
-        $id = $this->getRequest()->getParam('id');
+        $id = Inspekt::getInt($this->getRequest()->getParam('id'));
         $queryString = $this->getRequest()->getParam('query');
 
         $userQuery = Doctrine_Query::create()
                      ->select('u.username')
                      ->from('User u')
-                     ->leftJoin('u.Incidents i')
+                     ->leftJoin("u.IrIncidentUser iu ON u.id = iu.userId AND iu.incidentId = $id")
                      ->where("u.username like ?", "%$queryString%")
-                     ->andWhere('i.id IS NULL OR i.id <> ?', $id)
+                     ->andWhere('iu.incidentId IS NULL')
+                     ->orderBy('u.username')
                      ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         $users = $userQuery->execute();
@@ -2012,15 +1824,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     /**
      * Replace the default "Create" button with a "Report Incident" button
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
-        $buttons = parent::getToolbarButtons();
+        $buttons = parent::getToolbarButtons($record);
 
         unset($buttons['create']);
 
-        $buttons['repot'] = new Fisma_Yui_Form_Button_Link(
+        $buttons['report'] = new Fisma_Yui_Form_Button_Link(
             'toolbarReportIncidentButton',
             array(
                 'value' => 'Report New Incident',
@@ -2028,6 +1841,85 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
+        // Add Save/Discard buttons for authenticated users
+        if ($record && $this->_currentUserCanUpdateIncident($record->id)) {
+            $buttons['discard'] =  new Fisma_Yui_Form_Button_Link(
+                'discardChanges',
+                array(
+                    'value' => 'Discard Changes',
+                    'href' => "/incident/view/id/{$record->id}"
+                )
+            );
+
+            $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
+                'saveChanges',
+                array(
+                    'label' => 'Save Changes'
+                )
+            );
+        }
+
+        // Add a "Reject" button if the incident is still in "new" status
+        if ($record && 'new' == $record->status) {
+            $buttons['reject'] = new Fisma_Yui_Form_Button(
+                'reject',
+                array(
+                    'label' => 'Reject Incident',
+                    'onClickFunction' => 'Fisma.Incident.confirmReject'
+                )
+            );
+        }
+
+        // Add lock/unlock buttons if the user has the capability to use them
+        if ($record && $this->_acl->hasPrivilegeForClass('lock', 'Incident')) {
+            if ($record->isLocked) {
+                $buttons['unlock'] = new Fisma_Yui_Form_Button_Link(
+                    'unlock',
+                    array(
+                        'value' => 'Unlock Incident',
+                        'href' => "/incident/unlock/id/{$record->id}"
+                    )
+                );
+            } else {
+                $buttons['lock'] = new Fisma_Yui_Form_Button_Link(
+                    'lock',
+                    array(
+                        'value' => 'Lock Incident',
+                        'href' => "/incident/lock/id/{$record->id}"
+                    )
+                );
+            }
+        }
+
         return $buttons;
+    }
+
+    /**
+     * Send email to the user who has been assigned an incident
+     *
+     * @param integer $userId The id of user
+     * @param integer $incidentId The id of incident
+     * @param string $mailSubject The subject of mail
+     *
+     * @return void
+     */
+    private function _sendMailToAssignedUser($userId, $incidentId, $mailSubject)
+    {
+        $user = Doctrine::getTable('Poc')->find($userId);
+
+        $options = array(
+            'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incidentId,
+            'incidentId' => $incidentId,
+            'isUser' => ($user instanceof User)
+        );
+
+        $mail = new Mail();
+        $mail->recipient     = $user->email;
+        $mail->recipientName = $user->nameFirst . ' ' . $user->nameLast;
+        $mail->subject       = $mailSubject;
+
+        $mail->mailTemplate('ir_assign', $options);
+
+        Zend_Registry::get('mail_handler')->setMail($mail)->send();
     }
 }

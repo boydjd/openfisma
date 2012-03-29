@@ -33,10 +33,11 @@
 if (isset($this->notifications)) {
 ?>
     <div class="panel clear">
+        <input name="csrf" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
         <p><em>Notifications</em></p>
         <p>
             You have new notifications that you have not received in e-mail yet.
-            Click <a href="<?php echo $this->escape($this->dismissUrl, 'none')?>">here</a>
+            Click <a href="<?php echo $this->escape($this->submitUrl, 'none'); ?>">here</a> 
             to dismiss these notifications.
         </p>
         <ol>

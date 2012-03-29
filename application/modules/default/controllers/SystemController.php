@@ -62,6 +62,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * View the specified system
      *
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -135,6 +136,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display basic system properties such as name, creation date, etc.
      *
+     * @GETAllowed
      * @return void
      */
     public function systemAction()
@@ -155,6 +157,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->render();
     }
 
+    /**
+     * Convert a system to an organization.
+     *
+     * @return void
+     */
     public function convertToOrgAction()
     {
         if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
@@ -193,6 +200,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display CIA criteria and FIPS-199 categorization
      *
+     * @GETAllowed
      * @return void
      */
     public function fipsAction()
@@ -211,6 +219,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display FISMA attributes for the system
      *
+     * @GETAllowed
      * @return void
      */
     public function fismaAction()
@@ -229,6 +238,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display FISMA attributes for the system
      *
+     * @GETAllowed
      * @return void
      */
     public function artifactsAction()
@@ -427,7 +437,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      * @param Zend_Form $form
      * @param Doctrine_Record $system
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
-     * @returns integer Organization id of new system
+     * @return Fisma_Doctrine_Record The saved record
      */
     protected function saveValue($form, $system=null)
     {
@@ -496,7 +506,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $userRoles->save();
         }
 
-        return $system->id;
+        return $system;
     }
 
     /**
@@ -574,6 +584,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * userAction
      *
+     * @GETAllowed
      * @access public
      * @return void
      */
@@ -781,6 +792,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * getUserAccessTreeAction
      *
+     * @GETAllowed
      * @access public
      * @return void
      */
@@ -818,6 +830,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * getSystemsAction
      *
+     * @GETAllowed
      * @access public
      * @return void
      */
@@ -841,6 +854,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display system aggregation tree.
      *
+     * @GETAllowed
      * @return void
      */
     public function aggregationAction()
@@ -853,6 +867,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Returns a JSON object that describes the system aggregation tree.
      *
+     * @GETAllowed
      * @return void
      */
     public function aggregationDataAction()
@@ -882,8 +897,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Gets the system aggregation tree data
      *
+     * @GETAllowed
      * @param boolean $includeDisposal Whether display disposal system or not
-     *
      * @return array The array representation of aggregation tree
      */
     public function getAggregationTree($includeDisposal = false)
@@ -924,11 +939,12 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override from FZCAO.
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
-        $buttons = parent::getToolbarButtons();
+        $buttons = parent::getToolbarButtons($record);
 
         $isList = $this->getRequest()->getActionName() === 'list';
         $resourceName = $this->getAclResourceName();
@@ -951,6 +967,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      * Moves a tree node relative to another tree node. This is used by the YUI tree node to handle drag and drops
      * of system nodes. It replies with a JSON object.
      *
+     * @GETAllowed
      * @return void
      */
     public function moveNodeAction()
@@ -1015,6 +1032,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * AJAX action to render the form for converting a System to an Organization.
      *
+     * @GETAllowed
      * @return void
      */
     public function convertToOrganizationFormAction()

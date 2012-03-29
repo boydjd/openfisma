@@ -24,7 +24,7 @@
 (function() {
     /**
      * A box that is used to display error or success messages to the user.
-     * 
+     *
      * @namespace Fisma
      * @class MessageBox
      * @extends n/a
@@ -43,7 +43,7 @@
         }
 
         this._container = container;
-        
+
         // Default error level is "warn" for legacy compatibility
         this.setErrorLevel(MB.ERROR_LEVEL.WARN);
         this.hide();
@@ -61,7 +61,7 @@
         this._container.appendChild(this._closeContainer);
 
         YAHOO.util.Event.addListener(this._closeContainer, "click", function () {this.hide();}, this, true);
-        
+
         // Add the subcontainer
         this._subcontainer = document.createElement('div');
         this._container.appendChild(this._subcontainer);
@@ -69,7 +69,7 @@
 
     /**
      * An enumeration of error levels
-     * 
+     *
      * @static
      */
     MB.ERROR_LEVEL = {
@@ -80,18 +80,18 @@
     MB.prototype = {
         /**
          * A reference to the HTML container that this is rendered inside of.
-         * 
+         *
          * @param HTMLElement
          */
         _container: null,
 
         /**
          * A subcontainer that is used to hold the message (since the main container also has a "close" control)
-         * 
+         *
          * @param HTMLElement
          */
         _subcontainer: null,
-        
+
         /**
          * The criticality or error level for this message
          */
@@ -104,28 +104,35 @@
 
         /**
          * Append new message text to the existing message box
-         * 
+         *
          * @param message {String}
+         * @return {Fisma.MessageBox} Fluent Interface
          */
         addMessage: function (message) {
             this._subcontainer.innerHTML += message;
+
+            return this;
         },
-        
+
         /**
          * Set the message text (overwriting what was previously there)
-         * 
+         *
          * @param message {String}
-         */        
+         * @return {Fisma.MessageBox} Fluent Interface
+         */
         setMessage: function (message) {
             this._subcontainer.innerHTML = message;
+
+            return this;
         },
-        
+
         /**
          * Set the error level for this box.
-         * 
+         *
          * This affects appearance but in the future may also affect behavior.
-         * 
+         *
          * @param level {MessageBar.ERROR_LEVEL}
+         * @return {Fisma.MessageBox} Fluent Interface
          */
         setErrorLevel: function (level) {
             switch (level) {
@@ -140,11 +147,13 @@
             }
 
             this._errorLevel = level;
+
+            return this;
         },
 
         /**
          * Return the current error level.
-         * 
+         *
          * @return {MessageBar.ERROR_LEVEL}
          */
         getErrorLevel: function () {
@@ -153,18 +162,25 @@
 
         /**
          * Show the message box
+         *
+         * @return {Fisma.MessageBox} Fluent Interface
          */
         show: function () {
             YAHOO.util.Dom.removeClass(this._container, "hide");
 
             this._setClosedIconToVerticalCenter();
+            return this;
         },
-        
+
         /**
          * Hide the message box
+         *
+         * @return {Fisma.MessageBox} Fluent Interface
          */
         hide: function () {
             YAHOO.util.Dom.addClass(this._container, "hide");
+
+            return this;
         },
 
         /**

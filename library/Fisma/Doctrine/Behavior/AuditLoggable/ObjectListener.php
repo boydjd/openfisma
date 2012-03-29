@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Listener for the object which is using this behavior
- * 
+ *
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -29,7 +29,7 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
 {
     /**
      * Default options for the listener
-     * 
+     *
      * @var array
      */
     protected $_options = array(
@@ -38,10 +38,10 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
         'logUpdateField' => false,
         'logDeleteObject' => false
     );
-    
+
     /**
      * Create and configure a new listener
-     * 
+     *
      * @param array $options The object listener options
      * @return void
      */
@@ -49,10 +49,10 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
     {
         $this->_options = array_merge($this->_options, $options);
     }
-    
+
     /**
      * Audit log behavior for created objects
-     * 
+     *
      * @param Doctrine_Event $event The triggered doctrine event
      * @return void
      */
@@ -61,14 +61,14 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
         // Logs are only created if the logCreateObject option is true
         if ($this->_options['logCreateObject']) {
             $invoker = $event->getInvoker();
-        
+
             $invoker->getAuditLog()->write('Created');
         }
     }
 
     /**
      * Audit log behavior for updated objects
-     * 
+     *
      * @param Doctrine_Event $event The triggered doctrine event
      * @return void
      */
@@ -79,7 +79,7 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
 
         // Handle object-level logging
         if ($this->_options['logUpdateObject']) {
-        
+
             // Prepare a list of modified fields using logical names
             $fields = array();
 
@@ -89,7 +89,7 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
                     $fields[] = $logicalName;
                 }
             }
-        
+
             // Write new log if any loggable fields were modified
             if (count($fields) > 0) {
                 $invoker->getAuditLog()->write('Updated ' . implode(', ', $fields));
@@ -105,11 +105,11 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
                 if ($this->_fieldIsLoggable($invoker->getTable(), $field)) {
 
                     $logicalName = $this->_getLogicalNameForField($invoker->getTable(), $field);
-                    
+
                     if (empty($logicalName)) {
                         throw new Exception("Field ($field) cannot be logged because it does not have a logical name");
                     }
-                    
+
                     // The log always shows the old and new values for the field.
                     $oldValue = $invoker->getOriginalValue($field);
                     $newValue = $invoker->$field;
@@ -144,10 +144,10 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
 
     /**
      * Audit log behavior for deleted objects
-     * 
+     *
      * This only makes sense for objects which have a soft delete behavior. Otherwise there is no object to create
      * logs for.
-     * 
+     *
      * @param Doctrine_Event $event The triggered doctrine event
      * @return void
      */
@@ -156,14 +156,14 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
         // Logs are only created if the logDeleteObject option is true
         if ($this->_options['logDeleteObject']) {
             $invoker = $event->getInvoker();
-        
+
             $invoker->getAuditLog()->write('Deleted');
         }
     }
-    
+
     /**
      * Determine whether a particular field on a particular table should be logged individually
-     * 
+     *
      * @param Doctrine_Table $table The specified doctrine table object to be checked
      * @param string $field The specified field of table to be checked
      * @return boolean True if found extra property 'auditLog' in the table definition, false otherwise
@@ -178,10 +178,10 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
             return false;
         }
     }
-    
+
     /**
      * Determine whether a particular field on a particular table contains HTML
-     * 
+     *
      * @param Doctrine_Table $table The specified doctrine table object to be checked
      * @param string $field The specified field of table to be checked
      * @return boolean True if found extra property 'purify' in the table definition and is 'html', false otherwise
@@ -196,10 +196,10 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
             return false;
         }
     }
-    
+
     /**
      * A helper to derive a logical name from a physical field name in a particular table
-     * 
+     *
      * @param Doctrine_Table $table The specified doctrine table object to be checked
      * @param string $field The specified field of table to be checked
      * @return string|null The defined value of the extra property 'logicalName', null if is not set
@@ -217,7 +217,7 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
 
     /**
      * Determine whether a particular field on a particular table should be a foreign key and an id type
-     * 
+     *
      * @param Doctrine_Table $table The specified doctrine table object to be checked
      * @param string $field The specified field of table to be checked
      * @return relation if found relation property 'local' and 'foreign' is id type, null otherwise
@@ -227,7 +227,7 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
         $relations = $table->getRelations();
 
         foreach ($relations as $name => $relation) {
-            if (strtolower($field) === strtolower($relation->getLocal()) 
+            if (strtolower($field) === strtolower($relation->getLocal())
                 && 'id' === strtolower($relation->getForeign())) {
 
                return $relation;
@@ -236,10 +236,10 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
 
         return null;
     }
-    
+
     /**
      * A helper to derive a field name from a relation and a field id in a particular table
-     * 
+     *
      * @param Doctrine_Relation $relation The specified doctrine relation object to be checked
      * @param string $field The specified field of table to be checked
      * @return string|null The defined value if name field found, null otherwise
@@ -253,11 +253,12 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
         // SecurityControlCatalog table to be an unique name.
         if ($record instanceof Fisma_Doctrine_Behavior_AuditLoggable_AuditLogProvider) {
             return $record->getAuditLogValue();
-        } else { 
-            if ($record->contains('name')) {
-                return $record->name;
-            }
+        } elseif ($record && $record->contains('name')) {
+            return $record->name;
+        } else {
+            return $field;
         }
+
         return null;
     }
 }

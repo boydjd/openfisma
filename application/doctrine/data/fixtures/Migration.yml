@@ -4,7 +4,7 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: BootstrapMigration
-    021700_Add_Mail_Table:
+    021700_add_mail_table:
         majorVersion: 2
         minorVersion: 17
         tagNumber: 0
@@ -19,3 +19,28 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: AddIcons
+    021700_incident_model_cleanup:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: IncidentModelCleanup
+    021700_update_evaluation_names:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: UpdateEvaluationNames
+    021700_finding_workflow:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: FindingWorkflow
+    021700_AddUrlToNotificationEmail:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: AddUrlToNotificationEmail
+    021700_ipv6:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 0
+        name: Ipv6

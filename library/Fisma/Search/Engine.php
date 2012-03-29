@@ -48,7 +48,7 @@ class Fisma_Search_Engine
 
     /**
      * Constructs a search engine client object
-     * 
+     *
      * The constructor is public to keep the design clean, but in production you probably don't want to instantiate
      * your own instance at runtime. Instead, use a pre-built search engine object from the registry.
      *
@@ -213,6 +213,8 @@ class Fisma_Search_Engine
         // Text columns have different sorting rules (see design document)
         if ('text' == $sortColumnDefinition['type']) {
             $sortColumnParam = $this->escape($sortColumn) . '_textsort';
+        } elseif ('enum' == $sortColumnDefinition['type']) {
+            $sortColumnParam = $this->escape($sortColumn) . '_enumsort';
         } else {
             $sortColumnParam = $this->escape($sortColumn) . '_' . $sortColumnDefinition['type'];
         }
@@ -237,15 +239,15 @@ class Fisma_Search_Engine
         $aclQueryFilter = $this->_getAclQueryFilter($table, $searchableFields);
 
         if (!empty($aclQueryFilter)) {
-            $filterQuery .= ' AND (' 
+            $filterQuery .= ' AND ('
                           . $aclQueryFilter
                           . ')';
         }
-        
+
         // Handle soft delete
         if ($table->hasColumn('deleted_at')) {
             $query->addField('deleted_at_datetime');
-            
+
             if (!$deleted) {
                 $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
             }
@@ -257,11 +259,11 @@ class Fisma_Search_Engine
         } else {
 
             if ($this->getHighlightingEnabled()) {
-                
+
                 $query->setHighlight(true)
                       ->setHighlightSimplePre('***')
                       ->setHighlightSimplePost('***');
-            }            
+            }
 
             $query->addFilterQuery($filterQuery);
 
@@ -301,7 +303,7 @@ class Fisma_Search_Engine
                 }
             }
         }
-        
+
         if (!empty($trimmedKeyword)) {
             // If there are search terms, then combine them with the logical OR operator
             $query->setQuery(implode(' OR ', $searchTerms));
@@ -321,10 +323,10 @@ class Fisma_Search_Engine
      * @param boolean $sortDirection True for ascending sort, false for descending
      * @param int $start The offset within the result set to begin returning documents from
      * @param int $rows The number of documents to return
-     * @param bool $deleted If true, include soft-deleted records in the results     
+     * @param bool $deleted If true, include soft-deleted records in the results
      * @return Fisma_Search_Result Rectangular array of search results
      */
-    public function searchByCriteria($type, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection, 
+    public function searchByCriteria($type, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection,
                                      $start, $rows, $deleted)
     {
         $query = new SolrQuery;
@@ -341,6 +343,8 @@ class Fisma_Search_Engine
         // Text columns have different sorting rules (see design document)
         if ('text' == $sortColumnDefinition['type']) {
             $sortColumnParam = $this->escape($sortColumn) . '_textsort';
+        } elseif ('enum' == $sortColumnDefinition['type']) {
+            $sortColumnParam = $this->escape($sortColumn) . '_enumsort';
         } else {
             $sortColumnParam = $this->escape($sortColumn) . '_' . $sortColumnDefinition['type'];
         }
@@ -363,7 +367,7 @@ class Fisma_Search_Engine
         $aclQueryFilter = $this->_getAclQueryFilter($table, $searchableFields);
 
         if (!empty($aclQueryFilter)) {
-            $filterQuery .= ' AND (' 
+            $filterQuery .= ' AND ('
                           . $aclQueryFilter
                           . ')';
         }
@@ -371,7 +375,7 @@ class Fisma_Search_Engine
         // Handle soft delete
         if ($table->hasColumn('deleted_at')) {
             $query->addField('deleted_at_datetime');
-            
+
             if (!$deleted) {
                 $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
             }
@@ -379,13 +383,13 @@ class Fisma_Search_Engine
 
         // Enable highlighting
         if ($this->getHighlightingEnabled()) {
-            
+
             $query->setHighlight(true)
                   ->setHighlightSimplePre('***')
                   ->setHighlightSimplePost('***')
                   ->setHighlightRequireFieldMatch(true);
         }
-            
+
         // The filter query is used for efficiency (parts of the query that don't change can be cached separately)
         $query->addFilterQuery($filterQuery);
 
@@ -505,11 +509,11 @@ class Fisma_Search_Engine
 
                     $searchTerms[] = "$fieldName:[* TO {$operands[0]}]";
                     break;
-                
+
                 case 'integerBetween':
                     $lowEndIntValue = intval($operands[0]);
                     $highEndIntValue = intval($operands[1]);
-                    
+
                     if ($lowEndIntValue < $highEndIntValue) {
                         $searchTerms[] = "$fieldName:[$lowEndIntValue TO $highEndIntValue]";
                     } else {
@@ -575,7 +579,7 @@ class Fisma_Search_Engine
                         foreach ($ids as $id) {
                             $idTerms[] = "{$idField}_{$fieldType}:$id";
                         }
-                        
+
                         $searchTerms[] = '(' . implode($idTerms, ' OR ') . ')';
                     } else {
                         throw new Fisma_Search_Exception("Undefined search operator: " . $criterion->getOperator());
@@ -596,7 +600,7 @@ class Fisma_Search_Engine
         } catch (SolrClientException $e) {
             return new Fisma_Search_Result(0, 0, array());
         }
-        
+
         return $this->_convertSolrResultToStandardResult($type, $response);
     }
 
@@ -608,7 +612,7 @@ class Fisma_Search_Engine
      */
     private function _stringToIntArray($operand)
     {
-        
+
         return preg_split('/[^\d]+/', $operand);
     }
 
@@ -722,11 +726,11 @@ class Fisma_Search_Engine
             $documentFieldName = $doctrineFieldName . '_' . $searchFieldDefinition['type'];
 
             $rawValue = $this->_getRawValueForField($table, $object, $doctrineFieldName, $searchFieldDefinition);
-            
+
             if (is_null($rawValue)) {
                 continue;
             }
-            
+
             $doctrineDefinition = $table->getColumnDefinition($table->getColumnName($doctrineFieldName));
 
             //Some fields are stored in their join table, for example, description field of system is actually
@@ -742,12 +746,20 @@ class Fisma_Search_Engine
                                   $doctrineDefinition['extra']['purify']['html'];
 
             $documentFieldValue = $this->_getValueForColumn($rawValue, $searchFieldDefinition['type'], $containsHtml);
- 
+
             $document->addField($documentFieldName, $documentFieldValue);
 
-            // For sortable text columns, add a separate 'textsort' column (see design document)
             if ('text' == $searchFieldDefinition['type'] && $searchFieldDefinition['sortable']) {
+                // For sortable text columns, add a separate 'textsort' column (see design document)
                 $document->addField($doctrineFieldName . '_textsort', $documentFieldValue);
+            } elseif ('enum' == $searchFieldDefinition['type'] && $searchFieldDefinition['sortable']) {
+
+                if (!isset($searchFieldDefinition['enumReverse'])) {
+                    $searchFieldDefinition['enumReverse'] = array_flip($searchFieldDefinition['enumValues']);
+                }
+
+                $sortOrder = $searchFieldDefinition['enumReverse'][$rawValue];
+                $document->addField($doctrineFieldName . '_enumsort', $sortOrder);
             }
         }
 
@@ -774,9 +786,9 @@ class Fisma_Search_Engine
     {
         $numberFound = count($solrResult->response->docs);
         $numberReturned = $solrResult->response->numFound;
-        
+
         if (isset($solrResult->highlighting)) {
-            $highlighting = (array)$solrResult->highlighting;    
+            $highlighting = (array)$solrResult->highlighting;
         } else {
             $highlighting = array();
         }
@@ -820,7 +832,7 @@ class Fisma_Search_Engine
                     if (!isset($searchableFields[$fieldName])) {
                         continue;
                     }
-                
+
                     $fieldDefinition = $searchableFields[$fieldName];
 
                     if ('date' == $fieldDefinition['type'] || 'datetime' == $fieldDefinition['type']) {
@@ -921,22 +933,22 @@ class Fisma_Search_Engine
     }
 
     /**
-     * Returns query terms to limit the search results on 
-     * 
+     * Returns query terms to limit the search results on
+     *
      * @param Doctrine_Table $table
      * @param array $searchableFields
      */
     private function _getAclQueryFilter($table, $searchableFields)
     {
         $aclTerms = $this->_getAclTerms($table);
-        
+
         // If there is no ACL constraint, then return an empty query term
         if (is_null($aclTerms)) {
             return '';
         }
 
         $ids = array();
-        
+
         foreach ($aclTerms as $aclTerm) {
             $fieldName = $aclTerm['field'];
             $fieldValue = $aclTerm['value'];
@@ -1045,7 +1057,7 @@ class Fisma_Search_Engine
 
         return $html;
     }
-    
+
     /**
      * Return an array of ACL terms
      *
@@ -1059,7 +1071,7 @@ class Fisma_Search_Engine
      * @param Doctrine_Table $table
      * @return mixed Array of acl terms or null if ACL does not apply
      */
-    protected function _getAclTerms($table) 
+    protected function _getAclTerms($table)
     {
         $aclFields = $table->getAclFields();
 
@@ -1069,8 +1081,8 @@ class Fisma_Search_Engine
         }
 
         $ids = array();
-        
-        foreach ($aclFields as $aclFieldName => $callback) {      
+
+        foreach ($aclFields as $aclFieldName => $callback) {
             $aclIds = call_user_func($callback);
 
             if ($aclIds === false) {
@@ -1089,7 +1101,7 @@ class Fisma_Search_Engine
 
         return $ids;
     }
-    
+
     /**
      * Returns the raw value for a field based on the search metadata definition.
      *
@@ -1119,14 +1131,14 @@ class Fisma_Search_Engine
 
             $rawValue = $relatedObject[$searchFieldDefinition['join']['field']];
         }
-        
+
         return $rawValue;
     }
-    
+
     /**
      * Return searchable fields for a particular model
      *
-     * @param string $type Name of model 
+     * @param string $type Name of model
      */
     protected function _getSearchableFields($type)
     {
@@ -1138,13 +1150,13 @@ class Fisma_Search_Engine
 
             throw new Fisma_Zend_Exception($message);
         }
-        
+
         return $table->getSearchableFields();
     }
-    
+
     /**
      * Tokenize a basic search query and return an array of tokens
-     * 
+     *
      * @param string $basicQuery
      * @return array
      */

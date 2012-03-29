@@ -43,6 +43,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
     /**
      * View detail information of the subject model
      *
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -67,7 +68,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
             $downloadUrl = '/system-document/download/id/' . $history->id . '/version/' . $history->version;
             $historyRows[] = array(
                 'fileName' => $this->view->escape($upload->fileName),
-                'fileNameLink' => "<a href=$downloadUrl>" . $this->view->escape($upload->fileName) . "</a>",
+                'fileNameLink' => "<a href=\"$downloadUrl\">" . $this->view->escape($upload->fileName) . "</a>",
                 'version' => $history->version,
                 'description' => $this->view->textToHtml($this->view->escape($history->description)),
             );
@@ -127,12 +128,13 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->document = $document;
 
-        $this->view->toolbarButtons = $this->getToolbarButtons();
+        $this->view->toolbarButtons = $this->getToolbarButtons($document);
     }
 
     /**
      * Download the specified system document
      *
+     * @GETAllowed
      * @return void
      * @throws Fisma_Zend_Exception if requested file doesn`t exist
      */
@@ -174,11 +176,12 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
      * 1) List All <model name>s
      * 2) Create New <model name>
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
-        $buttons = parent::getToolbarButtons();
+        $buttons = parent::getToolbarButtons($record);
 
         // Remove the "Create" button, since that function is accessed through the system artifacts screen
         unset($buttons['create']);

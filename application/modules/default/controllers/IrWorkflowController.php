@@ -58,17 +58,28 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
+     * Override behavior from FZCAO so it renders our custom view script.
+     *
+     * @GETAllowed
+     */
+    public function viewAction()
+    {
+        $this->_viewObject();
+    }
+
+    /**
      * Override the parent to add special logic for saving the incident workflow's steps
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $workflowDefinition The specified subject model
-     * @return integer ID of the object saved.
+     * @return Fisma_Doctrine_Record The saved record
      */
     protected function saveValue($form, $workflowDefinition = null)
     {
         Doctrine_Manager::connection()->beginTransaction();
 
-        $workflowId = parent::saveValue($form, $workflowDefinition);
+        $workflow = parent::saveValue($form, $workflowDefinition);
+        $workflowId = $workflow->id;
 
         // Handle special cases of merging workflow steps
         $post = $this->getRequest()->getPost();
@@ -94,7 +105,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
                 // If the user posts more steps than the workflow has, then create new steps
                 if (isset($steps[$index])) {
                     $currentStep = $steps[$index];
-                    
+
                     $steps->remove($index);
                 } else {
                     $currentStep = new IrStep();
@@ -126,7 +137,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
 
         Doctrine_Manager::connection()->commit();
 
-        return $workflowId;
+        return $workflow;
     }
 
     /**
@@ -165,28 +176,14 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
             $steps->add($defaultStep);
         }
 
-        // Add steps to form
-        $displayGroup = $parentForm->getDisplayGroup('irworkflowdef');
-
-        foreach ($steps as $step) {
-            $stepElement = new Fisma_Zend_Form_Element_IncidentWorkflowStep("workflowStep$step->cardinality");
-
-            $stepElement->setLabel("Step $step->cardinality");
-            $stepElement->setValue($step);
-            $stepElement->setRoles($roles);
-            $stepElement->setDefaultRole($step->roleId);
-          
-            $resource = $this->getAclResourceName(); 
-            if ($this->_enforceAcl && !$this->_acl->hasPrivilegeForClass('update', $resource)) { 
-                $stepElement->readOnly = true;
-            }
-
-            $displayGroup->addElement($stepElement);
-        }
+        $this->view->stepsData = array(
+            'roles' => $roles,
+            'steps' => $steps->toArray()
+        );
 
         return $parentForm;
     }
-    
+
     protected function _isDeletable()
     {
         return false;

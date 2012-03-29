@@ -1,13 +1,41 @@
 <?php
-foreach ($this->list as $k=>$s) {
-    if ( $k == $this->selected || $s == $this->selected ) {
-        $select = 'selected="selected"';
-    } else {
-        $select = '';
-    }
+
+if ('nested' == $this->selectStyle):
+    foreach ($this->list as $group => $items):
+    ?>
+        <optgroup label="<?php echo $this->escape($group); ?>">
+
+        <?php
+        foreach ($items as $name => $label):
+            $selected = ($label == urldecode($this->selected)) ? 'selected="selected"' : '';
+        ?>
+
+            <option value="<?php echo $this->escape($name); ?>" <?php echo $this->escape($selected);?>>
+                <?php echo $this->escape($label); ?>
+            </option>
+
+        <?php
+        endforeach;
+        ?>
+
+        </optgroup>
+
+    <?php
+    endforeach;
+else:
+    foreach ($this->list as $k=>$s):
+        if ( $k == $this->selected || $s == $this->selected ):
+            $select = 'selected="selected"';
+        else:
+            $select = '';
+        endif;
+        ?>
+
+        <option value="<?php echo $this->escape($k)?>" <?php echo $this->escape($select)?>>
+            <?php echo $this->escape($s)?>
+        </option>
+
+    <?php
+    endforeach;
+endif;
 ?>
-    <option value="<?php echo $this->escape($k)?>" <?php echo $this->escape($select)?>>
-        <?php echo $this->escape($s)?>
-    </option>
-<?php
-}

@@ -54,6 +54,8 @@ class OrganizationChartController extends Fisma_Zend_Controller_Action_Security
     /**
      * Renders a pie chart which shows the proportions of the various FIPS-199 impact categories among information
      * systems.
+     *
+     * @GETAllowed
      */
     public function fipsCategoryAction()
     {
@@ -97,6 +99,8 @@ class OrganizationChartController extends Fisma_Zend_Controller_Action_Security
     
     /**
      * Renders a pie chart which shows the proportions of agency-owned vs. contractor-owned systems.
+     *
+     * @GETAllowed
      */
     public function agencyContractorAction()
     {

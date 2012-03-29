@@ -76,7 +76,16 @@ class Doctrine_Validator_ErrorStack extends Doctrine_Access implements Countable
             $validator = $errorCode;
             $this->_validators[$invalidFieldName][] = $validator;
             $className = get_class($errorCode);
-            $errorCode = strtolower(substr($className, strlen('Doctrine_Validator_'), strlen($className)));
+
+            /*
+             * This next line didn't work with our custom validators, and we don't have any upgrade path for doctrine,
+             * so i just patched doctrine directly. It's not ideal, but I can't think of any better alternatives.
+             * This mod is compatible with doctrine's internal validator classes as well as any external classes, so
+             * long as they contain 'Doctrine_Validator_' in their name. These next 2 lines return the part of the
+             * class name after 'Doctrine_Validator_' in lower case.
+             */
+            $offset = strpos($className, 'Doctrine_Validator_') + strlen('Doctrine_Validator_');
+            $errorCode = strtolower(substr($className, $offset));
         }
 
         $this->_errors[$invalidFieldName][] = $errorCode;

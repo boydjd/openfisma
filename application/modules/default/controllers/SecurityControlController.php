@@ -56,6 +56,8 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * View information for a particular control
+     *
+     * @GETAllowed
      */
     public function viewAction()
     {
@@ -72,6 +74,8 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override parent to disable this action
+     *
+     * @GETAllowed
      */
     public function editAction()
     {
@@ -88,11 +92,14 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * A helper action for autocomplete text boxes
+     *
+     * @GETAllowed
      */
     public function autocompleteAction()
     {
         $keyword = $this->getRequest()->getParam('keyword');
 
+        $catalogId = Fisma::configuration()->getConfig("default_security_control_catalog_id");
         $controlQuery = Doctrine_Query::create()
                         ->from('SecurityControl sc')
                         ->innerJoin('sc.Catalog c')
@@ -100,7 +107,8 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
                             "sc.id,
                             CONCAT(sc.code, ' ', sc.name, ' [', c.name, ']') AS name"
                         )
-                        ->where('sc.code LIKE ?', "$keyword%")
+                        ->where("CONCAT(sc.code, ' ', sc.name, ' [', c.name, ']') LIKE ?", "%$keyword%")
+                        ->andWhere("sc.securityControlCatalogId = ?", $catalogId)
                         ->orderBy("sc.code")
                         ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
@@ -111,6 +119,8 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
      * Render a single control as a table
      *
      * This view can also be invoked as a partial, so it can be embedded into other views or fetched with an XHR.
+     *
+     * @GETAllowed
      */
     public function singleControlAction()
     {
@@ -120,7 +130,7 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->securityControl = Doctrine::getTable('SecurityControl')->find($securityControlId);
     }
-    
+
     /**
      * Override parent to provide proper human-readable name for SystemDocument class
      */
@@ -140,11 +150,12 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override to remove the "Create New" button
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
-        $buttons = parent::getToolbarButtons();
+        $buttons = parent::getToolbarButtons($record);
 
         unset($buttons['create']);
 

@@ -35,6 +35,11 @@ abstract class Fisma_Yui_DataTable_Abstract
     private $_columns;
 
     /**
+     * The name that this table will be labeled with in the Javascript registry.
+     */
+    private $_registryName;
+
+    /**
      * Optional field to group rows by
      *
      * @var string
@@ -127,5 +132,29 @@ abstract class Fisma_Yui_DataTable_Abstract
     public function __toString()
     {
         return $this->render();
+    }
+
+    /**
+     * Get the current registry name, or create one using the controller action.
+     *
+     * @return string
+     */
+    public function getRegistryName()
+    {
+        $registryName = isset($this->_registryName)
+                      ? $this->_registryName
+                      : Zend_Controller_Front::getInstance()->getRequest()->getActionName();
+
+        return $registryName;
+    }
+
+    /**
+     * Set the registry name.
+     *
+     * @param string $name
+     */
+    public function setRegistryName($name)
+    {
+        $this->_registryName = $name;
     }
 }

@@ -30,6 +30,7 @@ class IndexController extends Fisma_Zend_Controller_Action_Security
     /**
      * The default action - show the home page
      * 
+     * @GETAllowed
      * @return void
      */
     public function indexAction()

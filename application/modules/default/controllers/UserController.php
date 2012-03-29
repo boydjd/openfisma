@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -28,16 +28,16 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
-     * 
+     *
      * This model is the main subject which the controller operates on.
-     * 
+     *
      * @var string
      */
     protected $_modelName = 'User';
 
     /**
      * Initialize internal members.
-     * 
+     *
      * @return void
      */
     public function init()
@@ -49,7 +49,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                       ->addActionContext('check-account', 'json')
                       ->initContext();
     }
-    
+
     /**
      * Returns the standard form for reading, and updating
      * the current user's profile.
@@ -75,12 +75,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         return $form;
     }
 
-    /** 
+    /**
      * Set the Roles, organization relation before save the model
      *
      * @param Zend_Form $form The specified form to save
      * @param Doctrine_Record|null $subject The specified subject related to the form
-     * @return void
+     * @return Fisma_Doctrine_Record The saved record
      * @throws Fisma_Zend_Exception if the related subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject=null)
@@ -106,8 +106,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 // Check whether role is changed for audit log
                 $originalRoles = $subject->getRoles(Doctrine::HYDRATE_ARRAY);
                 $originalRoleIds = array();
-           
-                if (is_array($originalRoles) && count($originalRoles) > 0) { 
+
+                if (is_array($originalRoles) && count($originalRoles) > 0) {
                     foreach ($originalRoles[0]['Roles'] as $key => $value) {
                         array_push($originalRoleIds, $value['id']);
                     }
@@ -123,15 +123,15 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
                          ->execute();
 
-                    $originalRolesOrganizations = array(); 
+                    $originalRolesOrganizations = array();
                     if (!empty($originalRoleOrganizations)) {
                         for ($i = 0; $i < count($originalRoleOrganizations); $i++) {
-                            $originalRolesOrganizations[$originalRoleOrganizations[$i]['ur_roleId']][] 
+                            $originalRolesOrganizations[$originalRoleOrganizations[$i]['ur_roleId']][]
                             = $originalRoleOrganizations[$i]['uro_organizationId'];
                         }
                     }
-                     
-                    $organizationChanged = $this->_isRolesOrganizationsChanged($originalRolesOrganizations, 
+
+                    $organizationChanged = $this->_isRolesOrganizationsChanged($originalRolesOrganizations,
                                                                                $rolesOrganizations);
                 }
 
@@ -150,7 +150,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             if (empty($values['password'])) {
                 unset($values['password']);
             }
-            
+
             if ($values['locked'] && !$subject->locked) {
                 $subject->lockAccount(User::LOCK_TYPE_MANUAL);
                 unset($values['locked']);
@@ -164,12 +164,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 unset($values['locked']);
                 unset($values['lockTs']);
             }
-            
+
             $subject->merge($values);
 
             /*
-             * We need to save the model once before linking related records, because Doctrine has a weird behavior 
-             * where an invalid record will result in failed foreign key constraints. If this record is invalid, 
+             * We need to save the model once before linking related records, because Doctrine has a weird behavior
+             * where an invalid record will result in failed foreign key constraints. If this record is invalid,
              * saving it here will avoid those errors.
              */
             $subject->save();
@@ -240,11 +240,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $auditLog = $roleChanged ? 'Updated Role.' : 'Updated Organization.';
                 $subject->getAuditLog()->write($auditLog);
             }
-            return $subject->id;
         } catch (Doctrine_Exception $e) {
             $conn->rollback();
             throw $e;
         }
+
+        return $subject;
     }
 
     /**
@@ -271,13 +272,15 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Show audit logs for a given user
+     *
+     * @GETAllowed
      */
     public function logAction()
     {
         $id = $this->getRequest()->getParam('id');
-        
+
         $user = Doctrine::getTable('User')->find($id);
-    
+
         $this->view->username = $user->username;
         $this->view->columns = array('Timestamp', 'User', 'Message');
         $this->view->viewLink = "/user/view/id/$id";
@@ -333,7 +336,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display the user's "Edit Profile" page and handle its updating
-     * 
+     *
+     * @GETAllowed
      * @return void
      */
     public function profileAction()
@@ -349,7 +353,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     $modified = $user->getModified();
                     $user->save();
                     Doctrine_Manager::connection()->commit();
-                    $message = "Profile updated successfully"; 
+                    $message = "Profile updated successfully";
                     $model   = 'notice';
                     if (CurrentUser::getInstance()->id === $user->id) {
                         CurrentUser::getInstance()->refresh();
@@ -374,21 +378,22 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Change user's password
-     * 
+     *
+     * @GETAllowed
      * @return void
      */
     public function passwordAction()
     {
         // This action isn't allowed unless the system's authorization is based on the database
         if (
-            'database' != Fisma::configuration()->getConfig('auth_type') && 
+            'database' != Fisma::configuration()->getConfig('auth_type') &&
             'root' != CurrentUser::getInstance()->username
         ) {
             throw new Fisma_Zend_Exception(
                 'Password change is not allowed when the authentication type is not "database"'
             );
         }
-        
+
         // Load the change password file
         $form = Fisma_Zend_Form_Manager::loadForm('change_password');
         $form = Fisma_Zend_Form_Manager::prepareForm($form);
@@ -400,14 +405,14 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             if ($form->isValid($post)) {
                 $user = CurrentUser::getInstance();
                 try {
-                    $user->mustResetPassword = false; 
+                    $user->mustResetPassword = false;
                     $user->merge($post);
                     $user->save();
-                    $message = "Password updated successfully."; 
+                    $message = "Password updated successfully.";
                     $model   = 'notice';
                     if ($this->_helper->ForcedAction->hasForcedAction($user->id, 'mustResetPassword')) {
 
-                        // Remove the forced action of mustResetPassword from session, and send users to 
+                        // Remove the forced action of mustResetPassword from session, and send users to
                         // their original requested page or dashboard otherwise.
                         $this->_helper->ForcedAction->unregisterForcedAction($user->id, 'mustResetPassword');
 
@@ -437,7 +442,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Set user's notification policy
-     * 
+     *
+     * @GETAllowed
      * @return void
      */
     public function notificationAction()
@@ -484,7 +490,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Store user last accept rob and create a audit event
-     * 
+     *
+     * @GETAllowed
      * @return void
      */
     public function acceptRobAction()
@@ -496,7 +503,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $user = CurrentUser::getInstance();
             $user->lastRob = Fisma::now();
             $user->save();
-       
+
             if ($this->_helper->ForcedAction->hasForcedAction($user->id, 'rulesOfBehavior')) {
                 $this->_helper->ForcedAction->unregisterForcedAction($user->id, 'rulesOfBehavior');
             }
@@ -510,19 +517,19 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override parent to add an audit log link
-     * 
+     *
      * @param Fisma_Doctrine_Record $subject
      */
     public function getViewLinks(Fisma_Doctrine_Record $subject)
     {
         $links = array();
-        
+
         if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
             $links['Audit Log'] = "/user/log/id/{$subject->id}";
         }
-        
+
         $links['Comments'] = "/user/comments/id/{$subject->id}";
-        
+
         $links = array_merge($links, parent::getViewLinks($subject));
 
         return $links;
@@ -530,11 +537,13 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Displays user info in a small pop-up box. No layout.
+     *
+     * @GETAllowed
      */
     public function infoAction()
     {
         $this->_helper->layout->disableLayout();
-        
+
         $username = $this->getRequest()->getParam('username');
 
         if ($username) {
@@ -542,13 +551,14 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         } else {
             $user = null;
         }
-        
+
         $this->view->user = $user;
     }
 
     /**
-     * Retrieve the organization subform 
-     * 
+     * Retrieve the organization subform
+     *
+     * @GETAllowed
      * @return void
      */
     public function getOrganizationSubformAction()
@@ -589,9 +599,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         if (!empty($organizationTree)) {
             foreach ($organizationTree as $organization) {
                 $organizations->addCheckbox(
-                    $organization['id'], 
-                    $organization['nickname'] . ' - ' . $organization['name'], 
-                    $organization['level'], 
+                    $organization['id'],
+                    $organization['nickname'] . ' - ' . $organization['name'],
+                    $organization['level'],
                     $roleId
                 );
             }
@@ -605,10 +615,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->subForm = $subForm;
     }
-    
+
     /**
      * Override parent to add a link for audit logs
      *
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -622,7 +633,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->where('u.id = ?', $id);
 
         $user = $q->fetchArray();
-        
+
         $subject = $this->_getSubject($id);
         if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('update', $subject)) {
             $readOnly = 0;
@@ -633,10 +644,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         if (isset($user[0]['Roles'])) {
             foreach ($user[0]['Roles'] as $role) {
                 $tabView->addTab(
-                    $this->view->escape($role['nickname']), 
-                    "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/$readOnly", 
+                    $this->view->escape($role['nickname']),
+                    "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/$readOnly",
                     $role['id'],
-                    $readOnly == 0 ? 'true' : 'false' 
+                    $readOnly == 0 ? 'true' : 'false'
                 );
             }
         }
@@ -659,7 +670,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Override parent method
-     * 
+     *
+     * @GETAllowed
      * @return void
      */
     public function createAction()
@@ -680,7 +692,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Generate a password that meet the application's password complexity requirements.
-     * 
+     *
+     * @GETAllowed
      * @return void
      */
     public function generatePasswordAction()
@@ -690,7 +703,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $passUpper = Fisma::configuration()->getConfig('pass_uppercase');
         $passLower = Fisma::configuration()->getConfig('pass_lowercase');
         $passSpecial = Fisma::configuration()->getConfig('pass_special');
-        
+
         $flag = 0;
         $password = "";
         $length = 2 * $passLengthMin;
@@ -730,16 +743,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->layout->disableLayout(true);
         $this->_helper->viewRenderer->setNoRender();
     }
-    
+
     /**
      * Check if the specified LDAP distinguished name (Account) exists in the system's specified LDAP directory.
-     * 
+     *
+     * @GETAllowed
      * @return void
      */
     public function checkAccountAction()
     {
-        
-        if (! ($this->_acl->hasPrivilegeForClass('read', 'User') 
+
+        if (! ($this->_acl->hasPrivilegeForClass('read', 'User')
                || $this->_acl->hasPrivilegeForClass('read', 'Poc')) ) {
             throw new Fisma_Zend_Exception_InvalidPrivilege("User does not have privileges to check account.");
         }
@@ -764,10 +778,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 throw new Fisma_Zend_Exception_User('When searching for a user, you must type at least 3 letters.');
             }
 
-            foreach ($ldapServerConfigurations as $ldapServerConfiguration) {        
+            foreach ($ldapServerConfigurations as $ldapServerConfiguration) {
                 $ldapServer = new Zend_Ldap($ldapServerConfiguration);
                 $type = 'message';
-            
+
                 // Using Zend_Ldap_Filter instead of a string query prevents LDAP injection
                 $searchFilter = Zend_Ldap_Filter::orFilter(
                     Zend_Ldap_Filter::begins('sAMAccountName', $account),
@@ -804,9 +818,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         echo Zend_Json::encode(
             array(
                 'accounts' => is_object($matchedAccounts) ? $matchedAccounts->toArray() : null,
-                'msg' => $msg, 
+                'msg' => $msg,
                 'query' => $account,
-                'type' => $type, 
+                'type' => $type,
             )
         );
 
@@ -815,6 +829,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Add a comment to a specified user
+     *
      */
     public function addCommentAction()
     {
@@ -828,16 +843,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         } else {
             $this->view->priorityMessenger('Comment field is blank', 'warning');
         }
-        
+
         $this->_redirect("/user/comments/id/$id");
     }
 
     /**
      * Displays the user comment interface
      *
+     * @GETAllowed
      * @return void
      */
-    function commentsAction() 
+    function commentsAction()
     {
         $id = $this->_request->getParam('id');
         $user = Doctrine::getTable('User')->find($id);
@@ -897,9 +913,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->viewLink = "/user/view/id/$id";
 
         $commentButton = new Fisma_Yui_Form_Button(
-            'commentButton', 
+            'commentButton',
             array(
-                'label' => 'Add Comment', 
+                'label' => 'Add Comment',
                 'onClickFunction' => 'Fisma.Commentable.showPanel',
                 'onClickArgument' => array(
                     'id' => $id,
@@ -916,8 +932,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * getUsersAction 
-     * 
+     * getUsersAction
+     *
+     * @GETAllowed
      * @access public
      * @return void
      */
@@ -933,13 +950,13 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                  ->execute();
 
         $list = array('users' => $users);
-        
+
         return $this->_helper->json($list);
     }
 
     /**
-     * removeUserRolesAction 
-     * 
+     * removeUserRolesAction
+     *
      * @access public
      * @return void
      */
@@ -968,8 +985,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * addUserRolesToOrganizationAction 
-     * 
+     * addUserRolesToOrganizationAction
+     *
      * @access public
      * @return void
      */
@@ -984,13 +1001,13 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $userRoles = $this->getRequest()->getParam('userRoles');
 
         Doctrine_Manager::connection()->beginTransaction();
-        
+
         Doctrine::getTable('UserRoleOrganization')
         ->getByOrganizationIdAndUserRoleIdQuery($organizationId, $userRoles)
         ->execute()
         ->delete();
 
-        foreach ($userRoles as $userRole) { 
+        foreach ($userRoles as $userRole) {
             $userRoleOrganization = new UserRoleOrganization();
             $userRoleOrganization->organizationId = (int) $organizationId;
             $userRoleOrganization->userRoleId = (int) $userRole;
@@ -999,7 +1016,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         Doctrine_Manager::connection()->commit();
     }
-    
+
     protected function _isDeletable()
     {
         return false;
@@ -1013,7 +1030,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     public function getForm($formName = null)
     {
-        $form = parent::getForm($formName);        
+        $form = parent::getForm($formName);
         $passwordRequirements = new Fisma_Zend_Controller_Action_Helper_PasswordRequirements();
 
         if ('create' == $this->_request->getActionName()) {
@@ -1045,7 +1062,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $form->removeElement('mustResetPassword');
             }
         }
-        
+
         if ($user && $user->locked) {
             $reason = $user->getLockReason();
             $form->getElement('lockReason')->setValue($reason);
@@ -1066,32 +1083,32 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Check whether the roles have been changed by comparing the roleIds between original and postForm 
+     * Check whether the roles have been changed by comparing the roleIds between original and postForm
      *
      * @param $originalData an array of role ids generated from database
-     * @param $postData an array of role ids posted from form 
+     * @param $postData an array of role ids posted from form
      * @return true if two arrays are not equal, otherwise false.
      */
     protected function _isRoleChanged($originalData, $postData)
     {
         if (count($originalData) != count($postData)) {
             return true;
-        } 
+        }
         sort($originalData);
         sort($postData);
         if ($originalData != $postData) {
             return true;
-        } 
+        }
         return false;
     }
 
     /**
-     * Check whether the roles organizations have been changeds  
+     * Check whether the roles organizations have been changeds
      *
-     * Compare the organizations within each roleId between original data gotten from DB and post data from post form 
+     * Compare the organizations within each roleId between original data gotten from DB and post data from post form
      *
      * @param $originalData an array with key of roleId and value of array of organizationIds generated from database.
-     * @param $postData an array with key of roleId and value of array of organizationIds posted from form. 
+     * @param $postData an array with key of roleId and value of array of organizationIds posted from form.
      * @return true if two arrays are not equal, otherwise false.
      */
     protected function _isRolesOrganizationsChanged($originalData, $postData)
@@ -1110,11 +1127,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         // Compare two arrays of organizationIds in each role.
         for ($i = 0; $i < count($originalData); $i++) {
+
+            // Do not need to sort and compare original and posted data if one has data and the other one doesn't.
+            if (isset($originalData[$i]) Xor isset($postData[$i])) {
+                return true;
+            }
+
             sort($originalData[$i]);
             sort($postData[$i]);
             if ($originalData[$i] != $postData[$i]) {
                 return true;
-            } 
+            }
         }
         return false;
     }

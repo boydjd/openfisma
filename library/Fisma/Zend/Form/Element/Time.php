@@ -34,36 +34,36 @@ class Fisma_Zend_Form_Element_Time extends Zend_Form_Element
 {
     /**
      * Contains valid values for AM and PM
-     * 
+     *
      * @var array
      */
     private $_ampmList = array(
-        'AM' => 'AM', 
+        'AM' => 'AM',
         'PM' => 'PM'
     );
-    
+
     /**
      * Holds the hours
-     * 
+     *
      * @var int
      */
     private $_hour;
-    
+
     /**
      * Holds the minutes
      *
      * @var int
      */
     private $_minute;
-    
+
     /**
      * Holds the AM/PM
      */
     private $_ampm;
-    
+
     /**
      * Override the parent in order to parse out the hour, minute, and AM/PM
-     * 
+     *
      * @param string $value
      */
     public function setValue($value)
@@ -90,45 +90,45 @@ class Fisma_Zend_Form_Element_Time extends Zend_Form_Element
      * @param Zend_View_Interface $view Not used but required because of parent's render() signature
      * @return string The rendered element
      */
-    public function render(Zend_View_Interface $view = null) 
+    public function render(Zend_View_Interface $view = null)
     {
         $label = $this->getLabel();
-        
+
         $hour = $this->_getHour();
         $minute = $this->_getMinute();
         $ampm = $this->_getAmpm();
         $hidden = $this->_getHidden();
-        
+
         $render = '<tr><td>'
                 . (empty($label) ? '&nbsp;' : "$label:")
                 . "</td><td>$hour&nbsp;:&nbsp;$minute&nbsp;$ampm$hidden</td></tr>";
-        
+
         return $render;
     }
 
     /**
      * Render the hour element
-     * 
+     *
      * @return string
      */
     private function _getHour()
     {
         $render = "<select onchange='Fisma.Util.updateTimeField(\"{$this->_name}\")'"
                 . " name='{$this->_name}Hour' id='{$this->_name}Hour'><option value=''></option>";
-        
+
         for ($hour = 1; $hour <= 12; $hour++) {
             $selected = ($this->_hour == $hour) ? ' selected' : '';
             $render .= "<option value='$hour'$selected>$hour</option>";
         }
-        
+
         $render .= '</select>';
-        
+
         return $render;
     }
 
     /**
      * Render the minute element
-     * 
+     *
      * @return string
      */
     private function _getMinute()
@@ -141,7 +141,7 @@ class Fisma_Zend_Form_Element_Time extends Zend_Form_Element
             $selected = ($this->_minute === $minuteStr) ? ' selected' : '';
             $render .= "<option value='$minuteStr'$selected>$minuteStr</option>";
         }
-        
+
         $render .= '</select>';
 
         return $render;
@@ -149,33 +149,33 @@ class Fisma_Zend_Form_Element_Time extends Zend_Form_Element
 
     /**
      * Render the AMPM element
-     * 
+     *
      * @return string
      */
     private function _getAmpm()
     {
         $render = "<select onchange='Fisma.Util.updateTimeField(\"{$this->_name}\")'"
                 . " name='{$this->_name}Ampm' id='{$this->_name}Ampm'><option value=''></option>";
-        
+
         foreach ($this->_ampmList as $ampm) {
             $selected = ($this->_ampm == $ampm) ? ' selected' : '';
             $render .= "<option value='$ampm'$selected>$ampm</option>";
         }
-        
+
         $render .= '</select>';
-        
+
         return $render;
     }
 
     /**
      * Render the hidden element
-     * 
+     *
      * @return string
      */
     private function _getHidden()
     {
         $render = "<input type='hidden' name='{$this->_name}'  id='{$this->_name}' value='{$this->_value}'>";
-        
+
         return $render;
     }
 }

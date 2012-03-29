@@ -316,12 +316,12 @@
                 link = document.createElement('a');
                 cell.appendChild(link);
                 if ("OPEN" == label) {
-                    link.href = "/finding/remediation/list?q=/denormalizedStatus/textNotExactMatch/CLOSED";
+                    link.href = "/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED";
                 } else if ("TOTAL" == label) {
                     // Pass a blank query, otherwise the saved settings of previous search will be used
-                    link.href = "/finding/remediation/list?q=/denormalizedStatus/textContains/";
+                    link.href = "/finding/remediation/list?q=/id/integerEquals/";
                 } else {
-                    link.href = "/finding/remediation/list?q=/denormalizedStatus/textExactMatch/"
+                    link.href = "/finding/remediation/list?q=/denormalizedStatus/enumIs/"
                               + encodeURIComponent(label);
                 }
                 link.appendChild(document.createTextNode(label));
@@ -563,9 +563,9 @@
 
             // Add status criterion
             if (status != "TOTAL" && status != "OPEN") {
-                url += "/denormalizedStatus/textExactMatch/" + encodeURIComponent(status);
+                url += "/denormalizedStatus/enumIs/" + encodeURIComponent(status);
             } else if (status == "OPEN"){
-                url += "/denormalizedStatus/textNotExactMatch/CLOSED";
+                url += "/denormalizedStatus/enumIsNot/CLOSED";
             }
 
             // Add organization/POC criterion

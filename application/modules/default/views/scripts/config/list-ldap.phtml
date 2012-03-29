@@ -1,7 +1,10 @@
 <?php 
 Fisma_Format_Section::startSection('LDAP Configurations</b>&nbsp;[<a href="/config/update-ldap">New</a>]'); 
+?>
 
-echo $this->escape($this->dataTable, 'none');
+<input name="csrf" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
+<?php echo $this->escape($this->dataTable, 'none'); ?>
 
+<?php
 Fisma_Format_Section::stopSection(); 
 ?>

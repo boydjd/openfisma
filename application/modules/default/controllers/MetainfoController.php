@@ -42,6 +42,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
     /**
      * List meta data on the remediation detail page
      *
+     * @GETAllowed
      * @return void
      */
     public function listAction()
@@ -138,6 +139,9 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             $list = $this->view->sourceSelect($sources);
         } elseif ($module == 'organizationType') {
             $list = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray();
+        } elseif ($module == 'incidentCategories') {
+            $list = IrCategoryTable::getCategoriesForSelect();
+            $this->view->selectStyle = 'nested';
         }
 
         $this->view->list = $list;

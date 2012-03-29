@@ -12,7 +12,7 @@
 
 elements.instructions.type = "Element_ConstantText"
 elements.instructions.options.label = "Instructions"
-elements.instructions.options.value = "<p>You indicated that PII may have been lost as the result of a shipment. Please answer the following questions pertaining to that shipment.</p>"
+elements.instructions.options.value = "<p>You indicated that PII may have been lost as the result of a shipment. Please answer the following questions pertaining to that shipment.</p><p>The following information is optional and not required to submit an incident report, if you do not have this information available please click continue.</p>"
 displayGroups.help.elements.instructions = "instructions"
 
 elements.piiShipmentSenderCompany.type="text"

@@ -344,19 +344,17 @@
             this._savePanel.setBody('<img src="/images/loading_bar.gif">');
             this._savePanel.show();
 
-            // Set up the GET query string for this operation
+            // Set up the POST data string for this operation
             var destination = (YAHOO.lang.isValue(destNode.data.pocId))
-                            ? ('/destPoc/' + destNode.data.pocId)
-                            : ('/destOrg/' + destNode.data.organizationId);
+                            ? ('&destPoc=' + destNode.data.pocId)
+                            : ('&destOrg=' + destNode.data.organizationId);
 
-            var query = '/poc/move-node/src/'
-                      + srcNode.data.pocId
-                      + destination
-                      + '/dragLocation/'
-                      + dragLocation;
+            var query = '/poc/move-node/';
+            var postData = 'src=' + srcNode.data.pocId + destination + '&dragLocation=' + dragLocation
+                           + '&csrf=' + $('[name="csrf"]').val();
 
             YAHOO.util.Connect.asyncRequest(
-                'GET',
+                'POST',
                 query,
                 {
                     success: function (event) {
@@ -378,7 +376,7 @@
                     },
                     scope: this
                 },
-                null
+                postData
             );
         },
 

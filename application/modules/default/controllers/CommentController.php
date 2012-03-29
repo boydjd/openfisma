@@ -40,6 +40,8 @@ class CommentController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Display the comment form
+     *
+     * @GETAllowed
      */
     public function formAction()
     {

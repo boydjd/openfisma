@@ -49,19 +49,28 @@ class Fisma_Yui_MenuItem
      * @var string
      */
     public $onclick;
-    
+
+    /**
+     * The target attribute of link
+     *
+     * @var string
+     */
+    public $target;
+
     /**
      * Performs initialization as default constructor
      * 
      * @param string $itemTitle The specified title of menu item
      * @param string $itemUrl The specified URL of menu item
      * @param Fisma_Yui_MenuItem_OnClick $onclick Optional onclick event handler.
+     * @param string $target The target attribute of link.
      * @return void
      */
-    function __construct($itemTitle, $itemUrl, Fisma_Yui_MenuItem_OnClick $onclick = null) 
+    function __construct($itemTitle, $itemUrl, Fisma_Yui_MenuItem_OnClick $onclick = null, $target = null) 
     {
         $this->text = $itemTitle;
         $this->url = $itemUrl;
         $this->onclick = $onclick;
+        $this->target = $target;
     }
 }
