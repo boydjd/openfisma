@@ -104,6 +104,6 @@ div.yui-calcontainer > div.title {
 }
 
 /* For fixing section div block calendar problem */
-#TabView_FindingView_TabViewContainer div.section {
+div.section {
     position: static;
 }
