@@ -49,6 +49,8 @@ class IconController extends Fisma_Zend_Controller_Action_Object
      * Send an icon to the browser.
      *
      * Icons are far-future cached since they are expected not to change.
+     *
+     * @GETAllowed
      */
     public function getAction()
     {
