@@ -832,7 +832,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 null // This is for the delete column
             );
 
-            $actorRows[] = $updateIncidentPrivilege ? $actorColumns : array_pop($actorColumns);
+            if (!$updateIncidentPrivilege) {
+                array_pop($actorColumns);
+            }
+
+            $actorRows[] = $actorColumns;
         }
 
         $actorTable = new Fisma_Yui_DataTable_Local();
@@ -876,7 +880,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 null // This is for the delete column
             );
 
-            $observerRows[] = $updateIncidentPrivilege ? $observerColumns : array_pop($observerColumns);
+            if (!$updateIncidentPrivilege) {
+                array_pop($observerColumns);
+            }
+
+            $observerRows[] = $observerColumns;
         }
 
         $observerTable = new Fisma_Yui_DataTable_Local();
