@@ -1876,7 +1876,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $buttons['unlock'] = new Fisma_Yui_Form_Button(
                     'unlock',
                     array(
-                          'label' => 'UnLock Incident',
+                          'label' => 'Unlock Incident',
                           'onClickFunction' => 'Fisma.Util.formPostAction',
                           'onClickArgument' => array(
                               'action' => '/incident/unlock/', 
