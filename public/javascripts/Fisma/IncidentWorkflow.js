@@ -103,7 +103,7 @@
             $("span.templateDescription", newTr).replaceWith(newTextarea);
             newTextarea.attr("id", textareaId);
             if (data) {
-                $("input:firstChild", newTr).val(data.name);
+                $('input[name^=stepName]', newTr).val(data.name);
                 $("select", newTr).val(data.roleId);
                 newTextarea.val(data.description);
             }
