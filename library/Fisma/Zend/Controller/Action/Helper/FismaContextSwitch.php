@@ -52,7 +52,7 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
     {
         parent::init();
 
-        // Fix a IE bug where JSON responses in an iframe are treated as attachments rather than inline.
+        // Fix an IE bug where JSON responses in an iframe are treated as attachments rather than inline.
         $agent = new Zend_Http_UserAgent;
         $device = $agent->getDevice();
 
@@ -61,8 +61,7 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
                 'json',
                 array(
                     'suffix'    => 'json',
-                    'headers'   => array('Content-Type' => 'text/html',
-                        'x-haase' => "what the fuckity fuck"),
+                    'headers'   => array('Content-Type' => 'text/html'),
                     'callbacks' => array(
                         'init' => 'initJsonContext',
                         'post' => 'postJsonContext'

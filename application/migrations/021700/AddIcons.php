@@ -190,6 +190,7 @@ class Application_Migration_021700_AddIcons extends Fisma_Migration_Abstract
                                . ' its operating system and utilities</li>'
                                . ' <li>Tactical radio network</li>'
                                . ' <li>Shared information processing service organization</li>'
+                               . '</ul>'
             )
         );
 

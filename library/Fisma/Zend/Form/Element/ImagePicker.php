@@ -68,7 +68,7 @@ class Fisma_Zend_Form_Element_ImagePicker extends Zend_Form_Element
      */
     public function render(Zend_View_Interface $view = null)
     {
-        $view = new Fisma_Zend_View();
+        $view = (isset($view)) ? $view : new Fisma_Zend_View();
 
         $view->setScriptPath(Fisma::getPath('formViews'))
              ->setEncoding('utf-8');

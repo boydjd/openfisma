@@ -38,10 +38,10 @@
     border: 1px solid gray;
     z-index: 1;
 
-	/* CSS3 won't work in IE7, but it looks cool in other browsers: */
-	box-shadow: 0 0 30px 5px gray;
+    /* CSS3 won't work in IE7, but it looks cool in other browsers: */
+    box-shadow: 0 0 30px 5px gray;
     -moz-box-shadow: 0 0 30px 5px gray;
-	-webkit-box-shadow: 0px 0px 30px 0px gray;
+    -webkit-box-shadow: 0px 0px 30px 0px gray;
 }
 
 table.imagePickerGrid {
@@ -49,14 +49,14 @@ table.imagePickerGrid {
 }
 
 table.imagePickerGrid td {
-	border: none;
+    border: none;
 }
 
 table.imagePickerGrid td img {
-	padding: 7px;
+    padding: 7px;
 }
 
 table.imagePickerGrid td img.imagePickerSelectedImage {
-	padding: 5px;
+    padding: 5px;
     border: 2px solid #406dd7;
 }

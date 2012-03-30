@@ -16,6 +16,7 @@ SystemType:
             <li>Departmental data processing center including its operating system and utilities</li>
             <li>Tactical radio network</li>
             <li>Shared information processing service organization</li>
+            </ul>
 
     major:
         name: Major Application

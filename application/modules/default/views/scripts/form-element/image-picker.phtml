@@ -13,32 +13,28 @@
         var imageUrls = <?php echo $this->escape(Zend_Json::encode($this->imageUrls), 'none'); ?>;
 
         var imagePicker = new Fisma.ImagePicker(
-            "<?php echo $this->escape($this->name); ?>",
-            document.getElementById("<?php echo $this->escape($this->tableId); ?>"),
+            <?php echo $this->escape($this->name, "json"); ?>,
+            document.getElementById(<?php echo $this->escape($this->tableId, "json"); ?>),
             imageUrls,
             <?php
             if (empty($this->defaultImageId)):
-                echo $this->escape("null");
+                echo $this->escape(null, "json");
             else:
-                echo $this->escape($this->defaultImageId);
+                echo $this->escape($this->defaultImageId, "json");
             endif;
             ?>,
             <?php
             if (isset($this->imageManagementUrl)):
-                echo $this->escape('"', "none");
-                echo $this->escape($this->imageManagementUrl);
-                echo $this->escape('"', "none");
+                echo $this->escape($this->imageManagementUrl, 'json');
             else:
-                echo $this->escape("null");
+                echo $this->escape(null, "json");
             endif;
             ?>,
             <?php
             if (isset($this->uploadUrl)):
-                echo $this->escape('"', "none");
-                echo $this->escape($this->uploadUrl);
-                echo $this->escape('"', "none");
+                echo $this->escape($this->uploadUrl, 'json');
             else:
-                echo $this->escape("null");
+                echo $this->escape(null, "json");
             endif;
             ?>
         );
