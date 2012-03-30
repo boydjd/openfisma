@@ -17,14 +17,17 @@
  */
 
 /**
- * This migration adds urlPath column and data to event table and url column to notification table.
+ * This migration:
+ *  - adds urlPath column and data to event table and url column to notification table; and
+ *  - adds Finding workflow administration related changes.
+ * These two are done together due to interdependencies, namely on the event table.
  *
  * @author     Mark Ma <mark.ma@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migration_Abstract
+class Application_Migration_021700_FindingWorkflowAndNotificationEmail extends Fisma_Migration_Abstract
 {
     /**
      * Call three functions to add urlPath column and data to event table and url column to notification table.
@@ -35,7 +38,8 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
     {
         $this->addUrlPathColumnToEvent();
         $this->addUrlPathData();
-        $this->addUrlColumnToNotification(); 
+        $this->addUrlColumnToNotification();
+        $this->turnOnSoftDelete();
     }
 
     /**
@@ -89,9 +93,9 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
             'DOCUMENT_TYPE_UPDATED'         => '/document-type/view/id/',
             'ORGANIZATION_TYPE_CREATED'     => '/organization-type/view/id/',
             'ORGANIZATION_TYPE_UPDATED'     => '/organization-type/view/id/'
-        ); 
+        );
 
-        // Since some event's names associated with finding action might be different in the user's  database,  
+        // Since some event's names associated with finding action might be different in the user's  database,
         // it's better update urlpath with privilegeid of finding action instead of event name.
         $privileges = $this->getHelper()->query(
             'SELECT p.id FROM privilege p WHERE p.resource = "notification" AND p.action = "finding"');
@@ -100,7 +104,7 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
             $this->getHelper()->exec(
                 "UPDATE `event` SET `urlpath` = '/finding/remediation/view/id/' WHERE `privilegeid` ="
                 . $privilege->id
-                . " AND `name` NOT LIKE '%_deleted'" 
+                . " AND `name` NOT LIKE '%_deleted'"
                 );
         }
 
@@ -119,6 +123,28 @@ class Application_Migration_021700_AddUrlToNotificationEmail extends Fisma_Migra
         $this->getHelper()->exec(
             'ALTER TABLE `notification` '
             . "ADD COLUMN `url` varchar(255) NULL COMMENT 'the url which is sent to the user' AFTER `userid`"
+        );
+    }
+
+    /**
+     * Turn on "SoftDelete" behavior and add a "description" column to Evaluation model
+     *
+     * @return void
+     */
+    public function turnOnSoftDelete()
+    {
+        $this->getHelper()->exec(
+            'ALTER TABLE `evaluation` '
+            . 'ADD COLUMN `description` text NULL AFTER `nickname`, '
+            . 'ADD COLUMN `deleted_at` datetime NULL AFTER `daysuntildue`;'
+        );
+        $this->getHelper()->exec(
+            'ALTER TABLE `event` '
+            . 'ADD COLUMN `deleted_at` datetime NULL AFTER `urlpath`;'
+        );
+        $this->getHelper()->exec(
+            'ALTER TABLE `privilege` '
+            . 'ADD COLUMN `deleted_at` datetime NULL AFTER `description`;'
         );
     }
 }

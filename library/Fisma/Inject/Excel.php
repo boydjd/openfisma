@@ -47,8 +47,9 @@ class Fisma_Inject_Excel
      * v3 2011-02-02 Removed asset related fields
      * v4 2011-03-25 threatLevel and threatDescription are now requiered fields
      * v5 2011-11-04 Remove contactInfo field
+     * v6 2012-03-26 Add data validation for 'ecdDate' field
      */
-    const TEMPLATE_VERSION = 5;
+    const TEMPLATE_VERSION = 6;
 
     /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those

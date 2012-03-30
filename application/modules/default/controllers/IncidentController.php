@@ -832,7 +832,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 null // This is for the delete column
             );
 
-            $actorRows[] = $updateIncidentPrivilege ? $actorColumns : array_pop($actorColumns);
+            if (!$updateIncidentPrivilege) {
+                array_pop($actorColumns);
+            }
+
+            $actorRows[] = $actorColumns;
         }
 
         $actorTable = new Fisma_Yui_DataTable_Local();
@@ -876,7 +880,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 null // This is for the delete column
             );
 
-            $observerRows[] = $updateIncidentPrivilege ? $observerColumns : array_pop($observerColumns);
+            if (!$updateIncidentPrivilege) {
+                array_pop($observerColumns);
+            }
+
+            $observerRows[] = $observerColumns;
         }
 
         $observerTable = new Fisma_Yui_DataTable_Local();
@@ -1873,21 +1881,29 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Add lock/unlock buttons if the user has the capability to use them
         if ($record && $this->_acl->hasPrivilegeForClass('lock', 'Incident')) {
             if ($record->isLocked) {
-                $buttons['unlock'] = new Fisma_Yui_Form_Button_Link(
+                $buttons['unlock'] = new Fisma_Yui_Form_Button(
                     'unlock',
                     array(
-                        'value' => 'Unlock Incident',
-                        'href' => "/incident/unlock/id/{$record->id}"
+                          'label' => 'Unlock Incident',
+                          'onClickFunction' => 'Fisma.Util.formPostAction',
+                          'onClickArgument' => array(
+                              'action' => '/incident/unlock/', 
+                               'id' => $record->id
+                        ) 
                     )
                 );
             } else {
-                $buttons['lock'] = new Fisma_Yui_Form_Button_Link(
+                $buttons['lock'] = new Fisma_Yui_Form_Button(
                     'lock',
-                    array(
-                        'value' => 'Lock Incident',
-                        'href' => "/incident/lock/id/{$record->id}"
+                     array(
+                           'label' => 'Lock Incident',
+                           'onClickFunction' => 'Fisma.Util.formPostAction',
+                           'onClickArgument' => array(
+                           'action' => '/incident/lock/', 
+                           'id' => $record->id
+                        ) 
                     )
-                );
+                );           
             }
         }
 
