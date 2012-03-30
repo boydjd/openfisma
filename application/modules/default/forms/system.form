@@ -31,12 +31,10 @@ elements.parentOrganizationId.options.validators.strlen.options.max = "10"
 elements.parentOrganizationId.options.required = true
 displayGroups.system.elements.parentOrganizationId = "parentOrganizationId"
 
-elements.type.type = "select"
-elements.type.options.label = "Type"
-elements.type.options.validators.alnum.validator = "NotEmpty"
-elements.type.options.required = true
-elements.type.options.tooltip = "<p><b>GSS stands for General Support System</b></p><p>Definition: An interconnected set of information resources under the same direct management control which shares common functionality. A General Support System may be, for example, a local area network (LAN) or an agency-wide backbone, or a communications network, or a departmental data processing center including its operating system and utilities. The term General Support System is used in context of security. Individual applications supporting different business-related functions may run on a single GSS.</p><p><b>Major stands for Major Application</b></p><p>Definition: An IT system that requires special management attention because of its importance to the organization; or its significant role in the administration of the organizations programs, finances, property, or other significant resources. An adverse impact on a major system would constitute serious, severe, or catastrophic harm due to the loss of confidentiality, integrity, or availability, as determined through conducting a system risk assessment. Major systems would be classified as either moderate or high impact as defined in FIPS 199. Those systems identified as Critical Infrastructure Protection (CIP) assets would clearly fall in this category as a major system.</p><p><b>Minor stands for Minor Application</b></p><p>Definition: An IT system that does not require special attention as it mainly provides mission supportive information to the organization and usually relies on another General Support System for the majority of its security controls.</p>"
-displayGroups.system.elements.type = "type"
+elements.systemTypeId.type = "select"
+elements.systemTypeId.options.label = "Type"
+elements.systemTypeId.options.required = true
+displayGroups.system.elements.systemTypeId = "systemTypeId"
 
 elements.sdlcPhase.type = "select"
 elements.sdlcPhase.options.label = "SDLC Phase"
@@ -77,7 +75,7 @@ elements.cloneOrganizationId.options.label = "Copy user access from"
 elements.cloneOrganizationId.options.validators.strlen.validator = "StringLength"
 elements.cloneOrganizationId.options.validators.strlen.options.min = "1"
 elements.cloneOrganizationId.options.validators.strlen.options.max = "10"
-elements.cloneOrganizationId.options.required = false 
+elements.cloneOrganizationId.options.required = false
 displayGroups.system.elements.cloneOrganizationId = "cloneOrganizationId"
 
 elements.save.type = "Form_Button_Submit"

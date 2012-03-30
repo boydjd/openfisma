@@ -25,6 +25,6 @@
  * @package    Fisma
  * @subpackage Fisma_Zend_Exception
  */
-class Fisma_Zend_Exception_Migration extends Fisma_Zend_Exception_User
+class Fisma_Zend_Exception_Migration extends Fisma_Zend_Exception
 {
 }

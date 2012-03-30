@@ -502,3 +502,21 @@ Privilege:
         resource: organization_type
         action: delete
         description: Delete Organization Type
+
+    # System Type CRUD
+    system_type_create:
+        resource: system_type
+        action: create
+        description: Create System Type
+    system_type_read:
+        resource: system_type
+        action: read
+        description: View System Type
+    system_type_update:
+        resource: system_type
+        action: update
+        description: Edit System Type
+    system_type_delete:
+        resource: system_type
+        action: delete
+        description: Delete System Type

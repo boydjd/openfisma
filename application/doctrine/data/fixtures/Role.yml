@@ -293,6 +293,10 @@ Role:
             - roles_delete
             - roles_read
             - roles_update
+            - system_type_create
+            - system_type_delete
+            - system_type_read
+            - system_type_update
             - source_create
             - source_delete
             - source_read

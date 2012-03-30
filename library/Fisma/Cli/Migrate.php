@@ -67,16 +67,22 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
     }
 
     /**
-     * Check for migrations that need to be run and execute them in the correct order.
+     * Set up logging
      */
-    protected function _run()
+    public function __construct()
     {
         // Log all migration messages to a dedicated migration log.
         $fileWriter = new Zend_Log_Writer_Stream(Fisma::getPath('log') . '/migration.log');
         $fileWriter->setFormatter(new Zend_Log_Formatter_Simple("[%timestamp%] %message%\n"));
 
         parent::getLog()->addWriter($fileWriter);
+    }
 
+    /**
+     * Check for migrations that need to be run and execute them in the correct order.
+     */
+    protected function _run()
+    {
         // Process arguments
         $this->_dryRun = $this->getOption('dry-run') === true;
 
@@ -147,7 +153,7 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
                 $message = "Cannot do dry run mode because migrations have not been bootstrapped."
                          . " (Try running without --dry-run or -d.)";
 
-                throw new Fisma_Zend_Exception_Migration($message);
+                throw new Fisma_Zend_Exception_User($message);
             }
 
             $this->_checkLegacyMigrations();
@@ -195,20 +201,20 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
         $table = $this->_db->query("SHOW TABLES LIKE 'migration_version'")->fetch(PDO::FETCH_ASSOC);
 
         if ($table === FALSE) {
-            throw new Fisma_Zend_Exception_Migration("Not able to find doctrine's migration_version table.");
+            throw new Fisma_Zend_Exception_User("Not able to find doctrine's migration_version table.");
         }
 
         $doctrineVersionQuery = $this->_db->query("SELECT MAX(version) AS maxVersion FROM migration_version");
 
         $result = $doctrineVersionQuery->fetch(PDO::FETCH_ASSOC);
         if ($result === FALSE) {
-            throw new Fisma_Zend_Exception_Migration("No version number found in doctrine's migration_version table.");
+            throw new Fisma_Zend_Exception_User("No version number found in doctrine's migration_version table.");
         }
 
         if ($result['maxVersion'] != self::DOCTRINE_MIGRATION_MAX_VERSION) {
             $message = "You must upgrade to the latest 2.16.x release before upgrading to 2.17.0 or higher.";
 
-            throw new Fisma_Zend_Exception_Migration($message);
+            throw new Fisma_Zend_Exception_User($message);
         }
     }
 
@@ -234,7 +240,7 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
                           . "\t{$migration['name']}\t{$migration['startedts']}";
             }
 
-            throw new Fisma_Zend_Exception_Migration($message);
+            throw new Fisma_Zend_Exception_User($message);
         }
     }
 
@@ -361,7 +367,7 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
             if (!$version->isDir()) {
                 $message = "Unexpected file in migrations directory (" . $version->getPathName() . ")";
 
-                throw new Fisma_Zend_Exception_Migration($message);
+                throw new Fisma_Zend_Exception_User($message);
             }
 
             $versionString = $version->getFilename();
@@ -371,7 +377,7 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
                          . $version->getPathName()
                          . ")";
 
-                throw new Fisma_Zend_Exception_Migration($message);
+                throw new Fisma_Zend_Exception_User($message);
             }
 
             // List migrations for this version
@@ -382,7 +388,7 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
                 if (substr($migration->getFilename(), -4) != ".php") {
                     $message = "Migration is not named with .php extension (" . $migration->getPathName() . ")";
 
-                    throw new Fisma_Zend_Exception_Migration($message);
+                    throw new Fisma_Zend_Exception_User($message);
                 }
 
                 $migrationName = substr($migration->getFilename(), 0, -4);

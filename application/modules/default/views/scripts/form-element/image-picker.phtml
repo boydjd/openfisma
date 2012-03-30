@@ -1,0 +1,42 @@
+<td><?php echo $this->escape(($this->required ? '*' : '') . $this->label); ?>:</td>
+
+<td id="<?php echo $this->escape($this->tableId); ?>">
+    <?php if (isset($this->imageUrls[$this->defaultImageId])): ?>
+        <img src="<?php echo $this->escape($this->imageUrls[$this->defaultImageId]); ?>">
+    <?php else: ?>
+        <img src="/images/blank.png">
+    <?php endif; ?>
+</td>
+
+<script type="text/javascript">
+    YAHOO.util.Event.onDOMReady(function() {
+        var imageUrls = <?php echo $this->escape(Zend_Json::encode($this->imageUrls), 'none'); ?>;
+
+        var imagePicker = new Fisma.ImagePicker(
+            <?php echo $this->escape($this->name, "json"); ?>,
+            document.getElementById(<?php echo $this->escape($this->tableId, "json"); ?>),
+            imageUrls,
+            <?php
+            if (empty($this->defaultImageId)):
+                echo $this->escape(null, "json");
+            else:
+                echo $this->escape($this->defaultImageId, "json");
+            endif;
+            ?>,
+            <?php
+            if (isset($this->imageManagementUrl)):
+                echo $this->escape($this->imageManagementUrl, 'json');
+            else:
+                echo $this->escape(null, "json");
+            endif;
+            ?>,
+            <?php
+            if (isset($this->uploadUrl)):
+                echo $this->escape($this->uploadUrl, 'json');
+            else:
+                echo $this->escape(null, "json");
+            endif;
+            ?>
+        );
+    });
+</script>

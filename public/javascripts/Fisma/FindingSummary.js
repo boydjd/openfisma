@@ -399,7 +399,11 @@
                 // The node icon is a graphical representation of what type of node this is: agency, bureau, etc.
                 var nodeIcon = document.createElement('img');
                 nodeIcon.className = "icon";
-                nodeIcon.src = "/images/" + nodeData.icon + ".png";
+                if (nodeData.iconId) {
+                    nodeIcon.src = "/icon/get/id/" + nodeData.iconId;
+                } else {
+                    nodeIcon.src = "/images/" + nodeData.icon + ".png";
+                }
                 container.appendChild(nodeIcon);
 
                 // Add text to the cell

@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -28,7 +28,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Create the additional PDF, XLS and RSS contexts for this class.
-     * 
+     *
      * @return void
      */
     public function init()
@@ -43,7 +43,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
     /**
      * Presents the view which contains the summary table. The summary table loads summary data
      * asynchronously by invoking the summaryDataAction().
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -58,12 +58,12 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             'CAP' => 'Corrective Action Plan',
             'FP' => 'False Positive'
         );
-        
+
         // Get a list of approvals and split them into lists of mitigation and evidence approvals
         $msApprovals = array();
         $evApprovals = array();
         $approvals = Doctrine::getTable('Evaluation')->findAll(Doctrine::HYDRATE_ARRAY);
-        
+
         foreach ($approvals as $approval) {
             if ('action' == $approval['approvalGroup']) {
                 $msApprovals[] = $approval['nickname'];
@@ -71,7 +71,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                 $evApprovals[] = $approval['nickname'];
             }
         }
-        
+
         $this->view->msApprovals = $msApprovals;
         $this->view->evApprovals = $evApprovals;
 
@@ -81,7 +81,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $tooltips['ms'] = $this->view->partial("/summary/ms-approvals-tooltip.phtml", array('approvals' => $approvals));
         $tooltips['ev'] = $this->view->partial("/summary/ev-approvals-tooltip.phtml", array('approvals' => $approvals));
 
-        array_walk($tooltips, 
+        array_walk($tooltips,
             function (&$value)
             {
                 $value = str_replace("\n", " ", $value);
@@ -98,7 +98,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Invoked asynchronously to load data for the summary table.
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -107,20 +107,20 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $this->_acl->requirePrivilegeForClass('read', 'Finding');
 
         $summaryType = $this->getRequest()->getParam('summaryType');
-        
+
         $findingParams = array(
             'findingSource' => null,
             'mitigationType' => null
         );
-        
+
         foreach ($findingParams as $key => &$value) {
             $temp = $this->getRequest()->getParam($key);
-            
+
             if ($temp !== 'none') {
                 $value = Doctrine_Manager::connection()->quote($temp);
             }
         }
-        
+
         switch ($summaryType) {
             case 'organizationHierarchy':
                 $treeNodes = $this->_getOrganizationHierarchyData($findingParams);
@@ -133,7 +133,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             case 'pointOfContact':
                 $treeNodes = $this->_getPointOfContactData($findingParams);
                 break;
-                
+
             default:
                 throw new Fisma_Zend_Exception("Invalid summary type ($summaryType)");
         }
@@ -150,8 +150,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             }
         );
 
-        /* 
-         * Remove the prefixed column alias that HYDRATE_SCALAR adds, and group all key-value pairs under 
+        /*
+         * Remove the prefixed column alias that HYDRATE_SCALAR adds, and group all key-value pairs under
          * a new key called "nodeData".
          */
         foreach ($treeNodes as &$treeNode) {
@@ -159,8 +159,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                 $underscoreString = strstr($k, '_');
                 if ($underscoreString !== FALSE) {
                     $newName = substr($underscoreString, 1);
-                    $treeNode['nodeData'][$newName] = $v;                        
-                    unset($treeNode[$k]);                    
+                    $treeNode['nodeData'][$newName] = $v;
+                    unset($treeNode[$k]);
                 }
             }
 
@@ -180,9 +180,9 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Get statistics about number of findings in each status for each of this user's systems and organizations.
-     * 
+     *
      * Organizations and system are grouped together by their organizational hierarchy.
-     * 
+     *
      * @param $findingParams Array A dictionary of parameters related to findings.
      * @return Array Flat list of organizations and finding data
      */
@@ -190,22 +190,18 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
     {
         $joinCondition = $this->_getFindingJoinConditions($findingParams);
 
-        // First get a list of all organizations, even one this user is not allowed to see. This is used to 
+        // First get a list of all organizations, even ones this user is not allowed to see. This is used to
         // fill in any "missing" nodes in tree structure.
         $organizationsQuery = Doctrine_Query::create()
                               ->from('Organization o')
                               ->select('o.id, o.level, o.lft, o.rgt, o.nickname AS rowLabel')
                               ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
-                              ->leftJoin('o.OrganizationType orgType')
-                              ->addSelect("IF(orgType.nickname = 'system', s.type, orgType.icon) icon")
+                              ->leftJoin('o.OrganizationType ot')
                               ->addSelect("'organization' AS searchKey")
                               ->leftJoin('o.System s')
-                              ->addSelect(
-                                  "IF(orgType.nickname <> 'system', orgType.name,"
-                                  . " CASE WHEN s.type = 'gss' then 'General Support System'"
-                                  . " WHEN s.type = 'major' THEN 'Major Application'"
-                                  . " WHEN s.type = 'minor' THEN 'Minor Application' END) typeLabel"
-                              )
+                              ->leftJoin('s.SystemType st')
+                              ->addSelect("IF(ot.nickname = 'system', st.iconId, ot.iconId) iconId")
+                              ->addSelect("IF(ot.nickname = 'system', st.name, ot.name) typeLabel")
                               ->groupBy('o.id')
                               ->orderBy('o.lft');
         $organizations = $organizationsQuery->execute(null, Doctrine::HYDRATE_SCALAR);
@@ -214,16 +210,12 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read')
                                   ->select('o.id, o.level, o.lft, o.rgt, o.nickname AS rowLabel')
                                   ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
-                                  ->leftJoin('o.OrganizationType orgType')
-                                  ->addSelect("IF(orgType.nickname = 'system', s.type, orgType.icon) icon")
+                                  ->leftJoin('o.OrganizationType ot')
                                   ->addSelect("'organization' AS searchKey")
                                   ->leftJoin('o.System s')
-                                  ->addSelect(
-                                      "IF(orgType.nickname <> 'system', orgType.name,"
-                                      . " CASE WHEN s.type = 'gss' then 'General Support System'"
-                                      . " WHEN s.type = 'major' THEN 'Major Application'"
-                                      . " WHEN s.type = 'minor' THEN 'Minor Application' END) typeLabel"
-                                  )
+                                  ->leftJoin('s.SystemType st')
+                                  ->addSelect("IF(ot.nickname = 'system', st.iconId, ot.iconId) iconId")
+                                  ->addSelect("IF(ot.nickname = 'system', st.name, ot.name) typeLabel")
                                   ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
                                   ->groupBy('o.id')
                                   ->orderBy('o.lft');
@@ -233,8 +225,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $userOrgs = $userOrgQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
         if (empty($userOrgs)) {
             return $userOrgs;
-        }   
-     
+        }
+
         // Stitch together the two organization lists.
         $orgMax = count($organizations) - 1;
         $previousOrg = null;
@@ -251,7 +243,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                     array_push($parents, $currentOrgIndex - 1);
                 } elseif ($previousOrg['o_level'] > $currentOrg['o_level']) {
                     array_pop($parents);
-                }                
+                }
             }
 
             if ($currentOrg['o_id'] == $currentUserOrg['o_id']) {
@@ -266,14 +258,14 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                     $organizations[$parent]['visited'] = true;
                 }
             }
-            
+
             $previousOrg = $currentOrg;
         }
 
         // Prune unvisited subtrees
         for ($currentOrgIndex = 0; $currentOrgIndex <= $orgMax; $currentOrgIndex++) {
             $currentOrg = $organizations[$currentOrgIndex];
-            
+
             if (!isset($currentOrg['visited'])) {
                 unset($organizations[$currentOrgIndex]);
             }
@@ -284,33 +276,29 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Get statistics about number of findings in each status for each of this user's systems.
-     * 
+     *
      * Systems are grouped together by their aggregation relationship.
-     * 
-     * This uses two queries: one query to get the root level and a second query to get the nested level. (The 
+     *
+     * This uses two queries: one query to get the root level and a second query to get the nested level. (The
      * sysagg relationship does not use nested set, so there is no efficient way to get a deep tree in a single
      * query.)
-     * 
+     *
      * @param $findingParams Array A dictionary of parameters related to findings.
      * @return Array Flat list of organizations and finding data
      */
     private function _getSystemAggregationData($findingParams)
     {
         $joinCondition = $this->_getFindingJoinConditions($findingParams);
-        
+
         // One query to get the outer level and another [similar] query to get the inner level
         $outerSystemsQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read', true)
                                        ->select('o.id')
                                        ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
                                        ->addSelect('o.nickname AS rowLabel')
                                        ->innerJoin('o.System s')
-                                       ->addSelect("s.id, s.type icon")
+                                       ->leftJoin('s.SystemType st')
+                                       ->addSelect("s.id, st.iconId, st.name AS typeLabel")
                                        ->addSelect("'organization' AS searchKey")
-                                       ->addSelect(
-                                           "(CASE WHEN s.type = 'gss' then 'General Support System'"
-                                           . " WHEN s.type = 'major' THEN 'Major Application'"
-                                           . " WHEN s.type = 'minor' THEN 'Minor Application' END) typeLabel"
-                                       )
                                        ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
                                        ->andWhere('s.sdlcPhase <> ?', 'disposal')
                                        ->groupBy('o.id')
@@ -342,14 +330,14 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
             for ($outerSystemsIndex = 0; $outerSystemsIndex < count($outerSystems); $outerSystemsIndex++) {
                 $outerId = $outerSystems[$outerSystemsIndex]['s_id'];
-                $innerId = isset($innerSystems[$innerSystemsIndex]) 
+                $innerId = isset($innerSystems[$innerSystemsIndex])
                          ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
                          : null;
 
                 // Skip all the child systems of a disposal system
                 while (in_array($innerId, $disposalSystemIds)) {
                     $innerSystemsIndex++;
-                    $innerId = isset($innerSystems[$innerSystemsIndex]) 
+                    $innerId = isset($innerSystems[$innerSystemsIndex])
                              ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
                              : null;
                 }
@@ -359,7 +347,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                     unset($innerSystems[$innerSystemsIndex]);
                     $innerSystemsIndex++;
                     $outerSystemsIndex++;
-                    $innerId = isset($innerSystems[$innerSystemsIndex]) 
+                    $innerId = isset($innerSystems[$innerSystemsIndex])
                              ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
                              : null;
 
@@ -407,9 +395,9 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Get statistics about number of findings in each status for Point Of Contact.
-     * 
+     *
      * Every user can see *all* points of contact across *all* organizations.
-     * 
+     *
      * @param $findingParams Array A dictionary of parameters related to findings.
      * @return Array Flat list of points of contact and organizations.
      */
@@ -424,8 +412,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                              ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
                              ->addSelect('o.nickname AS rowLabel')
                              ->addSelect("'pocOrg' AS searchKey")
-                             ->leftJoin('o.OrganizationType orgType')
-                             ->addSelect("orgType.name typeLabel, orgType.icon icon")
+                             ->leftJoin('o.OrganizationType ot')
+                             ->addSelect("ot.name typeLabel, ot.iconId iconId")
                              ->andWhere('o.systemId IS NULL')
                              ->groupBy('o.id')
                              ->orderBy('o.lft');
@@ -475,7 +463,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                   ->innerJoin('f.PointOfContact poc')
                                   ->groupBy('poc.id')
                                   ->orderBy('poc.id');
-        
+
         $this->_addFindingStatusFields($findingQuery);
         $tempFindings = $findingQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
         $findings = array();
@@ -500,24 +488,24 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
                 array_splice($organizations, $currentOrganization + 1, 0, $pointsOfContact[$currentOrganizationId]);
                 $currentOrganization += count($pointsOfContact[$currentOrganizationId]) + 1;
-            } else {                
+            } else {
                 $currentOrganization++;
             }
         }
 
         return $organizations;
     }
-    
+
     /**
      * Returns DQL string that can be used as finding join conditions (i.e. part of "ON" clause)
-     * 
+     *
      * @param $findingParams Array Optional parameters to join condition.
      * @return string
      */
     public function _getFindingJoinConditions($findingParams)
     {
         $dql = '';
-        
+
         // These are escaped in the dataAction method and are safe to interpolate.
         if (isset($findingParams['mitigationType'])) {
             $dql .= " AND f.type = " . $findingParams['mitigationType'];
@@ -532,16 +520,16 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Add fields to a query that get the number of findings in each status for each system or organization.
-     * 
+     *
      * This modifies the query that is passed to it, it does not return a new query.
-     * 
+     *
      * NOTE: The query that's passed in must have a table alias called "f" and it must be an alias for the Finding
      * table.
-     * 
+     *
      * @param $query
      */
     public function _addFindingStatusFields(Doctrine_Query $query)
-    {        
+    {
         $allStatuses = Finding::getAllStatuses();
 
         // Get ontime and overdue statistics for each status where we track overdues
@@ -551,7 +539,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
             if ($status === 'CLOSED') {
                 continue;
             }
-            
+
             $statusName = urlencode($status);
 
             $query->addSelect(
@@ -559,7 +547,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                     IF(f.denormalizedStatus LIKE ? AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
                 ) ontime_$statusName"
             );
-            
+
             $query->addSelect(
                 "SUM(
                     IF(f.denormalizedStatus LIKE ? AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
@@ -573,7 +561,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                 IF(f.denormalizedStatus NOT LIKE 'CLOSED' AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
             ) ontime_OPEN"
         );
-        
+
         $query->addSelect(
             "SUM(
                 IF(f.denormalizedStatus NOT LIKE 'CLOSED' AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
@@ -586,7 +574,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Set each finding status except 'CLOSED' to an array
-     * 
+     *
      * @return array The list of finding status.
      */
     private function _prepareSummaryQueryParameters()

@@ -97,7 +97,7 @@ class Application_Migration_021700_FindingWorkflowAndNotificationEmail extends F
 
         // Since some event's names associated with finding action might be different in the user's  database,
         // it's better update urlpath with privilegeid of finding action instead of event name.
-        $privileges = $this->getHelper()->execute(
+        $privileges = $this->getHelper()->query(
             'SELECT p.id FROM privilege p WHERE p.resource = "notification" AND p.action = "finding"');
 
         foreach ($privileges as $privilege) {

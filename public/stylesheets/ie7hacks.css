@@ -107,3 +107,10 @@ div.yui-calcontainer > div.title {
 div.section {
     position: static;
 }
+
+/* Fix the positioning of the image drawer */
+.imagePickerDrawer {
+    position: absolute;
+    margin-top: 37px;
+    margin-left: -120px;
+}

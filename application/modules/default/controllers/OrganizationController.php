@@ -101,7 +101,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             }
 
             // The type menu should display all types of organization EXCEPT system
-            $orgTypeArray = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
+            $orgTypeArray = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray();
             $form->getElement('orgTypeId')->addMultiOptions($orgTypeArray);
         }
 
@@ -411,9 +411,10 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function getOrganizationTree($includeDisposal = false)
     {
         $userOrgQuery = $this->_me->getOrganizationsByPrivilegeQuery('organization', 'read', $includeDisposal);
-        $userOrgQuery->select('o.name, o.nickname, ot.nickname, s.type, s.sdlcPhase')
+        $userOrgQuery->select('o.name, o.nickname, ot.nickname, st.name, s.sdlcPhase')
                      ->leftJoin('o.OrganizationType ot')
                      ->leftJoin('o.System s')
+                     ->leftJoin('s.SystemType st')
                      ->orderBy('o.lft');
 
         $orgTree = Doctrine::getTable('Organization')->getTree();
@@ -480,6 +481,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $item['level'] -= $rootLevel;
                 $item['label'] = $item['nickname'] . ' - ' . $item['name'];
                 $item['orgType'] = $node->getType();
+                $item['iconId'] = $node->getIconId();
                 $item['orgTypeLabel'] = $node->getOrgTypeLabel();
                 $item['children'] = array();
 

@@ -252,9 +252,9 @@ abstract class Fisma_Cli_Abstract
             $stdoutWriter = new Zend_Log_Writer_Stream("php://stdout");
 
             if (Fisma::debug()) {
-                $stdoutWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::INFO, "=="));
-            } else {
                 $stdoutWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::INFO, ">="));
+            } else {
+                $stdoutWriter->addFilter(new Zend_Log_Filter_Priority(Zend_Log::INFO, "=="));
             }
 
             // STDERR shows NOTICE, WARN, ERR, CRIT, ALERT, and EMERG

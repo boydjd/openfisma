@@ -1,0 +1,20 @@
+Icon:
+    columns:
+        largeIconId:
+            type: integer
+            comment: Foreign key to the upload table. This expects a 32x32 image.
+        smallIconId:
+            type: integer
+            comment: Foreign key to the upload table. This expects a 16x16 image.
+
+    relations:
+        LargeIconFile:
+            class: Upload
+            local: largeIconId
+            foreign: id
+            foreignAlias: Icons
+        SmallIconFile:
+            class: Upload
+            local: smallIconId
+            foreign: id
+            foreignAlias: Icons

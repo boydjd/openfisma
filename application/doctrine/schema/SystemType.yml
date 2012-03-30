@@ -1,0 +1,43 @@
+SystemType:
+    listeners: [IndexListener, NotificationListener]
+
+    columns:
+        createdTs: timestamp
+        modifiedTs: timestamp
+
+        name:
+            type: string(255)
+            notblank: true
+            notnull: true
+            extra:
+                notify: true
+        nickname:
+            type: string(255)
+            unique: true
+            notblank: true
+            notnull: true
+            extra:
+                notify: true
+        iconId:
+            type: integer
+            extra:
+                notify: true
+        description:
+            type: string
+            extra:
+                purify: html
+                notify: true
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp
+
+    relations:
+        Icon:
+            local: iconId
+            foreign: id
+            foreignAlias: SystemTypes
