@@ -276,7 +276,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
         $query = "SELECT * FROM upload "
                  . "WHERE filehash IS NULL "
                  . "AND filename IN (" . implode(',', array_fill(0, count($files), '?')) . ")";
-        $results = $this->getHelper()->execute($query, $files);
+        $results = $this->getHelper()->query($query, $files);
         foreach ($results as $record) {
             $hash = $fm->store($path . $record->filename);
             $this->getHelper()->update(
