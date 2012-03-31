@@ -338,5 +338,15 @@ Fisma.System = {
         waitPanel.setBody('<img src="/images/loading_bar.gif">');
         waitPanel.render(document.body);
         waitPanel.show();
+    },
+    
+    /**
+     * Checked all checkbox by name 
+     * 
+     * @access public
+     * @return void
+     */
+    selectAllByName : function (event, config) {
+        $('input:checkbox[name="' + config.name + '"]').attr("checked", "checked");
     }
 };
