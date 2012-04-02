@@ -9,7 +9,7 @@ Event:
         name: FINDING_DELETED
         description: Finding Deleted
         Privilege: notification_finding
-        
+
     FINDING_INJECTED:
         name: FINDING_INJECTED
         description: Security Scanner Finding Injected
@@ -50,7 +50,7 @@ Event:
         description: Mitigation Type For Finding Updated
         Privilege: notification_finding
         urlPath: /finding/remediation/view/id/
-        
+
     UPDATE_COURSE_OF_ACTION:
         name: UPDATE_COURSE_OF_ACTION
         description: Mitigation Strategy Description For Finding Updated
@@ -68,7 +68,7 @@ Event:
         description: Finding Description Updated
         Privilege: notification_finding
         urlPath: /finding/remediation/view/id/
-        
+
     UPDATE_SECURITY_CONTROL:
         name: UPDATE_SECURITY_CONTROL
         description: Security Control For Finding Updated
@@ -164,7 +164,7 @@ Event:
         description: Account Created
         Privilege: notification_admin
         urlPath: /user/view/id/
-        
+
     USER_UPDATED:
         name: USER_UPDATED
         description: Account Modified
@@ -180,13 +180,13 @@ Event:
         name: POC_CREATED
         description: POC Created
         Privilege: notification_admin
-        urlPath: /poc/view/id/ 
+        urlPath: /poc/view/id/
 
     POC_UPDATED:
         name: POC_UPDATED
         description: POC Modified
         Privilege: notification_admin
-        urlPath: /poc/view/id/ 
+        urlPath: /poc/view/id/
 
     POC_DELETED:
         name: POC_DELETED
@@ -200,8 +200,8 @@ Event:
         urlPath: /organization/view/id/
 
     ORGANIZATION_UPDATED:
-        name: ORGANIZATION_UPDATED 
-        description: Organization Modified 
+        name: ORGANIZATION_UPDATED
+        description: Organization Modified
         Privilege: notification_admin
         urlPath: /organization/view/id/
 
@@ -209,7 +209,7 @@ Event:
         name: ORGANIZATION_DELETED
         description: Organization Deleted
         Privilege: notification_admin
-        
+
     SYSTEM_DELETED:
         name: SYSTEM_DELETED
         description: System Deleted
@@ -305,19 +305,19 @@ Event:
         name: LOGIN_SUCCESS
         description: Login
         Privilege: notification_admin
-        urlPath: 
+        urlPath:
 
     LOGIN_FAILURE:
         name: LOGIN_FAILURE
         description: Login FAILED
         Privilege: notification_admin
-        urlPath: 
+        urlPath:
 
     LOGOUT:
         name: LOGOUT
         description: Account Logout
         Privilege: notification_admin
-        urlPath: 
+        urlPath:
 
     ECD_EXPIRES_TODAY:
         name: ECD_EXPIRES_TODAY
@@ -357,7 +357,7 @@ Event:
 
     MITIGATION_APPROVED:
         name: MITIGATION_APPROVED
-        description: Mitigation Strategy Was Approved 
+        description: Mitigation Strategy Was Approved
         Privilege: notification_finding
         urlPath: /finding/remediation/view/id/
 
@@ -417,4 +417,19 @@ Event:
     ORGANIZATION_TYPE_DELETED:
         name: ORGANIZATION_TYPE_DELETED
         description: Organization Type Deleted
+        Privilege: notification_admin
+
+    SYSTEM_TYPE_UPDATED:
+        name: SYSTEM_TYPE_UPDATED
+        description: System Type Modified
+        Privilege: notification_admin
+
+    SYSTEM_TYPE_CREATED:
+        name: SYSTEM_TYPE_CREATED
+        description: System Type Created
+        Privilege: notification_admin
+
+    SYSTEM_TYPE_DELETED:
+        name: SYSTEM_TYPE_DELETED
+        description: System Type Deleted
         Privilege: notification_admin

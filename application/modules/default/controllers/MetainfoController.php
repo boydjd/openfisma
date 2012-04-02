@@ -129,13 +129,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             );
             $this->view->selected = isset($list[$this->view->selected]) ? $list[$this->view->selected] : 'YES';
         } elseif ($module == 'systemType') {
-            $list = array(
-                "gss" => "General Support System",
-                "major"  => "Major Application",
-                "minor"  => "Minor Application"
-            );
-            $selected = urldecode($this->getRequest()->getParam('value'));
-            $this->view->selected = $list[array_search($selected, $list)];
+            $list = Doctrine::getTable('SystemType')->getTypeList();
         } elseif ($module == 'systemSdlcPhase') {
             $list = System::getSdlcPhaseMap();
             $selected = $this->getRequest()->getParam('value');
@@ -144,7 +138,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
             $sources = Doctrine::getTable('Source')->getSources();
             $list = $this->view->sourceSelect($sources);
         } elseif ($module == 'organizationType') {
-            $list = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
+            $list = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray();
         } elseif ($module == 'incidentCategories') {
             $list = IrCategoryTable::getCategoriesForSelect();
             $this->view->selectStyle = 'nested';

@@ -20,7 +20,7 @@
  * Dashboard for findings
  *
  * @author     Mark E. Haase
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controllers
  */
@@ -144,11 +144,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->chartNoMit = $chartNoMit->export();
 
         // Bottom-Upper chart - Open Findings By Organization
-        $orgTypes = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(false);
-        $orgTypeOptions = array_map('ucwords', $orgTypes);
-        $orgTypeOptions = $orgTypeOptions + array('System' => 'System') + array('GSS and Majors' => 'GSS and Majors');
+        $orgChartFilterList = $this->_getOrgChartFilterList();
 
-        $defaultValues = array_keys($orgTypeOptions);
+        $defaultValues = array_keys($orgChartFilterList);
 
         $findingOrgChart = new Fisma_Chart(400, 275, 'findingOrgChart');
         $findingOrgChart
@@ -159,7 +157,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'Display By:',
                     'combo',
                     $defaultValues[0],
-                    $orgTypeOptions,
+                    $orgChartFilterList,
                     true
                 )
             ->addWidget(
@@ -534,49 +532,21 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     private function _getOrganizationsByOrgType($orgType)
     {
+        $typeList = $this->_getOrgChartFilterList();
+        $orgType = $typeList[(int)$orgType];
 
-        if ($orgType === 'major') {
+        $q = Doctrine_Query::create();
+        $q->addSelect('o.id, o.nickname, o.name')
+          ->from('Organization o')
+          ->leftJoin('o.OrganizationType ot')
+          ->leftJoin('o.System s')
+          ->leftJoin('s.SystemType st')
+          ->where('(ot.name = ? OR st.name = ?)', array($orgType, $orgType))
+          ->whereIn('o.id ', $this->_visibleOrgs)
+          ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+          ->orderBy('o.nickname');
 
-            $q = Doctrine_Query::create();
-            $q
-                ->addSelect('o.id, o.nickname, o.name')
-                ->from('Organization o')
-                ->leftJoin('o.System s')
-                ->where('s.type = ?', $orgType)
-                ->whereIn('o.id ', $this->_visibleOrgs)
-                ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-                ->orderBy('o.nickname');
-
-            return $q->execute();
-
-        } elseif ($orgType === 'gss and majors') {
-
-            $q = Doctrine_Query::create();
-            $q
-                ->addSelect('o.id, o.nickname, o.name')
-                ->from('Organization o')
-                ->leftJoin('o.System s')
-                ->where('s.type = "gss" OR s.type = "major"')
-                ->whereIn('o.id ', $this->_visibleOrgs)
-                ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-                ->orderBy('o.nickname');
-
-            return $q->execute();
-
-        } else {
-
-            $q = Doctrine_Query::create();
-            $q
-                ->addSelect('o.id, o.nickname, o.name')
-                ->from('Organization o')
-                ->leftJoin('o.OrganizationType ot')
-                ->where('ot.id = ?', $orgType)
-                ->whereIn('o.id ', $this->_visibleOrgs)
-                ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-                ->orderBy('o.nickname');
-
-            return $q->execute();
-        }
+        return $q->execute();
     }
 
     /**
@@ -683,28 +653,28 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr;
 
             $thisChart->addColumn(
-                    $thisColLabel,
-                    array(
-                        $thisNull,
-                        $thisHigh,
-                        $thisMod,
-                        $thisLow
-                        ),
-                    array('',
-                        '/finding/remediation/list?q=' .
-                        '/denormalizedStatus/enumIsNot/CLOSED' .
-                        '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
-                        '/threatLevel/enumIs/HIGH',
-                        '/finding/remediation/list?q=' .
-                        '/denormalizedStatus/enumIsNot/CLOSED' .
-                        '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
-                        '/threatLevel/enumIs/MODERATE',
-                        '/finding/remediation/list?q=' .
-                        '/denormalizedStatus/enumIsNot/CLOSED' .
-                        '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
-                        '/threatLevel/enumIs/LOW'
-                        )
-                        );
+                $thisColLabel,
+                array(
+                    $thisNull,
+                    $thisHigh,
+                    $thisMod,
+                    $thisLow
+                ),
+                array('',
+                    '/finding/remediation/list?q=' .
+                    '/denormalizedStatus/enumIsNot/CLOSED' .
+                    '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
+                    '/threatLevel/enumIs/HIGH',
+                    '/finding/remediation/list?q=' .
+                    '/denormalizedStatus/enumIsNot/CLOSED' .
+                    '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
+                    '/threatLevel/enumIs/MODERATE',
+                    '/finding/remediation/list?q=' .
+                    '/denormalizedStatus/enumIsNot/CLOSED' .
+                    '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
+                    '/threatLevel/enumIs/LOW'
+                )
+            );
         }
 
         // What should we filter/show on the chart? Totals? Migh,Mod,Low? etc...
@@ -1312,5 +1282,17 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->chart = $thisChart->export('array');
     }
 
+    /**
+     * Return a nested array of organization types and system types for filtering the organization charts.
+     *
+     * @return array
+     */
+    private function _getOrgChartFilterList()
+    {
+        return array_merge(
+            Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(),
+            Doctrine::getTable('SystemType')->getTypeList()
+        );
+    }
 }
 

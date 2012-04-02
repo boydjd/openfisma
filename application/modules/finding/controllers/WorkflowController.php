@@ -273,22 +273,16 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                     $evaluation = Doctrine::getTable('Evaluation')->find($step['databaseId']);
 
                     $evaluation->name = $step['name'];
-                    $evaluation->nickname = $step['nickname'];
+                    $evaluation->setNickname($step['nickname']);
                     $evaluation->description = $step['description'];
                     $evaluation->precedence = $step['precedence'];
                     $evaluation->nextId = $step['nextId'];
+                    $evaluation->setDaysUntilDue($step['due']);
 
                     $evaluation->Event->name = $step['nickname'];
                     $evaluation->Event->description = $step['name'];
 
                     $evaluation->Privilege->description = $step['nickname'] . " Approval";
-
-                    $updateDeadline = false;
-
-                    if ($step['due'] != $evaluation->daysUntilDue) {
-                        $evaluation->daysUntilDue = $step['due'];
-                        $updateDeadline = true;
-                    }
 
                     $evaluation->save();
 
@@ -306,19 +300,6 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                         $evaluation->Privilege->Roles[] = Doctrine::getTable('Role')->find($roleId);
                     }
                     $evaluation->Privilege->save();
-
-                    // Update deadline
-                    if ($updateDeadline) {
-                        $findings = Doctrine_Query::create()
-                            ->from('Finding f')
-                            ->where('f.currentEvaluationId = ?', $step['databaseId'])
-                            ->andWhereIn('f.status', array('EA', 'MSA'))
-                            ->execute();
-                        foreach ($findings as $finding) {
-                            $finding->setStatus($finding->status); //updating denormalizedStatus & nextDueDate
-                        }
-                        $findings->save();
-                    }
                 }
             }
 

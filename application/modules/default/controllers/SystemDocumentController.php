@@ -68,7 +68,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
             $downloadUrl = '/system-document/download/id/' . $history->id . '/version/' . $history->version;
             $historyRows[] = array(
                 'fileName' => $this->view->escape($upload->fileName),
-                'fileNameLink' => "<a href=$downloadUrl>" . $this->view->escape($upload->fileName) . "</a>",
+                'fileNameLink' => "<a href=\"$downloadUrl\">" . $this->view->escape($upload->fileName) . "</a>",
                 'version' => $history->version,
                 'description' => $this->view->textToHtml($this->view->escape($history->description)),
             );

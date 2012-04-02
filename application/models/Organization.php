@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -30,7 +30,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
 {
     /**
      * Implements the interface for Zend_Acl_Role_Interface
-     * 
+     *
      * @return int The role id
      */
     public function getRoleId()
@@ -41,32 +41,46 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     /**
      * Return the type of this organization.  Unlike $this->type, this resolves
      * system organizations down to their subtype, such as gss, major or minor
-     * 
+     *
      * @return string The type of organization
      */
-    public function getType() 
+    public function getType()
     {
-        if ('system' == $this->OrganizationType->nickname) {
-            return $this->System->type;
+        if (empty($this->systemId)) {
+            return 'organization';
         } else {
-            return $this->OrganizationType->icon;
+            return 'system';
         }
     }
-    
+
     /**
-     * Return the English version of the OrganizationType field
-     * 
-     * @return string The English version of the OrganizationType field
+     * Get the icon ID for this organization
+     *
+     * @return int
      */
-    public function getOrgTypeLabel() 
+    public function getIconId()
     {
         if ('system' == $this->OrganizationType->nickname) {
-            return $this->System->getTypeLabel();
+            return $this->System->SystemType->iconId;
+        } else {
+            return $this->OrganizationType->iconId;
+        }
+    }
+
+    /**
+     * Return the English version of the OrganizationType field
+     *
+     * @return string The English version of the OrganizationType field
+     */
+    public function getOrgTypeLabel()
+    {
+        if ('system' == $this->OrganizationType->nickname) {
+            return $this->System->SystemType->name;
         } else {
             return $this->OrganizationType->name;
         }
     }
-    
+
     /**
      * Return the agency for this organization tree
      *
@@ -78,7 +92,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
 
         return $agency;
     }
-    
+
     /**
      * Return a collection of organization
      *
@@ -105,7 +119,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
      * This calculates data for both the quarterly and annual reports. I think this is a simpler design than having
      * separate methods for each report since most of the data is the same; but it is less efficient because some data
      * will be generated and thrown away.
-     * 
+     *
      * @return array The matrix of statistics which corresponds to the FISMA report in array
      * @throws Fisma_Zend_Exception if this method is called when the type of organziation is not bureau
      * @todo refactor... this turned into a huge method really quickly, but no time to fix it now
@@ -117,22 +131,22 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             throw new Fisma_Zend_Exception('getFismaStatistics() is only valid for organization type, '
                                     . "but was called on a 'system' instead.");
         }
-        
+
         // Setup structure of the returned array
-        $securityCategories = array('AGENCY' => 0, 
-                                    'CONTRACTOR' => 0, 
-                                    'TOTAL_CERTIFIED' => 0, 
-                                    'TOTAL_SELF_ASSESSMENT' => 0, 
+        $securityCategories = array('AGENCY' => 0,
+                                    'CONTRACTOR' => 0,
+                                    'TOTAL_CERTIFIED' => 0,
+                                    'TOTAL_SELF_ASSESSMENT' => 0,
                                     'TOTAL_CONTINGENCY_PLAN_TESTED' => 0,
                                     'CERTIFIED_THIS_QUARTER' => 0,
                                     'POAM_90_TO_120' => 0,
                                     'POAM_120_PLUS' => 0);
-        $securityStats = array('HIGH' => $securityCategories, 
-                               'MODERATE' => $securityCategories, 
-                               'LOW' => $securityCategories, 
+        $securityStats = array('HIGH' => $securityCategories,
+                               'MODERATE' => $securityCategories,
+                               'LOW' => $securityCategories,
                                'NC' => $securityCategories);
-                               
-        $privacyCategories = array('AGENCY' => 0, 
+
+        $privacyCategories = array('AGENCY' => 0,
                                    'CONTRACTOR' => 0);
         $privacyStats = array('FEDERAL_INFORMATION' => $privacyCategories,
                               'PIA_REQUIRED' => $privacyCategories,
@@ -141,11 +155,11 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
                               'SORN_REQUIRED' => $privacyCategories,
                               'SORN_PUBLISHED' => $privacyCategories,
                               'SORN_URL' => array());
-                              
+
         $systems = array();
-                              
+
         $today = new Zend_Date();
-                       
+
         // Calculate the inventory statistics, such as agency/contractor, C&A, etc.
         if ($children = $this->getNode()->getDescendants()) {
             $children->loadRelated();
@@ -153,14 +167,14 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
                 if ('system' != $child->OrganizationType->nickname) {
                     continue;
                 }
-            
+
                 $system = $child->System;
                 $fipsCategory = empty($system->fipsCategory) ? 'NC' : $system->fipsCategory;
-            
+
                 // Controlled by the agency or a contractor?
                 if (!empty($system->controlledBy)) {
                     $securityStats[$fipsCategory][$system->controlledBy]++;
-                
+
                     // Has federal information in identifiable form?
                     if ('YES' == $system->hasFiif) {
                         $privacyStats['FEDERAL_INFORMATION'][$system->controlledBy]++;
@@ -180,7 +194,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
                     // Requires a SORN?
                     if ('YES' == $system->piaRequired) {
                         $privacyStats['SORN_REQUIRED'][$system->controlledBy]++;
-                 
+
                         // Is the SORN published?
                         if ('YES' == $system->piaRequired) {
                             $privacyStats['SORN_PUBLISHED'][$system->controlledBy]++;
@@ -188,15 +202,15 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
                         }
                     }
                 }
-            
+
                 if (!empty($system->securityAuthorizationDt)) {
-                    // Was the system C&A'ed in the last 3 years? 
+                    // Was the system C&A'ed in the last 3 years?
                     $currentCaDate = new Zend_Date($system->securityAuthorizationDt, Fisma_Date::FORMAT_DATE);
                     $nextCaDate = $currentCaDate->addYear(3);
-                    
-                    /** 
+
+                    /**
                      * @todo should have used isEarlier and isLater() instead of compare()
-                     * compare is not very readable 
+                     * compare is not very readable
                      */
                     if (1 == $nextCaDate->compare($today)) {
                         $securityStats[$fipsCategory]['TOTAL_CERTIFIED']++;
@@ -208,7 +222,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
                             'uniqueProjectId' => $system->uniqueProjectId
                         );
                     }
-                
+
                     // Was the system C&A'ed in the last quarter?
                     $lastQuarter = $today->subMonth(3);
                     if (1 == $currentCaDate->compare($lastQuarter)) {
@@ -234,7 +248,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
                         $securityStats[$fipsCategory]['TOTAL_SELF_ASSESSMENT']++;
                     }
                 }
-            
+
                 // Contingency plan has been tested in the last year?
                 if (!empty($system->contingencyPlanTestDt)) {
                     $currentContingencyPlanTestDate = new Zend_Date($system->contingencyPlanTestDt,
@@ -247,7 +261,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             }
         }
 
-        // Get the number of HIGH, MODERATE, and NC systems which have overdue POAM items between 90 and 120 days, or 
+        // Get the number of HIGH, MODERATE, and NC systems which have overdue POAM items between 90 and 120 days, or
         // greater than 120 days
         $poamQuery = Doctrine_Query::create()
                      ->select('s.fipsCategory')
@@ -272,9 +286,9 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             }
             $securityStats[$level]['POAM_120_PLUS']++;
         }
-        
+
         // Now count the 90+
-        $today = new Zend_Date();        
+        $today = new Zend_Date();
         $overdueDate90 = $today->subDay(90)->toString(Fisma_Date::FORMAT_DATE);
         $result90 = $poamQuery->execute(array($overdueDate90));
         foreach ($result90 as $level => $system) {
@@ -283,12 +297,12 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             }
             $securityStats[$level]['POAM_90_TO_120']++;
         }
-        
+
         // Now subtract the 120+ from the 90+ to get only the 90-120 day range
         foreach (array('HIGH', 'MODERATE', 'NC') as $level) {
             $securityStats[$level]['POAM_90_TO_120'] -= $securityStats[$level]['POAM_120_PLUS'];
         }
-        
+
         // Now assemble all statistics
         $stats = array();
         $stats['name'] = $this->name;
@@ -298,15 +312,15 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
 
         return $stats;
     }
-    
+
     /**
      * A post-insert hook to send notifications
-     * 
+     *
      * @param Doctrine_Event $event The triggered doctrine event
      * @return void
      */
     public function postInsert($event)
-    {    
+    {
         // This model can generate events for organization objects AND system objects
         if ('system' != $this->OrganizationType->nickname) {
             $eventName = 'ORGANIZATION_CREATED';
@@ -316,15 +330,15 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
 
         Notification::notify($eventName, $this, CurrentUser::getInstance());
     }
-    
+
     /**
      * A post-update hook to send notifications
-     * 
+     *
      * @param Doctrine_Event $event The triggered doctrine event
      * @return void
      */
     public function postUpdate($event)
-    {        
+    {
         // The system model will handle update events on its own, but we need to filter them out here
         // in case the system model somehow triggers a save() on its related organization object
         if ('system' != $this->OrganizationType->nickname) {
@@ -335,46 +349,46 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
 
     /**
      * A post-delete hook to send notifications
-     * 
+     *
      * @param Doctrine_Event $event The triggered doctrine event
      * @return void
      */
     public function postDelete($event)
-    {        
+    {
         // This model can generate events for organization objects AND system objects
         if ('system' != $this->OrganizationType->nickname) {
             $eventName = 'ORGANIZATION_DELETED';
         } else {
             $eventName = 'SYSTEM_DELETED';
         }
-        
+
         Notification::notify($eventName, $this, CurrentUser::getInstance());
     }
 
     /**
      * Implement the required method for Fisma_Zend_Acl_OrganizationDependency
-     * 
+     *
      * @return int
      */
     public function getOrganizationDependencyId()
     {
         return $this->id;
     }
-    
+
     /**
      * Converts the current system to an organization
-     * 
+     *
      * @return void
      */
     public function convertToOrganization($organizationTypeId)
     {
-        
+
         $oldSystemId = $this->systemId;
-        
+
         try {
-        
+
             Doctrine_Manager::connection()->beginTransaction();
-            
+
             $system = $this->System;
             $this->System = null;
             $this->orgTypeId = $organizationTypeId;
@@ -386,14 +400,14 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
                           ->where('orgsystemid = ?', $this->id)
                           ->count();
 
-            // Update asset's orgsystemid to null and reindex the asset 
+            // Update asset's orgsystemid to null and reindex the asset
             // so that the converted system is not shown on the asset list any more.
             if ($countAsset > 0) {
                 $updateAssetQuery = Doctrine_Query::create()
                                     ->update('Asset')
                                     ->set('orgsystemid', 'NULL')
                                     ->where('orgsystemid = ?', $this->id);
-            
+
                 $updateAssetQuery->execute();
 
                 $modelName = 'Asset';
@@ -409,33 +423,33 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
                 $indexer = new Fisma_Search_Indexer($searchEngine);
                 $allRecordsQuery = $indexer->getRecordFetchQuery($modelName);
                 $indexer->indexRecordsFromQuery($allRecordsQuery, $modelName, $chunkSize);
-                $searchEngine->commit(); 
+                $searchEngine->commit();
             }
 
             Doctrine_Manager::connection()->commit();
-            
+
         } catch (Exception $e) {
             // We cannot access the view script from here (for priority messenger), so rethrow after roll-back
             Doctrine_Manager::connection()->rollback();
             throw $e;
         }
-        
+
     }
-    
+
     /**
      * Converts the current organization to a system
-     * 
+     *
      * @return void
      */
     public function convertToSystem($type, $sdlcPhase, $confidentiality, $integrity, $availability)
     {
         try {
-        
+
             Doctrine_Manager::connection()->beginTransaction();
-            
+
             // create system row
             $newSystem = new System();
-            $newSystem->type = $type;
+            $newSystem->systemTypeId = $type;
             $newSystem->sdlcPhase = $sdlcPhase;
             $newSystem->confidentiality = $confidentiality;
             $newSystem->integrity = $integrity;
@@ -447,12 +461,12 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             $newSystem->sornRequired = 'NO';
             $newSystem->save();
 
-            // create system relation        
+            // create system relation
             $this->systemId = $newSystem->id;
             $systemType = Doctrine::getTable('OrganizationType')->findOneByNickname('system', Doctrine::HYDRATE_ARRAY);
             $this->orgTypeId = $systemType['id'];
             $this->save();
-            
+
             // The organizaion needs to be deleted from index after it is converted to system
             $searchEngine = Zend_Registry::get('search_engine');
             $searchEngine->deleteObject(get_class($this), $this->toArray());
@@ -470,7 +484,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             $searchEngine->commit();
 
             Doctrine_Manager::connection()->commit();
-            
+
         } catch (Exception $e) {
             // We cannot access the view script from here (for priority messenger), so rethrow after roll-back
             Doctrine_Manager::connection()->rollback();

@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -20,7 +20,7 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 
 /**
  * Tests for the system model
- * 
+ *
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -31,14 +31,14 @@ class Test_Application_Models_System extends Test_Case_Unit
 {
     /**
      * FIPS category is the high water mark of CIA
-     * 
+     *
      * @return void
      * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryIsHighWaterMarkOfCia()
     {
         $system = new System();
-        
+
         $system->confidentiality = System::CIA_MODERATE;
         $system->integrity = System::CIA_LOW;
         $system->availability = System::CIA_HIGH;
@@ -53,7 +53,7 @@ class Test_Application_Models_System extends Test_Case_Unit
 
     /**
      * If one, but not all, CIA values are set, then FIPS security category should still be defined
-     * 
+     *
      * @return void
      * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
@@ -64,116 +64,71 @@ class Test_Application_Models_System extends Test_Case_Unit
         $system->confidentiality = System::CIA_LOW;
         $this->assertEquals(System::CIA_LOW, $system->fipsCategory);
     }
-    
+
     /**
      * Confidentiality can be N/A but FIPS category is still defined
-     * 
+     *
      * @return void
      * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryWhenConfidentialityIsNa()
     {
         $system = new System();
-        
+
         $system->confidentiality = System::CIA_NA;
         $system->integrity = System::CIA_LOW;
         $system->availability = System::CIA_MODERATE;
         $this->assertEquals(System::CIA_MODERATE, $system->fipsCategory);
     }
-    
+
     /**
      * If all CIA values are null, than FIPS category is null
-     * 
+     *
      * @return void
      * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testFipsCategoryIsNullWhenCiaIsNull()
     {
         $system = new System();
-        
+
         $this->assertNull($system->fipsCategory);
     }
-    
+
     /**
      * FIPS category cannot be set directly
-     * 
+     *
      * @return void
      * @expectedException Fisma_Zend_Exception
      */
     public function testCannotSetFipsCategoryDirectly()
     {
         $system = new System();
-        
+
         $system->fipsCategory = System::CIA_MODERATE;
     }
-    
+
     /**
      * Exhibit 53 Unique Project Id has automatic formatting
-     * 
+     *
      * @return void
      * @throws PHPUnit_Framework_ExpectationFailedException if assertion fails
      */
     public function testUpiFormatting()
     {
         $system = new System();
-        
+
         // Should automatically hyphenate
         $system->uniqueProjectId = '0123456789ABCDEFG';
         $this->assertEquals('012-34-56-78-9A-BCDE-FG', $system->uniqueProjectId);
-        
+
         // If the UPI is short, then it should pad out to fit the format
         $system->uniqueProjectId = '0123456789';
         $this->assertEquals('012-34-56-78-90-0000-00', $system->uniqueProjectId);
     }
 
     /**
-     * testGetTypeLabelForGss 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testGetTypeLabelForGss()
-    {
-        $system = new System();
-
-        $system->type = 'gss';
-
-        $this->assertEquals('General Support System', $system->getTypeLabel());
-    }
-
-    /**
-     * testGetTypeLabelForMajorApplication 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testGetTypeLabelForMajorApplication()
-    {
-        $system = new System();
-
-        $system->type = 'major';
-
-        $this->assertEquals('Major Application', $system->getTypeLabel());
-    }
-
-    /**
-     * testGetTypeLabelForMinorApplication 
-     * 
-     * @access public
-     * @return void
-     */
-    public function testGetTypeLabelForMinorApplication()
-    {
-        $system = new System();
-
-        $system->type = 'minor';
-
-        $this->assertEquals('Minor Application', $system->getTypeLabel());
-    }
-
-    /**
-     * testGetSdlcPhaseLabelForInitiation 
-     * 
+     * testGetSdlcPhaseLabelForInitiation
+     *
      * @access public
      * @return void
      */
@@ -187,8 +142,8 @@ class Test_Application_Models_System extends Test_Case_Unit
     }
 
     /**
-     * testGetSdlcPhaseLabelForDevelopment 
-     * 
+     * testGetSdlcPhaseLabelForDevelopment
+     *
      * @access public
      * @return void
      */
@@ -202,8 +157,8 @@ class Test_Application_Models_System extends Test_Case_Unit
     }
 
     /**
-     * testGetSdlcPhaseLabelForImplementation 
-     * 
+     * testGetSdlcPhaseLabelForImplementation
+     *
      * @access public
      * @return void
      */
@@ -217,8 +172,8 @@ class Test_Application_Models_System extends Test_Case_Unit
     }
 
     /**
-     * testGetSdlcPhaseLabelForOperations 
-     * 
+     * testGetSdlcPhaseLabelForOperations
+     *
      * @access public
      * @return void
      */
@@ -232,8 +187,8 @@ class Test_Application_Models_System extends Test_Case_Unit
     }
 
     /**
-     * testGetSdlcPhaseLabelForDisposal 
-     * 
+     * testGetSdlcPhaseLabelForDisposal
+     *
      * @access public
      * @return void
      */
@@ -247,8 +202,8 @@ class Test_Application_Models_System extends Test_Case_Unit
     }
 
     /**
-     * testGetSdlcPhaseMap 
-     * 
+     * testGetSdlcPhaseMap
+     *
      * @access public
      * @return void
      */
@@ -260,8 +215,8 @@ class Test_Application_Models_System extends Test_Case_Unit
     }
 
     /**
-     * testCalculateThreatLikelihood 
-     * 
+     * testCalculateThreatLikelihood
+     *
      * @access public
      * @return void
      * @dataProvider threatLikelihoodProvider
@@ -274,8 +229,8 @@ class Test_Application_Models_System extends Test_Case_Unit
     }
 
     /**
-     * threatLikelihoodProvider 
-     * 
+     * threatLikelihoodProvider
+     *
      * @static
      * @access public
      * @return void
@@ -294,10 +249,10 @@ class Test_Application_Models_System extends Test_Case_Unit
             array('expected' => 'LOW', 'threat' => 'LOW', 'countermeasure' => 'HIGH')
         );
     }
-    
+
     /**
      * Test calcMin()
-     * 
+     *
      * @return void
      */
     public function testCalcMin()
@@ -305,10 +260,10 @@ class Test_Application_Models_System extends Test_Case_Unit
         $system = new System();
         $this->assertEquals('LOW', $system->calcMin('LOW', 'HIGH'));
     }
-    
+
     /**
      * Test getName()
-     * 
+     *
      * @return void
      */
     public function testGetName()
@@ -318,10 +273,10 @@ class Test_Application_Models_System extends Test_Case_Unit
         $system->Organization->name = 'org_name';
         $this->assertEquals('org_nick - org_name', $system->getName());
     }
-    
+
     /**
      * Test getOrganizationDependencyId()
-     * 
+     *
      * @return void
      */
     public function testGetOrganizationDependencyId()
@@ -330,7 +285,7 @@ class Test_Application_Models_System extends Test_Case_Unit
         $system->Organization->id = 1;
         $this->assertEquals(1, $system->getOrganizationDependencyId());
     }
-    
+
     /**
      * Test the implementation of ON_DELETE constraint
      *
@@ -340,10 +295,10 @@ class Test_Application_Models_System extends Test_Case_Unit
     {
         $system = new System();
         $system->preDelete(null);
-        
+
         $mockIncident = $this->getMock('Mock_Blank', array('set'));
         $system->Organization->Incidents[] = $mockIncident;
-        
+
         $this->setExpectedException('Fisma_Zend_Exception_User');
         $system->preDelete(null);
     }

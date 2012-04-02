@@ -2,25 +2,24 @@ OrganizationType:
     agency:
         name: Agency
         nickname: agency
-        icon: agency
+        Icon: globe_icon
         description: >
             The agency is the top level organizational unit. Generally there should only be 1 agency, but it is possible
             to create multiple agency objects.
-    bureau: 
+    bureau:
         name: Bureau
         nickname: bureau
-        icon: bureau
+        Icon: drawers_icon
         description: >
-            Bureaus are organization types defined by OMB for the FISMA report. Bureaus are generally the second level 
+            Bureaus are organization types defined by OMB for the FISMA report. Bureaus are generally the second level
             of organization hiearchies.
     office:
         name: Office
         nickname: office
-        icon: organization
+        Icon: folder_icon
         description: >
-            Offices are the third level of the organization hiearchy. This organization type can be used to group 
+            Offices are the third level of the organization hiearchy. This organization type can be used to group
             together information systems that serve common business purposes, such as finance or accounting.
     system:
         name: System
         nickname: system
-        icon: system

@@ -1,0 +1,101 @@
+Upload:
+    openfisma_logo_file:
+        fileName: logo.png
+        fileHash: 7022767bf2f83dff89f5df9ea9570fd9ccf2c826
+        User: root
+    globe_large_icon_file:
+        fileName: globe_32.png
+        fileHash: ecc8af06815fd9f9b0737a1f9b1f82284d770c31
+        User: root
+    globe_small_icon_file:
+        fileName: globe_16.png
+        fileHash: 97e0068d60d356b4cf371f2898774c58d866a80f
+        User: root
+    drawers_large_icon_file:
+        fileName: drawers_32.png
+        fileHash: 0904bf27da39893b6b7b8f9f17310a5d2c40e2ad
+        User: root
+    drawers_small_icon_file:
+        fileName: drawers_16.png
+        fileHash: 07f4f747beef93c004aef2504f12b8950768112d
+        User: root
+    folder_large_icon_file:
+        fileName: folder_32.png
+        fileHash: 86c037a3ae2590dab79d695e23116239eb7b9e00
+        User: root
+    folder_small_icon_file:
+        fileName: folder_16.png
+        fileHash: 6bd43c1d413e4e89a240d904ae5475010913e107
+        User: root
+    server_large_icon_file:
+        fileName: server_32.png
+        fileHash: 805a464e7726ee4c854b5a45a847de7cb36e6872
+        User: root
+    server_small_icon_file:
+        fileName: server_16.png
+        fileHash: 48e69f83b0fcd87edaa0afb791b2c58eb6d8dcbd
+        User: root
+    terminal_large_icon_file:
+        fileName: terminal_32.png
+        fileHash: 3b54acad5b1607bab2033f7c54ce948d77f08af0
+        User: root
+    terminal_small_icon_file:
+        fileName: terminal_16.png
+        fileHash: a87edd236ff6263c147cc6a0dc378f2064f88b76
+        User: root
+    two_terminals_large_icon_file:
+        fileName: two_terminals_32.png
+        fileHash: ce08f01dd9282dd9c7590f9f6b6deb73f1d58a39
+        User: root
+    two_terminals_small_icon_file:
+        fileName: two_terminals_16.png
+        fileHash: b92cf47688db5f132305aa6d1f042efbc1ebde4e
+        User: root
+    address_book_large_icon_file:
+        fileName: address_book_32.png
+        fileHash: 02fc2a59f3332891a42b2b070da4c0090fefe246
+        User: root
+    address_book_small_icon_file:
+        fileName: address_book_16.png
+        fileHash: 96e5e5a098c81b47ba6fec75b9cb72a617375ca9
+        User: root
+    speech_bubbles_large_icon_file:
+        fileName: speech_bubbles_32.png
+        fileHash: ae7fafe1f0db1d85ad4a841b53260f5f2b8aae63
+        User: root
+    speech_bubbles_small_icon_file:
+        fileName: speech_bubbles_16.png
+        fileHash: 2f059e21ea5b5eff244b789004cd80d1072bcfe6
+        User: root
+    bookmark_large_icon_file:
+        fileName: bookmark_32.png
+        fileHash: da85536a3868d3a9f012f92b47f548e5149dfaa3
+        User: root
+    bookmark_small_icon_file:
+        fileName: bookmark_16.png
+        fileHash: 34c855d7f593c7fd30547a5fec980d96898fcb6b
+        User: root
+    clouds_large_icon_file:
+        fileName: clouds_32.png
+        fileHash: 5719e4da497598308d901292c554f203edd06436
+        User: root
+    clouds_small_icon_file:
+        fileName: clouds_16.png
+        fileHash: 0edbfbdeaeb892240ae4e8ab8d9d4a1f3ac8fea6
+        User: root
+    monitor_large_icon_file:
+        fileName: monitor_32.png
+        fileHash: 0a1bc7467ade61a75b4abc2af66bc703742e8af1
+        User: root
+    monitor_small_icon_file:
+        fileName: monitor_16.png
+        fileHash: b4a32d50357cff8a055b5434ea2ee97a9f9fc44d
+        User: root
+    mouse_large_icon_file:
+        fileName: mouse_32.png
+        fileHash: a5c72909beea9c4f927238a5fbc049675eb2de8c
+        User: root
+    mouse_small_icon_file:
+        fileName: mouse_16.png
+        fileHash: 267c218368f3f235ea14e749b791c8f125a82577
+        User: root
