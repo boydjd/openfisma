@@ -1,0 +1,37 @@
+Icon:
+    globe_icon:
+        LargeIconFile: globe_large_icon_file
+        SmallIconFile: globe_small_icon_file
+    drawers_icon:
+        LargeIconFile: drawers_large_icon_file
+        SmallIconFile: drawers_small_icon_file
+    folder_icon:
+        LargeIconFile: folder_large_icon_file
+        SmallIconFile: folder_small_icon_file
+    server_icon:
+        LargeIconFile: server_large_icon_file
+        SmallIconFile: server_small_icon_file
+    terminal_icon:
+        LargeIconFile: terminal_large_icon_file
+        SmallIconFile: terminal_small_icon_file
+    two_terminals_icon:
+        LargeIconFile: two_terminals_large_icon_file
+        SmallIconFile: two_terminals_small_icon_file
+    address_book_icon:
+        LargeIconFile: address_book_large_icon_file
+        SmallIconFile: address_book_small_icon_file
+    speech_bubbles_icon:
+        LargeIconFile: speech_bubbles_large_icon_file
+        SmallIconFile: speech_bubbles_small_icon_file
+    bookmark_icon:
+        LargeIconFile: bookmark_large_icon_file
+        SmallIconFile: bookmark_small_icon_file
+    clouds_terminals_icon:
+        LargeIconFile: clouds_large_icon_file
+        SmallIconFile: clouds_small_icon_file
+    monitor_icon:
+        LargeIconFile: monitor_large_icon_file
+        SmallIconFile: monitor_small_icon_file
+    mouse_icon:
+        LargeIconFile: mouse_large_icon_file
+        SmallIconFile: mouse_small_icon_file

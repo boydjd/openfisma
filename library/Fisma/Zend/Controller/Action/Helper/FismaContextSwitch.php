@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -52,6 +52,24 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
     {
         parent::init();
 
+        // Fix an IE bug where JSON responses in an iframe are treated as attachments rather than inline.
+        $agent = new Zend_Http_UserAgent;
+        $device = $agent->getDevice();
+
+        if (stristr($device->getBrowser(), 'explorer')) {
+            $this->setContext(
+                'json',
+                array(
+                    'suffix'    => 'json',
+                    'headers'   => array('Content-Type' => 'text/html'),
+                    'callbacks' => array(
+                        'init' => 'initJsonContext',
+                        'post' => 'postJsonContext'
+                    )
+                )
+            );
+        }
+
         if (!$this->hasContext('pdf')) {
             $pdfFilename = empty($this->_dispositionFilename) ? 'Report.pdf' : $this->_dispositionFilename;
             $this->addContext(
@@ -68,7 +86,7 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
                 )
             );
         }
-        
+
         if (!$this->hasContext('xls')) {
             $xlsFilename = empty($this->_dispositionFilename) ? 'Report.xls' : $this->_dispositionFilename;
             $this->addContext(
@@ -85,7 +103,7 @@ class Fisma_Zend_Controller_Action_Helper_FismaContextSwitch extends Zend_Contro
                 )
             );
         }
-        
+
         // The base class predefines an XML context that causes problems in IE and needs to be replaced
         $this->removeContext('xml');
 

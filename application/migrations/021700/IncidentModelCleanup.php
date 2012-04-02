@@ -35,14 +35,8 @@ class Application_Migration_021700_IncidentModelCleanup extends Fisma_Migration_
     {
         $this->message("Adding POC field to Incident table");
 
-        $pocIdColumn = array(
-            'type' => 'bigint(20)',
-            'after' => 'organizationid'
-        );
-
-        $this->getHelper()->addColumn('incident', 'pocid', $pocIdColumn);
-        $this->getHelper()->addIndex('incident', 'pocid');
-        $this->getHelper()->addForeignKey('incident', null, 'pocid', 'poc', 'id');
+        $this->getHelper()->addColumn('incident', 'pocid', 'bigint(20)', 'organizationid');
+        $this->getHelper()->addForeignKey('incident', 'pocid', 'poc', 'id');
 
         $this->message("Dropping the \"Actions Taken\" column from the Incident table");
 

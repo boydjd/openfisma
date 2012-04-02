@@ -3,22 +3,22 @@
 </div>
 
 <div id="logout">
-    <?php 
+    <?php
     $logoutButton = new Fisma_Yui_Form_Button_Link(
-        'logoutButton', 
+        'logoutButton',
         array(
             'value' => 'Log Out',
             'imageSrc' => $this->serverUrl('/images/logout.png'),
             'href' => '/auth/logout'
         )
-    ); 
+    );
     echo $this->escape($logoutButton, 'none');
     ?>
     <p>
         <b>
-            <?php 
+            <?php
                 $user = CurrentUser::getInstance();
-                
+
                 echo $this->escape($this->userInfo("{$user->nameFirst} {$user->nameLast}", $user->username), 'none');
             ?>
         </b>
@@ -31,8 +31,8 @@
 <script type="text/javascript">
 YAHOO.util.Event.onDOMReady(function () {
     //Constructs the YUI menu bar for OpenFISMA
-    var jsonMenuData = '<?php 
-        echo $this->escape(Fisma_Menu::getMainMenu(CurrentUser::getInstance())->getMenus(), 'json') 
+    var jsonMenuData = '<?php
+        echo $this->escape(Fisma_Menu::getMainMenu(CurrentUser::getInstance())->getMenus(), 'json')
     ?>';
     var menuData = YAHOO.lang.JSON.parse(jsonMenuData);
     for (var i in menuData) {
@@ -40,6 +40,16 @@ YAHOO.util.Event.onDOMReady(function () {
     }
     var menuBar = new YAHOO.widget.MenuBar("mainmenu", {autosubmenudisplay: true});
     YAHOO.util.Dom.addClass(menuBar.element, "yuimenubarnav");
+
+    // Improve the behavior cited in OFJ-1316 by keeping menus open when the menu heading is clicked
+    menuBar.subscribe('click', function (event, args) {
+        var submenu = args[1].cfg.getProperty("submenu");
+
+        if (submenu && !submenu.cfg.getProperty("visible")) {
+            submenu.show();
+        }
+    });
+
     menuBar.addItems(menuData);
     menuBar.render('menubar');
 });

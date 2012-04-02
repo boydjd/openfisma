@@ -1,6 +1,5 @@
 System:
     OF_SYS:
-        type: minor
         confidentiality: MODERATE
         integrity: MODERATE
         availability: LOW
@@ -14,9 +13,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: HERNDON_SYS
+        SystemType: minor
 
     OSC_SYS:
-        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -30,9 +29,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: MAINFRAME_SYS
+        SystemType: minor
 
     IAD_SYS:
-        type: minor
         confidentiality: MODERATE
         integrity: MODERATE
         availability: LOW
@@ -48,9 +47,9 @@ System:
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: HERNDON_SYS
+        SystemType: minor
 
     CIT_SYS:
-        type: major
         confidentiality: HIGH
         integrity: HIGH
         availability: MODERATE
@@ -65,9 +64,9 @@ System:
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
+        SystemType: major
 
     SCMS_SYS:
-        type: major
         confidentiality: LOW
         integrity: MODERATE
         availability: MODERATE
@@ -80,9 +79,9 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        SystemType: major
 
     CRMS_SYS:
-        type: major
         confidentiality: MODERATE
         integrity: LOW
         availability: LOW
@@ -97,9 +96,9 @@ System:
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: HERNDON_SYS
+        SystemType: minor
 
     HAZMAT_SYS:
-        type: major
         confidentiality: MODERATE
         integrity: MODERATE
         availability: LOW
@@ -113,9 +112,10 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: RESTON_SYS
+        SystemType: major
+
 
     RCD_SYS:
-        type: major
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -129,9 +129,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: RESTON_SYS
-        
+        SystemType: major
+
     GREEN_NRG_SYS:
-        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -145,9 +145,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: RESTON_SYS
-        
+        SystemType: minor
+
     WIND_SYS:
-        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -161,9 +161,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: MAINFRAME_SYS
-        
+        SystemType: minor
+
     RESTON_SYS:
-        type: gss
         confidentiality: LOW
         integrity: MODERATE
         availability: MODERATE
@@ -178,9 +178,9 @@ System:
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
-        
+        SystemType: gss
+
     LINUX_SYS:
-        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -194,9 +194,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: HERNDON_SYS
-        
+        SystemType: minor
+
     MAINFRAME_SYS:
-        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -210,9 +210,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: MAINFRAME_SYS
-        
+        SystemType: minor
+
     ORACLE_SYS:
-        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -226,9 +226,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: MAINFRAME_SYS
-        
+        SystemType: minor
+
     HERNDON_SYS:
-        type: gss
         confidentiality: MODERATE
         integrity: HIGH
         availability: HIGH
@@ -242,9 +242,9 @@ System:
         piaUrl: http://google.com/search?q=pia
         sornRequired: "YES"
         uniqueProjectId: 123-45-67-89-01-2345-67
-        
+        SystemType: gss
+
     RMTRP_SYS:
-        type: major
         confidentiality: LOW
         integrity: MODERATE
         availability: LOW
@@ -258,9 +258,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: RESTON_SYS
-        
+        SystemType: major
+
     ROCP_SYS:
-        type: major
         confidentiality: LOW
         integrity: MODERATE
         availability: LOW
@@ -274,9 +274,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: RESTON_SYS
+        SystemType: major
 
     H20_RIGHTS_SYS:
-        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -290,9 +290,9 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: HERNDON_SYS
+        SystemType: minor
 
     WILDLIFE_SYS:
-        type: major
         confidentiality: LOW
         integrity: LOW
         availability: MODERATE
@@ -306,10 +306,10 @@ System:
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
         AggregateSystem: RESTON_SYS
+        SystemType: major
 
     # This one intentionally does not have a C&A date
     TPP_SYS:
-        type: major
         confidentiality: LOW
         integrity: MODERATE
         availability: LOW
@@ -321,10 +321,10 @@ System:
         piaRequired: "NO"
         sornRequired: "NO"
         uniqueProjectId: 123-45-67-89-01-2345-67
+        SystemType: major
 
     # This system is by default not assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
     HIDDEN_SYS:
-        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -339,12 +339,12 @@ System:
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
+        SystemType: minor
 
     # The system is used to test when and how disposed systems are displayed in the UI. With this system, a tester
-    # should be easily to see which screens filter out disposed systems or treat disposed systems differently. 
+    # should be easily to see which screens filter out disposed systems or treat disposed systems differently.
     # The sample user should have access to this system record.
     DISPOSAL_SYS:
-        type: minor
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -360,3 +360,4 @@ System:
         sornRequired: "YES"
         sornUrl: http://google.com/search?q=sorn
         uniqueProjectId: 123-45-67-89-01-2345-67
+        SystemType: minor

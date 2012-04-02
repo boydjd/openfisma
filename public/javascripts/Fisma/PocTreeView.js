@@ -24,7 +24,7 @@
 (function() {
     /**
      * A treeview widget that is specialized for displaying the POC hierarchy
-     * 
+     *
      * @namespace Fisma
      * @class PocTreeView
      * @extends n/a
@@ -33,64 +33,64 @@
      */
     var PTV = function(contentDivId) {
         this._contentDiv = document.getElementById(contentDivId);
-        
+
         if (YAHOO.lang.isNull(this._contentDiv)) {
             throw "Invalid contentDivId";
         }
-        
+
         this._storage = new Fisma.PersistentStorage("Poc.Tree");
     };
 
     PTV.prototype = {
         /**
          * The outermost div for this widget (expected to exist on the page already and to be empty)
-         * 
+         *
          * @type HTMLElement
          * @protected
-         */                
+         */
         _contentDiv: null,
 
         /**
          * A YUI tree view widget
-         * 
+         *
          * @type YAHOO.widget.TreeView
          * @protected
-         */                
+         */
         _treeView: null,
 
         /**
          * The div containing the loading spinner
-         * 
+         *
          * @type HTMLElement
          * @protected
-         */                
-        _loadingContainer: null,        
+         */
+        _loadingContainer: null,
 
         /**
          * The container div that YUI renders the tree view into
-         * 
+         *
          * @type HTMLElement
          * @protected
-         */                
+         */
         _treeViewContainer: null,
 
         /**
-         * A modal dialog used to keep the user from modifying the tree while it's changes are being sychronized to 
+         * A modal dialog used to keep the user from modifying the tree while it's changes are being sychronized to
          * the server.
-         * 
+         *
          * Also used to display errors if a save operation fails.
-         * 
+         *
          * @type YAHOO.widget.Panel
          * @protected
-         */                        
+         */
         _savePanel: null,
 
         /**
          * Persistent storage for some of the features in this widget
-         * 
+         *
          * @type Fisma.PersistentStorage
          * @protected
-         */                
+         */
         _storage: null,
 
         /**
@@ -107,7 +107,7 @@
 
             that._treeViewContainer = document.createElement("div");
             that._renderTreeView(that._treeViewContainer);
-            that._contentDiv.appendChild(that._treeViewContainer);                
+            that._contentDiv.appendChild(that._treeViewContainer);
         },
 
         /**
@@ -137,9 +137,9 @@
          * Show the loading spinner
          *
          * @method OrganizationTreeView._hideLoadingImage
-         */        
+         */
         _hideLoadingImage: function () {
-            this._loadingContainer.style.display = "none";    
+            this._loadingContainer.style.display = "none";
         },
 
         /**
@@ -154,8 +154,8 @@
             var url = '/poc/tree-data/format/json';
 
             YAHOO.util.Connect.asyncRequest(
-                'GET', 
-                url, 
+                'GET',
+                url,
                 {
                     success: function (response) {
                         var json = YAHOO.lang.JSON.parse(response.responseText);
@@ -195,14 +195,14 @@
                         Fisma.Util.showAlertDialog(alertMessage);
                     },
                     scope: this
-                }, 
+                },
                 null
             );
         },
 
         /**
          * Load the given nodes into a treeView.
-         * 
+         *
          * This function is recursive, so the first time it's called, you need to pass in the root node of the tree
          * view.
          *
@@ -231,14 +231,20 @@
 
         /**
          * Create a node that represents an organization.
-         * 
+         *
          * @param node {Object} Dictionary of node data
          * @param parent {YAHOO.widget.Node} The tree node that is the parent to the node you want to create
          * @return YAHOO.widget.Node
          */
         _buildOrgNode: function (node, parent) {
-            var nodeText = "<b>" + PHP_JS().htmlspecialchars(node.label) + "</b> - <i>"
-                             + PHP_JS().htmlspecialchars(node.orgTypeLabel) + "</i>";
+            var imageUrl = "/icon/get/id/" + node.iconId + "/size/small";
+            var nodeText = "<img src='"
+                         + imageUrl
+                         + "'>&nbsp;<b>"
+                         + PHP_JS().htmlspecialchars(node.label)
+                         + "</b> - <i>"
+                         + PHP_JS().htmlspecialchars(node.orgTypeLabel)
+                          + "</i>";
 
             var yuiNode = new YAHOO.widget.HTMLNode(
                 {
@@ -246,45 +252,42 @@
                     organizationId: node.id,
                     type: node.orgType,
                     systemId: node.systemId
-                }, 
+                },
                 parent,
                 false
             );
 
-            // Set the label style
-            yuiNode.contentStyle = node.orgType;
-            
             return yuiNode;
         },
 
         /**
          * Create a node that represents a POC.
-         * 
+         *
          * @param node {Object} Dictionary of node data
          * @param parent {YAHOO.widget.Node} The tree node that is the parent to the node you want to create
          * @return YAHOO.widget.Node
-         */        
+         */
         _buildPocNode: function (node, parent) {
-            var nodeText = "<b>" 
-                         + node.p_nameFirst 
-                         + " " 
-                         + node.p_nameLast 
-                         + " (" 
-                         + node.p_username 
+            var imageUrl = "/images/poc-small.png";
+            var nodeText = "<img src='"
+                         + imageUrl
+                         + "'>&nbsp;<b>"
+                         + node.p_nameFirst
+                         + " "
+                         + node.p_nameLast
+                         + " ("
+                         + node.p_username
                          + ")</b> - <i>Point of Contact</i>";
 
             var yuiNode = new YAHOO.widget.HTMLNode(
                 {
                     html: nodeText,
                     pocId: node.p_id
-                }, 
+                },
                 parent,
                 false
             );
 
-            // Set the label style
-            yuiNode.contentStyle = "poc";
-            
             return yuiNode;
         },
 
@@ -292,7 +295,7 @@
          * Expand all nodes in the tree
          *
          * @method OrganizationTreeView.expandAll
-         */        
+         */
         expandAll: function () {
             this._treeView.getRoot().expandAll();
         },
@@ -301,14 +304,14 @@
          * Collapse all nodes in the tree
          *
          * @method OrganizationTreeView.collapseAll
-         */                
+         */
         collapseAll: function () {
             this._treeView.getRoot().collapseAll();
         },
 
         /**
          * A callback that handles the drag/drop operation by synchronized the user's action with the server.
-         * 
+         *
          * A modal dialog is used to prevent the user from performing more drag/drops while the current one is still
          * being synchronized.
          *
@@ -317,7 +320,7 @@
          * @param srcNode {YAHOO.widget.Node} The tree node that is being dragged
          * @param destNode {YAHOO.widget.Node} The tree node that the source is being dropped onto
          * @param dragLocation {TreeNodeDragBehavior.DRAG_LOCATION} The drag target relative to destNode
-         */        
+         */
         handleDragDrop: function (treeNodeDragBehavior, srcNode, destNode, dragLocation) {
             // Show a modal panel while waiting for the operation to complete. This is a bit ugly for usability,
             // but it prevents the user from modifying the tree while an update is already pending.
@@ -332,7 +335,7 @@
                         modal: true,
                         visible: true
                     }
-                );                
+                );
 
                 this._savePanel.setHeader('Saving...');
                 this._savePanel.render(document.body);
@@ -340,7 +343,7 @@
 
             this._savePanel.setBody('<img src="/images/loading_bar.gif">');
             this._savePanel.show();
-            
+
             // Set up the POST data string for this operation
             var destination = (YAHOO.lang.isValue(destNode.data.pocId))
                             ? ('&destPoc=' + destNode.data.pocId)
@@ -351,15 +354,15 @@
                            + '&csrf=' + $('[name="csrf"]').val();
 
             YAHOO.util.Connect.asyncRequest(
-                'POST', 
-                query, 
+                'POST',
+                query,
                 {
                     success: function (event) {
                         var result = YAHOO.lang.JSON.parse(event.responseText);
 
                         if (result.success) {
                             treeNodeDragBehavior.completeDragDrop(srcNode, destNode, dragLocation);
-                            
+
                             this._savePanel.hide();
                         } else {
                             this._displayDragDropError("Error: " + result.message);
@@ -372,7 +375,7 @@
                         this._savePanel.hide();
                     },
                     scope: this
-                }, 
+                },
                 postData
             );
         },
@@ -384,7 +387,7 @@
          * @param destNode {YAHOO.widget.Node} The tree node that the source is being dropped onto
          * @param dragLocation {Fisma.TreeNodeDragBehavior.DRAG_LOCATION}
          * @return bool
-         */        
+         */
         testDragTarget: function (srcNode, destNode, dragLocation) {
 
             // Reject a drag/drop if the source is not a POC
@@ -393,7 +396,7 @@
             }
 
             // Reject a drag/drop onto a POC node (but accept above and below a POC node)
-            if (YAHOO.lang.isValue(destNode.data.pocId) 
+            if (YAHOO.lang.isValue(destNode.data.pocId)
                 && dragLocation === Fisma.TreeNodeDragBehavior.DRAG_LOCATION.ONTO) {
 
                 return false;
@@ -404,13 +407,13 @@
 
         /**
          * Display an error message using the save panel.
-         * 
+         *
          * Notice that this assumes the save panel is already displayed (because it's usually used to display
          * error messages related to saving).
          *
          * @method OrganizationTreeView._displayDragDropError
          * @param message {String} The error message to display
-         */        
+         */
         _displayDragDropError: function (message) {
             var alertDiv = document.createElement("div");
 
@@ -427,7 +430,7 @@
                     fn: function () {that._savePanel.hide();}
                 }
             });
-            
+
             alertDiv.appendChild(p1);
             alertDiv.appendChild(p2);
 

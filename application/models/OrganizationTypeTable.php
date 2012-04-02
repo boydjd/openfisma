@@ -47,12 +47,6 @@ class OrganizationTypeTable extends Fisma_Doctrine_Table implements Fisma_Search
                 'sortable' => true,
                 'type' => 'text'
             ),
-            'icon' => array(
-                'initiallyVisible' => true,
-                'label' => 'Icon',
-                'sortable' => false,
-                'type' => 'text'
-            ),
             'description' => array(
                 'initiallyVisible' => true,
                 'label' => 'Description',
@@ -78,7 +72,7 @@ class OrganizationTypeTable extends Fisma_Doctrine_Table implements Fisma_Search
 
     /**
      * Modifies the search index collection query to filter out system objects
-     * 
+     *
      * @param Doctrine_Query $baseQuery
      * @param array $relationAliases An array that maps relation names to table aliases in the query
      * @return Doctrine_Query
@@ -92,24 +86,23 @@ class OrganizationTypeTable extends Fisma_Doctrine_Table implements Fisma_Search
 
     /**
      * Return an array of organization type which its keys are ids and value are nickname
-     * 
-     * @param boolean $includeSystem 
+     *
+     * @param boolean $includeSystem
      * @return Organization type array with key is id and value is nickname
      */
-    public function getOrganizationTypeArray($includeSystem = true)
+    public function getOrganizationTypeArray()
     {
         $orgTypeArray = array();
         $orgTypes = $this->findAll(Doctrine::HYDRATE_ARRAY);
         foreach ($orgTypes as $orgType) {
-            if (!$includeSystem) {
-                if ('system' == $orgType['nickname']) {
-                    continue;
-                }
+            if ('System' == $orgType['name']) {
+                continue;
             }
-            $orgTypeArray[$orgType['id']] = $orgType['nickname'];
-        }   
-        
-        natcasesort($orgTypeArray);        
+
+            $orgTypeArray[$orgType['id']] = $orgType['name'];
+        }
+
+        natcasesort($orgTypeArray);
         return $orgTypeArray;
     }
 }

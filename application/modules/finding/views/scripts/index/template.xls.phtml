@@ -153,8 +153,8 @@ echo $this->escape($xmltag, 'none');
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Finding Description -->
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Finding Recommendation -->
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="75"/><!-- Course Of Action Type -->
-   <Column ss:StyleID="s47" ss:AutoFitWidth="0" ss:Width="175"/><!-- Course Of Action Description -->
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="100"/><!-- Expected Completion Date -->
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="175"/><!-- Course Of Action Description -->
+   <Column ss:StyleID="s47" ss:AutoFitWidth="0" ss:Width="100"/><!-- Expected Completion Date -->
    <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="100"/><!-- NIST 800-53 Control -->
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Threat Level -->
    <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="175"/><!-- Threat Description -->
@@ -254,6 +254,12 @@ echo $this->escape($xmltag, 'none');
   </DataValidation>
   <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
    <Range>R4C2:R65536C2</Range>
+   <Type>Date</Type>
+   <Min>36526</Min>
+   <Max>50041</Max>
+  </DataValidation>
+  <DataValidation xmlns="urn:schemas-microsoft-com:office:excel">
+   <Range>R4C8:R65536C8</Range>
    <Type>Date</Type>
    <Min>36526</Min>
    <Max>50041</Max>

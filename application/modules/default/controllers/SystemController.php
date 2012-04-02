@@ -1041,4 +1041,22 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->form = $this->getForm('system_converttoorganization');
         $this->view->form->setAction('/system/convert-to-org/id/' . $id);
     }
+
+    /**
+     * Override to set some unique form elements.
+     *
+     * @param string|null $formName The name of the specified form
+     * @return Zend_Form The specified form of the subject model
+     */
+    public function getForm($formName = null)
+    {
+        $form = parent::getForm($formName);
+
+        if (empty($formName) || $formName == 'system') {
+            $systemTypeArray = Doctrine::getTable('SystemType')->getTypeList();
+            $form->getElement('systemTypeId')->addMultiOptions($systemTypeArray);
+        }
+
+        return $form;
+    }
 }

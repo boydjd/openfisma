@@ -151,6 +151,12 @@ class Fisma_Menu
                     );
                 }
 
+                if ($acl->hasPrivilegeForClass('read', 'SystemType')) {
+                    $systemInventoryAdminMenu->add(
+                        new Fisma_Yui_MenuItem('System Types', '/system-type/list')
+                    );
+                }
+
                 $systemInventoryMenu->add($systemInventoryAdminMenu);
             }
 

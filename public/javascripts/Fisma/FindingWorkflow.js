@@ -137,14 +137,17 @@ Fisma.FindingWorkflow = {
     chartLabelChangeHandler : function(element) {
         var newLabel = jQuery(element).val().trim();
         jQuery(element).val(newLabel);
-        if (jQuery('input[name$="nickname"]').filter('[value="' + newLabel + '"]').length > 1) {
+        var countDuplication = jQuery('input[name$="nickname"]').filter(function(i, e) {
+            return (jQuery(e).val().toUpperCase() == newLabel.toUpperCase());
+        }).length;
+        if (countDuplication > 1) {
             jQuery(element).val('');
-            Fisma.Util.showAlertDialog('Chart Label must be unique.');
+            Fisma.Util.showAlertDialog('Chart Label must be unique regardless of letter case.');
             return false;
         }
 
         var reserved = ['NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED'];
-        if (jQuery.inArray(newLabel, reserved) >= 0) {
+        if (jQuery.inArray(newLabel.toUpperCase(), reserved) >= 0) {
             jQuery(element).val('');
             Fisma.Util.showAlertDialog('Chart Label "' + newLabel + '" cannot be used because it is reserved by the system.');
             return false;
