@@ -16,13 +16,10 @@ elements.nickname.options.label = "Nickname"
 elements.nickname.options.required = true
 displayGroups.organizationType.elements.nickname = "nickname"
 
-elements.icon.type = "select"
-elements.icon.options.label = "Icon"
-elements.icon.options.multiOptions.agency = "agency"
-elements.icon.options.multiOptions.bureau = "bureau"
-elements.icon.options.multiOptions.organization = "organization"
-elements.icon.options.required = true
-displayGroups.organizationType.elements.icon = "icon"
+elements.iconId.type = "Element_ImagePicker"
+elements.iconId.options.label = "Icon"
+elements.iconId.options.required = true
+displayGroups.organizationType.elements.iconId = "iconId"
 
 elements.description.type = "textarea"
 elements.description.options.label = "Description"

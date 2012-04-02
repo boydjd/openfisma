@@ -123,6 +123,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
     /**
      * Genenerate fisma report
      *
+     * @GETAllowed
      * @return void
      */
     public function fismaAction()
@@ -137,6 +138,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      *
      * The data in this action is calculated in roughly the same order as it is laid out in the report itself.
      *
+     * @GETAllowed
      * @return void
      */
     public function fismaQuarterlyAction()
@@ -167,6 +169,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
     /**
      * Generate the annual FISMA report
      *
+     * @GETAllowed
      * @return void
      */
     public function fismaAnnualAction()
@@ -197,6 +200,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
     /**
      * Overdue report
      *
+     * @GETAllowed
      * @return void
      */
     public function overdueAction()
@@ -341,6 +345,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
     /**
      * Display the available plugin reports
      *
+     * @GETAllowed
      * @return void
      * @todo Use Zend_Cache for the report menu
      */
@@ -416,6 +421,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
     /**
      * Execute and display the specified plug-in report
      *
+     * @GETAllowed
      * @return void
      */
     public function pluginReportAction()

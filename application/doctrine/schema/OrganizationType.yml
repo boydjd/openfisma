@@ -4,7 +4,7 @@ OrganizationType:
     columns:
         createdTs: timestamp
         modifiedTs: timestamp
-        name: 
+        name:
             type: string(255)
             notblank: true
             notnull: true
@@ -17,12 +17,12 @@ OrganizationType:
             notnull: true
             extra:
                 notify: true
-        icon:
-            type: string(255)
+        iconId:
+            type: integer
             extra:
                 notify: true
-            comment: Icon of organization types (agency, bureau, organization)
-        description: 
+                logicalName: Icon
+        description:
             type: string
             extra:
                 purify: html
@@ -35,3 +35,9 @@ OrganizationType:
             updated:
                 name: modifiedTs
                 type: timestamp
+
+    relations:
+        Icon:
+            local: iconId
+            foreign: id
+            foreignAlias: OrganizationTypes

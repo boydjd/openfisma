@@ -62,6 +62,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * View the specified system
      *
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -69,11 +70,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         // Either 'id' (system ID) or 'oid' (organization ID) is required
         $id = $this->getRequest()->getParam('id');
         $organizationId = $this->getRequest()->getParam('oid');
-        
+
         if ($id) {
-            $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);            
+            $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
         } elseif ($organizationId) {
-            $organization = Doctrine::getTable('Organization')->find($organizationId);            
+            $organization = Doctrine::getTable('Organization')->find($organizationId);
             $id = $organization->System->id;
         } else {
             throw new Fisma_Zend_Exception("Required parameter 'id' or 'oid' is missing.");
@@ -103,25 +104,25 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'href' => $findingSearchUrl
             )
         );
-        
+
         if ($this->_acl->hasPrivilegeForClass('create', 'Organization')) {
 
             $this->view->convertToOrgButton = new Fisma_Yui_Form_Button(
-                'convertToOrg', 
+                'convertToOrg',
                 array(
                       'label' => 'Convert To Organization',
                       'onClickFunction' => 'Fisma.System.convertToOrgOrSystem',
                       'onClickArgument' => array(
                           'id' => $id,
-                          'text' => "WARNING: You are about to convert this system to an organization. " 
+                          'text' => "WARNING: You are about to convert this system to an organization. "
                                     . "After this conversion all system information (FIPS-199 and FISMA Data) will be "
-                                    . "permanently lost.\n\n" 
+                                    . "permanently lost.\n\n"
                                     . "Do you want to continue?",
                           'func' => 'Fisma.System.askForSysToOrgInput'
-                    ) 
+                    )
                 )
             );
-                
+
         }
 
         $this->view->tabView = $tabView;
@@ -135,6 +136,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display basic system properties such as name, creation date, etc.
      *
+     * @GETAllowed
      * @return void
      */
     public function systemAction()
@@ -155,21 +157,26 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->render();
     }
 
+    /**
+     * Convert a system to an organization.
+     *
+     * @return void
+     */
     public function convertToOrgAction()
     {
         if (!$this->_acl->hasPrivilegeForClass('create', 'Organization')) {
-            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' . 
-                'cannot create Organization');            
+            throw new Fisma_Zend_Exception('Insufficient privileges to convert organization to system - ' .
+                'cannot create Organization');
         }
-    
+
         $systemId = Inspekt::getDigits($this->getRequest()->getParam('id'));
 
         if ($systemId) {
-            $organization = Doctrine::getTable('Organization')->findOneBySystemId($systemId);         
+            $organization = Doctrine::getTable('Organization')->findOneBySystemId($systemId);
         } else {
             throw new Fisma_Zend_Exception("Required parameter 'id' is missing.");
-        }          
-        
+        }
+
         $countSystemDoc = $organization->System->Documents->count();
         if ($countSystemDoc > 0) {
             $msg = "Cannot convert this system to an organization because it has documents attached to it.";
@@ -177,14 +184,14 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $type = "warning";
             $this->view->priorityMessenger($msg, 'warning');
             $this->_redirect("/system/view/id/$systemId");
-        }          
-        
+        }
+
         $form = $this->getForm('system_converttoorganization');
         if ($form->isValid($this->getRequest()->getPost())) {
             $organization->convertToOrganization(
                 $form->getElement('orgType')->getValue()
             );
-        
+
             $this->view->priorityMessenger('Converted to organization successfully', 'notice');
             $this->_redirect("/organization/view/id/" . $organization->id);
         }
@@ -193,6 +200,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display CIA criteria and FIPS-199 categorization
      *
+     * @GETAllowed
      * @return void
      */
     public function fipsAction()
@@ -211,6 +219,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display FISMA attributes for the system
      *
+     * @GETAllowed
      * @return void
      */
     public function fismaAction()
@@ -229,6 +238,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display FISMA attributes for the system
      *
+     * @GETAllowed
      * @return void
      */
     public function artifactsAction()
@@ -427,7 +437,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      * @param Zend_Form $form
      * @param Doctrine_Record $system
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
-     * @returns integer Organization id of new system
+     * @return Fisma_Doctrine_Record The saved record
      */
     protected function saveValue($form, $system=null)
     {
@@ -496,7 +506,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $userRoles->save();
         }
 
-        return $system->id;
+        return $system;
     }
 
     /**
@@ -572,8 +582,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * userAction 
-     * 
+     * userAction
+     *
+     * @GETAllowed
      * @access public
      * @return void
      */
@@ -637,7 +648,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                  ->orderBy('r.nickname')
                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                  ->execute();
-        
+
         $select = new Zend_Form_Element_Select('roles');
         $select->setLabel('Role');
 
@@ -670,7 +681,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
-        $addUserId = new Zend_Form_Element_Hidden('addUserId'); 
+        $addUserId = new Zend_Form_Element_Hidden('addUserId');
         $addUserAccessForm->addElement($userAutoComplete);
         $addUserAccessForm->addElement($select);
         $addUserAccessForm->addElement($addButton);
@@ -715,7 +726,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
-        $copySystemId = new Zend_Form_Element_Hidden('copySystemId'); 
+        $copySystemId = new Zend_Form_Element_Hidden('copySystemId');
         $copyUserAccessForm->addElement($systemAutoComplete);
         $copyUserAccessForm->addElement($selectAllButton);
         $copyUserAccessForm->addElement($addSelectedButton);
@@ -730,8 +741,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * addUserAction 
-     * 
+     * addUserAction
+     *
      * @access public
      * @return void
      */
@@ -747,7 +758,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $roleId = $this->getRequest()->getParam('roleId');
 
         /**
-         * Get the existing user role ID, or create a new user role if one doesn't exist 
+         * Get the existing user role ID, or create a new user role if one doesn't exist
          */
         $userRoleId = Doctrine::getTable('UserRole')->getByUserIdAndRoleIdQuery($userId, $roleId)
                       ->select('ur.userroleid')
@@ -779,8 +790,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * getUserAccessTreeAction 
-     * 
+     * getUserAccessTreeAction
+     *
+     * @GETAllowed
      * @access public
      * @return void
      */
@@ -816,8 +828,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * getSystemsAction 
-     * 
+     * getSystemsAction
+     *
+     * @GETAllowed
      * @access public
      * @return void
      */
@@ -834,13 +847,14 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                    ->execute();
 
         $list = array('systems' => $systems);
-        
+
         return $this->_helper->json($list);
     }
 
     /**
      * Display system aggregation tree.
      *
+     * @GETAllowed
      * @return void
      */
     public function aggregationAction()
@@ -853,6 +867,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Returns a JSON object that describes the system aggregation tree.
      *
+     * @GETAllowed
      * @return void
      */
     public function aggregationDataAction()
@@ -860,7 +875,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
         $includeDisposalSystem = ('true' === $this->getRequest()->getParam('displayDisposalSystem'));
-        
+
         // Save preferences for this screen
         $userId = CurrentUser::getInstance()->id;
         $namespace = 'System.Aggregation';
@@ -882,8 +897,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Gets the system aggregation tree data
      *
+     * @GETAllowed
      * @param boolean $includeDisposal Whether display disposal system or not
-     *
      * @return array The array representation of aggregation tree
      */
     public function getAggregationTree($includeDisposal = false)
@@ -892,7 +907,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                        ->toKeyValueArray('id', 'id');
 
         if (empty($orgIds)) {
-            return null;   
+            return null;
         }
 
         $systemObjects = Doctrine_Query::create()
@@ -915,7 +930,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }
 
         if (empty($systems)) {
-            return null;   
+            return null;
         }
 
         return array_values($systems);
@@ -924,11 +939,12 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override from FZCAO.
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
-        $buttons = parent::getToolbarButtons();
+        $buttons = parent::getToolbarButtons($record);
 
         $isList = $this->getRequest()->getActionName() === 'list';
         $resourceName = $this->getAclResourceName();
@@ -951,6 +967,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      * Moves a tree node relative to another tree node. This is used by the YUI tree node to handle drag and drops
      * of system nodes. It replies with a JSON object.
      *
+     * @GETAllowed
      * @return void
      */
     public function moveNodeAction()
@@ -1015,6 +1032,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     /**
      * AJAX action to render the form for converting a System to an Organization.
      *
+     * @GETAllowed
      * @return void
      */
     public function convertToOrganizationFormAction()
@@ -1022,5 +1040,23 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $id = Inspekt::getDigits($this->getRequest()->getParam('id'));
         $this->view->form = $this->getForm('system_converttoorganization');
         $this->view->form->setAction('/system/convert-to-org/id/' . $id);
+    }
+
+    /**
+     * Override to set some unique form elements.
+     *
+     * @param string|null $formName The name of the specified form
+     * @return Zend_Form The specified form of the subject model
+     */
+    public function getForm($formName = null)
+    {
+        $form = parent::getForm($formName);
+
+        if (empty($formName) || $formName == 'system') {
+            $systemTypeArray = Doctrine::getTable('SystemType')->getTypeList();
+            $form->getElement('systemTypeId')->addMultiOptions($systemTypeArray);
+        }
+
+        return $form;
     }
 }

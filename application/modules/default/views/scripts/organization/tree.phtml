@@ -11,6 +11,8 @@ Fisma_Format_Section::startSection("Organizations: Hierarchy View");
     <button type="button" id="collapseAllButton">Collapse All</button>
 </p>
 
+<input name="csrf" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
+
 <div id="orgTreeContainer" class="draggableTreeContainer"></div>
 
 <script type="text/javascript">

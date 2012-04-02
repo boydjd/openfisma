@@ -295,7 +295,14 @@ Fisma.Finding = {
                 panelConfig
             );
 
-            Fisma.Finding.createPocPanel.subscribe("hide", this.removePocMessageBox, this, true);            
+            Fisma.Finding.createPocPanel.subscribe("hide", this.removePocMessageBox, this, true);
+
+            Fisma.Finding.createPocPanel.hideEvent.subscribe(function (e) {
+                setTimeout(function () {
+                    Fisma.Finding.createPocPanel.destroy();
+                    Fisma.Finding.createPocPanel = null;
+                }, 0);
+            });
         } else {
             // Handle OFJ-1579 IE7 bug.
             if (YAHOO.env.ua.ie === 7) {
@@ -378,6 +385,16 @@ Fisma.Finding = {
         var button = this;
         var form = Fisma.Finding.createPocPanel.body.getElementsByTagName('form')[0];
 
+        // Since the form misses reportingOrganizationId element, it needs to get the value manually.
+        var menu = YAHOO.widget.Button.getButton('reportingOrganizationId-button').getMenu();
+        var reportingOrganization = YAHOO.lang.isNull(menu.activeItem) ? menu.srcElement.value : menu.activeItem.value;
+
+        var reportingOrgEle = document.createElement('input');
+        reportingOrgEle.type = 'hidden';
+        reportingOrgEle.name = 'reportingOrganizationId';
+        reportingOrgEle.value = reportingOrganization;
+        form.appendChild(reportingOrgEle);
+
         // Disable the submit button
         button.set("disabled", true);
 
@@ -431,5 +448,32 @@ Fisma.Finding = {
      */
     setupSecurityControlAutocomplete : function (autocomplete, params) {
         autocomplete.itemSelectEvent.subscribe(Fisma.Finding.handleSecurityControlSelection);
+    },
+
+    /** 
+    * This takes a YUI datatable as parameters, delete a row, then refresh the table  
+    *    
+    * @param YUI datatable
+    */
+    deleteEvidence: function (oArgs) {
+        var oRecord = this.getRecord(oArgs.target);
+        var data = oRecord.getData();
+        var postData = new Object();
+
+        var that = this;
+        postData.id = data.id;
+        postData.attachmentId = data.attachmentId;
+        postData.csrf = $('[name="csrf"]').val();
+
+        $.ajax({
+            type: "POST",
+            url: '/finding/remediation/delete-evidence/',
+            data: postData,
+            dataType: "json",
+            success: function() {
+                that.deleteRow(oArgs.target);
+            }
+        });
     }
+
 };

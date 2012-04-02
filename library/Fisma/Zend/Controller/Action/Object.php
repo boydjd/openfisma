@@ -29,7 +29,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     /**
      * The maximum number of records this controller will export during its search action when the format is PDF
      * or XLS
-     * 
+     *
      * @var int
      */
     const MAX_EXPORT_RECORDS = 1000;
@@ -95,9 +95,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      * 1) List All <model name>s
      * 2) Create New <model name>
      *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons()
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
     {
         $buttons = array();
         $isList = $this->getRequest()->getActionName() === 'list';
@@ -197,7 +198,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 'user' => $this->_me
             )
         );
-        
+
         return $form;
     }
 
@@ -220,7 +221,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      *
      * @param Zend_Form $form The specified form
      * @param Doctrine_Record|null $subject The specified subject model
-     * @return integer ID of the object saved.
+     * @return Fisma_Doctrine_Record The saved object.
      * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
      */
     protected function saveValue($form, $subject = null)
@@ -234,15 +235,16 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $subject->merge($form->getValues());
         $subject->save();
 
-        return $subject->id;
+        return $subject;
     }
 
     /**
-     * Display a create page for a single record. 
+     * Display a create page for a single record.
      *
      * All of the default logic for creating a record is performed in _createObject, so that child classes can use the
      * default logic but still render their own views.
      *
+     * @GETAllowed
      * @return void
      */
     public function createAction()
@@ -264,7 +266,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         $format = $this->getRequest()->getParam('format');
-        
+
         if ($format == 'json') {
             $jsonResponse = new Fisma_AsyncResponse;
         }
@@ -279,16 +281,16 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             if ($form->isValid($post)) {
                 try {
                     Doctrine_Manager::connection()->beginTransaction();
-                    $objectId = $this->saveValue($form);
+                    $object = $this->saveValue($form);
                     Doctrine_Manager::connection()->commit();
-                    
+
                     if ($format == 'json') {
-                        $jsonResponse->succeed($objectId);
+                        $jsonResponse->succeed($object->id);
                     } else {
                         $msg   = $this->getSingularModelName() . ' created successfully';
                         $type = 'notice';
                         $this->view->priorityMessenger($msg, $type);
-                        $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$objectId");
+                        $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/{$object->id}");
                     }
                 } catch (Doctrine_Validator_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
@@ -303,7 +305,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 }
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                
+
                 if ($format == 'json') {
                     $jsonResponse->fail($errorString);
                 } else {
@@ -329,6 +331,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      * All of the default logic for viewing a record is performed in _viewObject, so that child classes can use the
      * default logic but still render their own views.
      *
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -346,8 +349,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $subject = $this->_getSubject($id);
 
         // Since combine view and edit in one action, it needs read and/or update privilege to access view page
-        if ($this->_enforceAcl && 
-            (!$this->_acl->hasPrivilegeForObject('read', $subject) && 
+        if ($this->_enforceAcl &&
+            (!$this->_acl->hasPrivilegeForObject('read', $subject) &&
              !$this->_acl->hasPrivilegeForObject('update', $subject))) {
 
                $this->view->priorityMessenger("Don't have permission to read/update this object.", 'warning');
@@ -362,10 +365,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         } else {
             $form->setReadOnly(true);
         }
- 
-       $this->setForm($subject, $form);
 
-        $this->view->links = $this->getViewLinks($subject);
+       $this->setForm($subject, $form);
 
         // Update the model
         if ($this->_request->isPost()) {
@@ -376,7 +377,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $post = $this->_request->getPost();
             if ($form->isValid($post)) {
                 try {
-                    $result = $this->saveValue($form, $subject);
+                    $this->saveValue($form, $subject);
                     $msg   = $this->getSingularModelName() . ' updated successfully';
                     $type = 'notice';
 
@@ -402,8 +403,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
         }
 
+        $viewButtons = $this->getViewButtons($subject);
+        $toolbarButtons = $this->getToolbarButtons();
+        $buttons = array_merge($toolbarButtons, $viewButtons);
         $this->view->modelName = $this->getSingularModelName();
-        $this->view->toolbarButtons = $this->getToolbarButtons();
+        $this->view->toolbarButtons = $this->getToolbarButtons($subject);
 
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;
@@ -454,10 +458,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * Delete multiple records 
-     * 
+     * Delete multiple records
+     *
      * @access public
-     * @return string JSON string 
+     * @return string JSON string
      */
     public function multiDeleteAction()
     {
@@ -500,24 +504,24 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $noun = $this->getPluralModelName();
                 $verb = "were";
             }
-            
+
             $message = "$numRecords $noun $verb deleted.";
             $status = 'notice';
-            
+
         } catch (Doctrine_Exception $e) {
-            
+
             Doctrine_Manager::connection()->rollback();
-            
+
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             } else {
                 $message .= 'An error has occured while deleting selected record(s)';
             }
             $status = 'warning';
-            
+
             $logger = $this->getInvokeArg('bootstrap')->getResource('Log');
             $logger->log($e->getMessage() . "\n" . $e->getTraceAsString(), Zend_Log::ERR);
-            
+
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollBack();
             $message = $e->getMessage();
@@ -526,10 +530,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         return $this->_helper->json(array('msg' => $message, 'status' => $status));
     }
-    
+
     /**
      * List the subjects
      *
+     * @GETAllowed
      * @return void
      */
     public function listAction()
@@ -541,11 +546,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $keywords = trim($this->_request->getParam('keywords'));
 
         $table = Doctrine::getTable($this->_modelName);
-        
+
         if (!($table instanceof Fisma_Search_Searchable)) {
             throw new Fisma_Zend_Exception(get_class($table) . ' does not implement Fisma_Search_Searchable.');
         }
-        
+
         $searchableFields = $table->getSearchableFields();
 
         // Create the YUI table that will display results
@@ -564,7 +569,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $firstColumn = each($searchableFields);
         $searchResultsTable->setInitialSortColumn($firstColumn['key']);
         reset($searchableFields);
-        
+
         // If user can delete objects, then add a checkbox column
         if ($this->_isDeletable() && $this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
             $column = new Fisma_Yui_DataTable_Column('<input id="dt-checkbox" type="checkbox">',
@@ -624,7 +629,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $searchResultsTable->setDeferData(true);
         }
 
-        $this->view->toolbarButtons = $this->getToolbarButtons();
+        $this->view->toolbarButtons = $this->getToolbarButtons(null);
         $this->view->pluralModelName = $this->getPluralModelName();
         $this->view->searchResultsTable = $searchResultsTable;
         $this->view->assign($searchResultsTable->getProperties());
@@ -680,9 +685,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
         return $result;
     }
+
     /**
      * Apply a user query to the search engine and return the results in JSON format
      *
+     * @GETAllowed
      * @return string The encoded table data in json format
      */
     public function searchAction()
@@ -714,7 +721,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $sortDirection = $this->getRequest()->getParam('dir', 'asc');
         $sortBoolean = ('asc' == $sortDirection);
         $showDeletedRecords = ('true' == $this->getRequest()->getParam('showDeleted'));
-        
+
         if (empty($format)) {
             // For HTML UI, add a limit/offset to query
             $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
@@ -727,7 +734,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         // Execute simple search (default) or advanced search (if explicitly requested)
         $searchEngine = Zend_Registry::get('search_engine');
-        
+
         // For exports, disable highlighting and result length truncation
         if (!empty($format)) {
             $searchEngine->setHighlightingEnabled(false);
@@ -797,7 +804,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $storage->data = $data;
             $storage->save();
         }
-        
+
         // Create the appropriate output for the requested format
         if (empty($format)) {
             $searchResults['recordsReturned'] = $result->getNumberReturned();
@@ -807,20 +814,20 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             return $this->_helper->json($searchResults);
         } else {
             $report = new Fisma_Report;
-            
+
             $visibleColumns = $this->_getColumnVisibility();
 
             // Columns are returned in wrong order and need to be re-arranged
             $rawSearchData = $result->getTableData();
             $reformattedSearchData = array();
-            
+
             // Create a place holder for each table row. This gets filled in during the following loop.
             foreach ($rawSearchData as $rawDatum) {
                 $reformattedSearchData[] = array();
             }
 
             foreach ($searchableFields as $fieldName => $searchableField) {
-                
+
                 // Visibility is determined by stored cookie, with fallback to search field definition
                 if (isset($visibleColumns[$fieldName])) {
                     $visible = (bool)$visibleColumns[$fieldName];
@@ -828,7 +835,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     $visible = isset($searchableField['initiallyVisible']) && $searchableField['initiallyVisible'];
                 }
 
-                // For visible columns, display the column in the report and add data from the 
+                // For visible columns, display the column in the report and add data from the
                 // raw result for that column
                 if ($visible) {
                     $report->addColumn(
@@ -939,7 +946,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         if (!Doctrine::getTable($this->_modelName)->hasColumn('deleted_at')) {
             $searchForm->removeElement('showDeleted');
         }
-        
+
         // Remove the delete button if the user doesn't have the right to click it
         if (!$this->_isDeletable() || !$this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
             $searchForm->removeElement('deleteSelected');
@@ -959,30 +966,44 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * Return an array of links that are displayed on the object view page
-     *
-     * The keys are link labels and the values are the URLs
+     * Return an array of buttons that are displayed on the object view page
      *
      * @param Fisma_Doctrine_Record $subject
      * @return array
      */
-    public function getViewLinks(Fisma_Doctrine_Record $subject)
+    public function getViewButtons(Fisma_Doctrine_Record $subject)
     {
-        $links = array();
+        $buttons = array();
 
         if ($this->_isDeletable() && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject))) {
-            $links['Delete'] = "{$this->_moduleName}/{$this->_controllerName}/delete/id/{$subject->id}";
+            $postAction = "{$this->_moduleName}/{$this->_controllerName}/delete/";
+
+            $buttons['delete'] = new Fisma_Yui_Form_Button(
+                'delete' . $this->_modelName,
+                 array(
+                       'label' => 'Delete '. $this->_modelName,
+                       'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                       'onClickArgument' => array(
+                           'args' => array(null, $postAction, $subject->id),
+                           'text' => 'WARNING: You are about to delete the '
+                                    . strtolower($this->_modelName)
+                                    . 'record. This action cannot be undone. Do you want to continue?',
+                           'func' => 'Fisma.Util.formPostAction'
+                    )
+                )
+            );
+
         }
 
-        return $links;
+        return $buttons;
     }
 
     /**
      * Returns true if the model is deletable, false otherwise.
-     * 
+     *
      * The default implementation returns true because most models are deletable. Models which are not deletable should
      * override this method in their controller and return false.
-     * 
+     *
      * @return bool
      */
     protected function _isDeletable()
@@ -1013,7 +1034,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
              $msg = '%s (%d) not found. Make sure a valid ID is specified.';
              throw new Fisma_Zend_Exception_User(sprintf($msg, $this->_modelName, $id));
         }
-        
+
         return $record;
     }
 }

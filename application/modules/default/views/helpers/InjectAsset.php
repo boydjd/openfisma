@@ -36,13 +36,13 @@ class View_Helper_InjectAsset
 {
     public $view;
     private static $_depMap = array(
-                                '/javascripts/combined.js' => 
+                                '/javascripts/combined.js' =>
                                 array('/javascripts/php.js',
                                       '/javascripts/tiny_mce_config.js',
                                       '/javascripts/selectallselectnone.js',
                                       '/javascripts/groupeddatatable.js',
                                       '/javascripts/Fisma.js',
-                                      '/javascripts/editable.js',
+                                      '/javascripts/Fisma/Editable.js',
                                       '/javascripts/Fisma/AttachArtifacts.js',
                                       '/javascripts/Fisma/AutoComplete.js',
                                       '/javascripts/Fisma/Blinker.js',
@@ -53,10 +53,14 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Email.js',
                                       '/javascripts/Fisma/TreeTable.js',
                                       '/javascripts/Fisma/FindingSummary.js',
+                                      '/javascripts/Fisma/FindingWorkflow.js',
                                       '/javascripts/Fisma/Highlighter.js',
                                       '/javascripts/Fisma/HtmlPanel.js',
                                       '/javascripts/Fisma/Incident.js',
+                                      '/javascripts/Fisma/InteractiveOrderedListItem.js',
+                                      '/javascripts/Fisma/IncidentWorkflow.js',
                                       '/javascripts/Fisma/Ldap.js',
+                                      '/javascripts/Fisma/ImagePicker.js',
                                       '/javascripts/Fisma/Menu.js',
                                       '/javascripts/Fisma/MessageBox.js',
                                       '/javascripts/Fisma/MessageBoxStack.js',
@@ -85,12 +89,12 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/TableFormat.js',
                                       '/javascripts/Fisma/TabView.js',
                                       '/javascripts/Fisma/TabView/Roles.js',
+                                      '/javascripts/Fisma/TinyMCE.js',
                                       '/javascripts/Fisma/TreeNodeDragBehavior.js',
                                       '/javascripts/Fisma/UrlPanel.js',
                                       '/javascripts/Fisma/User.js',
                                       '/javascripts/Fisma/Util.js',
                                       '/javascripts/Fisma/Vulnerability.js',
-                                      '/javascripts/Fisma/ZfDebugYuiLogging.js',
                                       '/javascripts/jquery-min.js',
                                       '/javascripts/jqPlot/core/jquery_jqplot.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasTextRenderer.js',
@@ -110,7 +114,9 @@ class View_Helper_InjectAsset
                                       '/stylesheets/chart.css',
                                       '/stylesheets/Dashboard.css',
                                       '/stylesheets/Finding.css',
+                                      '/stylesheets/ImagePicker.css',
                                       '/stylesheets/Incident.css',
+                                      '/stylesheets/InteractiveOrderedListItem.css',
                                       '/stylesheets/jquery_jqplot.css',
                                       '/stylesheets/MessageBox.css',
                                       '/stylesheets/Modules.css',
@@ -149,7 +155,7 @@ class View_Helper_InjectAsset
      * @return void
      */
     public function injectAsset($asset, $type, $combo = FALSE,
-        $media = 'screen', $conditional = FALSE) 
+        $media = 'screen', $conditional = FALSE)
     {
         /**
          * This asset is a Combo, and the application is in debug mode, so we need to output

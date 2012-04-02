@@ -59,12 +59,17 @@ div.attachArtifactsProgressBar {
 
 /* Fix autocomplete rendering underneath other page elements */
 div.yui-ac {
-    z-index: 999;
+    z-index: 998;
+}
+
+/* Fix select menu rendering underneath autocomplete */
+div.yuimenu {
+    z-index: 999 !important;
 }
 
 /* A class that will hide anything that uses it from IE users. Used for hiding IE-incompatible (chart-)features */
 .hideFromIE {
-	display: none;
+    display: none;
 }
 
 /* Fix basic search rendering */
@@ -83,13 +88,14 @@ span.searchQueryButtons button {
     height: 24px;
 }
 
-form#finding_detail_upload_evidence button {
-    display: inline;
+/* only show the element in IE7 */
+.ie7-only {
+    display: inline-block;
 }
 
 /* For fixing OFJ-1569 */
 dl {
-  margin : 0  
+  margin : 0
 }
 
 /* For fixing the calendar background problem */
@@ -98,6 +104,13 @@ div.yui-calcontainer > div.title {
 }
 
 /* For fixing section div block calendar problem */
-#TabView_FindingView_TabViewContainer div.section {
+div.section {
     position: static;
+}
+
+/* Fix the positioning of the image drawer */
+.imagePickerDrawer {
+    position: absolute;
+    margin-top: 37px;
+    margin-left: -120px;
 }

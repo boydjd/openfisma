@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -41,6 +41,7 @@ class DebugController extends Zend_Controller_Action
     /**
      * Display phpinfo()
      * 
+     * @GETAllowed
      * @return void
      */
     public function phpinfoAction()
@@ -50,19 +51,21 @@ class DebugController extends Zend_Controller_Action
     /**
      * Display error log
      *
+     * @GETAllowed
      * @return void
      */
     public function errorlogAction()
     {
         $this->_helper->layout()->enableLayout();
         $this->_helper->viewRenderer->setNoRender(false);
-        $this->view->errorLog = ($errorLog = @file_get_contents(APPLICATION_PATH . '/../data/logs/error.log')) 
-            ? $errorLog : 'The error log does not exist.'; 
+        $this->view->errorLog = ($errorLog = @file_get_contents(APPLICATION_PATH . '/../data/logs/error.log'))
+            ? $errorLog : 'The error log does not exist.';
     }
 
     /**
      * Display php log
      *
+     * @GETAllowed
      * @return void
      */
     public function phplogAction()
@@ -70,15 +73,17 @@ class DebugController extends Zend_Controller_Action
         $this->view->log = ($log = @file_get_contents(APPLICATION_PATH . '/../data/logs/php.log'))
             ? $log : 'The php log does not exist';
     }
-    
+
     /**
      * Display APC system cache info
+     *
+     * @GETAllowed
      */
     public function apcCacheAction()
     {
         // Cache type can be 'system' or 'user'. Defaults to 'system'.
         $cacheType = $this->getRequest()->getParam('type', 'system');
-        
+
         switch ($cacheType) {
             case 'system':
                 $cacheInfo = apc_cache_info();
@@ -94,12 +99,12 @@ class DebugController extends Zend_Controller_Action
         // Cache info contains summary data and line item data. Separate these into two view variables for clarity.
         $cacheItems = $cacheInfo['cache_list'];
         unset($cacheInfo['cache_list']);
-        
+
         $this->view->cacheType = ucfirst(htmlspecialchars($cacheType));
         $this->view->cacheSummary = $cacheInfo;
-        
+
         $invalidateCacheButton = new Fisma_Yui_Form_Button_Link(
-            'exportPdf',
+            'invalidateCache',
             array(
                 'value' => "Invalidate {$this->view->cacheType} Cache",
                 'href' => "/debug/invalidate-apc-cache/type/$cacheType"
@@ -112,15 +117,17 @@ class DebugController extends Zend_Controller_Action
             $this->view->cacheItems = $cacheItems;
         }
     }
-    
+
     /**
      * Invalidate APC cache
+     *
+     * @GETAllowed
      */
     public function invalidateApcCacheAction()
     {
         // Cache type can be 'system' or 'user'
         $cacheType = $this->getRequest()->getParam('type', 'system');
-        
+
         switch ($cacheType) {
             case 'system':
                 apc_clear_cache();
@@ -132,7 +139,7 @@ class DebugController extends Zend_Controller_Action
                 throw new Fisma_Zend_Exception("Invalid cache type: '$cacheType'");
                 break;
         }
-        
-        $this->_forward('apc-cache');
+
+        $this->_redirect("/debug/apc-cache/type/$cacheType");
     }
 }

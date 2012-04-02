@@ -23,11 +23,15 @@ if (!(
     echo $this->escape($uploadEvidenceButton, 'none');
 
     if ($this->finding->status == 'EN'): // [Submit Evidence] during EN phase
-        $submitEvidenceButton = new Fisma_Yui_Form_Button_Link(
+        $submitEvidenceButton = new Fisma_Yui_Form_Button(
             'submitEvidenceButton',
             array(
-                'value' => 'Submit Evidence Package',
-                'href' => "/finding/remediation/submit-evidence/id/{$this->finding->id}"
+                'label' => 'Submit Evidence Package',
+                'onClickFunction' => 'Fisma.Util.formPostAction',
+                'onClickArgument' => array(
+                       'action' => '/finding/remediation/submit-evidence/',
+                       'id' => $this->finding->id
+                )
             )
         );
         echo $this->escape($submitEvidenceButton, 'none');

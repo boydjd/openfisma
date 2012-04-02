@@ -1,0 +1,38 @@
+SystemType:
+    gss:
+        name: General Support System
+        nickname: GSS
+        Icon: server_icon
+        description: >
+            <p>A general support system is a set of interconnected information resources under the same
+            direct management control that shares common functionality.  A general support
+            system normally includes hardware, software, information, data, applications,
+            communications, facilities, and people and provides support for a variety of
+            users and/or applications. A general support system, for example, can be a:</p>
+            <ul>
+            <li>LAN including smart terminals that supports a branch office</li>
+            <li>Backbone (e.g., agency-wide)</li>
+            <li>Communications network</li>
+            <li>Departmental data processing center including its operating system and utilities</li>
+            <li>Tactical radio network</li>
+            <li>Shared information processing service organization</li>
+            </ul>
+
+    major:
+        name: Major Application
+        nickname: Major
+        Icon: terminal_icon
+        description: >
+            <p>Major applications are systems that perform clearly defined functions for which
+            there are readily identifiable security considerations and needs (e.g., an
+            electronic funds transfer system).  A major application might comprise many
+            individual programs and hardware, software, and telecommunications components.
+            These components can be a single software application or a combination of
+            hardware/software focused on supporting a specific mission-related function.  A
+            major application may also consist of multiple individual applications if all
+            are related to a single mission function (e.g., payroll or personnel).</p>
+
+    minor:
+        name: Minor Application
+        nickname: Minor
+        Icon: two_terminals_icon

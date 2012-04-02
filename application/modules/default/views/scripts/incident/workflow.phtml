@@ -1,0 +1,131 @@
+<?php
+Fisma_Format_Section::startSection("Workflow Steps");
+
+if ('closed' == $this->incident['status']):
+?>
+    <p><b>This workflow has been completed and the incident is now officially closed.</b></p>
+<?php
+elseif ('new' == $this->incident['status']):
+?>
+    <p><b>This incident does not have a workflow assigned to it yet.</b></p>
+    <p>
+        To create a workflow, select a category on the first tab and click "Save". (This can only be
+        done by privileged users.)
+    </p>
+<?php
+endif;
+
+foreach ($this->steps as $step):
+    switch ($step['status']):
+        case 'current':
+            $class = 'currentIncidentStep';
+            break;
+        case 'completed':
+            $class = 'completedIncidentStep';
+            break;
+        case 'queued':
+            $class = 'queuedIncidentStep';
+            break;
+    endswitch;
+?>
+    <div class="incidentStep <?php echo $this->escape($class)?>">
+        <div class="incidentCardinality">
+            <?php echo $this->escape($step['cardinality']); ?>
+        </div>
+        <table>
+            <tr>
+                <td>Step:</td>
+                <td><?php echo $this->escape($step['name']) ?></td>
+            </tr>
+            <tr>
+                <td>Status:</td>
+                <td><?php echo $this->escape(ucfirst($step['status']))?></td>
+            </tr>
+            <?php
+            if (!is_null($step['userId'])):
+            ?>
+                <tr>
+                    <td>Completion Date:</td>
+                    <td>
+                        <?php echo $this->escape(empty($step['completeTs']) ? 'n/a' : $step['completeTs']); ?>
+                    </td>
+                </tr>
+            <?php
+            endif;
+
+            if (!is_null($step['userId'])):
+            ?>
+                <tr>
+                    <td>Completed By:</td>
+                    <td><?php echo $this->escape($this->userInfo($step['User']['username']), 'none'); ?></td>
+                </tr>
+            <?php
+            endif;
+
+            if (isset($step['Role'])):
+            ?>
+                <tr>
+                    <td>Role Required:</td>
+                    <td>
+                        (<?php echo $this->escape($step['Role']['nickname'])?>)
+                        <?php echo $this->escape($step['Role']['name'])?>
+                    </td>
+                </tr>
+            <?php
+            endif;
+
+            if (!empty($step['description'])):
+            ?>
+                <tr>
+                    <td>Description:</td>
+                    <td><?php echo $this->escape($step['description'], 'none') ?></td>
+                </tr>
+            <?php
+            endif;
+
+            if (!empty($step['comments'])):
+            ?>
+                <tr>
+                    <td>Comments:</td>
+                    <td>
+                        <?php
+                            echo $this->escape(
+                                Fisma_String::textToHtml(htmlspecialchars($step['comments'])),
+                                'none'
+                            );
+                        ?>
+                    </td>
+                </tr>
+            <?php
+            endif;
+
+            if ('current' == $step['status'] && $this->updateIncidentPrivilege):
+            ?>
+                <tr>
+                    <td>*Comments:</td>
+                    <td>
+                        <textarea rows="8" cols="60" name="comment"></textarea>
+                    </td>
+                </tr>
+                <tr>
+                    <td>&nbsp;</td>
+                    <td>
+                        <?php
+                        $completeStepButton = new Fisma_Yui_Form_Button_Submit(
+                            'completeStep',
+                            array('label' => 'Complete Step')
+                        );
+                        echo $this->escape($completeStepButton, 'none');
+                        ?>
+                    </td>
+                </tr>
+            <?php
+            endif;
+            ?>
+        </table>
+    </div>
+<?php
+endforeach;
+
+Fisma_Format_Section::stopSection();
+?>

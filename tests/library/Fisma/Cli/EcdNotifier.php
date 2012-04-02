@@ -19,7 +19,7 @@
 require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 
 /**
- * Test suite for /library/Fisma/Cli/EcdNotifier.php. Due to the use of Zend_Console_Getopt, this test must be run 
+ * Test suite for /library/Fisma/Cli/EcdNotifier.php. Due to the use of Zend_Console_Getopt, this test must be run
  *  without any options for phpunit.
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
@@ -51,6 +51,7 @@ class Test_Library_Fisma_Cli_EcdNotifier extends Test_Case_Unit
         $query->expects($this->any())->method('execute')->will($this->returnValue($findings));
 
         $notify = $this->getMock('Fisma_Cli_EcdNotifier', array('getQuery', 'notify'));
+        $notify->setLog($this->getMock("Zend_Log"));
         $notify->expects($this->any())->method('getQuery')->will($this->returnValue($query));
         $notify->expects($this->exactly(count($findings)))->method('notify');
         Fisma::initialize(Fisma::RUN_MODE_TEST);
@@ -60,12 +61,13 @@ class Test_Library_Fisma_Cli_EcdNotifier extends Test_Case_Unit
 
     /**
      * Test the query to get expiringFindings
-     * 
+     *
      * @return void
      */
     public function testQuery()
     {
         $notify = new Fisma_Cli_EcdNotifier();
+        $notify->setLog($this->getMock("Zend_Log"));
         $query = $notify->getQuery()->getDql();
         $conditions = 'WHERE f.status != ? AND f.currentEcd IN (?, ?, ?, ?)';
         $this->assertContains($conditions, $query);

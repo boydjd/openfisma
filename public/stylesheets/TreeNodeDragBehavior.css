@@ -29,43 +29,7 @@ div.showDisposalSystem input {
     opacity: 0.75;
 }
 
-/* The following styles are for the organization tree view icons */
-.draggableTreeContainer .agency {
-       padding-left: 20px; 
-       background: url(/images/agency-small.png) no-repeat;
-}
-
-.draggableTreeContainer .bureau {
-       padding-left: 20px; 
-       background: url(/images/bureau-small.png) no-repeat;
-}
-
-.draggableTreeContainer .organization {
-       padding-left: 20px; 
-       background: url(/images/organization-small.png) no-repeat;
-}
-
-.draggableTreeContainer .gss {
-       padding-left: 20px; 
-       background: url(/images/gss-small.png) no-repeat;
-}
-
-.draggableTreeContainer .major {
-       padding-left: 20px; 
-       background: url(/images/major-small.png) no-repeat;
-}
-
-.draggableTreeContainer .minor {
-       padding-left: 20px; 
-       background: url(/images/minor-small.png) no-repeat;
-}
-
-.draggableTreeContainer .poc {
-       padding-left: 20px; 
-       background: url(/images/poc-small.png) no-repeat;
-}
-
 .draggableTreeContainer .disposal {
-       padding-left: 20px; 
+       padding-left: 20px;
        background-color: pink;
 }

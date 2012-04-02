@@ -227,10 +227,10 @@ Fisma.TableFormat = {
         var organization = oRecord.getData('System');
 
         if (organization) {
-        
+
             // Since organization may be html-encoded, decode the html before (url)-escaping it
             organization = $P.html_entity_decode(organization);
-            
+
             overdueFindingSearchUrl += "/organization/textExactMatch/" + encodeURIComponent(organization);
         }
 
@@ -239,7 +239,7 @@ Fisma.TableFormat = {
 
         if (status) {
             status = PHP_JS().html_entity_decode(status);
-            overdueFindingSearchUrl += "/denormalizedStatus/textExactMatch/" + encodeURIComponent(status);
+            overdueFindingSearchUrl += "/denormalizedStatus/enumIs/" + encodeURIComponent(status);
         }
 
         // Handle source field
@@ -255,7 +255,7 @@ Fisma.TableFormat = {
         if (parameters.from) {
             fromDate = new Date();
             fromDate.setDate(fromDate.getDate() - parseInt(parameters.from, 10));
-            
+
             from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
         }
 
@@ -264,12 +264,12 @@ Fisma.TableFormat = {
         if (parameters.to) {
             toDate = new Date();
             toDate.setDate(toDate.getDate() - parseInt(parameters.to, 10));
-            
+
             to = toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate();
         }
 
         if (from && to) {
-            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" + 
+            overdueFindingSearchUrl += "/nextDueDate/dateBetween/" +
                                         encodeURIComponent(to) +
                                         "/" +
                                         encodeURIComponent(from);
@@ -292,9 +292,9 @@ Fisma.TableFormat = {
     },
 
     /**
-     * A formatter which colors the the percentage of the required documents 
+     * A formatter which colors the the percentage of the required documents
      * which system has completed in red, yellow, or green (or not at all)
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -318,7 +318,7 @@ Fisma.TableFormat = {
 
     /**
      * A formatter which displays the missing document type name
-     * 
+     *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
      * @param oColumn Reference to the YUI column object
@@ -334,10 +334,10 @@ Fisma.TableFormat = {
 
         elCell.innerHTML = docTypeNames;
     },
-    
+
     /**
-     * Creates a checkbox element that can be used to select the record. If the model has soft delete and 
-     * any of the records are deleted, then the checkbox is replaced by an icon so that user's don't try to 
+     * Creates a checkbox element that can be used to select the record. If the model has soft delete and
+     * any of the records are deleted, then the checkbox is replaced by an icon so that user's don't try to
      * "re-delete" any already-deleted items.
      *
      * @param elCell Reference to a container inside the <td> element
@@ -346,11 +346,11 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     formatCheckbox : function (elCell, oRecord, oColumn, oData) {
-        
+
         if (oRecord.getData('deleted_at')) {
 
             elCell.parentNode.style.backgroundColor = "pink";
-            
+
         } else {
             var checkbox = document.createElement("input");
             checkbox.type = "checkbox";
@@ -358,11 +358,11 @@ Fisma.TableFormat = {
             checkbox.checked = oData;
 
             if (elCell.firstChild) {
-                elCell.removeChild(el.firstChild);            
+                elCell.removeChild(el.firstChild);
             }
 
             elCell.appendChild(checkbox);
-        }        
+        }
     },
 
     /**
@@ -390,5 +390,37 @@ Fisma.TableFormat = {
 
             elCell.innerHTML = size;
         }
+    },
+
+    /**
+     * Show a control that can be used to remove the current record from the table.
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    remover: function (elCell, oRecord, oColumn, oData) {
+        // Put table in closure scope
+        var table = this;
+
+        var img = document.createElement('img');
+        img.src = '/images/delete_row.png';
+        YAHOO.util.Event.on(
+            img,
+            "click",
+            function () {
+                YAHOO.util.Event.removeListener(img, "click");
+                img.src = "/images/spinners/small.gif";
+
+                Fisma.Incident.removeUser(
+                    oRecord.getData('incidentId'),
+                    oRecord.getData('userId'),
+                    table
+                );
+            }
+        );
+
+        elCell.appendChild(img);
     }
 };

@@ -1,4 +1,4 @@
-<?php 
+<?php
 Fisma_Format_Section::startSection("Incident Report Submitted");
 ?>
 
@@ -7,5 +7,11 @@ Fisma_Format_Section::startSection("Incident Report Submitted");
 <p>Your incident report has been submitted successfully.</p>
 
 <?php
+if ($this->viewIncidentButton):
+    echo $this->escape($this->viewIncidentButton, 'none');
+endif;
+
+echo $this->escape($this->createNewButton, 'none');
+
 Fisma_Format_Section::stopSection();
 ?>

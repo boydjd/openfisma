@@ -28,17 +28,18 @@ Fisma.Module = {
         
         var enabled = switchButton.state ? 'true' : 'false';
         
-        var requestUrl = '/config/set-module/id/' + switchButton.payload.id + '/enabled/' + enabled + '/format/json/';
-        
+        var requestUrl = '/config/set-module/format/json/';
+        var postData = 'id=' + switchButton.payload.id + '&enabled=' + enabled + '&csrf=' + $('[name="csrf"]').val(); 
+
         YAHOO.util.Connect.asyncRequest(
-            'GET', 
+            'POST', 
             requestUrl,
             {
                 success : Fisma.Module.handleAsyncResponse,
                 failure : Fisma.Module.handleAsyncResponse,
                 argument : switchButton
             }, 
-            null);
+            postData);
     },
     
     /**

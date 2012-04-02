@@ -1,0 +1,7 @@
+ALTER TABLE `<?php echo $this->escape($this->table); ?>`
+
+ADD CONSTRAINT `<?php echo $this->escape($this->name); ?>`
+
+FOREIGN KEY `<?php echo $this->escape($this->name); ?>` (`<?php echo $this->escape($this->column); ?>`)
+
+REFERENCES `<?php echo $this->escape($this->refTable); ?>` (`<?php echo $this->escape($this->refColumn); ?>`)

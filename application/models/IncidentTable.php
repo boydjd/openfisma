@@ -96,6 +96,28 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => true,
                 'type' => 'enum'
             ),
+            'category' => array(
+                'initiallyVisible' => false,
+                'label' => 'Category',
+                'join' => array(
+                    'model' => 'IrSubCategory',
+                    'relation' => 'Category',
+                    'field' => 'name'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'workflow' => array(
+                'initiallyVisible' => false,
+                'label' => 'Workflow',
+                'join' => array(
+                    'model' => 'IrIncidentWorkflow',
+                    'relation' => 'CurrentWorkflowStep',
+                    'field' => 'name'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+                ),
             'incidentDate' => array(
                 'initiallyVisible' => false,
                 'label' => 'Incident Date',
@@ -114,6 +136,28 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'label' => 'PII Involved',
                 'sortable' => true,
                 'type' => 'enum'
+            ),
+            'organization' => array(
+                'initiallyVisible' => true,
+                'label' => 'Organization/System',
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'Organization',
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'pocUser' => array(
+                'initiallyVisible' => false,
+                'label' => 'Point Of Contact',
+                'join' => array(
+                    'model' => 'Poc',
+                    'relation' => 'PointOfContact',
+                    'field' => 'username'
+                ),
+                'sortable' => true,
+                'type' => 'text'
             ),
             'hostIp' => array(
                 'initiallyVisible' => false,
@@ -155,7 +199,7 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             return array();
         } else {
             // Otherwise use the IrIncidentUser join table to determine access rights
-            return array('id' => 'IncidentTable::getIncidentIds');            
+            return array('id' => 'IncidentTable::getIncidentIds');
         }
     }
 
@@ -172,11 +216,11 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
         $incidentIds = array_keys($results);
         return $incidentIds;
     }
-    
+
     /**
      * Build the query for getIncidentIds
-     * 
-     * @return Doctrine_Query 
+     *
+     * @return Doctrine_Query
      */
     static function getIncidentIdsQuery()
     {

@@ -1,0 +1,32 @@
+; This is the form for system type.
+;
+; Author    Mark E. Haase <mhaase@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/content/license
+
+[systemtype]
+
+elements.name.type = "text"
+elements.name.options.label = "Name"
+elements.name.options.required = true
+displayGroups.organizationType.elements.name = "name"
+
+elements.nickname.type = "text"
+elements.nickname.options.label = "Nickname"
+elements.nickname.options.required = true
+displayGroups.organizationType.elements.nickname = "nickname"
+
+elements.iconId.type = "Element_ImagePicker"
+elements.iconId.options.label = "Icon"
+elements.iconId.options.required = true
+displayGroups.organizationType.elements.iconId = "iconId"
+
+elements.description.type = "textarea"
+elements.description.options.label = "Description"
+elements.description.options.cols = "70%"
+elements.description.options.rows = "7"
+displayGroups.organizationType.elements.description = "description"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save Changes"
+displayGroups.organizationType.elements.save = "save"

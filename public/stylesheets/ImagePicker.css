@@ -1,0 +1,62 @@
+/*******************************************************************************
+ *
+ * ImagePicker.css
+ *
+ * Copyright (c) 2012 Endeavor Systems, Inc.
+ *
+ * This file is part of OpenFISMA.
+ *
+ * OpenFISMA is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ *
+ * OpenFISMA is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+ *
+ *******************************************************************************
+ *
+ * CSS for a widget that displays a grid of images for the user to pick from.
+ *
+ * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
+ * Copyright: (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
+ * License:   http://www.openfisma.org/content/license
+ *
+ *******************************************************************************
+ */
+
+.imagePickerDrawer {
+    position: absolute;
+    margin-top: 5px;
+    margin-left: -12px;
+    background-color: white;
+    border: 1px solid gray;
+    z-index: 1;
+
+    /* CSS3 won't work in IE7, but it looks cool in other browsers: */
+    box-shadow: 0 0 30px 5px gray;
+    -moz-box-shadow: 0 0 30px 5px gray;
+    -webkit-box-shadow: 0px 0px 30px 0px gray;
+}
+
+table.imagePickerGrid {
+    margin-bottom: 0px;
+}
+
+table.imagePickerGrid td {
+    border: none;
+}
+
+table.imagePickerGrid td img {
+    padding: 7px;
+}
+
+table.imagePickerGrid td img.imagePickerSelectedImage {
+    padding: 5px;
+    border: 2px solid #406dd7;
+}

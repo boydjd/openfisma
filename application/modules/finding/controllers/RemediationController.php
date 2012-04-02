@@ -100,6 +100,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      *
      * It combines the searching and summary into one page.
      *
+     * @GETAllowed
      * @return void
      */
     public function indexAction()
@@ -115,7 +116,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      *
      * @param Zend_Form $form The specified form to save
      * @param Doctrine_Record|null $subject The subject model related to the form
-     * @return integer ID of the object
+     * @return Fisma_Doctrine_Record The saved record
      * @throws Fisma_Zend_Exception if the subject is not null or the organization of the finding associated
      * to the subject doesn`t exist
      */
@@ -148,7 +149,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $finding->save();
 
-        return $finding->id;
+        return $finding;
     }
 
     /**
@@ -227,6 +228,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * View details of a finding object
      *
+     * @GETAllowed
      * @return void
      */
     public function viewAction()
@@ -236,6 +238,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $finding = Doctrine_Query::create()
             ->from('Finding f')->leftJoin('f.Attachments')->where('f.id = ?', $id)
             ->fetchOne();
+
+        if (!$finding) {
+             $msg = '%s (%d) not found. Make sure a valid ID is specified.';
+             throw new Fisma_Zend_Exception_User(sprintf($msg, $this->_modelName, $id));
+        }
+
         $this->view->finding = $finding;
 
         $this->_acl->requirePrivilegeForObject('read', $finding);
@@ -270,17 +278,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         if (!$finding->isDeleted()) {
             // Display the delete finding button if the user has the delete finding privilege
             if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
-
+                $args = array(null, '/finding/remediation/delete/', $id);
                 $buttons['delete'] = new Fisma_Yui_Form_Button(
                     'deleteFinding',
                     array(
                           'label' => 'Delete Finding',
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
-                              'url' => "/finding/remediation/delete/id/$id",
+                              'args' => $args,
                               'text' => "WARNING: You are about to delete the finding record. This action cannot be "
                                         . "undone. Do you want to continue?",
-                              'isLink' => false
+                              'func' => 'Fisma.Util.formPostAction'
                         )
                     )
                 );
@@ -320,6 +328,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Printer-friendly version of the finding view page.
      *
+     * @GETAllowed
      * @return void
      */
     public function printAction()
@@ -335,6 +344,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display comments for this finding
+     *
+     * @GETAllowed
      */
     public function commentsAction()
     {
@@ -631,6 +642,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Download evidence
      *
+     * @GETAllowed
      * @return void
      */
     public function downloadEvidenceAction()
@@ -656,11 +668,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Delete evidence
-     *
-     * @return void
      */
     public function deleteEvidenceAction()
     {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
         $id = $this->_request->getParam('id');
         $attachmentId = $this->_request->getParam('attachmentId');
 
@@ -687,8 +700,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $finding->save();
 
         $finding->getAuditLog()->write($message);
-
-        $this->_redirect("/finding/remediation/view/id/{$id}");
     }
 
     /**
@@ -773,6 +784,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      *
      * It can handle different format of RAF report.
      *
+     * @GETAllowed
      * @return void
      */
     public function rafAction()
@@ -817,6 +829,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display basic data about the finding and the affected asset
      *
+     * @GETAllowed
      * @return void
      */
     function findingAction()
@@ -846,6 +859,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Fields for defining the mitigation strategy
      *
+     * @GETAllowed
      * @return void
      */
     function mitigationStrategyAction()
@@ -864,6 +878,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display fields related to risk analysis such as threats and countermeasures
      *
+     * @GETAllowed
      * @return void
      */
     function riskAnalysisAction()
@@ -884,8 +899,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
+     * Display fields related to risk analysis such as threats and countermeasures
+     *
      * Display evidence package and evaluations
      *
+     * @GETAllowed
      * @return void
      */
     function artifactsAction()
@@ -918,15 +936,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $baseUrl = '/finding/remediation/';
             $currentUrl = '/id/' . $this->view->finding->id . '/attachmentId/' . $attachment->id;
             $attachmentRows[] = array(
-                'iconUrl'  => "<a href={$baseUrl}download-evidence{$currentUrl}>"
-                            . "<img src={$attachment->getIconUrl()}></a>",
-                'fileName' => $this->view->escape($attachment->fileName),
-                'fileNameLink' => "<a href={$baseUrl}download-evidence{$currentUrl}>"
-                            . $this->view->escape($attachment->fileName) . "</a>",
-                'fileSize' => $attachment->getFileSize(),
-                'user'     => $this->view->userInfo($attachment->User->username),
-                'date'     => $attachment->createdTs,
-                'action'   => "<a href={$baseUrl}delete-evidence{$currentUrl}>Delete</a>"
+                'iconUrl'      => "<a href=\"{$baseUrl}download-evidence{$currentUrl}\">"
+                                 . "<img src=\"{$attachment->getIconUrl()}\"></a>",
+                'fileName'     => $this->view->escape($attachment->fileName),
+                'fileNameLink' => "<a href=\"{$baseUrl}download-evidence{$currentUrl}\">"
+                                . $this->view->escape($attachment->fileName) . "</a>",
+                'fileSize'     => $attachment->getFileSize(),
+                'user'         => $this->view->userInfo($attachment->User->username),
+                'date'         => $attachment->createdTs,
+                'action'       => 'Delete',
+                'id'           => $this->view->finding->id,
+                'attachmentId' => $attachment->id
             );
         }
 
@@ -1007,11 +1027,35 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 new Fisma_Yui_DataTable_Column(
                     'Action',
                     true,
-                    'Fisma.TableFormat.formatHtml',
+                    'YAHOO.widget.DataTable.formatButton',
                     null,
                     null
                 )
             );
+
+            $dataTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'id',
+                    null,
+                    null,
+                    null,
+                    null,
+                    true
+                )
+            );
+
+            $dataTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'attachmentId',
+                    null,
+                    null,
+                    null,
+                    null,
+                    true
+                )
+            );
+
+            $dataTable->addEventListener("buttonClickEvent", 'Fisma.Finding.deleteEvidence');
         endif;
 
         $dataTable->setData($attachmentRows);
@@ -1032,6 +1076,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display the audit log associated with a finding
      *
+     * @GETAllowed
      * @return void
      */
     function auditLogAction()
@@ -1090,6 +1135,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Display the NIST SP 800-53 control mapping and related information
      *
+     * @GETAllowed
      * @return void
      */
     function securityControlAction()
@@ -1144,6 +1190,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Renders the form for uploading artifacts.
      *
+     * @GETAllowed
      * @return void
      */
     function uploadFormAction()
@@ -1154,6 +1201,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Renders the form for rejecting evidence.
      *
+     * @GETAllowed
      * @return void
      */
     function rejectEvidenceAction()
@@ -1183,6 +1231,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override createAction() to show the warning message on the finding create page if there is no system.
      *
+     * @GETAllowed
      * @return void
      */
     public function createAction()

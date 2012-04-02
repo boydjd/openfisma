@@ -1,16 +1,16 @@
 Incident:
     listeners: [IndexListener]
-    
+
     columns:
         modifiedTs: timestamp
         closedTs: timestamp
-        
-        reporterTitle: 
+
+        reporterTitle:
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Title
-        reporterFirstName: 
+        reporterFirstName:
             type: string(255)
             extra:
                 auditLog: true
@@ -19,59 +19,59 @@ Incident:
                 The reporter is the user who reports the incident to the organization. The report can be made directly
                 (by logging into OpenFISMA) or can be made indirectly by reporting to an intermediary authority (such
                 as the customer service desk) which has the privilege to enter data into OpenFISMA.
-        reporterLastName: 
+        reporterLastName:
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Last Name
-        reporterOrganization: 
+        reporterOrganization:
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Organization
 
-        reporterAddress1: 
+        reporterAddress1:
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Street Address Line 1
-        reporterAddress2: 
+        reporterAddress2:
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's Street Address Line 2
-        reporterCity: 
+        reporterCity:
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's City
-        reporterState: 
+        reporterState:
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Reporter's State
-        reporterZip: 
+        reporterZip:
             type: string(10)
             extra:
                 auditLog: true
                 logicalName: Reporter's Zip Code
-        reporterPhone: 
+        reporterPhone:
             type: string(15)
             Fisma_Doctrine_Validator_Phone: true
             extra:
                 auditLog: true
                 logicalName: Reporter's Phone Number
             comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
-        reporterFax: 
+        reporterFax:
             type: string(15)
             Fisma_Doctrine_Validator_Phone: true
             extra:
                 auditLog: true
                 logicalName: Reporter's Fax Number
             comment: 10 digit US number with no symbols (dashes, dots, parentheses, etc.)
-        reporterEmail: 
+        reporterEmail:
             type: string(255)
-            email: 
+            email:
                 check_mx: false
             extra:
                 auditLog: true
@@ -83,55 +83,55 @@ Incident:
                 auditLog: true
                 logicalName: Reporter's IP Address
             comment: The IP address of the client which filed this report
-        
-        locationBuilding: 
+
+        locationBuilding:
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Building
             comment: The building in which the incident is believed to have occurred
-        locationRoom: 
+        locationRoom:
             type: string(255)
             extra:
                 auditLog: true
                 logicalName: Room
             comment: The room in which the incident is believed to have occurred
 
-        incidentDate: 
+        incidentDate:
             type: date
             extra:
                 auditLog: true
                 logicalName: Incident Date
             comment: The date on which the incident was known or believed to have occurred
-        incidentTime: 
+        incidentTime:
             type: time
             extra:
                 auditLog: true
                 logicalName: Incident Time
             comment: The time at which the incident was known or believed to have occurred
-        incidentTimezone: 
+        incidentTimezone:
             type: enum
             values: [AST, ADT, EST, EDT, CST, CDT, MST, MDT, PST, PDT, AKST, AKDT, HAST, HADT]
             extra:
                 auditLog: true
                 logicalName: Incident Timezone
             comment: The timezone in which the incident timestamp belongs
-        
-        reportTs: 
+
+        reportTs:
             type: timestamp
             extra:
                 logicalName: Report Date and Time
             comment: The time at which the incident was reported
-        reportTz: 
+        reportTz:
             type: enum
             values: [AST, ADT, EST, EDT, CST, CDT, MST, MDT, PST, PDT, AKST, AKDT, HAST, HADT]
             extra:
                 logicalName: Report Timezone
             comment: The timezone in which the report timestamp belongs
-            
+
         additionalInfo:
             type: string
-            extra: 
+            extra:
                 auditLog: true
                 purify: html
                 logicalName: Incident Description
@@ -230,7 +230,7 @@ Incident:
                 logicalName: Shipment Tracking Numbers
 
         hostIp:
-            type: string(15)
+            type: string(39)
             Fisma_Doctrine_Validator_Ip: true
             extra:
                 auditLog: true
@@ -249,11 +249,11 @@ Incident:
                 logicalName: Host Operating System
         hostAdditional:
             type: string
-            extra: 
+            extra:
                 auditLog: true
                 purify: html
                 logicalName: Additional Host Details
-        
+
         sourceIp:
             type: string(15)
             Fisma_Doctrine_Validator_Ip: true
@@ -263,20 +263,12 @@ Incident:
             comment: The IP address from which the incident is believed to have originated
         sourceAdditional:
             type: string
-            extra: 
+            extra:
                 auditLog: true
                 purify: html
                 logicalName: Additional Details About Incident Source
             comment: Additional description of the source or origin of the incident
-        
-        actionsTaken:
-            type: string
-            extra: 
-                auditLog: true
-                purify: html
-                logicalName: Actions That Were Taken Prior To Incident Report
-            comment: What actions were taken prior to reporting the incident?
-        
+
         status:
             type: enum
             values: [new, open, closed]
@@ -304,7 +296,14 @@ Incident:
             comment: Foreign key to the affected organization/system
             extra:
                 auditLog: true
-                logicalName: Affected System/Organization 
+                logicalName: Affected System/Organization
+        pocId:
+            type: integer
+            extra:
+                auditLog: true
+                logicalName: Point Of Contact
+                requiredPrivilege: update_poc
+            comment: Foreign key to the point of contact for this incident
 
     relations:
         CurrentWorkflowStep:
@@ -326,6 +325,11 @@ Incident:
             local: organizationId
             foreign: id
             foreignAlias: Incidents
+        PointOfContact:
+            class: Poc
+            local: pocId
+            foreign: id
+            foreignAlias: Incidents
         Users:
             class: User
             local: incidentId
@@ -336,7 +340,7 @@ Incident:
     actAs:
         SoftDelete:
         Fisma_Doctrine_Behavior_Commentable: true
-        
+
         Fisma_Doctrine_Behavior_Lockable: true
 
         Fisma_Doctrine_Behavior_HasAttachments: true

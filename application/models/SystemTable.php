@@ -67,11 +67,15 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
                 'type' => 'text'
             ),
             'type' => array(
-                'enumValues' => $this->getEnumValues('type'),
                 'initiallyVisible' => true,
                 'label' => 'Type',
                 'sortable' => true,
-                'type' => 'enum'
+                'join' => array(
+                    'model' => 'SystemType',
+                    'relation' => 'SystemType',
+                    'field' => 'nickname'
+                ),
+                'type' => 'text'
             ),
             'sdlcPhase' => array(
                 'enumValues' => $this->getEnumValues('sdlcPhase'),
@@ -223,7 +227,7 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
 
     /**
      * Provide ID list for ACL filter
-     * 
+     *
      * @return array
      */
     public static function getSystemIds()

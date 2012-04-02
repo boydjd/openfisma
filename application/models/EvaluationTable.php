@@ -30,9 +30,9 @@ class EvaluationTable extends Fisma_Doctrine_Table
     /**
      * Return the query for previous evaluation steps of a finding
      *
-     * @param mixed $findingId
+     * @param int $findingId
      *
-     * @return void
+     * @return Doctrine_Query
      */
     public function getPreviousEvaluationsQuery($findingId)
     {
@@ -41,8 +41,8 @@ class EvaluationTable extends Fisma_Doctrine_Table
                ->where('e.approvalgroup LIKE ?', 'evidence')
                ->andWhere("e.precedence < (" .
                    "SELECT e1.precedence FROM Evaluation e1 WHERE e1.id = (" .
-                       "SELECT f.currentEvaluationId FROM Finding f WHERE f.id = {$findingId} LIMIT 1".
+                       "SELECT f.currentEvaluationId FROM Finding f WHERE f.id = ? LIMIT 1".
                    ")" .
-               ")");
+               ")", $findingId);
     }
 }

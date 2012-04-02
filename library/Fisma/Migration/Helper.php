@@ -67,10 +67,18 @@ class Fisma_Migration_Helper
      */
     public function exec($sql)
     {
-        if (($rval = $this->_db->exec($sql)) === FALSE) {
-            throw new Fisma_Zend_Exception_Migration("Not able to execute query: " . $sql);
+        try {
+            $execResult = $this->_db->exec($sql);
+        } catch (PDOException $e) {
+            // If theres an exception while exec'ing, wrap it in a new exception that contains the full query
+            throw new Fisma_Zend_Exception_Migration("Not able to execute query:\n$sql", 0, $e);
         }
-        return $rval;
+
+        if ($execResult === FALSE) {
+            throw new Fisma_Zend_Exception_Migration("Exec returned false for this query:\n$sql");
+        }
+
+        return $execResult;
     }
 
     /**
@@ -79,7 +87,7 @@ class Fisma_Migration_Helper
      * @param string $sql
      * @return array Query results
      */
-    public function execute($sql, $params = array())
+    public function query($sql, $params = array())
     {
         $stmt = $this->_db->prepare($sql);
         if ($stmt->execute($params) === FALSE) {
@@ -137,7 +145,7 @@ class Fisma_Migration_Helper
      */
     public function dropTable($tableName)
     {
-        $result = $this->_db->exec("DROP TABLE $tableName");
+        $result = $this->_db->exec("DROP TABLE `$tableName`");
 
         if ($result === FALSE) {
             throw new Fisma_Zend_Exception_Migration("Not able to drop table ($tableName).");
@@ -191,5 +199,201 @@ class Fisma_Migration_Helper
         $params = array_values($fields);
         array_splice($params, count($params), 0, array_values($where));
         $stmt->execute($params);
+    }
+
+    /**
+     * Add a single foreign key between two columns in two tables.
+     *
+     * @param string $localTable
+     * @param string $localColumn
+     * @param string $remoteTable
+     * @param string $remoteColumn
+     * @param string $constraintName
+     */
+    public function addForeignKey($localTable, $localColumn, $remoteTable, $remoteColumn, $constraintName = null)
+    {
+        if (!$constraintName) {
+            $constraintName = "{$localTable}_{$localColumn}_{$remoteTable}_{$remoteColumn}";
+        }
+
+        // MySQL will implicitly add the correct index, but it uses a different naming convention than Doctrine,
+        // so we need to add the index explicitly using Doctrine's naming convention.
+        $this->exec("ALTER TABLE `$localTable` ADD INDEX `{$localColumn}_idx` (`$localColumn`)");
+
+        $this->exec("ALTER TABLE `$localTable` ADD CONSTRAINT `$constraintName`
+                     FOREIGN KEY `$constraintName` (`$localColumn`) REFERENCES `$remoteTable` (`$remoteColumn`)");
+    }
+
+    /**
+     * Add a unique key on a table.
+     *
+     * @param string $table
+     * @param string|array $columns The name or names of the columns included in the unique key.
+     * @param string $name The name of the index. It's optional for 1 column indexes.
+     */
+    public function addUniqueKey($table, $columns, $name = null)
+    {
+        if (is_array($columns)) {
+            if (!$name) {
+                throw new Fisma_Zend_Exception_Migration("Name is required for multi-column unique key.");
+            }
+
+            // Add backticks to each column name
+            $addBackticks = function ($column) {
+                return "`$column`";
+            };
+
+            $columns = array_map($addBackticks, $columns);
+            $columns = implode(',', $columns);
+        } else {
+            $name = $columns;
+            $columns = "`$columns`";
+        }
+
+        $this->exec("ALTER TABLE `$table` ADD UNIQUE `$name` ($columns)");
+    }
+
+    /**
+     * Add a column to a table
+     *
+     * @param string $table
+     * @param string $column
+     * @param string $definition
+     * @param string $after If specified, add this column immediately after the $after column.
+     */
+    public function addColumn($table, $column, $definition, $after = null)
+    {
+        $sql = "ALTER TABLE `$table` ADD COLUMN `$column` $definition";
+
+        if ($after) {
+            $sql .= " AFTER `$after`";
+        }
+
+        $this->exec($sql);
+    }
+
+    /**
+     * Add columns to a table
+     *
+     * @see addColumn
+     * @param $table
+     * @param array $columns Array of column definitions with key = column name and value = column definition.
+     */
+    public function addColumns($table, $columns)
+    {
+        foreach ($columns as $columnName => $columnDefinition) {
+            $this->addColumn($table, $columnName, $columnDefinition);
+        }
+    }
+
+    /**
+     * Drop a single column on a single table.
+     *
+     * @param string $table
+     * @param string $column
+     */
+    public function dropColumn($table, $column)
+    {
+        $view = $this->_createView();
+        $view->table = $table;
+        $view->column = $column;
+
+        $alterTableSql = $view->render('drop_column.phtml');
+        $this->_db->exec($alterTableSql);
+    }
+
+    /**
+     * Drop the specified columns on a single table.
+     *
+     * @param string $table
+     * @param array $columns Array of column names to drop
+     */
+    public function dropColumns($table, $columns)
+    {
+        foreach ($columns as $column) {
+            $this->dropColumn($table, $column);
+        }
+    }
+
+    /**
+     * Add an index to a single table.
+     *
+     * @param string $table
+     * @param array|string $columns Array of column names to include in this index or a single column name.
+     * @param string $index If not specified and there is only 1 column, the index name is derived from the column.
+     */
+    public function addIndex($table, $columns, $index = null)
+    {
+        $view = $this->_createView();
+
+        $view->table = $table;
+
+        if ($index) {
+            $view->index = $index;
+        } else {
+            if (!is_array($columns) || count($columns) == 1) {
+                // This naming convention mirror's Doctrine's
+                $view->index = (is_array($columns) ? $columns[0] : $columns) . '_idx';
+            } else {
+                throw new Fisma_Zend_Exception_Migration("Index name is required when using more than 1 column.");
+            }
+        }
+
+        $backquoteFunction = function ($v) {
+            return "`$v`";
+        };
+
+        if (is_array($columns)) {
+            $view->columns = implode(', ', array_map($backquoteFunction, $columns));
+        } else {
+            $view->columns = "`$columns`";
+        }
+
+        $alterTableSql = $view->render('add_index.phtml');
+        $this->_db->exec($alterTableSql);
+    }
+
+    /**
+     * Drop the specified indexes on a single table.
+     *
+     * @param string $table
+     * @param array|string $indexes Array of index names to drop or a single name.
+     */
+    public function dropIndexes($table, $indexes)
+    {
+        if (is_array($indexes)) {
+            foreach ($indexes as $index) {
+                $this->dropIndexes($table, $index);
+            }
+        } else {
+            $view = $this->_createView();
+            $view->table = $table;
+            $view->index = $indexes;
+
+            $alterTableSql = $view->render('drop_key_or_index.phtml');
+            $this->_db->exec($alterTableSql);
+        }
+    }
+
+    /**
+     * Drop the specified columns on a single table.
+     *
+     * @param string $table
+     * @param array|string $foreignKeys Array of foreign key names to drop or a single name.
+     */
+    public function dropForeignKeys($table, $foreignKeys)
+    {
+        if (is_array($foreignKeys)) {
+            foreach ($foreignKeys as $foreignKey) {
+                $this->dropForeignKeys($table, $foreignKey);
+            }
+        } else {
+            $view = $this->_createView();
+            $view->table = $table;
+            $view->foreignKey = $foreignKeys;
+
+            $alterTableSql = $view->render('drop_key_or_index.phtml');
+            $this->_db->exec($alterTableSql);
+        }
     }
 }

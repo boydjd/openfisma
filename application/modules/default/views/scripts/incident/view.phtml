@@ -1,6 +1,11 @@
-<?php 
-echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
+<form action="<?php echo $this->escape($this->formAction); ?>"
+      method="post"
+      id="incident_detail"
+      name="incident_detail">
 
-echo $this->escape($this->tabView, 'none'); 
+    <?php
+    echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
+    echo $this->escape($this->tabView, 'none');
+    ?>
 
-?>
+</form>

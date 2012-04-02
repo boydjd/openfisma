@@ -49,6 +49,6 @@ select {
 }
 
 form#finding_detail_upload_evidence button {
-    display: inline;
+    display: inline-block;
 }
 

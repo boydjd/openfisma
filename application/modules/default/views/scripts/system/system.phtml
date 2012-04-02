@@ -48,19 +48,19 @@ Fisma_Format_Section::startSection('Details');
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
-                <span id="type" 
-                      class="editable" 
-                      target="type" 
-                      name="type" 
-                      type="select" 
+                <span id="type"
+                      class="editable"
+                      target="type"
+                      name="systemTypeId"
+                      type="select"
                       href="/metainfo/list/o/systemType/format/html/">
-                    <?php echo $this->escape($this->organization->getOrgTypeLabel()); ?>
+                    <?php echo $this->escape($this->organization->System->SystemType->name); ?>
                 </span>
             <?php
             } else {
             ?>
             <span>
-                <?php echo $this->escape($this->organization->getOrgTypeLabel()); ?>
+                <?php echo $this->escape($this->organization->System->SystemType->name); ?>
             </span>
             <?php
             }
@@ -73,11 +73,11 @@ Fisma_Format_Section::startSection('Details');
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
-                <span id="sdlcPhase" 
-                      class="editable" 
-                      target="sdlcPhase" 
-                      name="sdlcPhase" 
-                      type="select" 
+                <span id="sdlcPhase"
+                      class="editable"
+                      target="sdlcPhase"
+                      name="sdlcPhase"
+                      type="select"
                       value="<?php echo $this->escape($this->organization->System->sdlcPhase);?>"
                       href="/metainfo/list/o/systemSdlcPhase/format/html/">
                     <?php echo $this->escape($this->organization->System->getSdlcPhaseLabel()); ?>
@@ -103,7 +103,7 @@ Fisma_Format_Section::startSection('Details');
                 $parentOrganizationName = $parentOrganization->nickname . ' - ' . $parentOrganization->name;
                 if ($this->acl()->hasPrivilegeForObject('read', $parentOrganization)) {
                     $parentOrgType = 'system' == $organizationTypeNickname ? 'system' : 'organization';
-                    $parentOrganizationId = 'system' == $parentOrgType ? 
+                    $parentOrganizationId = 'system' == $parentOrgType ?
                                             $parentOrganization->systemId : $parentOrganization->id;
                     echo $this->escape('<a href="/' . $parentOrgType . '/view/id/', 'none');
                     echo $this->escape($parentOrganizationId, 'url');
@@ -144,7 +144,7 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
     Fisma_Format_Section::startSection('System Description');
 }
 ?>
-<div name="description" id="system_description" type="textarea" rows="3" cols="120"> 
+<div name="description" id="system_description" type="textarea" rows="3" cols="120">
     <?php echo $this->escape($this->organization->description, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>

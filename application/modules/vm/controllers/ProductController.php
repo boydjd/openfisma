@@ -49,6 +49,8 @@ class Vm_ProductController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Handle autocomplete requests
+     *
+     * @GETAllowed
      */
     public function autocompleteAction()
     {

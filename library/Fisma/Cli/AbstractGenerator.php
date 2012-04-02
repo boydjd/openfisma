@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * A generator class to hold methods shared among the command-line tools.
- * 
+ *
  * @author     Duy K. Bui
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -29,28 +29,28 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
 {
     /**
      * Some organizations to randomly involve in the creation of sample data
-     * 
+     *
      * @var Doctrine_Collection
      */
     private $_sampleOrganizations;
 
     /**
      * Some sub categories to randomly involve in the creation of sample data
-     * 
+     *
      * @var Doctrine_Collection
      */
     private $_sampleSubCategories;
-    
+
     /**
      * Some users to randomly involve in the creation of sample data
-     * 
+     *
      * @var Doctrine_Collection
      */
     private $_sampleUsers;
 
     /**
      * Some points of contact (poc's) to randomly assign to findings
-     * 
+     *
      * @var Doctrine_Collection
      */
     private $_samplePocs;
@@ -64,9 +64,9 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
 
     /**
      * Get an Upload object to use as attachment for generated evidences, incidents... The object is NOT saved.
-     * 
-     * The object is instantiated with default metadata and a real sample file in data/uploads. 
-     * The file is a PNG logo of OpenFISMA. 
+     *
+     * The object is instantiated with default metadata and a real sample file in data/uploads.
+     * The file is a PNG logo of OpenFISMA.
      *
      * @return Upload
      */
@@ -85,7 +85,7 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
 
     /**
      * Return a random user object
-     * 
+     *
      * @return User
      */
     protected function _getRandomUser()
@@ -108,7 +108,7 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
 
     /**
      * Return a random POC
-     * 
+     *
      * @return Poc
      */
     protected function _getRandomPoc()
@@ -122,14 +122,14 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
                 ->execute();
             if (0 == count($this->_samplePocs)) {
                 throw new Fisma_Exception("Cannot generate sample data because the application has no POCs.");
-            }  
+            }
         }
         return $this->_samplePocs[rand(0, count($this->_samplePocs))];
     }
 
     /**
      * Return a random organization object
-     * 
+     *
      * @return Fisma_Record
      */
     protected function _getRandomOrganization()
@@ -151,29 +151,8 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
     }
 
     /**
-     * Return a random subcategory object
-     * 
-     * @return Fisma_Record
-     */
-    protected function _getRandomSubCategory()
-    {
-        if (empty($this->_sampleSubCategories)) {
-            // Get some subcategories
-            $this->_sampleSubCategories = Doctrine_Query::create()
-                                          ->from('IrSubCategory c')
-                                          ->limit(50)
-                                          ->execute();
-
-            if (0 == count($this->_sampleSubCategories)) {
-                throw new Fisma_Exception("Cannot generate sample data because the application has no IR categories.");
-            }
-        }
-        return $this->_sampleSubCategories[rand(0, count($this->_sampleSubCategories))];
-    }
-
-    /**
      * Generate a random phone number
-     * 
+     *
      * @return string
      */
     protected function _getRandomPhoneNumber()
@@ -183,7 +162,7 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
 
     /**
      * Generate a random ipv4 address
-     * 
+     *
      * @return string
      */
     protected function _getRandomIpAddress()
