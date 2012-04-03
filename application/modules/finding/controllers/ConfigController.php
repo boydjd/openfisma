@@ -60,9 +60,15 @@ class Finding_ConfigController extends Fisma_Zend_Controller_Action_Security
      */
     public function generalAction()
     {
-        $form = $this->_getConfigForm('finding_omb_report_config');
+        $form = $this->_getConfigForm('finding_general_config');
 
-        $orgTypes = Doctrine::getTable('OrganizationType')->getOrganizationTypeArray();
+        $selectValues = array(
+            'default_bureau_id' => Doctrine::getTable('OrganizationType')->getOrganizationTypeArray(),
+            'threat_type' => array(
+                'threat_level' => 'Threat Level',
+                'residual_risk' => 'Residual Risk'
+            )
+        );
 
         // Populate default values for non-submit button elements
         foreach ($form->getElements() as $element) {
@@ -71,9 +77,13 @@ class Finding_ConfigController extends Fisma_Zend_Controller_Action_Security
             }
 
             $name = $element->getName();
-            $element->setMultiOptions($orgTypes)
-                    ->setValue(Fisma::configuration()->getConfig($name))
-                    ->setRegisterInArrayValidator(false);
+
+            if ($element instanceof Zend_Form_Element_Select) {
+                $element->setMultiOptions($selectValues[$name])
+                        ->setRegisterInArrayValidator(false);
+            }
+
+            $element->setValue(Fisma::configuration()->getConfig($name));
         }
 
         if ($this->_request->isPost()) {
