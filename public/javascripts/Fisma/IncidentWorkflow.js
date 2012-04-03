@@ -58,7 +58,10 @@
             var select = $("select", this._stepTemplate);
             select.append("<option value=''></option>");
             $.each(roleData, function(key, value) {
-                select.append("<option value='" + key + "'>" + value + "</option>");
+                var newOption = $("<option/>");
+                newOption.attr("value", key);
+                newOption.text(value);
+                select.append(newOption);
             });
         },
 
@@ -123,7 +126,12 @@
             $(tr).after(newTr);
 
             // Fetch currently selected item
-            var selectedLabel = (data) ? $("option:selected", selectMenu).text() : '';
+            var selectedLabel = (data) ? $("option:selected", selectMenu).html() : '';
+
+            // doubly-escape option text because YUI menus are stupid
+            $("option", newTr).each(function() {
+                $(this).text($(this).html());
+            });
 
             // Create a Button using an existing <input> and <select> element
             var oMenuButton = new YAHOO.widget.Button(textareaId + '_button', {
