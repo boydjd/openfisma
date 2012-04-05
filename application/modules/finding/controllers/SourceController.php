@@ -42,6 +42,8 @@ class Finding_SourceController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * Display the POC form without any layout
+     *
+     * @GETAllowed
      */
     public function formAction()
     {
