@@ -166,6 +166,21 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->chartTotalType = $chartTotalType->export();
 
+        $showWhatsNew = 0;
+        $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($user->id, 'whatsnew.checked')->fetchOne();
+
+        if (empty($storage)) {
+            $showWhatsNew = true;
+        } else {
+           $data = $storage->data;
+           if ($data['version'] != substr($versions['application'], 0, -2)) {
+               $showWhatsNew = true;
+           } 
+        }
+
+        $this->view->showWhatsNew = $showWhatsNew ;
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
     }
 
     /**

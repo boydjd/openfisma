@@ -356,5 +356,86 @@ Fisma.Util = {
         postData = postData.substring(0, postData.length - 1);
 
         return postData;
+    },
+
+    /**
+     * Create a dialog which what's new content shows on
+     */
+    showWhatsNewDialog: function () {
+        var dialog = new YAHOO.widget.SimpleDialog("whatsNewDialog",
+            {width: "855px", 
+             fixedcenter: true, 
+             visible: false, 
+             close: false,
+             modal: true,
+             constraintoviewport: true, 
+             draggable: false
+            }); 
+
+        //Add line spacing to dialog
+        var bottomPanel = document.createElement('div');
+        bottomPanel.className = 'dialog-button-panel';
+ 
+        var close = document.createElement('a');
+        close.className = 'close-link';
+        close.href = '#';
+        close.innerHTML = 'Close';
+        bottomPanel.appendChild(close);
+
+        var dialogTip = document.createElement('div');
+        dialogTip.className = 'dialog-tip';
+
+        var dontShowCheckbox = document.createElement('input');
+        dontShowCheckbox.type = 'checkbox';
+        dontShowCheckbox.id = 'notShow';
+        dontShowCheckbox.name = 'dontShow';
+        dialogTip.appendChild(dontShowCheckbox);
+
+        var dontShowLabel = document.createElement('label');
+        dontShowLabel.type = 'checkbox';
+        dontShowLabel.setAttribute('for','notShow');
+
+        var checkboxSpan = document.createElement('span');
+        checkboxSpan.className = 'checkbox-label';
+        checkboxSpan.innerHTML = "Don't show again";
+        dontShowLabel.appendChild(checkboxSpan);
+        dialogTip.appendChild(dontShowLabel);
+
+        var dialogSpan = document.createElement('span');
+        dialogSpan.innerHTML = "(Access from 'User Preferences' menu)";
+        dialogTip.appendChild(dialogSpan);
+
+        bottomPanel.appendChild(dialogTip);
+
+        var iframe = document.createElement('iframe');
+        iframe.height = '420px';
+        iframe.width = '830px';
+        iframe.style.border = 'none';
+        iframe.style.overflow = 'hidden';
+        iframe.scrolling = 'no';
+
+        var version = $("#currentVersion").text().trim();
+        var title = $("title").text().split("-")[0].trim();
+        var header = "<font size=3>What’s New in " + title + " " + version + " </font>";
+ 
+        dialog.setHeader(header);
+        dialog.setBody(iframe);
+        dialog.setFooter(bottomPanel);
+        dialog.render(document.body); 
+        dialog.show();
+
+        dontShowCheckbox.focus();
+        YAHOO.util.Event.addListener(close, 'click', function() {
+            var notShowCheckbox = document.getElementById('notShow');
+            if (notShowCheckbox.checked === true) {
+                var whatsNewStorage = new Fisma.PersistentStorage('WhatsNew.Checked');
+                whatsNewStorage.set('version', version.substr(0, (version.length-2)));
+                whatsNewStorage.sync();
+            }
+
+            dialog.destroy();
+        }); 
+
+        iframe.src = '/whats-new';
     }
 };

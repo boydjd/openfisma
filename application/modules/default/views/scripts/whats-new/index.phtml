@@ -1,0 +1,75 @@
+<div class="panel">
+    <div class="panel-heading">
+        <h3><?php echo $this->escape($this->systemName);?> has been upgraded. This is an overview of the changes.</h3>
+    </div>
+
+    <ul class="intro-feature-highlights column-count-3">
+    <?php for ($i = 0; $i < 3; $i++): ?>
+        <li class="">
+            <a href="#<?php echo $this->escape($this->contents[$i]['displayOrder']) 
+                . '.-' . $this->escape(strtolower(str_replace(' ', '-', $this->contents[$i]['title'])), 'none') ?>">
+             <img src="<?php echo $this->escape($this->contents[$i]['imagePath'], 'none');?>" alt="#">
+        <?php echo $this->escape($this->contents[$i]['displayOrder'] . '.' . $this->contents[$i]['title'], 'none'); ?>
+            </a></li>
+   <?php endfor ?>
+
+    </ul>
+<p class="center"><a href="#" class="next">Take a Quick Tour of the Changes</a><span class="arrow">&raquo;</span></p>
+
+</div>
+
+<?php for ($i = 0; $i < count($this->contents); $i++): ?>
+    <div class="panel" id="<?php echo $this->escape($this->contents[$i]['displayOrder']) . '.-' 
+                           . $this->escape(strtolower(str_replace(' ', '-', $this->contents[$i]['title'])), 'none') ?>">
+        <div class="panel-heading">
+            <h3><?php echo $this->escape($this->contents[$i]['displayOrder'], 'none') 
+                . '. ' . $this->escape($this->contents[$i]['title'], 'none'); ?> 
+            </h3>
+        </div>
+
+        <div class="two-col">
+            <div class="column">
+                <?php echo $this->escape($this->contents[$i]['description'], 'none'); ?>   
+            </div>
+
+            <div class="column last"> 
+                <script>
+                    var params = { allowScriptAccess: "always", allowfullscreen: "true" };
+                    var atts = { id: "<?php echo $this->escape('newFeature' . $i)?>" };
+                    swfobject.embedSWF("<?php echo $this->escape($this->contents[$i]['videoUrl'], 'none'); ?>" 
+                        + "?hd=1&enablejsapi=1&fs=1&playerapiid=newFeature" + <?php echo $this->escape($i)?>,
+                        "ytapiplayer", "400", "300", "10", null, null, params, atts);
+
+                   function onYouTubePlayerReady(playerId) {
+                     var newFeature<?php echo $this->escape($i);?>  
+                         = document.getElementById("newFeature" + "<?php echo $this->escape($i); ?>");
+                   }
+                </script>
+
+                <div class="yt-player" id="ytapiplayer">You need Flash player 8+ and JavaScript enabled to 
+                                                        view this video.
+                    <a href="http://www.adobe.com/go/getflashplayer">
+                        <img src="https://www.adobe.com/images/shared/download_buttons/get_flash_player.gif" 
+                        alt="Get Adobe Flash player" />
+                    </a>
+                </div> 
+            </div>
+
+            <div class="navigation">
+                 <span class="arrow">&laquo;</span><a href="#" class="previous">Back</a>
+                 <span class="pipe">|</span> <a class="next" href="">Next</a><span class="arrow">&raquo;</span>
+            </div>
+        </div>
+
+    </div>
+<?php endfor ?>
+
+<div class="panel" id="youve-completed-the-tour">
+    <div class="panel-heading">
+        <h3>The End</h3>
+    </div>
+        <div class="navigation">
+             <span class="arrow">&laquo;</span><a href="#" class="previous">Back</a>
+             <span class="pipe">|</span> <a class="next" href="">Next</a><span class="arrow">&raquo;</span>
+        </div>
+</div>

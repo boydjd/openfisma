@@ -292,6 +292,11 @@ class Fisma_Menu
 
         $preferences->add(new Fisma_Yui_MenuItem('Profile', '/user/profile'));
 
+        $preferences->add(new Fisma_Yui_MenuItem('What\u2019s New', 
+                                                 null, 
+                                                 new Fisma_Yui_MenuItem_OnClick('Fisma.Util.showWhatsNewDialog'))
+                                                );
+
         $mainMenuBar->add($preferences);
 
         if (Fisma::debug()) {
