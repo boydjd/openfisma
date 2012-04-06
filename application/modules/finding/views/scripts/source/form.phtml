@@ -7,12 +7,14 @@
     <?php echo $this->escape($this->form, 'none');?>
 <?php
     else:
+        $mailurl = 'mailto:' . $this->escape(Fisma::configuration()->getConfig('contact_email'))
+                 . '?Subject='. $this->escape(Fisma::configuration()->getConfig('contact_subject'), 'url');
+
 ?>
-    <script type='text/javascript'>
-        var privilegeErrorMessage = 'You do not have sufficient privileges to add a new finding source.<br/>'
-                                  + 'Please contact the administrator for assistance.';
-        Fisma.Util.message(privilegeErrorMessage, 'warning', true);
-    </script>
+    <div class='messageBox warn'><div> <!-- use a double divs to simulate the usual setup of Fisma warning message -->
+            You do not have sufficient privileges to add a new finding source.<br/>
+            Please <a href="<?php echo $this->escape($mailurl, 'none'); ?>">contact the administrator</a> for assistance.
+    </div></div>
 <?php
     endif;
 ?>

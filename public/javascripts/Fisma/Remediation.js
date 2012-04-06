@@ -308,11 +308,11 @@ Fisma.Remediation = {
      */
     createSource : function () {
         // The scope is the button that was clicked, so save it for closures
-        var button = this;
+        var saveButton = this;
         var form = Fisma.Remediation.createSourcePanel.body.getElementsByTagName('form')[0];
 
         // Disable the submit button
-        button.set("disabled", true);
+        saveButton.set("disabled", true);
 
         // Save the username so we can populate it back on the create finding form
         var sourceName = document.getElementById("name").value;
@@ -340,16 +340,18 @@ Fisma.Remediation = {
                     jQuery('#sourceId > option[value="new"]').after(newOption);
 
                     // Reflect the change in the YUI Select Menu Button
-                    var button = YAHOO.widget.Button.getButton('sourceId-button');
-                    button.getMenu().addItems([
-                        { text: sourceName, value: sourceId, selected: true }
-                    ]);
-                    button.set('label', sourceName);
+                    var selectButton = YAHOO.widget.Button.getButton('sourceId-button');
+                    var newSource = selectButton.getMenu().addItem({
+                        'text': sourceName,
+                        'value': sourceId
+                    });
+                    selectButton.set('selectedMenuItem', newSource);
+                    selectButton.set('label', sourceName);
 
                     Fisma.Util.message('A finding source has been created.', 'info', true);
                 } else {
                     Fisma.Util.message(result.message, 'warning', true);
-                    button.set("disabled", false);
+                    saveButton.set("disabled", false);
                 }
             },
             failure : function(o) {
