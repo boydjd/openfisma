@@ -719,7 +719,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             'selectAll',
             array(
                 'label' => 'Select All',
-                'onClickFunction' => 'selectAllByName',
+                'onClickFunction' => 'Fisma.System.selectAllByName',
                 'onClickArgument' => array(
                     'name' => 'copyUserAccessTree[][]'
                 )

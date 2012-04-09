@@ -142,10 +142,6 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
         }
         $render .= "</ul></td></tr>\n";
 
-        $render .= "<tr><td>"
-                 . '<script type="text/javascript" src="/javascripts/selectallselectnone.js"></script>'
-                 . "</td></tr>";
-
         $render .= "</span>";
 
         return $render;
