@@ -21,7 +21,7 @@
  * @license   http://www.openfisma.org/content/license
  */
 
-Fisma.Search.CriteriaDefinition = function () {
+Fisma.Search.CriteriaDefinition = (function () {
     return {
         date : {
             dateAfter : {label : "After", renderer : 'singleDate', query : 'oneInput'},
@@ -36,7 +36,7 @@ Fisma.Search.CriteriaDefinition = function () {
         "float" : {
             floatBetween : {label : "Between", renderer : 'betweenFloat', query : 'twoInputs'},
             floatGreaterThan : {label : "Greater Than", renderer : 'singleFloat', query : 'oneInput', isDefault : true},
-            floatLessThan : {label : "Less Than", renderer : 'singleFloat', query : 'oneInput'}            
+            floatLessThan : {label : "Less Than", renderer : 'singleFloat', query : 'oneInput'}
         },
 
         integer : {
@@ -58,10 +58,10 @@ Fisma.Search.CriteriaDefinition = function () {
             textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'},
             textNotExactMatch : {label : "Not Exact Match", renderer : 'text', query : 'oneInput'}
         },
-        
+
         "enum" : {
             enumIs : {label : "Is", renderer : "enumSelect", query : "enumSelect", isDefault : true},
             enumIsNot : {label : "Is Not", renderer : "enumSelect", query : "enumSelect"}
         }
     };
-}();
+}());

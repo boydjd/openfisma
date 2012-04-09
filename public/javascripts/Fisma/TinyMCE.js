@@ -28,7 +28,7 @@
      * @namespace Fisma
      * @class TinyMCE
      */
-    Fisma.TinyMCE = FT = {
+    var FT = {
         _isInitialized: false,
         _initCallbacks: [],
         registerInitCallback : function(callback) {
@@ -46,4 +46,6 @@
             FT._isInitialized = true;
         }
     };
-})();
+
+    Fisma.TinyMCE = FT;
+}());

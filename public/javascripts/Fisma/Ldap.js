@@ -36,25 +36,27 @@ Fisma.Ldap = {
         if (Fisma.Ldap.validateLdapBusy) {
             return;
         }
-        
+
         Fisma.Ldap.validateLdapBusy = true;
-        
+
         // Bit of a hack. Grab the id of the current ldap Config out of the URL
         var location = document.location;
         var pieces = document.location.pathname.split('/');
         var ldapConfigId = null;
 
+        var pieceIndex;
         for (pieceIndex in pieces) {
             var piece = pieces[pieceIndex];
 
-            if ('id' == piece) {
+            if ('id' === piece) {
                 ldapConfigId = pieces[parseInt(pieceIndex, 10) + 1];
 
                 break;
             }
         }
+
         // End hack. @todo Modify controller so that it passes the id of the configuration to validate.
-        
+
         var validateButton = document.getElementById('validateLdap');
         validateButton.className = "yui-button yui-push-button yui-button-disabled";
 
@@ -69,7 +71,7 @@ Fisma.Ldap = {
             {
                 success : function (o) {
                     var response = YAHOO.lang.JSON.parse(o.responseText);
-                    
+
                     Fisma.Util.message(response.msg, response.type, true);
 
                     validateButton.className = "yui-button yui-push-button";
@@ -85,7 +87,7 @@ Fisma.Ldap = {
             }
         );
     },
-      
+
     /** 
     * This takes a YUI datatable as parameters, delete a row, then refresh the table  
     *    
@@ -94,7 +96,7 @@ Fisma.Ldap = {
     deleteLdap: function (oArgs) {
         var oRecord = this.getRecord(oArgs.target);
         var data = oRecord.getData();
-        var postData = new Object();
+        var postData = {};
 
         var that = this;
         postData.id = data.LdapId;

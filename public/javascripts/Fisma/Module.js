@@ -23,11 +23,11 @@
 
 Fisma.Module = {
     handleSwitchButtonStateChange : function (switchButton) {
-        
+
         switchButton.setBusy(true);
-        
+
         var enabled = switchButton.state ? 'true' : 'false';
-        
+
         var requestUrl = '/config/set-module/format/json/';
         var postData = 'id=' + switchButton.payload.id + '&enabled=' + enabled + '&csrf=' + $('[name="csrf"]').val(); 
 
@@ -41,32 +41,33 @@ Fisma.Module = {
             }, 
             postData);
     },
-    
+
     /**
      * Handle an asynchronous response to a module enable/disable
      */
     handleAsyncResponse : function (response) {
+        var responseStatus;
 
         try {
-            var responseStatus = YAHOO.lang.JSON.parse(response.responseText).response;
+            responseStatus = YAHOO.lang.JSON.parse(response.responseText).response;
         } catch (e) {
             if (e instanceof SyntaxError) {
                 // Handle a JSON syntax error by constructing a fake response object
-                responseStatus = new Object();
+                responseStatus = {};
                 responseStatus.success = false;
                 responseStatus.message = "Invalid response from server.";
             } else {
                 throw e;
             }
         }
-        
+
         if (!responseStatus.success) {
             var alertMessage = 'Error: Not able to change module status. Reason: ' + responseStatus.message;
             Fisma.Util.showAlertDialog(alertMessage);
         }
-        
+
         // Disable switch button spinner
-        var switchButton = response.argument;        
+        var switchButton = response.argument;
         switchButton.setBusy(false);
     }
 };

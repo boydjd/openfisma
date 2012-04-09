@@ -39,7 +39,7 @@
         this._msApprovals = msApprovals;
         this._evApprovals = evApprovals;
 
-        this._columnLabels = Array();
+        this._columnLabels = [];
         this._columnLabels = this._columnLabels.concat(
             FS.MITIGATION_COLUMNS,
             msApprovals,
@@ -171,7 +171,7 @@
 
             var firstCellSpan = document.createElement('span');
             firstCell.appendChild(firstCellSpan);
-            firstCellSpan.appendChild(document.createTextNode("View By: "))
+            firstCellSpan.appendChild(document.createTextNode("View By: "));
 
             if (YAHOO.lang.isValue(this._tooltips.viewBy)) {
                 firstCellSpan.className = "tooltip";
@@ -193,15 +193,16 @@
             var select = document.createElement("select");
             select.onchange = function (event) {that.changeViewType.call(that, event, select);};
 
-            for (var optionKey in FS.SUMMARY_TYPES) {
-                var option = new Option(FS.SUMMARY_TYPES[optionKey], optionKey)
+            var optionKey;
+            for (optionKey in FS.SUMMARY_TYPES) {
+                var option = new Option(FS.SUMMARY_TYPES[optionKey], optionKey);
 
-                if (option.value == this._currentViewType) {
+                if (option.value === this._currentViewType) {
                     option.selected = true;
                 }
 
                 // Workaround for IE7:
-                if (YAHOO.env.ua.ie == 7) {
+                if (YAHOO.env.ua.ie === 7) {
                     select.add(option, select.options[null]);
                 } else {
                     select.add(option, null);
@@ -306,8 +307,9 @@
             var label;
             var cell;
             var link;
+            var index;
 
-            for (var index in this._columnLabels) {
+            for (index in this._columnLabels) {
                 cell = document.createElement('th');
                 cell.style.borderBottom = "none";
 
@@ -315,9 +317,9 @@
 
                 link = document.createElement('a');
                 cell.appendChild(link);
-                if ("OPEN" == label) {
+                if ("OPEN" === label) {
                     link.href = "/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED";
-                } else if ("TOTAL" == label) {
+                } else if ("TOTAL" === label) {
                     // Pass a blank query, otherwise the saved settings of previous search will be used
                     link.href = "/finding/remediation/list?q=/id/integerEquals/";
                 } else {
@@ -344,8 +346,10 @@
                 closed: nodeData.closed || 0
             };
 
-            for (var i in this._columnLabels) {
-                var column = $P.urlencode(this._columnLabels[i]);
+            var index,
+                column;
+            for (index in this._columnLabels) {
+                column = $P.urlencode(this._columnLabels[index]);
 
                 if (column === 'CLOSED' || column === 'TOTAL') {
                     // These columns don't distinguish ontime from overdue (they're handled above)
@@ -358,7 +362,8 @@
 
             // Include children's aggregate values in this node's aggregate value
             if (YAHOO.lang.isValue(node.children) && node.children.length > 0) {
-                for (var i in node.children) {
+                var i;
+                for (i in node.children) {
                     var child = node.children[i];
                     var childData = child.nodeData;
 
@@ -367,8 +372,9 @@
                     nodeData.aggregate.total += childData.aggregate.total;
                     nodeData.aggregate.closed += childData.aggregate.closed;
 
-                    for (var i in this._columnLabels) {
-                        var column = $P.urlencode(this._columnLabels[i]);
+                    var j;
+                    for (j in this._columnLabels) {
+                        column = $P.urlencode(this._columnLabels[j]);
 
                         if (column === 'CLOSED' || column === 'TOTAL') {
                             // These columns don't distinguish ontime from overdue (they're handled above)
@@ -391,7 +397,7 @@
          * @param nodeState {TreeTable.NodeState}
          */
         _renderCell: function (container, nodeData, columnNumber, nodeState) {
-            if (columnNumber == 0) {
+            if (columnNumber === 0) {
                 container.style.minWidth = "15em";
                 container.style.height = "2.5em";
                 container.style.overflow = "hidden";
@@ -424,15 +430,15 @@
                 var overdueUrl = this._makeUrl(false, status, nodeState, nodeData.rowLabel, nodeData.searchKey);
 
                 // If we are in a collapsed tree node, then switch single-record node data to aggregate node data
-                if (nodeState == Fisma.TreeTable.NodeState.COLLAPSED) {
+                if (nodeState === Fisma.TreeTable.NodeState.COLLAPSED) {
                     nodeData = nodeData.aggregate;
                 }
 
-                if (status == "CLOSED") {
+                if (status === "CLOSED") {
                     link.href = ontimeUrl;
                     container.appendChild(link);
                     link.appendChild(document.createTextNode(nodeData.closed || 0));
-                } else if (status == "TOTAL") {
+                } else if (status === "TOTAL") {
                     link.href = ontimeUrl;
                     container.appendChild(link);
                     link.appendChild(document.createTextNode(nodeData.total || 0));
@@ -441,16 +447,16 @@
                     var ontime = nodeData["ontime_" + status] || 0;
                     var overdue = nodeData["overdue_" + status] || 0;
 
-                    if (ontime == 0 && overdue == 0) {
+                    if (ontime === 0 && overdue === 0) {
                         container.className = "ontime";
                         container.appendChild(document.createTextNode('-'));
-                    } else if (ontime > 0 && overdue == 0) {
+                    } else if (ontime > 0 && overdue === 0) {
                         container.className = "ontime";
                         container.appendChild(link);
 
                         link.href = ontimeUrl;
                         link.appendChild(document.createTextNode(ontime || 0));
-                    } else if (ontime == 0 && overdue > 0) {
+                    } else if (ontime === 0 && overdue > 0) {
                         container.className = "overdue";
                         container.appendChild(link);
 
@@ -562,15 +568,15 @@
             status = $P.urldecode(status);
 
             // Add status criterion
-            if (status != "TOTAL" && status != "OPEN") {
+            if (status !== "TOTAL" && status !== "OPEN") {
                 url += "/denormalizedStatus/enumIs/" + encodeURIComponent(status);
-            } else if (status == "OPEN"){
+            } else if (status === "OPEN"){
                 url += "/denormalizedStatus/enumIsNot/CLOSED";
             }
 
             // Add organization/POC criterion
-            if (nodeState == Fisma.TreeTable.NodeState.COLLAPSED) {
-                if (this._currentViewType == "systemAggregation") {
+            if (nodeState === Fisma.TreeTable.NodeState.COLLAPSED) {
+                if (this._currentViewType === "systemAggregation") {
                     url += '/' + searchKey + '/systemAggregationSubtree/' + encodeURIComponent(rowLabel);
                 } else {
                     url += '/' + searchKey + '/organizationSubtree/' + encodeURIComponent(rowLabel);
@@ -580,7 +586,7 @@
             }
 
             // Add ontime criteria (if applicable)
-            if (status != "TOTAL" && status != "CLOSED") {
+            if (status !== "TOTAL" && status !== "CLOSED") {
                 var today = new Date();
                 var todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
 
@@ -592,16 +598,16 @@
             }
 
             // Add filter criteria
-            msSelect = this._filters.mitigationType.select;
-            msValue = msSelect.options[msSelect.selectedIndex].value;
-            if (msValue != "none") {
+            var msSelect = this._filters.mitigationType.select;
+            var msValue = msSelect.options[msSelect.selectedIndex].value;
+            if (msValue !== "none") {
                 url += "/type/enumIs/" + encodeURIComponent(msValue);
             }
 
-            sourceSelect = this._filters.findingSource.select;
-            sourceValue = sourceSelect.options[sourceSelect.selectedIndex].value;
-            sourceLabel = sourceSelect.options[sourceSelect.selectedIndex].text;
-            if (sourceValue != "none") {
+            var sourceSelect = this._filters.findingSource.select;
+            var sourceValue = sourceSelect.options[sourceSelect.selectedIndex].value;
+            var sourceLabel = sourceSelect.options[sourceSelect.selectedIndex].text;
+            if (sourceValue !== "none") {
                 url += "/source/textExactMatch/" + encodeURIComponent(sourceLabel);
             }
 
@@ -617,4 +623,4 @@
     });
 
     Fisma.FindingSummary = FS;
-})();
+}());

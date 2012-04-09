@@ -21,7 +21,7 @@
  * @license   http://www.openfisma.org/content/license
  */
  
-Fisma.Search.CriteriaQuery = function () {
+Fisma.Search.CriteriaQuery = (function () {
     return {
         /**
          * This is the simplest query generator, it doesn't generate anything!
@@ -31,7 +31,7 @@ Fisma.Search.CriteriaQuery = function () {
         noInputs : function(container) {
             return [];
         },
-        
+
         /**
          * Generates a query based on one input field
          * 
@@ -39,12 +39,12 @@ Fisma.Search.CriteriaQuery = function () {
          */
         oneInput : function (container) {
             var inputs = container.getElementsByTagName('input');
-            
+
             var values = [inputs[0].value];
-            
+
             return values;
         },
-        
+
         /**
          * Generates a query based on two input fields
          * 
@@ -52,12 +52,12 @@ Fisma.Search.CriteriaQuery = function () {
          */
         twoInputs : function (container) {
             var inputs = container.getElementsByTagName('input');
-            
+
             var values = [inputs[0].value, inputs[1].value];
-            
+
             return values;
         },
-        
+
         /**
          * Generate a query based on a YUI menu button
          * 
@@ -67,8 +67,8 @@ Fisma.Search.CriteriaQuery = function () {
             var inputs = container.getElementsByTagName('button');
 
             var values = [inputs[0].firstChild.nodeValue];
-            
+
             return values;
         }
     };
-}();
+}());

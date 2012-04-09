@@ -24,7 +24,7 @@
 (function() {
     /**
      * Adds drag-and-drop functionality to a yui treeview widget
-     * 
+     *
      * @namespace Fisma
      * @class TreeNodeDragBehavior
      * @extends n/a
@@ -35,7 +35,7 @@
      */
     var TNDB = function(treeView, callbacks, element) {
         this._callbacks = callbacks;
-        
+
         // Validate required callback
         var dragFinishedCallbackValid = callbacks.dragFinished 
                                         && YAHOO.lang.isFunction(callbacks.dragFinished.fn) 
@@ -54,53 +54,53 @@
         // Style the proxy element
         YAHOO.util.Dom.addClass(this.getDragEl(), "treeNodeDragProxy");
     };
-    
+
     YAHOO.lang.extend(TNDB, YAHOO.util.DDProxy, {
 
         /**
          * The tree view whose behavior is being modified
-         * 
+         *
          * @property _treeview
          * @type YAHOO.widget.TreeView
          * @protected
-         */        
+         */
         _treeView: null,
 
         /**
          * The element which is the target of any current drag/drop operation
-         * 
+         *
          * @property _currentDragTarget
          * @type HTMLElement
          * @protected
-         */                
+         */
         _currentDragTarget: null,
 
         /**
          * Tracks if the current drag was successful across several event handlers
-         * 
+         *
          * @property _currentDragSuccessful
          * @type boolean
          * @protected
-         */                
+         */
         _currentDragSuccessful: false,
 
         /**
          * Unique ID for this drag and drop group
-         * 
+         *
          * @property _dragDropGroup
          * @type string
          * @protected
-         */                
+         */
         _dragDropGroup: null,
 
         /**
          * Stores a dictionary of callbacks used by this class
-         * 
+         *
          * @type object
          * @protected
          */
         _callbacks: null,
-        
+
         /**
          * Override DDProxy to handle the start of a drag/drop event
          *
@@ -112,7 +112,7 @@
             // Make the dragged proxy look like the source elemnt
             var dragEl = this.getDragEl();
             var clickEl = this.getEl();
-    
+
             dragEl.innerHTML = clickEl.innerHTML;
             YAHOO.util.Dom.setStyle(dragEl, "background", "white");
             YAHOO.util.Dom.setStyle(dragEl, "border", "none");
@@ -124,7 +124,7 @@
          * @method TreeNodeDragBehavior.endDrag
          * @param event {YAHOO.util.Event} The mousemove event
          * @param id {String} The element id this is hovering over
-         */        
+         */
         endDrag: function (event, id) {
             var srcEl = this.getEl();
             var proxy = this.getDragEl();
@@ -133,17 +133,17 @@
             YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
             YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
             YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragBelow');
-    
+
             if (!this._currentDragSuccessful) {
                 // Animate the proxy element returning to its origin
                 YAHOO.util.Dom.setStyle(proxy, "visibility", "");
                 var anim = new YAHOO.util.Motion(
-                    proxy, 
+                    proxy,
                     { points: { to: YAHOO.util.Dom.getXY(srcEl) } },
                     0.2,
                     YAHOO.util.Easing.easeOut
                 );
-            
+
                 // Hide the proxy element when the animation finishes
                 anim.onComplete.subscribe(function () {
                     YAHOO.util.Dom.setStyle(proxy.id, "visibility", "hidden");
@@ -167,7 +167,7 @@
              * If its near the middle, we highlight the entire element. If its near the
              * bottom, we set the bottom border.
              */
-            this._currentDragTarget = YAHOO.util.Dom.get(id);   
+            this._currentDragTarget = YAHOO.util.Dom.get(id);
 
             YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragAbove');
             YAHOO.util.Dom.removeClass(this._currentDragTarget, 'treeNodeDragOnto');
@@ -191,9 +191,9 @@
             }
 
             // If this drag is valid, then highlight the current drag-drop target.
-            if (dragLocation == TNDB.DRAG_LOCATION.ABOVE) {
+            if (dragLocation === TNDB.DRAG_LOCATION.ABOVE) {
                 YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragAbove');
-            } else if (dragLocation == TNDB.DRAG_LOCATION.ONTO) {
+            } else if (dragLocation === TNDB.DRAG_LOCATION.ONTO) {
                 YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragOnto');
             } else {
                 YAHOO.util.Dom.addClass(this._currentDragTarget, 'treeNodeDragBelow');
@@ -240,12 +240,11 @@
                 }
             }
 
-
             var success = this._callbacks.dragFinished.fn.call(
                 this._callbacks.dragFinished.context,
-                this, 
-                srcNode, 
-                destNode, 
+                this,
+                srcNode,
+                destNode,
                 dragLocation
             );
 
@@ -277,17 +276,16 @@
                     break;
                 default:
                     throw "Invalid drag location parameter";
-                    break;
             }
 
             this._treeView.getRoot().refresh();
-            
+
             // YUI discards all the event handlers after refreshing a treeview, so we need to make it
             // draggable all over again.
             Fisma.TreeNodeDragBehavior.makeTreeViewDraggable(
                 this._treeView,
                 this._callbacks
-            );            
+            );
         },
 
         /**
@@ -331,13 +329,14 @@
         // Get a list of all nodes in the tree
         var nodes = treeView.getNodesBy(function (node) {return true;});
 
-        for (var nodeIndex in nodes) {
+        var nodeIndex;
+        for (nodeIndex in nodes) {
             var node = nodes[nodeIndex];
 
             var yuiNodeDrag = new TNDB(treeView, callbacks, node.contentElId, this._dragDropGroup);
         }
     };
-    
+
     /**
      * Constants that represent drag targets relative to a destination node
      *
@@ -351,4 +350,4 @@
     };
 
     Fisma.TreeNodeDragBehavior = TNDB;
-})();
+}());

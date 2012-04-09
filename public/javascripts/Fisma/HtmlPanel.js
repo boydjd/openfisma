@@ -22,7 +22,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license   http://www.openfisma.org/content/license
  */
-Fisma.HtmlPanel = function() {
+Fisma.HtmlPanel = (function() {
     return {
         /**
          * Popup a YUI panel dialog which renders user specified HTML text.
@@ -39,6 +39,7 @@ Fisma.HtmlPanel = function() {
             {
                 element = YAHOO.util.Dom.generateId();
             }
+
             // Initialize user config with default config object if the user config is not specified or null
             if (typeof(userConfig) === 'undefined' || userConfig === null)
             {
@@ -47,7 +48,7 @@ Fisma.HtmlPanel = function() {
                     modal : true
                 };
             }
-            
+
             // Instantiate YUI panel for rendering
             var panel = new YAHOO.widget.Panel(element, userConfig);
             panel.setHeader(title);
@@ -55,14 +56,14 @@ Fisma.HtmlPanel = function() {
             panel.render(document.body);
             panel.center();
             panel.show();
-            
+
             // Fill the panel with HTML text
             if (html !== '') {
                 panel.setBody(html);
                 panel.center();
             }
-            
+
             return panel;
         }
     };
-}();
+}());

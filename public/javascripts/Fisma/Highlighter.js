@@ -26,9 +26,9 @@
  * class, but it still makes a number of assumptions about how highlighting is performed and what the DOM will look
  * like when we try to highlight it. It needs some work to become a general-purpose highlighting utility class.
  */
-Fisma.Highlighter = function() {
+Fisma.Highlighter = (function() {
     return {
-        
+
         /**
          * Highlights delimited text in specified HTML elements
          * 
@@ -46,7 +46,8 @@ Fisma.Highlighter = function() {
 
             var regex = new RegExp("^(.*?)" + escapedDelimiter + "(.*?)" + escapedDelimiter + "(.*?)$");
 
-            for (var i in elements) {
+            var i;
+            for (i in elements) {
                 var element = elements[i];
 
                 // Skip empty table cells
@@ -55,9 +56,9 @@ Fisma.Highlighter = function() {
                 }
 
                 var parentNode = element.firstChild;
-                
+
                 // Don't try to highlight non-text nodes (text nodeType is 3 -- can't find a named constant for it)
-                if (parentNode && parentNode.firstChild && parentNode.firstChild.nodeType != 3) {
+                if (parentNode && parentNode.firstChild && parentNode.firstChild.nodeType !== 3) {
                     continue;
                 }
 
@@ -99,7 +100,7 @@ Fisma.Highlighter = function() {
                 highlightMatches = currentText.match(regex);
 
                 // Match 3 subexpressions plus the overall match -> 4 total matches
-                if (highlightMatches && highlightMatches.length == 4) {
+                if (highlightMatches && highlightMatches.length === 4) {
 
                     var preMatch = highlightMatches[1];
                     var highlightMatch = highlightMatches[2];
@@ -120,12 +121,12 @@ Fisma.Highlighter = function() {
                     // ever get matched and we need to break out of the loop or else it will loop indefinitely.
                     break;
                 }
-                
+
             } while (highlightMatches);
-            
+
             return matches;
         },
-        
+
         /**
          * Create highlighted span elements based on a list of matching text snippets
          * 
@@ -134,14 +135,15 @@ Fisma.Highlighter = function() {
          */
         _highlightMatches : function (parentNode, matches) {
 
-            if ((matches.length > 1) && (matches.length % 2 == 1)) {
+            if ((matches.length > 1) && (matches.length % 2 === 1)) {
 
                 // Remove current text
                 parentNode.removeChild(parentNode.firstChild);
 
                 // Iterate over matches and create new text nodes (for plain text) and new spans (for highlighted
                 // text)
-                for (var j in matches) {
+                var j;
+                for (j in matches) {
                     var match = matches[j];
 
                     var newTextNode = document.createTextNode(match);
@@ -154,11 +156,11 @@ Fisma.Highlighter = function() {
                         var newSpan = document.createElement('span');
                         newSpan.className = 'highlight';
                         newSpan.appendChild(newTextNode);
-                        
+
                         parentNode.appendChild(newSpan);
                     }
                 }
             }
         }
     };
-}();
+}());

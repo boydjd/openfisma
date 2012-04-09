@@ -30,9 +30,11 @@
 
             if (obj.submenu) {
                 var groups = obj.submenu.itemdata;
-                for (var i in groups) {
+                var i;
+                for (i in groups) {
                     var group = groups[i];
-                    for (var j in group) {
+                    var j;
+                    for (j in group) {
                         var item = group[j];
                         Fisma.Menu.resolveOnClickObjects(item);
                     }
@@ -85,4 +87,4 @@
             textField.focus();
         }
     };
-})();
+}());

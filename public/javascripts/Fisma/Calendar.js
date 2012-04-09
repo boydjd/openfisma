@@ -78,4 +78,4 @@
     };
 
     Fisma.Calendar = Calendar;
-})();
+}());

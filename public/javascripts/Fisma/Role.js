@@ -22,14 +22,15 @@
  */
  
 Fisma.Role = {
-    
+
     rolePrivChanges : {},
-    
+
     dataTableCheckboxClick : function (oArgs) {
-    
+
         var checkboxObj = oArgs.target;
         var column = this.getColumn(checkboxObj);
         var roleName = column.key;
+
         // The 2nd column (hidden) has the privilegeId
         var privilegeCell = this.getRow(checkboxObj).childNodes[1].childNodes[0].childNodes[0];
         var privilegeId = $(privilegeCell).text();
@@ -39,11 +40,11 @@ Fisma.Role = {
             'roleName': roleName,
             'privilegeId': privilegeId,
             'newValue': checkboxObj.checked
-        }
+        };
+
         Fisma.Role.rolePrivChanges[roleName + privilegeId] = newChange;
-        
+
         // Put change list into the form to be submitted
         YAHOO.util.Dom.get('rolePrivChanges').value = YAHOO.lang.JSON.stringify(Fisma.Role.rolePrivChanges);
     }
-    
 };
