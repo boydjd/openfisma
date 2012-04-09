@@ -65,7 +65,7 @@ div.stepDetail {
     margin-top: 6px;
     margin-left: 24px;
     margin-right: 24px;
-    margin-bottom: 0;
+    margin-bottom: 0px;
     border: none;
     padding: 12px;
 }
@@ -92,23 +92,24 @@ form#finding_workflow td:first-child{
     width:150px;
 }
 
-div.stepDetail td input, div.stepDetail td div, div.stepDetail td textarea {
+form#finding_workflow td input, form#finding_workflow td div, form#finding_workflow td textarea {
     width: 100%;
-    border: solid thin white;
+    border: solid thin transparent;
     padding: 2px;
+    background-color: transparent;
 }
 
-div.stepDetail td input:hover, div.stepDetail td textarea:hover {
+form#finding_workflow td input:hover, form#finding_workflow td textarea:hover {
     border: solid thin black;
-    background: #FFFF99;
+    background-color: #FFFF99;
 }
 
-div.stepDetail textarea {
+form#finding_workflow textarea {
     height: 48px;
 }
 
-div.stepDetail td input[readonly], div.stepDetail td textarea[readonly] {
+form#finding_workflow td input[readonly], form#finding_workflow td textarea[readonly] {
     color: black ! important;
-    background: white ! important;
+    background-color: white ! important;
     border: none;
 }
