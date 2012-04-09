@@ -715,6 +715,7 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
     display: none;
 }
 
+/* Used by Fisma.Util.showWhatsNewDialog */
 .dialog-button-panel {
     background:#fff;
     border-top:1px solid #f0f0f0;

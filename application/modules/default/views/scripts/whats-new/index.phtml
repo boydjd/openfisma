@@ -4,11 +4,12 @@
     </div>
 
     <ul class="intro-feature-highlights column-count-3">
-    <?php for ($i = 0; $i < 3; $i++): ?>
+
+    <?php for ($i = 0; $i < 3; $i++): // Show first 3 changes which have the thumbnails shown on the first page.?>
         <li class="">
             <a href="#<?php echo $this->escape($this->contents[$i]['displayOrder']) 
                 . '.-' . $this->escape(strtolower(str_replace(' ', '-', $this->contents[$i]['title'])), 'none') ?>">
-             <img src="<?php echo $this->escape($this->contents[$i]['imagePath'], 'none');?>" alt="#">
+             <img src="<?php echo $this->escape($this->contents[$i]['imagePath'], 'none');?>" alt="#" border="0">
         <?php echo $this->escape($this->contents[$i]['displayOrder'] . '.' . $this->contents[$i]['title'], 'none'); ?>
             </a></li>
    <?php endfor ?>
@@ -18,7 +19,7 @@
 
 </div>
 
-<?php for ($i = 0; $i < count($this->contents); $i++): ?>
+<?php for ($i = 0; $i < count($this->contents); $i++): // Each individual change shown on the each panel. ?>
     <div class="panel" id="<?php echo $this->escape($this->contents[$i]['displayOrder']) . '.-' 
                            . $this->escape(strtolower(str_replace(' ', '-', $this->contents[$i]['title'])), 'none') ?>">
         <div class="panel-heading">
@@ -64,7 +65,7 @@
     </div>
 <?php endfor ?>
 
-<div class="panel" id="youve-completed-the-tour">
+<div class="panel" id="end-the-tour">
     <div class="panel-heading">
         <h3>The End</h3>
     </div>

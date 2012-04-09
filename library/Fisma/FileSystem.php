@@ -54,6 +54,12 @@ class Fisma_FileSystem
      */
     static function readDir($dir)
     {
+        if (!file_exists($dir)) {
+            throw new Fisma_Zend_Exception(
+                'Unable to open directory, the requested directory does not exist: ' . $dir
+            );
+        }
+
         $dh = opendir($dir);
         $files = array();
         while (($file = readdir($dh)) !== false) {

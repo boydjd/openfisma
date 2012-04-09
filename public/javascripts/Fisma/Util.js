@@ -388,7 +388,7 @@ Fisma.Util = {
         var dontShowCheckbox = document.createElement('input');
         dontShowCheckbox.type = 'checkbox';
         dontShowCheckbox.id = 'notShow';
-        dontShowCheckbox.name = 'dontShow';
+        dontShowCheckbox.name = 'notShow';
         dialogTip.appendChild(dontShowCheckbox);
 
         var dontShowLabel = document.createElement('label');
@@ -407,7 +407,7 @@ Fisma.Util = {
 
         bottomPanel.appendChild(dialogTip);
 
-        var iframe = document.createElement('iframe');
+        var iframe = document.createElement('<iframe frameborder="0"></iframe>');
         iframe.height = '420px';
         iframe.width = '830px';
         iframe.style.border = 'none';
@@ -435,7 +435,8 @@ Fisma.Util = {
 
             dialog.destroy();
         }); 
-
+   
         iframe.src = '/whats-new';
+        iframe.contentWindow.document.body.style.border = "none";
     }
 };

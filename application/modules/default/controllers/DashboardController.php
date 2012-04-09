@@ -168,15 +168,17 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $showWhatsNew = 0;
         $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
-        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($user->id, 'whatsnew.checked')->fetchOne();
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($user->id, 'WhatsNew.checked')->fetchOne();
 
         if (empty($storage)) {
             $showWhatsNew = true;
         } else {
-           $data = $storage->data;
-           if ($data['version'] != substr($versions['application'], 0, -2)) {
-               $showWhatsNew = true;
-           } 
+            $data = $storage->data;
+
+            // Use only main version number
+            if ($data['version'] != substr($versions['application'], 0, -2)) {
+                $showWhatsNew = true;
+            }
         }
 
         $this->view->showWhatsNew = $showWhatsNew ;
