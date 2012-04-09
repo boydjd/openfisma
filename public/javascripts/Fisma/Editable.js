@@ -116,7 +116,10 @@
                                 YAHOO.util.Event.onContentReady(name + "-button", function () {
                                     // Fetch currently selected item
                                     var selectElement = document.getElementById(name + '-select');
-                                    var selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
+                                    var selectedLabel = '';
+                                    if (selectElement.options.length > 0) {
+                                        selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
+                                    }
 
                                     // Create a Button using an existing <input> and <select> element
                                     var oMenuButton = new YAHOO.widget.Button(name + "-button", {
