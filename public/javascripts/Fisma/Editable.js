@@ -87,7 +87,7 @@
 
                     textEl.style.width = (oldWidth - 10) + "px";
                     if (eclass === 'date') {
-                        Fisma.Calendar.addCalendarPopupToTextField(target);
+                        Fisma.Calendar.addCalendarPopupToTextField(textEl);
                     }
                 } else if( type === 'textarea' ) {
                     var row = target.getAttribute('rows');
