@@ -34,3 +34,8 @@ Migration:
         minorVersion: 17
         tagNumber: 0
         name: Ipv6
+    021701_add_url_of_systemtype_to_event:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 1 
+        name: AddSystemTypeUrlToEventTable

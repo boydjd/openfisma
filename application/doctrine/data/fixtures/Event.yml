@@ -423,11 +423,13 @@ Event:
         name: SYSTEM_TYPE_UPDATED
         description: System Type Modified
         Privilege: notification_admin
+        urlPath: /system-type/view/id/
 
     SYSTEM_TYPE_CREATED:
         name: SYSTEM_TYPE_CREATED
         description: System Type Created
         Privilege: notification_admin
+        urlPath: /system-type/view/id/
 
     SYSTEM_TYPE_DELETED:
         name: SYSTEM_TYPE_DELETED
