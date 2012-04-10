@@ -82,7 +82,9 @@ Fisma.Email = (function() {
                 panelConfig);
 
             // Make button a YUI widget and set up onclick event
-            new YAHOO.widget.Button("dialogRecipientSendBtn", {onclick: {fn: Fisma.Email.sendTestEmail}});
+            var sendButton = new YAHOO.widget.Button("dialogRecipientSendBtn", {
+                onclick: {fn: Fisma.Email.sendTestEmail}
+            });
         },
 
         /**

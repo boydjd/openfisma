@@ -606,7 +606,7 @@ Fisma.Chart = {
 
         // dont show title on canvas, (it must be above the threat-level-legend if it exists)
         jPlotParamObj.title = null;
-        
+
         // implement hook nessesary for patterns
         Fisma.Chart.hookPostDrawSeriesHooks();
 
@@ -661,10 +661,10 @@ Fisma.Chart = {
             columnLabelObjs[x].columnNumber = x;
 
             // hook onMouseOver to show tooltip
-            columnLabelObjs[x].onmouseover = columnLabelMouseOver();
+            columnLabelObjs[x].onmouseover = columnLabelMouseOver;
 
             // hook onMouseOut to hide tooltip
-            columnLabelObjs[x].onmouseout = columnLabelMouseOut();
+            columnLabelObjs[x].onmouseout = columnLabelMouseOut;
 
             // bring this label to front, otherwise onmouseover will never fire
             columnLabelObjs[x].style.zIndex = 1;
@@ -801,9 +801,10 @@ Fisma.Chart = {
                 // Because this is a nested function, chartParamsObj may or may not be the true related
                 // instance to this trigger (it isnt in Firefox). Refreash this variable.
                 var uniqueId;
+                var chartParamsObj;
                 if (this.canvas._elem.context.parentNode.id !== undefined) {
                     uniqueId = this.canvas._elem.context.parentNode.id;
-                    var chartParamsObj = Fisma.Chart.chartsOnDOM.uniqueId;
+                    chartParamsObj = Fisma.Chart.chartsOnDOM.uniqueId;
                 }
 
                 /* chartParamsObj.patternCounter will be used (incremented for each call of this function) to
@@ -815,8 +816,8 @@ Fisma.Chart = {
 
                 // Decide which pattern to use in place of the color for this hooked layer/series, and increment for next hook
                 var myPatternId = Fisma.Chart.chartsOnDOM.uniqueId.patternCounter;
-                var myPatternURL = Fisma.Chart.patternURLs[myPatternId];
-                Fisma.Chart.chartsOnDOM[uniqueId].patternCounter++;
+                var myPatternURL = Fisma.Chart.patternURLs.myPatternId;
+                Fisma.Chart.chartsOnDOM.uniqueId.patternCounter++;
 
                 // For each bar drawn of this layer/series/color
                 var bar;
@@ -2399,7 +2400,7 @@ Fisma.Chart = {
 
         // First, show a loading message showing that the chart is loading
         for (uniqueid in Fisma.Chart.chartsOnDOM) {
-            thisParamObj = Fisma.Chart.chartsOnDOM.uniqueid;
+            thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];
             Fisma.Chart.showChartLoadingMsg(thisParamObj);
         }
 
@@ -2413,7 +2414,7 @@ Fisma.Chart = {
 
         // Now redraw and refreash charts and chart options
         for (uniqueid in Fisma.Chart.chartsOnDOM) {
-            thisParamObj = Fisma.Chart.chartsOnDOM.uniqueid;
+            thisParamObj = Fisma.Chart.chartsOnDOM[uniqueid];
 
             // redraw chart
             Fisma.Chart.createJQChart(thisParamObj);

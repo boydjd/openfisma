@@ -39,7 +39,7 @@ Fisma.Remediation = {
                 // have same target action. So set the latter`s action with the former`s.
                 document.finding_detail_upload_evidence.action = document.finding_detail.action;
                 // make the add another upload button YUI
-                new YAHOO.widget.Button("add-another-file-button");
+                var addAnotherFileButton = new YAHOO.widget.Button("add-another-file-button");
                 // YUI strips away the classes, replace them
                 YAHOO.util.Dom.addClass("add-another-file-button", "ie7-only");
                 YAHOO.util.Dom.addClass("add-another-file-button", "ie8-only");
@@ -51,7 +51,7 @@ Fisma.Remediation = {
                 var i;
                 for (i in inputs) {
                     if (inputs[i].type === 'submit') {
-                        new YAHOO.widget.Button(inputs[i]);
+                        var submitButton = new YAHOO.widget.Button(inputs[i]);
                     }
                 }
             }
@@ -82,11 +82,13 @@ Fisma.Remediation = {
                 '/finding/remediation/reject-evidence/id/' + findingId,
                 function(){
                     document.finding_detail_reject_evidence.action = document.finding_detail.action;
-                    new YAHOO.widget.Button(YAHOO.util.Selector.query("input[type=submit]", "finding_detail_reject_evidence", true));
+                    var rejectEvidenceButton = new YAHOO.widget.Button(
+                        YAHOO.util.Selector.query("input[type=submit]", "finding_detail_reject_evidence", true)
+                    );
                     var closeDialogFunction = function() {
                         panel.destroy();
                     };
-                    new YAHOO.widget.Button("dialog_close", {onclick: {fn: closeDialogFunction}});
+                    var closeButton = new YAHOO.widget.Button("dialog_close", {onclick: {fn: closeDialogFunction}});
                 }
             );
         } else {
@@ -126,7 +128,7 @@ Fisma.Remediation = {
 
             panel = Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 
-            new YAHOO.widget.Button("dialog_continue", {onclick: {fn: function () {
+            var continueButton = new YAHOO.widget.Button("dialog_continue", {onclick: {fn: function () {
                 var form2 = document.getElementById(formId);
                 var comment = document.getElementById('dialog_comment').value;
 
@@ -151,7 +153,7 @@ Fisma.Remediation = {
                 return;
             }}});
 
-            new YAHOO.widget.Button("dialog_close", {onclick: {fn: function () {
+            var closeButton = new YAHOO.widget.Button("dialog_close", {onclick: {fn: function () {
                 panel.destroy();
                 return false;
             }}});

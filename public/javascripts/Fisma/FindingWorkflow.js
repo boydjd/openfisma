@@ -36,7 +36,7 @@ Fisma.FindingWorkflow = {
         newItem.find('span.stepName').text('(new step)');
         newItem.find('input[name$="_name"]').val('(new step)');
         newItem.find('input, textarea, select').attr('name', function(index, oldId) {
-            return oldId.replace(/.*_.*_/, itemId + '_');
+            return itemId + '_' + oldId.split('_').pop();
         });
 
         Fisma.FindingWorkflow.toggleDetailPanel(newItem.find('span.linkBar > a').get(0));
@@ -49,7 +49,7 @@ Fisma.FindingWorkflow = {
      * Only allow submission if triggered by the "Save" button
      */
     submitHandler : function() {
-        return jQuery('input[name="forceSubmit"]').val(true);
+        return jQuery('input[name="forceSubmit"]').val() === 'true';
     },
 
     /**
@@ -216,13 +216,13 @@ Fisma.FindingWorkflow = {
                             ).attr('checked', true);
                     }
 
-                    new YAHOO.widget.Button('dialog_close');
+                    var closeButton = new YAHOO.widget.Button('dialog_close');
                     YAHOO.util.Event.addListener("dialog_close", "click", function (){
                         panel.destroy();
                         return false;
                     });
 
-                    new YAHOO.widget.Button('dialog_confirm');
+                    var confirmButton = new YAHOO.widget.Button('dialog_confirm');
                     YAHOO.util.Event.addListener("dialog_confirm", "click", function (){
                         var inputs = jQuery('#finding_workflow_select_roles input:checked');
 

@@ -135,7 +135,7 @@ Fisma.InteractiveOrderedListItem.appendNewTo = function(listId, jsHandlers) {
     newItem.attr('id', newId);
     newItem.appendTo(list);
 
-    new Fisma.InteractiveOrderedListItem(
+    var listItem = new Fisma.InteractiveOrderedListItem(
         newId,
         listId,
         jsHandlers,

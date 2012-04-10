@@ -109,13 +109,13 @@
             }
 
             $(buttons[0]).attr('id', textareaId + "_addAbove");
-            new YAHOO.widget.Button(buttons[0], {label: "Add Step Above"});
+            var addStepAboveButton = new YAHOO.widget.Button(buttons[0], {label: "Add Step Above"});
 
             $(buttons[1]).attr('id', textareaId + "_addBelow");
-            new YAHOO.widget.Button(buttons[1], {label: "Add Step Below"});
+            var addStepBelowButton = new YAHOO.widget.Button(buttons[1], {label: "Add Step Below"});
 
             $(buttons[2]).attr('id', textareaId + "_remove");
-            new YAHOO.widget.Button(buttons[2], {label: "Remove Step"});
+            var removeStepButton = new YAHOO.widget.Button(buttons[2], {label: "Remove Step"});
 
             $(selectMenu).attr('id', textareaId + '_menu');
             $(selectButton).attr('id', textareaId + '_button');

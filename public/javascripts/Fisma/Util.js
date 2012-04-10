@@ -52,7 +52,7 @@ Fisma.Util = {
         var piece;
 
         for (piece in pieces) {
-            currentObj = currentObj[pieces.piece];
+            currentObj = currentObj[pieces[piece]];
 
             if (currentObj === undefined) {
                 throw "Specified object does not exist: " + objectName;

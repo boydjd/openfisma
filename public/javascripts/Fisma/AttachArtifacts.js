@@ -30,54 +30,54 @@ Fisma.AttachArtifacts = {
      * The amount of time to delay in between requesting upload progress
      */
     sampleInterval : 1000,
-    
+
     /**
      * The APC file upload ID which is used to track this upload on the server side
      */
     apcId : null,
-    
+
     /**
      * A reference to the YUI progress bar
      */
     yuiProgressBar : null,
-    
+
     /**
      * Server polling timeout ID
-     * 
+     *
      * Polling is accomplished using settimout(). The ID which that returns is saved so that the timeout can be
      * canceled when the upload is finished (or fails).
      */
     pollingTimeoutId : null,
-    
+
     /**
      * Reference to the last asynchonrous request dispatched by this object
-     * 
+     *
      * This can be used to cancel the last pending request before it completes
      */
     lastAsyncRequest : null,
-    
+
     /**
      * A flag that indicates whether polling is enabled or not
      */
     pollingEnabled : false,
-    
+
     /**
      * A configuration object specified by the invoker of showPanel
      * 
      * See technical specification for Attach Artifacts behavior for the structure of this object
      */
     config : null,
-    
+
     /**
      * Reference to the YUI panel which is displayed to handle file uploads
      */
      yuiPanel : null,
-        
+
     /**
      * Show the file upload panel
-     * 
+     *
      * This is an event handler, so 'this' will not refer to the local object
-     * 
+     *
      * @param event Required to implement an event handler but not used
      * @param config Contains the callback information for this file upload (See definition of config member)
      */
@@ -91,17 +91,17 @@ Fisma.AttachArtifacts = {
         newPanel.render(document.body);
         newPanel.center();
         newPanel.show();
-        
+
         // Register listener for the panel close event
         newPanel.hideEvent.subscribe(function () {
             Fisma.AttachArtifacts.cancelPanel.call(Fisma.AttachArtifacts);
         });
 
         Fisma.AttachArtifacts.yuiPanel = newPanel;
-        
+
         // Construct form action URL
         var uploadFormAction = '/artifact/upload-form';
-        
+
         if (config.form) {
             uploadFormAction += '/form/' + encodeURIComponent(config.form);
         }
@@ -113,7 +113,9 @@ Fisma.AttachArtifacts = {
             {
                 success: function(o) {
                     o.argument.setBody(o.responseText);
-                    new YAHOO.widget.Button(YAHOO.util.Selector.query("input[type=submit]", o.argument.body, true));
+                    var button = new YAHOO.widget.Button(
+                        YAHOO.util.Selector.query("input[type=submit]", o.argument.body, true)
+                    );
                     o.argument.center();
                 },
 
@@ -126,7 +128,7 @@ Fisma.AttachArtifacts = {
             }, 
             null);
     },
-    
+
     /**
      * Show the progress bar and kick off the tracking process
      * 
@@ -144,7 +146,7 @@ Fisma.AttachArtifacts = {
             
             return false;
         }
-                
+
         // Disable the upload button
         var uploadButton = document.getElementById('uploadButton');
         uploadButton.disabled = true;
@@ -175,21 +177,21 @@ Fisma.AttachArtifacts = {
 
             // Add YUI bar
             var yuiProgressBar = new YAHOO.widget.ProgressBar();
-            
+
             yuiProgressBar.set('width', progressBarWidth); 
             yuiProgressBar.set('height', progressBarHeight);
-            
+
             yuiProgressBar.set('ariaTextTemplate', 'Upload is {value}% complete');
 
             yuiProgressBar.set('anim', true);
             var animation = yuiProgressBar.get('anim');
             animation.duration = 2;
             animation.method = YAHOO.util.Easing.easeNone;
-            
+
             yuiProgressBar.render('progressBarContainer');
-            
+
             YAHOO.util.Dom.addClass(progressBarContainer, 'attachArtifactsProgressBar');
-            
+
             // Store progress bar reference inside this object
             this.yuiProgressBar = yuiProgressBar;
 
@@ -216,10 +218,10 @@ Fisma.AttachArtifacts = {
                 that.postForm.call(that);
             },
             0);
-        
+
         return false;
     },
-    
+
     /**
      * Posts the artifact attachment form asynchronously
      * 
@@ -231,7 +233,7 @@ Fisma.AttachArtifacts = {
     postForm : function() {
 
         var that = this;
-        
+
         var postUrl = "/";
         postUrl += encodeURIComponent(this.config.server.controller);
         postUrl += "/";
@@ -255,14 +257,14 @@ Fisma.AttachArtifacts = {
             }, 
             null);
     },
-    
+
     /**
      * Poll the server for file upload progress
      * 
      * @param arg The AttachArtifacts object
      */
     getProgress : function () {
-        
+
         var that = this;
 
         if (this.pollingEnabled) {
@@ -288,23 +290,23 @@ Fisma.AttachArtifacts = {
 
                         // If progress fails for some reason, then revert to the indeterminate bar and cancel polling
                         if (!response.progress) {
-                                                        
+
                             that.yuiProgressBar.destroy();
                             that.yuiProgressBar = null;
-                            
+
                             that.pollingEnabled = false;
-                            
+
                             // Re-add original styling
                             var progressBarContainer = document.getElementById('progressBarContainer');
                             YAHOO.util.Dom.addClass(progressBarContainer, 'attachArtifactsProgressBar');
-                            
+
                             // Re-add indeterminate progress image
                             var img = document.createElement('img');
                             img.src = '/images/loading_bar.gif';
                             progressBarContainer.appendChild(img);
-                            
+
                             that.pollingTimeoutId = null;
-                                             
+
                             return;
                         }
 
@@ -316,7 +318,7 @@ Fisma.AttachArtifacts = {
                         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
 
                         progressTextEl.nodeValue = percent + '%';
-                    
+
                         // Reschedule the timeout to call this method again
                         that.pollingTimeoutId = setTimeout(
                             function () {
@@ -328,10 +330,10 @@ Fisma.AttachArtifacts = {
                 null);
         }
     },
-    
+
     /**
      * Handle a completed file upload
-     * 
+     *
      * @param asyncResponse Response object from YUI connection
      */
     handleUploadComplete : function (asyncResponse) {
@@ -355,7 +357,7 @@ Fisma.AttachArtifacts = {
         this.pollingEnabled = false;
         clearTimeout(this.pollingTimeoutId);
         YAHOO.util.Connect.abort(this.lastAsyncRequest);
-        
+
         // Update progress to 100%
         if (this.yuiProgressBar) {
             this.yuiProgressBar.get('anim').duration = 0.5;
@@ -380,7 +382,7 @@ Fisma.AttachArtifacts = {
 
             return;
         }
-        
+
         /*
          * Invoke callback. These are stored in the configuration as strings, so we need to find the real object 
          * references using array access notation.
@@ -391,11 +393,11 @@ Fisma.AttachArtifacts = {
         var callbackObject = Fisma[this.config.callback.object];
 
         if (typeof callbackObject !== "Undefined") {
-            
+
             var callbackMethod = callbackObject[this.config.callback.method];
-            
+
             if (typeof callbackMethod === "function") {
-                
+
                 /**
                  * Passing callbackObject to call() will make that the scope for the called method, which gives "this"
                  * its expected meaning.
@@ -404,7 +406,7 @@ Fisma.AttachArtifacts = {
             }
         }
     },
-    
+
     /**
      * Handle a panel close event by canceling the upload and disabling any oustanding timeouts
      */
@@ -413,7 +415,7 @@ Fisma.AttachArtifacts = {
             this.pollingEnabled = false;
             clearTimeout(this.pollingTimeoutId);
         }
-        
+
         if (this.lastAsyncRequest) {
             YAHOO.util.Connect.abort(this.lastAsyncRequest);
         }
