@@ -32,7 +32,7 @@ displayGroups.source.elements.description = "description"
 
 elements.submit.type = "Form_Button"
 elements.submit.options.label = "Save"
-elements.submit.options.onClickFunction = "Fisma.User.showCommentPanel"
+elements.submit.options.onClickFunction = "function() {this.submitForm();}"
 displayGroups.source.elements.submit = "submit"
 
 ; I'm disabling this temporarily because it doesn't work quite right...

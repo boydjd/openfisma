@@ -355,7 +355,7 @@ Fisma.Remediation = {
                 }
             },
             failure : function(o) {
-                var alertMessage = 'Failed to create new point of contact: ' + o.statusText;
+                var alertMessage = 'Failed to create new finding source: ' + o.statusText;
                 Fisma.Remediation.createSourcePanel.setBody(alertMessage);
             }
         }, null);
