@@ -18,7 +18,6 @@
 
 require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
 require_once(realpath(dirname(__FILE__) . '/../../vfsStream/vfsStream.php'));
-require_once(realpath(dirname(__FILE__) . '/../../vfsStream/Example.php'));
 /**
  * Initial test suite for /library/Fisma/FileSystem.php.
  *
