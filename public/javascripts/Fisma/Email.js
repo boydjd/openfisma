@@ -103,7 +103,16 @@ Fisma.Email = function() {
             var recipient = document.getElementById('testEmailRecipient').value;
             var form = document.getElementById('email_config');
             form.elements['recipient'].value = recipient;
-    
+
+            var menu = YAHOO.widget.Button.getButton('send_type-button').getMenu();
+            var sendType = YAHOO.lang.isNull(menu.activeItem) ? menu.srcElement.value : menu.activeItem.value;
+
+            var sendTypeEle = document.createElement('input');
+            sendTypeEle.type = 'hidden';
+            sendTypeEle.name = 'send_type';
+            sendTypeEle.value = sendType;
+            form.appendChild(sendTypeEle);
+
             var element = document.getElementById('sendTestEmail');
 
             spinner = new Fisma.Spinner(element.parentNode);
