@@ -179,16 +179,6 @@ Configuration:
         host_url:
             type: string(255)
             comment: This is used to construct self referencing URLs.
-        default_security_control_catalog_id:
-            type: integer(1)
-            notblank: true
-            comment: The ID of the default security control catalog which is used when the user does not explicitly specify a security control catalog.
-            default: 4
-        default_bureau_id:
-            type: integer(20)
-            notblank: true
-            comment: The ID of the default organization type which is used when the user does not explicitly organization type.
-            default: 3
         threat_type:
             type: enum
             notnull: true
@@ -200,6 +190,16 @@ Configuration:
             notnull: true
             default: true
             comment: Whether to use and show the Legacy Finding Key field in finding detail view.
+        default_security_control_catalog_id:
+            type: integer(1)
+            notblank: true
+            comment: The ID of the default security control catalog which is used when the user does not explicitly specify a security control catalog.
+            default: 4
+        default_bureau_id:
+            type: integer(20)
+            notblank: true
+            comment: The ID of the default organization type which is used when the user does not explicitly organization type.
+            default: 3
         finding_new_due:
             type: integer(2)
             unsigned: true
