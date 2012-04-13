@@ -63,7 +63,7 @@ div.yui-ac {
 }
 
 /* Fix select menu rendering underneath autocomplete */
-div.yuimenu {
+div.yuimenu, div.yui-panel-container{
     z-index: 999 !important;
 }
 

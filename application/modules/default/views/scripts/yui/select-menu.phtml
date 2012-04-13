@@ -34,6 +34,11 @@
                     oMenuButton.set('selectedMenuItem', firstChild);
                     oMenuButton.set('label', firstChild.cfg.getProperty('text').replace(/&amp;/g, "&"));
                 }
+                var f = selectElement.onchange;
+                if (f) {
+                    selectElement.value = p_aArgs[1].srcElement.value;
+                    jQuery(selectElement).trigger('change');
+                }
             }
         });
     });

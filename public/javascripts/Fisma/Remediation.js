@@ -256,5 +256,108 @@ Fisma.Remediation = {
         forcedIndicator.value = true;
         document.finding_detail_upload_evidence.appendChild(forcedIndicator);
         document.finding_detail_upload_evidence.upload_evidence.click();
+    },
+
+    /**
+     * A static reference to the Source create form panel
+     */
+    createSourcePanel : null,
+
+    /**
+     * Display Source create form panel
+     */
+    displaySourcePanel : function (element) {
+        if (element.value == 'new') {
+            var panelConfig = {width : "700px", modal : true};
+
+            Fisma.Remediation.createSourcePanel = Fisma.UrlPanel.showPanel(
+                'Create New Finding Source',
+                '/finding/source/form',
+                function () {
+                    var sourceMessageBox = new Fisma.MessageBox(document.getElementById("sourceMessageBar"));
+                    Fisma.Registry.get("messageBoxStack").push(sourceMessageBox);
+
+                    // The form contains some scripts that need to be executed
+                    var scriptNodes = Fisma.Remediation.createSourcePanel.body.getElementsByTagName('script');
+
+                    for (var i=0; i < scriptNodes.length; i++) {
+                        try {
+                            eval(scriptNodes[i].text);
+                        } catch (e) {
+                            var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                            Fisma.Util.showAlertDialog(message);
+                        }
+                    }
+                },
+                'createSourcePanel',
+                panelConfig
+            );
+
+            Fisma.Remediation.createSourcePanel.subscribe("hide", function() {
+                Fisma.Registry.get("messageBoxStack").pop();
+                setTimeout(function () {
+                    Fisma.Remediation.createSourcePanel.destroy();
+                    Fisma.Remediation.createSourcePanel = null;
+                }, 0);
+            }, this, true);
+        }
+    },
+
+    /**
+     * Submit an XHR to create a Finding Source
+     */
+    createSource : function () {
+        // The scope is the button that was clicked, so save it for closures
+        var saveButton = this;
+        var form = Fisma.Remediation.createSourcePanel.body.getElementsByTagName('form')[0];
+
+        // Disable the submit button
+        saveButton.set("disabled", true);
+
+        // Save the username so we can populate it back on the create finding form
+        var sourceName = document.getElementById("name").value;
+
+        YAHOO.util.Connect.setForm(form);
+        YAHOO.util.Connect.asyncRequest('POST', '/finding/source/create/format/json', {
+            success : function(o) {
+                var result;
+
+                try {
+                    result = YAHOO.lang.JSON.parse(o.responseText).result;
+                } catch (e) {
+                    result = {success : false, message : e};
+                }
+
+                if (result.success) {
+                    Fisma.Remediation.createSourcePanel.hide();
+
+                    // Insert the new source into the <select>
+                    var sourceId = parseInt(result.message, 10);
+                    var newOption = document.createElement('option');
+                    newOption.value = sourceId;
+                    newOption.appendChild(document.createTextNode(sourceName));
+                    newOption.selected = true;
+                    jQuery('#sourceId > option[value="new"]').after(newOption);
+
+                    // Reflect the change in the YUI Select Menu Button
+                    var selectButton = YAHOO.widget.Button.getButton('sourceId-button');
+                    var newSource = selectButton.getMenu().addItem({
+                        'text': sourceName,
+                        'value': sourceId
+                    });
+                    selectButton.set('selectedMenuItem', newSource);
+                    selectButton.set('label', sourceName);
+
+                    Fisma.Util.message('A finding source has been created.', 'info', true);
+                } else {
+                    Fisma.Util.message(result.message, 'warning', true);
+                    saveButton.set("disabled", false);
+                }
+            },
+            failure : function(o) {
+                var alertMessage = 'Failed to create new finding source: ' + o.statusText;
+                Fisma.Remediation.createSourcePanel.setBody(alertMessage);
+            }
+        }, null);
     }
 };
