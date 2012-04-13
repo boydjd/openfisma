@@ -423,6 +423,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $userOrgs = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read')
                               ->select('o.id')
                               ->execute(null, Doctrine::HYDRATE_SCALAR);
+
         $userOrgIds = array();
         foreach ($userOrgs as $userOrg) {
             $userOrgIds[] = $userOrg['o_id'];
@@ -473,8 +474,38 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         // Stitch together the organizations, POCs, and findings
         $currentOrganization = 0;
+
         while (isset($organizations[$currentOrganization])) {
             $currentOrganizationId = $organizations[$currentOrganization]['o_id'];
+
+            if ($organizations[$currentOrganization]['o_level'] > 0) {
+                $org = Doctrine::getTable('organization')->findOneById($currentOrganizationId);
+
+                /**
+                 * If an organization's parent is a system, it needs to update the organization and its descendants
+                 * levels so that the organization and its descendants can show on the summary tree.
+                 */
+                if ($org->getNode()->getParent()->systemId) {
+                    $parent = $this->_getNearestOrgParent($org->getNode());
+
+                    /**
+                     * If an organization's nearest parent with organization type is found, then update the
+                     * organization's level to its parent level + 1 because the level difference between parent and
+                     * its direct children needs to be 1 to build the tree structure correctly.
+                     */
+                    if ($parent) {
+                        $organizations[$currentOrganization]['o_level']
+                            = $this->_getOrgLevel($organizations, $parent->nickname) + 1;
+                    } else {
+
+                        // If no parent with organization type, it means the root such as BGA becomes system.
+                        $organizations[$currentOrganization]['o_level'] = 0;
+                    }
+
+                    $levelDifference = $org->level - $organizations[$currentOrganization]['o_level'];
+                    $this->_updateLevel($organizations, $org, $levelDifference);
+                }
+            }
 
             if (isset($pointsOfContact[$currentOrganizationId])) {
                 $level = $organizations[$currentOrganization]['o_level'];
@@ -494,6 +525,67 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         }
 
         return $organizations;
+    }
+
+    /**
+     * Recursively update the level of an organization's children except the child with system type and its descendants
+     *
+     * @param array $organizations The array data of organization for tree structure.
+     * @param object $organization An organization to update
+     * @param integer $difference Use to update an organization's level
+     */
+    private function _updateLevel(&$organizations, $organization, $difference)
+    {
+        if ($organization->getNode()->hasChildren()) {
+            $children = $organization->getNode()->getChildren();
+            for ($j = 0; $j < count($children); $j++) {
+                if (is_null($children[$j]->systemId)) {
+                    for ($i = 0; $i < count($organizations); $i++) {
+                        if (isset($organizations[$i]['o_nickname'])
+                            && $organizations[$i]['o_nickname'] == $children[$j]->nickname) {
+
+                            $organizations[$i]['o_level'] = $organizations[$i]['o_level'] - $difference;
+                        }
+                    }
+                    $this->_updateLevel($organizations, $children[$j], $difference);
+                }
+            }
+        }
+    }
+
+    /**
+     * Return a node's nearest parent with organization type if any, otherwise, false
+     *
+     * @param $node  An organization node.
+     */
+    private function _getNearestOrgParent($node)
+    {
+        $ancestors = $node->getAncestors();
+        if ($ancestors) {
+            for ($i = count($ancestors) - 1; $i >= 0; $i--) {
+                if (is_null($ancestors[$i]->systemId)) {
+                    return $ancestors[$i];
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Return an organization level if found, otherwise, false
+     *
+     * @param array $organizations The array data of organization
+     * @param string $nickname The nickname of an organization to update
+     */
+    private function _getOrgLevel($organizations, $nickname)
+    {
+        for ($i = 0; $i < count($organizations); $i++) {
+            if (isset($organizations[$i]['o_nickname']) && $organizations[$i]['o_nickname'] == $nickname) {
+                return $organizations[$i]['o_level'];
+            }
+        }
+
+        return false;
     }
 
     /**

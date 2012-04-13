@@ -850,6 +850,15 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->view->organizationViewUrl = "/$controller/view/$idParameter/$organization->id";
 
         $this->view->keywords = $this->_request->getParam('keywords');
+
+        $nextDueDate = new Zend_Date($finding->nextDueDate, Fisma_Date::FORMAT_DATE);
+        if (is_null($finding->nextDueDate)) {
+            $onTimeState = 'N/A';
+        } else {
+            $onTimeState = ($nextDueDate->compareDate(new Zend_Date()) >= 0) ? 'On Time' : 'Overdue';
+        }
+
+        $this->view->onTimeState = $onTimeState;
     }
 
     /**
