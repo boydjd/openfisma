@@ -407,7 +407,13 @@ Fisma.Util = {
 
         bottomPanel.appendChild(dialogTip);
 
-        var iframe = document.createElement('<iframe frameborder="0"></iframe>');
+        // Get rid of iframe boarder with IE
+        if (YAHOO.env.ua.ie) {
+            var iframe = document.createElement('<iframe frameborder="0"></iframe>');
+        } else {
+            var iframe = document.createElement('iframe');
+        }
+
         iframe.height = '420px';
         iframe.width = '830px';
         iframe.style.border = 'none';
@@ -437,6 +443,5 @@ Fisma.Util = {
         }); 
    
         iframe.src = '/whats-new';
-        iframe.contentWindow.document.body.style.border = "none";
     }
 };
