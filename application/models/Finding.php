@@ -387,6 +387,12 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
      */
     private function _updateNextDueDate()
     {
+        if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode() && Fisma::RUN_MODE_TEST != Fisma::mode()) {
+            $config = Fisma::configuration();
+            $this->_overdue['NEW'] = $config->getConfig('finding_new_due');
+            $this->_overdue['DRAFT'] = $config->getConfig('finding_draft_due');
+        }
+
         if (in_array($this->status, array('PEND', 'CLOSED'))) {
             $this->_set('nextDueDate', null);
             return;

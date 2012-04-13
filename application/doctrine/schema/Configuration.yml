@@ -200,3 +200,15 @@ Configuration:
             notnull: true
             default: true
             comment: Whether to use and show the Legacy Finding Key field in finding detail view.
+        finding_new_due:
+            type: integer(2)
+            unsigned: true
+            notblank: true
+            comment: Number of days before a NEW finding becomes overdue
+            default: 30
+        finding_draft_due:
+            type: integer(2)
+            unsigned: true
+            notblank: true
+            comment: Number of days before a DRAFT finding becomes overdue
+            default: 30
