@@ -191,11 +191,12 @@ Configuration:
             default: 3
         threat_type:
             type: enum
-            notblank: true
+            notnull: true
             values: [threat_level, residual_risk]
             comment: The default threat metrics to use for finding risk analysis.
             default: threat_level
         use_legacy_finding_key:
             type: boolean
+            notnull: true
             default: true
             comment: Whether to use and show the Legacy Finding Key field in finding detail view.
