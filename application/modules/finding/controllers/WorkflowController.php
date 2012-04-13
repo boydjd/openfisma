@@ -129,8 +129,8 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
         }
 
         $config = Fisma::configuration();
-        $this->view->finding_new_due = $config->getConfig('finding_new_due');
-        $this->view->finding_draft_due = $config->getConfig('finding_draft_due');
+        $this->view->findingNewDue = $config->getConfig('finding_new_due');
+        $this->view->findingDraftDue = $config->getConfig('finding_draft_due');
     }
 
     /**
