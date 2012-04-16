@@ -27,9 +27,6 @@
  */
 class WhatsNewController extends Fisma_Zend_Controller_Action_Security
 {
-    // hold the directory path where configure files locate at
-    private static $_path = null;
-
     /**
      * Display whats new content
      *
@@ -39,29 +36,11 @@ class WhatsNewController extends Fisma_Zend_Controller_Action_Security
     {
         $this->_helper->layout->setLayout('whats-new');
         $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
-        self::$_path = realpath(Fisma::getPath('config')) . '/whatsnew/' .substr( $versions['application'], 0, -2); 
-        $files = Fisma_FileSystem::readDir(self::$_path);
-        usort($files, "self::comp");
+        $configFile = realpath(Fisma::getPath('config')) . '/whatsnew/' 
+                      . substr( $versions['application'], 0, -2) . '/whatsnew.yml';
+        $contents = Doctrine_Parser_YamlSf::load($configFile);
 
-        for ($i = 0; $i < count($files); $i++) { 
-            $contents[] = Doctrine_Parser_YamlSf::load(self::$_path . '/' . $files[$i]);
-        }
-       
         $this->view->systemName = Fisma::configuration()->getConfig('system_name'); 
         $this->view->contents = $contents;
-    }
-
-    /**
-     * Sort file array by its value of displayOrder
-     */
-    private static function comp($a, $b)
-    {
-        $acontent = Doctrine_Parser_YamlSf::load(self::$_path . '/' . $a);
-        $bcontent = Doctrine_Parser_YamlSf::load(self::$_path . '/' . $b);
-
-        if ($acontent['displayOrder'] == $bcontent['displayOrder']) {
-            return 0;
-        }
-        return ($acontent['displayOrder'] < $bcontent['displayOrder']) ? -1 : 1;
     }
 }

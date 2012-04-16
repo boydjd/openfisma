@@ -45,29 +45,4 @@ class Fisma_FileSystem
             return rmdir($dir);
         }
     }
-
-    /**
-     * Get all the files except '.' and '..' in a directory
-     * 
-     * @param dir A path of directory
-     * @return array An array of file names
-     */
-    static function readDir($dir)
-    {
-        if (!file_exists($dir)) {
-            throw new Fisma_Zend_Exception(
-                'Unable to open directory, the requested directory does not exist: ' . $dir
-            );
-        }
-
-        $dh = opendir($dir);
-        $files = array();
-        while (($file = readdir($dh)) !== false) {
-            $flag = false;
-            if ($file !== '.' && $file !== '..') {
-                $files[] = $file;
-            }
-        }
-        return $files;
-    }
 }

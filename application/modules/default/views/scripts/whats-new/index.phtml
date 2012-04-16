@@ -5,39 +5,40 @@
 
     <ul class="intro-feature-highlights column-count-3">
 
-    <?php for ($i = 0; $i < 3; $i++): // Show first 3 changes which have the thumbnails shown on the first page.?>
+    <?php // Show first 3 changes which have the thumbnails shown on the first page.?>
+    <?php $i = 1; foreach ($this->contents as $key => $content): ?>
         <li class="">
-            <a href="#<?php echo $this->escape($this->contents[$i]['displayOrder']) 
-                . '.-' . $this->escape(strtolower(str_replace(' ', '-', $this->contents[$i]['title'])), 'none') ?>">
-             <img src="<?php echo $this->escape($this->contents[$i]['imagePath'], 'none');?>" alt="#" border="0">
-        <?php echo $this->escape($this->contents[$i]['displayOrder'] . '.' . $this->contents[$i]['title'], 'none'); ?>
+            <a href="#<?php echo $this->escape($i . '.-' . 
+                strtolower(str_replace(' ', '-', $content['title'])), 'none'); ?>">
+             <img src="<?php echo $this->escape($content['imagePath']);?>" alt="#" border="0">
+        <?php echo $this->escape("$i." . $content['title']); ?>
             </a></li>
-   <?php endfor ?>
+   <?php $i++; endforeach?>
 
     </ul>
 <p class="center"><a href="#" class="next">Take a Quick Tour of the Changes</a><span class="arrow">&raquo;</span></p>
 
 </div>
 
-<?php for ($i = 0; $i < count($this->contents); $i++): // Each individual change shown on the each panel. ?>
-    <div class="panel" id="<?php echo $this->escape($this->contents[$i]['displayOrder']) . '.-' 
-                           . $this->escape(strtolower(str_replace(' ', '-', $this->contents[$i]['title'])), 'none') ?>">
+<?php $i = 1; foreach ($this->contents as $key => $content): // Each individual change shown on the each panel. ?>
+    <div class="panel" id="<?php echo $this->escape($i . '.-' 
+                           . strtolower(str_replace(' ', '-', $content['title'])), 'none');?>">
         <div class="panel-heading">
-            <h3><?php echo $this->escape($this->contents[$i]['displayOrder'], 'none') 
-                . '. ' . $this->escape($this->contents[$i]['title'], 'none'); ?> 
+            <h3><?php echo $this->escape($i) 
+                . '. ' . $this->escape($content['title']); ?> 
             </h3>
         </div>
 
         <div class="two-col">
             <div class="column">
-                <?php echo $this->escape($this->contents[$i]['description'], 'none'); ?>   
+                <?php echo $this->escape($content['description'], 'none'); ?>   
             </div>
 
             <div class="column last"> 
                 <script>
                     var params = { allowScriptAccess: "always", allowfullscreen: "true" };
-                    var atts = { id: "<?php echo $this->escape('newFeature' . $i)?>" };
-                    swfobject.embedSWF("<?php echo $this->escape($this->contents[$i]['videoUrl'], 'none'); ?>" 
+                    var atts = { id: "<?php echo $this->escape("newFeature$i")?>" };
+                    swfobject.embedSWF("<?php echo $this->escape($content['videoUrl'], 'none'); ?>" 
                         + "?hd=1&enablejsapi=1&fs=1&playerapiid=newFeature" + <?php echo $this->escape($i)?>,
                         "ytapiplayer", "400", "300", "10", null, null, params, atts);
 
@@ -63,7 +64,8 @@
         </div>
 
     </div>
-<?php endfor ?>
+
+<?php $i++; endforeach ?>
 
 <div class="panel" id="end-the-tour">
     <div class="panel-heading">
