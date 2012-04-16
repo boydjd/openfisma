@@ -1,0 +1,54 @@
+metions:
+    imagePath: /images/0217/mentions.png
+    videoUrl: https://www.youtube.com/e/0YutYJg6Tgw
+    title: @mention Others
+    description: > 
+        <h4>Notify Other Users</h4>
+        <p>@mentions are a great way to notify other users about content and conversations they should be involved 
+        in. Best of all, they work just like Twitter and Facebook.</p> <p>&nbsp;</p>
+        <h4>Receive Email Notifications</h4>
+        <p>When you are mentioned you'll receive an email notification so you can jump right into Confluence and 
+        never miss another conversation again.</p> <p>&nbsp;</p>
+        <h4>Works in Pages, Blogs, &amp; Comments</h4>
+        <p>Just type the '@' symbol and choose from a list of the users you follow, or start typing a user's name.</p>
+
+newEditor:
+    imagePath: /images/0217/new-editor.png
+    videoUrl: https://www.youtube.com/e/P9-AKX9lSL8
+    title: Brand New Editor
+    description: >
+        <h4>Brand New Look</h4>
+        <p>Built for the needs of every user, a new streamlined interface maximizes your editing space so you 
+        can create rich content with extraordinary speed and simplicity.</p> <p>&nbsp;</p>
+        <h4>Autoformatting Magic</h4>
+        <p>Type wiki markup and watch Confluence convert it on the fly. Formatted text, tables, symbols, emoticons 
+        &ndash; it all works.</p> <p>&nbsp;</p>
+        <h4>Visual Macros</h4>
+        <p>Editing and working with macros is now much easier. Just like images and links, now you can click a 
+        macro to perform common actions.</p> <p>&nbsp;</p>
+        <p><a href="http://confluence.atlassian.com/x/JhIaDg">See our Quick Reference Guide for the Confluence 
+        Editor &gt;&gt;</a></p>
+
+table:
+    imagePath: /images/0217/tables.png
+    videoUrl: https://www.youtube.com/e/ZL49lqH-6l8
+    title: Table & Image Editing
+    description: >
+        <h4>Advanced Table Editing</h4>
+        <p>
+        <span>Insert new tables with drag-and-drop simplicity. Merge, split, highlight cells, and more.</span>
+        </p> <p>&nbsp;</p>
+        <h4>Copy &amp; Paste Images</h4>
+        <p><span>Paste images from your clipboard directly into the editor when using Safari, Firefox, or 
+        Chrome.</span></p> <p>&nbsp;</p>
+        <h4>Resize &amp; Link Images</h4>
+        <p><span>Enter a custom width for embedded images and link them to other content like pages, blogs, and 
+        external sites.</span></p>
+
+fourth:
+    imagePath:
+    videoUrl: https://www.youtube.com/e/0YutYJg6Tgw
+    title: Fourth
+    description: > 
+        <h4>Fourth</h4>
+        <p>This is a test.</p>
