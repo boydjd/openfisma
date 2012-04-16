@@ -118,7 +118,8 @@
                     ?>
 
                 <?php if ($finding->uploadId): ?>
-                    <br><?php echo $this->escape($finding->Upload->fileName)?>
+                    <br><?php echo $this->escape($finding->Upload->fileName 
+                        . ', uploaded on ' . $finding->Upload->createdTs .'.')?>
                 <?php endif; ?>
                 </td>
             </tr>
