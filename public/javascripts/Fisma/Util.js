@@ -402,7 +402,7 @@ Fisma.Util = {
         dialogTip.appendChild(dontShowLabel);
 
         var dialogSpan = document.createElement('span');
-        dialogSpan.innerHTML = "(Access from 'User Preferences' menu)";
+        dialogSpan.innerHTML = " (Access from 'User Preferences' menu)";
         dialogTip.appendChild(dialogSpan);
 
         bottomPanel.appendChild(dialogTip);

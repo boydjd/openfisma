@@ -746,3 +746,7 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
     margin: 3px 3px 3px 4px;
     padding-top: 1px;
 }
+
+#whatsNewDialog  div.bd, #whatsNewDialog div.ft {
+    background-color: #FFFFFF
+}

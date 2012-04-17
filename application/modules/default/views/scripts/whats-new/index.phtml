@@ -13,7 +13,7 @@
              <img src="<?php echo $this->escape($content['imagePath']);?>" alt="#" border="0">
         <?php echo $this->escape("$i." . $content['title']); ?>
             </a></li>
-   <?php $i++; endforeach?>
+   <?php $i++; if ($i > 3) break; endforeach?>
 
     </ul>
 <p class="center"><a href="#" class="next">Take a Quick Tour of the Changes</a><span class="arrow">&raquo;</span></p>
