@@ -30,9 +30,10 @@ elements.description.options.cols = "70%"
 elements.description.options.rows = "7"
 displayGroups.source.elements.description = "description"
 
-elements.save.type = "Form_Button_Submit"
-elements.save.options.label = "Save"
-displayGroups.source.elements.save = "save"
+elements.submit.type = "Form_Button"
+elements.submit.options.label = "Save"
+elements.submit.options.onClickFunction = "function() {this.submitForm();}"
+displayGroups.source.elements.submit = "submit"
 
 ; I'm disabling this temporarily because it doesn't work quite right...
 ; After you click submit, the value of this input is changed to "Reset" so the

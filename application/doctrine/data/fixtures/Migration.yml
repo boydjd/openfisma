@@ -39,6 +39,11 @@ Migration:
         minorVersion: 18
         tagNumber: 0
         name: FindingConfig
+    021701_add_url_of_systemtype_to_event:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 1
+        name: AddSystemTypeUrlToEventTable
     021800_finding_workflow_extended:
         majorVersion: 2
         minorVersion: 18

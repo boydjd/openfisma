@@ -172,6 +172,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $form->getElement('sourceId')->addMultiOptions(array('' => null));
 
+        // Add an option to add Finding source on the fly
+        $form->getElement('sourceId')->addMultiOptions(array('new' => '-- Add New Finding Source --'));
+        $form->getElement('sourceId')->setOptions(array('onChange' => 'Fisma.Remediation.displaySourcePanel(this)'));
+
         foreach ($sources as $source) {
             $form->getElement('sourceId')
                  ->addMultiOptions(array($source['id'] => html_entity_decode($source['name'])));
@@ -850,6 +854,15 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->view->organizationViewUrl = "/$controller/view/$idParameter/$organization->id";
 
         $this->view->keywords = $this->_request->getParam('keywords');
+
+        $nextDueDate = new Zend_Date($finding->nextDueDate, Fisma_Date::FORMAT_DATE);
+        if (is_null($finding->nextDueDate)) {
+            $onTimeState = 'N/A';
+        } else {
+            $onTimeState = ($nextDueDate->compareDate(new Zend_Date()) >= 0) ? 'On Time' : 'Overdue';
+        }
+
+        $this->view->onTimeState = $onTimeState;
     }
 
     /**
