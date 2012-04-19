@@ -37,5 +37,10 @@ Migration:
     021701_add_url_of_systemtype_to_event:
         majorVersion: 2
         minorVersion: 17
-        tagNumber: 1 
+        tagNumber: 1
         name: AddSystemTypeUrlToEventTable
+    021701_add_privileges_for_system_type:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 1
+        name: AddSystemTypePrivileges
