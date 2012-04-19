@@ -280,8 +280,8 @@
          * @param nodeList {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
          */
         _buildTreeNodes: function (nodeList, parent) {
-
-            for (var i in nodeList) {
+            var i;
+            for (i in nodeList) {
                 var node = nodeList[i];
                 var imageUrl = "/icon/get/id/" + node.iconId + "/size/small";
                 var nodeText = "<img src='" + imageUrl + "'>&nbsp;<b>"
@@ -291,8 +291,8 @@
                              + "</i>";
 
                 // Preload images
-                var i = new Image();
-                i.src = imageUrl;
+                var image = new Image();
+                image.src = imageUrl;
 
                 var yuiNode = new YAHOO.widget.HTMLNode(
                     {
@@ -473,7 +473,7 @@
             var url;
             var type = targetNode.data.type;
 
-            if (type == 'organization') {
+            if (type === 'organization') {
                 url = '/organization/view/id/' + targetNode.data.organizationId;
             } else {
                 url = '/system/view/id/' + targetNode.data.systemId;
@@ -484,4 +484,4 @@
     };
 
     Fisma.OrganizationTreeView = OTV;
-})();
+}());

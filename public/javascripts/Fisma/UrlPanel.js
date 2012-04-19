@@ -23,12 +23,12 @@
  * @license   http://www.openfisma.org/content/license
  */
 
-Fisma.UrlPanel = function() {
+Fisma.UrlPanel = (function() {
     return {
         /**
          * Popup a YUI panel dialog which renders user URL specified page
          * asynchronously.
-         * 
+         *
          * @param {String} title The YUI panel dialog title
          * @param {String} url The source that YUI panel dialog loads content from
          * @param {Function} callback The callback handler function
@@ -50,7 +50,7 @@ Fisma.UrlPanel = function() {
                     modal : true
                 };
             }
-            
+
             // Instantiate YUI panel for rendering
             var panel = new YAHOO.widget.Panel(element, userConfig);
             panel.setHeader(title);
@@ -58,27 +58,26 @@ Fisma.UrlPanel = function() {
             panel.render(document.body);
             panel.center();
             panel.show();
-            
+
             // Load panel content from url
             if (url !== '') {
                 YAHOO.util.Connect.asyncRequest('GET', url, {
                     success : function(o) {
                         o.argument.setBody(o.responseText);
                         o.argument.center();
-                        
-                        if (typeof(callback) == "function") {
+
+                        if (typeof(callback) === "function") {
                             callback(o.argument);
                         }
                     },
                     failure : function(o) {
-                        /** @todo english */
                         Fisma.Util.showAlertDialog('Failed to load the specific panel.');
                     },
                     argument : panel
                 }, null);
             }
-            
+
             return panel;
         }
     };
-}();
+}());

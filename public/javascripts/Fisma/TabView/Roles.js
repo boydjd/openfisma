@@ -21,7 +21,7 @@
  * @license http://www.openfisma.org/content/license
  */
 
-Fisma.TabView.Roles = function() {
+Fisma.TabView.Roles = (function() {
     return {
         init : function(roles, userid, readOnly) {
             YAHOO.util.Event.addListener('role', 'change', function(e) {
@@ -32,18 +32,18 @@ Fisma.TabView.Roles = function() {
 
                     if (el.selected) {
                         var found = 0;
-                        
                         for (i in tabs) {
-                            if (tabs[i].get('id') == el.value) {
+                            if (tabs.hasOwnProperty(i) &&tabs[i].get('id') === el.value) {
                                 found = 1;
                                 break;
                             }
                         }
 
                         if (!found) {
+                            var label;
                             for (i in roles) {
-                                if (roles[i]['id'] == el.value) {
-                                    var label = $P.htmlspecialchars(roles[i]['nickname']);
+                                if (roles.hasOwnProperty(i) && roles[i].id === el.value) {
+                                    label = $P.htmlspecialchars(roles[i].nickname);
                                     break;
                                 }
                             }
@@ -51,7 +51,8 @@ Fisma.TabView.Roles = function() {
                             var newTab = new YAHOO.widget.Tab({
                                 id: el.value,
                                 label: label,
-                                dataSrc: '/user/get-organization-subform/user/' + userid + '/role/' + el.value + '/readOnly/' + readOnly,
+                                dataSrc: '/user/get-organization-subform/user/' + userid
+                                    + '/role/' + el.value + '/readOnly/' + readOnly,
                                 cacheData: true,
                                 active: true
                             });
@@ -60,7 +61,7 @@ Fisma.TabView.Roles = function() {
                         }
                     } else {
                         for (i in tabs) {
-                            if (tabs[i].get('id') == el.value) {
+                            if (tabs.hasOwnProperty(i) && tabs[i].get('id') === el.value) {
                                 tabView.removeTab(tabs[i]);
                             }
                         }
@@ -69,4 +70,4 @@ Fisma.TabView.Roles = function() {
             });
         }
     };
-}();
+}());

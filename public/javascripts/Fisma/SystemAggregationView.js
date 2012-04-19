@@ -283,7 +283,7 @@
                         this._hideError();
                     },
                     failure: function (response) {
-                        alert('Unable to load the organization tree: ' + response.statusText);
+                        Fisma.Util.showAlertDialog('Unable to load the organization tree: ' + response.statusText);
                     },
                     scope: this
                 },
@@ -302,8 +302,9 @@
          * @param nodeList {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
          */
         _buildTreeNodes: function (nodeList, parent) {
+            var i;
 
-            for (var i in nodeList) {
+            for (i in nodeList) {
                 var node = nodeList[i];
                 var imageUrl = "/icon/get/id/" + node.iconId + "/size/small";
                 var nodeText = "<img src='" + imageUrl + "'>&nbsp;<b>"
@@ -489,7 +490,7 @@
             var url;
             var type = targetNode.data.type;
 
-            if (type == 'agency' || type == 'bureau' || type == 'organization') {
+            if (type === 'agency' || type === 'bureau' || type === 'organization') {
                 url = '/organization/view/id/' + targetNode.data.organizationId;
             } else {
                 url = '/system/view/id/' + targetNode.data.systemId;
@@ -534,4 +535,4 @@
     };
 
     Fisma.SystemAggregationView = SAV;
-})();
+}());

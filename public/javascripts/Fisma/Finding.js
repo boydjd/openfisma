@@ -38,17 +38,17 @@ Fisma.Finding = {
      * A static reference to the POC create form panel
      */
     createPocPanel : null,
-    
+
     /**
      * A static reference to the username that should prepopulate the POC create panel
      */
     createPocDefaultUsername : null,
-    
+
     /**
      * A static reference to the autocomplete which is used for matching a POC
      */
     pocAutocomplete : null,
-    
+
     /**
      * A static reference to the hidden input element that stores the POC id
      */
@@ -73,7 +73,7 @@ Fisma.Finding = {
         this.commentTable = Fisma.Registry.get('comments');
 
         this.commentTable.addRow(commentRow);
-        
+
         /*
          * Redo the sort. If the user had some other sort applied, then our element might be inserted in
          * the wrong place and the sort would be wrong.
@@ -89,15 +89,15 @@ Fisma.Finding = {
             },
             function () {
                 that.commentTable.unhighlightRow(0);
-            }            
+            }
         );
-        
+
         rowBlinker.start();
-        
+
         // Update the comment count in the tab UI
         var commentCountEl = document.getElementById('findingCommentsCount').firstChild;
         commentCountEl.nodeValue++;
-                
+
         // Hide YUI dialog
         yuiPanel.hide();
         yuiPanel.destroy();
@@ -110,11 +110,11 @@ Fisma.Finding = {
      * form.
      */
     editEcdJustification : function () {
-        
+
         // Hide the current text
         var currentEcdJustificationEl = document.getElementById('currentChangeDescription');
         currentEcdJustificationEl.style.display = 'none';
-        
+
         // Copy current text into a new input element
         var currentEcdJustification;
         if (currentEcdJustificationEl.firstChild) {
@@ -122,15 +122,15 @@ Fisma.Finding = {
         } else {
             currentEcdJustification = '';
         }
-        
+
         var inputEl = document.createElement('input');
         inputEl.type = 'text';
         inputEl.value = currentEcdJustification;
         inputEl.name = 'finding[ecdChangeDescription]';
-        
+
         currentEcdJustificationEl.parentNode.appendChild(inputEl);
     },
-    
+
     /**
      * Show the search control on the finding view's Security Control tab
      */
@@ -141,19 +141,19 @@ Fisma.Finding = {
         var searchForm = document.getElementById('findingSecurityControlSearch');
         searchForm.style.display = 'block';
     },
-    
+
     /**
      * When the user selects a security control, refresh the screen with that control's data
      */
     handleSecurityControlSelection : function () {
         var controlContainer = document.getElementById('securityControlContainer');
-        
+
         controlContainer.innerHTML = '<img src="/images/loading_bar.gif">';
-        
+
         var securityControlElement = document.getElementById('securityControlId');
-        
-        var securityControlId = escape(securityControlElement.value);
-        
+
+        var securityControlId = window.escape(securityControlElement.value);
+
         YAHOO.util.Connect.asyncRequest(
             'GET', 
             '/security-control/single-control/id/' + securityControlId, 
@@ -161,7 +161,7 @@ Fisma.Finding = {
                 success: function (connection) {
                     controlContainer.innerHTML = connection.responseText;
                 },
-                
+
                 failure : function (connection) {
                     Fisma.Util.showAlertDialog('Unable to load security control definition.');
                 }
@@ -213,7 +213,7 @@ Fisma.Finding = {
          * 
          * There's no way to do this without using autocomplete's private member _bItemSelected.
          */
-        if (type == "containerCollapse" && autocomplete._bItemSelected) {
+        if (type === "containerCollapse" && autocomplete._bItemSelected) {
             return;
         }
 
@@ -262,7 +262,7 @@ Fisma.Finding = {
         container.appendChild(document.createTextNode(""));
 
         parent.appendChild(container);
-        
+
         return container;
     },
 
@@ -357,7 +357,8 @@ Fisma.Finding = {
         // The form contains some scripts that need to be executed
         var scriptNodes = Fisma.Finding.createPocPanel.body.getElementsByTagName('script');
 
-        for (var i=0; i < scriptNodes.length; i++) {
+        var i;
+        for (i = 0; i < scriptNodes.length; i++) {
             try {
                 eval(scriptNodes[i].text);
             } catch (e) {
@@ -365,18 +366,19 @@ Fisma.Finding = {
                 Fisma.Util.showAlertDialog(message);
             } 
         }
-        
+
         // The tool tips will display underneath the modal dialog mask, so we'll move them up to a higher layer.
         var tooltips = YAHOO.util.Dom.getElementsByClassName('yui-tt', 'div');
-        
-        for (var index in tooltips) {
+
+        var index;
+        for (index in tooltips) {
             var tooltip = tooltips[index];
 
             // The yui panel is usually 4, so anything higher is good.
             tooltip.style.zIndex = 5;
         }
     },
-    
+
     /**
      * Submit an XHR to create a POC object
      */
@@ -458,7 +460,7 @@ Fisma.Finding = {
     deleteEvidence: function (oArgs) {
         var oRecord = this.getRecord(oArgs.target);
         var data = oRecord.getData();
-        var postData = new Object();
+        var postData = {};
 
         var that = this;
         postData.id = data.id;
@@ -475,5 +477,4 @@ Fisma.Finding = {
             }
         });
     }
-
 };

@@ -211,8 +211,8 @@
          * @param parent {YAHOO.widget.Node} The tree node that is the parent to the nodes you want to create
          */
         _buildTreeNodes: function (nodeList, parent) {
-
-            for (var i in nodeList) {
+            var i;
+            for (i in nodeList) {
                 var node = nodeList[i];
                 var yuiNode;
 
@@ -439,4 +439,4 @@
     };
 
     Fisma.PocTreeView = PTV;
-})();
+}());

@@ -36,7 +36,7 @@ Fisma.FindingWorkflow = {
         newItem.find('span.stepName').text('(new step)');
         newItem.find('input[name$="_name"]').val('(new step)');
         newItem.find('input, textarea, select').attr('name', function(index, oldId) {
-            return oldId.replace(/.*_.*_/, itemId + '_');
+            return itemId + '_' + oldId.split('_').pop();
         });
 
         Fisma.FindingWorkflow.toggleDetailPanel(newItem.find('span.linkBar > a').get(0));
@@ -49,7 +49,7 @@ Fisma.FindingWorkflow = {
      * Only allow submission if triggered by the "Save" button
      */
     submitHandler : function() {
-        return (jQuery('input[name="forceSubmit"]').val() = true);
+        return jQuery('input[name="forceSubmit"]').val() === 'true';
     },
 
     /**
@@ -71,7 +71,7 @@ Fisma.FindingWorkflow = {
         alertDialog.show();
 
         jQuery('input[name="forceSubmit"]').val(true);
-        document.forms['finding_workflow'].submit();
+        document.forms.finding_workflow.submit();
     },
 
     /**
@@ -94,7 +94,7 @@ Fisma.FindingWorkflow = {
         var onTimes = jQuery('input[name$="due"]');
         jQuery.each(onTimes, function(index, element) {
             var name = jQuery(element).parents('li').children('span.stepName').text();
-            if (jQuery(element).val() == '') {
+            if (jQuery(element).val() === '') {
                 message += "On Time period for " + name + " cannot be empty.<br/>";
                 error = true;
             } else if (isNaN(parseInt(jQuery(element).val(), 10))) {
@@ -122,7 +122,7 @@ Fisma.FindingWorkflow = {
         var newTitle = jQuery(element).val().trim();
         jQuery(element).val(newTitle);
         var oldTitle = jQuery(element).parents('li').children('.stepName').text().trim();
-        if (newTitle == '') {
+        if (newTitle === '') {
             jQuery(element).val(oldTitle);
             Fisma.Util.showAlertDialog('Workflow Title cannot be blank.');
             return false;
@@ -138,7 +138,7 @@ Fisma.FindingWorkflow = {
         var newLabel = jQuery(element).val().trim();
         jQuery(element).val(newLabel);
         var countDuplication = jQuery('input[name$="nickname"]').filter(function(i, e) {
-            return (jQuery(e).val().toUpperCase() == newLabel.toUpperCase());
+            return (jQuery(e).val().toUpperCase() === newLabel.toUpperCase());
         }).length;
         if (countDuplication > 1) {
             jQuery(element).val('');
@@ -179,7 +179,7 @@ Fisma.FindingWorkflow = {
      */
     endDragHandler : function(source, moved) {
         if (moved) {
-            title = jQuery(source).find('.stepName').first().text();
+            var title = jQuery(source).find('.stepName').first().text();
             Fisma.FindingWorkflow.addChangeLogEntry(title + ' moved.');
         }
     },
@@ -210,17 +210,19 @@ Fisma.FindingWorkflow = {
                 '/finding/workflow/select-roles',
                 function(){
                     var roles = jQuery(linkElement).next().val().split('|');
-                    for (var role in roles) {
-                        jQuery('#finding_workflow_select_roles input[name="' + roles[role] + '"]').attr('checked', true);
+                    var role;
+                    for (role in roles) {
+                        jQuery('#finding_workflow_select_roles input[name="' + roles[role] + '"]'
+                            ).attr('checked', true);
                     }
 
-                    new YAHOO.widget.Button('dialog_close');
+                    var closeButton = new YAHOO.widget.Button('dialog_close');
                     YAHOO.util.Event.addListener("dialog_close", "click", function (){
                         panel.destroy();
                         return false;
                     });
 
-                    new YAHOO.widget.Button('dialog_confirm');
+                    var confirmButton = new YAHOO.widget.Button('dialog_confirm');
                     YAHOO.util.Event.addListener("dialog_confirm", "click", function (){
                         var inputs = jQuery('#finding_workflow_select_roles input:checked');
 
@@ -228,7 +230,7 @@ Fisma.FindingWorkflow = {
                             jQuery.map(
                                 inputs.parents('span').text().split("\n"),
                                 function(val) {
-                                    return (val == '') ? null : $("<div>").text(val).html();
+                                    return (val === '') ? null : $("<div>").text(val).html();
                                 }
                             ).join("<br/>")
                         );
@@ -258,7 +260,7 @@ Fisma.FindingWorkflow = {
      */
     showRemoveStepDialog : function(linkElement) {
         if (jQuery(linkElement).parents('ul.dragList').find('input[name$="destinationId"]').filter(function(i, e){
-            return (jQuery(e).val() == '' && e.name.indexOf('skeleton') < 0);
+            return (jQuery(e).val() === '' && e.name.indexOf('skeleton') < 0);
         }).length <= 1) { // Only 1 remaining step
             Fisma.Util.showAlertDialog("There must be at least one approval for this workflow step.");
             return false;
@@ -275,14 +277,14 @@ Fisma.FindingWorkflow = {
                     jQuery.each(steps.children('.stepName'), function(index, element){
                         var isSkeleton = (jQuery(element).parents('li').attr('id').indexOf('Skeleton') >= 0);
                         var isDeleted = (jQuery(element).parents('li')
-                                            .find('input[name$="destinationId"]').val() != "");
+                                            .find('input[name$="destinationId"]').val() !== "");
                         if (!isSkeleton && !isDeleted) {
                             var stepName = jQuery(element).text();
                             var stepId = steps.eq(index).find('input[name$="databaseId"]').attr('name').split('_')[1];
                             var stepList = document.getElementById('step_list');
                             var currentStepName = jQuery(linkElement).parents('li').children('.stepName').text();
 
-                            if (currentStepName != stepName) {
+                            if (currentStepName !== stepName) {
                                 var stepRadio = document.createElement("input");
                                 stepRadio.type = "radio";
                                 stepRadio.name = "target_step";
@@ -303,7 +305,7 @@ Fisma.FindingWorkflow = {
                     document.getElementById('dialog_close').onclick = function (){
                         panel.destroy();
                         return false;
-                    }
+                    };
 
                     // Add handler for Confirm button
                     document.getElementById('dialog_confirm').onclick = function (){
@@ -323,10 +325,10 @@ Fisma.FindingWorkflow = {
                         panel.destroy();
 
                         return false;
-                    }
+                    };
                 }
             );
         }
         return false;
     }
-}
+};

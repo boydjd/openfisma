@@ -49,11 +49,12 @@ Fisma.Util = {
     getObjectFromName : function (objectName) {
         var pieces = objectName.split('.');
         var currentObj = window;
+        var piece;
 
         for (piece in pieces) {
             currentObj = currentObj[pieces[piece]];
 
-            if (currentObj == undefined) {
+            if (currentObj === undefined) {
                 throw "Specified object does not exist: " + objectName;
             }
         }
@@ -93,21 +94,21 @@ Fisma.Util = {
     getTimestamp : function () {
         var date = new Date();
 
-        var hours = date.getHours() + "";
+        var hours = date.getHours().toString();
 
-        if (hours.length == 1) {
+        if (hours.length === 1) {
          hours = "0" + hours;
         }
 
-        var minutes = date.getMinutes() + "";
+        var minutes = date.getMinutes().toString();
 
-        if (minutes.length == 1) {
+        if (minutes.length === 1) {
          minutes = "0" + minutes;
         }
 
-        var seconds = date.getSeconds() + "";
+        var seconds = date.getSeconds().toString();
 
-        if (seconds.length == 1) {
+        if (seconds.length === 1) {
          seconds = "0" + seconds;
         }
 
@@ -214,7 +215,7 @@ Fisma.Util = {
      * @return a YUI SimpleDialog
      */
     getDialog : function (closable) {
-        closable = (typeof closable == "undefined") ? true : closable;
+        closable = (typeof closable === "undefined") ? true : closable;
 
         var dialog =
             new YAHOO.widget.SimpleDialog("warningDialog",
@@ -295,7 +296,7 @@ Fisma.Util = {
                 messageBox.addMessage(msg);
             }
 
-            if (model == 'warning') {
+            if (model === 'warning') {
                 messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN);
             } else {
                 messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO);
@@ -322,10 +323,10 @@ Fisma.Util = {
 
         // Since it might not be able to get date element by id and date is irrelevant when convert AMPM to 24 hours format,
         // so, just use current date to make up date string
-        var currentTime = new Date()
-        var currentMonth = currentTime.getMonth() + 1
-        var currentDay = currentTime.getDate()
-        var currentYear = currentTime.getFullYear()
+        var currentTime = new Date();
+        var currentMonth = currentTime.getMonth() + 1;
+        var currentDay = currentTime.getDate();
+        var currentYear = currentTime.getFullYear();
 
         var date = new Date(currentMonth + "/" + currentDay + "/" + currentYear + " " + hour + ":" + minute + ":00" + " " + ampm);
         hour = $P.str_pad(date.getHours(), 2, '0', 'STR_PAD_LEFT');
@@ -346,8 +347,9 @@ Fisma.Util = {
      */
     convertObjectToPostData: function (params) {
         var postData = '';
+        var key;
 
-        for (var key in params) {
+        for (key in params) {
             var value = params[key];
 
             postData += encodeURIComponent(key) + "=" + encodeURIComponent(value) + "&";

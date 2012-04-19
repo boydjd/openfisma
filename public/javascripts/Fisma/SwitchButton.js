@@ -26,34 +26,34 @@
 
 /**
  * Constructor
- * 
+ *
  * @param element|string element The element to convert into a switch button
  * @param boolean initialState True if switch is ON, false if OFF
  * @param function callback Called when switch's state changes. The callback takes the switch button object as a
  * its only parameter.
- * @param object payload Payload is a generic object which is stored with the button that the implementer can use to 
- * pass extra information to the 
+ * @param object payload Payload is a generic object which is stored with the button that the implementer can use to
+ * pass extra information to the
  */
 Fisma.SwitchButton = function (element, initialState, callback, payload) {
 
     var that = this;
-    
+
     // element can be an actual element or an ID (notice that 'element instanceof HTMLElement' doesn't work in IE)
-    if (element.nodeType && element.nodeType == document.ELEMENT_NODE) {
+    if (element.nodeType && element.nodeType === document.ELEMENT_NODE) {
         this.element = element;
-    } else if ('string' == typeof element) {
+    } else if ('string' === typeof element) {
         this.element = document.getElementById(element);
-        
+
         if (!this.element) {
             throw 'Invalid element name "' + name + '"';
         }
     } else {
         throw "Invalid element for switch button constructor";
     }
-    
+
     // Set up DOM elements needed for switch button
     this.createDomElements();
-    
+
     // Set parameters
     this.state = initialState;
     this.payload = payload;
@@ -67,16 +67,16 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
     this.element.onclick = function () {
         that.toggleSwitch.call(that);
     };
-    
+
     /* 
      * Callback will be a string like 'Fisma.Module.handleSwitchButtonStateChange', which needs to be converted into a 
      * reference to the actual function, such as window['Fisma']['Module']['handleSwitchButtonStateChange']
      */
     if ('' !== callback) {
-        callbackObj = Fisma.Util.getObjectFromName(callback);
-        
+        var callbackObj = Fisma.Util.getObjectFromName(callback);
+
         // At this point, the current value of callbackParent should be the callback function itself
-        if ('function' ==  typeof callbackObj) {
+        if ('function' ===  typeof callbackObj) {
             this.callback = callbackObj;
         } else {
             throw "Specified callback is not a function: " + callback;
@@ -85,7 +85,7 @@ Fisma.SwitchButton = function (element, initialState, callback, payload) {
 };
 
 Fisma.SwitchButton.prototype = {
-    
+
     /**
      * Create the necessary elements in the DOM to support the button functionality
      */
@@ -113,7 +113,7 @@ Fisma.SwitchButton.prototype = {
         this.proxyElement.style.display = 'none';
         document.body.appendChild(this.proxyElement);
     },
-    
+
     /**
      * Toggle this switch between its off and on states
      * 
@@ -127,44 +127,44 @@ Fisma.SwitchButton.prototype = {
     toggleSwitch : function () {
 
         var that = this;
-                      
+
         var animationAttributes;
 
         if (this.state) {
-            
+
             // Animate from "ON" to "OFF"
             animationAttributes = {
                 left : {
                     from : 0,
                     to : -54,
                     unit : 'px'
-                }                
+                }
             };
 
             this.state = false;
         } else {
-            
+
             // Animate from "OFF" to "ON"
             animationAttributes = {
                 left : {
                     from : -54,
                     to : 0,
                     unit : 'px'
-                }                
+                }
             };
 
             this.state = true;
-        }        
-        
-        var toggleAnimation = new YAHOO.util.Anim(this.proxyElement, 
-                                                  animationAttributes, 
-                                                  0.1, 
+        }
+
+        var toggleAnimation = new YAHOO.util.Anim(this.proxyElement,
+                                                  animationAttributes,
+                                                  0.1,
                                                   YAHOO.util.Easing.easeOut);
 
         toggleAnimation.onTween.subscribe(
             function () {
-                
-                /* The proxy element is animated on the 'left' attribute, so we copy that into the actual button's 
+
+                /* The proxy element is animated on the 'left' attribute, so we copy that into the actual button's
                  * background position.
                  */
                 that.element.style.backgroundPosition = that.proxyElement.style.left + ' 100%';
@@ -177,14 +177,14 @@ Fisma.SwitchButton.prototype = {
             this.callback(this);
         }
     },
-    
+
     /**
      * Set the busy state of the button
-     * 
+     *
      * In addition to ON/OFF states, the button also has the states "busy" and "not busy" (which are orthogonal to 
      * ON/OFF). These states can be used by the implementer to show the user that some action is occuring in the 
      * background, such as an XHR to persist the button's state.
-     * 
+     *
      * @param bool busy True if the XHR should display a "busy" indicator (i.e. indeterminate progress spinner)
      */
     setBusy : function (busy) {

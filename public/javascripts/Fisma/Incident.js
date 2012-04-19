@@ -36,7 +36,7 @@ Fisma.Incident = {
      * @param yuiPanel This is required for a callback but not used here
      */
     attachArtifactCallback : function (yuiPanel) {
-        window.location.href = window.location.href;
+        window.location = window.location.href;
     },
 
     /**
@@ -99,7 +99,7 @@ Fisma.Incident = {
 
         // Sanity check: this must be a <tr> element node
         var elementNode = 1;
-        if (!(elementNode == parent.nodeType && "TR" == parent.tagName)) {
+        if (!(elementNode === parent.nodeType && "TR" === parent.tagName)) {
             throw "Cannot locate the parent element for this incident step.";
         }
 
@@ -116,7 +116,7 @@ Fisma.Incident = {
 
         // Sanity check: this must be a <tr> element node
         var elementNode = 1;
-        if (!(elementNode == tdEl.nodeType && "TD" == tdEl.tagName)) {
+        if (!(elementNode === tdEl.nodeType && "TD" === tdEl.tagName)) {
             throw "Cannot locate the table data (td) element for this incident step.";
         }
 
@@ -125,7 +125,7 @@ Fisma.Incident = {
         var numberMatches = label.match(/\d+/);
 
         // Sanity check: should match exactly 1 string of digits
-        if (numberMatches.length != 1) {
+        if (numberMatches.length !== 1) {
             throw "Not able to locate the step number in the incident step label.";
         }
 
@@ -144,7 +144,8 @@ Fisma.Incident = {
         var trEls = YAHOO.util.Dom.getElementsByClassName('incidentStep', 'tr', tableEl);
         var stepNumber = 1;
 
-        for (var i in trEls) {
+        var i;
+        for (i in trEls) {
             var trEl = trEls[i];
 
             trEl.firstChild.firstChild.nodeValue = "Step " + stepNumber + ":";
@@ -320,16 +321,16 @@ Fisma.Incident = {
      * incidentId: the ID of the incident to add the person to
      *
      * @param {YAHOO.util.Event} event
-     * @param {Object} arguments
+     * @param {Object} args
      */
-    addUser: function(event, arguments) {
-        var type = arguments.type;
-        var incidentId = arguments.incidentId;
+    addUser: function(event, args) {
+        var type = args.type;
+        var incidentId = args.incidentId;
         var userId = document.getElementById(type + "Id").value;
         var username = document.getElementById(type + "Autocomplete").value;
 
         var postData = Fisma.Util.convertObjectToPostData({
-            csrf: document.getElementById('incident_detail').elements['csrf'].value,
+            csrf: document.getElementById('incident_detail').elements.csrf.value,
             userId: userId,
             username: username,
             incidentId: incidentId,
@@ -360,7 +361,7 @@ Fisma.Incident = {
                     if (response.success) {
                         var dataTable;
 
-                        if (type == 'actor') {
+                        if (type === 'actor') {
                             dataTable = Fisma.Registry.get('actorTable');
                         } else {
                             dataTable = Fisma.Registry.get('observerTable');
@@ -394,7 +395,7 @@ Fisma.Incident = {
      */
     addUserToTable: function (user, table) {
         table.addRow(user, 0);
-        table.set("sortedBy", null)
+        table.set("sortedBy", null);
 
         // Highlight the added row so the user can see that it worked
         var blinker = new Fisma.Blinker(
@@ -422,7 +423,7 @@ Fisma.Incident = {
         var postData = Fisma.Util.convertObjectToPostData({
             incidentId: incidentId,
             userId: userId,
-            csrf: document.getElementById('incident_detail').elements['csrf'].value
+            csrf: document.getElementById('incident_detail').elements.csrf.value
         });
 
         YAHOO.util.Connect.asyncRequest(
@@ -467,10 +468,11 @@ Fisma.Incident = {
 
         // There doesn't seem to be an easy way to get a particular record from a click event, so loop over the table
         // to find the matching record.
-        for (var i = 0; i < recordSet.getLength(); i++) {
+        var i;
+        for (i = 0; i < recordSet.getLength(); i++) {
             var record = recordSet.getRecord(i);
 
-            if (record.getData('userId') == userId) {
+            if (record.getData('userId') === userId) {
                 recordSet.deleteRecord(recordSet.getRecordIndex(record));
                 table.render();
                 return;

@@ -21,7 +21,7 @@
  * @license   http://www.openfisma.org/content/license
  */
 
-Fisma.Search = function() {
+Fisma.Search = (function() {
     return {
 
         /**
@@ -48,7 +48,7 @@ Fisma.Search = function() {
          * A spinner that is display while persising the user's column preferences cookie
          */
         columnPreferencesSpinner : null,
-        
+
         /**
          * A boolean which determines whether soft-deleted items are displayed in search results
          */
@@ -134,12 +134,12 @@ Fisma.Search = function() {
                     // Update YUI's visual state to show sort on first data column
                     var sortColumnIndex = 0;
                     var sortColumn;
-                    
+
                     do {
                         sortColumn = dataTable.getColumn(sortColumnIndex);
                         
                         sortColumnIndex++;
-                    } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
+                    } while (sortColumn.formatter === Fisma.TableFormat.formatCheckbox);
 
                     // Reset the page to 1 if search form is submitted 
                     if (!YAHOO.lang.isUndefined(form.search)  && 'Search' === form.search.value) {
@@ -162,7 +162,7 @@ Fisma.Search = function() {
                 dataSource.sendRequest(postData, onDataTableRefresh);
             } catch (error) {
                 // If a string is thrown, then display that string to the user
-                if ('string' == typeof error) {
+                if ('string' === typeof error) {
                     Fisma.Util.showAlertDialog(error);
                 }
             }
@@ -180,10 +180,11 @@ Fisma.Search = function() {
                 if (searchPrefs.type === 'advanced') {
                     var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
                     var fields = {};
-                    for (var i in panelState) {
+                    var i;
+                    for (i in panelState) {
                         fields[panelState[i].field] = panelState[i].operator;
                     }
-                    searchPrefs['fields'] = fields;
+                    searchPrefs.fields = fields;
                 }
                 Fisma.Search.updateSearchPreferences = true;
                 Fisma.Search.searchPreferences = searchPrefs;
@@ -224,20 +225,20 @@ Fisma.Search = function() {
             var searchType = document.getElementById('searchType').value;
             var query = {queryType : searchType};
 
-            if ('simple' == searchType) {
-                query['keywords'] = form.keywords.value;
-            } else if ('advanced' == searchType) {
+            if ('simple' === searchType) {
+                query.keywords = form.keywords.value;
+            } else if ('advanced' === searchType) {
                 var queryData = this.advancedSearchPanel.getQuery();
 
-                query['query'] = YAHOO.lang.JSON.stringify(queryData);
+                query.query = YAHOO.lang.JSON.stringify(queryData);
             } else {
                 throw "Invalid value for search type: " + searchType;
             }
 
-            query['showDeleted'] = this.showDeletedRecords;
-            
-            query['csrf'] = document.getElementById('searchForm').csrf.value;
-            
+            query.showDeleted = this.showDeletedRecords;
+
+            query.csrf = document.getElementById('searchForm').csrf.value;
+
             return query;
         },
 
@@ -249,9 +250,10 @@ Fisma.Search = function() {
          */
         convertQueryToPostData : function (object) {
 
-            var uriComponents = Array();
+            var uriComponents = [];
+            var key;
 
-            for (var key in object) {
+            for (key in object) {
                 var value = object[key];
                 uriComponents.push(key + "=" + encodeURIComponent(value));
             }
@@ -287,7 +289,8 @@ Fisma.Search = function() {
             var query = Fisma.Search.getQuery(searchForm);
 
             // Create a hidden form element for each piece of post data
-            for (var key in query) {
+            var key;
+            for (key in query) {
                 var value = query[key];
 
                 var hiddenField = document.createElement('input');
@@ -316,7 +319,7 @@ Fisma.Search = function() {
             try {
                 postData = Fisma.Search.buildPostRequest(tableState);
             } catch (error) {
-                if ('string' == typeof error) {
+                if ('string' === typeof error) {
                     Fisma.Util.message(error, 'warning', true);
                 }
             }
@@ -337,16 +340,16 @@ Fisma.Search = function() {
             var searchType = document.getElementById('searchType').value;
             var postData = {
                 sort: tableState.sortedBy.key,
-                dir: (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc'),
+                dir: (tableState.sortedBy.dir === 'yui-dt-asc' ? 'asc' : 'desc'),
                 start: (fromSearchForm ? 0 : tableState.pagination.recordOffset),
                 count: tableState.pagination.rowsPerPage,
                 csrf: document.getElementById('searchForm').csrf.value,
                 showDeleted: Fisma.Search.showDeletedRecords,
                 queryType: searchType
             };
-            if ('simple' == searchType) {
+            if ('simple' === searchType) {
                 postData.keywords = document.getElementById('keywords').value;
-            } else if ('advanced' == searchType) {
+            } else if ('advanced' === searchType) {
                 postData.query = YAHOO.lang.JSON.stringify(Fisma.Search.advancedSearchPanel.getQuery());
             } else {
                 throw "Invalid value for search type: " + searchType;
@@ -357,7 +360,8 @@ Fisma.Search = function() {
             }
 
             var postDataArray = [];
-            for (var key in postData) {
+            var key;
+            for (key in postData) {
                 postDataArray.push(key + "=" + encodeURIComponent(postData[key]));
             }
             return postDataArray.join("&");
@@ -389,7 +393,7 @@ Fisma.Search = function() {
             var Dom = YAHOO.util.Dom;
             var yuiButton = YAHOO.widget.Button.getButton("advanced");
             var advancedSearch = Dom.get("advancedSearch");
-            if (advancedSearch.style.display == 'none') {
+            if (advancedSearch.style.display === 'none') {
                 advancedSearch.style.display = 'block';
                 Dom.get('keywords').style.visibility = 'hidden';
                 Dom.get('searchType').value = 'advanced';
@@ -410,7 +414,7 @@ Fisma.Search = function() {
          * Show or hide the search columns UI
          */
         toggleSearchColumnsPanel : function () {
-            if (document.getElementById('searchColumns').style.display == 'none') {
+            if (document.getElementById('searchColumns').style.display === 'none') {
                 document.getElementById('searchColumns').style.display = 'block';
             } else {
                 document.getElementById('searchColumns').style.display = 'none';
@@ -434,7 +438,24 @@ Fisma.Search = function() {
                 checkedTitle = "Column is visible. Click to hide column.",
                 uncheckedTitle = "Column is hidden. Click to unhide column.";
 
-            for (var index in columns) {
+            var index;
+            var columnToggleButtonClickEvent = function (event, obj) {
+                var table = Fisma.Search.yuiDataTable,
+                column = table.getColumn(obj.name),
+                checked = this.get("checked");
+
+                this.set("title", checked ? checkedTitle : uncheckedTitle);
+
+                if (checked) {
+                    table.showColumn(column);
+                } else {
+                    table.hideColumn(column);
+                }
+
+                obj.prefs.setColumnVisibility(obj.name, checked);
+            };
+
+            for (index in columns) {
                 var column = columns[index],
                     columnName = column.key;
 
@@ -450,21 +471,7 @@ Fisma.Search = function() {
                     container : container,
                     checked : checked,
                     onclick : {
-                        fn : function (event, obj) {
-                            var table = Fisma.Search.yuiDataTable,
-                                column = table.getColumn(obj.name),
-                                checked = this.get("checked");
-
-                            this.set("title", checked ? checkedTitle : uncheckedTitle);
-
-                            if (checked) {
-                                table.showColumn(column);
-                            } else {
-                                table.hideColumn(column);
-                            }
-
-                            obj.prefs.setColumnVisibility(obj.name, checked);
-                        },
+                        fn  : columnToggleButtonClickEvent,
                         obj : {name: columnName, prefs: prefs}
                     }
                 });
@@ -497,7 +504,7 @@ Fisma.Search = function() {
          * This includes things like help, column toggles, and advanced search
          */
         toggleMoreButton : function () {
-            if (document.getElementById('moreSearchOptions').style.display == 'none') {
+            if (document.getElementById('moreSearchOptions').style.display === 'none') {
                 document.getElementById('moreSearchOptions').style.display = 'block';
             } else {
                 document.getElementById('moreSearchOptions').style.display = 'none';
@@ -550,24 +557,25 @@ Fisma.Search = function() {
             var checkedRecords = [];
             var dataTable = Fisma.Search.yuiDataTable;
             var selectedRows = dataTable.getSelectedRows();
-            
+
             // Create an array containing the PKs of records to delete
-            for (var i = 0; i < selectedRows.length; i++) {
+            var i;
+            for (i = 0; i < selectedRows.length; i++) {
                 var record = dataTable.getRecord(selectedRows[i]);
 
                 if (record) {
                     checkedRecords.push(record.getData('id'));
                 }
             }
-            
+
             // Do some sanity checking
             if (0 === checkedRecords.length) {
                 Fisma.Util.message("No records selected for deletion.", "warning", true);
-                
+
                 return;
             }
             var deleteRecords = [];
-            deleteRecords.push(YAHOO.lang.JSON.stringify(checkedRecords));          
+            deleteRecords.push(YAHOO.lang.JSON.stringify(checkedRecords));
 
             var warningMessage = '';  
             if (1 === checkedRecords.length) {
@@ -580,7 +588,6 @@ Fisma.Search = function() {
                           args : deleteRecords  };
             var e = null;
             Fisma.Util.showConfirmDialog(e, config);
-           
           },
 
          doDelete : function (checkedRecords) {
@@ -592,9 +599,9 @@ Fisma.Search = function() {
 
             var searchUrl = Fisma.Search.yuiDataTable.getDataSource().liveData;
             var urlPieces = searchUrl.split('/');
-            
+
             urlPieces[urlPieces.length-1] = 'multi-delete';
-            
+
             var multiDeleteUrl = urlPieces.join('/');
 
             var onDataTableRefresh = {
@@ -609,7 +616,7 @@ Fisma.Search = function() {
                         sortColumn = dataTable.getColumn(sortColumnIndex);
                         
                         sortColumnIndex++;
-                    } while (sortColumn.formatter == Fisma.TableFormat.formatCheckbox);
+                    } while (sortColumn.formatter === Fisma.TableFormat.formatCheckbox);
 
                     dataTable.set("sortedBy", {key : sortColumn.key, dir : YAHOO.widget.DataTable.CLASS_ASC});
                     dataTable.get('paginator').setPage(1);
@@ -624,21 +631,21 @@ Fisma.Search = function() {
             postString += document.getElementById('searchForm').csrf.value;
             postString += "&records=";
             postString += checkedRecords;
-            
-            // Submit request to delete records        
+
+            // Submit request to delete records
             YAHOO.util.Connect.asyncRequest(
                 'POST', 
                 multiDeleteUrl,
                 {
                     success : function(o) {
                         var messages = [];
-        
+
                         if (o.responseText !== undefined) {
                             var response = YAHOO.lang.JSON.parse(o.responseText);
                             
                             Fisma.Util.message(response.msg, response.status, true);
                         }
-                        
+
                         // Refresh search results
                         var query = Fisma.Search.getQuery(document.getElementById('searchForm'));
                         var postData = Fisma.Search.convertQueryToPostData(query);
@@ -657,7 +664,7 @@ Fisma.Search = function() {
                 },
                 postString);
         },
-        
+
         /**
          * A method to add a YUI table to the "registry" that this object keeps track of
          *
@@ -699,4 +706,4 @@ Fisma.Search = function() {
             keyHandle.enable();
          }
     };
-}();
+}());

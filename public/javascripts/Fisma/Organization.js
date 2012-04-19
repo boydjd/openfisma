@@ -58,4 +58,4 @@
     };
 
     Fisma.Organization = Organization;
-})();
+}());

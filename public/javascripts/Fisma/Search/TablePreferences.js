@@ -33,19 +33,20 @@
      * @param model {String} Model for which this table is representing.
      * @param init {Object} Object literal of default state.
      */
-        FSTP = function(model, init) {
-            this._model = model;
-            this._storage = new Fisma.PersistentStorage('Fisma.Search.TablePreferences');
-            this._localStorage = new Fisma.Storage('Fisma.Search.TablePreferences.Local');
-            this._state = null;
-            Fisma.Storage.onReady(function() {
-                var data = this._storage.get(this._model);
-                this._state = YL.isObject(init) ? init : {};
-                if (YL.isObject(data)) {
-                    this._state = YL.merge(data, this._state);
-                }
-            }, this, true);
-        };
+    FSTP = function(model, init) {
+        this._model = model;
+        this._storage = new Fisma.PersistentStorage('Fisma.Search.TablePreferences');
+        this._localStorage = new Fisma.Storage('Fisma.Search.TablePreferences.Local');
+        this._state = null;
+        Fisma.Storage.onReady(function() {
+            var data = this._storage.get(this._model);
+            this._state = YL.isObject(init) ? init : {};
+            if (YL.isObject(data)) {
+                this._state = YL.merge(data, this._state);
+            }
+        }, this, true);
+    };
+
     FSTP.prototype = {
         /**
          * Get specified columns visibility.
@@ -87,6 +88,7 @@
             var data = this._localStorage.get(this._model);
             return YL.isObject(data) && YL.isObject(data.sort) ? data.sort : null;
         },
+
         /**
          * Set the sort column and direction
          *
@@ -111,6 +113,7 @@
             var data = this._localStorage.get(this._model);
             return YL.isObject(data) && YL.isNumber(data.page) ? data.page: null;
         },
+
         /**
          * Set the current page number
          *
@@ -154,4 +157,4 @@
         }
     };
     Fisma.Search.TablePreferences = FSTP;
-})();
+}());

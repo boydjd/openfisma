@@ -195,4 +195,4 @@
     };
 
     Fisma.MessageBox = MB;
-})();
+}());
