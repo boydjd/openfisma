@@ -104,7 +104,7 @@ Fisma.Email = (function() {
             // Get dialog_recipient value to recipient
             var recipient = document.getElementById('testEmailRecipient').value;
             var form = document.getElementById('email_config');
-            form.elements['recipient'].value = recipient;
+            form.elements.recipient.value = recipient;
 
             var menu = YAHOO.widget.Button.getButton('send_type-button').getMenu();
             var sendType = YAHOO.lang.isNull(menu.activeItem) ? menu.srcElement.value : menu.activeItem.value;

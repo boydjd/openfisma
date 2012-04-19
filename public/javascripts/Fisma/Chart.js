@@ -1194,7 +1194,7 @@ Fisma.Chart = {
             if (theLink.indexOf('#ColumnLabel#') !== -1) {
                 theLink = theLink.replace('#ColumnLabel#', encodeURIComponent(paramObj.chartDataText[pointIndex]));
             } else {
-                theLink = escape(theLink);
+                theLink = window.escape(theLink);
                 theLink = theLink.replace('%3F', '?');
                 theLink = theLink.replace('%3D', '=');
             }

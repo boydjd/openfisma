@@ -273,7 +273,7 @@ Fisma.Remediation = {
      * Display Source create form panel
      */
     displaySourcePanel : function (element) {
-        if (element.value == 'new') {
+        if (element.value === 'new') {
             var panelConfig = {width : "700px", modal : true};
 
             Fisma.Remediation.createSourcePanel = Fisma.UrlPanel.showPanel(
@@ -286,7 +286,8 @@ Fisma.Remediation = {
                     // The form contains some scripts that need to be executed
                     var scriptNodes = Fisma.Remediation.createSourcePanel.body.getElementsByTagName('script');
 
-                    for (var i=0; i < scriptNodes.length; i++) {
+                    var i;
+                    for (i = 0; i < scriptNodes.length; i++) {
                         try {
                             eval(scriptNodes[i].text);
                         } catch (e) {
