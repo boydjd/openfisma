@@ -510,6 +510,10 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
             if (!empty($htmlColumns)) {
                 foreach ($rawResult as $columnName => $columnValue) {
                     if (in_array($columnName, $htmlColumns)) {
+
+                        // Change the relative path to absolute, like '../../../' prefix to '/'
+                        $columnValue = preg_replace('/(\.\.\/)+/i', '/', $columnValue);
+
                         if (in_array($this->getRequest()->getParam('format'), array('pdf', 'xls'))) {
                             $rawResult[$columnName] = Fisma_String::htmlToPlainText($columnValue);
                         } else {
