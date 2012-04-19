@@ -163,7 +163,8 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'threatLevel' => array(
                 'enumValues' => $this->getEnumValues('threatLevel'),
-                'initiallyVisible' => false,
+                'initiallyVisible' => 
+                    Fisma::configuration()->getConfig('threat_type') == 'threat_level' ? true : false,
                 'label' => 'Threat Level',
                 'sortable' => true,
                 'type' => 'enum'
@@ -189,7 +190,8 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'residualRisk' => array(
                 'enumValues' => $this->getEnumValues('residualRisk'),
-                'initiallyVisible' => true,
+                'initiallyVisible' =>
+                    Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? true : false,
                 'label' => 'Residual Risk',
                 'sortable' => true,
                 'type' => 'enum'
