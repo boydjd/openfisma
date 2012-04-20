@@ -201,7 +201,7 @@ class Test_Application_Models_User extends Test_Case_Unit
            .'LEFT JOIN ur.Role r '
            .'LEFT JOIN r.Privileges p '
            .'WHERE p.resource = ? AND p.action = ? '
-           .'GROUP BY o.id ORDER BY o.nickname',
+           .'GROUP BY o.id, r.id ORDER BY o.nickname',
             $user->getOrganizationsByPrivilegeQuery('finding', 'view', true)->getDql()
         );
 
@@ -212,7 +212,7 @@ class Test_Application_Models_User extends Test_Case_Unit
             .'LEFT JOIN r.Privileges p '
             .'LEFT JOIN o.System s2 '
             .'WHERE p.resource = ? AND p.action = ? AND s2.sdlcphase <> \'disposal\' or s2.sdlcphase is NULL '
-            .'GROUP BY o.id ORDER BY o.nickname',
+            .'GROUP BY o.id, r.id ORDER BY o.nickname',
             $user->getOrganizationsByPrivilegeQuery('finding', 'view')->getDql()
         );
     }

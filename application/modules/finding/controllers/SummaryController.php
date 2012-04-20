@@ -217,7 +217,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                   ->addSelect("IF(ot.nickname = 'system', st.iconId, ot.iconId) iconId")
                                   ->addSelect("IF(ot.nickname = 'system', st.name, ot.name) typeLabel")
                                   ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
-                                  ->groupBy('o.id')
+                                  ->distinct()
+                                  ->groupBy('o.id, r.id')
                                   ->orderBy('o.lft');
 
         $this->_addFindingStatusFields($userOrgQuery);
@@ -301,7 +302,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                        ->addSelect("'organization' AS searchKey")
                                        ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
                                        ->andWhere('s.sdlcPhase <> ?', 'disposal')
-                                       ->groupBy('o.id')
+                                       ->distinct()
+                                       ->groupBy('o.id, r.id')
                                        ->orderBy('o.nickname');
 
         $innerSystemsQuery = clone $outerSystemsQuery;
@@ -462,7 +464,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                   ->select('o.id, f.id, poc.id')
                                   ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
                                   ->innerJoin('f.PointOfContact poc')
-                                  ->groupBy('poc.id')
+                                  ->distinct()
+                                  ->groupBy('poc.id, r.id')
                                   ->orderBy('poc.id');
 
         $this->_addFindingStatusFields($findingQuery);
