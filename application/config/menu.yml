@@ -1,0 +1,408 @@
+########################################################################################################################
+#
+# Copyright (c) 2012 Endeavor Systems, Inc.
+#
+# This file is part of OpenFISMA.
+#
+# OpenFISMA is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# OpenFISMA is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY# without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with OpenFISMA.  If not, see {@link http://www.gnu.org/licenses/}.
+#
+########################################################################################################################
+#
+# Configure file for building menu.
+#
+# Author:    Mark Ma<mark.ma@reyosoft.com>
+# Copyright: (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
+# License:   http://www.openfisma.org/content/license
+#
+########################################################################################################################
+
+Dashboard:
+    label: Dashboard
+    link: /dashboard
+    privilege: 
+        func: hasArea
+        param: dashboard
+
+Finding:
+    label: Findings
+    privilege:
+        func: hasArea
+        param: finding
+    submenu:
+        Summary:
+            label: Summary
+            link: /finding/summary
+            privilege:
+                func: hasPrivilegeForClass
+                param1: read
+                param2: Finding
+        Search:
+            label: Search
+            link: /finding/remediation/list
+            privilege:
+                func: hasPrivilegeForClass
+                param1: read
+                param2: Finding
+        Goto:
+            label: Go To...
+            model: Finding
+            click: /finding/remediation
+            privilege:
+                func: hasPrivilegeForClass
+                param1: read
+                param2: Finding
+
+        Separator1:
+            label: Separator
+            condition: >
+                if ($acl->hasPrivilegeForClass('read', 'Finding') and ($acl->hasPrivilegeForClass('create', 'Finding') || $acl->hasPrivilegeForClass('inject', 'Finding'))) return true;
+        Create:
+            label: Create New Finding
+            link: /finding/remediation/create
+            privilege:
+                func: hasPrivilegeForClass
+                param1: create
+                param2: Finding
+        Inject:
+            label: Upload Spreadsheet
+            link: /finding/index/injection
+            privilege:
+                func: hasPrivilegeForClass
+                param1: inject
+                param2: Finding
+        Separator2:
+            label: Separator
+        Dashboard:
+            label: Dashboard
+            link: /finding/dashboard
+        Workflow:
+            label: Workflow
+            link: /finding/workflow/view
+        Administration:
+            label: Administration
+            privilege:
+                func: hasArea
+                param: finding_admin
+            submenu:
+                Finding_General:
+                    label: Finding General
+                    link: /finding/config/general
+                Finding_Source:
+                    label: Finding Source
+                    link: /finding/source/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: Source
+        Reports:
+            label: Reports
+            privilege: 
+                func: hasArea
+                param: finding_report
+            submenu:
+                OMB_FISMA:
+                    label: OMB FISMA
+                    link: /finding/report/fisma
+                Overdue:
+                    label: Overdue Findings
+                    link: /finding/report/overdue/format/html
+                Plugin:
+                    label: Plugin Reports
+                    link: /finding/report/plugin
+
+Vulnerability:
+    label: Vulnerabilities
+    module: Vulnerability Management
+    privilege: 
+        func: hasArea
+        param: vulnerability
+    submenu:
+        Search:
+            label: Search
+            link: /vm/vulnerability/list
+        Goto:
+            label: Go To...
+            model: Vulnerability
+            click: /vm/vulnerability
+        Separator1:
+            label: Separator
+        Administration:
+            label: Administration
+            privilege:
+                func: hasArea
+                param: vulnerability_admin
+            submenu:
+                Products:
+                    label: Products
+                    link: /vm/product/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: Product
+                Resolutions:
+                    label: Vulnerability Resolution
+                    link: /vm/vulnerability-resolution/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: VulnerabilityResolution
+        Reports:
+            label: Reports
+            privilege: 
+                func: hasArea
+                param: vulnerability_report
+            submenu:
+                Aggregated:
+                    label: Aggregated Risk
+                    link: /vm/vulnerabiity-report/risk/format/html
+                Reopened:
+                    label: Reopened Vulnerabilities
+                    link: /vm/vulnerability-report/reopened/format/html
+                Services:
+                    label: Vulnerable Services
+                    link: /vm/vulnerability-report/vulnerable-service/format/html
+
+System:
+    label: System Inventory 
+    privilege:
+        func: hasArea
+        param: system_inventory
+    submenu:
+        Asset:
+            label: Assets
+            link: /asset/list
+            privilege:
+                func: hasPrivilegeForClass
+                param1: read
+                param2: Asset
+        Controls:
+            label: Controls
+            link: /security-control/list
+        Documentation:
+            label: Documentation
+            link: /system-document/list
+        Organizations:
+            label: Organizations
+            link: /organization/tree
+        Systems:
+            label: Systems
+            link: /system/list
+        Separator1:
+            label: Separator
+        Dashboard:
+            label: Dashboard
+            link: /organization-dashboard
+        Administration:
+            label: Administration
+            privilege:
+                func: hasArea
+                param: system_inventory_admin
+            submenu:
+                Controls:
+                    label: Controls 
+                    link: /security-control-admin
+                DocumentType:
+                    label: Document Types
+                    link: /document-type/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: DocumentType
+                Network:
+                    label: Networks 
+                    link: /network/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: Network
+                OrganizationType:
+                    label: Organization Types
+                    link: /organization-type/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: OrganizationType
+                SystemType:
+                    label: System Types
+                    link: /System-type/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: SystemType
+        Reports:
+            label: Reports
+            privilege: 
+                func: hasArea
+                param: system_inventory_report
+            submenu:
+                Compliance:
+                    label: Documentation Compliance
+                    link: /organization-report/documentation-compliance/format/html
+                Personnel:
+                    label: Personnel
+                    link: /organization-report/personnel/format/html
+                Privacy:
+                    label: Privacy
+                    link: /organization-report/privacy/format/html
+                SecurityAuthorizations:
+                    label: Security Authorizations
+                    link: /organization-report/security-authorization/format/html
+
+Incident:
+    label: Incidents
+    module: Incident Reporting
+    privilege: 
+        func: hasArea
+        param: incident
+    submenu:
+        ReportIncident:
+            label: Report An Incident
+            link: /incident/report
+        Search:
+            label: Search
+            link: /incident/list
+        Goto:
+            label: Go To...
+            model: Incident
+            click: /incident
+        Separator1:
+            label: Separator
+        Dashboard:
+            label: Dashboard
+            link: /incident-dashboard
+        Administration:
+            label: Administration
+            privilege:
+                func: hasArea
+                param: incident_admin
+            submenu:
+                IrSubCategory:
+                    label: Categories
+                    link: /ir-category/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: IrSubCategory
+                IrWorkflowDef:
+                    label: Workflows
+                    link: /ir-workflow/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: VulnerabilityResolution
+        Reports:
+            label: Reports
+            privilege: 
+                func: hasArea
+                param: incident_report
+            submenu:
+                IncidentOrganizations:
+                    label: Incident Organizations
+                    link: /incident-report/organization/format/html
+                IncidentCategories:
+                    label: Incident Categories
+                    link: /incident-report/catgegory/format/html
+                History:
+                    label: Incident History
+                    link: /incident-report/history/format/html
+
+Administration:
+    label: Administration
+    privilege:
+        func: hasArea
+        param: admin
+    submenu:
+        Email:
+            label: E-mail
+            link: /config/email
+        Policies:
+            label: General Policies
+            link: /config/general
+        LDAP:
+            label: LDAP
+            link: /config/list-ldap
+            condition: if ('ldap' == Fisma::configuration()->getConfig('auth_type')) return true;
+        Modules:
+            label: Modules
+            link: /config/modules
+        PasswordPolicy:
+            label: Password Policy
+            link: /config/password
+        POC:
+            label: Points of Contact
+            link: /poc/list
+            privilege:
+                func: hasPrivilegeForClass
+                param1: read
+                param2: Poc
+        Privacy:
+            label: Privacy Policy
+            link: /config/privacy
+        Roles:
+            label: Roles
+            link: /role/list
+            privilege:
+                func: hasPrivilegeForClass
+                param1: read
+                param2: Role
+        Search:
+            label: Search 
+            link: /config/search
+        Contact:
+            label: Technical Contact
+            link: /config/contact
+        User:
+            label: Users
+            link: /user/list
+            privilege:
+                func: hasPrivilegeForClass
+                param1: read
+                param2: user 
+
+UserPreferences:
+    label: User Preferences
+    submenu:
+        ChangePassword:
+            label: Change Password
+            link: /user/password
+            condition: if ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username) return TRUE;
+        Notifications:
+            label: E-mail Notifications
+            link: /user/notification
+        Online:
+            label: Online Help
+            link: http://manual.openfisma.org
+        Profile:
+            label: Profile
+            link: /user/profile
+
+Debug:
+    label: Debug
+    condition: if (Fisma::debug()) return TRUE;
+    submenu:
+        SystemCache:
+            label: APC System Cache
+            link: /debug/apc-cache/type/system
+        UserCache:
+            label: APC User Cache
+            link: /debug/apc-cache/type/user
+        ErrorLog:
+            label: Error log
+            link: /debug/errorlog
+        PHPInfo:
+            label: PHP Info
+            link: /debug/phpinfo
+        PHPlog:
+            label: PHP Log
+            link: /debug/phplog
