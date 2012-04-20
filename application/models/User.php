@@ -593,7 +593,8 @@ class User extends BaseUser
                 ->leftJoin('r.Privileges p')
                 ->where('p.resource = ?', $resource)
                 ->andWhere('p.action = ?', $action)
-                ->groupBy('o.id')
+                ->distinct()
+                ->groupBy('o.id, r.id')
                 ->orderBy('o.nickname');
 
             if (!$includeDisposal) {
