@@ -45,13 +45,12 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
     public function addPrivilege()
     {
         $this->message("Adding privileges for SystemType");
-        $query = "INSERT into `privilege` (`resource`, `action`, `description`) VALUES ("
+        $query = "INSERT into `privilege` (`resource`, `action`, `description`) VALUES "
                    . "('system_type', 'create', 'Create System Type'),"
                    . "('system_type', 'read', 'Read System Type'),"
                    . "('system_type', 'update', 'Update System Type'),"
-                   . "('system_type', 'delete', 'Delete System Type'),"
-               . ")";
-        $this->getHelper->execute($query);
+                   . "('system_type', 'delete', 'Delete System Type')";
+        $this->getHelper()->exec($query);
     }
 
     /**
@@ -62,7 +61,7 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
     public function assignPrivilege()
     {
         $this->message("Assigning privileges to Admin role");
-        $query = "INSERT into `role_privilege` (`roleid`, `privilegeid`) VALUES ("
+        $query = "INSERT into `role_privilege` (`roleid`, `privilegeid`) VALUES "
                    . "("
                        . "(SELECT `id` from `role` where `nickname` LIKE 'ADMIN'),"
                        . "(SELECT `id` from `privilege` where `resource` LIKE 'system_type' AND `action` LIKE 'read')"
@@ -75,8 +74,7 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
                    . "), ("
                        . "(SELECT `id` from `role` where `nickname` LIKE 'ADMIN'),"
                        . "(SELECT `id` from `privilege` where `resource` LIKE 'system_type' AND `action` LIKE 'delete')"
-                   . ")"
-               . ")";
-        $this->getHelper->execute($query);
+                   . ")";
+        $this->getHelper()->exec($query);
     }
 }
