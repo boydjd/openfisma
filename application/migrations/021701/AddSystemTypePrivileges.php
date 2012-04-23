@@ -35,6 +35,7 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
     {
         $this->addPrivilege();
         $this->assignPrivilege();
+        $this->addEvents();
     }
 
     /**
@@ -45,12 +46,22 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
     public function addPrivilege()
     {
         $this->message("Adding privileges for SystemType");
-        $query = "INSERT into `privilege` (`resource`, `action`, `description`) VALUES "
-                   . "('system_type', 'create', 'Create System Type'),"
-                   . "('system_type', 'read', 'Read System Type'),"
-                   . "('system_type', 'update', 'Update System Type'),"
-                   . "('system_type', 'delete', 'Delete System Type')";
-        $this->getHelper()->exec($query);
+
+        $insertStatement = "INSERT into `privilege` (`resource`, `action`, `description`) VALUE ('system_type', ";
+        $queryStatement = "SELECT `id` from `privilege` WHERE `resource` LIKE 'system_type' AND `action` LIKE ";
+
+        if (!$this->getHelper()->query($queryStatement . "'read'")) {
+            $this->getHelper()->exec($insertStatement . "'read', 'Read System Type'" . ")");
+        }
+        if (!$this->getHelper()->query($queryStatement . "'create'")) {
+            $this->getHelper()->exec($insertStatement . "'create', 'Create System Type'" . ")");
+        }
+         if (!$this->getHelper()->query($queryStatement."'update'")) {
+            $this->getHelper()->exec($insertStatement . "'update', 'Update System Type'" . ")");
+        }
+        if (!$this->getHelper()->query($queryStatement . "'delete'")) {
+            $this->getHelper()->exec($insertStatement . "'delete', 'Delete System Type'" . ")");
+        }
     }
 
     /**
@@ -61,20 +72,64 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
     public function assignPrivilege()
     {
         $this->message("Assigning privileges to Admin role");
-        $query = "INSERT into `role_privilege` (`roleid`, `privilegeid`) VALUES "
-                   . "("
-                       . "(SELECT `id` from `role` where `nickname` LIKE 'ADMIN'),"
-                       . "(SELECT `id` from `privilege` where `resource` LIKE 'system_type' AND `action` LIKE 'read')"
-                   . "), ("
-                       . "(SELECT `id` from `role` where `nickname` LIKE 'ADMIN'),"
-                       . "(SELECT `id` from `privilege` where `resource` LIKE 'system_type' AND `action` LIKE 'create')"
-                   . "), ("
-                       . "(SELECT `id` from `role` where `nickname` LIKE 'ADMIN'),"
-                       . "(SELECT `id` from `privilege` where `resource` LIKE 'system_type' AND `action` LIKE 'update')"
-                   . "), ("
-                       . "(SELECT `id` from `role` where `nickname` LIKE 'ADMIN'),"
-                       . "(SELECT `id` from `privilege` where `resource` LIKE 'system_type' AND `action` LIKE 'delete')"
-                   . ")";
-        $this->getHelper()->exec($query);
+
+        $privilegeQueryStatement = "SELECT `id` from `privilege` WHERE `resource` LIKE 'system_type' AND `action` LIKE ";
+        $readPrivilege = $this->getHelper()->query($privilegeQueryStatement . "'read'");
+        $createPrivilege = $this->getHelper()->query($privilegeQueryStatement . "'create'");
+        $updatePrivilege = $this->getHelper()->query($privilegeQueryStatement . "'update'");
+        $deletePrivilege = $this->getHelper()->query($privilegeQueryStatement . "'delete'");
+
+        $adminRole = $this->getHelper()->query("SELECT `id` from `role` WHERE `nickname` LIKE 'ADMIN'");
+
+        $queryStatement = "SELECT * from `role_privilege` WHERE `roleid` = {$adminRole[0]->id} AND `privilegeid` = ";
+        $insertStatement = "INSERT into `role_privilege` VALUE ({$adminRole[0]->id}, ";
+        if (!$this->getHelper()->query($queryStatement . $readPrivilege[0]->id)) {
+            $this->getHelper()->exec($insertStatement . $readPrivilege[0]->id . ")");
+        }
+        if (!$this->getHelper()->query($queryStatement . $createPrivilege[0]->id)) {
+            $this->getHelper()->exec($insertStatement . $createPrivilege[0]->id . ")");
+        }
+        if (!$this->getHelper()->query($queryStatement . $updatePrivilege[0]->id)) {
+            $this->getHelper()->exec($insertStatement . $updatePrivilege[0]->id . ")");
+        }
+        if (!$this->getHelper()->query($queryStatement . $deletePrivilege[0]->id)) {
+            $this->getHelper()->exec($insertStatement . $deletePrivilege[0]->id . ")");
+        }
+    }
+
+    /**
+     * Add events
+     *
+     * @return void
+     */
+    public function addEvents()
+    {
+        $this->message("Adding events for SystemType");
+
+        $insertStatement = "INSERT into `event` (`privilegeid`, `name`, `description`, `urlpath`) VALUE ("
+            . "(SELECT `id` from `privilege` where `resource` LIKE 'notification' AND `action` LIKE 'admin'), ";
+        $queryStatement = "SELECT `id` from `event` WHERE `name` LIKE ";
+
+        if (!$this->getHelper()->query($queryStatement . "'SYSTEM_TYPE_CREATED'")) {
+            $this->getHelper()->exec(
+                $insertStatement
+                    . "'SYSTEM_TYPE_CREATED', 'System Type Created', '/system-type/view/id/'"
+                . ")"
+            );
+        }
+        if (!$this->getHelper()->query($queryStatement . "'SYSTEM_TYPE_UPDATED'")) {
+            $this->getHelper()->exec(
+                $insertStatement
+                    . "'SYSTEM_TYPE_UPDATED', 'System Type Modified', '/system-type/view/id/'"
+                . ")"
+            );
+        }
+        if (!$this->getHelper()->query($queryStatement . "'SYSTEM_TYPE_DELETED'")) {
+            $this->getHelper()->exec(
+                $insertStatement
+                    . "'SYSTEM_TYPE_DELETED', 'System Type Deleted', NULL"
+                . ")"
+            );
+        }
     }
 }
