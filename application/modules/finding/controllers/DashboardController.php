@@ -949,7 +949,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $fromDayStr = $fromDay->toString(Fisma_Date::FORMAT_DATE);
 
             /**
-             * Since the createdts column is timestamp type. It needs to add one extra day to the first label so that 
+             * Since the createdts column is timestamp type. It needs to add one extra day to the first label so that
              * the finding created yesterday can be searched.
              */
             if ( $x == 0 ) {
@@ -958,7 +958,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             } else {
                 $toDayInt = $dayRange[$x];
                 $thisColumnLabel = $toDayInt . '-' . $fromDayInt;
-            }          
+            }
 
             $toDay = new Zend_Date();
             $toDay = $toDay->addDay(-$toDayInt);
@@ -968,7 +968,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $fromDay->addday(-1);
                 $fromDayStr = $fromDay->toString(Fisma_Date::FORMAT_DATE);
             }
-            
+
             // Get the count of findings
             $q = Doctrine_Query::create()
                 ->select('count(f.id), f.threatlevel')
@@ -1015,7 +1015,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $basicSearchLink .= '/denormalizedStatus/enumIsNot/CLOSED';
             $basicSearchLink .= '/denormalizedStatus/enumIsNot/EN';
             foreach ($this->_getEvaluationNames() as $thisStatus) {
-                $basicSearchLink .= '/denormalizedStatus/enumIsNot/' . rawurlencode($thisStatus);
+                $basicSearchLink .= '/denormalizedStatus/enumIsNot/' . $thisStatus;
             }
 
             // Remembers links for a non-stacked bar chart in the even the user is querying "totals"
