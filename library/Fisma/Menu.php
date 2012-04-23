@@ -55,16 +55,21 @@ class Fisma_Menu
      * @param string $link The link of the menu item.
      * @param mixed string|null $model The model shows on the Go to.. menu item, 
      * null if the $type is not Fisma_Yui_MenuItem_GoTo 
+     * @param integer $target  The target of the link.
      * @param integer $count Add the submenu to its parent menu when $count is 1.
      * @param Fisma_Yui_Menu $root The menu holds the menu items. 
      * @param Fisma_Yui_Menu $parent The parent menu holds the menu items. 
      * @return Fisma_Yui_MenuBar The assembled Fisma YUI menu bar object
      */
-    private static function addMenuItem($type, $label, $link, $model, $count, $root, $parent = null)
+    private static function addMenuItem($type, $label, $link, $model, $target, $count, $root, $parent = null)
     {
         // It is Fisma_Yui_MenuItem if the $model is null.
         if (is_null($model)) {
-            $menuItem = new $type($label, $link);
+            if (is_null($target)) {
+                $menuItem = new $type($label, $link);
+            } else {
+                $menuItem = new $type($label, $link, null, $target);
+            }
         } else {
             $menuItem = new $type($label, $model, $link);
         }
@@ -105,6 +110,13 @@ class Fisma_Menu
                 }
             }
 
+            // Skip the menuItem and its submenu if it does not have the privilege
+            if (isset($value['privilege']) && 'hasArea' == $value['privilege']['func']) {
+                if (!$acl->$value['privilege']['func']($value['privilege']['param'])) {
+                     continue;  
+                }
+            }
+            
             if (isset($value['submenu'])) {
 
                 // Skip the menu if condition is not true
@@ -124,34 +136,19 @@ class Fisma_Menu
 
                 // Handle the different types of menu items 
                 if ('Go To...' == $value['label']) {
-                    if (isset($value['privilege'])) {
-                        if ('hasArea' == $value['privilege']['func']) {
-                            if ($acl->$value['privilege']['func']($value['privilege']['param'])) {
-                                self::addMenuItem(
-                                    'Fisma_Yui_MenuItem_GoTo', 
-                                    $value['label'],
-                                    $value['click'],
-                                    $value['model'],
-                                    $i,
-                                    $root,
-                                    $parent
-                                );
-                            }
-                        } else {
-                            if ($acl->$value['privilege']['func'](
-                                    $value['privilege']['param1'],
-                                    $value['privilege']['param2'])
-                               ) {
-                                self::addMenuItem(
-                                    'Fisma_Yui_MenuItem_GoTo',
-                                    $value['label'],
-                                    $value['click'],
-                                    $value['model'],
-                                    $i,
-                                    $root,
-                                    $parent
-                                );
-                            }
+                    if (isset($value['privilege'])) { 
+                        if ( $acl->$value['privilege']['func']($value['privilege']['param1'],
+                            $value['privilege']['param2'])) {
+                            self::addMenuItem(
+                                'Fisma_Yui_MenuItem_GoTo',
+                                $value['label'],
+                                $value['click'],
+                                $value['model'],
+                                null,
+                                $i,
+                                $root,
+                                $parent
+                            );
                         }
                     } else {
                         self::addMenuItem(
@@ -159,6 +156,7 @@ class Fisma_Menu
                             $value['label'],
                             $value['click'],
                             $value['model'],
+                            null,
                             $i,
                             $root,
                             $parent
@@ -171,36 +169,25 @@ class Fisma_Menu
                         } 
                     } else {
                         $root->addSeparator();
-                    } 
+                    }
                 } else {
-                    if (isset($value['privilege'])) {
-                        if ('hasArea' == $value['privilege']['func']) {
-                            if ($acl->$value['privilege']['func']($value['privilege']['param'])) {
-                                self::addMenuItem(
-                                    'Fisma_Yui_MenuItem',
-                                    $value['label'],
-                                    $value['link'],
-                                    null,
-                                    $i,
-                                    $root,
-                                    $parent
-                                );
-                            }
-                        } else {
-                            if ($acl->$value['privilege']['func'](
+
+                    // Do not need to check hasArea privilege here because it has been checked previously 
+                    if (isset($value['privilege']) && 'hasArea' != $value['privilege']['func']) {
+                        if ($acl->$value['privilege']['func'](
                                 $value['privilege']['param1'],
                                 $value['privilege']['param2'])
                             ) {
                                 self::addMenuItem(
                                     'Fisma_Yui_MenuItem',
                                     $value['label'],
-                                    null,
                                     $value['link'],
+                                    null,
+                                    isset($value['target']) ? $value['target'] : null,
                                     $i,
                                     $root,
                                     $parent
                                 );
-                            }
                         }
                     } else {
                         if (isset($value['condition'])) {
@@ -212,6 +199,7 @@ class Fisma_Menu
                                     $value['label'],
                                     $value['link'],
                                     null,
+                                    isset($value['target']) ? $value['target'] : null,
                                     $i,
                                     $root,
                                     $parent
@@ -223,6 +211,7 @@ class Fisma_Menu
                                 $value['label'],
                                 $value['link'],
                                 null,
+                                isset($value['target']) ? $value['target'] : null,
                                 $i,
                                 $root,
                                 $parent
