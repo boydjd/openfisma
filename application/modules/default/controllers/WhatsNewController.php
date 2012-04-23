@@ -38,7 +38,16 @@ class WhatsNewController extends Fisma_Zend_Controller_Action_Security
         $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
         $configFile = realpath(Fisma::getPath('config')) . '/whatsnew/' 
                       . substr( $versions['application'], 0, -2) . '/whatsnew.yml';
+        
+        if (!file_exists($configFile)) {
+            throw new Fisma_Zend_Exception('There is no configure file: ' . $configFile);
+        }
+
         $contents = Doctrine_Parser_YamlSf::load($configFile);
+
+        if (!is_array($contents) || count($contents) <= 0) {
+            throw new Fisma_Zend_Exception('There is no content in: ' . $configFile);
+        }
 
         $this->view->systemName = Fisma::configuration()->getConfig('system_name'); 
         $this->view->contents = $contents;
