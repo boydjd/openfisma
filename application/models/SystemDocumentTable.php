@@ -79,17 +79,6 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                 'sortable' => true,
                 'type' => 'date'
             ),
-            'lastModifiedUser' => array(
-                'initiallyVisible' => true,
-                'label' => 'Last Modified By User',
-                'join' => array(
-                    'model' => 'User',
-                    'relation' => 'User',
-                    'field' => 'username'
-                ),
-                'sortable' => true,
-                'type' => 'text'
-            ),
             'systemId' => array(
                 'hidden' => true,
                 'join' => array(
