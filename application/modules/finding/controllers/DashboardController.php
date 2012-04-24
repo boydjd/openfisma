@@ -26,6 +26,32 @@
  */
 class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 {
+    const COLOR_HIGH = "#FF0000";
+    const COLOR_MODERATE = "#FF6600";
+    const COLOR_LOW = "#FFC000";
+    const COLOR_BLUE = " #3366FF";
+
+    /**
+     * Mapping from enum strings used in the DB to User-Friendly strings used in the UI
+     *
+     * @var array
+     */
+    protected $_threatTypes = array('threat_level' => 'Threat Level', 'residual_risk' => 'Residual Risk');
+
+    /**
+     * List of threat/risk levels
+     *
+     * @var array
+     */
+    protected $_threatLevels = array( 'Totals', 'High, Moderate, and Low', 'High', 'Moderate', 'Low');
+
+    /**
+     * Low, Moderate and High Colors
+     *
+     * @var array
+     */
+    protected $_highModLowColors = array(self::COLOR_HIGH, self::COLOR_MODERATE, self::COLOR_LOW);
+
     /**
      * Set up headers/footers
      */
@@ -64,18 +90,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setTitle('Finding Forecast')
             ->addWidget('dayRangesStatChart', 'Day Ranges:', 'text', '0, 15, 30, 60, 90')
             ->addWidget(
-                    'forcastThreatLvl',
-                    'Finding Type:',
-                    'combo',
-                    'High, Moderate, and Low',
-                    array(
-                        'Totals',
-                        'High, Moderate, and Low',
-                        'High',
-                        'Moderate',
-                        'Low'
-                        )
-                    );
+                'forcastThreatLvl',
+                'Finding Type:',
+                'combo',
+                'High, Moderate, and Low',
+                $this->_threatLevels
+            )
+            ->addWidget(
+                'forecastThreatType',
+                'Threat Type',
+                'combo',
+                'Threat Level',
+                array_values($this->_threatTypes)
+            );
 
         $this->view->chartFindForecast = $chartFindForecast->export();
 
@@ -86,18 +113,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setTitle('Findings Past Due')
             ->addWidget('dayRanges', 'Day Ranges:', 'text', '1, 30, 60, 90, 120')
             ->addWidget(
-                    'pastThreatLvl',
-                    'Finding Type:',
-                    'combo',
-                    'High, Moderate, and Low',
-                    array(
-                        'Totals',
-                        'High, Moderate, and Low',
-                        'High',
-                        'Moderate',
-                        'Low'
-                        )
-                    );
+                'pastThreatLvl',
+                'Finding Type:',
+                'combo',
+                'High, Moderate, and Low',
+                $this->_threatLevels
+            )
+            ->addWidget(
+                'pastThreatType',
+                'Threat Type',
+                'combo',
+                'Threat Level',
+                array_values($this->_threatTypes)
+            );
         $this->view->chartOverdueFinding = $chartOverdueFinding->export();
 
         // Mid-left chart - Findings by Worklow Process
@@ -106,18 +134,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $chartTotalStatus
             ->setTitle('Findings by Workflow Process')
             ->addWidget(
-                    'findingType',
-                    'Finding Type:',
-                    'combo',
-                    'High, Moderate, and Low',
-                    array(
-                        'Totals',
-                        'High, Moderate, and Low',
-                        'High',
-                        'Moderate',
-                        'Low'
-                        )
-                    );
+                'findingType',
+                'Finding Type:',
+                'combo',
+                'High, Moderate, and Low',
+                $this->_threatLevels
+            )
+            ->addWidget(
+                'workflowThreatType',
+                'Threat Type',
+                'combo',
+                'Threat Level',
+                array_values($this->_threatTypes)
+            );
 
         $this->view->chartTotalStatus = $chartTotalStatus->export();
 
@@ -129,18 +158,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setExternalSource('/finding/dashboard/chartfindnomitstrat/format/json')
             ->addWidget('dayRangesMitChart', 'Day Ranges:', 'text', '1, 30, 60, 90, 120')
             ->addWidget(
-                    'noMitThreatLvl',
-                    'Finding Type:',
-                    'combo',
-                    'High, Moderate, and Low',
-                    array(
-                        'Totals',
-                        'High, Moderate, and Low',
-                        'High',
-                        'Moderate',
-                        'Low'
-                        )
-                    );
+                'noMitThreatLvl',
+                'Finding Type:',
+                'combo',
+                'High, Moderate, and Low',
+                $this->_threatLevels
+            )
+            ->addWidget(
+                'withoutCorrectiveActionThreatType',
+                'Threat Type',
+                'combo',
+                'Threat Level',
+                array_values($this->_threatTypes)
+            );
         $this->view->chartNoMit = $chartNoMit->export();
 
         // Bottom-Upper chart - Open Findings By Organization
@@ -161,18 +191,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     true
                 )
             ->addWidget(
-                    'threatLevel',
-                    'Threat Level:',
-                    'combo',
-                    'Totals',
-                    array(
-                        'Totals',
-                        'High, Moderate, and Low',
-                        'High',
-                        'Moderate',
-                        'Low'
-                        )
-                    );
+                'threatLevel',
+                'Threat Level:',
+                'combo',
+                'Totals',
+                $this->_threatLevels
+            )
+            ->addWidget(
+                'orgThreatType',
+                'Threat Type',
+                'combo',
+                'Threat Level',
+                array_values($this->_threatTypes)
+            );
 
         $this->view->findingOrgChart = $findingOrgChart->export();
 
@@ -252,19 +283,17 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $threatLevel = urldecode($this->getRequest()->getParam('threatLevel'));
         $threatLevel = strtolower($threatLevel);
 
+        $threatType = $this->getRequest()->getparam('orgThreatType');
+        $threatField = $threatType === 'Threat Level' ? 'threatLevel' : 'residualRisk';
+
         $rtnChart = new Fisma_Chart();
         $rtnChart
             ->setThreatLegendVisibility(true)
+            ->setThreatLegendTitle($threatType)
             ->setThreatLegendWidth(450)
             ->setAxisLabelY('Number of Findings')
             ->setChartType('stackedbar')
-            ->setColors(
-                    array(
-                        "#FF0000",
-                        "#FF6600",
-                        "#FFC000"
-                        )
-                    )
+            ->setColors($this->_highModLowColors)
             ->setLayerLabels(
                     array(
                         'Null',
@@ -288,10 +317,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         if ($displayBy === 'system') {
             $systemCounts = Doctrine_Query::create()
                 ->select('parent.id, parent.nickname, parent.name')
-                ->addSelect("SUM(IF(finding.id IS NOT NULL AND finding.threatLevel IS NULL, 1, 0)) isnull")
-                ->addSelect("SUM(IF(finding.threatLevel = 'LOW', 1, 0)) low")
-                ->addSelect("SUM(IF(finding.threatLevel = 'MODERATE', 1, 0)) moderate")
-                ->addSelect("SUM(IF(finding.threatLevel = 'HIGH', 1, 0)) high")
+                ->addSelect("SUM(IF(finding.id IS NOT NULL AND finding.' . $threatField . ' IS NULL, 1, 0)) isnull")
+                ->addSelect("SUM(IF(finding.' . $threatField . ' = 'LOW', 1, 0)) low")
+                ->addSelect("SUM(IF(finding.' . $threatField . ' = 'MODERATE', 1, 0)) moderate")
+                ->addSelect("SUM(IF(finding.' . $threatField . ' = 'HIGH', 1, 0)) high")
                 ->from('Organization parent')
                 ->leftJoin('parent.System system')
                 ->leftJoin('Organization node')
@@ -319,9 +348,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ),
                     array(
                         '',
-                        $basicLink . '#ColumnLabel#/threatLevel/enumIs/HIGH',
-                        $basicLink . '#ColumnLabel#/threatLevel/enumIs/MODERATE',
-                        $basicLink . '#ColumnLabel#/threatLevel/enumIs/LOW'
+                        $basicLink . '#ColumnLabel#/' . $threatField . '/enumIs/HIGH',
+                        $basicLink . '#ColumnLabel#/' . $threatField . '/enumIs/MODERATE',
+                        $basicLink . '#ColumnLabel#/' . $threatField . '/enumIs/LOW'
                     ),
                     $systemCountInfo['parent_name'] . '<hr/>#columnReport#'
                 );
@@ -334,7 +363,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             // For each parent (foreach agency, or bBureau, etc)
             foreach ($parents as $thisParentOrg) {
 
-                $childrenTotaled = $this->_getSumsOfOrgChildren($thisParentOrg['id']);
+                $childrenTotaled = $this->_getSumsOfOrgChildren($thisParentOrg['id'], $threatField);
 
                 // Do not use association, high/mod/low is defined on the chart with Fisma_Chart->setLayerLabels()
                 $childrenTotaled = array_values($childrenTotaled);
@@ -344,9 +373,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $childrenTotaled,
                         array(
                             '',
-                            $basicLink . '#ColumnLabel#/threatLevel/enumIs/HIGH',
-                            $basicLink . '#ColumnLabel#/threatLevel/enumIs/MODERATE',
-                            $basicLink . '#ColumnLabel#/threatLevel/enumIs/LOW'
+                            $basicLink . '#ColumnLabel#/' . $threatField . '/enumIs/HIGH',
+                            $basicLink . '#ColumnLabel#/' . $threatField . '/enumIs/MODERATE',
+                            $basicLink . '#ColumnLabel#/' . $threatField . '/enumIs/LOW'
                             ),
                         $thisParentOrg['name'] . '<hr/>#columnReport#'
                         );
@@ -364,7 +393,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             case 'totals':
                 $rtnChart
                     ->convertFromStackedToRegular()
-                    ->setColors(array('#3366FF'))
+                    ->setColors(array(self::COLOR_BLUE))
                     ->setThreatLegendVisibility(false)
                     ->setLinks(
                             '/finding/remediation/list?q=' .
@@ -380,7 +409,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $rtnChart
                     ->deleteLayer(2)
                     ->deleteLayer(1)
-                    ->setColors(array('#FF0000'));
+                    ->setColors(array(self::COLOR_HIGH));
                 break;
             case 'moderate':
                 // Remove null-count layer/stack in this stacked bar chart
@@ -389,7 +418,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $rtnChart
                     ->deleteLayer(2)
                     ->deleteLayer(0)
-                    ->setColors(array('#FF6600'));
+                    ->setColors(array(self::COLOR_MODERATE));
                 break;
                 case 'low';
                 // Remove null-count layer/stack in this stacked bar chart
@@ -398,7 +427,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $rtnChart
                     ->deleteLayer(1)
                     ->deleteLayer(0)
-                    ->setColors(array('#FFC000'));
+                    ->setColors(array(self::COLOR_LOW));
                     break;
         }
 
@@ -411,11 +440,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      *
      * @return array
      */
-    private function _getSumsOfOrgChildren($orgId)
+    private function _getSumsOfOrgChildren($orgId, $threatField)
     {
 
         // Get all children of the given organization id
-        $childList = $this->_getAllChildrenOfOrg($orgId);
+        $childList = $this->_getAllChildrenOfOrg($orgId, $threatField);
 
         $totalNull = 0;
         $totalHigh = 0;
@@ -428,7 +457,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             // For each threat level total (of findings) of this organization (high.mod,low)
             foreach ($thisChildOrg['Findings'] as $thisThreatLvl) {
 
-                switch ($thisThreatLvl['threatLevel']) {
+                switch ($thisThreatLvl[$threatField]) {
                     case 'HIGH':
                         $totalHigh += $thisThreatLvl['COUNT'];
                         break;
@@ -471,7 +500,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      *
      * @return array
      */
-    private function _getAllChildrenOfOrg($orgId, $includeParent = true)
+    private function _getAllChildrenOfOrg($orgId, $threatField)
     {
         // Dont query if there are no organizations this user can see
         if (empty($this->_visibleOrgs)) {
@@ -492,7 +521,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $q = Doctrine_Query::create();
         $q
-            ->addSelect('COUNT(f.id), o.id, o.nickname, f.threatlevel')
+            ->addSelect('COUNT(f.id), o.id, o.nickname, f.' . $threatField)
             ->from('Organization o')
             ->leftJoin('o.Findings f')
             ->where('f.responsibleorganizationid=o.id')
@@ -500,21 +529,21 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->andWhere("? < o.lft", $parLft)
             ->andWhere('f.status <> "CLOSED"')
             ->andWhere("? > o.rgt", $parRgt)
-            ->groupBy('o.nickname, f.threatlevel')
+            ->groupBy('o.nickname, f.' . $threatField)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $rtn = $q->execute();
 
-        if ($includeParent === true && array_search($orgId, $this->_visibleOrgs) !== false) {
+        if (array_search($orgId, $this->_visibleOrgs) !== false) {
 
             $q = Doctrine_Query::create();
             $q
-                ->addSelect('COUNT(f.id), o.id, o.nickname, f.threatlevel')
+                ->addSelect('COUNT(f.id), o.id, o.nickname, f.' . $threatField)
                 ->from('Organization o')
                 ->leftJoin('o.Findings f')
                 ->whereIn('f.responsibleorganizationid', $this->_visibleOrgs)
                 ->where('o.id = ?', $orgId)
                 ->andWhere('f.status <> "CLOSED"')
-                ->groupBy('o.nickname, f.threatlevel')
+                ->groupBy('o.nickname, f.' . $threatField)
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
             $rtn = array_merge($rtn, $q->execute());
@@ -560,6 +589,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $findingType = urldecode($this->getRequest()->getParam('pastThreatLvl'));
 
+        $threatType = $this->getRequest()->getParam('pastThreatType', 'Threat Level');
+        $threatField = $threatType === 'Threat Level' ? 'threatLevel' : 'residualRisk';
+
         $thisChart = new Fisma_Chart();
         $thisChart
             ->setChartType('stackedbar')
@@ -568,13 +600,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setAxisLabelY('Number of Findings')
             ->setColumnLabelAngle(0)
             ->setThreatLegendVisibility(true)
-            ->setColors(
-                    array(
-                        "#FF0000",
-                        "#FF6600",
-                        "#FFC000"
-                        )
-                    )
+            ->setThreatLegendTitle($threatType)
+            ->setColors($this->_highModLowColors)
             ->setLayerLabels(
                     array(
                         'Null',
@@ -607,12 +634,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             $q = Doctrine_Query::create();
             $q
-                ->addSelect('threatlevel threat, COUNT(f.id)')
+                ->addSelect($threatField . ' threat, COUNT(f.id)')
                 ->from('Finding f')
                 ->where('f.currentecd BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
                 ->andWhere('f.status <> "CLOSED"')
                 ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
-                ->groupBy('threatlevel')
+                ->groupBy($threatField)
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
             $rslts = $q->execute();
 
@@ -652,6 +679,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 '/denormalizedStatus/enumIsNot/CLOSED' .
                 '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr;
 
+            $linkPrefix = '/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED'
+                        . '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr
+                        . '/' . $threatField . '/enumIs/';
             $thisChart->addColumn(
                 $thisColLabel,
                 array(
@@ -661,18 +691,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     $thisLow
                 ),
                 array('',
-                    '/finding/remediation/list?q=' .
-                    '/denormalizedStatus/enumIsNot/CLOSED' .
-                    '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
-                    '/threatLevel/enumIs/HIGH',
-                    '/finding/remediation/list?q=' .
-                    '/denormalizedStatus/enumIsNot/CLOSED' .
-                    '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
-                    '/threatLevel/enumIs/MODERATE',
-                    '/finding/remediation/list?q=' .
-                    '/denormalizedStatus/enumIsNot/CLOSED' .
-                    '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr .
-                    '/threatLevel/enumIs/LOW'
+                    $linkPrefix . 'HIGH',
+                    $linkPrefix . 'MODERATE',
+                    $linkPrefix . 'LOW'
                 )
             );
         }
@@ -685,7 +706,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisChart
                     ->convertFromStackedToRegular()
                     ->setThreatLegendVisibility(false)
-                    ->setColors(array('#3366FF'))
+                    ->setColors(array(self::COLOR_BLUE))
                     ->setLinks($nonStackedLinks);
                 break;
             case "high, moderate, and low":
@@ -698,7 +719,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
-                $thisChart->setColors(array('#FF0000'));
+                $thisChart->setColors(array(self::COLOR_HIGH));
                 break;
             case "moderate":
                 // Remove null-count layer
@@ -706,7 +727,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
-                $thisChart->setColors(array('#FF6600'));
+                $thisChart->setColors(array(self::COLOR_MODERATE));
                 break;
             case "low":
                 // Remove null-count layer
@@ -714,185 +735,11 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
-                $thisChart->setColors(array('#FFC000'));
+                $thisChart->setColors(array(self::COLOR_LOW));
                 break;
         }
 
         $this->view->chart = $thisChart->export('array');
-    }
-
-    /**
-     * Calculate the finding statistics by Org
-     *
-     * @return Fisma_Chart
-     */
-    private function _chartfindingorgbasic()
-    {
-        $findingType = urldecode($this->getRequest()->getParam('threatLevel'));
-
-        if ($findingType === 'Totals') {
-
-            $thisChart = new Fisma_Chart();
-            $thisChart
-                ->setChartType('bar')
-                ->setConcatColumnLabels(false)
-                ->setAxisLabelY('Number of Findings')
-                ->setColors(array('#3366FF'));
-
-            $q = Doctrine_Query::create()
-                ->select('count(*), nickname')
-                ->from('Organization o')
-                ->leftJoin('o.Findings f')
-                ->groupBy('o.id')
-                ->orderBy('o.nickname')
-                ->where('f.status <> "CLOSED"')
-                ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-            $orgCounts = $q->execute();
-
-            foreach ($orgCounts as $thisOrg) {
-
-                $thisChart->addColumn(
-                        $thisOrg['nickname'],
-                        $thisOrg['count'],
-                        '/finding/remediation/list?q=' .
-                        '/denormalizedStatus/enumIsNot/CLOSED' .
-                        '/organization/textExactMatch/' . $thisOrg['nickname']
-                        );
-
-            }
-
-            return $thisChart;
-
-        } elseif ($findingType === 'High, Moderate, and Low') {
-
-            $thisChart = new Fisma_Chart();
-            $thisChart
-                ->setChartType('stackedbar')
-                ->setThreatLegendVisibility(true)
-                ->setThreatLegendWidth(450)
-                ->setConcatColumnLabels(true)
-                ->setAxisLabelY('Number of Findings')
-                ->setColors(
-                        array(
-                            "#FF0000",
-                            "#FF6600",
-                            "#FFC000"
-                            )
-                        )
-                ->setLayerLabels(
-                        array(
-                            'Null',
-                            'HIGH',
-                            'MODERATE',
-                            'LOW'
-                            )
-                        );
-
-            $q = Doctrine_Query::create()
-                ->select('count(f.threatlevel), nickname, f.threatlevel')
-                ->from('Organization o')
-                ->leftJoin('o.Findings f')
-                ->groupBy('o.id, f.threatlevel')
-                ->orderBy('o.nickname, f.threatlevel')
-                ->where('f.status <> "CLOSED"')
-                ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-
-            $orgCounts = $q->execute();
-
-            foreach ($orgCounts as $thisOrg) {
-
-                // initalize counts to 0
-                $thisHigh = 0;
-                $thisMod = 0;
-                $thisLow = 0;
-
-                foreach ($thisOrg['Findings'] as $thisLevel) {
-                    switch ($thisLevel['threatLevel']) {
-                        case 'LOW':
-                            $thisHigh = $thisLevel['count'];
-                            break;
-                        case 'MODERATE':
-                            $thisMod = $thisLevel['count'];
-                            break;
-                        case 'HIGH':
-                            $thisLow = $thisLevel['count'];
-                            break;
-                    }
-                }
-
-                $thisChart->addColumn(
-                        $thisOrg['nickname'],
-                        array(
-                            $thisLow,
-                            $thisMod,
-                            $thisHigh
-                            ),
-                        array(
-                            '/finding/remediation/list?q=' .
-                            '/denormalizedStatus/enumIsNot/CLOSED' .
-                            'organization/textExactMatch/' . $thisOrg['nickname'] .
-                            '/threatLevel/enumIs/HIGH',
-                            '/finding/remediation/list?q=' .
-                            '/denormalizedStatus/enumIsNot/CLOSED' .
-                            'organization/textExactMatch/' . $thisOrg['nickname'] .
-                            '/threatLevel/enumIs/MODERATE',
-                            '/finding/remediation/list?q=' .
-                            '/denormalizedStatus/enumIsNot/CLOSED' .
-                            'organization/textExactMatch/' . $thisOrg['nickname'] .
-                            '/threatLevel/enumIs/LOW'
-                            )
-                            );
-            }
-
-            return $thisChart;
-
-        } else {
-            // findingType is High, Mod, or Low
-
-            $thisChart = new Fisma_Chart();
-            $thisChart
-                ->setChartType('bar')
-                ->setConcatColumnLabels(false)
-                ->setAxisLabelY('Number of Findings');
-
-            // Decide color of every bar based on High/Mod/Low
-            switch (strtoupper($findingType)) {
-                case 'HIGH':
-                    $thisChart->setColors(array('#FF0000'));    // red
-                    break;
-                case 'MODERATE':
-                    $thisChart->setColors(array('#FF6600'));    // orange
-                    break;
-                case 'LOW':
-                    $thisChart->setColors(array('#FFC000'));    // yellow
-                    break;
-            }
-
-            $q = Doctrine_Query::create()
-                ->select('count(f.threatlevel), nickname, f.threatlevel')
-                ->from('Organization o')
-                ->leftJoin('o.Findings f')
-                ->groupBy('o.id')
-                ->orderBy('o.nickname, f.threatlevel')
-                ->where('f.threatlevel = ?', strtoupper($findingType))
-                ->andWhere('f.status <> "CLOSED"')
-                ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-
-            $orgThisThreatCounts = $q->execute();
-
-            foreach ($orgThisThreatCounts as $thisThreatCount) {
-                $thisChart->addColumn(
-                        $thisThreatCount['nickname'],
-                        $thisThreatCount['count'],
-                        '/finding/remediation/list?q=' .
-                        '/denormalizedStatus/enumIsNot/CLOSED' .
-                        '/organization/textExactMatch/' . $thisThreatCount['nickname'] .
-                        '/threatLevel/enumIs/' . strtoupper($findingType)
-                        );
-            }
-
-            return $thisChart;
-        }
     }
 
     /**
@@ -908,6 +755,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $dayRange = explode(',', $dayRange);
 
         $threatLvl = $this->getRequest()->getParam('noMitThreatLvl');
+        $threatType = $this->getRequest()->getParam('withoutCorrectiveActionThreatType');
+        $threatField = $threatType === 'Threat Level' ? 'threatLevel' : 'residualRisk';
 
         $noMitChart = new Fisma_Chart();
         $noMitChart
@@ -915,12 +764,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setAxisLabelY('Number of Findings')
             ->setChartType('stackedbar')
             ->setThreatLegendVisibility(true)
+            ->setThreatLegendTitle($threatType)
             ->setColumnLabelAngle(0)
             ->setColors(
                     array(
-                        "#FF0000",
-                        "#FF6600",
-                        "#FFC000"
+                        self::COLOR_HIGH,
+                        self::COLOR_MODERATE,
+                        self::COLOR_LOW
                         )
                     )
             ->setConcatColumnLabels(false)
@@ -971,12 +821,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             // Get the count of findings
             $q = Doctrine_Query::create()
-                ->select('count(f.id), f.threatlevel')
+                ->select('count(f.id), f.' . $threatField)
                 ->from('Finding f')
                 ->where('f.status="NEW" OR f.status="DRAFT"')
                 ->andWhere('f.status <> "CLOSED"')
                 ->andWhere('f.createdts BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
-                ->groupBy('f.threatlevel')
+                ->groupBy('f.' . $threatField)
                 ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
             $rslts = $q->execute();
@@ -988,7 +838,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $thisLow = 0;
 
             foreach ($rslts as $thisLevel) {
-                switch ($thisLevel['threatLevel']) {
+                switch ($thisLevel[$threatField]) {
                     case 'LOW':
                         $thisLow = $thisLevel['count'];
                         break;
@@ -1030,10 +880,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         $thisLow
                         ),
                     array(
-                        $basicSearchLink . '/threatLevel/enumIs/NULL',
-                        $basicSearchLink . '/threatLevel/enumIs/HIGH',
-                        $basicSearchLink . '/threatLevel/enumIs/MODERATE',
-                        $basicSearchLink . '/threatLevel/enumIs/LOW'
+                        $basicSearchLink . '/' . $threatField . '/enumIs/NULL',
+                        $basicSearchLink . '/' . $threatField . '/enumIs/HIGH',
+                        $basicSearchLink . '/' . $threatField . '/enumIs/MODERATE',
+                        $basicSearchLink . '/' . $threatField . '/enumIs/LOW'
                         )
                     );
 
@@ -1048,7 +898,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $noMitChart
                     ->convertFromStackedToRegular()
                     ->setThreatLegendVisibility(false)
-                    ->setColors(array('#3366FF'))
+                    ->setColors(array(self::COLOR_BLUE))
                     ->setLinks($nonStackedLinks);
                 break;
             case "high, moderate, and low":
@@ -1062,7 +912,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and Moderate columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(1);
-                $noMitChart->setColors(array('#FF0000'));
+                $noMitChart->setColors(array(self::COLOR_HIGH));
                 break;
             case "moderate":
                 // Remove null-counts (findings without threatLevels)
@@ -1070,7 +920,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and High columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(0);
-                $noMitChart->setColors(array('#FF6600'));
+                $noMitChart->setColors(array(self::COLOR_MODERATE));
                 break;
             case "low":
                 // Remove null-counts (findings without threatLevels)
@@ -1078,7 +928,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Moderate and High columns/layers
                 $noMitChart->deleteLayer(1);
                 $noMitChart->deleteLayer(0);
-                $noMitChart->setColors(array('#FFC000'));
+                $noMitChart->setColors(array(self::COLOR_LOW));
                 break;
         }
 
@@ -1121,6 +971,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $dayRange = explode(',', $dayRange);
 
         $threatLvl = $this->getRequest()->getParam('forcastThreatLvl');
+        $threatType = $this->getRequest()->getParam('forecastThreatType');
+        $threatField = $threatType === 'Threat Level' ? 'threatLevel' : 'residualRisk';
 
         $highCount = 0;
         $modCount = 0;
@@ -1135,6 +987,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setConcatColumnLabels(false)
             ->setColumnLabelAngle(0)
             ->setThreatLegendVisibility(true)
+            ->setThreatLegendTitle($threatType)
             ->setAxisLabelX('Number of Days Until Overdue')
             ->setAxisLabelY('Number of Findings')
             ->setLayerLabels(
@@ -1145,13 +998,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                         'Low'
                         )
                     )
-            ->setColors(
-                    array(
-                        "#FF0000",
-                        "#FF6600",
-                        "#FFC000"
-                        )
-                    );
+            ->setColors($this->_highModLowColors);
 
         // Dont query if there are no organizations this user can see
         if (empty($this->_visibleOrgs)) {
@@ -1179,12 +1026,12 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             // Get the count of High,Mod,Low findings
             $q = Doctrine_Query::create()
-                ->select('COUNT(f.id), f.threatlevel')
+                ->select('COUNT(f.id), f.' . $threatField)
                 ->from('Finding f')
                 ->where('f.currentecd BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
                 ->andWhere('f.status <> "CLOSED"')
                 ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
-                ->groupBy('f.threatlevel')
+                ->groupBy('f.' . $threatField)
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
             $results = $q->execute();
@@ -1192,7 +1039,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             $highCount = $modCount = $lowCount = 0;
             foreach ($results as $thisRslt) {
-                switch ($thisRslt['threatLevel']) {
+                switch ($thisRslt[$threatField]) {
                     case 'HIGH':
                         $highCount = $thisRslt['COUNT'];
                         break;
@@ -1212,6 +1059,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
 
             // Add column assuming this is a stacked-bar chart with High, Mod, and Low findings
+            $linkPrefix = '/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED'
+                        . '/currentEcd/dateBetween/'
+                        . $fromDay->toString(Fisma_Date::FORMAT_DATE).'/'.$toDay->toString(Fisma_Date::FORMAT_DATE)
+                        . '/' . $threatField . '/enumIs/';
             $thisChart
                 ->addColumn(
                         $thisColumnLabel,
@@ -1222,21 +1073,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                             $lowCount
                             ),
                         array('',
-                            '/finding/remediation/list?q=' .
-                            '/denormalizedStatus/enumIsNot/CLOSED' .
-                            '/currentEcd/dateBetween/' .
-                            $fromDay->toString(Fisma_Date::FORMAT_DATE).'/'.$toDay->toString(Fisma_Date::FORMAT_DATE) .
-                            '/threatLevel/enumIs/HIGH',
-                            '/finding/remediation/list?q=' .
-                            '/denormalizedStatus/enumIsNot/CLOSED' .
-                            '/currentEcd/dateBetween/' .
-                            $fromDay->toString(Fisma_Date::FORMAT_DATE).'/'.$toDay->toString(Fisma_Date::FORMAT_DATE) .
-                            '/threatLevel/enumIs/MODERATE',
-                            '/finding/remediation/list?q=' .
-                            '/denormalizedStatus/enumIsNot/CLOSED' .
-                            '/currentEcd/dateBetween/' .
-                            $fromDay->toString(Fisma_Date::FORMAT_DATE).'/'.$toDay->toString(Fisma_Date::FORMAT_DATE) .
-                            '/threatLevel/enumIs/LOW'
+                            $linkPrefix . 'HIGH',
+                            $linkPrefix . 'MODERATE',
+                            $linkPrefix . 'LOW'
                             )
                             );
 
@@ -1255,7 +1094,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ->convertFromStackedToRegular()
                     ->setLinks($totalChartLinks)
                     ->setThreatLegendVisibility(false)
-                    ->setColors(array('#3366FF'));
+                    ->setColors(array(self::COLOR_BLUE));
                 break;
             case "high, moderate, and low":
                 // Remove the nullCount layer
@@ -1267,7 +1106,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
-                $thisChart->setColors(array('#FF0000'));
+                $thisChart->setColors(array(self::COLOR_HIGH));
                 break;
             case "moderate":
                 // Remove the nullCount layer
@@ -1275,7 +1114,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
-                $thisChart->setColors(array('#FF6600'));
+                $thisChart->setColors(array(self::COLOR_MODERATE));
                 break;
             case "low":
                 // Remove the nullCount layer
@@ -1283,7 +1122,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
-                $thisChart->setColors(array('#FFC000'));
+                $thisChart->setColors(array(self::COLOR_LOW));
                 break;
         }
 
