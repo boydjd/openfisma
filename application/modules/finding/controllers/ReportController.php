@@ -510,7 +510,15 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
             if (!empty($htmlColumns)) {
                 foreach ($rawResult as $columnName => $columnValue) {
                     if (in_array($columnName, $htmlColumns)) {
-                        $rawResult[$columnName] = Fisma_String::htmlToPlainText($columnValue);
+
+                        // Change the relative path to absolute, like '../../../' prefix to '/'
+                        $columnValue = preg_replace('/(\.\.\/)+/i', '/', $columnValue);
+
+                        if (in_array($this->getRequest()->getParam('format'), array('pdf', 'xls'))) {
+                            $rawResult[$columnName] = Fisma_String::htmlToPlainText($columnValue);
+                        } else {
+                            $rawResult[$columnName] = $columnValue;
+                        }
                     }
                 }
             }
@@ -538,7 +546,9 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                ->setData($reportData);
 
         foreach ($columns as $column) {
-            $report->addColumn(new Fisma_Report_Column($column, true));
+            $htmlFormat = in_array($column, $htmlColumns) ? 'Fisma.TableFormat.formatHtml' : null;
+
+            $report->addColumn(new Fisma_Report_Column($column, true, $htmlFormat));
         }
 
         $this->_helper->reportContextSwitch()->setReport($report);

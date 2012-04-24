@@ -34,6 +34,7 @@ tinyMCE.init({
     plugin_insertdate_dateFormat : "%Y-%m-%d",
     plugin_insertdate_timeFormat : "%H:%M:%S",
     browsers : "msie,gecko,safari,opera",
+    relative_urls: false,
     /**
      * Be careful when adding buttons to ensure that you don't use up too much horizontal spaces and cause the editor
      * to overflow its parent container.
