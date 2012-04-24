@@ -686,7 +686,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             );
 
             if (1 == $email['smtp_tls']) {
-                $email['ssl'] = 'tls';
+                $config['ssl'] = 'tls';
             }
 
             $transport = new Zend_Mail_Transport_Smtp($email['smtp_host'], $config);
