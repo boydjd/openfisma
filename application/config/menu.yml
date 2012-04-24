@@ -99,7 +99,7 @@ Finding:
                     label: Finding General
                     link: /finding/config/general
                 Finding_Source:
-                    label: Finding Source
+                    label: Finding Sources
                     link: /finding/source/list
                     privilege:
                         func: hasPrivilegeForClass
@@ -160,7 +160,7 @@ Vulnerability:
                         param1: read
                         param2: Product
                 Resolutions:
-                    label: Vulnerability Resolution
+                    label: Resolutions
                     link: /vm/vulnerability-resolution/list
                     privilege:
                         func: hasPrivilegeForClass

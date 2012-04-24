@@ -204,6 +204,11 @@ class Fisma_Menu
                                     $root,
                                     $parent
                                 );
+                            } else {
+
+                                // If the first menu item is not shown, then the next one needs to be added to menu.
+                                // For example, the "change password" is not shown when auth type is set to LDAP.
+                                $i--;
                             }
                         } else {
                             self::addMenuItem(
