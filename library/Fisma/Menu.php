@@ -149,6 +149,8 @@ class Fisma_Menu
                                 $root,
                                 $parent
                             );
+                        } else {
+                            $i--; // It does not count if the menuItem is not added to menu.
                         }
                     } else {
                         self::addMenuItem(
@@ -166,9 +168,15 @@ class Fisma_Menu
                     if (isset($value['condition'])) {
                         if (eval($value['condition'])) {
                             $root->addSeparator();
+                        } else {
+                            $i--;
                         } 
                     } else {
-                        $root->addSeparator();
+                        if ($i == 1) {
+                            $i--; // Do not need to add separator if it is the first menuItem.
+                        } else {
+                            $root->addSeparator();
+                        }
                     }
                 } else {
 
@@ -188,6 +196,8 @@ class Fisma_Menu
                                     $root,
                                     $parent
                                 );
+                        } else {
+                            $i--; // It does not count if the menuItem is not added to menu.
                         }
                     } else {
                         if (isset($value['condition'])) {
@@ -205,10 +215,7 @@ class Fisma_Menu
                                     $parent
                                 );
                             } else {
-
-                                // If the first menu item is not shown, then the next one needs to be added to menu.
-                                // For example, the "change password" is not shown when auth type is set to LDAP.
-                                $i--;
+                                $i--; // It does not count if the menuItem is not added to menu.
                             }
                         } else {
                             self::addMenuItem(
