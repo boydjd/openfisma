@@ -45,6 +45,11 @@ Migration:
         minorVersion: 17
         tagNumber: 1
         name: MigrateSpreadsheets
+    021701_add_privileges_for_system_type:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 1
+        name: AddSystemTypePrivileges
 
     021800_finding_config:
         majorVersion: 2
