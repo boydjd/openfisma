@@ -73,7 +73,7 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                 'join' => array(
                     'model' => 'Upload',
                     'relation' => 'Upload',
-                    'field' => 'createdTs'
+                    'field' => 'updated_at'
                 ),
                 'sortable' => true,
                 'type' => 'date'
