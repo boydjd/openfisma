@@ -25,6 +25,7 @@ displayGroups.general_config.elements.threat_type = "threat_type"
 elements.use_legacy_finding_key.type = "checkbox"
 elements.use_legacy_finding_key.options.label = "Use Legacy Finding Key"
 elements.use_legacy_finding_key.options.required = true
+elements.use_legacy_finding_key.options.attribs.description = "Checking this box will enable a field called Legacy Finding Key which can be used to reference findings migrated from another data source which have an existing ID. Unchecking this box will hide this field from the users."
 displayGroups.general_config.elements.use_legacy_finding_key = "use_legacy_finding_key"
 
 elements.save.type = "Form_Button_Submit"

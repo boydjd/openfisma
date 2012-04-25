@@ -340,8 +340,6 @@ div.subform {
 
 table.fisma_crud {
     margin: 0px 15px;
-    background-color: #f0f0f0;
-    border: 1px dotted #c0c0c0;
 }
 
 table.fisma_crud tr td, table.fisma_crud tr td input {
@@ -713,4 +711,48 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 /* hide elements when not using IE (ie9hacks undoes this) */
 .ie9-only {
     display: none;
+}
+
+.descriptionBox .descriptionBoxTop,
+.descriptionBox .descriptionBoxBottom,
+.descriptionBox .descriptionBoxCenter {
+    background:url('/images/description.gif') no-repeat 0 0;
+}
+
+.descriptionBox {
+    font-size:12px;
+    left: 0;
+    width:310px;
+    position:absolute;
+    color:#CC0000;
+    display: none;
+    z-index: 2;
+    opacity: 1;
+}
+
+.descriptionBox .descriptionBoxTop {
+    height: 2px;
+    overflow:hidden;
+}
+
+.descriptionBox .descriptionBoxCenter {
+    width: 290px;
+    border-left: 1px solid #c6c6c6;
+    border-right: 1px solid #c6c6c6;
+    background: #ffffe3;
+    padding: 4px 7px 5px 10px;
+    line-height: 1.2em;
+    zoom: 1;
+    overflow: hidden;
+}
+
+.descriptionBox .descriptionBoxBottom {
+    background-position: 0 -28px;
+    height: 7px;
+    overflow: hidden;
+    clear: both;
+}
+
+.descriptionActive {
+   border: 2px solid #E54246;
 }

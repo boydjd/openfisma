@@ -358,5 +358,87 @@ Fisma.Util = {
         postData = postData.substring(0, postData.length - 1);
 
         return postData;
+    },
+
+    /**
+     * Display the description div to the above of element.
+     *
+     * @param {String} targetId The id of element
+     * @param {String} description The description of element
+     */
+    showDescription: function (targetId, description) {
+        var Dom = YAHOO.util.Dom;
+        var element = Dom.get(targetId) ? Dom.get(targetId) : Dom.get(targetId + '-button');
+
+        var container = document.createElement("div");
+        container.className = 'descriptionBox';
+        container.id = targetId + '_description';
+
+        var containerTop = document.createElement("div");
+        containerTop.className = 'descriptionBoxTop';
+        container.appendChild(containerTop);
+
+        var containerCenter = document.createElement("div");
+        containerCenter.className = 'descriptionBoxCenter';
+        containerCenter.innerHTML = description;
+        container.appendChild(containerCenter);
+
+        var containerBottom = document.createElement("div");
+        containerBottom.className = 'descriptionBoxBottom';
+        container.appendChild(containerBottom);
+
+        // Add description div after the last child node of element parent node
+        var addContainerToParentNode = function(targetEl) {
+            targetEl.parentNode.appendChild(container);
+            targetEl.parentNode.style.position = 'relative';
+        };
+
+        // Set the height of element to the style bottom of description div
+        var setContainerBottomHeight = function(targetEl) {
+            var elementRegion = Dom.getRegion(targetEl);
+            container.style.bottom = (elementRegion.height + 2).toString() + 'px';
+        };
+
+        // Attach event to element
+        var onMouseEvent = function(targetEl) {
+            var display = function () {
+                Dom.addClass(targetEl, 'descriptionActive');
+                Dom.setStyle(container, 'display', 'block');
+            };
+
+            var hide = function () {
+                Dom.removeClass(targetEl, 'descriptionActive');
+                Dom.setStyle(container, 'display', 'none');
+            };
+
+            YAHOO.util.Event.addListener(targetEl.parentNode, "mouseout", hide);
+            YAHOO.util.Event.addListener(targetEl.parentNode, "mouseover", display);
+        }
+
+        // Put the description div to the top of element
+        if (element.nodeName.toLowerCase() === "select" && !element.multiple) {
+            var selectMenuId = targetId + '-button';
+            YAHOO.util.Event.onContentReady(selectMenuId, function() {
+                var selectMenu = Dom.get(selectMenuId);
+                addContainerToParentNode(selectMenu);
+                setContainerBottomHeight(selectMenu);
+                onMouseEvent(selectMenu);
+            });
+        } else if (element.nodeName.toLowerCase() === "textarea") {
+            var textareaTableId = targetId + '_tbl';
+            YAHOO.util.Event.onContentReady(textareaTableId, function() {
+                var textareaTable = Dom.get(textareaTableId);
+                addContainerToParentNode(element);
+                setContainerBottomHeight(textareaTable);
+                onMouseEvent(element);
+            });
+        } else {
+            addContainerToParentNode(element);
+            setContainerBottomHeight(element);
+            onMouseEvent(element);
+        }
+
+        // Remove the description attribute from element
+        element.removeAttribute('description');
     }
 };
