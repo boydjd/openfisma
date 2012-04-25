@@ -365,6 +365,10 @@ span.tooltip {
 /* This is the style for the tooltip itself. The style must be marked !important
    so that YUI won't override it.
 */
+body.masked .yui-tt {
+    z-index: 10 ! important;
+}
+
 .yui-tt .bd {
     border: none ! important;
     background-color: #f0f0f0 ! important;

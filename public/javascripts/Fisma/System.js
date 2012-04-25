@@ -195,6 +195,8 @@ Fisma.System = {
             panelConfig
         );
 
+        setTimeout(function () {jQuery('body').addClass('masked');}, 100);
+
         panel.hideEvent.subscribe(function (e) {
             setTimeout(function () {panel.destroy();}, 0);
         });
