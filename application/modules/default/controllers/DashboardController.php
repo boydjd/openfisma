@@ -181,6 +181,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             }
         }
 
+        $this->view->currentVersion = $versions['application'];
         $this->view->showWhatsNew = $showWhatsNew ;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
     }

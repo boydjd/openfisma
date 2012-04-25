@@ -360,8 +360,10 @@ Fisma.Util = {
 
     /**
      * Create a dialog which what's new content shows on
+     *
+     * @param {string} params current version number.
      */
-    showWhatsNewDialog: function () {
+    showWhatsNewDialog: function (currentVersion) {
         var dialog = new YAHOO.widget.SimpleDialog("whatsNewDialog",
             {width: "855px", 
              fixedcenter: true, 
@@ -420,9 +422,8 @@ Fisma.Util = {
         iframe.style.overflow = 'hidden';
         iframe.scrolling = 'no';
 
-        var version = $("#currentVersion").text().trim();
         var title = $("title").text().split("-")[0].trim();
-        var header = "<font size=3>What’s New in " + title + " " + version + " </font>";
+        var header = "<font size=3>What’s New in " + title + " " + currentVersion + " </font>";
  
         dialog.setHeader(header);
         dialog.setBody(iframe);
@@ -435,7 +436,7 @@ Fisma.Util = {
             var notShowCheckbox = document.getElementById('notShow');
             if (notShowCheckbox.checked === true) {
                 var whatsNewStorage = new Fisma.PersistentStorage('WhatsNew.Checked');
-                whatsNewStorage.set('version', version.substr(0, (version.length-2)));
+                whatsNewStorage.set('version', currentVersion.substr(0, (currentVersion.length-2)));
                 whatsNewStorage.sync();
             }
 

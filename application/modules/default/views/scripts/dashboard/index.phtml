@@ -85,7 +85,7 @@ if ( !empty( $this->alert['TOTAL'] ) ) {
 <script type="text/javascript">
 YAHOO.util.Event.onDOMReady(function () {
     if (<?php echo $this->escape($this->showWhatsNew, 'none'); ?>) {                                           
-        Fisma.Util.showWhatsNewDialog();
+        Fisma.Util.showWhatsNewDialog(<?php echo $this->escape("'" . $this->currentVersion . "'", 'none');?>);
     }
 });
 </script>
