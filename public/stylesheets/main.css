@@ -752,7 +752,3 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
     overflow: hidden;
     clear: both;
 }
-
-.descriptionActive {
-   border: 2px solid #E54246;
-}

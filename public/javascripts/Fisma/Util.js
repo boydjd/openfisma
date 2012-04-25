@@ -402,17 +402,15 @@ Fisma.Util = {
         // Attach event to element
         var onMouseEvent = function(targetEl) {
             var display = function () {
-                Dom.addClass(targetEl, 'descriptionActive');
                 Dom.setStyle(container, 'display', 'block');
             };
 
             var hide = function () {
-                Dom.removeClass(targetEl, 'descriptionActive');
                 Dom.setStyle(container, 'display', 'none');
             };
 
-            YAHOO.util.Event.addListener(targetEl.parentNode, "mouseout", hide);
-            YAHOO.util.Event.addListener(targetEl.parentNode, "mouseover", display);
+            YAHOO.util.Event.addListener(targetEl, "mouseout", hide);
+            YAHOO.util.Event.addListener(targetEl, "mouseover", display);
         }
 
         // Put the description div to the top of element
@@ -430,7 +428,7 @@ Fisma.Util = {
                 var textareaTable = Dom.get(textareaTableId);
                 addContainerToParentNode(element);
                 setContainerBottomHeight(textareaTable);
-                onMouseEvent(element);
+                onMouseEvent(element.parentNode);
             });
         } else {
             addContainerToParentNode(element);
