@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -19,349 +19,219 @@
 /**
  * Menu building for OpenFISMA
  *
- * @author     Jackson Yang <yangjianshan@users.sourceforge.net>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Mark Ma <mark.ma@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Menu
  */
 class Fisma_Menu
 {
+    // Hold the main menu bar.
+    private static $_mainMenuBar = null;
+
     /**
-     * Constructs a main menu for OpenFISMA.
+     * Constructs a main menu.
      *
      * @param User $user
-     * @return Fisma_Yui_MenuBar The assembled Fisma YUI menu bar object
+     * @return Fisma_Yui_MenuBar Build a menu bar from a YAML configure file
      */
     public static function getMainMenu($user)
     {
-        $acl = $user->acl();
-        $mainMenuBar = new Fisma_Yui_MenuBar();
-
-        if ($acl->hasArea('dashboard')) {
-            $dashboard = new Fisma_Yui_MenuItem('Dashboard', '/dashboard');
-            $mainMenuBar->add($dashboard);
-        }
-
-        if ($acl->hasArea('finding')) {
-            $findings = new Fisma_Yui_Menu('Findings');
-
-            if ($acl->hasPrivilegeForClass('read', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Summary', '/finding/summary'));
-                $findings->add(new Fisma_Yui_MenuItem('Search', '/finding/remediation/list'));
-                $findings->add(new Fisma_Yui_MenuItem_GoTo('Go To...', 'Finding', '/finding/remediation'));
-            }
-
-            if ($acl->hasPrivilegeForClass('read', 'Finding')
-                && ($acl->hasPrivilegeForClass('create', 'Finding')
-                    || $acl->hasPrivilegeForClass('inject', 'Finding'))) {
-
-                $findings->addSeparator();
-            }
-
-            if ($acl->hasPrivilegeForClass('create', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Create New Finding', '/finding/remediation/create'));
-            }
-
-            if ($acl->hasPrivilegeForClass('inject', 'Finding')) {
-                $findings->add(new Fisma_Yui_MenuItem('Upload Spreadsheet', '/finding/index/injection'));
-            }
-
-            $findings->addSeparator();
-
-            $findings->add(new Fisma_Yui_MenuItem('Dashboard', '/finding/dashboard'));
-
-            $findings->add(new Fisma_Yui_MenuItem('Workflow', '/finding/workflow/view'));
-
-            // Finding Administration submenu
-            if ($acl->hasArea('finding_admin')) {
-                $findingAdminSubmenu = new Fisma_Yui_Menu('Administration');
-
-                $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding General', '/finding/config/general'));
-
-                if ($acl->hasPrivilegeForClass('read', 'Source')) {
-                    $findingAdminSubmenu->add(new Fisma_Yui_MenuItem('Finding Sources', '/finding/source/list'));
-                }
-
-                $findings->add($findingAdminSubmenu);
-            }
-
-            // Finding reports submenu
-            if ($acl->hasArea('finding_report')) {
-                $findingReportsSubmenu = new Fisma_Yui_Menu('Reports');
-
-                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('OMB FISMA', '/finding/report/fisma'));
-
-                $findingReportsSubmenu->add(
-                    new Fisma_Yui_MenuItem('Overdue Findings', '/finding/report/overdue/format/html')
-                );
-
-                /**
-                 * @todo This doesn't belong here, but plugin reports needs to be re-written.
-                 */
-                $findingReportsSubmenu->add(new Fisma_Yui_MenuItem('Plug-in Reports', '/finding/report/plugin'));
-
-                $findings->add($findingReportsSubmenu);
-            }
-
-            $mainMenuBar->add($findings);
-        }
-
-        $vmModule = Doctrine::getTable('Module')->findOneByName('Vulnerability Management');
-        if ($vmModule && $vmModule->enabled && $acl->hasArea('vulnerability')) {
-            $mainMenuBar->add(self::buildVulnerabilitiesMenu($acl));
-        }
-
-        if ($acl->hasArea('system_inventory')) {
-            $systemInventoryMenu = new Fisma_Yui_Menu('System Inventory');
-
-            if ($acl->hasPrivilegeForClass('read', 'Asset')) {
-                $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Assets', '/asset/list'));
-            }
-
-            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control/list'));
-
-            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Documentation', '/system-document/list'));
-
-            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Organizations', '/organization/tree'));
-
-            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Systems', '/system/list'));
-
-            $systemInventoryMenu->addSeparator();
-
-            $systemInventoryMenu->add(new Fisma_Yui_MenuItem('Dashboard', '/organization-dashboard'));
-
-            // Organization Administration submenu
-            if ($acl->hasArea('system_inventory_admin')) {
-                $systemInventoryAdminMenu = new Fisma_Yui_Menu('Administration');
-
-                $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Controls', '/security-control-admin'));
-
-                if ($acl->hasPrivilegeForClass('read', 'DocumentType')) {
-                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Document Types', '/document-type/list'));
-                }
-
-                if ($acl->hasPrivilegeForClass('read', 'Network')) {
-                    $systemInventoryAdminMenu->add(new Fisma_Yui_MenuItem('Networks', '/network/list'));
-                }
-
-                if ($acl->hasPrivilegeForClass('read', 'OrganizationType')) {
-                    $systemInventoryAdminMenu->add(
-                        new Fisma_Yui_MenuItem('Organization Types', '/organization-type/list')
-                    );
-                }
-
-                if ($acl->hasPrivilegeForClass('read', 'SystemType')) {
-                    $systemInventoryAdminMenu->add(
-                        new Fisma_Yui_MenuItem('System Types', '/system-type/list')
-                    );
-                }
-
-                $systemInventoryMenu->add($systemInventoryAdminMenu);
-            }
-
-            // Organization reports submenu
-            if ($acl->hasArea('system_inventory_report')) {
-                $systemInventoryReportsMenu = new Fisma_Yui_Menu('Reports');
-
-                $systemInventoryReportsMenu->add(
-                    new Fisma_Yui_MenuItem(
-                        'Documentation Compliance',
-                        '/organization-report/documentation-compliance/format/html'
-                    )
-                );
-
-                $systemInventoryReportsMenu->add(
-                    new Fisma_Yui_MenuItem('Personnel', '/organization-report/personnel/format/html')
-                );
-
-                $systemInventoryReportsMenu->add(
-                    new Fisma_Yui_MenuItem('Privacy', '/organization-report/privacy/format/html')
-                );
-
-                $systemInventoryReportsMenu->add(
-                    new Fisma_Yui_MenuItem(
-                        'Security Authorizations',
-                        '/organization-report/security-authorization/format/html'
-                    )
-                );
-
-                $systemInventoryMenu->add($systemInventoryReportsMenu);
-            }
-
-            $mainMenuBar->add($systemInventoryMenu);
-        }
-
-        $incidentModule = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
-
-        if ($incidentModule && $incidentModule->enabled && $acl->hasArea('incident')) {
-            // Incidents main menu
-            $incidentMenu = new Fisma_Yui_Menu('Incidents');
-
-            $incidentMenu->add(new Fisma_Yui_MenuItem('Report An Incident', '/incident/report'));
-
-            $incidentMenu->add(new Fisma_Yui_MenuItem('Search', '/incident/list'));
-            $incidentMenu->add(new Fisma_Yui_MenuItem_GoTo('Go To...', 'Incident', '/incident'));
-
-            $incidentMenu->addSeparator();
-
-            $incidentMenu->add(new Fisma_Yui_MenuItem('Dashboard', '/incident-dashboard'));
-
-            // Incident Administration submenu
-            if ($acl->hasArea('incident_admin')) {
-                $incidentAdminSubmenu = new Fisma_Yui_Menu('Administration');
-
-                if ($acl->hasPrivilegeForClass('read', 'IrSubCategory')) {
-                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Categories', '/ir-category/list'));
-                }
-
-                if ($acl->hasPrivilegeForClass('read', 'IrWorkflowDef')) {
-                    $incidentAdminSubmenu->add(new Fisma_Yui_MenuItem('Workflows', '/ir-workflow/list'));
-                }
-
-                $incidentMenu->add($incidentAdminSubmenu);
-            }
-
-            // Incident reports submenu
-            if ($acl->hasArea('incident_report')) {
-                $reportsSubmenu = new Fisma_Yui_Menu('Reports');
-
-                $reportsSubmenu->add(
-                    new Fisma_Yui_MenuItem('Incident Organizations', '/incident-report/organization/format/html')
-                );
-
-                $reportsSubmenu->add(
-                    new Fisma_Yui_MenuItem('Incident Categories', '/incident-report/category/format/html')
-                );
-
-                $reportsSubmenu->add(
-                    new Fisma_Yui_MenuItem('Incident History', '/incident-report/history/format/html')
-                );
-
-                $incidentMenu->add($reportsSubmenu);
-            }
-
-            $mainMenuBar->add($incidentMenu);
-        }
-
-        if ($acl->hasArea('admin')) {
-            $admin = new Fisma_Yui_Menu('Administration');
-
-            $admin->add(new Fisma_Yui_MenuItem('E-mail', '/config/email'));
-
-            $admin->add(new Fisma_Yui_MenuItem('General Policies', '/config/general'));
-
-            if ('ldap' == Fisma::configuration()->getConfig('auth_type')) {
-                $admin->add(new Fisma_Yui_MenuItem('LDAP', '/config/list-ldap'));
-            }
-
-            $admin->add(new Fisma_Yui_MenuItem('Modules', '/config/modules'));
-
-            $admin->add(new Fisma_Yui_MenuItem('Password Policy', '/config/password'));
-
-            if ($acl->hasPrivilegeForClass('read', 'Poc')) {
-                $admin->add(new Fisma_Yui_MenuItem('Points of Contact', '/poc/list'));
-            }
-
-            $admin->add(new Fisma_Yui_MenuItem('Privacy Policy', '/config/privacy'));
-
-            if ($acl->hasPrivilegeForClass('read', 'Role')) {
-                $admin->add(new Fisma_Yui_MenuItem('Roles', '/role/list'));
-            }
-
-            $admin->add(new Fisma_Yui_MenuItem('Search', '/config/search'));
-
-            $admin->add(new Fisma_Yui_MenuItem('Technical Contact', '/config/contact'));
-
-            if ($acl->hasPrivilegeForClass('read', 'User')) {
-                $admin->add(new Fisma_Yui_MenuItem('Users', '/user/list'));
-            }
-
-            $mainMenuBar->add($admin);
-        }
-
-        $preferences = new Fisma_Yui_Menu('User Preferences');
-
-        if ('database' == Fisma::configuration()->getConfig('auth_type')
-            || 'root' == $user->username) {
-            $preferences->add(new Fisma_Yui_MenuItem('Change Password', '/user/password'));
-        }
-        $preferences->add(new Fisma_Yui_MenuItem('E-mail Notifications', '/user/notification'));
-
-        $preferences->add(new Fisma_Yui_MenuItem('Online Help', 'http://manual.openfisma.org/', null, '_blank'));
-
-        $preferences->add(new Fisma_Yui_MenuItem('Profile', '/user/profile'));
-
-        $mainMenuBar->add($preferences);
-
-        if (Fisma::debug()) {
-            $debug = new Fisma_Yui_Menu('Debug');
-
-            $debug->add(new Fisma_Yui_MenuItem('APC System Cache', '/debug/apc-cache/type/system'));
-            $debug->add(new Fisma_Yui_MenuItem('APC User Cache', '/debug/apc-cache/type/user'));
-            $debug->add(new Fisma_Yui_MenuItem('Error log', '/debug/errorlog'));
-            $debug->add(new Fisma_Yui_MenuItem('PHP Info', '/debug/phpinfo'));
-            $debug->add(new Fisma_Yui_MenuItem('PHP Log', '/debug/phplog'));
-
-            $mainMenuBar->add($debug);
-        }
-
-        return $mainMenuBar;
+        self::$_mainMenuBar = new Fisma_Yui_MenuBar();
+        $path = Fisma::getPath('config');
+        $menuConfig = Doctrine_Parser_YamlSf::load($path . '/menu.yml');
+
+        self::buildMenu($user, $menuConfig, self::$_mainMenuBar, $parent = null);
+       
+        return self::$_mainMenuBar;
     }
 
     /**
-     * Constructs a vulnerabilities menu
+     * Add a menu item to a menu
      *
-     * @param Zend_Acl $acl
-     * @return Fisma_Yui_Menu
+     * @param string $type The menu item type.
+     * @param string $label The label shows on the menu.
+     * @param string $link The link of the menu item.
+     * @param mixed string|null $model The model shows on the Go to.. menu item, 
+     * null if the $type is not Fisma_Yui_MenuItem_GoTo 
+     * @param integer $target  The target of the link.
+     * @param integer $count Add the submenu to its parent menu when $count is 1.
+     * @param Fisma_Yui_Menu $root The menu holds the menu items. 
+     * @param Fisma_Yui_Menu $parent The parent menu holds the menu items. 
+     * @return Fisma_Yui_MenuBar The assembled Fisma YUI menu bar object
      */
-    protected static function buildVulnerabilitiesMenu(Zend_Acl $acl)
+    private static function addMenuItem($type, $label, $link, $model, $target, $count, $root, $parent = null)
     {
-        $menu = new Fisma_Yui_Menu('Vulnerabilities');
-
-        $menu->add(new Fisma_Yui_MenuItem('Search', '/vm/vulnerability/list'));
-        $menu->add(new Fisma_Yui_MenuItem_GoTo('Go To...', 'Vulnerability', '/vm/vulnerability'));
-
-        $menu->addSeparator();
-
-        if ($acl->hasPrivilegeForClass('create', 'Vulnerability')) {
-            $menu->add(new Fisma_Yui_MenuItem('Upload Scan Results', '/vm/vulnerability/plugin'));
+        // It is Fisma_Yui_MenuItem if the $model is null.
+        if (is_null($model)) {
+            if (is_null($target)) {
+                $menuItem = new $type($label, $link);
+            } else {
+                $menuItem = new $type($label, $link, null, $target);
+            }
+        } else {
+            $menuItem = new $type($label, $model, $link);
         }
+        $root->add($menuItem);
 
-        $menu->addSeparator();
+        // Only need to add the sub menu to its parent menu once
+        if ($count == 1 && !is_null($parent)) {
+            $parent->add($root);
+        }
+    }    
 
-        if ($acl->hasArea('vulnerability_admin')) {
-            $adminMenu = new Fisma_Yui_Menu('Administration');
-
-            if ($acl->hasPrivilegeForClass('read', 'Product')) {
-                $adminMenu->add(new Fisma_Yui_MenuItem('Products', '/vm/product/list'));
+    /**
+     * Build a main menu recursively.
+     *
+     * @param User $user
+     * @param array $menuValue The data from configure file.
+     * @param Fisma_Yui_Menu $root The menu holds the menu items. 
+     * @param Fisma_Yui_Menu $parent The parent menu holds the menu items. 
+     * @return Fisma_Yui_MenuBar The assembled Fisma YUI menu bar object
+     */
+    protected static function buildMenu($user, $menuValue, $root, $parent = null) 
+    {
+        $i = 0; 
+        $acl = $user->acl();
+        foreach ($menuValue as $key => $value) {
+            if (isset($value['module'])) {
+                $module = null;
+                if (strstr($value['module'], 'Vulnerability')) {
+                    $module = Doctrine::getTable('Module')->findOneByName('Vulnerability Management');
+                } else if (strstr($value['module'], 'Incident')) {
+                    $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+                }
+     
+                // Skip the module if the module is not enable
+                if (!$module || !$module->enabled 
+                    || !$acl->$value['privilege']['func']($value['privilege']['param'])) {
+                    continue;  
+                }
             }
 
-            if ($acl->hasPrivilegeForClass('read', 'VulnerabilityResolution')) {
-                $adminMenu->add(new Fisma_Yui_MenuItem('Resolutions', '/vm/vulnerability-resolution/list'));
+            // Skip the menuItem and its submenu if it does not have the privilege
+            if (isset($value['privilege']) && 'hasArea' == $value['privilege']['func']) {
+                if (!$acl->$value['privilege']['func']($value['privilege']['param'])) {
+                     continue;  
+                }
             }
+            
+            if (isset($value['submenu'])) {
 
-            $menu->add($adminMenu);
+                // Skip the menu if condition is not true
+                if (isset($value['condition'])) {
+                    if (eval($value['condition'])) {
+                        $menu = new Fisma_Yui_Menu($value['label']);
+                    } else {
+                        continue;
+                    } 
+                } else { 
+                    $menu = new Fisma_Yui_Menu($value['label']);
+                }
+
+                self::buildMenu($user, $value['submenu'], $menu, $root);
+            } else {
+                $i++; // Track the loop count, adding the submenu to its parent when it is 1.
+
+                // Handle the different types of menu items 
+                if ('Go To...' == $value['label']) {
+                    if (isset($value['privilege'])) { 
+                        if ( $acl->$value['privilege']['func']($value['privilege']['param1'],
+                            $value['privilege']['param2'])) {
+                            self::addMenuItem(
+                                'Fisma_Yui_MenuItem_GoTo',
+                                $value['label'],
+                                $value['click'],
+                                $value['model'],
+                                null,
+                                $i,
+                                $root,
+                                $parent
+                            );
+                        } else {
+                            $i--; // It does not count if the menuItem is not added to menu.
+                        }
+                    } else {
+                        self::addMenuItem(
+                            'Fisma_Yui_MenuItem_GoTo',
+                            $value['label'],
+                            $value['click'],
+                            $value['model'],
+                            null,
+                            $i,
+                            $root,
+                            $parent
+                        );
+                    }
+                } else if ('Separator' == $value['label']) {
+                    if (isset($value['condition'])) {
+                        if (eval($value['condition'])) {
+                            $root->addSeparator();
+                        } else {
+                            $i--;
+                        } 
+                    } else {
+                        if ($i == 1) {
+                            $i--; // Do not need to add separator if it is the first menuItem.
+                        } else {
+                            $root->addSeparator();
+                        }
+                    }
+                } else {
+
+                    // Do not need to check hasArea privilege here because it has been checked previously 
+                    if (isset($value['privilege']) && 'hasArea' != $value['privilege']['func']) {
+                        if ($acl->$value['privilege']['func'](
+                                $value['privilege']['param1'],
+                                $value['privilege']['param2'])
+                            ) {
+                                self::addMenuItem(
+                                    'Fisma_Yui_MenuItem',
+                                    $value['label'],
+                                    $value['link'],
+                                    null,
+                                    isset($value['target']) ? $value['target'] : null,
+                                    $i,
+                                    $root,
+                                    $parent
+                                );
+                        } else {
+                            $i--; // It does not count if the menuItem is not added to menu.
+                        }
+                    } else {
+                        if (isset($value['condition'])) {
+                            
+                            // Add the menu item based on the return of Evaluating the condition
+                            if (eval($value['condition'])) {
+                                self::addMenuItem(
+                                    'Fisma_Yui_MenuItem',
+                                    $value['label'],
+                                    $value['link'],
+                                    null,
+                                    isset($value['target']) ? $value['target'] : null,
+                                    $i,
+                                    $root,
+                                    $parent
+                                );
+                            } else {
+                                $i--; // It does not count if the menuItem is not added to menu.
+                            }
+                        } else {
+                            self::addMenuItem(
+                                'Fisma_Yui_MenuItem',
+                                $value['label'],
+                                $value['link'],
+                                null,
+                                isset($value['target']) ? $value['target'] : null,
+                                $i,
+                                $root,
+                                $parent
+                            );
+                        }
+                    }
+                }
+            }
         }
-
-        if ($acl->hasArea('vulnerability_report')) {
-            $reportsMenu = new Fisma_Yui_Menu('Reports');
-
-            $reportsMenu->add(
-                new Fisma_Yui_MenuItem('Aggregated Risk', '/vm/vulnerability-report/risk/format/html')
-            );
-
-            $reportsMenu->add(
-                new Fisma_Yui_MenuItem('Reopened Vulnerabilities', '/vm/vulnerability-report/reopened/format/html')
-            );
-
-            $reportsMenu->add(
-                new Fisma_Yui_MenuItem('Vulnerable Services', '/vm/vulnerability-report/vulnerable-service/format/html')
-            );
-
-            $menu->add($reportsMenu);
-        }
-
-        return $menu;
     }
 }
