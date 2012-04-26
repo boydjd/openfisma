@@ -67,17 +67,27 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                 'sortable' => false,
                 'type' => 'text'
             ),
-            'size' => array(
-                'initiallyVisible' => true,
-                'label' => 'Size (bytes)',
-                'sortable' => true,
-                'type' => 'integer'
-            ),
             'updated_at' => array(
                 'initiallyVisible' => true,
                 'label' => 'Last Modification Date',
+                'join' => array(
+                    'model' => 'Upload',
+                    'relation' => 'Upload',
+                    'field' => 'updated_at'
+                ),
                 'sortable' => true,
                 'type' => 'date'
+            ),
+            'lastModifiedUser' => array(
+                'initiallyVisible' => true,
+                'label' => 'Last Modified By User',
+                'join' => array(
+                    'model' => 'User',
+                    'relation' => 'Upload.User',
+                    'field' => 'username'
+                ),
+                'sortable' => true,
+                'type' => 'text'
             ),
             'systemId' => array(
                 'hidden' => true,
@@ -128,10 +138,14 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                                ->leftJoin('o.OrganizationType ot')
                                ->andWhere('ot.nickname = ?', array('system'))
                                ->andWhere('s.sdlcPhase <> ?', 'disposal')
-                               ->distinct()
-                               ->groupBy('o.nickname, r.id')
+                               ->groupBy('o.nickname')
                                ->orderBy('o.nickname')
                                ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
+        if (CurrentUser::getInstance()->username != 'root') {
+            $systemDocumentQuery->distinct()
+                                ->addGroupBy('r.id');
+        }
 
         return $systemDocumentQuery;
     }

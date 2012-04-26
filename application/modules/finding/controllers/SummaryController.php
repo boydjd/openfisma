@@ -217,9 +217,13 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                   ->addSelect("IF(ot.nickname = 'system', st.iconId, ot.iconId) iconId")
                                   ->addSelect("IF(ot.nickname = 'system', st.name, ot.name) typeLabel")
                                   ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
-                                  ->distinct()
-                                  ->groupBy('o.id, r.id')
+                                  ->groupBy('o.id')
                                   ->orderBy('o.lft');
+
+        if ($this->_me->username != 'root') {
+            $userOrgQuery->distinct()
+                         ->addGroupBy('r.id');
+        }
 
         $this->_addFindingStatusFields($userOrgQuery);
 
@@ -302,9 +306,13 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                        ->addSelect("'organization' AS searchKey")
                                        ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
                                        ->andWhere('s.sdlcPhase <> ?', 'disposal')
-                                       ->distinct()
-                                       ->groupBy('o.id, r.id')
+                                       ->groupBy('o.id')
                                        ->orderBy('o.nickname');
+
+        if ($this->_me->username != 'root') {
+            $outerSystemsQuery->distinct()
+                              ->addGroupBy('r.id');
+        }
 
         $innerSystemsQuery = clone $outerSystemsQuery;
 
@@ -464,9 +472,13 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                   ->select('o.id, f.id, poc.id')
                                   ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
                                   ->innerJoin('f.PointOfContact poc')
-                                  ->distinct()
-                                  ->groupBy('poc.id, r.id')
+                                  ->groupBy('poc.id')
                                   ->orderBy('poc.id');
+
+        if ($this->_me->username != 'root') {
+            $findingQuery->distinct()
+                         ->addGroupBy('r.id');
+        }
 
         $this->_addFindingStatusFields($findingQuery);
         $tempFindings = $findingQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
