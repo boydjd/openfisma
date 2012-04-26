@@ -128,10 +128,14 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                                ->leftJoin('o.OrganizationType ot')
                                ->andWhere('ot.nickname = ?', array('system'))
                                ->andWhere('s.sdlcPhase <> ?', 'disposal')
-                               ->distinct()
-                               ->groupBy('o.nickname, r.id')
+                               ->groupBy('o.nickname')
                                ->orderBy('o.nickname')
                                ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+
+        if (CurrentUser::getInstance()->username != 'root') {
+            $systemDocumentQuery->distinct()
+                                ->addGroupBy('r.id');
+        }
 
         return $systemDocumentQuery;
     }
