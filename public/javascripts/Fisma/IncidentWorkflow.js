@@ -107,6 +107,7 @@
             newTextarea.attr("id", textareaId);
             if (data) {
                 $('input[name^=stepName]', newTr).val(data.name);
+                $('input[name^=stepRole]', newTr).val(data.roleId);
                 $("select", newTr).val(data.roleId);
                 newTextarea.val(data.description);
             }
@@ -142,10 +143,17 @@
 
             // Register "click" event listener for the Button's Menu instance
             oMenuButton.getMenu().subscribe("click", function (p_sType, p_aArgs) {
+                var Dom = YAHOO.util.Dom;
                 var oEvent = p_aArgs[0],       // DOM event
                     oMenuItem = p_aArgs[1]; // MenuItem target of the event
                 if (oMenuItem) {
                     oMenuButton.set('label', oMenuItem.cfg.getProperty("text"));
+
+                    // Set the roleid to stepRole hidden input field, fix for OFJ1790.
+                    var pEle = Dom.getAncestorByTagName(this.id, 'p');
+                    var parentOfStepRole = Dom.getPreviousSibling(pEle);
+                    var stepRole = Dom.getFirstChild(parentOfStepRole);
+                    stepRole.value = oMenuItem.value;
                 }
             });
 
