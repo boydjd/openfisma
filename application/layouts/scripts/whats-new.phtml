@@ -10,6 +10,9 @@
             $this->headScript()->appendFile('/javascripts/jquery-localscroll-1-2-7-min.js');
             $this->headScript()->appendFile('/javascripts/jquery-serialScroll-1-2-2-min.js');
             $this->headScript()->appendFile('/javascripts/swfobject.js');
+            $this->headScript()->appendFile('/javascripts/php.js');
+            $this->headScript()->appendFile('/javascripts/Fisma.js');
+            $this->headScript()->appendFile('/javascripts/Fisma/WhatsNew.js');
             $this->headLink()->appendStylesheet('/stylesheets/whatsNew.css');
 
             echo $this->escape($this->headScript(), 'none');
@@ -17,51 +20,7 @@
         ?>
         <script type="text/javascript">
             $(document).ready(function () {
-                (function () {
-                    var panels = $('#slider .scrollContainer > div');
-                    var container = $('#slider .scrollContainer'); 
-                    $('#whats-new-wrapper').css('overflow', 'hidden');
-                    panels.css({
-                        'float' : 'left',
-                        'position' : 'relative'
-                    });
-
-                    var scroll = $('#slider .scroll').css('overflow', 'hidden');
-
-                    var scrollOptions = {
-                          target: scroll,
-                          items: panels,
-                          prev: 'a.previous', 
-                          next: 'a.next',
-                          axis: 'xy',        
-                          duration: 400    
-                    };
-
-                    $('#slider').serialScroll(scrollOptions);
-                    $.localScroll(scrollOptions);
-
-                    $('.panel:last').addClass('last-panel');
-                    $('.arrow:last').css('display','none');
-                
-                    $('.next').click(function(){
-                        $("object[id^=newFeature]").each(function() {
-                            var videoEle = document.getElementById($(this).attr('id'));
-                            if (videoEle) {
-                                videoEle.pauseVideo();
-                            }
-                        });
-                    });    
-
-                    $('.previous').click(function(){
-                        $("object[id^=newFeature]").each(function() {
-                            var videoEle = document.getElementById($(this).attr('id'));
-                            if (videoEle) {
-                                videoEle.pauseVideo();
-                            }
-                        });
-                   });
-
-                })();
+                Fisma.WhatsNew.panelScroll();
             });
         </script>
     </head>
