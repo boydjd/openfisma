@@ -142,7 +142,7 @@ Fisma.AutoComplete = (function() {
              */
             if (params.hasOwnProperty('enterKeyEventHandler')) {
                 YAHOO.util.Event.on(ac.getInputEl(), "keydown", function (e) {
-                    if ((e.which && e.which == 13) || (e.keyCode && e.keyCode == 13)) {
+                    if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
                         YAHOO.util.Event.preventDefault(e);
 
                         if (!YAHOO.lang.isNull(params.enterKeyEventHandler)) {

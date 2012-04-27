@@ -26,19 +26,19 @@ Fisma.Commentable = {
      * Reference to the asynchonrous request dispatched by this object
      */
     asyncRequest : null,
-    
+
     /**
      * A configuration object specified by the invoker of showPanel
      * 
      * See technical specification for Commentable behavior for the structure of this object
      */
     config : null,
-    
+
     /**
      * Reference to the YUI panel which is displayed to input the comment
      */
      yuiPanel : null,
-    
+
      /**
       * Show the file upload panel
       * 
@@ -72,7 +72,9 @@ Fisma.Commentable = {
              {
                  success: function(o) {
                      o.argument.setBody(o.responseText);
-                     new YAHOO.widget.Button(YAHOO.util.Selector.query("input[type=submit]", o.argument.body, true));
+                     var button = new YAHOO.widget.Button(
+                         YAHOO.util.Selector.query("input[type=submit]", o.argument.body, true)
+                     );
                      o.argument.center();
                  },
 
@@ -84,11 +86,11 @@ Fisma.Commentable = {
                  argument: newPanel
              }, 
              null);
-         
+
          // Prevent form submission
          return false;
      },
-     
+
      /**
       * Posts the artifact attachment form asynchronously
       * 
@@ -98,7 +100,7 @@ Fisma.Commentable = {
       * @param arg The AttachArtifacts object
       */
      postComment : function() {
-         
+
          var postUrl = "/comment/add/id/" + encodeURIComponent(Fisma.Commentable.config.id) + "/type/" + encodeURIComponent(Fisma.Commentable.config.type) + "/format/json";
 
          YAHOO.util.Connect.setForm('addCommentForm');
@@ -115,11 +117,11 @@ Fisma.Commentable = {
                  }
              }, 
              null);
-                  
+
          // Prevent form submission
          return false;
      },
-     
+
      /**
       * Handle the server response after a comment is added
       * 
@@ -128,7 +130,7 @@ Fisma.Commentable = {
      commentCallback : function (asyncResponse) {
 
          var responseStatus;
-         
+
          // Check response status and display error message if necessary
          try {
              var responseObject = YAHOO.lang.JSON.parse(asyncResponse.responseText);

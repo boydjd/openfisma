@@ -21,7 +21,7 @@
  * @license   http://www.openfisma.org/content/license
  */
 
-Fisma.Search.CriteriaRenderer = function () {
+Fisma.Search.CriteriaRenderer = (function () {
     return {
         /**
          * Renders two date fields with the word "And" between them
@@ -231,6 +231,7 @@ Fisma.Search.CriteriaRenderer = function () {
          * @param enumValues An array of enumeration values
          */
         enumSelect : function (container, operands, enumValues) {
+            var menuButton;
 
             // This event handler makes the menu button behave like a popup menu
             var handleEnumSelectionEvent = function (type, args, item) {
@@ -240,12 +241,13 @@ Fisma.Search.CriteriaRenderer = function () {
             };
 
             // Create the select menu
-            var menuItems = new Array();
+            var menuItems = [];
+            var index;
 
-            for (var index in enumValues) {
+            for (index in enumValues) {
                 var enumValue = enumValues[index];
 
-                menuItem = {
+                var menuItem = {
                     text : $P.htmlentities(enumValue, "ENT_NOQUOTES", "UTF-8"),
                     value : enumValue,
                     onclick : {fn : handleEnumSelectionEvent}
@@ -259,7 +261,7 @@ Fisma.Search.CriteriaRenderer = function () {
             defaultValue =  jQuery('<div/>').text(defaultValue).html();
 
             // Render menu button
-            var menuButton = new YAHOO.widget.Button({
+            menuButton = new YAHOO.widget.Button({
                 type : "menu",
                 label : defaultValue,
                 menu : menuItems,
@@ -267,4 +269,4 @@ Fisma.Search.CriteriaRenderer = function () {
             });
         }
     };
-}();
+}());

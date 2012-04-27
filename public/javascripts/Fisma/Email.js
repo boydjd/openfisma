@@ -23,7 +23,7 @@
  * @license   http://www.openfisma.org/content/license
  */
 
-Fisma.Email = function() {
+Fisma.Email = (function() {
     return {
         /**
          * Hold the opened YUI panel object.
@@ -43,25 +43,25 @@ Fisma.Email = function() {
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
             }
-    
+
             // Create a dialog
             var content = document.createElement('div');
             var p = document.createElement('p');
             var contentTitle = document.createTextNode('* Target E-mail Address:');
             p.appendChild(contentTitle);
             content.appendChild(p);
-    
+
             // Add email address input to dialog
             var emailAddress = document.createElement('input');
             emailAddress.id = 'testEmailRecipient';
             emailAddress.name = 'recipient';
             content.appendChild(emailAddress);
-    
+
             // Add line spacing to dialog
             var lineSpacingDiv = document.createElement('div');
             lineSpacingDiv.style.height = '10px';
             content.appendChild(lineSpacingDiv);
-    
+
             // Add submmit button to dialog
             var sendBtn = document.createElement('input');
             sendBtn.type = 'button';
@@ -69,7 +69,7 @@ Fisma.Email = function() {
             sendBtn.style.marginLeft = '10px';
             sendBtn.value = 'Send';
             content.appendChild(sendBtn);
-    
+
             // Load panel
             var panelConfig = {
                     width : "260px",
@@ -82,14 +82,16 @@ Fisma.Email = function() {
                 panelConfig);
 
             // Make button a YUI widget and set up onclick event
-            new YAHOO.widget.Button("dialogRecipientSendBtn", {onclick: {fn: Fisma.Email.sendTestEmail}});
+            var sendButton = new YAHOO.widget.Button("dialogRecipientSendBtn", {
+                onclick: {fn: Fisma.Email.sendTestEmail}
+            });
         },
 
         /**
          * Send test email to specified recipient
          */
         sendTestEmail : function() {
-            
+
             if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
                 var alertMessage = "Recipient is required.";
@@ -98,17 +100,26 @@ Fisma.Email = function() {
                 document.getElementById('testEmailRecipient').focus();
                 return false;
             }
-    
+
             // Get dialog_recipient value to recipient
             var recipient = document.getElementById('testEmailRecipient').value;
             var form = document.getElementById('email_config');
-            form.elements['recipient'].value = recipient;
-    
+            form.elements.recipient.value = recipient;
+
+            var menu = YAHOO.widget.Button.getButton('send_type-button').getMenu();
+            var sendType = YAHOO.lang.isNull(menu.activeItem) ? menu.srcElement.value : menu.activeItem.value;
+
+            var sendTypeEle = document.createElement('input');
+            sendTypeEle.type = 'hidden';
+            sendTypeEle.name = 'send_type';
+            sendTypeEle.value = sendType;
+            form.appendChild(sendTypeEle);
+
             var element = document.getElementById('sendTestEmail');
 
-            spinner = new Fisma.Spinner(element.parentNode);
+            var spinner = new Fisma.Spinner(element.parentNode);
             spinner.show();
-            
+
             // Post data through YUI
             YAHOO.util.Connect.setForm(form);
             YAHOO.util.Connect.asyncRequest('POST', '/config/test-email-config/format/json', {
@@ -123,7 +134,7 @@ Fisma.Email = function() {
                     spinner.hide();
                 }
             }, null);
-    
+
             // Remove used panel
             if (Fisma.Email.panelElement !== null && Fisma.Email.panelElement instanceof YAHOO.widget.Panel) {
                 Fisma.Email.panelElement.hide();
@@ -134,4 +145,4 @@ Fisma.Email = function() {
             return true;
         }
     };
-}();
+}());

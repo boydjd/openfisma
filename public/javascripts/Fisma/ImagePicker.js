@@ -177,20 +177,20 @@
                 opacity: {
                     to: 1.0
                 }
-            }, .5, YAHOO.util.Easing.easeOut);
+            }, 0.5, YAHOO.util.Easing.easeOut);
 
             var fadeOutMessage = new YAHOO.util.Anim(clickMessage, {
                 opacity: {
                     to: 0.0
                 }
-            }, .5, YAHOO.util.Easing.easeIn);
+            }, 0.5, YAHOO.util.Easing.easeIn);
 
             // Attach events
             YAHOO.util.Event.addListener(this._displayedImage, "mouseover", function () {fadeInMessage.animate();});
             YAHOO.util.Event.addListener(this._displayedImage, "mouseout", function () {fadeOutMessage.animate();});
             YAHOO.util.Event.addListener(this._displayedImage, "click", this._toggleDrawer, this, true);
             YAHOO.util.Event.addListener(this._displayedImage, "keydown", function (event) {
-                if (event.keyCode == YAHOO.util.KeyListener.KEY.SPACE) {
+                if (event.keyCode === YAHOO.util.KeyListener.KEY.SPACE) {
                     this._toggleDrawer();
                 }
             }, this, true);
@@ -229,7 +229,8 @@
 
             var tableRow = table.insertRow(this._currentRow);
 
-            for (var imageId in this._images) {
+            var imageId;
+            for (imageId in this._images) {
                 var imageUrl = this._images[imageId];
 
                 var tableCell = tableRow.insertCell(this._currentColumn);
@@ -289,7 +290,8 @@
         _getNumberOfImages: function() {
             var numberOfImages = 0;
 
-            for (var imageId in this._images) {
+            var imageId;
+            for (imageId in this._images) {
                 if (this._images.hasOwnProperty(imageId)) {
                     numberOfImages++;
                 }
@@ -310,7 +312,7 @@
             image.src = imageUrl;
             image.setAttribute("imageId", imageId);
 
-            if (imageId == this._selectedImageId) {
+            if (imageId === this._selectedImageId) {
                 image.className = "imagePickerSelectedImage";
                 this._selectedImageEl = image;
             }
@@ -386,6 +388,7 @@
                 uploadButton.setStyle("margin-bottom", "5px");
                 uploadButton.setStyle("font-weight", "normal");
 
+                var ieDialog;
                 if (YAHOO.env.ua.ie) {
                     /* IE doesn't let us call the click() method on a file input and then submit it through an iframe.
                      * So in IE we'll put the file form in a dialog instead of hiding it.
@@ -402,7 +405,7 @@
                     body.appendChild(fileForm);
                     formDiv.appendChild(body);
 
-                    var ieDialog = new YAHOO.widget.Dialog(formDiv, {
+                    ieDialog = new YAHOO.widget.Dialog(formDiv, {
                         fixedCenter: true,
                         draggable: false,
                         modal: true
@@ -441,8 +444,9 @@
                             upload: function (o) {
                                 uploadButton.set('disabled', false);
 
+                                var response;
                                 try {
-                                    var response = YAHOO.lang.JSON.parse(o.responseText).response;
+                                    response = YAHOO.lang.JSON.parse(o.responseText).response;
                                 } catch (e) {
                                     Fisma.Util.showAlertDialog("Uploading failed: could not parse response.");
                                     return;
@@ -478,7 +482,7 @@
          */
         _handleImageSelect: function (event, imageEl) {
             // Update the currently selected image information
-            this._hiddenInput.value = imageEl.getAttribute("imageId");;
+            this._hiddenInput.value = imageEl.getAttribute("imageId");
             this._displayedImage.src = imageEl.src;
 
             // Move the selection UI
@@ -493,7 +497,11 @@
          * Toggle the drawer's visibility
          */
         _toggleDrawer: function () {
-            this._drawerState == IP.DRAWER.OPEN ? this._hideDrawer() : this._showDrawer();
+            if (this._drawerState === IP.DRAWER.OPEN) {
+                this._hideDrawer();
+            } else {
+                this._showDrawer();
+            }
         },
 
         /**
@@ -508,7 +516,7 @@
                 opacity: {
                     to: 1.0
                 }
-            }, .5, YAHOO.util.Easing.easeOut);
+            }, 0.5, YAHOO.util.Easing.easeOut);
 
             this._drawer.style.display = "block";
             fadeInDrawer.animate();
@@ -531,9 +539,9 @@
                 opacity: {
                     to: 0.0
                 }
-            }, .5, YAHOO.util.Easing.easeIn);
+            }, 0.5, YAHOO.util.Easing.easeIn);
 
-            fadeOutDrawer.onComplete.subscribe(function () {this._drawer.style.display = "none"}, this, true);
+            fadeOutDrawer.onComplete.subscribe(function () {this._drawer.style.display = "none";}, this, true);
             fadeOutDrawer.animate();
 
             // Remove the event listeners set up in _showDrawer
@@ -550,7 +558,7 @@
             var clickPoint = new YAHOO.util.Point(event.pageX, event.pageY);
 
             // Don't respond to simulated clicks -- i.e. clicks triggered by click().
-            if (clickPoint.x == 0 && clickPoint.y == 0) {
+            if (clickPoint.x === 0 && clickPoint.y === 0) {
                 return;
             }
 
@@ -603,11 +611,12 @@
                 return;
             }
 
+            var cellIndex;
             switch (keyCode) {
                 case YAHOO.util.KeyListener.KEY.UP:
                     var rowAbove = this._selectedImageEl.parentNode.parentNode.previousSibling;
                     var lastRow = this._selectedImageEl.parentNode.parentNode.parentNode.lastChild;
-                    var cellIndex = this._selectedImageEl.parentNode.cellIndex;
+                    cellIndex = this._selectedImageEl.parentNode.cellIndex;
 
                     if (YAHOO.lang.isValue(rowAbove)) {
                         newImageEl = rowAbove.cells[cellIndex].firstChild;
@@ -622,7 +631,7 @@
                 case YAHOO.util.KeyListener.KEY.DOWN:
                     var rowBelow = this._selectedImageEl.parentNode.parentNode.nextSibling;
                     var firstRow = this._selectedImageEl.parentNode.parentNode.parentNode.firstChild;
-                    var cellIndex = this._selectedImageEl.parentNode.cellIndex;
+                    cellIndex = this._selectedImageEl.parentNode.cellIndex;
 
                     if (YAHOO.lang.isValue(rowBelow) && rowBelow.cells.length > cellIndex) {
                         newImageEl = rowBelow.cells[cellIndex].firstChild;
@@ -654,11 +663,11 @@
                     throw "Unexpected keycode " + keyCode;
             }
 
-            if (YAHOO.lang.isValue(newImageEl) && newImageEl != this._selectedImageEl) {
+            if (YAHOO.lang.isValue(newImageEl) && newImageEl !== this._selectedImageEl) {
                 this._handleImageSelect(null, newImageEl);
             }
         }
     });
 
     Fisma.ImagePicker = IP;
-})();
+}());

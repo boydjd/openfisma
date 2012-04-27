@@ -107,9 +107,9 @@ Fisma.Search.Criteria.prototype = {
      * @return An HTML element containing the search criteria widget
      */
     render : function (fieldName, operator, operands) {
-        
+
         this.container = document.createElement('div');
-        
+
         this.container.className = "searchCriteria";
 
         // IE7 will display floated elements on the next line, not the current line, unless those floated elements
@@ -149,29 +149,30 @@ Fisma.Search.Criteria.prototype = {
 
         var that = this;
 
-        var menuItems = new Array();
+        var menuItems = [];
         var menuButton;
 
         // This event handler makes the menu button behave like a popup menu
         var handleQueryFieldSelectionEvent = function (type, args, item) {
 
             var newLabel = item.cfg.getProperty("text");
+            var index, field;
 
-            for (var index in that.fields) {
-                var field = that.fields[index];
+            for (index in that.fields) {
+                field = that.fields[index];
 
-                if (item.value == field.name) {
+                if (item.value === field.name) {
 
                     // If a widget is already displayed that still applies to this new field, then leave it alone
                     // (Re-rendering it will set it back to its initial state, which is an annoying behavior.)
                     var refreshQueryType = true;
                     var refreshQueryInput = true;
 
-                    if (that.getCriteriaDefinition(field) == that.getCriteriaDefinition(that.currentField)) {
+                    if (that.getCriteriaDefinition(field) === that.getCriteriaDefinition(that.currentField)) {
                         refreshQueryType = false;
                     }
-                    
-                    if ('enum' == field.type) {
+
+                    if ('enum' === field.type) {
                         refreshQueryInput = true;
                     }
 
@@ -182,7 +183,7 @@ Fisma.Search.Criteria.prototype = {
                     if (refreshQueryType) {
                         that.renderQueryType(that.queryTypeContainer);
                     }
-                    
+
                     if (refreshQueryInput) {
                         that.renderQueryInput(that.queryInputContainer);
                     }
@@ -195,7 +196,8 @@ Fisma.Search.Criteria.prototype = {
         };
 
         // Convert field list to menu items
-        for (var index in this.fields) {
+        var index;
+        for (index in this.fields) {
             var field = this.fields[index];
 
             menuItems.push({
@@ -232,6 +234,7 @@ Fisma.Search.Criteria.prototype = {
         }
 
         var that = this;
+        var menuButton;
 
         // This event handler makes the menu button behave like a popup menu
         var handleQueryTypeSelectionEvent = function (type, args, item) {
@@ -243,7 +246,7 @@ Fisma.Search.Criteria.prototype = {
 
             that.currentQueryType = item.value;
 
-            if (oldRenderer != newRenderer || 'enum' == that.currentField.type) {
+            if (oldRenderer !== newRenderer || 'enum' === that.currentField.type) {
                 that.renderQueryInput(that.queryInputContainer);
             }
 
@@ -254,12 +257,13 @@ Fisma.Search.Criteria.prototype = {
         var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
 
         // Create the select menu
-        var menuItems = new Array();
+        var menuItems = [];
+        var criteriaType;
 
-        for (var criteriaType in criteriaDefinitions) {
+        for (criteriaType in criteriaDefinitions) {
             var criteriaDefinition = criteriaDefinitions[criteriaType];
 
-            menuItem = {
+            var menuItem = {
                 text : criteriaDefinition.label,
                 value : criteriaType,
                 onclick : {fn : handleQueryTypeSelectionEvent}
@@ -278,7 +282,7 @@ Fisma.Search.Criteria.prototype = {
         }
 
         // Render menu button
-        var menuButton = new YAHOO.widget.Button({
+        menuButton = new YAHOO.widget.Button({
             type : "menu",
             label : criteriaDefinitions[this.currentQueryType].label,
             menu : menuItems,
@@ -307,7 +311,7 @@ Fisma.Search.Criteria.prototype = {
         var rendererName = criteriaDefinitions[this.currentQueryType].renderer;
         var render = Fisma.Search.CriteriaRenderer[rendererName];
 
-        if ('enum' == this.currentField.type) {
+        if ('enum' === this.currentField.type) {
             render(container, operands, this.currentField.enumValues);
         } else {
             render(container, operands);
@@ -374,9 +378,9 @@ Fisma.Search.Criteria.prototype = {
         // Some mapping between the field's declared type and its inferred type
         var tempType = field.type;
 
-        if ('datetime' == tempType) {
+        if ('datetime' === tempType) {
             tempType = 'date';
-        } else if ('text' == tempType) {
+        } else if ('text' === tempType) {
             if (field.sortable) {
                 tempType = 'sortableText';
             } else {
@@ -385,10 +389,11 @@ Fisma.Search.Criteria.prototype = {
         }
 
         var definition = Fisma.Search.CriteriaDefinition[tempType];
-        
+
         // Fields can define extra criteria that should be merged in
         if (field.extraCriteria) {
-            for (var index in field.extraCriteria) {
+            var index;
+            for (index in field.extraCriteria) {
                 definition[index] = field.extraCriteria[index];
             }
         }
@@ -408,19 +413,20 @@ Fisma.Search.Criteria.prototype = {
     setRemoveButtonEnabled : function (enabled) {
         this.removeButton.set("disabled", !enabled);
     },
-    
+
     /**
      * Fields is numerically indexed. This is a helper function to find a field by name.
      */
     getField : function (fieldName) {
-        for (var index in this.fields) {
+        var index;
+        for (index in this.fields) {
             var field = this.fields[index];
-            
-            if (field.name == fieldName) {
+
+            if (field.name === fieldName) {
                 return field;
             }
         }
-        
+
         throw "No field found with this name: " + fieldName;
     },
 
@@ -434,12 +440,13 @@ Fisma.Search.Criteria.prototype = {
 
     hasBlankOperands: function() {
         var operands = this.getOperands();
-        for (var i in operands) {
+        var i;
+        for (i in operands) {
             if ('' === $P.trim(operands[i])) {
                 return true;
             }
         }
+
         return false;
     }
-
 };

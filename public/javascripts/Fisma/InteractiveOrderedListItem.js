@@ -80,7 +80,7 @@ YAHOO.extend(Fisma.InteractiveOrderedListItem, YAHOO.util.DDProxy, {
         animator.onComplete.subscribe(function() {
                 YAHOO.util.Dom.setStyle(proxyid, "visibility", "hidden");
                 YAHOO.util.Dom.setStyle(thisid, "visibility", "");
-                endDrag(srcEl, (nextId != jQuery(srcEl).next('li').attr('id')));
+                endDrag(srcEl, (nextId !== jQuery(srcEl).next('li').attr('id')));
             });
         animator.animate();
     },
@@ -104,7 +104,7 @@ YAHOO.extend(Fisma.InteractiveOrderedListItem, YAHOO.util.DDProxy, {
 
         // We are only concerned with list items, we ignore the dragover
         // notifications for the list.
-        if (destEl.nodeName.toLowerCase() == "li") {
+        if (destEl.nodeName.toLowerCase() === "li") {
             var p = destEl.parentNode;
 
             if (this.goingUp) {
@@ -135,7 +135,7 @@ Fisma.InteractiveOrderedListItem.appendNewTo = function(listId, jsHandlers) {
     newItem.attr('id', newId);
     newItem.appendTo(list);
 
-    new Fisma.InteractiveOrderedListItem(
+    var listItem = new Fisma.InteractiveOrderedListItem(
         newId,
         listId,
         jsHandlers,
@@ -147,15 +147,18 @@ Fisma.InteractiveOrderedListItem.appendNewTo = function(listId, jsHandlers) {
     // This unfortunate hack is to get around YAHOO DragDrop onMouseDown handler shadowing over onClick
     var selector = 'li#' + newId + ' input[type=text], li#' + newId + ' textarea, li#' + newId + ' select';
     var inputs = YAHOO.util.Selector.query(selector);
-    for (var i in inputs) {
-        YAHOO.util.Event.on(inputs[i], 'click', function(clickEvent) {
-            if (clickEvent.target) {
-                clickEvent.target.focus();
-            } else {
-                clickEvent.srcElement.focus();
-            }
-        });
+    var i;
+    var inputOnlickEvent = function (clickEvent) {
+        if (clickEvent.target) {
+            clickEvent.target.focus();
+        } else {
+            clickEvent.srcElement.focus();
+        }
+    };
+
+    for (i in inputs) {
+        YAHOO.util.Event.on(inputs[i], 'click', inputOnlickEvent);
     }
 
     return jsHandlers.onAppend(listId, newId);
-}
+};

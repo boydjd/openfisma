@@ -25,21 +25,21 @@
 
 /**
  * The constructor for a spinner object
- * 
+ *
  * A spinner is a simple graphic that is used to indicate a "busy" or "working" state in response to some user action
  * that does not have any other immediate, visual feedback.
- * 
+ *
  * @var container The spinner will be appended to the end of this container element.
  */
 Fisma.Spinner = function (container) {
     this.container = container;
-    
+
     // Create new image element to act as spinner
     this.spinner = document.createElement('img');
     this.spinner.id = container.id + "_spinnerImg";
     this.spinner.src = "/images/spinners/small.gif";
     this.spinner.style.visibility = "hidden";
-    
+
     // Append spinner to end of container element
     this.container.appendChild(this.spinner);
 };
@@ -47,7 +47,7 @@ Fisma.Spinner = function (container) {
 Fisma.Spinner.prototype.show = function () {
     this.spinner.style.visibility = 'visible';
 };
-        
+
 Fisma.Spinner.prototype.hide = function () {
     this.spinner.style.visibility = 'hidden';
 };

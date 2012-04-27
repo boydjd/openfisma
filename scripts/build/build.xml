@@ -4,7 +4,7 @@
 
     <taskdef name="jslint"
         classname="com.googlecode.jslint4java.ant.JSLintTask"
-        classpath="bin/jslint4java-2.0.0.jar" />
+        classpath="bin/jslint4java-2.0.2.jar" />
 
     <target name="-load.properties">
         <property file="config.properties"/>
@@ -13,7 +13,7 @@
     <target name="-js.concat">
         <echo message="Concatenating JavaScript..."/>
         <concat destfile="${location.js}/combined.js" force="no">
-            <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,Fisma.js,selectallselectnone.js,jquery-min.js,groupeddatatable.js"/>
+            <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,Fisma.js,jquery-min.js,groupeddatatable.js"/>
             <filelist dir="${location.js}" files="Fisma/Storage.js,Fisma/TreeTable.js"/>
             <fileset dir="${location.js}/Fisma" includes="**/*.js" excludes="Storage.js,TreeTable.js"/>
             <fileset dir="${location.js}/jqPlot" includes="**/*.js"/>
@@ -99,16 +99,16 @@
     </target>
 
     <target name="jslint-default" depends="check-jslint-cond" unless="cond-is-true">
-        <jslint options="browser,sloppy,white,vars,plusplus,nomen" haltOnFailure="false">
-            <predef>jQuery,$$,Fisma,YAHOO,document,PHP_JS,$$P</predef>
+        <jslint options="browser,sloppy,white,vars,plusplus,nomen,forin,continue,evil" haltOnFailure="false">
+            <predef>jQuery,$$,Fisma,YAHOO,document,PHP_JS,$$P,tinyMCE</predef>
             <formatter type="plain" />
             <fileset dir="../../public/javascripts/Fisma" includes="**/*.js" excludes="**/*-min.js" />
         </jslint>
     </target>
 
     <target name="jslint-single" depends="check-jslint-cond" if="cond-is-true">
-        <jslint options="browser,sloppy,white,vars,plusplus,nomen" haltOnFailure="false">
-            <predef>jQuery,$$,Fisma,YAHOO,document,PHP_JS,$$P</predef>
+        <jslint options="browser,sloppy,white,vars,plusplus,nomen,forin,continue,evil" haltOnFailure="false">
+            <predef>jQuery,$$,Fisma,YAHOO,document,PHP_JS,$$P,tinyMCE</predef>
             <formatter type="plain" />
             <fileset file="${filename}"/>
         </jslint>

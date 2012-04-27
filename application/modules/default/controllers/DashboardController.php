@@ -168,7 +168,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $showWhatsNew = 0;
         $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
-        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($user->id, 'WhatsNew.checked')->fetchOne();
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($user->id, 'WhatsNew.Checked')->fetchOne();
 
         if (empty($storage)) {
             $showWhatsNew = true;

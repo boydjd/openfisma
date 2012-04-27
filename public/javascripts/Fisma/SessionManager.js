@@ -235,4 +235,4 @@
         }
     };
     Fisma.SessionManager = Manager;
-})();
+}());

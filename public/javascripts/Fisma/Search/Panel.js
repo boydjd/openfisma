@@ -23,7 +23,7 @@
 
 /**
  * Constructor
- * 
+ *
  * @param advancedSearchOptions Contains searchable fields and pre-defined filters
  */
 Fisma.Search.Panel = function (advancedSearchOptions) {
@@ -33,7 +33,7 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
     if (0 === searchableFields.length) {
         throw "Field array cannot be empty";
     }
-    
+
     // Sort fields by name
     searchableFields.sort(
         function (a, b) {
@@ -49,7 +49,7 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
 
     // Copy all visible (non-hidden) fields into this panel
     this.searchableFields = [];
-    
+
     for (index in searchableFields) {
         var searchableField = searchableFields[index];
 
@@ -63,13 +63,14 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
 
     var urlParamString = document.location.search.substring(1); // strip the leading "?" character
     var urlParams = urlParamString.split('&');
+    var i;
 
-    for (var i in urlParams) {
+    for (i in urlParams) {
         var urlParam = urlParams[i];
         var keyValuePair = urlParam.split("=");
 
         // parse parameters
-        if ("q" == keyValuePair[0]) {
+        if ("q" === keyValuePair[0]) {
             var criteriaString = keyValuePair[1];
             this.defaultQueryTokens = criteriaString.split("/");
 
@@ -84,12 +85,12 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
 };
 
 Fisma.Search.Panel.prototype = {
-    
+
     /**
      * The parent container for this search panel
      */
     container : null,
-    
+
     /**
      * A list of current selected criteria
      */
@@ -99,7 +100,7 @@ Fisma.Search.Panel.prototype = {
      * Flag indicating that we want to show all results, no advanced search.
      */
     showAll: false,
-    
+
     /**
      * Render the advanced search box
      * 
@@ -119,37 +120,37 @@ Fisma.Search.Panel.prototype = {
             this.container.appendChild(initialCriteria.render(this.searchableFields[0].name));
         } else if (this.defaultQueryTokens) {
             var index = 0;
-            
+
             // If a default query is specified, then switch to advanced mode and set up the UI for those criteria
             while (this.defaultQueryTokens.length > index) {
                 var field = this.defaultQueryTokens[index];
                 index++;
-                
+
                 var operator = this.defaultQueryTokens[index];
                 index++;
-                
+
                 // Load up this criteria definition and see how many operands it takes
                 var fieldDefinition = this.getFieldDefinition(field);
-                
+
                 var criterion = new Fisma.Search.Criteria(this, this.searchableFields);
                 var criterionDefinition = criterion.getCriteriaDefinition(fieldDefinition);
-                
+
                 var numberOfOperands = this.getNumberOfOperands(fieldDefinition, operator, criterionDefinition);
-                
+
                 // Now we know how many operands there, push that number of tokens onto a stack
                 var operands = [];
-                
-                for (; numberOfOperands > 0; numberOfOperands--) {
+
+                for (i = 0; i < numberOfOperands; i++) {
                     operands.push(this.defaultQueryTokens[index]);
                     index ++; 
                 }
-                
+
                 // URI Decode the operands
                 var unescapedOperands = $P.array_map(decodeURIComponent, operands);
 
                 // Render the element and then set its default values
                 var criterionElement = criterion.render(field, operator, unescapedOperands);
-                
+
                 this.container.appendChild(criterion.container);
                 this.criteria.push(criterion);
             }
@@ -169,6 +170,7 @@ Fisma.Search.Panel.prototype = {
                         advancedQuery[i].operator,
                         advancedQuery[i].operands));
             }
+
             // Display the advanced search UI and submit the initial query request XHR
             Fisma.Search.toggleAdvancedSearchPanel();
         } else if (Fisma.Search.searchPreferences.type === 'advanced') {
@@ -179,6 +181,7 @@ Fisma.Search.Panel.prototype = {
                 this.container.appendChild(
                     advancedCriterion.render(i, fields[i]));
             }
+
             // Display the advanced search UI and submit the initial query request XHR
             Fisma.Search.toggleAdvancedSearchPanel();
         } else {
@@ -191,13 +194,13 @@ Fisma.Search.Panel.prototype = {
         }
 
         // If only one criterion, disable its "minus" button
-        if (1 == this.criteria.length) {
+        if (1 === this.criteria.length) {
             this.criteria[0].setRemoveButtonEnabled(false);
         }
 
         Fisma.Search.onSetTable(function () {
             var searchForm = document.getElementById('searchForm');
-        
+
             // YUI renders the UI after this function returns, so a minimal delay is required to allow YUI to run
             setTimeout(function () {Fisma.Search.executeSearch(searchForm);}, 1);
         });
@@ -205,20 +208,22 @@ Fisma.Search.Panel.prototype = {
   
     /**
      * Add a criteria row below the specified row
-     * 
+     *
      * @param currentRow The HTML container for the row that the new row will be placed under
      */
     addCriteria : function (currentRow) {
         // Update internal state
-        if (1 == this.criteria.length) {
+        if (1 === this.criteria.length) {
             this.criteria[0].setRemoveButtonEnabled(true);
         }
 
-        if (!this.searchableFields[this.criteria.length]) throw "No field defined for search";
+        if (!this.searchableFields[this.criteria.length]) {
+            throw "No field defined for search";
+        }
 
         var criteria = new Fisma.Search.Criteria(this, this.searchableFields);
         this.criteria.push(criteria);
-        
+
         // Update DOM
         var defaultFieldIndex = this.criteria.length - 1;
 
@@ -226,47 +231,50 @@ Fisma.Search.Panel.prototype = {
 
         this.container.insertBefore(criteriaElement, currentRow.nextSibling);
     },
-    
+
     /**
      * Remove the specified criteria row
-     * 
+     *
      * @param currentRow The HTML container for the row that needs to be removed
      */
     removeCriteria : function (currentRow) {
         // Update internal state
-        for (var index in this.criteria) {
+        var index;
+        for (index in this.criteria) {
             var criterion = this.criteria[index];
-            
-            if (criterion.container == currentRow) {
+
+            if (criterion.container === currentRow) {
                 this.criteria.splice(index, 1);
-                
+
                 break;
             }
         }
-        
+
         // Disable the remove button when there is only 1 criterion left
-        if (1 == this.criteria.length) {
+        if (1 === this.criteria.length) {
             this.criteria[0].setRemoveButtonEnabled(false);
         }
 
         // Update DOM
         this.container.removeChild(currentRow);
     },
-    
+
     /**
      * Get the URL query string for the current filter status
      */
     getQuery : function () {
-        var query = new Array();
-        
-        for (var index in this.criteria) {
+        var query = [];
+        var index;
+
+        for (index in this.criteria) {
             var criterion = this.criteria[index];
             if (criterion.hasBlankOperands()) {
                 continue;
             }
+
             query.push(criterion.getQuery());
         }
-        
+
         return query;
     },
 
@@ -274,34 +282,36 @@ Fisma.Search.Panel.prototype = {
      * Get the search panel's state
      */
     getPanelState: function () {
-        var state = new Array();
-        
-        for (var index in this.criteria) {
+        var state = [];
+        var index;
+
+        for (index in this.criteria) {
             var criterion = this.criteria[index];
             state.push(criterion.getQuery());
         }
-        
+
         return state;
     },
-    
+
     /**
      * Returns search metadata for a field (specified by name)
      * 
      * @param fieldName
      */
     getFieldDefinition : function (fieldName) {
-        for (var index in this.searchableFields) {
-            if (this.searchableFields[index].name == fieldName) {
+        var index;
+        for (index in this.searchableFields) {
+            if (this.searchableFields[index].name === fieldName) {
                 return this.searchableFields[index];
             }
         }
-        
+
         throw "No definition for field: " + fieldName;
     },
-    
+
     /**
      * Returns the number of operands required for the specified field and operator
-     * 
+     *
      * @param field Definition of the field
      * @param operator The operator applied to the field
      * @param criteriaDefinition
@@ -312,29 +322,21 @@ Fisma.Search.Panel.prototype = {
         if (!criterionQueryDefinition) {
             throw "No criteria defined for field (" + field.name + ") and operator (" + operator + ")";
         }
-        
+
         var queryFunction = criterionQueryDefinition.query;
-        
+
         switch (queryFunction) {
             case 'noInputs':
                 return 0;
-                break;
-                
+
             // The following cases intentionally fall through
             case 'enumSelect':
             case 'oneInput':
                 return 1;
-                break;
-                
             case 'twoInputs':
                 return 2;
-                break;
-            
             default:
                 throw "Number of operands not defined for query function: " + queryFunction;
-                break;
         }
-        
-        throw "Number of operands not defined for query function: " + queryFunction;
     }
 };

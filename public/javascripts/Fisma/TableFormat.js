@@ -70,16 +70,16 @@ Fisma.TableFormat = {
         elCell.innerHTML = oData;
 
         // Date format is YYYY-MM-DD. Convert into javascript date object.
-        dateParts = oData.split('-');
+        var dateParts = oData.split('-');
 
-        if (3 == dateParts.length) {
+        if (3 === dateParts.length) {
 
-            authorizedDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
+            var authorizedDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
 
-            greenDate = new Date();
+            var greenDate = new Date();
             greenDate.setMonth(greenDate.getMonth() - 30);
 
-            yellowDate = new Date();
+            var yellowDate = new Date();
             yellowDate.setMonth(yellowDate.getMonth() - 36);
 
             if (authorizedDate >= greenDate) {
@@ -104,16 +104,16 @@ Fisma.TableFormat = {
         elCell.innerHTML = oData;
 
         // Date format is YYYY-MM-DD. Convert into javascript date object.
-        dateParts = oData.split('-');
+        var dateParts = oData.split('-');
 
-        if (3 == dateParts.length) {
+        if (3 === dateParts.length) {
 
-            assessmentDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
+            var assessmentDate = new Date(dateParts[0], dateParts[1], dateParts[2]);
 
-            greenDate = new Date();
+            var greenDate = new Date();
             greenDate.setMonth(greenDate.getMonth() - 8);
 
-            yellowDate = new Date();
+            var yellowDate = new Date();
             yellowDate.setMonth(yellowDate.getMonth() - 12);
 
             if (assessmentDate >= greenDate) {
@@ -144,9 +144,9 @@ Fisma.TableFormat = {
     yesNo : function (elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = oData;
 
-        if ('YES' == oData) {
+        if ('YES' === oData) {
             Fisma.TableFormat.green(elCell.parentNode);
-        } else if ('NO' == oData) {
+        } else if ('NO' === oData) {
             Fisma.TableFormat.red(elCell.parentNode);
         }
     },
@@ -221,7 +221,7 @@ Fisma.TableFormat = {
     overdueFinding : function (elCell, oRecord, oColumn, oData) {
 
         // Construct overdue finding search url
-        overdueFindingSearchUrl = '/finding/remediation/list?q=';
+        var overdueFindingSearchUrl = '/finding/remediation/list?q=';
 
         // Handle organization field
         var organization = oRecord.getData('System');
@@ -253,7 +253,7 @@ Fisma.TableFormat = {
         var from = null;
 
         if (parameters.from) {
-            fromDate = new Date();
+            var fromDate = new Date();
             fromDate.setDate(fromDate.getDate() - parseInt(parameters.from, 10));
 
             from = fromDate.getFullYear() + '-' + (fromDate.getMonth() + 1) + '-' + fromDate.getDate();
@@ -262,7 +262,7 @@ Fisma.TableFormat = {
         var to = null;
 
         if (parameters.to) {
-            toDate = new Date();
+            var toDate = new Date();
             toDate.setDate(toDate.getDate() - parseInt(parameters.to, 10));
 
             to = toDate.getFullYear() + '-' + (toDate.getMonth() + 1) + '-' + toDate.getDate();
@@ -276,16 +276,10 @@ Fisma.TableFormat = {
         } else if (from) {
             overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(from);
         } else {
-            // This is the TOTAL column
-            var yesterday = new Date();
-            yesterday.setDate(yesterday.getDate() - 1);
-            var yesterdayString = yesterday.getFullYear();
-            yesterdayString += '-';
-            yesterdayString += (yesterday.getMonth() + 1);
-            yesterdayString += '-';
-            yesterdayString += yesterday.getDate();
 
-            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(yesterdayString);
+            // This is the TOTAL column
+            var todayString = $P.date('Y-m-d');
+            overdueFindingSearchUrl += "/nextDueDate/dateBefore/" + encodeURIComponent(todayString);
         }
 
         elCell.innerHTML = '<a href="' + overdueFindingSearchUrl + '">' + oData + "</a>";
@@ -301,7 +295,7 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     completeDocTypePercentage : function (elCell, oRecord, oColumn, oData) {
-        percentage = parseInt(oData, 10);
+        var percentage = parseInt(oData, 10);
 
         if (oData !== null) {
             elCell.innerHTML = oData + "%";
@@ -358,7 +352,7 @@ Fisma.TableFormat = {
             checkbox.checked = oData;
 
             if (elCell.firstChild) {
-                elCell.removeChild(el.firstChild);
+                elCell.removeChild(elCell.firstChild);
             }
 
             elCell.appendChild(checkbox);
@@ -375,7 +369,7 @@ Fisma.TableFormat = {
      */
     formatFileSize : function (elCell, oRecord, oColumn, oData) {
         // Convert to number
-        var size = oData * 1;
+        var size = parseInt(oData, 10);
 
         if(YAHOO.lang.isNumber(size)) {
             if (size < 1024) {

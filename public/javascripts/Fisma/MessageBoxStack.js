@@ -49,7 +49,7 @@
      * @constructor
      */
     var MBS = function(container) {
-        this._messageBoxes = new Array();
+        this._messageBoxes = [];
     };
 
     MBS.prototype = {
@@ -62,11 +62,11 @@
         push: function (messageBox) {
             this._messageBoxes.push(messageBox);
         },
-        
+
         pop: function () {
             return this._messageBoxes.pop();
         }
     };
 
     Fisma.MessageBoxStack = MBS;
-})();
+}());

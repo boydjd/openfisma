@@ -15,7 +15,10 @@
 <script>
     YAHOO.util.Event.onContentReady('<?php echo $this->escape($name); ?>-button', function () {
         var selectElement = document.getElementById('<?php echo $this->escape($name); ?>');
-        var selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
+        var selectedLabel = '';
+        if (selectElement.options.length > 0) {
+            selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
+        }
         var oMenuButton = new YAHOO.widget.Button('<?php echo $this->escape($name); ?>-button', {
             label: selectedLabel.replace(/&amp;/g, "&"),
             type: 'menu',
@@ -30,6 +33,11 @@
                     var firstChild = children.getItem(0);
                     oMenuButton.set('selectedMenuItem', firstChild);
                     oMenuButton.set('label', firstChild.cfg.getProperty('text').replace(/&amp;/g, "&"));
+                }
+                var f = selectElement.onchange;
+                if (f) {
+                    selectElement.value = p_aArgs[1].srcElement.value;
+                    jQuery(selectElement).trigger('change');
                 }
             }
         });

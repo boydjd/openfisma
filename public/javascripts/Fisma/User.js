@@ -25,11 +25,11 @@ Fisma.User = {
     
     /**
      * A dictionary of user info panels that have already been created.
-     * 
+     *
      * We use this to make sure that we don't create multiple panels for the same user object.
      */
     userInfoPanelList : {},
-    
+
     /**
      * A boolean which indicates if a password is currently being generated
      */
@@ -49,7 +49,7 @@ Fisma.User = {
 
     /**
      * Map LDAP column names onto names of fields in this form
-     * 
+     *
      * ldap name => field name
      */
     ldapColumnMap : {
@@ -87,7 +87,7 @@ Fisma.User = {
          * the wrong place and the sort would be wrong.
          */
         this.commentTable.sortColumn(this.commentTable.getColumn(0), YAHOO.widget.DataTable.CLASS_DESC);
-        
+
         // Highlight the added row so the user can see that it worked
         var rowBlinker = new Fisma.Blinker(
             100,
@@ -117,14 +117,14 @@ Fisma.User = {
 
         var panel;
 
-        if (typeof Fisma.User.userInfoPanelList[username] == 'undefined') {
+        if (typeof Fisma.User.userInfoPanelList[username] === 'undefined') {
 
             // Create new panel
             panel = Fisma.User.createUserInfoPanel(referenceElement, username);
 
             Fisma.User.userInfoPanelList[username] = panel;
             
-            panel.show();            
+            panel.show();
         } else {
 
             // Panel already exists
@@ -135,20 +135,20 @@ Fisma.User = {
                 panel.hide();
             } else {
                 panel.bringToTop();
-                panel.show();            
+                panel.show();
             }
-        }        
+        }
     },
-    
+
     /**
      * Create the user info panel and position it near the referenceElement
-     * 
+     *
      * @param referenceElement
      * @param username The name of the user to get info for
      * @return YAHOO.widget.Panel
      */
     createUserInfoPanel : function (referenceElement, username) {
-        
+
         var PANEL_WIDTH = 350; // in pixels
         var panel = new YAHOO.widget.Panel(
             YAHOO.util.Dom.generateId(), 
@@ -165,11 +165,11 @@ Fisma.User = {
         panel.render(document.body);
 
         Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
-        
+
         // Load panel content using asynchronous request
         YAHOO.util.Connect.asyncRequest(
             'GET', 
-            '/user/info/username/' + escape(username),
+            '/user/info/username/' + encodeURI(username),
             {
                 success: function(o) {
                     panel.setBody(o.responseText);
@@ -180,12 +180,12 @@ Fisma.User = {
                     panel.setBody('User information cannot be loaded.');
                     Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
                 }
-            }, 
+            },
             null);
 
         return panel;
     },
-    
+
     generatePassword : function () {
         
         if (Fisma.User.generatePasswordBusy) {
@@ -251,14 +251,14 @@ Fisma.User = {
                         var data = YAHOO.lang.JSON.parse(o.responseText);
 
                         // Query comes originally from the user. Escape it just to be safe.
-                        data.query = escape(data.query);
+                        data.query = encodeURI(data.query);
 
                         // Make sure each column value is not null in LDAP account, then populate to related elements.
                         if (YAHOO.lang.isValue(data.accounts)) {
-                            if (data.accounts.length == 0) {
+                            if (data.accounts.length === 0) {
                                 Fisma.Util.message('No account matches your query: '
-                                    + escape(data.query) + '.', 'warning', true);
-                            } else if (data.accounts.length == 1) {
+                                    + encodeURI(data.query) + '.', 'warning', true);
+                            } else if (data.accounts.length === 1) {
                                 Fisma.User.populateAccountForm(data.accounts[0]);
                             } else {
                                 Fisma.User.showMultipleAccounts(data.accounts);
@@ -299,7 +299,8 @@ Fisma.User = {
     populateAccountForm : function (account) {
         Fisma.Util.message('Your search matched one user: ' + account.dn, 'info', true);
 
-        for (var ldapColumn in Fisma.User.ldapColumnMap) {
+        var ldapColumn;
+        for (ldapColumn in Fisma.User.ldapColumnMap) {
             if (!Fisma.User.ldapColumnMap.hasOwnProperty(ldapColumn)) {
                 continue;
             }
@@ -323,14 +324,15 @@ Fisma.User = {
         var msgBar = document.getElementById('msgbar');
 
         var accountsContainer = document.createElement('p');
+        var index;
 
-        for (var index in accounts) {
+        for (index in accounts) {
             var account = accounts[index];
-            
+
             var accountLink = document.createElement('a');
             accountLink.setAttribute('href', '#');
             accountLink.account = account;
-            accountLink.onclick = function () {Fisma.User.populateAccountForm(this.account);};
+            YAHOO.util.Event.on(accountLink, "click", Fisma.User.populateAccountForm, this.account);
 
             var accountText = account.givenname
                             + ' '
@@ -343,7 +345,7 @@ Fisma.User = {
 
             accountsContainer.appendChild(accountLink);
         }
-        
+
         msgBar.appendChild(accountsContainer);
     },
 
@@ -353,14 +355,15 @@ Fisma.User = {
      * @return void
      */
     showCommentPanel : function () {
-       
+
         // The scope is the button that was clicked, so save it for closures
         var button = this;
 
         var lockedElement = YAHOO.widget.Button.getButton('locked-button');
+        var lockedValue;
         if (!YAHOO.lang.isUndefined(lockedElement)) {
             var menu = lockedElement.getMenu();
-            var lockedValue = YAHOO.lang.isNull(menu.activeItem) ? menu.srcElement.value : menu.activeItem.value;
+            lockedValue = YAHOO.lang.isNull(menu.activeItem) ? menu.srcElement.value : menu.activeItem.value;
         }
 
         // Only show panel when status is locked

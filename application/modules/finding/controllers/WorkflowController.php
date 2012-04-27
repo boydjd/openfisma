@@ -127,6 +127,10 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                 )
             );
         }
+
+        $config = Fisma::configuration();
+        $this->view->findingNewDue = $config->getConfig('finding_new_due');
+        $this->view->findingDraftDue = $config->getConfig('finding_draft_due');
     }
 
     /**
@@ -159,6 +163,35 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                                      ->getFirst();
         try {
             Doctrine_Manager::connection()->beginTransaction();
+
+            // Processing general finding configuration
+            $config = Fisma::configuration();
+
+            if ($lists['finding']['new']['due'] != $config->getConfig('finding_new_due')) {
+                $config->setConfig('finding_new_due', $lists['finding']['new']['due']);
+                $findings = Doctrine_Query::create()
+                ->from('Finding f')
+                ->where('f.status = ?', 'NEW')
+                ->execute();
+                foreach ($findings as $finding) {
+                    $finding->setStatus($finding->status); // to trigger the private _updateNextDueDate()
+                    $finding->save();
+                }
+            }
+
+            if ($lists['finding']['draft']['due'] != $config->getConfig('finding_draft_due')) {
+                $config->setConfig('finding_draft_due', $lists['finding']['draft']['due']);
+                $findings = Doctrine_Query::create()
+                ->from('Finding f')
+                ->where('f.status = ?', 'DRAFT')
+                ->execute();
+                foreach ($findings as $finding) {
+                    $finding->setStatus($finding->status); // to trigger the private _updateNextDueDate()
+                    $finding->save();
+                }
+            }
+
+            unset($lists['finding']); // stop processing 'finding' list automatically
 
             // Process all ADD's
             foreach ($lists as $listName => &$list) {

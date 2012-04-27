@@ -109,6 +109,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 
                 // upload file after the file parsed
                 $upload->instantiate($file);
+                $upload->save();
                 
                 Doctrine_Manager::connection()->commit();
                 $error = "$rowsProcessed findings were created.";

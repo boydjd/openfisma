@@ -62,7 +62,8 @@ for ($i = 1; $i < $count; $i++):
 endfor;
 ?>
         // This unfortunate hack is to get around YAHOO DragDrop onMouseDown handler shadowing over onClick
-        var inputs = YAHOO.util.Selector.query('div.stepDetail input[type=text], div.stepDetail textarea, div.stepDetail select');
+        var selector = 'div.stepDetail input[type=text], div.stepDetail textarea, div.stepDetail select';
+        var inputs = YAHOO.util.Selector.query(selector);
         for (var i in inputs) {
             YAHOO.util.Event.on(inputs[i], 'click', function(clickEvent) {
                 if (clickEvent.target) {

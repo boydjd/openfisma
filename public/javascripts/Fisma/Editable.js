@@ -52,7 +52,8 @@
     }
 
 
-    var FE = new Object();
+    var FE = {};
+
     /**
      * Replace editable fields with appropriate form elements
      */
@@ -70,24 +71,25 @@
                 var eclass = target.className;
                 var oldWidth = target.offsetWidth;
                 var oldHeight = target.offsetHeight;
-                var cur_val = target.innerText ? target.innerText : target.textContent;
+                var cur_val = target.innerText || target.textContent;
                 var cur_html = target.innerHTML;
-                if (type == 'text') {
+                if (type === 'text') {
                     jQuery(target).replaceWith('<input length="50" name="' + name
                                              + '" id="'+t_name+'" class="' + eclass+'" type="text" />');
-                    textEl = document.getElementById(t_name);
+                    var textEl = document.getElementById(t_name);
+
                     // set value attribute using JS call instead of string concatenation
                     // so we don't have to worry about escaping special characters
                     textEl.setAttribute('value', cur_val.trim());
                     if (oldWidth < 200) {
                         oldWidth = 200;
                     }
+
                     textEl.style.width = (oldWidth - 10) + "px";
-                    if (eclass == 'date') {
-                        var target = document.getElementById(t_name);
-                        Fisma.Calendar.addCalendarPopupToTextField(target);
+                    if (eclass === 'date') {
+                        Fisma.Calendar.addCalendarPopupToTextField(textEl);
                     }
-                } else if( type == 'textarea' ) {
+                } else if( type === 'textarea' ) {
                     var row = target.getAttribute('rows');
                     var col = target.getAttribute('cols');
                     jQuery(target).replaceWith('<textarea id="'+name+'" rows="'+row+'" cols="'+col
@@ -97,18 +99,19 @@
                     textareaEl.style.width = oldWidth + "px";
                     textareaEl.style.height = oldHeight + "px";
                     tinyMCE.execCommand("mceAddControl", true, name);
-                } else if (type == 'autocomplete') {
+                } else if (type === 'autocomplete') {
                     this.parentNode.removeChild(this);
                     Fisma.Editable.makeAutocomplete(target);
                 } else {
-                    if (val = target.getAttribute('value')) {
+                    var val = target.getAttribute('value');
+                    if (val) {
                         cur_val = val;
                     }
-                    YAHOO.util.Connect.asyncRequest('GET', url+'value/'+cur_val.trim(), {
+                    YAHOO.util.Connect.asyncRequest('GET', url + 'value/' + cur_val.trim(), {
                         success: function(o) {
-                            if(type == 'select') {
-                                innerHTML = o.responseText.replace(/&lt;/g, "&amp;lt;");
-                                targetHTML = '<input type="button" id="' + name + '-button"/>'
+                            if(type === 'select') {
+                                var innerHTML = o.responseText.replace(/&lt;/g, "&amp;lt;");
+                                var targetHTML = '<input type="button" id="' + name + '-button"/>'
                                            + '<select id="' + name + '-select" name="' + name + '">'
                                            + innerHTML + '</select>';
                                 jQuery(target).replaceWith(targetHTML);
@@ -116,7 +119,10 @@
                                 YAHOO.util.Event.onContentReady(name + "-button", function () {
                                     // Fetch currently selected item
                                     var selectElement = document.getElementById(name + '-select');
-                                    var selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
+                                    var selectedLabel = '';
+                                    if (selectElement.options.length > 0) {
+                                        selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
+                                    }
 
                                     // Create a Button using an existing <input> and <select> element
                                     var oMenuButton = new YAHOO.widget.Button(name + "-button", {
@@ -136,12 +142,19 @@
                                                 oMenuButton.set('selectedMenuItem', firstChild);
                                                 oMenuButton.set('label', firstChild.cfg.getProperty('text').replace(/&amp;/g, "&"));
                                             }
+                                            var f = selectElement.onchange;
+                                            if (f) {
+                                                selectElement.value = p_aArgs[1].srcElement.value;
+                                                jQuery(selectElement).trigger('change');
+                                            }
                                         }
                                     });
                                 });
                             }
                         },
-                        failure: function(o) {alert('Failed to load the specified panel.');}
+                        failure: function(o) {
+                            Fisma.Util.showAlertDialog('Failed to load the specified panel.');
+                        }
                     }, null);
                 }
             }
@@ -200,4 +213,4 @@
     };
 
     Fisma.Editable = FE;
-})();
+}());

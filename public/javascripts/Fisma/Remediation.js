@@ -39,7 +39,7 @@ Fisma.Remediation = {
                 // have same target action. So set the latter`s action with the former`s.
                 document.finding_detail_upload_evidence.action = document.finding_detail.action;
                 // make the add another upload button YUI
-                new YAHOO.widget.Button("add-another-file-button"),
+                var addAnotherFileButton = new YAHOO.widget.Button("add-another-file-button");
                 // YUI strips away the classes, replace them
                 YAHOO.util.Dom.addClass("add-another-file-button", "ie7-only");
                 YAHOO.util.Dom.addClass("add-another-file-button", "ie8-only");
@@ -48,9 +48,10 @@ Fisma.Remediation = {
                 YAHOO.util.Event.addListener("add-another-file-button", "click", Fisma.Remediation.addUploadEvidence);
                 // make the submit button a YUI widget
                 var inputs = panel.body.getElementsByTagName("input");
-                for (var i in inputs) {
+                var i;
+                for (i in inputs) {
                     if (inputs[i].type === 'submit') {
-                        new YAHOO.widget.Button(inputs[i]);
+                        var submitButton = new YAHOO.widget.Button(inputs[i]);
                     }
                 }
             }
@@ -73,18 +74,21 @@ Fisma.Remediation = {
         var formId = args.formId;
         var panelTitle = args.panelTitle;
         var findingId = args.findingId;
+        var panel;
 
         if ('REJECTED' === action) {
-            var panel = Fisma.UrlPanel.showPanel(
+            panel = Fisma.UrlPanel.showPanel(
                 panelTitle,
                 '/finding/remediation/reject-evidence/id/' + findingId,
                 function(){
                     document.finding_detail_reject_evidence.action = document.finding_detail.action;
-                    new YAHOO.widget.Button(YAHOO.util.Selector.query("input[type=submit]", "finding_detail_reject_evidence", true));
+                    var rejectEvidenceButton = new YAHOO.widget.Button(
+                        YAHOO.util.Selector.query("input[type=submit]", "finding_detail_reject_evidence", true)
+                    );
                     var closeDialogFunction = function() {
                         panel.destroy();
                     };
-                    new YAHOO.widget.Button("dialog_close", {onclick: {fn: closeDialogFunction}});
+                    var closeButton = new YAHOO.widget.Button("dialog_close", {onclick: {fn: closeDialogFunction}});
                 }
             );
         } else {
@@ -122,9 +126,9 @@ Fisma.Remediation = {
             cancelButton.appendChild(document.createTextNode('Cancel'));
             div.appendChild(cancelButton);
 
-            var panel = Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
+            panel = Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
 
-            new YAHOO.widget.Button("dialog_continue", {onclick: {fn: function () {
+            var continueButton = new YAHOO.widget.Button("dialog_continue", {onclick: {fn: function () {
                 var form2 = document.getElementById(formId);
                 var comment = document.getElementById('dialog_comment').value;
 
@@ -137,8 +141,8 @@ Fisma.Remediation = {
                     }
                 }
 
-                form2.elements['comment'].value = comment;
-                form2.elements['decision'].value = action;
+                form2.elements.comment.value = comment;
+                form2.elements.decision.value = action;
 
                 var sub = document.createElement('input');
                 sub.type = 'hidden';
@@ -149,7 +153,7 @@ Fisma.Remediation = {
                 return;
             }}});
 
-            new YAHOO.widget.Button("dialog_close", {onclick: {fn: function () {
+            var closeButton = new YAHOO.widget.Button("dialog_close", {onclick: {fn: function () {
                 panel.destroy();
                 return false;
             }}});
@@ -197,31 +201,33 @@ Fisma.Remediation = {
         var duplicationDetected = false;
         var message = "WARNING: The following file(s) will be replaced: <ul>";
 
-        for (var i = 0; i < document.links.length; i++) {
+        var i;
+        for (i = 0; i < document.links.length; i++) {
             var link = document.links[i];
 
-            if (link.href.indexOf('download-evidence') >= 0 && link.lastChild.nodeName != 'IMG') {
+            if (link.href.indexOf('download-evidence') >= 0 && link.lastChild.nodeName !== 'IMG') {
                 var files = document.finding_detail_upload_evidence['evidence[]'].files;
+                var j, fileName;
                 if (!files) // this ugly chunk is the workaround for IE7
                 {
                     var elements = document.finding_detail_upload_evidence.elements;
-                    for (var j = 0; j < elements.length; j++) {
-                        if (elements[j].name == 'forceSubmit') {
+                    for (j = 0; j < elements.length; j++) {
+                        if (elements[j].name === 'forceSubmit') {
                             return true;
                         }
-                        if (elements[j].name == 'evidence[]') {
-                            var fileName = elements[j].value;
+                        if (elements[j].name === 'evidence[]') {
+                            fileName = elements[j].value;
                             fileName = fileName.slice(fileName.lastIndexOf('\\')+1);
-                            if (fileName == link.lastChild.data) {
+                            if (fileName === link.lastChild.data) {
                                 duplicationDetected = true;
                                 message += "<li>" + fileName + "</li>";
                             }
                         }
                     }
                 } else {
-                    for (var j = 0; j < files.length; j++) {
-                        var fileName = (!files[j].fileName) ? files[j].name : files[j].fileName;
-                        if (fileName == link.lastChild.data) {
+                    for (j = 0; j < files.length; j++) {
+                        fileName = (!files[j].fileName) ? files[j].name : files[j].fileName;
+                        if (fileName === link.lastChild.data) {
                             duplicationDetected = true;
                             message += "<li>" + fileName + "</li>";
                             break;
@@ -256,5 +262,109 @@ Fisma.Remediation = {
         forcedIndicator.value = true;
         document.finding_detail_upload_evidence.appendChild(forcedIndicator);
         document.finding_detail_upload_evidence.upload_evidence.click();
+    },
+
+    /**
+     * A static reference to the Source create form panel
+     */
+    createSourcePanel : null,
+
+    /**
+     * Display Source create form panel
+     */
+    displaySourcePanel : function (element) {
+        if (element.value === 'new') {
+            var panelConfig = {width : "700px", modal : true};
+
+            Fisma.Remediation.createSourcePanel = Fisma.UrlPanel.showPanel(
+                'Create New Finding Source',
+                '/finding/source/form',
+                function () {
+                    var sourceMessageBox = new Fisma.MessageBox(document.getElementById("sourceMessageBar"));
+                    Fisma.Registry.get("messageBoxStack").push(sourceMessageBox);
+
+                    // The form contains some scripts that need to be executed
+                    var scriptNodes = Fisma.Remediation.createSourcePanel.body.getElementsByTagName('script');
+
+                    var i;
+                    for (i = 0; i < scriptNodes.length; i++) {
+                        try {
+                            eval(scriptNodes[i].text);
+                        } catch (e) {
+                            var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                            Fisma.Util.showAlertDialog(message);
+                        }
+                    }
+                },
+                'createSourcePanel',
+                panelConfig
+            );
+
+            Fisma.Remediation.createSourcePanel.subscribe("hide", function() {
+                Fisma.Registry.get("messageBoxStack").pop();
+                setTimeout(function () {
+                    Fisma.Remediation.createSourcePanel.destroy();
+                    Fisma.Remediation.createSourcePanel = null;
+                }, 0);
+            }, this, true);
+        }
+    },
+
+    /**
+     * Submit an XHR to create a Finding Source
+     */
+    createSource : function () {
+        // The scope is the button that was clicked, so save it for closures
+        var saveButton = this;
+        var form = Fisma.Remediation.createSourcePanel.body.getElementsByTagName('form')[0];
+
+        // Disable the submit button
+        saveButton.set("disabled", true);
+
+        // Save the username so we can populate it back on the create finding form
+        var sourceName = document.getElementById("name").value;
+
+        YAHOO.util.Connect.setForm(form);
+        YAHOO.util.Connect.asyncRequest('POST', '/finding/source/create/format/json', {
+            success : function(o) {
+                var result;
+
+                try {
+                    result = YAHOO.lang.JSON.parse(o.responseText).result;
+                } catch (e) {
+                    result = {success : false, message : e};
+                }
+
+                if (result.success) {
+                    Fisma.Remediation.createSourcePanel.hide();
+
+                    // Insert the new source into the <select>
+                    var sourceId = parseInt(result.message, 10);
+                    var newOption = document.createElement('option');
+                    newOption.value = sourceId;
+                    newOption.appendChild(document.createTextNode(sourceName));
+                    newOption.selected = true;
+                    jQuery('#sourceId > option[value="new"]').after(newOption);
+
+                    // Reflect the change in the YUI Select Menu Button
+                    var selectButton = YAHOO.widget.Button.getButton('sourceId-button');
+                    var newSource = selectButton.getMenu().addItem({
+                        'text': sourceName,
+                        'value': sourceId
+                    });
+                    selectButton.set('selectedMenuItem', newSource);
+                    selectButton.set('label', sourceName);
+
+                    Fisma.Util.message('A finding source has been created.', 'info', true);
+                } else {
+                    Fisma.Util.message(result.message, 'warning', true);
+                    saveButton.set("disabled", false);
+                }
+            },
+            failure : function(o) {
+                var alertMessage = 'Failed to create new finding source: ' + o.statusText;
+                Fisma.Remediation.createSourcePanel.setBody(alertMessage);
+            }
+        }, null);
     }
 };

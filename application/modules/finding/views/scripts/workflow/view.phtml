@@ -1,5 +1,6 @@
 <?php
 $editMode = $this->editMode;
+$disabled = ($editMode) ? "" : "readonly";
 ?>
 
 <form
@@ -50,33 +51,38 @@ $editMode = $this->editMode;
             <td><?php
                 echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('workflowTitle', 'new'), 'none');
             ?></td>
-            <td>New</td>
+            <td><div>New</div></td>
         </tr>
         <tr>
             <td><?php
                 echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('chartLabel', 'new'), 'none');
             ?></td>
-            <td>NEW</td>
+            <td><div>NEW</div></td>
         </tr>
         <tr>
             <td><?php
                 echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('statusMessage', 'new'), 'none');
             ?></td>
-            <td>Awaiting Mitigation Strategy</td>
+            <td><div>Awaiting Mitigation Strategy</div></td>
         </tr>
         <tr>
             <td><?php
                 echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('onTime', 'new'), 'none');
             ?></td>
-            <td>30</td>
+            <td><input
+                type='text'
+                <?php echo $this->escape($disabled); ?>
+                name='finding_new_due'
+                value='<?php echo $this->escape($this->findingNewDue); ?>'
+            /></td>
         </tr>
         <tr>
             <td>Description</td>
-            <td>
+            <td><div>
                 The finding has been created but nobody has determined an effective mitigation strategy.
                 Once a user picks a mitigation strategy the finding will move from NEW to DRAFT.
                 You have 30 days to choose a mitigation strategy before this item becomes overdue.
-            </td>
+            </div></td>
         </tr>
     </table>
 </div>
@@ -89,33 +95,38 @@ $editMode = $this->editMode;
             <td><?php
                 echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('workflowTitle', 'draft'), 'none');
             ?></td>
-            <td>Draft</td>
+            <td><div>Draft</div></td>
         </tr>
         <tr>
             <td><?php
                 echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('chartLabel', 'draft'), 'none');
             ?></td>
-            <td>DRAFT</td>
+            <td><div>DRAFT</div></td>
         </tr>
         <tr>
             <td><?php
                 echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('statusMessage', 'draft'), 'none');
             ?></td>
-            <td>Awaiting Mitigation Strategy Submission</td>
+            <td><div>Awaiting Mitigation Strategy Submission</div></td>
         </tr>
         <tr>
             <td><?php
                 echo $this->escape(Finding_WorkflowController::getWorkflowTooltip('onTime', 'draft'), 'none');
             ?></td>
-            <td>30</td>
+            <td><input
+                type='text'
+                <?php echo $this->escape($disabled); ?>
+                name='finding_draft_due'
+                value='<?php echo $this->escape($this->findingDraftDue); ?>'
+            /></td>
         </tr>
         <tr>
             <td>Description</td>
-            <td>
+            <td><div>
                 The finding is awaiting a completed mitigation strategy. Once a user submits the mitigation strategy
                 for approval the finding will move from DRAFT to mitigation strategy approval.
                 You have 30 days to define and submit a mitigation strategy.
-            </td>
+            </div></td>
         </tr>
     </table>
 </div>

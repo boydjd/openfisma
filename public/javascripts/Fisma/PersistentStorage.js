@@ -64,10 +64,12 @@
          * @param values {Object} Object literal of key-value pairs to set
          */
         init: function(values) {
-            for (var key in values) {
+            var key;
+            for (key in values) {
                 this._set(key, values[key]);
             }
         },
+
         /**
          * Synchronize the server with the local state.
          *
@@ -80,12 +82,12 @@
                 failureFn = null,
                 scope = null;
             if (callback) {
-                if (typeof(callback) == "function") {
+                if (typeof(callback) === "function") {
                     successFn = callback;
-                } else if (callback.success && typeof(callback.success) == "function") {
+                } else if (callback.success && typeof(callback.success) === "function") {
                     successFn = callback.success;
                 }
-                if (callback.failure && typeof(callback.failure) == "function") {
+                if (callback.failure && typeof(callback.failure) === "function") {
                     failureFn = callback.failure;
                 }
                 if (callback.scope) {
@@ -94,22 +96,22 @@
             }
             Fisma.Storage.onReady(function() {
                 var uri = '/storage/sync/format/json',
-                    csrfInputs = $('[name="csrf"]').val();
+                    csrfInputs = $('[name="csrf"]').val(),
                     callback = {
                         scope: this,
                         success: function(response) {
                             var object = YAHOO.lang.JSON.parse(response.responseText);
-                            if (object.status == "ok") {
+                            if (object.status === "ok") {
                                 this.init(object.data);
                                 this._modified = null;
                             }
                             if (successFn) {
-                                successFn.call(scope ? scope : this, response, object);
+                                successFn.call(scope || this, response, object);
                             }
                         },
                         failure: function() {
                             if (failureFn) {
-                                failureFn.call(scope ? scope : this);
+                                failureFn.call(scope || this);
                             }
                         }
                     },
@@ -123,4 +125,4 @@
             }, this, true);
         }
     });
-})();
+}());

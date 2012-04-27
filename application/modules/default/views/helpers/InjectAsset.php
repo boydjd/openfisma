@@ -39,7 +39,6 @@ class View_Helper_InjectAsset
                                 '/javascripts/combined.js' =>
                                 array('/javascripts/php.js',
                                       '/javascripts/tiny_mce_config.js',
-                                      '/javascripts/selectallselectnone.js',
                                       '/javascripts/groupeddatatable.js',
                                       '/javascripts/Fisma.js',
                                       '/javascripts/Fisma/Editable.js',

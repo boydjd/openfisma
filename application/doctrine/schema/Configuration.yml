@@ -91,7 +91,7 @@ Configuration:
         contact_email:
             type: string(255)
             notblank: true
-            email: 
+            email:
                 check_mx: false
             comment: Technical support contact email address
             default: ""
@@ -179,6 +179,17 @@ Configuration:
         host_url:
             type: string(255)
             comment: This is used to construct self referencing URLs.
+        threat_type:
+            type: enum
+            notnull: true
+            values: [threat_level, residual_risk]
+            comment: The default threat metrics to use for finding risk analysis.
+            default: threat_level
+        use_legacy_finding_key:
+            type: boolean
+            notnull: true
+            default: true
+            comment: Whether to use and show the Legacy Finding Key field in finding detail view.
         default_security_control_catalog_id:
             type: integer(1)
             notblank: true
@@ -189,3 +200,15 @@ Configuration:
             notblank: true
             comment: The ID of the default organization type which is used when the user does not explicitly organization type.
             default: 3
+        finding_new_due:
+            type: integer(2)
+            unsigned: true
+            notblank: true
+            comment: Number of days before a NEW finding becomes overdue
+            default: 30
+        finding_draft_due:
+            type: integer(2)
+            unsigned: true
+            notblank: true
+            comment: Number of days before a DRAFT finding becomes overdue
+            default: 30

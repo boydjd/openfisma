@@ -28,7 +28,7 @@ Fisma.System = {
      * Eventually it would be nifty to refresh the YUI table but for now we will just refresh the entire page
      */
     uploadDocumentCallback : function (yuiPanel) {
-        window.location.href = window.location.href;
+        window.location = window.location.href;
     },
 
     /**
@@ -41,7 +41,7 @@ Fisma.System = {
      */
     removeSelectedUsers : function (event, config) {
         var userRoles = [];
-        var data = new Object();
+        var data = {};
 
         $('input:checkbox[name="rolesAndUsers[][]"]:checked').each(
             function() {
@@ -74,7 +74,7 @@ Fisma.System = {
      * @return void
      */
     addUser : function (event, config) {
-        var data = new Object();
+        var data = {};
 
         data.userId = $('#addUserId').val();
         data.roleId = $('#roles').val();
@@ -102,7 +102,7 @@ Fisma.System = {
      */
     addSelectedUsers : function (event, config) {
         var userRoles = [];
-        var data = new Object();
+        var data = {};
 
         $('input:checkbox[name="copyUserAccessTree[][]"]:checked').each(
             function() {
@@ -163,8 +163,9 @@ Fisma.System = {
 
             // The form contains some scripts that need to be executed
             var scriptNodes = panel.body.getElementsByTagName('script');
+            var i;
 
-            for (var i=0; i < scriptNodes.length; i++) {
+            for (i = 0; i < scriptNodes.length; i++) {
                 try {
                     eval(scriptNodes[i].text);
                 } catch (e) {
@@ -175,8 +176,9 @@ Fisma.System = {
 
             // The tool tips will display underneath the modal dialog mask, so we'll move them up to a higher layer.
             var tooltips = YAHOO.util.Dom.getElementsByClassName('yui-tt', 'div');
+            var index;
 
-            for (var index in tooltips) {
+            for (index in tooltips) {
                 var tooltip = tooltips[index];
 
                 // The yui panel is usually 4, so anything higher is good.
@@ -192,6 +194,8 @@ Fisma.System = {
             'convertToSystemPanel',
             panelConfig
         );
+
+        setTimeout(function () {jQuery('body').addClass('masked');}, 100);
 
         panel.hideEvent.subscribe(function (e) {
             setTimeout(function () {panel.destroy();}, 0);
@@ -212,8 +216,9 @@ Fisma.System = {
 
             // The form contains some scripts that need to be executed
             var scriptNodes = panel.body.getElementsByTagName('script');
+            var i;
 
-            for (var i=0; i < scriptNodes.length; i++) {
+            for (i = 0; i < scriptNodes.length; i++) {
                 try {
                     eval(scriptNodes[i].text);
                 } catch (e) {
@@ -246,6 +251,25 @@ Fisma.System = {
      */
     getSystemConversionForm : function (sysId) {
 
+        var rtnHighModLowSelectObj = function (selectObjName, states) {
+
+            var selectObj = document.createElement('select');
+            selectObj.name = selectObjName.replace(' ', '');
+            var x;
+
+            for (x = 0; x < states.length; x++) {
+                var myOption = document.createElement('option');
+                myOption.value = states[x];
+                var optText = document.createTextNode(states[x]);
+                var boldOptText = document.createElement('b');
+                boldOptText.appendChild(optText);
+                myOption.appendChild(boldOptText);
+                selectObj.appendChild(myOption);
+            }
+
+            return selectObj;
+        };
+
         var addInputRowOnTable = function (addToTable, descriptionText, opts) {
 
             var myRow = document.createElement('tr');
@@ -261,24 +285,6 @@ Fisma.System = {
             myRow.appendChild(cellDescr);
             myRow.appendChild(cellInput);
             addToTable.appendChild(myRow);
-        };
-
-        var rtnHighModLowSelectObj = function (selectObjName, states) {
-
-            var selectObj = document.createElement('select');
-            selectObj.name = selectObjName.replace(' ', '');
-
-            for (var x = 0; x < states.length; x++) {
-                var myOption = document.createElement('option');
-                myOption.value = states[x];
-                var optText = document.createTextNode(states[x]);
-                var boldOptText = document.createElement('b');
-                boldOptText.appendChild(optText);
-                myOption.appendChild(boldOptText);
-                selectObj.appendChild(myOption);
-            }
-
-            return selectObj;
         };
 
         var myDialogForm = document.createElement('form');
@@ -338,5 +344,15 @@ Fisma.System = {
         waitPanel.setBody('<img src="/images/loading_bar.gif">');
         waitPanel.render(document.body);
         waitPanel.show();
+    },
+    
+    /**
+     * Checked all checkbox by name 
+     * 
+     * @access public
+     * @return void
+     */
+    selectAllByName : function (event, config) {
+        $('input:checkbox[name="' + config.name + '"]').attr("checked", "checked");
     }
 };

@@ -58,7 +58,10 @@
             var select = $("select", this._stepTemplate);
             select.append("<option value=''></option>");
             $.each(roleData, function(key, value) {
-                select.append("<option value='" + key + "'>" + value + "</option>");
+                var newOption = $("<option/>");
+                newOption.attr("value", key);
+                newOption.text(value);
+                select.append(newOption);
             });
         },
 
@@ -104,18 +107,19 @@
             newTextarea.attr("id", textareaId);
             if (data) {
                 $('input[name^=stepName]', newTr).val(data.name);
+                $('input[name^=stepRole]', newTr).val(data.roleId);
                 $("select", newTr).val(data.roleId);
                 newTextarea.val(data.description);
             }
 
             $(buttons[0]).attr('id', textareaId + "_addAbove");
-            new YAHOO.widget.Button(buttons[0], {label: "Add Step Above"});
+            var addStepAboveButton = new YAHOO.widget.Button(buttons[0], {label: "Add Step Above"});
 
             $(buttons[1]).attr('id', textareaId + "_addBelow");
-            new YAHOO.widget.Button(buttons[1], {label: "Add Step Below"});
+            var addStepBelowButton = new YAHOO.widget.Button(buttons[1], {label: "Add Step Below"});
 
             $(buttons[2]).attr('id', textareaId + "_remove");
-            new YAHOO.widget.Button(buttons[2], {label: "Remove Step"});
+            var removeStepButton = new YAHOO.widget.Button(buttons[2], {label: "Remove Step"});
 
             $(selectMenu).attr('id', textareaId + '_menu');
             $(selectButton).attr('id', textareaId + '_button');
@@ -123,7 +127,12 @@
             $(tr).after(newTr);
 
             // Fetch currently selected item
-            var selectedLabel = (data) ? $("option:selected", selectMenu).text() : '';
+            var selectedLabel = (data) ? $("option:selected", selectMenu).html() : '';
+
+            // doubly-escape option text because YUI menus are stupid
+            $("option", newTr).each(function() {
+                $(this).text($(this).html());
+            });
 
             // Create a Button using an existing <input> and <select> element
             var oMenuButton = new YAHOO.widget.Button(textareaId + '_button', {
@@ -134,10 +143,17 @@
 
             // Register "click" event listener for the Button's Menu instance
             oMenuButton.getMenu().subscribe("click", function (p_sType, p_aArgs) {
+                var Dom = YAHOO.util.Dom;
                 var oEvent = p_aArgs[0],       // DOM event
                     oMenuItem = p_aArgs[1]; // MenuItem target of the event
                 if (oMenuItem) {
                     oMenuButton.set('label', oMenuItem.cfg.getProperty("text"));
+
+                    // Set the roleid to stepRole hidden input field, fix for OFJ1790.
+                    var pEle = Dom.getAncestorByTagName(this.id, 'p');
+                    var parentOfStepRole = Dom.getPreviousSibling(pEle);
+                    var stepRole = Dom.getFirstChild(parentOfStepRole);
+                    stepRole.value = oMenuItem.value;
                 }
             });
 

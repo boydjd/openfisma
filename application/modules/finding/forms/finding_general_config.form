@@ -7,7 +7,7 @@
 ; Copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
 ; License   http://www.openfisma.org/mw/index.php?title=License
 
-[finding_omb_report_config]
+[finding_general_config]
 elementPrefixPath.prefix = Fisma_Zend_Form
 elementPrefixPath.path = Fisma/Zend/Form
 elementPrefixPath.type = Validate
@@ -15,8 +15,18 @@ elementPrefixPath.type = Validate
 elements.default_bureau_id.type = "select"
 elements.default_bureau_id.options.label = "Map OMB Bureau To"
 elements.default_bureau_id.options.required = true
-displayGroups.omb_report_config.elements.default_bureau_ida = "default_bureau_id"
+displayGroups.general_config.elements.default_bureau_id = "default_bureau_id"
+
+elements.threat_type.type = "select"
+elements.threat_type.options.label = "Default Threat Type"
+elements.threat_type.options.required = true
+displayGroups.general_config.elements.threat_type = "threat_type"
+
+elements.use_legacy_finding_key.type = "checkbox"
+elements.use_legacy_finding_key.options.label = "Use Legacy Finding Key"
+elements.use_legacy_finding_key.options.required = true
+displayGroups.general_config.elements.use_legacy_finding_key = "use_legacy_finding_key"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save"
-displayGroups.omb_report_config.elements.save = "save"
+displayGroups.general_config.elements.save = "save"
