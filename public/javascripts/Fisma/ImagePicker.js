@@ -105,7 +105,8 @@
         /**
          * A link to a URL where the images in this picker can be managed.
          *
-         * If set, the widget will display a URL button for this URL. If not set, the button will not be displayed at all.
+         * If set, the widget will display a URL button for this URL. If not set,
+         * the button will not be displayed at all.
          */
         _managementUrl: null,
 

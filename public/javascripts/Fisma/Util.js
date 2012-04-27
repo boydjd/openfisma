@@ -97,19 +97,19 @@ Fisma.Util = {
         var hours = date.getHours().toString();
 
         if (hours.length === 1) {
-         hours = "0" + hours;
+            hours = "0" + hours;
         }
 
         var minutes = date.getMinutes().toString();
 
         if (minutes.length === 1) {
-         minutes = "0" + minutes;
+            minutes = "0" + minutes;
         }
 
         var seconds = date.getSeconds().toString();
 
         if (seconds.length === 1) {
-         seconds = "0" + seconds;
+            seconds = "0" + seconds;
         }
 
         return hours + ":" + minutes + ":" + seconds;
@@ -328,7 +328,10 @@ Fisma.Util = {
         var currentDay = currentTime.getDate();
         var currentYear = currentTime.getFullYear();
 
-        var date = new Date(currentMonth + "/" + currentDay + "/" + currentYear + " " + hour + ":" + minute + ":00" + " " + ampm);
+        var date = new Date(
+                currentMonth + "/" + currentDay + "/" + currentYear
+                + " " + hour + ":" + minute + ":00" + " " + ampm
+            );
         hour = $P.str_pad(date.getHours(), 2, '0', 'STR_PAD_LEFT');
         minute = $P.str_pad(date.getMinutes(), 2, '0', 'STR_PAD_LEFT');
 

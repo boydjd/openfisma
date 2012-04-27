@@ -61,7 +61,9 @@ Fisma.System = {
             data: data,
             dataType: "json",
             success: function() {
-                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+                $("#rolesAndUsers").load(
+                    '/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers'
+                );
         }});
     },
 
@@ -87,7 +89,9 @@ Fisma.System = {
             data: data,
             dataType: "json",
             success: function() {
-                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+                $("#rolesAndUsers").load(
+                    '/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers'
+                );
             }
         });
     },
@@ -122,7 +126,9 @@ Fisma.System = {
             data: data,
             dataType: "json",
             success: function() {
-                $("#rolesAndUsers").load('/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers');
+                $("#rolesAndUsers").load(
+                    '/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers'
+                );
             }
         });
     },
@@ -298,7 +304,9 @@ Fisma.System = {
         var dialogBody = document.createElement('div');
         dialogBody.className = 'bd';
 
-        var msg = document.createTextNode("Please input the needed system information in order to complete conversion.");
+        var msg = document.createTextNode(
+                "Please input the needed system information in order to complete conversion."
+            );
         dialogBody.appendChild(msg);
         dialogBody.appendChild(document.createElement('br'));
         dialogBody.appendChild(document.createElement('br'));
@@ -347,8 +355,8 @@ Fisma.System = {
     },
     
     /**
-     * Checked all checkbox by name 
-     * 
+     * Checked all checkbox by name
+     *
      * @access public
      * @return void
      */

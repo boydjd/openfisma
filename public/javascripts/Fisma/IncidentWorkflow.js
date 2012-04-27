@@ -23,7 +23,8 @@
     /**
      * Manages the IR workflow editor using dynamic client-side code.
      *
-     * @param {Array} data.steps Array of object literals containing the properties for each of the initial workflow steps.
+     * @param {Array} data.steps Array of object literals containing the properties for each of the initial workflow
+     *                           steps.
      * @param {Object} data.roles Object literal mapping role IDs to their nicknames.
      * @param {String} templateId ID of the DOM element containing the template to use when adding new workflow steps.
      * @class IncidentWorkflow
@@ -67,7 +68,8 @@
 
         /**
          * @method _renumberSteps
-         * @description Renumber the step labels in the left hand column.  Used to correct numbering after adding or removing a step.
+         * @description Renumber the step labels in the left hand column.  Used to correct numbering after adding or
+         *              removing a step.
          * @protected
          */
         _renumberSteps: function() {
@@ -77,7 +79,8 @@
 
         /**
          * @method addStepAbove
-         * @description Add empty step above the provided TR element.  The step may optionally be populated with the provided data.
+         * @description Add empty step above the provided TR element.  The step may optionally be populated with
+         *              the provided data.
          * @public
          * @param {String|HTMLElement|jQuery} tr Element above which to place the new step.
          * @param {Object} data (Optional) Data with which to populate the new step.
@@ -89,7 +92,8 @@
 
         /**
          * @method addStepBelow
-         * @description Add empty step below the provided TR element.  The step may optionally be populated with the provided data.
+         * @description Add empty step below the provided TR element.  The step may optionally be populated with
+         *              the provided data.
          * @public
          * @param {String|HTMLElement|jQuery} tr Element below which to place the new step.
          * @param {Object} data (Optional) Data with which to populate the new step.

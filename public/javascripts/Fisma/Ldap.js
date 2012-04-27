@@ -30,7 +30,7 @@ Fisma.Ldap = {
 
     /**
      * Uses an XHR to validate the user's current LDAP settings
-     */    
+     */
     validateLdapConfiguration : function () {
 
         if (Fisma.Ldap.validateLdapBusy) {

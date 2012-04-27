@@ -61,9 +61,9 @@ Fisma.Finding = {
      * @param yuiPanel A reference to the modal YUI dialog
      */
     commentCallback : function (comment, yuiPanel) {
-                
+
         var that = this;
-        
+
         var commentRow = {
             timestamp : comment.createdTs,
             username : comment.username,
@@ -79,7 +79,7 @@ Fisma.Finding = {
          * the wrong place and the sort would be wrong.
          */
         this.commentTable.sortColumn(this.commentTable.getColumn(0), YAHOO.widget.DataTable.CLASS_DESC);
-        
+
         // Highlight the added row so the user can see that it worked
         var rowBlinker = new Fisma.Blinker(
             100,
@@ -102,7 +102,7 @@ Fisma.Finding = {
         yuiPanel.hide();
         yuiPanel.destroy();
     },
-    
+
     /**
      * A function which is called when the ECD needs to be changed and a justification needs to be provided.
      * 
@@ -190,13 +190,13 @@ Fisma.Finding = {
 
     /**
      * Display a message to let the user know that the POC they were looking for could not be found
-     * 
+     *
      * This is registered as the event handler for both the data return event and the container collapse event, so it
      * has some conditional logic based on what "type" and what arguments it receives.
-     * 
+     *
      * @param type {String} Name of the event.
      * @param args {Array} Event arguments.
-     */   
+     */
     displayPocNotFoundMessage : function (type, args) {
         var autocomplete = Fisma.Finding.pocAutocomplete;
 
@@ -249,7 +249,7 @@ Fisma.Finding = {
 
     /**
      * Create the container for the POC not found message
-     * 
+     *
      * @param id {String} The ID to set on the container
      * @param parent {HTMLElement} The autocomplete that this container belongs to
      */
@@ -279,7 +279,7 @@ Fisma.Finding = {
 
     /**
      * Display a POC creation form inside a modal dialog.
-     * 
+     *
      * When setting a finding POC, if the user doesn't select from the autocomplete list, then prompt them to see if
      * they want to create a new POC instead.
      */
@@ -452,9 +452,9 @@ Fisma.Finding = {
         autocomplete.itemSelectEvent.subscribe(Fisma.Finding.handleSecurityControlSelection);
     },
 
-    /** 
-    * This takes a YUI datatable as parameters, delete a row, then refresh the table  
-    *    
+    /**
+    * This takes a YUI datatable as parameters, delete a row, then refresh the table
+    *
     * @param YUI datatable
     */
     deleteEvidence: function (oArgs) {
