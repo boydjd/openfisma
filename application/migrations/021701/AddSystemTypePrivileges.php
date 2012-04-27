@@ -56,7 +56,7 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
         if (!$this->getHelper()->query($queryStatement . "'create'")) {
             $this->getHelper()->exec($insertStatement . "'create', 'Create System Type'" . ")");
         }
-         if (!$this->getHelper()->query($queryStatement."'update'")) {
+        if (!$this->getHelper()->query($queryStatement."'update'")) {
             $this->getHelper()->exec($insertStatement . "'update', 'Update System Type'" . ")");
         }
         if (!$this->getHelper()->query($queryStatement . "'delete'")) {
@@ -73,7 +73,7 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
     {
         $this->message("Assigning privileges to Admin role");
 
-        $privilegeQueryStatement = "SELECT `id` from `privilege` WHERE `resource` LIKE 'system_type' AND `action` LIKE ";
+        $privilegeQueryStatement = "SELECT `id` from privilege WHERE `resource` LIKE 'system_type' AND `action` LIKE ";
         $readPrivilege = $this->getHelper()->query($privilegeQueryStatement . "'read'");
         $createPrivilege = $this->getHelper()->query($privilegeQueryStatement . "'create'");
         $updatePrivilege = $this->getHelper()->query($privilegeQueryStatement . "'update'");
