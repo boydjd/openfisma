@@ -718,3 +718,39 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 .ie9-only {
     display: none;
 }
+
+/* Used by Fisma.Util.showWhatsNewDialog */
+.dialog-button-panel {
+    background:#fff;
+    border-top:1px solid #f0f0f0;
+    clear:both;
+    height:23px;
+    overflow:hidden;
+    padding:10px 0 10px 0;
+    text-align:right;
+    width:100%;
+}
+
+.dialog-button-panel a.button-panel-link {
+    font-size:1em;
+    margin-right:1.65em;
+    margin-top:2px;
+    text-decoration: none;
+    color: #3C78B5;
+}
+
+.dialog-tip {
+    float:left;
+    margin-left:17px;
+    font-size:13px;
+    color:#666;
+}
+
+.dialog-tip input[type="checkbox"] {
+    margin: 3px 3px 3px 4px;
+    padding-top: 1px;
+}
+
+#whatsNewDialog  div.bd, #whatsNewDialog div.ft {
+    background-color: #FFFFFF
+}

@@ -33,7 +33,6 @@
 if (isset($this->notifications)) {
 ?>
     <div class="panel clear">
-        <input name="csrf" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
         <p><em>Notifications</em></p>
         <p>
             You have new notifications that you have not received in e-mail yet.
@@ -80,5 +79,13 @@ if ( !empty( $this->alert['TOTAL'] ) ) {
 ?>
 
 <div class="clear"></div>
-
+<input name="csrf" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
 <?php Fisma_Format_Section::stopSection(); ?>
+
+<script type="text/javascript">
+YAHOO.util.Event.onDOMReady(function () {
+    if (<?php echo $this->escape($this->showWhatsNew, 'none'); ?>) {                                           
+        Fisma.Util.showWhatsNewDialog(<?php echo $this->escape("'" . $this->currentVersion . "'", 'none');?>);
+    }
+});
+</script>

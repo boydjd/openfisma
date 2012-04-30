@@ -396,6 +396,10 @@ UserPreferences:
         Profile:
             label: Profile
             link: /user/profile
+        Whatsnew:
+            label: What\u2019s New
+            link: ""
+            onClick: Fisma.Util.showWhatsNewDialog
 
 Debug:
     label: Debug

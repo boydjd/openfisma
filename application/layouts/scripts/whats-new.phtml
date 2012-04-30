@@ -1,0 +1,38 @@
+<?php
+    echo $this->escape("{$this->doctype()}\n", 'none');
+?>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <?php 
+            $this->headScript()->appendFile('/javascripts/jquery-min.js');
+            $this->headScript()->appendFile('/javascripts/jquery-scrollTo-1-4-2-min.js');
+            $this->headScript()->appendFile('/javascripts/jquery-localscroll-1-2-7-min.js');
+            $this->headScript()->appendFile('/javascripts/jquery-serialScroll-1-2-2-min.js');
+            $this->headScript()->appendFile('/javascripts/swfobject.js');
+            $this->headScript()->appendFile('/javascripts/php.js');
+            $this->headScript()->appendFile('/javascripts/Fisma.js');
+            $this->headScript()->appendFile('/javascripts/Fisma/WhatsNew.js');
+            $this->headLink()->appendStylesheet('/stylesheets/whatsNew.css');
+
+            echo $this->escape($this->headScript(), 'none');
+            echo $this->escape($this->headLink(), 'none');
+        ?>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                Fisma.WhatsNew.panelScroll();
+            });
+        </script>
+    </head>
+    <body>
+        <div id="whats-new-wrapper">
+            <div id="slider">
+                <div class="scroll">
+                    <div class="scrollContainer">
+                        <?php echo $this->escape($this->layout()->content, 'none'); ?>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

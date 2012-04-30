@@ -55,22 +55,27 @@ class Fisma_Menu
      * @param string $link The link of the menu item.
      * @param mixed string|null $model The model shows on the Go to.. menu item, 
      * null if the $type is not Fisma_Yui_MenuItem_GoTo 
+     * @param integer $onClick  The the javascript function for onclick event.
      * @param integer $target  The target of the link.
      * @param integer $count Add the submenu to its parent menu when $count is 1.
      * @param Fisma_Yui_Menu $root The menu holds the menu items. 
      * @param Fisma_Yui_Menu $parent The parent menu holds the menu items. 
      * @return Fisma_Yui_MenuBar The assembled Fisma YUI menu bar object
      */
-    private static function addMenuItem($type, $label, $link, $model, $target, $count, $root, $parent = null)
+    private static function addMenuItem($type, $label, $link, $model, $onClick, $target, $count, $root, $parent = null)
     {
         // It is Fisma_Yui_MenuItem if the $model is null.
         if (is_null($model)) {
-            if (is_null($target)) {
-                $menuItem = new $type($label, $link);
+            if (!is_null($onClick)) {
+                $menuItem = new $type($label, null, new Fisma_Yui_MenuItem_OnClick($onClick));
             } else {
-                $menuItem = new $type($label, $link, null, $target);
+                if (is_null($target)) {
+                    $menuItem = new $type($label, $link);
+                } else {
+                    $menuItem = new $type($label, $link, null, $target);
+                }
             }
-        } else {
+        } else { // It is Go to
             $menuItem = new $type($label, $model, $link);
         }
         $root->add($menuItem);
@@ -145,6 +150,7 @@ class Fisma_Menu
                                 $value['click'],
                                 $value['model'],
                                 null,
+                                null,
                                 $i,
                                 $root,
                                 $parent
@@ -158,6 +164,7 @@ class Fisma_Menu
                             $value['label'],
                             $value['click'],
                             $value['model'],
+                            null,
                             null,
                             $i,
                             $root,
@@ -191,6 +198,7 @@ class Fisma_Menu
                                     $value['label'],
                                     $value['link'],
                                     null,
+                                    isset($value['onClick']) ? $value['onClick'] : null,
                                     isset($value['target']) ? $value['target'] : null,
                                     $i,
                                     $root,
@@ -209,6 +217,7 @@ class Fisma_Menu
                                     $value['label'],
                                     $value['link'],
                                     null,
+                                    isset($value['onClick']) ? $value['onClick'] : null,
                                     isset($value['target']) ? $value['target'] : null,
                                     $i,
                                     $root,
@@ -223,6 +232,7 @@ class Fisma_Menu
                                 $value['label'],
                                 $value['link'],
                                 null,
+                                isset($value['onClick']) ? $value['onClick'] : null,
                                 isset($value['target']) ? $value['target'] : null,
                                 $i,
                                 $root,

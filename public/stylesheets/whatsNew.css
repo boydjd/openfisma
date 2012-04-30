@@ -1,0 +1,161 @@
+/* Style for the what's new panel */
+
+html, body, div, span, object, h1, h2, h3, h4, p, img, ul, li {
+    margin: 0;
+    outline: 0 none;
+    padding: 0;
+    vertical-align: baseline;
+}
+
+body {
+    font: 13px/1.231 arial,helvetica,clean,sans-serif;
+}
+
+h3 {
+    font-size: 24px;
+    color: #000;
+    font-weight: normal;
+    padding: 35px 0 17px;
+    border-bottom: 1px solid #e0e0e0;
+    width:805px;
+}
+
+#whats-new-wrapper {
+    width: 830px;
+}
+
+a, .arrow {
+    color: #326ca6;
+    text-decoration: none;
+}
+
+.arrow {
+    padding:0 3px;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+div.center {
+    clear:both;
+    text-align: center;
+    margin: 91px 0 0;
+    display:block;
+    width:798px;  
+}
+
+p.center  {
+    font-size:16px;  
+    margin:25px 0 0; 
+    text-align: center;
+    display: block;
+}
+
+ul.intro-feature-highlights {
+    overflow: hidden;
+    margin: 45px 0 0 45px;
+}   
+
+.panel ul.column-count-3 li{
+    margin-right: 70px;
+}
+                    
+ul.intro-feature-highlights li a {
+    display:block;
+    font-size: 16px;
+    padding-bottom: 5px;
+}
+
+ul.intro-feature-highlights li {
+    float: left;
+    display:inline;
+    width: 180px;
+    margin-right: 85px;
+    text-align: center;
+}
+
+ul.intro-feature-highlights li.last {
+    margin-right: 0;
+}
+
+ul.intro-feature-highlights li img {
+    height: 180px;
+    width: 180px;
+    display:block;
+    padding-bottom:10px;
+}
+
+.two-col {
+    overflow:hidden;
+    margin: 35px 0;
+}
+
+.two-col .column {
+    float:left;
+    width: 355px;
+}
+
+.two-col .column.last {
+    width: 432px;
+    float:right;
+}
+
+.navigation {
+    position: absolute;
+    bottom: 0;
+    left:0;
+}
+
+.center .navigation {
+    left:30px;
+    bottom:30px;
+}
+
+.navigation .pipe {
+    color: #ccc;
+}                  
+
+.last-panel .pipe, .last-panel .next {
+    display:none;
+}
+
+.panel .full-panel {
+    margin:130px 0 0;
+}
+
+.panel .full-panel .center {
+    margin: 20px 0;
+}
+     
+.panel {
+    padding: 0 0 0 10px;
+    height: 420px;
+    position: relative;
+}
+
+#slider {
+    width: 820px;
+    margin: 0 auto;
+    position: relative;
+}
+
+.scroll {
+    height: 420px;
+    overflow: hidden;
+    position: relative; 
+    clear: left;
+} 
+
+.scrollContainer {
+    width: 16600px;
+}
+
+.scrollContainer div.panel {
+    width: 830px;
+}
+
+.close-link {
+    text-decoration: underline;
+    text-align: right;
+}        
