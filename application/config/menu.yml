@@ -30,7 +30,7 @@
 Dashboard:
     label: Dashboard
     link: /dashboard
-    privilege: 
+    privilege:
         func: hasArea
         param: dashboard
 
@@ -107,7 +107,7 @@ Finding:
                         param2: Source
         Reports:
             label: Reports
-            privilege: 
+            privilege:
                 func: hasArea
                 param: finding_report
             submenu:
@@ -124,7 +124,7 @@ Finding:
 Vulnerability:
     label: Vulnerabilities
     module: Vulnerability Management
-    privilege: 
+    privilege:
         func: hasArea
         param: vulnerability
     submenu:
@@ -168,7 +168,7 @@ Vulnerability:
                         param2: VulnerabilityResolution
         Reports:
             label: Reports
-            privilege: 
+            privilege:
                 func: hasArea
                 param: vulnerability_report
             submenu:
@@ -183,7 +183,7 @@ Vulnerability:
                     link: /vm/vulnerability-report/vulnerable-service/format/html
 
 System:
-    label: System Inventory 
+    label: System Inventory
     privilege:
         func: hasArea
         param: system_inventory
@@ -219,7 +219,7 @@ System:
                 param: system_inventory_admin
             submenu:
                 Controls:
-                    label: Controls 
+                    label: Controls
                     link: /security-control-admin
                 DocumentType:
                     label: Document Types
@@ -229,7 +229,7 @@ System:
                         param1: read
                         param2: DocumentType
                 Network:
-                    label: Networks 
+                    label: Networks
                     link: /network/list
                     privilege:
                         func: hasPrivilegeForClass
@@ -244,14 +244,21 @@ System:
                         param2: OrganizationType
                 SystemType:
                     label: System Types
-                    link: /System-type/list
+                    link: /system-type/list
                     privilege:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: SystemType
+                IconManagement:
+                    label: Icon Management
+                    link: /icon/manage
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage
+                        param2: Icon
         Reports:
             label: Reports
-            privilege: 
+            privilege:
                 func: hasArea
                 param: system_inventory_report
             submenu:
@@ -271,7 +278,7 @@ System:
 Incident:
     label: Incidents
     module: Incident Reporting
-    privilege: 
+    privilege:
         func: hasArea
         param: incident
     submenu:
@@ -312,7 +319,7 @@ Incident:
                         param2: IrWorkflowDef
         Reports:
             label: Reports
-            privilege: 
+            privilege:
                 func: hasArea
                 param: incident_report
             submenu:
@@ -366,7 +373,7 @@ Administration:
                 param1: read
                 param2: Role
         Search:
-            label: Search 
+            label: Search
             link: /config/search
         Contact:
             label: Technical Contact
@@ -377,7 +384,7 @@ Administration:
             privilege:
                 func: hasPrivilegeForClass
                 param1: read
-                param2: user 
+                param2: user
 
 UserPreferences:
     label: User Preferences

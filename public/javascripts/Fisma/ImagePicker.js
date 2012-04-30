@@ -365,6 +365,24 @@
                 fileForm.action = "/icon/create";
                 fileForm.enctype = "multipart/form-data";
 
+                var tooltipSpan = document.createElement("span");
+                tooltipSpan.id = "uploadIconTooltip";
+                this._drawer.appendChild(tooltipSpan);
+                var uploadIconTooltipTxt = "Please upload a square image file larger than 32 x 32 pixels. ";
+                uploadIconTooltipTxt += "You don't have to worry about the size of the image file as the system will ";
+                uploadIconTooltipTxt += "automatically resize and scale the image down to 32 x 32 pixels¸ but you do ";
+                uploadIconTooltipTxt += "have to worry about the shape. As rectangular images will be distorted, ";
+                uploadIconTooltipTxt += "please make sure that you are uploading a square image file. ";
+                uploadIconTooltipTxt += "Formats accepted are JPEG, GIF,SVG, BMP, and PNG.";
+                var uploadIconTooltipObj = new YAHOO.widget.Tooltip("uploadIconTooltipYui", {
+                    context:"uploadIconTooltip",
+                    showdelay: 0,
+                    hidedelay: 150,
+                    autodismissdelay: 25000,
+                    text: uploadIconTooltipTxt,
+                    effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.1}, width: "50%"
+                });
+
                 var fileElement = document.createElement("input");
                 fileElement.type = "file";
                 fileElement.name = "imageUpload";
@@ -380,7 +398,7 @@
                 var uploadButton = new YAHOO.widget.Button({
                     id: YAHOO.util.Dom.generateId(),
                     label: "Upload A New Image",
-                    container: this._drawer
+                    container: tooltipSpan
                 });
 
                 uploadButton.setStyle("position", "relative");
@@ -491,6 +509,11 @@
             }
             this._selectedImageEl = imageEl;
             this._selectedImageEl.className = "imagePickerSelectedImage";
+
+            // Mimick the behavior of a normal select menu
+            if (event.type == 'click') {
+                this._hideDrawer();
+            }
         },
 
         /**
