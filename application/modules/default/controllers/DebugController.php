@@ -40,12 +40,31 @@ class DebugController extends Zend_Controller_Action
 
     /**
      * Display phpinfo()
-     * 
+     *
      * @GETAllowed
      * @return void
      */
     public function phpinfoAction()
     {
+        $this->view->requiredExtensions = array(
+            'apc',
+            'bcmath',
+            'ctype', 'curl',
+            'dom',
+            'fileinfo',
+            'hash',
+            'iconv', 'imagick',
+            'json',
+            'ldap',
+            'mbstring', 'mysql',
+            'openssl',
+            'PDO',
+            'solr', 'SQLite',
+            'tokenizer',
+            'xmlreader', 'xmlwriter',
+            'zip', 'zlib'
+        );
+        $this->view->installedExtensions = get_loaded_extensions();
     }
 
     /**
