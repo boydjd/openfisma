@@ -155,6 +155,13 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                     'Moderate',
                     'Low'
                 )
+            )
+            ->addWidget(
+                'workflowThreatType',
+                'Threat Type',
+                'combo',
+                'Threat Level',
+                array('Threat Level', 'Residual Risk')
             );
 
         $this->view->chartTotalStatus = $chartTotalStatus->export();
