@@ -158,7 +158,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             )
             ->addWidget(
                 'workflowThreatType',
-                'Threat Type',
+                'Risk Type',
                 'combo',
                 'Threat Level',
                 array('Threat Level', 'Residual Risk')

@@ -98,7 +98,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             )
             ->addWidget(
                 'forecastThreatType',
-                'Threat Type',
+                'Risk Type',
                 'combo',
                 'Threat Level',
                 array_values($this->_threatTypes)
@@ -121,7 +121,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             )
             ->addWidget(
                 'pastThreatType',
-                'Threat Type',
+                'Risk Type',
                 'combo',
                 'Threat Level',
                 array_values($this->_threatTypes)
@@ -142,7 +142,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             )
             ->addWidget(
                 'workflowThreatType',
-                'Threat Type',
+                'Risk Type',
                 'combo',
                 'Threat Level',
                 array_values($this->_threatTypes)
@@ -166,7 +166,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             )
             ->addWidget(
                 'withoutCorrectiveActionThreatType',
-                'Threat Type',
+                'Risk Type',
                 'combo',
                 'Threat Level',
                 array_values($this->_threatTypes)
@@ -199,7 +199,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             )
             ->addWidget(
                 'orgThreatType',
-                'Threat Type',
+                'Risk Type',
                 'combo',
                 'Threat Level',
                 array_values($this->_threatTypes)

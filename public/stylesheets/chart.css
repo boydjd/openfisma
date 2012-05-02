@@ -67,7 +67,7 @@
 }
 
 .widgetSpaceHolder th, .widgetSpaceHolder td {
-    padding: 0;
+    padding: 2px;
 }
 
 /* the gear icon that toggles chart-options visibility */
