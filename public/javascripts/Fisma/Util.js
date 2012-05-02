@@ -369,6 +369,7 @@ Fisma.Util = {
     showDescription: function (targetId, description) {
         var Dom = YAHOO.util.Dom;
         var element = Dom.get(targetId) ? Dom.get(targetId) : Dom.get(targetId + '-button');
+        var label = YAHOO.util.Selector.query("label[for="+ targetId +"]");
 
         var container = document.createElement("div");
         container.className = 'descriptionBox';
@@ -409,8 +410,14 @@ Fisma.Util = {
                 Dom.setStyle(container, 'display', 'none');
             };
 
-            YAHOO.util.Event.addListener(targetEl, "mouseout", hide);
-            YAHOO.util.Event.addListener(targetEl, "mouseover", display);
+            var targets = [];
+            targets.push(targetEl);
+            if (!YAHOO.lang.isNull(label)) {
+                targets.push(label);
+            }
+
+            YAHOO.util.Event.addListener(targets, "mouseout", hide);
+            YAHOO.util.Event.addListener(targets, "mouseover", display);
         }
 
         // Put the description div to the top of element

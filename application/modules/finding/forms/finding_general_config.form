@@ -20,6 +20,7 @@ displayGroups.general_config.elements.default_bureau_id = "default_bureau_id"
 elements.threat_type.type = "select"
 elements.threat_type.options.label = "Default Threat Type"
 elements.threat_type.options.required = true
+elements.threat_type.options.attribs.description = "Sets the default risk view for new users. If "threat level" is chosen, users will see threat level for graphs and search results. Please note that this only affects new users, existing users will keep their current settings. A threat level is the initial risk rating given to each finding based on the impact it could have against the system. Countermeasures may be defined to lower the initial "threat level" for example if the system has defenses in place that limit the effectiveness of the finding then this would lower the overall residual risk or actual risk to the system."
 displayGroups.general_config.elements.threat_type = "threat_type"
 
 elements.use_legacy_finding_key.type = "checkbox"
