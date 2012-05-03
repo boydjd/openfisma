@@ -145,7 +145,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setTitle('Finding Status Distribution')
             ->addWidget(
                 'findingType',
-                'Threat Level:',
+                'Finding Type:',
                 'combo',
                 'Totals',
                 array(
@@ -158,7 +158,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             )
             ->addWidget(
                 'workflowThreatType',
-                'Risk Type',
+                'Risk Type:',
                 'combo',
                 'Threat Level',
                 array('Threat Level', 'Residual Risk')
