@@ -321,14 +321,14 @@ Fisma.Util = {
         var minute = minuteEl.value;
         var ampm = ampmEl.value;
 
-        // Since it might not be able to get date element by id and date is irrelevant when convert AMPM to 24 hours format,
-        // so, just use current date to make up date string
+        // Make up a date (whose values will be discarded) to use internal time conversion
         var currentTime = new Date();
         var currentMonth = currentTime.getMonth() + 1;
         var currentDay = currentTime.getDate();
         var currentYear = currentTime.getFullYear();
 
-        var date = new Date(currentMonth + "/" + currentDay + "/" + currentYear + " " + hour + ":" + minute + ":00" + " " + ampm);
+        var date = new Date(currentMonth + "/" + currentDay + "/" + currentYear + " "
+                          + hour + ":" + minute + ":00" + " " + ampm);
         hour = $P.str_pad(date.getHours(), 2, '0', 'STR_PAD_LEFT');
         minute = $P.str_pad(date.getMinutes(), 2, '0', 'STR_PAD_LEFT');
 
@@ -367,19 +367,19 @@ Fisma.Util = {
      */
     showWhatsNewDialog: function (currentVersion) {
         var dialog = new YAHOO.widget.SimpleDialog("whatsNewDialog",
-            {width: "855px", 
-             fixedcenter: true, 
-             visible: false, 
+            {width: "855px",
+             fixedcenter: true,
+             visible: false,
              close: false,
              modal: true,
-             constraintoviewport: true, 
+             constraintoviewport: true,
              draggable: false
-            }); 
+            });
 
         //Add line spacing to dialog
         var bottomPanel = document.createElement('div');
         bottomPanel.className = 'dialog-button-panel';
- 
+
         var close = document.createElement('a');
         close.className = 'close-link';
         close.href = '#';
@@ -411,11 +411,12 @@ Fisma.Util = {
 
         bottomPanel.appendChild(dialogTip);
 
+        var iframe;
         // Get rid of iframe boarder with IE
         if (YAHOO.env.ua.ie) {
-            var iframe = document.createElement('<iframe frameborder="0"></iframe>');
+            iframe = document.createElement('<iframe frameborder="0"></iframe>');
         } else {
-            var iframe = document.createElement('iframe');
+            iframe = document.createElement('iframe');
         }
 
         iframe.height = '420px';
@@ -426,11 +427,11 @@ Fisma.Util = {
 
         var title = $("title").text().split("-")[0].trim();
         var header = "<font size=3>What’s New in " + title + " " + currentVersion + " </font>";
- 
+
         dialog.setHeader(header);
         dialog.setBody(iframe);
         dialog.setFooter(bottomPanel);
-        dialog.render(document.body); 
+        dialog.render(document.body);
         dialog.show();
 
         dontShowCheckbox.focus();
@@ -443,8 +444,8 @@ Fisma.Util = {
             }
 
             dialog.destroy();
-        }); 
-   
+        });
+
         iframe.src = '/whats-new';
     }
 };
