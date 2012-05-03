@@ -76,11 +76,18 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
         $buttons = parent::getToolbarButtons($record);
 
         if ($this->_isDeletable() && $this->_acl->hasPrivilegeForClass('delete', 'SystemType')) {
-            $buttons[] = new Fisma_Yui_Form_Button_Link(
+            $args = array(null, $this->getBaseUrl() . '/delete/id/', $record['id']);
+            $buttons[] = new Fisma_Yui_Form_Button(
                 'deleteSystemTypeButton',
                 array(
-                    'value' => 'Delete System Type',
-                    'href' => $this->getBaseUrl() . '/delete/id/' . $record['id']
+                    'label' => 'Delete System Type',
+                    'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                    'onClickArgument' => array(
+                        'args' => $args,
+                        'text' => "WARNING: You are about to delete this system type. This action cannot be "
+                                . "undone. Do you want to continue?",
+                        'func' => 'Fisma.Util.formPostAction'
+                    )
                 )
             );
         }
@@ -91,7 +98,6 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
     /**
      * Delete a system type
      *
-     * @GETAllowed
      * @return void
      */
     public function deleteAction()

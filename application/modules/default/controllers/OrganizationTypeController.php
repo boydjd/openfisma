@@ -86,11 +86,18 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
         $buttons = parent::getToolbarButtons($record);
 
         if ($this->_isDeletable() && $this->_acl->hasPrivilegeForClass('delete', 'OrganizationType')) {
-            $buttons[] = new Fisma_Yui_Form_Button_Link(
+            $args = array(null, $this->getBaseUrl() . '/delete/id/', $record['id']);
+            $buttons[] = new Fisma_Yui_Form_Button(
                 'deleteOrganizationTypeButton',
                 array(
-                    'value' => 'Delete Organization Type',
-                    'href' => $this->getBaseUrl() . '/delete/id/' . $record['id']
+                    'label' => 'Delete Organization Type',
+                    'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                    'onClickArgument' => array(
+                        'args' => $args,
+                        'text' => "WARNING: You are about to delete this organization type. This action cannot be "
+                                . "undone. Do you want to continue?",
+                        'func' => 'Fisma.Util.formPostAction'
+                    )
                 )
             );
         }
@@ -101,7 +108,6 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
     /**
      * Delete a system type
      *
-     * @GETAllowed
      * @return void
      */
     public function deleteAction()
