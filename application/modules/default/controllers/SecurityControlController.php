@@ -99,7 +99,6 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
     {
         $keyword = $this->getRequest()->getParam('keyword');
 
-        $catalogId = Fisma::configuration()->getConfig("default_security_control_catalog_id");
         $controlQuery = Doctrine_Query::create()
                         ->from('SecurityControl sc')
                         ->innerJoin('sc.Catalog c')
@@ -108,7 +107,7 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
                             CONCAT(sc.code, ' ', sc.name, ' [', c.name, ']') AS name"
                         )
                         ->where("CONCAT(sc.code, ' ', sc.name, ' [', c.name, ']') LIKE ?", "%$keyword%")
-                        ->andWhere("sc.securityControlCatalogId = ?", $catalogId)
+                        ->andWhere("c.visible = ?", true)
                         ->orderBy("sc.code")
                         ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 

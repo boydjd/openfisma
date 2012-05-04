@@ -1,0 +1,27 @@
+; This is the form for security control catalogs
+;
+; Author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/content/license
+
+[securitycontrolcatalog]
+
+elements.name.type = "text"
+elements.name.options.label = "Name"
+elements.name.options.required = true
+displayGroups.securitycontrolcatalog.elements.name = "name"
+
+elements.published.type = "checkbox"
+elements.published.options.label = "Published"
+elements.published.options.tooltip = "Published catalogs are viewable by general users and can be assigned to findings. If a catalog is unpublished it will not be available to general users."
+displayGroups.securitycontrolcatalog.elements.published = "published"
+
+elements.description.type = "textarea"
+elements.description.options.label = "Description"
+elements.description.options.attribs.class = "plaintext"
+elements.description.options.attribs.style = "width: 159px; height: 100px;"
+displayGroups.securitycontrolcatalog.elements.description = "description"
+
+elements.save.type = "Form_Button_Submit"
+elements.save.options.label = "Save Changes"
+displayGroups.securitycontrolcatalog.elements.save = "save"

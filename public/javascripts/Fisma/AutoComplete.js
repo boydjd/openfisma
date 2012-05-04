@@ -55,7 +55,7 @@ Fisma.AutoComplete = (function() {
 
             var ac = new YAHOO.widget.AutoComplete(params.fieldId, params.containerId, acRDS);
 
-            ac.maxResultsDisplayed = 20;
+            ac.maxResultsDisplayed = 500;
             ac.forceSelection = true;
 
             var spinnerImage = document.getElementById(params.containerId + "Spinner");

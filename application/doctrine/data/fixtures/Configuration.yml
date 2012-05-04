@@ -53,5 +53,3 @@ Configuration:
         pass_warning: 14
 
         hash_type: sha1
-
-        default_security_control_catalog_id: 4

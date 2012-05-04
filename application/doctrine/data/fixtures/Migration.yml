@@ -71,3 +71,9 @@ Migration:
         minorVersion: 17
         tagNumber: 2
         name: AddIconManagementPrivileges
+    021702_security_controls:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 2
+        name: SecurityControls
+

@@ -602,9 +602,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $visible = $searchParams['initiallyVisible'];
             }
 
+            $formatter = 'YAHOO.widget.DataTable.formatText';
+            if ($searchParams['type'] === 'boolean') {
+                $formatter = 'Fisma.TableFormat.formatBoolean';
+            }
+
             $column = new Fisma_Yui_DataTable_Column($label,
                                                      $sortable,
-                                                     "YAHOO.widget.DataTable.formatText",
+                                                     $formatter,
                                                      null,
                                                      $fieldName,
                                                      !$visible);

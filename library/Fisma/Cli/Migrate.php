@@ -384,11 +384,10 @@ class Fisma_Cli_Migrate extends Fisma_Cli_Abstract
             $migrationIterator = new FilesystemIterator($version->getPathName(), FilesystemIterator::SKIP_DOTS);
 
             foreach ($migrationIterator as $migration) {
-                // Validate migration file name
+                // Ignore non-PHP files
                 if (substr($migration->getFilename(), -4) != ".php") {
-                    $message = "Migration is not named with .php extension (" . $migration->getPathName() . ")";
-
-                    throw new Fisma_Zend_Exception_User($message);
+                    $this->getLog()->info('Ignoring non-PHP file: ' . $migration->getFilename());
+                    continue;
                 }
 
                 $migrationName = substr($migration->getFilename(), 0, -4);

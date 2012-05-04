@@ -429,5 +429,17 @@ Fisma.TableFormat = {
         );
 
         elCell.appendChild(img);
+    },
+
+    /**
+     * A formatter which displays Yes or No for a boolean value
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatBoolean : function (elCell, oRecord, oColumn, oData) {
+        elCell.innerHTML = oData ? "Yes" : "No";
     }
 };

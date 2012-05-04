@@ -526,3 +526,20 @@ Privilege:
         resource: icon
         action: manage
         description: Manage Icons
+    # Security Control Catalog CRUD
+    security_control_catalog_create:
+        resource: security_control_catalog
+        action: create
+        description: Create Security Control Catalog
+    security_control_catalog_read:
+        resource: security_control_catalog
+        action: read
+        description: View Security Control Catalog
+    security_control_catalog_update:
+        resource: security_control_catalog
+        action: update
+        description: Edit Security Control Catalog
+    security_control_catalog_delete:
+        resource: security_control_catalog
+        action: delete
+        description: Delete Security Control Catalog

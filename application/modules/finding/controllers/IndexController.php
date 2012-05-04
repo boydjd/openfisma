@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -29,12 +29,12 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * Invokes a contract with Fisma_Zend_Controller_Action_Object regarding privileges
-     * 
+     *
      * @var string
      * @link http://jira.openfisma.org/browse/OFJ-24
      */
     protected $_organizations = '*';
-    
+
     public function init()
     {
         parent::init();
@@ -46,7 +46,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Allow the user to upload an XML Excel spreadsheet file containing finding data for multiple findings
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -56,28 +56,16 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
 
         // Set up the form for downloading template files
         $downloadForm = Fisma_Zend_Form_Manager::loadForm('finding_spreadsheet_download');
-        
+
         Fisma_Zend_Form_Manager::prepareForm($downloadForm);
 
-        $catalogQuery = Doctrine_Query::create()
-                        ->select('id AS key, name AS value')
-                        ->from('SecurityControlCatalog')
-                        ->orderBy('name')
-                        ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-
-        $catalogs = $catalogQuery->execute();
-
-        $downloadForm->getElement('catalogId')
-                     ->setMultiOptions($catalogs)
-                     ->setValue(Fisma::configuration()->getConfig('default_security_control_catalog_id'));
-        
         $this->view->downloadForm = $downloadForm;
-        
+
         // Set up the form for uploading files
         $uploadForm = Fisma_Zend_Form_Manager::loadForm('finding_spreadsheet_upload');
-        
+
         Fisma_Zend_Form_Manager::prepareForm($uploadForm);
-        
+
         $this->view->uploadForm = $uploadForm;
     }
 
@@ -87,7 +75,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
     public function uploadSpreadsheetAction()
     {
         $file = $_FILES['excelFile'];
-        
+
         if (!is_array($file)) {
             $this->view->priorityMessenger("The file upload failed.", 'warning');
             return;
@@ -98,7 +86,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
             // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
             try {
                 Doctrine_Manager::connection()->beginTransaction();
-                
+
                 // organize upload data
                 $upload = new Upload();
                 $upload->save();
@@ -106,11 +94,11 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 $injectExcel = new Fisma_Inject_Excel();
 
                 $rowsProcessed = $injectExcel->inject($file['tmp_name'], $upload->id);
-                
+
                 // upload file after the file parsed
                 $upload->instantiate($file);
                 $upload->save();
-                
+
                 Doctrine_Manager::connection()->commit();
                 $error = "$rowsProcessed findings were created.";
                 $type  = 'notice';
@@ -121,28 +109,28 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
             }
             $this->view->priorityMessenger($error, $type);
         }
-        
+
         $this->_redirect('/finding/index/injection');
     }
 
-    /** 
+    /**
      * Downloading a excel file which is used as a template for uploading findings.
-     * 
+     *
      * Systems, networks and sources are extracted from the database dynamically.
-     * 
+     *
      * @GETAllowed
      * @return void
      */
     public function templateAction()
     {
         $this->_acl->requirePrivilegeForClass('inject', 'Finding');
-        
+
         // set the filename for the browser to save the file as
         $this->_helper->fismaContextSwitch->setFilename(Fisma_Inject_Excel::TEMPLATE_NAME);
 
-        /* The spreadsheet won't open in Excel if any of these tables are 
-         * empty. So we explicitly check for that condition, and if it 
-         * exists then we show the user an error message explaining why 
+        /* The spreadsheet won't open in Excel if any of these tables are
+         * empty. So we explicitly check for that condition, and if it
+         * exists then we show the user an error message explaining why
          * the spreadsheet isn't available.
          */
         try {
@@ -158,7 +146,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 throw new Fisma_Zend_Exception("The spreadsheet template can not be
                     prepared because there are no systems defined.");
             } else {
-                /** 
+                /**
                  * @todo This really needs to be reconstructed. We shouldn't sort in PHP when the DBMS
                  * already has this field (nickname) indexed for us. Ideally, the user object would be
                  * able to return a query object that we could then modify.
@@ -166,7 +154,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 sort($systems);
                 $this->view->systems = $systems;
             }
-            
+
             $sources = Doctrine::getTable('Source')->findAll()->toArray();
             $this->view->sources = array();
             foreach ($sources as $source) {
@@ -177,27 +165,12 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                     not be prepared because there are no finding sources
                     defined.");
             }
-            
-            $securityControlCatalogId = $this->getRequest()->getParam('catalogId');
-            $this->view->securityControlCatalogId = $securityControlCatalogId;
 
-            $securityControlCatalog = Doctrine::getTable('SecurityControlCatalog')->find($securityControlCatalogId);
-            
-            if (!$securityControlCatalog) {
-                throw new Fisma_Zend_Exception("No security control exists with id ($securityControlCatalogId)");
-            } else {
-                $this->view->securityControlCatalogName = $securityControlCatalog->name;
-            }
-            
-            $securityControlQuery = Doctrine_Query::create()
-                                    ->from('SecurityControl')
-                                    ->where('securityControlCatalogId = ?', array($securityControlCatalogId));
-            
-            $securityControls = $securityControlQuery->execute();
-            
+            $securityControls = Doctrine::getTAble('SecurityControl')->getPublishedQuery()->execute();
+
             $this->view->securityControls = array();
-            foreach ($securityControls as $securityControl) {
-                $this->view->securityControls[$securityControl['id']] = $securityControl['code'];
+            foreach ($securityControls as $sc) {
+                $this->view->securityControls[$sc->id] = $sc->code . ' ' . $sc->name . ' (' . $sc->Catalog->name . ')';
             }
             if (count($this->view->securityControls) == 0) {
                  throw new Fisma_Zend_Exception('The spreadsheet template can not be ' .
@@ -216,20 +189,20 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
     }
 
     /**
-     * Forward to the remediation view action, since view isn't actually implemented in finding (wtf?). 
-     * 
+     * Forward to the remediation view action, since view isn't actually implemented in finding (wtf?).
+     *
      * @GETAllowed
      * @access public
      * @return void
      */
-    public function viewAction() 
+    public function viewAction()
     {
         $this->_forward('view', 'remediation', 'finding');
     }
 
     /**
-     * Forward to the remediation list action. 
-     * 
+     * Forward to the remediation list action.
+     *
      * @GETAllowed
      * @access public
      * @return void
