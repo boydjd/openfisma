@@ -617,20 +617,22 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             }
 
             // If no uploaded files were successful processed, throw a fatal error
-            if (count($auditMessages)==0) {
+            if (count($auditMessages)==0 && empty($errorMessages)) {
                 $message = "You did not select any file to upload. Please select a file and try again.";
                 throw new Fisma_Zend_Exception_User($message);
             }
 
-            $finding->save();
+            if (count($auditMessages) > 0) {
+                $finding->save();
 
-            foreach ($auditMessages as $auditMessage) {
-                $finding->getAuditLog()->write($auditMessage);
+                foreach ($auditMessages as $auditMessage) {
+                    $finding->getAuditLog()->write($auditMessage);
+                }
             }
 
             // Throw non-fatal error(s) after saving the Finding
             if (!empty($errorMessages)) {
-                throw new Fisma_Zend_Exception_User(implode("\n", $errorMessages));
+                throw new Fisma_Zend_Exception_User($errorMessages);
             }
         } catch (Fisma_Zend_Exception_User $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
