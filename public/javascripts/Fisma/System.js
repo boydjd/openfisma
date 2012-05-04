@@ -64,7 +64,8 @@ Fisma.System = {
                 $("#rolesAndUsers").load(
                     '/system/get-user-access-tree/id/' + data.organizationId + '/name/rolesAndUsers'
                 );
-        }});
+            }
+        });
     },
 
     /**
@@ -305,8 +306,8 @@ Fisma.System = {
         dialogBody.className = 'bd';
 
         var msg = document.createTextNode(
-                "Please input the needed system information in order to complete conversion."
-            );
+            "Please input the needed system information in order to complete conversion."
+        );
         dialogBody.appendChild(msg);
         dialogBody.appendChild(document.createElement('br'));
         dialogBody.appendChild(document.createElement('br'));
