@@ -133,7 +133,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
         if ($value) {
             $render .= "<script type=\"text/javascript\">"
                      . "YAHOO.util.Event.onDOMReady(function() {"
-                     . "Fisma.Util.showDescription('{$element->getName()}', '{$value}');"
+                     . "Fisma.Util.showDescription('{$element->getName()}', \"{$value}\");"
                      . "});</script>";
         }
 

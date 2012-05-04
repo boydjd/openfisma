@@ -371,6 +371,7 @@ Fisma.Util = {
         var element = Dom.get(targetId) ? Dom.get(targetId) : Dom.get(targetId + '-button');
         var label = YAHOO.util.Selector.query("label[for="+ targetId +"]");
 
+        // Create a description div for showing description
         var container = document.createElement("div");
         container.className = 'descriptionBox';
         container.id = targetId + '_description';
@@ -388,13 +389,13 @@ Fisma.Util = {
         containerBottom.className = 'descriptionBoxBottom';
         container.appendChild(containerBottom);
 
-        // Add description div after the last child node of element parent node
+        // Add the description div to the parent node of targetEl.
         var addContainerToParentNode = function(targetEl) {
             targetEl.parentNode.appendChild(container);
             targetEl.parentNode.style.position = 'relative';
         };
 
-        // Set the height of element to the style bottom of description div
+        // Display the description on the top of element.
         var setContainerBottomHeight = function(targetEl) {
             var elementRegion = Dom.getRegion(targetEl);
             container.style.bottom = (elementRegion.height + 2).toString() + 'px';
@@ -404,24 +405,34 @@ Fisma.Util = {
         var onMouseEvent = function(targetEl) {
             var display = function () {
                 Dom.setStyle(container, 'display', 'block');
+
+                // Make the element's parent div display at higher layer when the element receives focus.
+                Dom.setStyle(container.parentNode, 'z-index', '2');
             };
 
             var hide = function () {
                 Dom.setStyle(container, 'display', 'none');
+
+                // Make description's parent div display at lower layer when element loses focus
+                Dom.setStyle(container.parentNode, 'z-index', '0');
             };
 
-            var targets = [];
-            targets.push(targetEl);
-            if (!YAHOO.lang.isNull(label)) {
-                targets.push(label);
-            }
+            var button = YAHOO.widget.Button.getButton(targetEl.id);
 
-            YAHOO.util.Event.addListener(targets, "mouseout", hide);
-            YAHOO.util.Event.addListener(targets, "mouseover", display);
+            // Set the description's parent div to a higher layer when the select menu receives focus.
+            // Set the description's parent div to a lower layer when the select menu loses focus. 
+            if (typeof button !== "undefined") {
+                var menu = button.getMenu();
+                menu.subscribe("show", display);
+                menu.subscribe("hide", hide);
+            } else {
+                YAHOO.util.Event.addListener(targetEl, "mousedown", display);
+                YAHOO.util.Event.addListener(targetEl, "mouseout", hide);
+            }
         }
 
         // Put the description div to the top of element
-        if (element.nodeName.toLowerCase() === "select" && !element.multiple) {
+        if (element.nodeName.toLowerCase() === "span") { // menu button
             var selectMenuId = targetId + '-button';
             YAHOO.util.Event.onContentReady(selectMenuId, function() {
                 var selectMenu = Dom.get(selectMenuId);

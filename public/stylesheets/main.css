@@ -720,29 +720,25 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 }
 
 .descriptionBox {
-    font-size:12px;
     left: 0;
-    width:310px;
-    position:absolute;
-    color:#CC0000;
+    width: 410px;
+    position: absolute;
+    color: #CC0000;
     display: none;
-    z-index: 2;
     opacity: 1;
 }
 
 .descriptionBox .descriptionBoxTop {
     height: 2px;
-    overflow:hidden;
+    overflow: hidden;
 }
 
 .descriptionBox .descriptionBoxCenter {
-    width: 290px;
     border-left: 1px solid #c6c6c6;
     border-right: 1px solid #c6c6c6;
     background: #ffffe3;
-    padding: 4px 7px 5px 10px;
+    padding: 4px 5px 5px 10px;
     line-height: 1.2em;
-    zoom: 1;
     overflow: hidden;
 }
 
