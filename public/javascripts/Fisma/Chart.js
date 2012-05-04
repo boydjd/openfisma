@@ -883,8 +883,8 @@ Fisma.Chart = {
                 cell = document.createElement("td");
                 cell.style.textAlign = 'center';
                 cell.style.fontWeight = 'bold';
-                cell.width = '40%';
-                var textLabel = document.createTextNode('');
+                cell.style.verticalAlign = 'top';
+                var textLabel = document.createTextNode(chartParamsObj.threatLegendTitle || '');
                 cell.appendChild(textLabel);
                 row.appendChild(cell);
 
@@ -894,7 +894,6 @@ Fisma.Chart = {
                 var layerIndex;
                 for (layerIndex in chartParamsObj.chartLayerText) {
                     cell = document.createElement("td");
-                    cell.width = '20%';
 
                     // Are we using colors, or patterns?
                     usePatterns = Fisma.Chart.getGlobalSetting('usePatterns');
