@@ -120,8 +120,15 @@ Fisma.FindingWorkflow = {
      */
     titleChangeHandler : function(element) {
         var newTitle = jQuery(element).val().trim();
-        jQuery(element).val(newTitle);
+        jQuery(element).val(newTitle);0
         var oldTitle = jQuery(element).parents('li').children('.stepName').text().trim();
+
+        if (newLabel.length > 255) {
+            jQuery(element).val(oldTitle);
+            Fisma.Util.showAlertDialog('Chart Label cannot be longer than 255 characters including whitespace.');
+            return false;
+        }
+
         if (newTitle === '') {
             jQuery(element).val(oldTitle);
             Fisma.Util.showAlertDialog('Workflow Title cannot be blank.');
