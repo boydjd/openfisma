@@ -228,6 +228,13 @@ System:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: DocumentType
+                IconManagement:
+                    label: Icon Management
+                    link: /icon/manage
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage
+                        param2: Icon
                 Network:
                     label: Networks
                     link: /network/list
@@ -249,13 +256,6 @@ System:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: SystemType
-                IconManagement:
-                    label: Icon Management
-                    link: /icon/manage
-                    privilege:
-                        func: hasPrivilegeForClass
-                        param1: manage
-                        param2: Icon
         Reports:
             label: Reports
             privilege:

@@ -85,7 +85,11 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
     {
         $buttons = parent::getToolbarButtons($record);
 
-        if ($this->_isDeletable() && $this->_acl->hasPrivilegeForClass('delete', 'OrganizationType')) {
+        if (
+            $this->_isDeletable() &&
+            $this->_acl->hasPrivilegeForClass('delete', 'OrganizationType') &&
+            $this->getRequest()->getActionName() == 'view'
+        ) {
             $args = array(null, $this->getBaseUrl() . '/delete/id/', $record['id']);
             $buttons[] = new Fisma_Yui_Form_Button(
                 'deleteOrganizationTypeButton',
