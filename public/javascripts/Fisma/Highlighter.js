@@ -31,12 +31,12 @@ Fisma.Highlighter = (function() {
 
         /**
          * Highlights delimited text in specified HTML elements
-         * 
-         * The element to be highlighted must contain matching pairs of delimiters. This method replaces the text in 
+         *
+         * The element to be highlighted must contain matching pairs of delimiters. This method replaces the text in
          * between each pair of delimiters with highlighted text and then removes the pair of delimiters.
-         * 
+         *
          * The method is recursive and will replace all instances of delimited text.
-         * 
+         *
          * @param elements Array of HTML elements
          * @param delimiter Phrases delimted with this string will be replaced with highlighted text
          */
@@ -70,10 +70,10 @@ Fisma.Highlighter = (function() {
                 this._highlightMatches(parentNode, matches);
             }
         },
-        
+
         /**
          * A helper function that returns a list of text snippets matching a regex
-         * 
+         *
          * The regex is assumed to be looking for a particular delimiter, in the form:
          *     (some text)delimiter(highlighted text)delimiter(some more text)
          * 
@@ -105,10 +105,10 @@ Fisma.Highlighter = (function() {
                     var preMatch = highlightMatches[1];
                     var highlightMatch = highlightMatches[2];
                     var postMatch = highlightMatches[3];
-                    
+
                     matches.push(preMatch);
                     matches.push(highlightMatch);
-                    
+
                     // The rest of the matching text becomes the input for the next loop iteration, in order to 
                     // match multiple times on the same input string.
                     currentText = postMatch;
@@ -117,7 +117,7 @@ Fisma.Highlighter = (function() {
                     // Any remaining text gets pushed onto the matches list
                     matches.push(currentText);
 
-                    // If the input text contains a delimiter that doesn't have a matching delimiter, then nothing will     
+                    // If the input text contains a delimiter that doesn't have a matching delimiter, then nothing will
                     // ever get matched and we need to break out of the loop or else it will loop indefinitely.
                     break;
                 }

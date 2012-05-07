@@ -25,7 +25,7 @@
  */
  
 Fisma.AttachArtifacts = {
-    
+
     /**
      * The amount of time to delay in between requesting upload progress
      */
@@ -123,7 +123,7 @@ Fisma.AttachArtifacts = {
                     o.argument.setBody('The content for this panel could not be loaded.');
                     o.argument.center();
                 },
-                
+
                 argument: newPanel
             }, 
             null);
@@ -210,7 +210,7 @@ Fisma.AttachArtifacts = {
         document.getElementById('progressTextContainer').style.display = 'block';
 
         /**
-         * Post the form. This needs to be done aysnchronously, or else the web browser will not 
+         * Post the form. This needs to be done aysnchronously, or else the web browser will not
          * respond to the progress tracking XHRs
          */
         setTimeout(
@@ -279,7 +279,8 @@ Fisma.AttachArtifacts = {
                             response = YAHOO.lang.JSON.parse(asyncResponse.responseText);
                         } catch (e) {
                             if (e instanceof SyntaxError) {
-                                // Handle a JSON syntax error by constructing a fake response object with progress=false
+                                // Handle a JSON syntax error by constructing a fake response object
+                                // with progress=false
                                 response = {
                                     progress : false
                                 };
@@ -313,7 +314,7 @@ Fisma.AttachArtifacts = {
                         // Update progress bar
                         var percent = Math.round((response.progress.current / response.progress.total) * 100);
                         that.yuiProgressBar.set('value', percent);
-                    
+
                         // Update progress text
                         var progressTextEl = document.getElementById('progressTextContainer').firstChild;
 

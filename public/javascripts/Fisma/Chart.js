@@ -96,7 +96,8 @@ Fisma.Chart = {
                 Fisma.Chart.showMsgOnEmptyChart(chartParamsObj);
             }
 
-            // call the Fisma.Chart.createJQChart() with the chartParamsObj-object initally given to Fisma.Chart.createJQChart() and the merged responce object
+            // Call the Fisma.Chart.createJQChart() with the chartParamsObj-object initally given to
+            // Fisma.Chart.createJQChart() and the merged responce object
             return Fisma.Chart.createJQChart(chartParamsObj);
 
         } else {
@@ -160,7 +161,8 @@ Fisma.Chart = {
             }
             chartParamsObj.externalSource = undefined;
 
-            // Send data from widgets to external data source if needed7 (will load from cookies and defaults if widgets are not drawn yet)
+            // Send data from widgets to external data source if needed7 (will load from cookies and defaults
+            // if widgets are not drawn yet)
             chartParamsObj = Fisma.Chart.buildExternalSourceParams(chartParamsObj);
             externalSource += String(chartParamsObj.externalSourceParams).replace(/ /g, '%20');
             chartParamsObj.lastURLpull = externalSource;
@@ -214,21 +216,25 @@ Fisma.Chart = {
             chartParamsObj.legendRowCount = undefined;
         }
 
-        // make sure the numbers to be plotted in chartParamsObj.chartData are infact numbers and not an array of strings of numbers
+        // make sure the numbers to be plotted in chartParamsObj.chartData are infact numbers and not
+        // an array of strings of numbers
         chartParamsObj.chartData = Fisma.Chart.forceIntegerArray(chartParamsObj.chartData);
 
         // hide the loading spinner and show the canvas target
         document.getElementById(chartParamsObj.uniqueid + 'holder').style.display = '';
         Fisma.Chart.makeElementInvisible(chartParamsObj.uniqueid + 'holder');
         document.getElementById(chartParamsObj.uniqueid + 'loader').style.position = 'absolute';
-        document.getElementById(chartParamsObj.uniqueid + 'loader').finnishFadeCallback = new Function ("Fisma.Chart.fadeIn('" + chartParamsObj.uniqueid + "holder', 500);");
+        document.getElementById(chartParamsObj.uniqueid + 'loader').finnishFadeCallback = new Function (
+            "Fisma.Chart.fadeIn('" + chartParamsObj.uniqueid + "holder', 500);"
+        );
         Fisma.Chart.fadeOut(chartParamsObj.uniqueid + 'loader', 500);
 
         // now that we have the chartParamsObj.chartData, do we need to make the chart larger and scrollable?
         Fisma.Chart.setChartWidthAttribs(chartParamsObj);
 
         // Store this charts paramiter object into the global variable chartsOnDOM, so it can be redrawn
-        // This must be done before the next switch block that translates some data within the chartParamsObj object for jqPlot
+        // This must be done before the next switch block that translates some data within
+        // the chartParamsObj object for jqPlot
         Fisma.Chart.chartsOnDOM[chartParamsObj.uniqueid] = jQuery.extend(true, {}, chartParamsObj);
 
         // call the correct function based on chartType, or state there will be no chart created
@@ -238,7 +244,9 @@ Fisma.Chart = {
             switch (chartParamsObj.chartType) {
             case 'stackedbar':
                 chartParamsObj.varyBarColor = false;
-                            if (typeof chartParamsObj.showlegend === 'undefined') { chartParamsObj.showlegend = true; }
+                if (typeof chartParamsObj.showlegend === 'undefined') {
+                    chartParamsObj.showlegend = true;
+                }
                 rtn = Fisma.Chart.createChartStackedBar(chartParamsObj);
                 break;
             case 'bar':
@@ -246,8 +254,11 @@ Fisma.Chart = {
                 // Is this a simple-bar chart (not-stacked-bar) with multiple series?
                 if (typeof chartParamsObj.chartData[0] === 'object') {
 
-                    // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar. So we assume it is a simple-bar chart with multi series
-                    // thus we will leave the chartData array as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with no other layers of bars (a lazy but functional of creating a regular bar charts from the stacked-bar chart renderer)
+                    // the chartData is already a multi dimensional array, and the chartType is bar, not stacked bar.
+                    // So we assume it is a simple-bar chart with multi series, thus we will leave the chartData array
+                    // as is (as opposed to forcing it to a 2 dim array, and claming it to be a stacked bar chart with
+                    // no other layers of bars (a lazy but functional of creating a regular bar charts from
+                    // the stacked-bar chart renderer)
 
                     chartParamsObj.varyBarColor = false;
                     chartParamsObj.showlegend = true;
@@ -289,7 +300,7 @@ Fisma.Chart = {
         Fisma.Chart.getTableFromChartData(chartParamsObj);
         Fisma.Chart.setTitle(chartParamsObj);
         Fisma.Chart.placeCanvasesInDivs(chartParamsObj);
-        
+
         return rtn;
     },
 
@@ -411,7 +422,14 @@ Fisma.Chart = {
         var plot1 = $.jqplot(chartParamsObj.uniqueid, [dataSet], jPlotParamObj);
 
         // create an event handeling function that calls chartClickEvent while preserving the parm object
-        var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
+        var EvntHandler = new Function (
+                "ev",
+                "seriesIndex",
+                "pointIndex",
+                "data",
+                "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj)
+                + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);"
+            );
 
         // hook highlight event for tooltips
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
@@ -421,7 +439,7 @@ Fisma.Chart = {
         );
 
         // hook un-highlight event for tooltips
-        $('#' + chartParamsObj.uniqueid).bind('jqplotDataUnhighlight', 
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataUnhighlight',
             function (ev, seriesIndex, pointIndex, data) {
                 Fisma.Chart.hideAllChartTooltips();
             }
@@ -614,7 +632,14 @@ Fisma.Chart = {
         var plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, jPlotParamObj);
 
         // hook click events for navigation/"drill-down"
-        var EvntHandler = new Function ("ev", "seriesIndex", "pointIndex", "data", "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj) + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);" );
+        var EvntHandler = new Function(
+                "ev",
+                "seriesIndex",
+                "pointIndex",
+                "data",
+                "var thisChartParamObj = " + YAHOO.lang.JSON.stringify(chartParamsObj)
+                + "; Fisma.Chart.chartClickEvent(ev, seriesIndex, pointIndex, data, thisChartParamObj);"
+            );
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
 
         // hook highlight event for tooltips
@@ -640,7 +665,11 @@ Fisma.Chart = {
         };
 
         // Hook the mouse events for column labels (make tooltips show on label hovering)
-        var columnLabelObjs = Fisma.Chart.getElementsByClassWithinObj('jqplot-xaxis-tick', 'canvas', chartParamsObj.uniqueid);
+        var columnLabelObjs = Fisma.Chart.getElementsByClassWithinObj(
+                'jqplot-xaxis-tick',
+                'canvas',
+                chartParamsObj.uniqueid
+            );
 
         var columnLabelMouseOver = function (ev) {
                 var forceStyle = {
@@ -684,7 +713,11 @@ Fisma.Chart = {
      * @return object[]
      */
     getTooltipObjOfChart : function (chartParamsObj) {
-        return Fisma.Chart.getElementsByClassWithinObj('jqplot-highlighter-tooltip', 'div', chartParamsObj.uniqueid)[0];
+        return Fisma.Chart.getElementsByClassWithinObj(
+                   'jqplot-highlighter-tooltip',
+                   'div',
+                   chartParamsObj.uniqueid
+               )[0];
     },
 
     getElementsByClassWithinObj : function (className, objectType, withinDiv) {
@@ -735,7 +768,11 @@ Fisma.Chart = {
 
         var plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, {
             seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
-            series: [{label: 'Open Findings', lineWidth:4, markerOptions: {style:'square'}}, {label: 'Closed Findings', lineWidth:4, markerOptions: {style:'square'}}, {lineWidth:4, markerOptions: {style:'square'}}],
+            series: [
+                {label: 'Open Findings', lineWidth: 4, markerOptions: {style:'square'}},
+                {label: 'Closed Findings',lineWidth: 4,markerOptions: {style:'square'}},
+                {lineWidth: 4, markerOptions: {style:'square'}}
+            ],
             seriesDefaults: {
                 fill:false,
                 showMarker: true,
@@ -754,7 +791,7 @@ Fisma.Chart = {
             legend: {
                         show: true,
                         rendererOptions: {
-                            numberRows: 2 
+                            numberRows: 2
                         },
                         location: 'nw'
                     }
@@ -814,7 +851,8 @@ Fisma.Chart = {
                     Fisma.Chart.chartsOnDOM.uniqueId.patternCounter = 0;
                 }
 
-                // Decide which pattern to use in place of the color for this hooked layer/series, and increment for next hook
+                // Decide which pattern to use in place of the color for this hooked layer/series,
+                // and increment for next hook
                 var myPatternId = Fisma.Chart.chartsOnDOM.uniqueId.patternCounter;
                 var myPatternURL = Fisma.Chart.patternURLs.myPatternId;
                 Fisma.Chart.chartsOnDOM.uniqueId.patternCounter++;
@@ -1013,7 +1051,10 @@ Fisma.Chart = {
             ttHtml = ttHtml.replace('#layerName#', chartParamsObj.chartLayerText[seriesIndex]);
         }
         if (ttHtml.indexOf('#columnReport#') !== -1) {
-            ttHtml = ttHtml.replace('#columnReport#', Fisma.Chart.getColumnReport(chartParamsObj, seriesIndex, pointIndex));
+            ttHtml = ttHtml.replace(
+                '#columnReport#',
+                Fisma.Chart.getColumnReport(chartParamsObj, seriesIndex, pointIndex)
+            );
         }
 
         // apply to tooltip
@@ -1200,8 +1241,11 @@ Fisma.Chart = {
         }
 
         if (paramObj.linksdebug === true) {
-            var msg = "You clicked on layer " + seriesIndex + ", in column " + pointIndex + ", which has the data of " + data[1] + "\n";
-            msg += "The link information for this element should be stored as a string in chartParamData['links'], or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
+            var msg = "You clicked on layer " + seriesIndex
+                    + ", in column " + pointIndex
+                    + ", which has the data of " + data[1] + "\n";
+                    + "The link information for this element should be stored as a string in chartParamData['links'], "
+                    + "or as a string in chartParamData['links'][" + seriesIndex + "][" + pointIndex + "]\n";
             if (theLink !== false) { msg += "The link with this element is " + theLink; }
             Fisma.Util.showAlertDialog(msg);
         } else {
@@ -1268,7 +1312,8 @@ Fisma.Chart = {
             if (typeof children[x].nodeName !== 'undefined') {
 
                 // search for a canvas that is the shadow canvas
-                if (String(children[x].nodeName).toLowerCase() === 'canvas' && children[x].className === 'jqplot-series-shadowCanvas') {
+                if (String(children[x].nodeName).toLowerCase() === 'canvas'
+                    && children[x].className === 'jqplot-series-shadowCanvas') {
 
                     // this is the canvas we want to draw on
                     var targCanv = children[x];
@@ -1303,7 +1348,7 @@ Fisma.Chart = {
                     }
 
                     // Draw top border?
-                    if (chartParamsObj.borders.indexOf('T') !== -1) {
+                    if (chartParamsObj.borders.indexOf('T') !== -1) { 
                         context.moveTo(0, 0);
                         context.lineTo(w, 0);
                         context.stroke();
@@ -1338,7 +1383,8 @@ Fisma.Chart = {
                 backURL = chartParamsObj.background.URL;
             }
         }
-        var injectHTML = '<img height="100%" src="' + backURL + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';
+        var injectHTML = '<img height="100%" src="' + backURL
+                       + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';
 
         // But wait, is there an override issued for the HTML of the background to inject?
         if (chartParamsObj.background) {
@@ -1362,7 +1408,13 @@ Fisma.Chart = {
 
         var injectedBackgroundImg = document.createElement('span');
         injectedBackgroundImg.setAttribute('align', 'center');
-        injectedBackgroundImg.setAttribute('style' , 'position: absolute; left: ' + cpyStyl.left + '; top: ' + cpyStyl.top + '; width: ' + cpy.width + 'px; height: ' + cpy.height + 'px;');
+        injectedBackgroundImg.setAttribute(
+            'style',
+            'position: absolute; left: ' + cpyStyl.left
+            + '; top: ' + cpyStyl.top
+            + '; width: ' + cpy.width
+            + 'px; height: ' + cpy.height + 'px;'
+        );
 
         var inserted = targDiv.insertBefore(injectedBackgroundImg, insertBeforeChild);
         inserted.innerHTML = injectHTML;
@@ -1501,7 +1553,9 @@ Fisma.Chart = {
                     thisWigInDOM.value = thisWidget.forcevalue;
                     thisWigInDOM.text = thisWidget.forcevalue;
                 } else {
-                    var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj.uniqueid + '_' + thisWidget.uniqueid);
+                    var thisWigCookieValue = YAHOO.util.Cookie.get(
+                            chartParamsObj.uniqueid + '_' + thisWidget.uniqueid
+                        );
                     if (thisWigCookieValue !== null) {
                         // the value has been coosen in the past and is stored as a cookie
                         thisWigCookieValue = thisWigCookieValue.replace(/%20/g, ' ');
@@ -1548,7 +1602,9 @@ Fisma.Chart = {
                     thisWidgetValue = thisWidgetOnDOM.value;
                 } else {
                     // not on DOM, is there a cookie?
-                    var thisWigCookieValue = YAHOO.util.Cookie.get(chartParamsObj.uniqueid + '_' + thisWidget.uniqueid);
+                    var thisWigCookieValue = YAHOO.util.Cookie.get(
+                            chartParamsObj.uniqueid + '_' + thisWidget.uniqueid
+                        );
                     if (thisWigCookieValue !== null) {
                         // there is a cookie value, us it
                         thisWidgetValue = thisWigCookieValue;
@@ -1599,7 +1655,10 @@ Fisma.Chart = {
         chartParamsObj.chartDataText = undefined;
 
         // re-create chart entirly
-        document.getElementById(chartParamsObj.uniqueid + 'holder').finnishFadeCallback = new Function ("Fisma.Chart.makeElementVisible('" + chartParamsObj.uniqueid + "loader'); Fisma.Chart.createJQChart(" + YAHOO.lang.JSON.stringify(chartParamsObj) + "); Fisma.Chart.finnishFadeCallback = '';");
+        document.getElementById(chartParamsObj.uniqueid + 'holder').finnishFadeCallback = new Function (
+            "Fisma.Chart.makeElementVisible('" + chartParamsObj.uniqueid + "loader'); Fisma.Chart.createJQChart("
+            + YAHOO.lang.JSON.stringify(chartParamsObj) + "); Fisma.Chart.finnishFadeCallback = '';"
+        );
         Fisma.Chart.fadeOut(chartParamsObj.uniqueid + 'holder', 300);
     },
 
@@ -1705,10 +1764,10 @@ Fisma.Chart = {
             element.FadeState = element.FadeState === 2 ? -1 : 1;
             element.FadeTimeLeft = TimeToFade;
             setTimeout("Fisma.Chart.animateFade(" + new Date().getTime() + ",'" + eid + "'," + TimeToFade + ")", 33);
-        }  
+        }
     },
 
-    animateFade : function (lastTick, eid, TimeToFade) {  
+    animateFade : function (lastTick, eid, TimeToFade) {
         var curTick = new Date().getTime();
         var elapsedTicks = curTick - lastTick;
 
@@ -1781,7 +1840,8 @@ Fisma.Chart = {
                     barCount = chartParamsObj.chartData.length;
                 }
 
-                // Assuming each bar margin is 10px, And each bar has a minimum width of 35px, how much space is needed total (minimum).
+                // Assuming each bar margin is 10px, And each bar has a minimum width of 35px,
+                // how much space is needed total (minimum).
                 minSpaceRequired = (barCount * 10) + (barCount * 35) + 40;
 
                 // Do we not have enough space for a non-scrolling chart?
@@ -2034,7 +2094,8 @@ Fisma.Chart = {
                         thisChld.innerHTML = '';
                     }
 
-                    // add outline to this point label so it is easily visible on dark color backgrounds (outlines are done through white-shadows)
+                    // add outline to this point label so it is easily visible on dark color backgrounds
+                    // (outlines are done through white-shadows)
                     if (Fisma.Chart.getGlobalSetting('pointLabelsOutline') === 'true') {
 
                         outlineStyle = 'text-shadow: ';
@@ -2045,16 +2106,23 @@ Fisma.Chart = {
                         outlineStyle += '#FFFFFF -1px -1px 0px, ';
                         outlineStyle += '#FFFFFF 1px 1px 0px; ';
 
-                        thisChld.innerHTML = '<span style="' + outlineStyle + chartParamsObj.pointLabelStyle + '">' + thisChld.innerHTML + '</span>';
-                        thisChld.style.textShadow = 'text-shadow: #FFFFFF 0px -1px 0px, #FFFFFF 0px 1px 0px, #FFFFFF 1px 0px 0px, #FFFFFF -1px 1px 0px, #FFFFFF -1px -1px 0px, #FFFFFF 1px 1px 0px;';
+                        thisChld.innerHTML = '<span style="' + outlineStyle + chartParamsObj.pointLabelStyle + '">'
+                                           + thisChld.innerHTML + '</span>';
+                        thisChld.style.textShadow = 'text-shadow: #FFFFFF 0px -1px 0px, #FFFFFF 0px 1px 0px,'
+                                                  + '#FFFFFF 1px 0px 0px, #FFFFFF -1px 1px 0px, #FFFFFF -1px -1px 0px,'
+                                                  + '#FFFFFF 1px 1px 0px;';
 
                     } else {
-                        thisChld.innerHTML = '<span style="' + chartParamsObj.pointLabelStyle + '">' + thisChld.innerHTML + '</span>';
+                        thisChld.innerHTML = '<span style="' + chartParamsObj.pointLabelStyle + '">'
+                                           + thisChld.innerHTML + '</span>';
                     }
 
                     // adjust the label to the a little bit since with the decemal trimmed, it may seem off-centered
-                    var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''), 10);       // remove "px" from string, and conver to number
-                    var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''), 10);       // remove "px" from string, and conver to number
+                    // remove "px" from string, and conver to number
+                    var thisLeftNbrValue = parseInt(String(thisChld.style.left).replace('px', ''), 10);
+
+                    // remove "px" from string, and conver to number
+                    var thisTopNbrValue = parseInt(String(thisChld.style.top).replace('px', ''), 10);
                     thisLeftNbrValue += chartParamsObj.pointLabelAdjustX;
                     thisTopNbrValue += chartParamsObj.pointLabelAdjustY;
                     if (thisLabelValue >= 100) { thisLeftNbrValue -= 2; }
@@ -2072,7 +2140,7 @@ Fisma.Chart = {
 
     /**
      * Removes data-labels that are within a certain range of eachother. If two labels are close,
-     * the data-label showing the lesser value is hidden.
+     * the data-label showing the lesser value is hidden. 
      *
      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
      * @param object
@@ -2121,7 +2189,9 @@ Fisma.Chart = {
                     // remove "px" from string, and conver to number
                     pointLabelLeft = parseInt(String(thisChld.style.left).replace('px', ''), 10);
                     pointLabelTop = parseInt(String(thisChld.style.top).replace('px', ''), 10);
-                    pointLabelValue = thisChld.value; // the value property should be given to this element form removeDecFromPointLabels
+
+                    // the value property should be given to this element form removeDecFromPointLabels
+                    pointLabelValue = thisChld.value;
 
                     var thispLabelInfo = {
                         left: pointLabelLeft, 
@@ -2258,7 +2328,7 @@ Fisma.Chart = {
 
         // get this chart's GlobSettings menue
         var settingsMenue = document.getElementById(chartParamsObj.uniqueid + 'GlobSettings');
-
+        
         // get all elements of this chart's GlobSettings menue
         var settingOpts = settingsMenue.childNodes;
 
@@ -2320,7 +2390,9 @@ Fisma.Chart = {
         } else {
 
             if (typeof Fisma.Chart.globalSettingsDefaults[settingName] === 'undefined') {
-                throw 'You have referenced a global setting (' + settingName + '), but have not defined a default value for it! Please defined a def-value in the object called globalSettingsDefaults that is located within the global scope of Chart.js';
+                throw 'You have referenced a global setting (' + settingName + '), but have not defined a default'
+                      + ' value for it! Please defined a def-value in the object called globalSettingsDefaults'
+                      + ' that is located within the global scope of Chart.js';
             } else {
                 return String(Fisma.Chart.globalSettingsDefaults[settingName]);
             }
@@ -2358,7 +2430,8 @@ Fisma.Chart = {
         }
 
         // Depth of bar shadows?
-        if (Fisma.Chart.getGlobalSetting('barShadowDepth') !== 'no-setting' && Fisma.Chart.getGlobalSetting('barShadows') === 'true') {
+        if (Fisma.Chart.getGlobalSetting('barShadowDepth') !== 'no-setting'
+            && Fisma.Chart.getGlobalSetting('barShadows') === 'true') {
             chartParamObj.seriesDefaults.rendererOptions.shadowDepth = Fisma.Chart.getGlobalSetting('barShadowDepth');
             chartParamObj.seriesDefaults.rendererOptions.shadowOffset = Fisma.Chart.getGlobalSetting('barShadowDepth');
         }
@@ -2382,13 +2455,8 @@ Fisma.Chart = {
             chartParamObj.seriesDefaults.pointLabels.show = true;
         }
 
-        // point labels outline?
-            /* no alterations to the chartParamObject needs to be done here, this is handeled by Fisma.Chart.removeDecFromPointLabels() */  
-
-
         return chartParamObj;
     },
-
 
     /**
      * Redraws all charts and refreashes all options dialogs associated.
@@ -2584,7 +2652,7 @@ Fisma.Chart = {
                             right: 0
                         }
                     );
-                    
+
                     if (Fisma.Chart.isIE === false) {
                         div.className = 'chart-yaxis-tick';
                     } else {
@@ -2603,7 +2671,8 @@ Fisma.Chart = {
 
                 } else {
 
-                    // All other canvases elements are placed absolute and corectly, and need not to be moved for printing purposes
+                    // All other canvases elements are placed absolute and corectly,
+                    // and need not to be moved for printing purposes
                     div = $('<div />').css(
                         {
                             position: 'absolute',

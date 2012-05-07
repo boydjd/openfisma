@@ -22,7 +22,7 @@
  */
  
 Fisma.User = {
-    
+
     /**
      * A dictionary of user info panels that have already been created.
      *
@@ -109,7 +109,7 @@ Fisma.User = {
 
     /**
      * Display a dialog which shows user information for the specified user.
-     * 
+     *
      * @param referenceElement The panel will be displayed near this element
      * @param username The name of the user to get info for
      */
@@ -123,13 +123,13 @@ Fisma.User = {
             panel = Fisma.User.createUserInfoPanel(referenceElement, username);
 
             Fisma.User.userInfoPanelList[username] = panel;
-            
+
             panel.show();
         } else {
 
             // Panel already exists
             panel = Fisma.User.userInfoPanelList[username];
-            
+
             // If panel is hidden then display it, or if its already visible, then hide it.
             if (panel.cfg.getProperty("visible")) {
                 panel.hide();
@@ -293,7 +293,7 @@ Fisma.User = {
 
     /**
      * Fill in the account info for one user and display a success message
-     * 
+     *
      * @param account {Object} A dictionary of LDAP data for an account.
      */
     populateAccountForm : function (account) {
@@ -316,7 +316,7 @@ Fisma.User = {
 
     /**
      * Display a list of accounts that a user can select from
-     * 
+     *
      * @param accounts {Object} An array of LDAP account dictionaries.
      */
     showMultipleAccounts : function (accounts) {
@@ -351,7 +351,7 @@ Fisma.User = {
 
     /**
      * Show the comment panel
-     * 
+     *
      * @return void
      */
     showCommentPanel : function () {

@@ -29,27 +29,29 @@
      * @class ImagePicker
      * @constructor
      *
-     * @param {String} name The name of the form element associated with the picker.
-     * @param {HTMLElement} parent The parent element to render inside of.
-     * @param {Object} images A dictionary of images where keys are image IDs and values are URLs to find images at.
-     * @param {Integer} selectedImage The ID number of the default image.
-     * @param {String} managementUrl Optional. A URL that this image picker can link to for managing the images.
-     * @param {String} uploadUrl Optional. A URL that can accept the POST of an image.
+     * @param {Object} config Dictionary of configuration values
+     *  {String} name The name of the form element associated with the picker.
+     *  {String} parentId The parent element to render inside of.
+     *  {Object} images A dictionary of images where keys are image IDs and values are URLs to find images at.
+     *  {Integer} selectedImage The ID number of the default image.
+     *  {String} managementUrl Optional. A URL that this image picker can link to for managing the images.
+     *  {String} uploadUrl Optional. A URL that can accept the POST of an image.
      */
-    var IP = function(name, parent, images, selectedImage, managementUrl, uploadUrl) {
-        this._parent = parent;
-        this._images = images;
-        this._selectedImageId = selectedImage;
-        this._managementUrl = managementUrl;
-        this._uploadUrl = uploadUrl;
+    var IP = function(config) {
+        this._name = config.name;
+        this._parent = document.getElementById(config.parentId);
+        this._images = config.images;
+        this._selectedImageId = config.selectedImageId;
+        this._managementUrl = config.managementUrl;
+        this._uploadUrl = config.uploadUrl;
 
         // The form element wrapper may put something else in here, so get rid of that first.
-        while (parent.firstChild) {
-            parent.removeChild(parent.firstChild);
+        while (this._parent.firstChild) {
+            this._parent.removeChild(this._parent.firstChild);
         }
 
         this._renderImage();
-        this._renderHiddenInput(name);
+        this._renderHiddenInput();
         this._renderDrawer();
     };
 
@@ -105,7 +107,8 @@
         /**
          * A link to a URL where the images in this picker can be managed.
          *
-         * If set, the widget will display a URL button for this URL. If not set, the button will not be displayed at all.
+         * If set, the widget will display a URL button for this URL. If not set,
+         * the button will not be displayed at all.
          */
         _managementUrl: null,
 
@@ -201,10 +204,10 @@
          *
          * @param String name The name of the input field
          */
-        _renderHiddenInput: function (name) {
+        _renderHiddenInput: function () {
             this._hiddenInput = document.createElement("input");
             this._hiddenInput.type = "hidden";
-            this._hiddenInput.name = name;
+            this._hiddenInput.name = this._name;
             this._hiddenInput.value = this._selectedImageId;
             this._parent.appendChild(this._hiddenInput);
         },

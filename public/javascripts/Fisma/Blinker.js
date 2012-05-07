@@ -40,7 +40,7 @@ Fisma.Blinker = function (interval, cycles, onFunction, offFunction) {
 
     this.onFunction = onFunction;
     this.offFunction = offFunction;
-    
+
     // State definition: 1 => ON, 0 => OFF. Defaults to OFF.
     this.state = 0;
 };
@@ -57,11 +57,11 @@ Fisma.Blinker.prototype.start = function () {
  */
 Fisma.Blinker.prototype.cycle = function () {
     var that = this;
-    
+
     if (1 === this.state) {
         this.offFunction();
     } else {
-        this.onFunction();        
+        this.onFunction();
     }
 
     // Toggle state

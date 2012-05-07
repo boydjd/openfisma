@@ -141,7 +141,7 @@
             var state = this.getState();
             if (!Lang.isObject(state) || !Lang.isObject(state.advancedQuery)) {
                 return {};
-            } 
+            }
             return state.advancedQuery;
         },
 
