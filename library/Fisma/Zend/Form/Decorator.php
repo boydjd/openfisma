@@ -173,10 +173,10 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
         } else if ($element instanceof Zend_Form_Element) {
             $render = '<tr><td>'
                     . $this->buildLabel()
-                    . '</td><td><div>'
+                    . '</td><td>'
                     . $this->buildInput()
                     . $this->buildDescription()
-                    . '</div></td></tr>';
+                    . '</td></tr>';
         } else if ($element instanceof Zend_Form_DisplayGroup) {
             $render = '<div class=\'subform\'><table class=\'fisma_crud\'>'
                     . $content

@@ -361,15 +361,12 @@ Fisma.Util = {
     },
 
     /**
-     * Display the description div to the above of element.
+     * Display the description div to the below of element.
      *
      * @param {String} targetId The id of element
      * @param {String} description The description of element
      */
     showDescription: function (targetId, description) {
-        var Dom = YAHOO.util.Dom;
-        var element = Dom.get(targetId) ? Dom.get(targetId) : Dom.get(targetId + '-button');
-        var label = YAHOO.util.Selector.query("label[for="+ targetId +"]");
 
         // Create a description div for showing description
         var container = document.createElement("div");
@@ -389,72 +386,22 @@ Fisma.Util = {
         containerBottom.className = 'descriptionBoxBottom';
         container.appendChild(containerBottom);
 
-        // Add the description div to the parent node of targetEl.
-        var addContainerToParentNode = function(targetEl) {
-            targetEl.parentNode.appendChild(container);
-            targetEl.parentNode.style.position = 'relative';
-        };
-
-        // Display the description on the top of element.
-        var setContainerBottomHeight = function(targetEl) {
-            var elementRegion = Dom.getRegion(targetEl);
-            container.style.bottom = (elementRegion.height + 2).toString() + 'px';
-        };
-
-        // Attach event to element
-        var onMouseEvent = function(targetEl) {
-            var display = function () {
-                Dom.setStyle(container, 'display', 'block');
-
-                // Make the element's parent div display at higher layer when the element receives focus.
-                Dom.setStyle(container.parentNode, 'z-index', '2');
-            };
-
-            var hide = function () {
-                Dom.setStyle(container, 'display', 'none');
-
-                // Make description's parent div display at lower layer when element loses focus
-                Dom.setStyle(container.parentNode, 'z-index', '0');
-            };
-
-            var button = YAHOO.widget.Button.getButton(targetEl.id);
-
-            // Set the description's parent div to a higher layer when the select menu receives focus.
-            // Set the description's parent div to a lower layer when the select menu loses focus. 
-            if (typeof button !== "undefined") {
-                var menu = button.getMenu();
-                menu.subscribe("show", display);
-                menu.subscribe("hide", hide);
-            } else {
-                YAHOO.util.Event.addListener(targetEl, "mousedown", display);
-                YAHOO.util.Event.addListener(targetEl, "mouseout", hide);
-            }
-        }
-
-        // Put the description div to the top of element
-        if (element.nodeName.toLowerCase() === "span") { // menu button
-            var selectMenuId = targetId + '-button';
-            YAHOO.util.Event.onContentReady(selectMenuId, function() {
-                var selectMenu = Dom.get(selectMenuId);
-                addContainerToParentNode(selectMenu);
-                setContainerBottomHeight(selectMenu);
-                onMouseEvent(selectMenu);
-            });
-        } else if (element.nodeName.toLowerCase() === "textarea") {
-            var textareaTableId = targetId + '_tbl';
-            YAHOO.util.Event.onContentReady(textareaTableId, function() {
-                var textareaTable = Dom.get(textareaTableId);
-                addContainerToParentNode(element);
-                setContainerBottomHeight(textareaTable);
-                onMouseEvent(element.parentNode);
-            });
+        var targetEl;
+        if (jQuery('#' + targetId)[0]) {
+            targetEl = jQuery('#' + targetId);
         } else {
-            addContainerToParentNode(element);
-            setContainerBottomHeight(element);
-            onMouseEvent(element);
+            targetEl = jQuery('#' + targetId + '-button');
         }
+
+        // Clone a tr element from the tr of the current element.
+        // Clean the content of cloned tr and insert it to the next sibling of the tr of current element.
+        // Append the description div to the second td of the cloned tr.
+        var tr = targetEl.closest('tr');
+        var cloneTr = tr.clone();
+        cloneTr.children().text("").last().html(container);
+        tr.after(cloneTr);
 
         // Remove the description attribute from element
-        element.removeAttribute('description');
+        targetEl.removeAttr('description');
     }
 };

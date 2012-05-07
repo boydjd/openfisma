@@ -721,15 +721,13 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 
 .descriptionBox {
     left: 0;
-    width: 410px;
-    position: absolute;
-    color: #CC0000;
-    display: none;
+    width: 328px;
     opacity: 1;
+    margin-bottom: 3px;
 }
 
 .descriptionBox .descriptionBoxTop {
-    height: 2px;
+    height: 6px;
     overflow: hidden;
 }
 
@@ -743,8 +741,8 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 }
 
 .descriptionBox .descriptionBoxBottom {
-    background-position: 0 -28px;
-    height: 7px;
+    background-position: 0 -32px;
+    height: 2px;
     overflow: hidden;
     clear: both;
 }
