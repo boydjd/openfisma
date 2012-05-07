@@ -1,5 +1,20 @@
-<?php 
-Fisma_Format_Section::startSection('PHP Info');
-phpinfo();
-Fisma_Format_Section::stopSection();
-?>
+<div style='float:left; width: 33%'>
+<?php Fisma_Format_Section::startSection('Required PHP Extensions'); ?>
+    <div class='approval'>
+    <?php foreach ($this->requiredExtensions as $ext):
+        $installed = in_array($ext, $this->installedExtensions); ?>
+        <div class='approvalStep'>
+            <span class='<?php echo $this->escape((($installed) ? "approved" : "denied"), 'none'); ?>'>
+                <?php echo $this->escape($ext . " => " . (($installed) ? "installed" : "missing")); ?>
+            </span>
+        </div>
+    <?php endforeach; ?>
+    </div>
+<?php Fisma_Format_Section::stopSection(); ?>
+</div>
+
+<div style='width: 66%; float:right'>
+<?php Fisma_Format_Section::startSection('PHP Info');
+    phpinfo();
+Fisma_Format_Section::stopSection(); ?>
+</div>
