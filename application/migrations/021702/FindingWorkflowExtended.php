@@ -24,19 +24,18 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_021800_FindingConfig extends Fisma_Migration_Abstract
+class Application_Migration_021702_FindingWorkflowExtended extends Fisma_Migration_Abstract
 {
     /**
      * Add 2 unsigned integer columns
      */
     public function migrate()
     {
-        $this->message("Adding threat_type & use_legacy_finding_key fields to Configuration table");
+        $this->message("Adding finding_new_due & finding_draft_due fields to Configuration table");
 
-        $threatOption = "enum('threat_level','residual_risk') DEFAULT 'threat_level' NOT NULL";
-        $legacyOption = "tinyint(1) DEFAULT 1 NOT NULL";
+        $columnOption = "smallint(5) DEFAULT 30 UNSIGNED NOT NULL";
 
-        $this->getHelper()->addColumn('configuration', 'threat_type', $threatOption, 'host_url');
-        $this->getHelper()->addColumn('configuration', 'use_legacy_finding_key', $legacyOption, 'threat_type');
+        $this->getHelper()->addColumn('configuration', 'finding_new_due', $columnOption, 'default_bureau_id');
+        $this->getHelper()->addColumn('configuration', 'finding_draft_due', $columnOption, 'finding_new_due');
     }
 }
