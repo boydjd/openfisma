@@ -370,7 +370,7 @@
                 this._drawer.appendChild(tooltipSpan);
                 var uploadIconTooltipTxt = "Please upload a square image file larger than 32 x 32 pixels. ";
                 uploadIconTooltipTxt += "You don't have to worry about the size of the image file as the system will ";
-                uploadIconTooltipTxt += "automatically resize and scale the image down to 32 x 32 pixels¸ but you do ";
+                uploadIconTooltipTxt += "automatically resize and scale the image down to 32 x 32 pixels, but you do ";
                 uploadIconTooltipTxt += "have to worry about the shape. As rectangular images will be distorted, ";
                 uploadIconTooltipTxt += "please make sure that you are uploading a square image file. ";
                 uploadIconTooltipTxt += "Formats accepted are JPEG, GIF,SVG, BMP, and PNG.";
