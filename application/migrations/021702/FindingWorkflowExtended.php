@@ -33,7 +33,7 @@ class Application_Migration_021702_FindingWorkflowExtended extends Fisma_Migrati
     {
         $this->message("Adding finding_new_due & finding_draft_due fields to Configuration table");
 
-        $columnOption = "smallint(5) DEFAULT 30 UNSIGNED NOT NULL";
+        $columnOption = "smallint(5) UNSIGNED DEFAULT 30 NULL";
 
         $this->getHelper()->addColumn('configuration', 'finding_new_due', $columnOption, 'default_bureau_id');
         $this->getHelper()->addColumn('configuration', 'finding_draft_due', $columnOption, 'finding_new_due');
