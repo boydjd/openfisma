@@ -110,10 +110,10 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
             $incident['reportTs'] = $oldDate->getDate()->toString(Fisma_Date::FORMAT_DATETIME);
             $incident['reportTz'] = $timezones[array_rand($timezones)];
 
-            $incident['additionalInfo'] = Fisma_String::loremIpsum(rand(100, 200), 'html');
+            $incident['additionalInfo'] = Fisma_String::loremIpsum(rand(90, 100), 'html');
 
             $incident['piiInvolved'] = $yesNo[array_rand($yesNo)];
-            $incident['piiAdditional'] = Fisma_String::loremIpsum(rand(100, 200), 'html');
+            $incident['piiAdditional'] = Fisma_String::loremIpsum(rand(90, 100), 'html');
             $incident['piiMobileMedia'] = $yesNo[array_rand($yesNo)];
             $incident['piiMobileMediaType'] = $mobileMediaTypes[array_rand($mobileMediaTypes)];
             $incident['piiEncrypted'] = $yesNo[array_rand($yesNo)];
@@ -124,16 +124,16 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
             $incident['piiShipment'] = $yesNo[array_rand($yesNo)];
             $incident['piiShipmentSenderContacted'] = $yesNo[array_rand($yesNo)];
             $incident['piiShipmentSenderCompany'] = ucwords(Fisma_String::loremIpsum(rand(1, 3)));
-            $incident['piiShipmentTimeline'] = Fisma_String::loremIpsum(rand(100, 200), 'html');
-            $incident['piiShipmentTrackingNumbers'] = Fisma_String::loremIpsum(rand(100, 200), 'html');
+            $incident['piiShipmentTimeline'] = Fisma_String::loremIpsum(rand(90, 100), 'html');
+            $incident['piiShipmentTrackingNumbers'] = Fisma_String::loremIpsum(rand(90, 100), 'html');
 
             $incident['hostIp'] = $this->_getRandomIpAddress();
             $incident['hostName'] = 'webprod04.agency.gov';
             $incident['hostOs'] = $hostOs[array_rand($hostOs)];
-            $incident['hostAdditional'] = Fisma_String::loremIpsum(rand(100, 200), 'html');
+            $incident['hostAdditional'] = Fisma_String::loremIpsum(rand(40, 50), 'html');
 
             $incident['sourceIp'] = $this->_getRandomIpAddress();
-            $incident['sourceAdditional'] = Fisma_String::loremIpsum(rand(100, 200), 'html');
+            $incident['sourceAdditional'] = Fisma_String::loremIpsum(rand(40, 50), 'html');
 
             // Mischief. Randomly unset two fields. (Incident reports don't have required fields.)
             $nulls = array_rand($incident, 2);
