@@ -50,7 +50,6 @@ Migration:
         minorVersion: 17
         tagNumber: 1
         name: AddSystemTypePrivileges
-
     021800_finding_config:
         majorVersion: 2
         minorVersion: 18
@@ -61,3 +60,8 @@ Migration:
         minorVersion: 18
         tagNumber: 0
         name: FindingWorkflowExtended
+    021701_add_privileges_for_evaluation:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 1
+        name: AddEvaluationPrivileges
