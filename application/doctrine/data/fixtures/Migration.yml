@@ -45,23 +45,24 @@ Migration:
         minorVersion: 17
         tagNumber: 1
         name: MigrateSpreadsheets
-    021701_add_privileges_for_system_type:
+
+    021702_add_privileges_for_system_type:
         majorVersion: 2
         minorVersion: 17
-        tagNumber: 1
+        tagNumber: 2
         name: AddSystemTypePrivileges
-    021800_finding_config:
-        majorVersion: 2
-        minorVersion: 18
-        tagNumber: 0
-        name: FindingConfig
-    021800_finding_workflow_extended:
-        majorVersion: 2
-        minorVersion: 18
-        tagNumber: 0
-        name: FindingWorkflowExtended
-    021701_add_privileges_for_evaluation:
+    021702_finding_config:
         majorVersion: 2
         minorVersion: 17
-        tagNumber: 1
+        tagNumber: 2
+        name: FindingConfig
+    021702_finding_workflow_extended:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 2
+        name: FindingWorkflowExtended
+    021702_add_privileges_for_evaluation:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 2
         name: AddEvaluationPrivileges

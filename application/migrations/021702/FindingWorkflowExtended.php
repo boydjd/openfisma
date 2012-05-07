@@ -24,7 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_021800_FindingWorkflowExtended extends Fisma_Migration_Abstract
+class Application_Migration_021702_FindingWorkflowExtended extends Fisma_Migration_Abstract
 {
     /**
      * Add 2 unsigned integer columns
@@ -33,7 +33,7 @@ class Application_Migration_021800_FindingWorkflowExtended extends Fisma_Migrati
     {
         $this->message("Adding finding_new_due & finding_draft_due fields to Configuration table");
 
-        $columnOption = "smallint(5) DEFAULT 30 UNSIGNED NOT NULL";
+        $columnOption = "smallint(5) UNSIGNED DEFAULT 30 NULL";
 
         $this->getHelper()->addColumn('configuration', 'finding_new_due', $columnOption, 'default_bureau_id');
         $this->getHelper()->addColumn('configuration', 'finding_draft_due', $columnOption, 'finding_new_due');

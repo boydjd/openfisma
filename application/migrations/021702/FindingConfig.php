@@ -24,7 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_021800_FindingConfig extends Fisma_Migration_Abstract
+class Application_Migration_021702_FindingConfig extends Fisma_Migration_Abstract
 {
     /**
      * Add 2 unsigned integer columns

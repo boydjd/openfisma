@@ -17,17 +17,17 @@
  */
 
 /**
- * This migration adds the privileges for SystemType model and assign these privileges to the admin role
+ * This migration adds the privileges for Evaluation model and assign these privileges to the admin role
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migration_Abstract
+class Application_Migration_021702_AddEvaluationPrivileges extends Fisma_Migration_Abstract
 {
     /**
-     * Add privileges for SystemType and assign to ADMIN
+     * Add privileges for Evaluation and assign to ADMIN
      *
      * @return void
      */
@@ -35,7 +35,6 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
     {
         $this->addPrivilege();
         $this->assignPrivilege();
-        $this->addEvents();
     }
 
     /**
@@ -45,22 +44,19 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
      */
     public function addPrivilege()
     {
-        $this->message("Adding privileges for SystemType");
+        $this->message("Adding privileges for Evaluation");
 
-        $insertStatement = "INSERT into `privilege` (`resource`, `action`, `description`) VALUE ('system_type', ";
-        $queryStatement = "SELECT `id` from `privilege` WHERE `resource` LIKE 'system_type' AND `action` LIKE ";
+        $insertStatement = "INSERT into `privilege` (`resource`, `action`, `description`) VALUE ('evaluation', ";
+        $queryStatement = "SELECT `id` from `privilege` WHERE `resource` LIKE 'evaluation' AND `action` LIKE ";
 
-        if (!$this->getHelper()->query($queryStatement . "'read'")) {
-            $this->getHelper()->exec($insertStatement . "'read', 'Read System Type'" . ")");
-        }
         if (!$this->getHelper()->query($queryStatement . "'create'")) {
-            $this->getHelper()->exec($insertStatement . "'create', 'Create System Type'" . ")");
+            $this->getHelper()->exec($insertStatement . "'create', 'Create Evaluation'" . ")");
         }
         if (!$this->getHelper()->query($queryStatement."'update'")) {
-            $this->getHelper()->exec($insertStatement . "'update', 'Update System Type'" . ")");
+            $this->getHelper()->exec($insertStatement . "'update', 'Update Evaluation'" . ")");
         }
         if (!$this->getHelper()->query($queryStatement . "'delete'")) {
-            $this->getHelper()->exec($insertStatement . "'delete', 'Delete System Type'" . ")");
+            $this->getHelper()->exec($insertStatement . "'delete', 'Delete Evaluation'" . ")");
         }
     }
 
@@ -73,8 +69,7 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
     {
         $this->message("Assigning privileges to Admin role");
 
-        $privilegeQueryStatement = "SELECT `id` from privilege WHERE `resource` LIKE 'system_type' AND `action` LIKE ";
-        $readPrivilege = $this->getHelper()->query($privilegeQueryStatement . "'read'");
+        $privilegeQueryStatement = "SELECT `id` from privilege WHERE `resource` LIKE 'evaluation' AND `action` LIKE ";
         $createPrivilege = $this->getHelper()->query($privilegeQueryStatement . "'create'");
         $updatePrivilege = $this->getHelper()->query($privilegeQueryStatement . "'update'");
         $deletePrivilege = $this->getHelper()->query($privilegeQueryStatement . "'delete'");
@@ -83,9 +78,6 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
 
         $queryStatement = "SELECT * from `role_privilege` WHERE `roleid` = {$adminRole[0]->id} AND `privilegeid` = ";
         $insertStatement = "INSERT into `role_privilege` VALUE ({$adminRole[0]->id}, ";
-        if (!$this->getHelper()->query($queryStatement . $readPrivilege[0]->id)) {
-            $this->getHelper()->exec($insertStatement . $readPrivilege[0]->id . ")");
-        }
         if (!$this->getHelper()->query($queryStatement . $createPrivilege[0]->id)) {
             $this->getHelper()->exec($insertStatement . $createPrivilege[0]->id . ")");
         }
@@ -94,42 +86,6 @@ class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migrati
         }
         if (!$this->getHelper()->query($queryStatement . $deletePrivilege[0]->id)) {
             $this->getHelper()->exec($insertStatement . $deletePrivilege[0]->id . ")");
-        }
-    }
-
-    /**
-     * Add events
-     *
-     * @return void
-     */
-    public function addEvents()
-    {
-        $this->message("Adding events for SystemType");
-
-        $insertStatement = "INSERT into `event` (`privilegeid`, `name`, `description`, `urlpath`) VALUE ("
-            . "(SELECT `id` from `privilege` where `resource` LIKE 'notification' AND `action` LIKE 'admin'), ";
-        $queryStatement = "SELECT `id` from `event` WHERE `name` LIKE ";
-
-        if (!$this->getHelper()->query($queryStatement . "'SYSTEM_TYPE_CREATED'")) {
-            $this->getHelper()->exec(
-                $insertStatement
-                    . "'SYSTEM_TYPE_CREATED', 'System Type Created', '/system-type/view/id/'"
-                . ")"
-            );
-        }
-        if (!$this->getHelper()->query($queryStatement . "'SYSTEM_TYPE_UPDATED'")) {
-            $this->getHelper()->exec(
-                $insertStatement
-                    . "'SYSTEM_TYPE_UPDATED', 'System Type Modified', '/system-type/view/id/'"
-                . ")"
-            );
-        }
-        if (!$this->getHelper()->query($queryStatement . "'SYSTEM_TYPE_DELETED'")) {
-            $this->getHelper()->exec(
-                $insertStatement
-                    . "'SYSTEM_TYPE_DELETED', 'System Type Deleted', NULL"
-                . ")"
-            );
         }
     }
 }
