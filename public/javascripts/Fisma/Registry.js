@@ -24,7 +24,7 @@
 (function() {
     /**
      * Generic storage class helps to manage global data.
-     * 
+     *
      * @namespace Fisma
      * @class Registry
      */

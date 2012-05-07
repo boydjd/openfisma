@@ -29,7 +29,7 @@ Fisma.Module = {
         var enabled = switchButton.state ? 'true' : 'false';
 
         var requestUrl = '/config/set-module/format/json/';
-        var postData = 'id=' + switchButton.payload.id + '&enabled=' + enabled + '&csrf=' + $('[name="csrf"]').val(); 
+        var postData = 'id=' + switchButton.payload.id + '&enabled=' + enabled + '&csrf=' + $('[name="csrf"]').val();
 
         YAHOO.util.Connect.asyncRequest(
             'POST', 

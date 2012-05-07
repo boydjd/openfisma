@@ -107,7 +107,7 @@ Fisma.SwitchButton.prototype = {
 
         this.element.appendChild(spinnerSpan);
         this.spinner = spinnerSpan;
-        
+
         // Create a proxy element for animating the background position (see toggleSwitch())
         this.proxyElement = document.createElement('div');
         this.proxyElement.style.display = 'none';

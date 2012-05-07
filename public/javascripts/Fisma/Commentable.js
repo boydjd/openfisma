@@ -93,15 +93,19 @@ Fisma.Commentable = {
 
      /**
       * Posts the artifact attachment form asynchronously
-      * 
+      *
       * The form needs to be posted asynchronously because otherwise the browser will begin ignoring responses to XHR
       * requests -- which would totally defeat the purpose of upload progress tracking.
-      * 
+      *
       * @param arg The AttachArtifacts object
       */
      postComment : function() {
 
-         var postUrl = "/comment/add/id/" + encodeURIComponent(Fisma.Commentable.config.id) + "/type/" + encodeURIComponent(Fisma.Commentable.config.type) + "/format/json";
+         var postUrl = "/comment/add/id/"
+                     + encodeURIComponent(Fisma.Commentable.config.id)
+                     + "/type/"
+                     + encodeURIComponent(Fisma.Commentable.config.type)
+                     + "/format/json";
 
          YAHOO.util.Connect.setForm('addCommentForm');
          Fisma.Commentable.asyncRequest = YAHOO.util.Connect.asyncRequest(
@@ -124,7 +128,7 @@ Fisma.Commentable = {
 
      /**
       * Handle the server response after a comment is added
-      * 
+      *
       * @param asyncResponse Response object from YUI connection
       */
      commentCallback : function (asyncResponse) {
@@ -155,9 +159,9 @@ Fisma.Commentable = {
          }
 
          /*
-          * Invoke callback. These are stored in the configuration as strings, so we need to find the real object 
+          * Invoke callback. These are stored in the configuration as strings, so we need to find the real object
           * references using array access notation.
-          * 
+          *
           * @todo Error handling is bad here. We really need a JS debug mode so that we could help out the developer
           * realize if these callbacks are invalid.
           */

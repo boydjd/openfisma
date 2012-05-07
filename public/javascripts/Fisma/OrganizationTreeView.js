@@ -249,7 +249,9 @@
                             );
 
                             // Expand the first two levels of the tree by default
-                            var defaultExpandNodes = this._treeView.getNodesBy(function (node) {return node.depth < 2;});
+                            var defaultExpandNodes = this._treeView.getNodesBy(function (node) {
+                                return node.depth < 2;
+                            });
                             $.each(defaultExpandNodes, function (key, node) {node.expand();});
 
                             this._treeView.draw();
