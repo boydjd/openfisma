@@ -140,7 +140,7 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
             )
         );
 
-        // Foreign key to the object which this log relates to
+        // Foreign key to the object which this task relates to
         $this->hasColumn(
             'objectId',
             'integer',
@@ -148,7 +148,7 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
             array('comment' => 'The parent object to which this task belongs')
         );
 
-        // Foreign key to the user who created this log entry
+        // Foreign key to the user who created this task entry
         $this->hasColumn(
             'userId',
             'integer',
@@ -223,8 +223,8 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
         $taskEntry = new $taskClass;
         $taskEntry->createdTs = Fisma::now();
         $taskEntry->description = isset($task['description']) ? $task['description'] : null;
-        $taskEntry->pocId = isset($task['pocId']) ? strtoupper($task['pocId']) : null;
-        $taskEntry->ecd = isset($task['ecd']) ? strtoupper($task['ecd']) : null;
+        $taskEntry->pocId = isset($task['pocId']) ? $task['pocId'] : null;
+        $taskEntry->ecd = isset($task['ecd']) ? $task['ecd'] : null;
 
         if (isset($task['expectedCost'])) {
             $taskEntry->expectedCost = $task['expectedCost'];
