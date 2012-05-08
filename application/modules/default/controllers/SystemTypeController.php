@@ -42,6 +42,16 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
+     * Override to disable mass deletion
+     *
+     * @return bool
+     */
+    protected function _isDeletable()
+    {
+        return false;
+    }
+
+    /**
      * Override parent to set up the image picker.
      *
      * @param string|null $formName The name of the specified form
@@ -76,7 +86,6 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
         $buttons = parent::getToolbarButtons($record);
 
         if (
-            $this->_isDeletable() &&
             $this->_acl->hasPrivilegeForClass('delete', 'SystemType') &&
             $this->getRequest()->getActionName() == 'view'
         ) {
