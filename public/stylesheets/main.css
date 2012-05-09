@@ -344,7 +344,6 @@ table.fisma_crud {
 
 table.fisma_crud tr td, table.fisma_crud tr td input {
     font-family: 'Verdana', 'Arial', 'Helvetica';
-    color: #404040;
     font-weight: bold;
     font-size: 12px;
     padding: 3px 5px;
@@ -734,7 +733,7 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 .descriptionBox .descriptionBoxCenter {
     border-left: 1px solid #c6c6c6;
     border-right: 1px solid #c6c6c6;
-    background: #ffffe3;
+    background: #ffffff;
     padding: 4px 5px 5px 10px;
     line-height: 1.2em;
     overflow: hidden;
