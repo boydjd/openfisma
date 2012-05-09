@@ -2,7 +2,7 @@ User:
     sample:
         username: sample
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: sample@department.gov
         nameFirst: Sample
         nameLast: User
         phoneOffice: (202) 555-7261
@@ -11,7 +11,7 @@ User:
     mike_green:
         username: mike.green
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: mike.green@department.gov
         nameFirst: Mike
         nameLast: Green
         phoneOffice: (202) 555-9271
@@ -19,7 +19,7 @@ User:
     alexander_ovechkin:
         username: alex.ovechkin
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: alex.ovechkin@department.gov
         nameFirst: Alexander
         nameLast: Ovechkin
         phoneOffice: (202) 555-9627
@@ -27,7 +27,7 @@ User:
     alexander_semin:
         username: alexander.semin
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: alexander.semin@department.gov
         nameFirst: Alexander
         nameLast: Semin
         phoneOffice: (301) 555-1462
@@ -35,7 +35,7 @@ User:
     mike_knuble:
         username: mike.knuble
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: mike.knuble@department.gov
         nameFirst: Mike
         nameLast: Knuble
         phoneOffice: (571) 555-5821
@@ -43,7 +43,7 @@ User:
     nicklas_backstrom:
         username: nicklas.backstrom
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: nicklas.backstrom@department.gov
         nameFirst: Nicklas
         nameLast: Bäckström
         phoneOffice: (301) 555-7751
@@ -51,7 +51,7 @@ User:
     michael_neuvirth:
         username: michael.neuvirth
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: michael.neuvirth@department.gov
         nameFirst: Michael
         nameLast: Neuvirth
         phoneOffice: (571) 555-8129
@@ -59,7 +59,7 @@ User:
     bruce_boudreau:
         username: bruce.boudreau
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: bruce.boudreau@department.gov
         nameFirst: Bruce
         nameLast: Boudreau
         phoneOffice: (571) 555-8130
@@ -67,7 +67,7 @@ User:
     george_mcphee:
         username: george.mcphee
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: george.mcphee@department.gov
         nameFirst: George
         nameLast: McPhee
         phoneOffice: (571) 555-8231
@@ -75,7 +75,7 @@ User:
     semyon_varlamov:
         username: semyon.varlamov
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: semyon.varlamov@department.gov
         nameFirst: Semyon
         nameLast: Varlamov
         phoneOffice: (571) 555-8132
@@ -83,7 +83,7 @@ User:
     braden_holtby:
         username: braden.holtby
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: braden.holtby@department.gov
         nameFirst: Braden
         nameLast: Holtby
         phoneOffice: (571) 555-8233
@@ -91,7 +91,7 @@ User:
     john_erskine:
         username: john.erskine
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: john.erskine@department.gov
         nameFirst: John
         nameLast: Erskine
         phoneOffice: (571) 555-8134
@@ -99,7 +99,7 @@ User:
     matt_hendricks:
         username: matt.hendricks
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: matt.hendricks@department.gov
         nameFirst: Matt
         nameLast: Hendricks
         phoneOffice: (571) 555-8235
@@ -107,7 +107,7 @@ User:
     matt_bradley:
         username: matt.bradley
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: matt.bradley@department.gov
         nameFirst: Matt
         nameLast: Bradley
         phoneOffice: (571) 555-8136
@@ -115,7 +115,7 @@ User:
     john_carlson:
         username: john.carlson
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: john.carlson@department.gov
         nameFirst: John
         nameLast: Carlson
         phoneOffice: (571) 555-8237
@@ -123,7 +123,7 @@ User:
     jeff_schultz:
         username: jeff.schultz
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: jeff.schultz@department.gov
         nameFirst: Jeff
         nameLast: Schultz
         phoneOffice: (571) 555-8138
@@ -131,7 +131,7 @@ User:
     karl_alzner:
         username: karl.alzner
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: karl.alzner@department.gov
         nameFirst: Karl
         nameLast: Alzner
         phoneOffice: (571) 555-8239
@@ -139,7 +139,7 @@ User:
     jason_chimera:
         username: jason.chimera
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: jason.chimera@department.gov
         nameFirst: Jason
         nameLast: Chimera
         phoneOffice: (571) 555-8401
@@ -147,7 +147,7 @@ User:
     boyd_gordon:
         username: boyd.gordon
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: boyd.gordon@department.gov
         nameFirst: Boyd
         nameLast: Gordon
         phoneOffice: (571) 555-8502
@@ -155,7 +155,7 @@ User:
     marcus_johansson:
         username: marcus.johansson
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: marcus.johansson@department.gov
         nameFirst: Marcus
         nameLast: Johansson
         phoneOffice: (571) 555-8403
@@ -163,7 +163,7 @@ User:
     mathieu_perreault:
         username: mathieu.perreault
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: mathieu.perreault@department.gov
         nameFirst: Mathieu
         nameLast: Perreault
         phoneOffice: (571) 555-8504
@@ -171,7 +171,7 @@ User:
     brooks_laich:
         username: brooks.laich
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: brooks.laich@department.gov
         nameFirst: Brooks
         nameLast: Laich
         phoneOffice: (571) 555-8405
@@ -179,7 +179,7 @@ User:
     marco_sturm:
         username: marco.sturm
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: marco.sturm@department.gov
         nameFirst: Marco
         nameLast: Sturm
         phoneOffice: (571) 555-8506
@@ -187,7 +187,7 @@ User:
     jason_chimera:
         username: jason.chimera
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: jason.chimera@department.gov
         nameFirst: Jason
         nameLast: Chimera
         phoneOffice: (571) 555-8407
@@ -195,7 +195,7 @@ User:
     dennis_wideman:
         username: dennis.wideman
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: dennis.wideman@department.gov
         nameFirst: Dennis
         nameLast: Wideman
         phoneOffice: (571) 555-8508
@@ -203,7 +203,7 @@ User:
     tom_poti:
         username: tom.poti
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: tom.poti@department.gov
         nameFirst: Tom
         nameLast: Poti
         phoneOffice: (571) 555-8409
@@ -211,7 +211,7 @@ User:
     sean_collins:
         username: sean.collins
         password: Sample1
-        email: openfisma-default-install@googlegroups.com
+        email: sean.collins@department.gov
         nameFirst: Sean
         nameLast: Collins
         phoneOffice: (571) 555-8510
