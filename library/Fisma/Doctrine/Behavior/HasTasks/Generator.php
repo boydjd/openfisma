@@ -106,9 +106,9 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
                 'notnull' => true,
                 'extra' => array(
                     'auditLog' => true,
-                    'logicalName' => 'Expected Current Date',
+                    'logicalName' => 'Expected Completion Date',
                 ),
-                'comment' => 'The expected current date',
+                'comment' => 'The expected completion date',
             )
         );
 
