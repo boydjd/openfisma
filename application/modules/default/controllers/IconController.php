@@ -237,7 +237,6 @@ class IconController extends Fisma_Zend_Controller_Action_Object
     /**
      * Delete an icon
      *
-     * @GETAllowed
      * @return void
      */
     public function deleteAction()

@@ -89,7 +89,7 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
             $this->_acl->hasPrivilegeForClass('delete', 'SystemType') &&
             $this->getRequest()->getActionName() == 'view'
         ) {
-            $args = array(null, $this->getBaseUrl() . '/delete/id/', $record['id']);
+            $args = array(null, $this->getBaseUrl() . '/delete/', $record['id']);
             $buttons[] = new Fisma_Yui_Form_Button(
                 'deleteSystemTypeButton',
                 array(
