@@ -511,7 +511,7 @@
             this._selectedImageEl.className = "imagePickerSelectedImage";
 
             // Mimick the behavior of a normal select menu
-            if (event.type == 'click') {
+            if (event.type === 'click') {
                 this._hideDrawer();
             }
         },
