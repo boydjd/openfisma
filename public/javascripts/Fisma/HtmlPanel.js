@@ -26,7 +26,7 @@ Fisma.HtmlPanel = (function() {
     return {
         /**
          * Popup a YUI panel dialog which renders user specified HTML text.
-         * 
+         *
          * @param {String} title The YUI panel dialog title
          * @param {String} html The content source of the panel
          * @param {String} element The optional element or its id representing the Panel

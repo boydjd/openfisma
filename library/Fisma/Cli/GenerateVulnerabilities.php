@@ -80,14 +80,14 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_Abstract
             }
             $entry['threatLevel'] = $threat[rand(0, $threatCount)];
             $entry['assetId'] = $assetIds[rand(0, $assetIdsCount)][0];
-            $entry['description'] = Fisma_String::loremIpsum(rand(2, 1000));
-            $entry['recommendation'] = Fisma_String::loremIpsum(rand(2, 1000));
-            $entry['threat'] = Fisma_String::loremIpsum(rand(2, 1000));
+            $entry['description'] = Fisma_String::loremIpsum(rand(90, 100));
+            $entry['recommendation'] = Fisma_String::loremIpsum(rand(90, 100));
+            $entry['threat'] = Fisma_String::loremIpsum(rand(90, 100));
             $zdDescDate = new Zend_Date($discoveredDate);
             $entry['discoveredDate'] = $zdDescDate->toString('yyyy-MM-dd');
             $entries[] = $entry;
             unset($entry);
-            
+
             $generateProgressBar->update($i, "Generate Vulnerabilities");
         }
 

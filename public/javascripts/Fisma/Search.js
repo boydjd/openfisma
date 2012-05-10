@@ -80,7 +80,7 @@ Fisma.Search = (function() {
 
             var spinner = new Fisma.Spinner(testConfigurationButton.parentNode);
             spinner.show();
-            
+
             var postData = "csrf=" + document.getElementById('csrfToken').value;
 
             YAHOO.util.Connect.asyncRequest(
@@ -611,7 +611,7 @@ Fisma.Search = (function() {
                     // Update YUI's visual state to show sort on first data column
                     var sortColumnIndex = 0;
                     var sortColumn;
-                    
+
                     do {
                         sortColumn = dataTable.getColumn(sortColumnIndex);
                         

@@ -31,7 +31,7 @@
      *
      * Data loaded into this widget should be a nested array. Each level of nesting represents a level of nesting
      * in the tree. Each element in the array must have at least the following two elements:
-     * 
+     *
      *     1. nodeData - a hash of key/values that will be passed to your custom rendering functions.
      *     2. children - an array of nodes that are nested underneath the current node.
      *
@@ -97,7 +97,7 @@
          * A TR element that contains the "loading" message that is displayed while requesting data.
          */
         _loadingBar: null,
-        
+
         /**
          * A TR element that contains an error message, if any error condition has occurred.
          */
@@ -294,7 +294,10 @@
                 });
 
                 // To fix the IE popup insecure warning window problem 
-                buttonDefinition.image = window.location.protocol + '//' + window.location.host + buttonDefinition.image;
+                buttonDefinition.image = window.location.protocol
+                                       + '//'
+                                       + window.location.host + buttonDefinition.image;
+
                 button._button.style.background = 'url(' + buttonDefinition.image + ') 10% 50% no-repeat';
                 button._button.style.paddingLeft = '3em';
             }
@@ -528,13 +531,13 @@
         },
 
         /**
-         * A stub function. Subclasses can implement this in order to do any pre-procesing necessary (such as 
+         * A stub function. Subclasses can implement this in order to do any pre-procesing necessary (such as
          * aggregation).
-         * 
-         * Notice the rendering abstractions (particularly _renderCell) only provide node data, not the full 
+         *
+         * Notice the rendering abstractions (particularly _renderCell) only provide node data, not the full
          * node object. Therefore, any processing which requires knowing the tree structure cannot be done
          * at render time and must be done in this step.
-         * 
+         *
          * @param node {Array}
          */
         _preprocessTreeData: function(node) {
@@ -544,7 +547,7 @@
         /**
          * Recursively renders the data rows starting from a root node.
          *
-         * Rows with children are actually rendered TWICE, once in their expanded state and once in their collapsed 
+         * Rows with children are actually rendered TWICE, once in their expanded state and once in their collapsed
          * state. This makes it easy to render changes to the tree by simply hiding and showing certain rows -- nothing
          * actually needs to be rendered again.
          *
@@ -575,7 +578,7 @@
 
         /**
          * Render a node with the specified NodeState.
-         * 
+         *
          * @param container {HTMLElement} The tr that contains this node state.
          * @param node {Object} The node object to render.
          * @param level {Integer} The level of nesting, starting with 0.
@@ -699,7 +702,7 @@
         /**
          * Hide a row for a particular node
          *
-         * This is a simple operation, just look for any rows that have been rendered for this node 
+         * This is a simple operation, just look for any rows that have been rendered for this node
          * and hide everything you find.
          *
          * @param node {Array}
@@ -811,7 +814,7 @@
          *
          * This simply tells the table to render a filter, it does not necessarily do any filtering.
          *
-         * The callback method is called when the filter value changes. It is executed in the global scope 
+         * The callback method is called when the filter value changes. It is executed in the global scope
          * and will be passed two parameters:
          *
          * 1. The name of the newly selected filter.

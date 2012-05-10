@@ -48,8 +48,9 @@ class Fisma_Inject_Excel
      * v4 2011-03-25 threatLevel and threatDescription are now requiered fields
      * v5 2011-11-04 Remove contactInfo field
      * v6 2012-03-26 Add data validation for 'ecdDate' field
+     * v7 2012-04-27 Add owner email for adding POC
      */
-    const TEMPLATE_VERSION = 6;
+    const TEMPLATE_VERSION = 7;
 
     /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
@@ -72,7 +73,8 @@ class Fisma_Inject_Excel
         'threatLevel',
         'threatDescription',
         'countermeasuresEffectiveness',
-        'countermeasureDescription'
+        'countermeasureDescription',
+        'pocEmail'
     );
 
     /**
@@ -323,6 +325,13 @@ class Fisma_Inject_Excel
                 $poam['countermeasures'] = $finding['countermeasureDescription'];
             }
             $poam['resourcesRequired'] = 'None';
+
+            if (!empty($finding['pocEmail'])) {
+                $poc = Doctrine::getTable('Poc')->findOneByEmail($finding['pocEmail']);
+                if ($poc) {
+                    $poam['pocId'] = $poc->id;
+                }
+            }
 
             // Finally, create the finding
             $findingRecord = new Finding();

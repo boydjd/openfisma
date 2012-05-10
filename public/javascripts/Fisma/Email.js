@@ -31,7 +31,7 @@ Fisma.Email = (function() {
          * @type YAHOO.widget.Panel
          */
         panelElement : null,
-         
+
         /**
          * Initializes the ShowRecipientDialog widget
          */
@@ -141,7 +141,7 @@ Fisma.Email = (function() {
                 Fisma.Email.panelElement.destroy();
                 Fisma.Email.panelElement = null;
             }
-            
+
             return true;
         }
     };

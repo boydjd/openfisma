@@ -62,9 +62,9 @@ Fisma.CheckboxTree = {
                 if (!checkboxItem.checked) {
                     allChildNodesChecked = false;
                 }
-                
+
                 checkboxArray.push(checkboxItem);
-                
+
                 if (listItem.nextSibling) {
                     listItem = listItem.nextSibling;
                     checkboxItem = listItem.childNodes[0];
@@ -72,19 +72,19 @@ Fisma.CheckboxTree = {
                     break;
                 }
             }
-            
+
             // Update the node which the user clicked on
             if (allChildNodesChecked) {
                 clickedBox.checked = false;
             } else {
                 clickedBox.checked = true;
             }
-            
+
             // Now iterate through child nodes and update them
             var i;
             for (i = 0; i < checkboxArray.length; i++) {
                 var checkbox = checkboxArray[i];
-                
+
                 if (allChildNodesChecked) {
                     checkbox.checked = false;
                 } else {

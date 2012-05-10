@@ -24,7 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migration_Abstract
+class Application_Migration_021702_AddSystemTypePrivileges extends Fisma_Migration_Abstract
 {
     /**
      * Add privileges for SystemType and assign to ADMIN

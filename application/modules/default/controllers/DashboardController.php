@@ -63,7 +63,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * The user dashboard displays important system-wide metrics, charts, and graphs
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -133,7 +133,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         if ($user->Notifications->count() > 0) {
             $this->view->notifications = $user->Notifications;
             $this->view->csrfToken = $this->_helper->csrf->getToken();
-            $this->view->submitUrl = "javascript:Fisma.Util.formPostAction('', '/dashboard/dismiss/', " 
+            $this->view->submitUrl = "javascript:Fisma.Util.formPostAction('', '/dashboard/dismiss/', "
                                      . $this->_me->id . ')';
         }
 
@@ -145,7 +145,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setTitle('Finding Status Distribution')
             ->addWidget(
                 'findingType',
-                'Threat Level:',
+                'Finding Type:',
                 'combo',
                 'Totals',
                 array(
@@ -155,6 +155,13 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                     'Moderate',
                     'Low'
                 )
+            )
+            ->addWidget(
+                'workflowThreatType',
+                'Risk Type:',
+                'combo',
+                'Threat Level',
+                array('Threat Level', 'Residual Risk')
             );
 
         $this->view->chartTotalStatus = $chartTotalStatus->export();
@@ -177,10 +184,12 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
     public function chartFindingAction()
     {
         $findingType = urldecode($this->getRequest()->getParam('findingType'));
+        $threatType = $this->getRequest()->getParam('workflowThreatType');
 
         $thisChart = new Fisma_Chart();
         $thisChart->setChartType('stackedbar')
             ->setThreatLegendVisibility(true)
+            ->setThreatLegendTitle($threatType)
             ->setColors(
                 array(
                     "#FF0000",
@@ -205,12 +214,13 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             return;
         }
 
+        $threatField = $threatType === 'Threat Level' ? 'threatLevel' : 'residualRisk';
         $q = Doctrine_Query::create()
-            ->select('count(f.id), threatlevel, denormalizedstatus')
+            ->select('count(f.id), ' . $threatField . ', denormalizedstatus')
             ->from('Finding f')
             ->where('f.status <> "CLOSED"')
             ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
-            ->groupBy('f.denormalizedstatus, f.threatlevel')
+            ->groupBy('f.denormalizedstatus, f.' . $threatField)
             ->orderBy('f.denormalizedstatus, f.threatlevel')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $rslts = $q->execute();
@@ -223,11 +233,11 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                 $sortedRslts[$thisRslt['denormalizedStatus']] = array();
             }
 
-            if ($thisRslt['threatLevel'] === NULL || $thisRslt['threatLevel'] === '') {
-                $thisRslt['threatLevel'] = 'NULL';
+            if ($thisRslt[$threatField] === NULL || $thisRslt[$threatField] === '') {
+                $thisRslt[$threatField] = 'NULL';
             }
 
-            $sortedRslts[$thisRslt['denormalizedStatus']][$thisRslt['threatLevel']] = $thisRslt['count'];
+            $sortedRslts[$thisRslt['denormalizedStatus']][$thisRslt[$threatField]] = $thisRslt['count'];
         }
 
         $nonStackedLinks = array();
@@ -276,9 +286,9 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
             $nonStackedLinks[] = $basicLink;
             $stackedLinks = array(
                 '',
-                $basicLink . '/threatLevel/enumIs/HIGH',
-                $basicLink . '/threatLevel/enumIs/MODERATE',
-                $basicLink . '/threatLevel/enumIs/LOW'
+                $basicLink . '/' . $threatField . '/enumIs/HIGH',
+                $basicLink . '/' . $threatField . '/enumIs/MODERATE',
+                $basicLink . '/' . $threatField . '/enumIs/LOW'
             );
 
             // Create this column as a stacked-bar chart for now (filtration later in function)
@@ -344,7 +354,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Calculate the statistics by type
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -416,7 +426,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Delete user's notification.
-     * 
+     *
      * @return void
      */
     public function dismissAction()
@@ -427,7 +437,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         if (empty($user)) {
             throw new Fisma_Zend_Exception('Invalid user ID');
         }
- 
+
         $user->Notifications->delete();
         $user->mostRecentNotifyTs = Fisma::now();
         $user->save();

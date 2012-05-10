@@ -73,15 +73,22 @@ class Fisma_Zend_Form_Element_ImagePicker extends Zend_Form_Element
         $view->setScriptPath(Fisma::getPath('formViews'))
              ->setEncoding('utf-8');
 
-        $view->defaultImageId = $this->getValue();
-        $view->imageElementId = $this->getName() . '_image';
-        $view->imageManagementUrl = $this->_imageManagementUrl;
-        $view->imageUrls = $this->_imageUrls;
+        $value = $this->getValue();
         $view->label = $this->getLabel();
-        $view->name = $this->getName();
         $view->required = $this->isRequired();
         $view->tableId = $this->getName() . '_td';
-        $view->uploadUrl = $this->_uploadUrl;
+        $view->defaultImage = '/images/blank.png';
+        if (!empty($this->_imageUrls[$this->getValue()])) {
+            $view->defaultImage = $this->_imageUrls[$this->getValue()];
+        }
+        $view->properties = array(
+            'name' => $this->getName(),
+            'parentId' => $view->tableId,
+            'images' => $this->_imageUrls,
+            'selectedImageId' => !empty($value) ? $value : null,
+            'managementUrl' => $this->_imageManagementUrl,
+            'uploadUrl' => $this->_uploadUrl
+        );
 
         return $view->render('image-picker.phtml');
     }

@@ -35,7 +35,12 @@ Fisma.Search.CriteriaDefinition = (function () {
 
         "float" : {
             floatBetween : {label : "Between", renderer : 'betweenFloat', query : 'twoInputs'},
-            floatGreaterThan : {label : "Greater Than", renderer : 'singleFloat', query : 'oneInput', isDefault : true},
+            floatGreaterThan : {
+                label : "Greater Than",
+                renderer : 'singleFloat',
+                query : 'oneInput',
+                isDefault : true
+            },
             floatLessThan : {label : "Less Than", renderer : 'singleFloat', query : 'oneInput'}
         },
 
