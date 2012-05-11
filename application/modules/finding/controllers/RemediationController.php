@@ -1207,6 +1207,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     function uploadFormAction()
     {
         $this->_helper->layout()->disableLayout();
+
+        $form = Fisma_Zend_Form_Manager::loadForm('finding_upload_evident');
+        $form->setAttrib('onsubmit', "return Fisma.Remediation.uploadEvidenceValidate();");
+        $form->setAttrib('id', "finding_detail_upload_evidence");
+        $form->setAttrib('name', "finding_detail_upload_evidence");
+        $this->view->form = $form;
     }
 
     /**

@@ -273,4 +273,35 @@ class Fisma_String
 
         return $html;
     }   
+
+    /**
+     * Converts a ini setting to a integer value
+     *
+     * @param  string $value
+     * @return integer
+     */
+    public static function convertFilesizeToInteger($value)
+    {
+        $type = strtoupper(substr($value, -1));
+        $value = (integer) substr($value, 0, -1);
+
+        switch ($type) {
+            case 'K' :
+                $value *= 1024;
+                break;
+
+            case 'M' :
+                $value *= 1024 * 1024;
+                break;
+
+            case 'G' :
+                $value *= 1024 * 1024 * 1024;
+                break;
+
+            default :
+                break;
+        }
+
+        return (integer) $value;
+    } 
 }

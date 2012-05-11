@@ -89,6 +89,12 @@ elements.rob_duration.options.required = true
 elements.rob_duration.options.tooltip = "<p><b>Rules of Behavior Period</b></p><p>OpenFISMA requires users to accept a rules of behavior agreement before logging onto the application. OpenFISMA stores this acceptance in its database for compliance purposes. Please enter the period in which users need to re-accept the rules of behavior. For example, if you enter 365, the user will be able to use OpenFISMA for one year, at which time, they will need to read the rules of behavior again and re-accept the agreement.</p>"
 displayGroups.general.elements.rob_duration = "rob_duration"
 
+elements.max_file_upload_size.type = "text"
+elements.max_file_upload_size.options.label = "Maxium File Upload Size"
+elements.max_file_upload_size.options.validators.maxuploadfilesize.validator = "MaxUploadFilesize"
+elements.max_file_upload_size.options.tooltip = "<p>Sets the maximum size of files that users can upload to the application, this setting applies to all modules.</p>"
+displayGroups.general.elements.max_file_upload_size = "max_file_upload_size"
+
 elements.saveGeneral.type = "Form_Button_Submit"
 elements.saveGeneral.options.label = "Save Changes"
 displayGroups.general.elements.saveGeneral = "saveGeneral"

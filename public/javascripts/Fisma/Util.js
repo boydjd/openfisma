@@ -449,5 +449,38 @@ Fisma.Util = {
         });
 
         iframe.src = '/whats-new';
+    },
+
+    /**
+     * Create a file upload form
+     *
+     * @param {object} form configuration which should include form action, the name of file input element
+     *  and max upload file size. The accept attribute is optional.
+     * @return a form element.
+     */
+    createUploadFileForm : function (config) {
+
+        // Create a hidden form for the file upload
+        var fileForm = document.createElement("form");
+        fileForm.method = "post";
+        fileForm.action = config.action;
+        fileForm.enctype = "multipart/form-data";
+
+        var maxElement = document.createElement("input");
+        maxElement.type = "hidden";
+        maxElement.name = "MAX_FILE_SIZE";
+        maxElement.value = config.maxValue;
+        fileForm.appendChild(maxElement);
+
+        var fileElement = document.createElement("input");
+        fileElement.type = "file";
+        fileElement.name = config.fileEleName;
+        if (!YAHOO.lang.isUndefined(config.accept)) {
+            fileElement.setAttribute("accept", config.accept); // not supported in IE or safari
+        }
+
+        fileForm.appendChild(fileElement);
+        return fileForm;
     }
+ 
 };

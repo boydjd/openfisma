@@ -362,17 +362,15 @@
 
         _renderUploadButton: function () {
             if (this._uploadUrl) {
+                var maxFilesize = document.getElementsByName("MAX_UPLOAD_FILE_SIZE")[0].value;
                 // Create a hidden form for the file upload
-                var fileForm = document.createElement("form");
-                fileForm.method = "post";
-                fileForm.action = "/icon/create";
-                fileForm.enctype = "multipart/form-data";
-
-                var fileElement = document.createElement("input");
-                fileElement.type = "file";
-                fileElement.name = "imageUpload";
-                fileElement.setAttribute("accept", "image/*"); // not supported in IE or safari
-                fileForm.appendChild(fileElement);
+                var config = { action: "/icon/create",
+                               fileEleName: "imageUpload",
+                               maxValue: maxFilesize,
+                               accept: "image/*" // not supported in IE or safari
+                             }
+                var fileForm = Fisma.Util.createUploadFileForm(config);
+                var fileElement = fileForm.elements[1];
 
                 var csrfElement = document.createElement("input");
                 csrfElement.type = "hidden";

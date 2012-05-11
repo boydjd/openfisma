@@ -212,3 +212,8 @@ Configuration:
             notblank: true
             comment: Number of days before a DRAFT finding becomes overdue
             default: 30
+        max_file_upload_size:
+            type: string(10)
+            notblank: true
+            comment: The maximum size of files that users can upload to the application, this setting applies to all modules.
+            default: 10M

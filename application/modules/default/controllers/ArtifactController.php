@@ -84,7 +84,7 @@ class ArtifactController extends Fisma_Zend_Controller_Action_Security
         $form->setAttrib('onsubmit', "return Fisma.AttachArtifacts.trackUploadProgress()");
                         
         $this->view->form = $form;
-        $this->view->maxFileSize = ini_get('upload_max_filesize');
+        $this->view->maxFileSize = Fisma::configuration()->getConfig('max_file_upload_size');
     }
     
     /**

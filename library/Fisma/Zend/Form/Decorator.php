@@ -107,8 +107,16 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
             // If the element can render itself, then call its renderSelf() function
             $render = $element->renderSelf();
         } else {
+            $maxFileSizeField = '';
+
+            // To limit the upload file size.
+            if ($element instanceof Zend_Form_Element_File) {
+                $maxFileSizeField = '<input type="hidden" name="MAX_FILE_SIZE" value="' 
+                               . Fisma::configuration()->getConfig('max_file_upload_size') . '"/>';
+            }
+
             // Otherwise, use the element's view helper to render it
-            $render = $element->getView()->$helper(
+            $render = $maxFileSizeField  . $element->getView()->$helper(
                 $element->getName(),
                 $value,
                 $element->getAttribs(),

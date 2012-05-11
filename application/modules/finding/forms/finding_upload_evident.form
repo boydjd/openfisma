@@ -1,0 +1,11 @@
+; This is the form for uploading finding evidents
+;
+; Author    Mark Ma <mark.ma@reyosoft.com>
+; Copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
+; License   http://openfisma.org/content/license
+
+[finding_upload_evident]
+
+elements.selectFile.type = "Element_Upload"
+elements.selectFile.options.required = true
+displayGroups.finding_upload_evident.elements.selectFile = "selectFile"

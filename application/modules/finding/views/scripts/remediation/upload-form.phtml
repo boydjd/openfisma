@@ -2,19 +2,5 @@
 // phpcs requires php tags or it generates warnings
 ?>
 
-<form id="finding_detail_upload_evidence"
-      name="finding_detail_upload_evidence" method="post" enctype="multipart/form-data"
-      onsubmit="return Fisma.Remediation.uploadEvidenceValidate();">
-<fieldset id="evidence_upload_file_list">
-    <legend>Select File(s):</legend>
-    <input type="file" name="evidence[]" multiple/>
-</fieldset>
-<p>
-    <button class="ie7-only ie8-only ie9-only" id="add-another-file-button">Add another file</button>
-    <input type="submit" name="upload_evidence" value="Upload"/>
-</p>
-<ul>
-    <li>Each file must be <b>under 10 megabytes</b> in size</li>
-    <li>Please ensure no <b>Personally Identifiable Information</b> is included (eg, SSN, DOB)</li>
-</ul>
-</form>
+<?php echo $this->escape($this->form, 'none'); ?>
+

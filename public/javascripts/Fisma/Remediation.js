@@ -38,15 +38,8 @@ Fisma.Remediation = {
                 // from the panel belongs to document body rather than the form document.finding_detail.But they should
                 // have same target action. So set the latter`s action with the former`s.
                 document.finding_detail_upload_evidence.action = document.finding_detail.action;
-                // make the add another upload button YUI
-                var addAnotherFileButton = new YAHOO.widget.Button("add-another-file-button");
-                // YUI strips away the classes, replace them
-                YAHOO.util.Dom.addClass("add-another-file-button", "ie7-only");
-                YAHOO.util.Dom.addClass("add-another-file-button", "ie8-only");
-                YAHOO.util.Dom.addClass("add-another-file-button", "ie9-only");
-                // add the appropriate event listener to the button
-                YAHOO.util.Event.addListener("add-another-file-button", "click", Fisma.Remediation.addUploadEvidence);
-                // make the submit button a YUI widget
+
+               // make the submit button a YUI widget
                 var inputs = panel.body.getElementsByTagName("input");
                 var i;
                 for (i in inputs) {
