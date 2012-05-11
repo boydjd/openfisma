@@ -122,6 +122,13 @@ Fisma.FindingWorkflow = {
         var newTitle = jQuery(element).val().trim();
         jQuery(element).val(newTitle);
         var oldTitle = jQuery(element).parents('li').children('.stepName').text().trim();
+
+        if (newTitle.length > 255) {
+            jQuery(element).val(oldTitle);
+            Fisma.Util.showAlertDialog('Workflow Title cannot be longer than 255 characters including whitespace.');
+            return false;
+        }
+
         if (newTitle === '') {
             jQuery(element).val(oldTitle);
             Fisma.Util.showAlertDialog('Workflow Title cannot be blank.');
@@ -137,6 +144,13 @@ Fisma.FindingWorkflow = {
     chartLabelChangeHandler : function(element) {
         var newLabel = jQuery(element).val().trim();
         jQuery(element).val(newLabel);
+
+        if (newLabel.length > 255) {
+            jQuery(element).val('');
+            Fisma.Util.showAlertDialog('Chart Label cannot be longer than 255 characters including whitespace.');
+            return false;
+        }
+
         var countDuplication = jQuery('input[name$="nickname"]').filter(function(i, e) {
             return (jQuery(e).val().toUpperCase() === newLabel.toUpperCase());
         }).length;
@@ -149,8 +163,11 @@ Fisma.FindingWorkflow = {
         var reserved = ['NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED'];
         if (jQuery.inArray(newLabel.toUpperCase(), reserved) >= 0) {
             jQuery(element).val('');
-            Fisma.Util.showAlertDialog('Chart Label "'
-                + newLabel + '" cannot be used because it is reserved by the system.');
+            Fisma.Util.showAlertDialog(
+                'Chart Label "'
+                + newLabel
+                + '" cannot be used because it is reserved by the system.'
+            );
             return false;
         }
     },

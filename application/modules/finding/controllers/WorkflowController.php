@@ -39,12 +39,14 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
         $workflowTitle = 'The workflow title is used to distinguish the workflow step and to auto-create the status me'
                        . 'ssage. The status message adds the word awaiting to the beginning of the workflow title. For'
                        . ' example, if you create a workflow step called \\"CISO Approval of Evidence Package\\", the '
-                       . 'status message becomes \\"Awaiting CISO Approval of Evidence Package\\".';
+                       . 'status message becomes \\"Awaiting CISO Approval of Evidence Package\\". Please note that ch'
+                       . 'art labels cannot be longer than 255 characters including whitespace.';
         $chartLabel = 'The chart label is used to designate the workflow step in short notation. The chart label is us'
                     . 'ed for graphs, reports, and searching. For example, if the chart label for workflow step ISSO A'
                     . 'pproval of Mitigation Strategy is set to \\"MS ISSO\\" then the graph will identify the workflo'
                     . 'w step as \\"MS ISSO\\" and the user will be able to search for items currently in the \\"MS IS'
-                    . 'SO\\" status.';
+                    . 'SO\\" status. Please note that chart labels cannot be longer than 255 characters including whit'
+                    . 'espace.';
         $statusMessage = 'The status message is a brief synopsis of the current status used to give additional context'
                        . ' to the user rather than showing them an acronym. For example, the status message \\"Awaitin'
                        . 'g ISSO Approval of Mitigation Strategy\\" informs the user what has to happen before the sta'
