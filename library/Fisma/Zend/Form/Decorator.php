@@ -120,6 +120,27 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
     }
 
     /**
+     * Create the description for this element.
+     *
+     * @return string The description rendered in HTML.
+     */
+    public function buildDescription()
+    {
+        $render = '';
+        $element  = $this->getElement();
+        $value  = $element->getAttrib('description');
+
+        if ($value) {
+            $render .= "<script type=\"text/javascript\">"
+                     . "YAHOO.util.Event.onDOMReady(function() {"
+                     . "Fisma.Util.showDescription('{$element->getName()}', \"{$value}\");"
+                     . "});</script>";
+        }
+
+        return $render;
+    }
+
+    /**
      * Create the error message for this element (if applicable).
      *
      * @return string The error message rendered in HTML.
@@ -154,6 +175,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
                     . $this->buildLabel()
                     . '</td><td>'
                     . $this->buildInput()
+                    . $this->buildDescription()
                     . '</td></tr>';
         } else if ($element instanceof Zend_Form_DisplayGroup) {
             $render = '<div class=\'subform\'><table class=\'fisma_crud\'>'

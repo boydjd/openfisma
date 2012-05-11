@@ -50,6 +50,7 @@ displayGroups.accountInfo.elements.checkAccount = "checkAccount"
 elements.mustResetPassword.type = "checkbox"
 elements.mustResetPassword.options.label = "Must Reset Password"
 elements.mustResetPassword.options.value = "1"
+elements.mustResetPassword.options.attribs.description = "The user will be forced to change his or her password during their next successful login."
 displayGroups.accountInfo.elements.mustResetPassword = "mustResetPassword"
 
 elements.nameFirst.type = "text"

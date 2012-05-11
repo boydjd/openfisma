@@ -361,5 +361,50 @@ Fisma.Util = {
         postData = postData.substring(0, postData.length - 1);
 
         return postData;
+    },
+
+    /**
+     * Display the description div to the below of element.
+     *
+     * @param {String} targetId The id of element
+     * @param {String} description The description of element
+     */
+    showDescription: function (targetId, description) {
+
+        // Create a description div for showing description
+        var container = document.createElement("div");
+        container.className = 'descriptionBox';
+        container.id = targetId + '_description';
+
+        var containerTop = document.createElement("div");
+        containerTop.className = 'descriptionBoxTop';
+        container.appendChild(containerTop);
+
+        var containerCenter = document.createElement("div");
+        containerCenter.className = 'descriptionBoxCenter';
+        containerCenter.innerHTML = description;
+        container.appendChild(containerCenter);
+
+        var containerBottom = document.createElement("div");
+        containerBottom.className = 'descriptionBoxBottom';
+        container.appendChild(containerBottom);
+
+        var targetEl;
+        if (jQuery('#' + targetId)[0]) {
+            targetEl = jQuery('#' + targetId);
+        } else {
+            targetEl = jQuery('#' + targetId + '-button');
+        }
+
+        // Clone a tr element from the tr of the current element.
+        // Clean the content of cloned tr and insert it to the next sibling of the tr of current element.
+        // Append the description div to the second td of the cloned tr.
+        var tr = targetEl.closest('tr');
+        var cloneTr = tr.clone();
+        cloneTr.children().text("").last().html(container);
+        tr.after(cloneTr);
+
+        // Remove the description attribute from element
+        targetEl.removeAttr('description');
     }
 };
