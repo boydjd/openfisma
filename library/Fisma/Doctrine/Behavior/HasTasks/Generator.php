@@ -213,6 +213,13 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
      *
      * @param Doctrine_Record $instance The instance to be logged
      * @param array $task The task to be written
+     *     The $task is an array of 5 keys:
+     *         'description'  - string (required) The description for this task.
+     *         'ecd'          - datetime (required) The expected completion date.
+     *         'status'       - string (required) The task status.
+     *         'pocId'        - int (optional) The id of point of contact.
+     *         'expectedCost' - float (optional) The expected completion date.
+     *
      * @return Doctrine_Record Return the added task
      */
     public function addTask(Doctrine_Record $instance, $task)
