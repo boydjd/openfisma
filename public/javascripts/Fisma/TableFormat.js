@@ -127,6 +127,20 @@ Fisma.TableFormat = {
     },
 
     /**
+     * A formatter which wrap the img element around the source URI
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    imageControl : function (elCell, oRecord, oColumn, oData) {
+        var img = document.createElement('img');
+        img.src = oData;
+        elCell.appendChild(img);
+    },
+
+    /**
      * A proxy for selfAssessment() above -- they have identical formatting logic
      */
     contingencyPlanTest : function (elCell, oRecord, oColumn, oData) {
@@ -172,7 +186,7 @@ Fisma.TableFormat = {
     },
 
     /**
-     * A formatter which displays a delete icon that is linked to an edit page
+     * A formatter which displays a delete icon that is linked to a delete action
      *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
@@ -184,11 +198,10 @@ Fisma.TableFormat = {
         var icon = document.createElement('img');
         icon.src = '/images/del.png';
 
-        var link = document.createElement('a');
-        link.href = oData;
-        link.appendChild(icon);
-
-        elCell.appendChild(link);
+        elCell.appendChild(icon);
+        YAHOO.util.Event.on(icon, "click", function() {
+            Fisma.Util.formPostAction(null, oData, null);
+        });
     },
 
     /**

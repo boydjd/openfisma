@@ -520,3 +520,9 @@ Privilege:
         resource: system_type
         action: delete
         description: Delete System Type
+
+    # Icon CRUD
+    icon_manage:
+        resource: icon
+        action: manage
+        description: Manage Icons

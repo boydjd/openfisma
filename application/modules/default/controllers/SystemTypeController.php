@@ -42,7 +42,7 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Override to indicate that this model is not deletable.
+     * Override to disable mass deletion
      *
      * @return bool
      */
@@ -73,5 +73,76 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
              ->setImageUploadUrl("/icon/upload/format/json");
 
         return $form;
+    }
+
+    /**
+     * Customize the toolbar buttons
+     *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
+     * @return array Array of Fisma_Yui_Form_Button
+     */
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    {
+        $buttons = parent::getToolbarButtons($record);
+
+        if (
+            $this->_acl->hasPrivilegeForClass('delete', 'SystemType') &&
+            $this->getRequest()->getActionName() == 'view'
+        ) {
+            $args = array(null, $this->getBaseUrl() . '/delete/', $record['id']);
+            $buttons[] = new Fisma_Yui_Form_Button(
+                'deleteSystemTypeButton',
+                array(
+                    'label' => 'Delete System Type',
+                    'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                    'onClickArgument' => array(
+                        'args' => $args,
+                        'text' => "WARNING: You are about to delete this system type. This action cannot be "
+                                . "undone. Do you want to continue?",
+                        'func' => 'Fisma.Util.formPostAction'
+                    )
+                )
+            );
+        }
+
+        return $buttons;
+    }
+
+    /**
+     * Delete a system type
+     *
+     * @return void
+     */
+    public function deleteAction()
+    {
+        $this->_acl->requirePrivilegeForClass('delete', 'SystemType');
+
+        $id = $this->getRequest()->getParam('id');
+        $systemType = Doctrine_Query::create()
+            ->from('SystemType st')
+            ->leftJoin('st.Systems')
+            ->where('st.id = ?', $id)
+            ->execute()
+            ->getFirst();
+        if (!$systemType) {
+           throw new Fisma_Zend_Exception("No system type found with id ($id).");
+        }
+
+        $count = $systemType->Systems->count();
+        if ($count > 0) {
+            $searchLink = '/system/list?q=/type/textExactMatch/' . $this->view->escape($systemType->nickname, 'url');
+            $this->view->priorityMessenger(
+                "This System Type is associated with <a href='$searchLink'>$count system(s)</a>.<br/>" .
+                "Please assign them to other system types and try again.",
+                "warning"
+            );
+
+            $this->_redirect($this->getBaseUrl() . '/view/id/' . $id);
+        } else {
+            $systemType->delete();
+            $this->view->priorityMessenger("System Type deleted successfully");
+
+            $this->_redirect($this->getBaseUrl() . '/list');
+        }
     }
 }

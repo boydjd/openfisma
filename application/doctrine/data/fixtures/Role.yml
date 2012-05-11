@@ -246,6 +246,7 @@ Role:
             - findings_update_threat
             - findings_update_type
             - findings_upload_evidence
+            - icon_manage
             - incident_admin_area
             - incident_area
             - incident_classify
