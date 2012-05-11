@@ -371,7 +371,7 @@ Fisma.Incident = {
                         Fisma.Registry.get('messageBoxStack').peek().hide();
                     } else {
                         var message = "Cannot add actor or observer: " + response.message;
-                        Fisma.Registry.get('messageBoxStack').peek().setMessage(message).show();
+                        Fisma.Util.message(message, 'warning', true);
                     }
                 },
 
@@ -379,7 +379,7 @@ Fisma.Incident = {
                     button.set('disabled', false);
 
                     var message = 'Cannot add actor or observer: ' + o.statusText;
-                    Fisma.Registry.get('messageBoxStack').peek().setMessage(message).show();
+                    Fisma.Util.message(message, 'warning', true);
                 }
             },
             postData
