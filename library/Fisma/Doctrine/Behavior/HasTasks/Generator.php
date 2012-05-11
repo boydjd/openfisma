@@ -218,7 +218,7 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
      *         'ecd'          - datetime (required) The expected completion date.
      *         'status'       - string (required) The task status.
      *         'pocId'        - int (optional) The id of point of contact.
-     *         'expectedCost' - float (optional) The expected completion date.
+     *         'expectedCost' - float (optional) The expected cost for this task.
      *
      * @return Doctrine_Record Return the added task
      */
