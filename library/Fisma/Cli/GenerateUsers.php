@@ -98,7 +98,7 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
             $user['reportingOrganizationId'] = $reportingOrganizationId;
             $user['roleId'] = $roleIds[rand(0, $roleIdsCount)][0];
             $user['username'] = 'generated' . $timestamp . '.' . $i;
-            $user['email'] = 'openfisma-default-install@googlegroups.com';
+            $user['email'] = $user['username'] . '@department.gov';
             $user['nameFirst'] = $timestamp . '.' . $i;
             $user['nameLast'] = 'Generated';
             $users[] = $user;
