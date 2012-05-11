@@ -54,7 +54,7 @@ class Fisma_Zend_Form_Element_ImagePicker extends Zend_Form_Element
     private $_imageManagementUrl = '/icon/manage';
 
     /**
-     * If set, the widget will display a button for uploading the images that will submnit to this URL.
+     * If set, the widget will display a button for uploading the images that will submit to this URL.
      *
      * @var string
      */
