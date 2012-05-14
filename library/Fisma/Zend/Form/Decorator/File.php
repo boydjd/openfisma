@@ -1,44 +1,30 @@
 <?php
 /**
- * Zend Framework
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
- * LICENSE
+ * This file is part of OpenFISMA.
  *
- * This source file is subject to the new BSD license that is bundled
- * with this package in the file LICENSE.txt.
- * It is also available through the world-wide-web at this URL:
- * http://framework.zend.com/license/new-bsd
- * If you did not receive a copy of the license and are unable to
- * obtain it through the world-wide-web, please send an email
- * to license@zend.com so we can send you a copy immediately.
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+ * version.
  *
- * @category   Zend
- * @package    Zend_Form
- * @subpackage Decorator
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * details.
+ *
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * {@link http://www.gnu.org/licenses/}.
  */
 
-/** Zend_Form_Decorator_Abstract */
-// require_once 'Zend/Form/Decorator/Abstract.php';
-
-/** Zend_Form_Decorator_Marker_File_Interface */
-// require_once 'Zend/Form/Decorator/Marker/File/Interface.php';
-
-/** Zend_File_Transfer_Adapter_Http */
-// require_once 'Zend/File/Transfer/Adapter/Http.php';
-
 /**
- * Zend_Form_Decorator_File
- *
- * Fixes the rendering for all subform and multi file elements
- *
- * @category   Zend
- * @package    Zend_Form
- * @subpackage Decorator
- * @copyright  Copyright (c) 2005-2011 Zend Technologies USA Inc. (http://www.zend.com)
- * @license    http://framework.zend.com/license/new-bsd     New BSD License
- * @version    $Id$
+ * A decorator which override Zend_Form_Decorator_File to set MAX_FILE_SIZE from Fisma configuration 
+ * instead of php.ini or .htaccess
+ * 
+ * @author     Mark Ma <mark.ma@reyosoft.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
+ * @license    http://www.openfisma.org/content/license GPLv3
+ * @package    Fisma
+ * @subpackage Fisma_Zend
  */
 class Fisma_Zend_Form_Decorator_File
     extends Zend_Form_Decorator_Abstract

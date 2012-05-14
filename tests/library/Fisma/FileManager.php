@@ -258,5 +258,47 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
         $this->assertFalse($fm->remove($this->hash));
         $this->assertTrue($fm->remove($this->hash));
     }
+
+    /**
+     * Test the getUploadFileError() method
+     *
+     * @return void
+     */
+    public function testGetUploadFileError()
+    {
+        Fisma::setConfiguration(new Fisma_Configuration_Array(), true);
+        Fisma::configuration()->setConfig('max_file_upload_size', '15M');
+   
+        $file['name'] = ''; 
+        $error = 'You did not select a file to upload. Please select a file and try again.'; 
+        $this->assertEquals($error, Fisma_FileManager::getUploadFileError($file));
+
+        $file['name'] = 'test'; 
+        $file['error'] = UPLOAD_ERR_FORM_SIZE; 
+        $error = 'The uploaded file test is too large. The file size should be less than 15M.'; 
+        $this->assertEquals($error, Fisma_FileManager::getUploadFileError($file));
+
+        $file['name'] = 'test'; 
+        $file['error'] = UPLOAD_ERR_PARTIAL; 
+        $error = 'The uploaded file test was only partially received.'; 
+        $this->assertEquals($error, Fisma_FileManager::getUploadFileError($file));
+
+        $file['name'] = 'test'; 
+        $file['error'] = 20; 
+        $error = 'An error occurred while processing the uploaded file test.'; 
+        $this->assertEquals($error, Fisma_FileManager::getUploadFileError($file));
+
+        $file['name'] = 'test'; 
+        $file['size'] = 16000000;
+        $file['error'] = UPLOAD_ERR_OK;
+        $error = 'The uploaded file test is too large. The file size should be less than 15M.'; 
+        $this->assertEquals($error, Fisma_FileManager::getUploadFileError($file));
+
+        $file['name'] = 'test'; 
+        $file['size'] = 1000000;
+        $file['error'] = UPLOAD_ERR_OK;
+        $error = ''; 
+        $this->assertEquals($error, Fisma_FileManager::getUploadFileError($file));
+    }
 }
 

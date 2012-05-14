@@ -1420,14 +1420,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
             $this->_assertCurrentUserCanUpdateIncident($id);
 
-            // If file upload is too large, then $_FILES will be empty (thanks for the helpful behavior, PHP!)
-            if (0 == count($_FILES)) {
-                throw new Fisma_Zend_Exception_User('File size is over the limit.');
-            }
-
-            // 'file' is the name of the file input element.
-            if (!isset($_FILES['file'])) {
-                throw new Fisma_Zend_Exception_User('You did not specify a file to upload.');
+            $file = $_FILES['file']; 
+            if (Fisma_FileManager::getUploadFileError($file)) {
+               $error = Fisma_FileManager::getUploadFileError($file);
+               throw new Fisma_Zend_Exception_User($error);
             }
 
             $incident->attach($_FILES['file'], $comment);

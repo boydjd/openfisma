@@ -256,4 +256,22 @@ class Test_Library_Fisma_String extends Test_Case_Unit
         $pdftext = "Style <b>some</b> <i>neat</i> words.";
         $this->assertEquals($pdftext, Fisma_String::htmlToPdfText($html));
     }
+
+    /**
+    * Test convertFilesizeToInteger().
+    */
+    public function testConvertFilesizeToInteger()
+    {
+        $value = '30M';
+        $expectValue = 30*1024*1024;
+        $this->assertEquals($expectValue, Fisma_String::convertFilesizeToInteger($value));
+
+        $value = '30K';
+        $expectValue = 30*1024;
+        $this->assertEquals($expectValue, Fisma_String::convertFilesizeToInteger($value));
+
+        $value = '1G';
+        $expectValue = 1024*1024*1024;
+        $this->assertEquals($expectValue, Fisma_String::convertFilesizeToInteger($value));
+    }
 }

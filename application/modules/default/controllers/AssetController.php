@@ -135,14 +135,15 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $filesReceived = ($uploadForm->selectFile->receive()) ? TRUE : FALSE;
 
             if (!$uploadForm->isValid($postValues)) {
-                $errorString = Fisma_Zend_Form_Manager::getErrors($uploadForm);
-
-                // Customize error message, see the attachments on OFJ-1693
-                if ($errorString && stristr($errorString, 'selectFile') && stristr($errorString, 'few')) {
-                    $msgs[] = array('warning' => 'No file selected. Please select at least one file to upload.');
+               
+                $file = $_FILES['selectFile']; 
+                if (Fisma_FileManager::getUploadFileError($file)) {
+                    $msgs[] = array('warning' => Fisma_FileManager::getUploadFileError($file));
                 } else {
+                    $errorString = Fisma_Zend_Form_Manager::getErrors($uploadForm);
                     $msgs[] = array('warning' => $errorString);
                 }
+                 
                 $err = TRUE;
             } elseif (!$filesReceived) {
                 $msgs[] = array('warning' => "File not received.");

@@ -590,14 +590,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 }
 
                 if (!empty($file['name'])) {
-                    if ($file['error'] != UPLOAD_ERR_OK) {
-                      if ($file['error'] == UPLOAD_ERR_INI_SIZE) {
-                        $errorMessages .= "The uploaded file {$file['name']} is too large.\n";
-                      } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {
-                        $errorMessages .= "The uploaded file {$file['name']} was only partially received.\n";
-                      } else {
-                        $errorMessages .= "An error occurred while processing the uploaded file {$file['name']}.\n";
-                      }
+                    if (Fisma_FileManager::getUploadFileError($file)) {
+                        $errorMessages .= Fisma_FileManager::getUploadFileError($file);
+                        continue;
                     } else {
                         $duplicated = false;
                         foreach ($finding->Attachments as $index => $attachment) {

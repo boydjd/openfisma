@@ -91,8 +91,8 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
         if (!is_array($file)) {
             $this->view->priorityMessenger("The file upload failed.", 'warning');
             return;
-        } elseif (empty($file['name'])) {
-            $error = 'You did not select a file to upload. Please select a file and try again.';
+        } elseif (Fisma_FileManager::getUploadFileError($file)) {
+            $error = Fisma_FileManager::getUploadFileError($file);
             $this->view->priorityMessenger($error, 'warning');
         } else {
             // Load the findings from the spreadsheet upload. Return a user error if the parser fails.

@@ -90,6 +90,12 @@ class IconController extends Fisma_Zend_Controller_Action_Object
         $response = new Fisma_AsyncResponse;
         $this->view->response = $response;
 
+        $file = $_FILES['imageUpload']; 
+        if (Fisma_FileManager::getUploadFileError($file)) {
+            $response->fail(Fisma_FileManager::getUploadFileError($file));
+            return;
+        }
+
         // Create thumbnails
         $thirtyTwoImage = $this->_makeThumbnail($_FILES['imageUpload'], 32, 32);
         $thirtyTwoUpload = $this->_saveThumbnail($thirtyTwoImage, $_FILES['imageUpload']);

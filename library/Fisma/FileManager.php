@@ -249,4 +249,52 @@ class Fisma_FileManager
     {
         return filesize($filename);
     }
+
+    /**
+     * Check whether the size of uploaded file is greater than MAX_FILE_UPLOAD_SIZE
+     * 
+     * @param fileSize integer
+     * @return TRUE if greater , FALSE otherwise
+     */
+    static function isGreaterThanMaxUloadSize($filesize) 
+    {
+        $maxUploadFilesize = Fisma::configuration()->getConfig('max_file_upload_size');
+        $maxUploadFilesize = Fisma_String::convertFilesizeToInteger($maxUploadFilesize);
+
+        if ($filesize > $maxUploadFilesize) {
+            return true;
+        } else {
+            return false;
+        }
+
+    }
+
+    /**
+     * Check whether the upload file has error. 
+     * 
+     * @param file
+     * @return String error message if there is any.
+     */
+    static function getUploadFileError($file) 
+    {
+        $error = '';
+
+        if (empty($file['name'])) {
+            $error = 'You did not select a file to upload. Please select a file and try again.';  
+        } elseif ($file['error'] != UPLOAD_ERR_OK) {                                              
+            if ($file['error'] == UPLOAD_ERR_INI_SIZE || $file['error'] == UPLOAD_ERR_FORM_SIZE) {
+                $error = "The uploaded file {$file['name']} is too large. The file size should be less than " 
+                        . Fisma::configuration()->getConfig('max_file_upload_size') . ".";
+            } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {                                     
+                $error = "The uploaded file {$file['name']} was only partially received.";      
+            } else {                                                                              
+                $error = "An error occurred while processing the uploaded file {$file['name']}.";                
+            }                                                                                     
+        } elseif (self::isGreaterThanMaxUloadSize($file['size'])) {                  
+            $error = "The uploaded file {$file['name']} is too large. The file size should be less than "
+                    . Fisma::configuration()->getConfig('max_file_upload_size') . ".";
+        }
+        
+        return $error;
+    }
 }

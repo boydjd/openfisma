@@ -112,7 +112,8 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
             // To limit the upload file size.
             if ($element instanceof Zend_Form_Element_File) {
                 $maxFileSizeField = '<input type="hidden" name="MAX_FILE_SIZE" value="' 
-                               . Fisma::configuration()->getConfig('max_file_upload_size') . '"/>';
+                    . Fisma_String::convertFilesizeToInteger(Fisma::configuration()->getConfig('max_file_upload_size'))
+                    . '"/>';
             }
 
             // Otherwise, use the element's view helper to render it

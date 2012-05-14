@@ -534,8 +534,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             if ('' == trim($versionNotes)) {
                 throw new Fisma_Zend_Exception_User("Version notes are required.");
             }
-            if (empty($_FILES['file']['name'])) {
-                throw new Fisma_Zend_Exception_User("You did not specify a file to upload.");
+
+            $file = $_FILES['file'];
+            if (Fisma_FileManager::getUploadFileError($file)) {
+                $error = Fisma_FileManager::getUploadFileError($file);
+                throw new Fisma_Zend_Exception_User($error);
             }
 
             // Get the existing document
