@@ -38,7 +38,7 @@ class Fisma_Zend_Form_Validate_MaxUploadFilesize extends Zend_Validate_Abstract
      */
     protected $_messageTemplates = array(
         self::INVALID        => "Invalid maxium upload file size.",
-        self::INVALID_FORMAT => "Invalid maxium upload file size, expected 'K' or 'M' at the end of number."
+        self::INVALID_FORMAT => "Invalid maxium upload file size, expected 'M' or 'K' at the end of number."
     );
 
     /**
@@ -52,7 +52,7 @@ class Fisma_Zend_Form_Validate_MaxUploadFilesize extends Zend_Validate_Abstract
      */
     public function isValid($value)
     {
-        if (!is_string($value)) {
+        if (!is_string($value) || !is_numeric(substr($value, 0, -1))) {
             $this->_error(self::INVALID);
             return false;
         }

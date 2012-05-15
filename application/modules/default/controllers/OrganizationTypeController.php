@@ -71,6 +71,11 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
     {
         $form = parent::getForm($formName);
 
+        $maxSize = Fisma_String::convertFilesizeToInteger(Fisma::configuration()->getConfig('max_file_upload_size'));
+        $maxFilesizeEle = new Zend_Form_Element_Hidden("MAX_UPLOAD_FILE_SIZE");
+        $maxFilesizeEle->setValue($maxSize); 
+        $form->addElement($maxFilesizeEle);
+
         $icons = Doctrine_Query::create()
                  ->from('Icon i')
                  ->select("i.id, CONCAT('/icon/get/id/', i.id) as url")
