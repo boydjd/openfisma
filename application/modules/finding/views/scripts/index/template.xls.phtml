@@ -160,7 +160,7 @@ echo $this->escape($xmltag, 'none');
    <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="175"/><!-- Threat Description -->
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Countermeasures Effectiveness -->
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Countermeasures Description -->
-   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="120"/><!-- Owner Email -->
+   <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="120"/><!-- POC Email -->
    <Row ss:AutoFitHeight="0" ss:Height="26.25" ss:StyleID="s27">
     <Cell ss:MergeAcross="13" ss:StyleID="s29"><Data ss:Type="String"><?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?> - Injection Template</Data></Cell>
    </Row>
@@ -207,7 +207,7 @@ echo $this->escape($xmltag, 'none');
     <Cell ss:StyleID="s39"><Data ss:Type="String">Countermeasures Description</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="Verdana" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">Owner Email</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">POC Email</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="Verdana" x:Family="Swiss" html:Size="9" html:Color="#000000"> The email for the person who is assigned responsibility for this finding. </Font></ss:Data></Comment></Cell>
    </Row>
