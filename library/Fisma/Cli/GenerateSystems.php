@@ -64,7 +64,6 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
         $systems = array();
 
         // Some enumerations to randomly pick values from
-        $type = array('gss', 'major', 'minor');
         $phase = array('initiation', 'development', 'implementation', 'operations', 'disposal');
         $confidentiality = array('NA', 'LOW', 'MODERATE', 'HIGH');
         $integrity = array('LOW', 'MODERATE', 'HIGH');
@@ -76,9 +75,8 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
 
         for ($i = 1; $i <= $numSystems; $i++) {
             $system = array();
-            $system['name'] = Fisma_String::loremIpsum(1);
-            $system['nickname'] = strtoupper(Fisma_String::loremIpsum(1)) . $i;
-            $system['type'] = $type[array_rand($type)];
+            $system['name'] = trim(Fisma_String::loremIpsum(1));
+            $system['nickname'] = trim(strtoupper(Fisma_String::loremIpsum(1))) . $i;
             $system['sdlcphase'] = $phase[array_rand($phase)];
             $system['description'] = Fisma_String::loremIpsum(rand(100, 500));
             $system['confidentiality'] = $confidentiality[array_rand($confidentiality)];
@@ -98,16 +96,26 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
 
         $currentSystem = 0;
         $systemType = Doctrine::getTable('OrganizationType')->findOneByNickname('system', Doctrine::HYDRATE_ARRAY);
-        
+
+        $systemTypeIds = Doctrine::getTable('SystemType')->findAll()->toKeyValueArray('id', 'id');
+        $systemIds = Doctrine_Query::create()
+                     ->from('System s')
+                     ->where('s.aggregateSystemId is null')
+                     ->execute()
+                     ->toKeyValueArray('id', 'id');
+
         try {
             Doctrine_Manager::connection()->beginTransaction();
-           
+
             foreach ($systems as $system) {
                 $s = new System();
                 $s->merge($system);
 
+                $s->systemTypeId = array_rand($systemTypeIds);
+                $s->aggregateSystemId = array_rand($systemIds);
+
                 $s->Organization = new Organization();
-                
+
                 $s->Organization->orgTypeId = $systemType['id'];
                 $s->Organization->merge($system);
                 $s->save();
@@ -129,7 +137,7 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
             throw $e;
         }
     }
-    
+
     /**
      * Assign the generated organzation to an admin user if it exists
      * 
@@ -142,7 +150,7 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
         if (empty($adminRole) || empty($userRole)) {
             return;
         }
-        
+
         $userRoleOrganization = New UserRoleOrganization();
         $userRoleOrganization->userRoleId = $userRole['userRoleId'];
         $userRoleOrganization->organizationId = $organizationId;
