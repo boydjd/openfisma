@@ -275,23 +275,23 @@ class Test_Library_Fisma_FileManager extends Test_Case_Unit
 
         $file['name'] = 'test'; 
         $file['error'] = UPLOAD_ERR_FORM_SIZE; 
-        $error = 'The uploaded file test is too large. The file size should be less than 15M.'; 
+        $error = "The uploaded file test is too large. The file size should be less than 15M.\n"; 
         $this->assertEquals($error, Fisma_FileManager::getUploadFileError($file));
 
         $file['name'] = 'test'; 
         $file['error'] = UPLOAD_ERR_PARTIAL; 
-        $error = 'The uploaded file test was only partially received.'; 
+        $error = "The uploaded file test was only partially received.\n"; 
         $this->assertEquals($error, Fisma_FileManager::getUploadFileError($file));
 
         $file['name'] = 'test'; 
         $file['error'] = 20; 
-        $error = 'An error occurred while processing the uploaded file test.'; 
+        $error = "An error occurred while processing the uploaded file test.\n"; 
         $this->assertEquals($error, Fisma_FileManager::getUploadFileError($file));
 
         $file['name'] = 'test'; 
         $file['size'] = 16000000;
         $file['error'] = UPLOAD_ERR_OK;
-        $error = 'The uploaded file test is too large. The file size should be less than 15M.'; 
+        $error = "The uploaded file test is too large. The file size should be less than 15M.\n"; 
         $this->assertEquals($error, Fisma_FileManager::getUploadFileError($file));
 
         $file['name'] = 'test'; 

@@ -66,8 +66,8 @@ Migration:
         minorVersion: 17
         tagNumber: 2
         name: AddEvaluationPrivileges
-    021702_add_max_file_upload_size:
+    021800_add_max_file_upload_size:
         majorVersion: 2
-        minorVersion: 17
-        tagNumber: 2
+        minorVersion: 18
+        tagNumber: 0
         name: AddMaxFileUploadSize

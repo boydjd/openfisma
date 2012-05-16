@@ -284,15 +284,15 @@ class Fisma_FileManager
         } elseif ($file['error'] != UPLOAD_ERR_OK) {                                              
             if ($file['error'] == UPLOAD_ERR_INI_SIZE || $file['error'] == UPLOAD_ERR_FORM_SIZE) {
                 $error = "The uploaded file {$file['name']} is too large. The file size should be less than " 
-                        . Fisma::configuration()->getConfig('max_file_upload_size') . ".";
+                        . Fisma::configuration()->getConfig('max_file_upload_size') . ".\n";
             } elseif ($file['error'] == UPLOAD_ERR_PARTIAL) {                                     
-                $error = "The uploaded file {$file['name']} was only partially received.";      
+                $error = "The uploaded file {$file['name']} was only partially received.\n";      
             } else {                                                                              
-                $error = "An error occurred while processing the uploaded file {$file['name']}.";                
+                $error = "An error occurred while processing the uploaded file {$file['name']}.\n";                
             }                                                                                     
         } elseif (self::isGreaterThanMaxUloadSize($file['size'])) {                  
             $error = "The uploaded file {$file['name']} is too large. The file size should be less than "
-                    . Fisma::configuration()->getConfig('max_file_upload_size') . ".";
+                    . Fisma::configuration()->getConfig('max_file_upload_size') . ".\n";
         }
         
         return $error;

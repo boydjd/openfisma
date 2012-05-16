@@ -24,7 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_021702_AddMaxFileUploadSize extends Fisma_Migration_Abstract
+class Application_Migration_021800_AddMaxFileUploadSize extends Fisma_Migration_Abstract
 {
     /**
      * Add a varchar(10) collumn
