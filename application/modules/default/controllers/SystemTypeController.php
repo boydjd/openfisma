@@ -34,6 +34,12 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
     protected $_modelName = 'SystemType';
 
     /**
+     * Overriding associated model information
+     */
+    protected $_associatedModel = 'System';
+    protected $_associatedPlural = 'Systems';
+
+    /**
      * Override to return a human-friendly name
      */
     public function getSingularModelName()
@@ -61,16 +67,18 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
     {
         $form = parent::getForm($formName);
 
-        $icons = Doctrine_Query::create()
-                 ->from('Icon i')
-                 ->select("i.id, CONCAT('/icon/get/id/', i.id) as url")
-                 ->execute()
-                 ->toKeyValueArray('id', 'url');
+        if (!$formName) {
+            $icons = Doctrine_Query::create()
+                     ->from('Icon i')
+                     ->select("i.id, CONCAT('/icon/get/id/', i.id) as url")
+                     ->execute()
+                     ->toKeyValueArray('id', 'url');
 
-        $form->getElement('iconId')
-             ->setImageUrls($icons)
-             // ->setImageManagementUrl("/icon/list") // Don't have time to implement this in this release
-             ->setImageUploadUrl("/icon/upload/format/json");
+            $form->getElement('iconId')
+                 ->setImageUrls($icons)
+                 // ->setImageManagementUrl("/icon/list") // Don't have time to implement this in this release
+                 ->setImageUploadUrl("/icon/upload/format/json");
+         }
 
         return $form;
     }
@@ -133,7 +141,9 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
             $searchLink = '/system/list?q=/type/textExactMatch/' . $this->view->escape($systemType->nickname, 'url');
             $this->view->priorityMessenger(
                 "This System Type is associated with <a href='$searchLink'>$count system(s)</a>.<br/>" .
-                "Please assign them to other system types and try again.",
+                "Please associate them with other system types, or click " .
+                "<a href='#' onclick='Fisma.Util.triggerButton(\"toolbarReassociateButton\");return false;'>here</a> " .
+                "to quickly migrate all of them to another system type and try again.",
                 "warning"
             );
 
