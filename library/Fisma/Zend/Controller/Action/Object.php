@@ -911,16 +911,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         // Fetch associated objects
         $relations = Doctrine::getTable($this->_associatedModel)->getRelations();
-        $relationAlias = null;
         $relationColumn = null;
         foreach ($relations as $relation) {
             if ($relation->getClass() === $this->_modelName) {
-                $relationAlias = $relation->getAlias();
                 $relationColumn = $relation->getLocal();
                 break;
             }
         }
-        if (empty($relationAlias)) {
+        if (empty($relationColumn)) {
             throw new Fisma_Zend_Exception("No relation between {$this->_associatedModel} and {$this->_modelName}");
         }
         $associatedObjects = Doctrine_Query::create()
@@ -935,9 +933,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             try {
                 Doctrine_Manager::connection()->beginTransaction();
 
-                $destinationObject = Doctrine::getTable($this->_modelName)->find($values['destinationObjectId']);
                 foreach ($associatedObjects as $object) {
-                    $object->$relationAlias = $destinationObject;
+                    $object->merge(array($relationColumn => $values['destinationObjectId']));
                     $object->save();
                 }
 
