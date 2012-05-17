@@ -55,7 +55,7 @@ Fisma.AutoComplete = (function() {
 
             var ac = new YAHOO.widget.AutoComplete(params.fieldId, params.containerId, acRDS);
 
-            ac.maxResultsDisplayed = 20;
+            ac.maxResultsDisplayed = 500;
             ac.forceSelection = true;
 
             var spinnerImage = document.getElementById(params.containerId + "Spinner");
@@ -120,7 +120,7 @@ Fisma.AutoComplete = (function() {
 
                 // Create a regex to match the query case insensitively
                 var regex = new RegExp('\\b(' + sQuery + ')', 'i');
-                sResultMatch = sResultMatch.replace(regex, "<em>$1</em>");
+                sResultMatch = sResultMatch.replace('<', '&lt;').replace(regex, "<em>$1</em>");
 
                 return sResultMatch;
             };
