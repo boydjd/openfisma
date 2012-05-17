@@ -17,7 +17,7 @@
  */
 
 /**
- * Custom form validator for maxium upload file size element.
+ * Custom form validator for maximum upload file size element.
  *
  * @author     Mark Ma <mark.maendeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
@@ -37,8 +37,8 @@ class Fisma_Zend_Form_Validate_MaxUploadFilesize extends Zend_Validate_Abstract
      * @var array
      */
     protected $_messageTemplates = array(
-        self::INVALID        => "Invalid maxium upload file size.",
-        self::INVALID_FORMAT => "Invalid maxium upload file size, expected 'M' at the end of string."
+        self::INVALID        => "Invalid maximum upload file size.",
+        self::INVALID_FORMAT => "Invalid maximum upload file size, expected 'M' at the end of string."
     );
 
     /**
@@ -52,7 +52,7 @@ class Fisma_Zend_Form_Validate_MaxUploadFilesize extends Zend_Validate_Abstract
      */
     public function isValid($value)
     {
-        if (!is_string($value) || !is_numeric(substr($value, 0, -1))) {
+        if (!is_string($value) || !is_numeric(substr($value, 0, -1)) || strlen($value) > 5) {
             $this->_error(self::INVALID);
             return false;
         }
@@ -66,7 +66,7 @@ class Fisma_Zend_Form_Validate_MaxUploadFilesize extends Zend_Validate_Abstract
         $maxSize = Fisma_String::convertFilesizeToInteger(ini_get('upload_max_filesize'));
  
         if ($setting > $maxSize) {
-            $this->_messageTemplates[self::INVALID_SIZE] = 'Invalid maxium upload file size, should be less than '
+            $this->_messageTemplates[self::INVALID_SIZE] = 'Invalid maximum upload file size, should be less than '
                                                            . ini_get('upload_max_filesize');
             $this->_error(self::INVALID_SIZE);
             return false;

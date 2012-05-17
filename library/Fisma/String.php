@@ -283,7 +283,7 @@ class Fisma_String
     public static function convertFilesizeToInteger($value)
     {
         $type = strtoupper(substr($value, -1));
-        $value = (integer) substr($value, 0, -1);
+        $value = substr($value, 0, -1);
 
         switch ($type) {
             case 'K' :

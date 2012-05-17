@@ -90,7 +90,7 @@ elements.rob_duration.options.tooltip = "<p><b>Rules of Behavior Period</b></p><
 displayGroups.general.elements.rob_duration = "rob_duration"
 
 elements.max_file_upload_size.type = "text"
-elements.max_file_upload_size.options.label = "Maxium File Upload Size"
+elements.max_file_upload_size.options.label = "Maximum File Upload Size"
 elements.max_file_upload_size.options.validators.maxuploadfilesize.validator = "MaxUploadFilesize"
 elements.max_file_upload_size.options.required = true
 elements.max_file_upload_size.options.tooltip = "<p>Sets the maximum size of files that users can upload to the application, this setting applies to all modules and CANNOT exceed 256MB.</p>"
