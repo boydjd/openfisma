@@ -23,6 +23,7 @@
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
+ * @tickets    OFJ-1731
  */
 class Application_Migration_021702_FindingWorkflowExtended extends Fisma_Migration_Abstract
 {

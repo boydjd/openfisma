@@ -24,6 +24,7 @@
  * @copyright (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
+ * @tickets OFJ-1696
  */
 class Application_Migration_021700_UpdateEvaluationNames extends Fisma_Migration_Abstract
 {
