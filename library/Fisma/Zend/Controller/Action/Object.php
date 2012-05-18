@@ -912,9 +912,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         // Fetch associated objects
         $relations = Doctrine::getTable($this->_associatedModel)->getRelations();
         $relationColumn = null;
+        $relationAlias = null;
         foreach ($relations as $relation) {
             if ($relation->getClass() === $this->_modelName) {
                 $relationColumn = $relation->getLocal();
+                $relationAlias = $relation->getAlias();
                 break;
             }
         }
@@ -932,9 +934,18 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         if ($values) {
             try {
                 Doctrine_Manager::connection()->beginTransaction();
-
+                $destinationObject = Doctrine::getTable($this->_modelName)->find($values['destinationObjectId']);
                 foreach ($associatedObjects as $object) {
-                    $object->merge(array($relationColumn => $values['destinationObjectId']));
+                    if ($this->_associatedModel === 'Finding') { //Finding editable only during specific stages
+                        if (!in_array($object->status, array('NEW', 'DRAFT'))) {
+                            continue;
+                        }
+                    }
+                    if ($this->_associatedModel === 'Incident') { //Incident has a mutator on categoryId
+                        $object->merge(array($relationColumn => $values['destinationObjectId']));
+                    }  else {
+                        $object->$relationAlias = $destinationObject;
+                    }
                     $object->save();
                 }
 
