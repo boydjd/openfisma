@@ -23,7 +23,7 @@
 
 (function() {
     /**
-     * A treeview widget that is specialized for displaying the POC hierarchy
+     * A treeview widget that is specialized for displaying the Contact hierarchy
      *
      * @namespace Fisma
      * @class PocTreeView
@@ -151,7 +151,7 @@
         _renderTreeView: function (container) {
             this._showLoadingImage();
 
-            var url = '/poc/tree-data/format/json';
+            var url = '/contact/tree-data/format/json';
 
             YAHOO.util.Connect.asyncRequest(
                 'GET',
@@ -263,7 +263,7 @@
         },
 
         /**
-         * Create a node that represents a POC.
+         * Create a node that represents a Contact.
          *
          * @param node {Object} Dictionary of node data
          * @param parent {YAHOO.widget.Node} The tree node that is the parent to the node you want to create
@@ -279,7 +279,7 @@
                          + node.p_nameLast
                          + " ("
                          + node.p_username
-                         + ")</b> - <i>Point of Contact</i>";
+                         + ")</b> - <i>" + (node.p_type === "User" ? "User" : "Contact") + "</i>";
 
             var yuiNode = new YAHOO.widget.HTMLNode(
                 {
@@ -351,7 +351,7 @@
                             ? ('&destPoc=' + destNode.data.pocId)
                             : ('&destOrg=' + destNode.data.organizationId);
 
-            var query = '/poc/move-node/';
+            var query = '/contact/move-node/';
             var postData = 'src=' + srcNode.data.pocId + destination + '&dragLocation=' + dragLocation
                            + '&csrf=' + $('[name="csrf"]').val();
 

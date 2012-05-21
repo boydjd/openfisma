@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -21,7 +21,7 @@
  *
  * @uses Fisma_Doctrine_Table
  * @package Model
- * @copyright (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @copyright (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
@@ -35,7 +35,7 @@ class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
         return array (
             'username' => array(
                 'initiallyVisible' => true,
-                'label' => 'POC Name',
+                'label' => 'Contact Name',
                 'sortable' => true,
                 'type' => 'text'
             ),

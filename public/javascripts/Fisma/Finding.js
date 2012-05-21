@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,7 +17,7 @@
  * @fileoverview Client-side behavior related to the Finding module
  * 
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
- * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+ * @copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
  */
  
@@ -239,7 +239,7 @@ Fisma.Finding = {
             );
         }
 
-        container.firstChild.nodeValue = "No point of contact named \"" 
+        container.firstChild.nodeValue = "No contact or user named \"" 
                                        + unmatchedQuery
                                        + "\" was found. Click here to create one.";
         container.style.display = 'block';
@@ -288,8 +288,8 @@ Fisma.Finding = {
             var panelConfig = {width : "50em", modal : true};
 
             Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
-                'Create New Point Of Contact',
-                '/poc/form',
+                'Create New Contact',
+                '/contact/form',
                 Fisma.Finding.populatePocForm,
                 'createPocPanel',
                 panelConfig
@@ -404,7 +404,7 @@ Fisma.Finding = {
         var username = document.getElementById("username").value;
 
         YAHOO.util.Connect.setForm(form);
-        YAHOO.util.Connect.asyncRequest('POST', '/poc/create/format/json', {
+        YAHOO.util.Connect.asyncRequest('POST', '/contact/create/format/json', {
             success : function(o) {
                 var result;
 
@@ -429,14 +429,14 @@ Fisma.Finding = {
                     Fisma.Finding.pocHiddenEl.value = pocId;
                     Fisma.Finding.pocAutocomplete.getInputEl().value = username;
 
-                    Fisma.Util.message('A point of contact has been created.', 'info', true);
+                    Fisma.Util.message('A contact has been created.', 'info', true);
                 } else {
                     Fisma.Util.message(result.message, 'warning', true);
                     button.set("disabled", false);
                 }
             },
             failure : function(o) {
-                var alertMessage = 'Failed to create new point of contact: ' + o.statusText;
+                var alertMessage = 'Failed to create new contact: ' + o.statusText;
                 Fisma.Finding.createPocPanel.setBody(alertMessage);
             }
         }, null);
