@@ -36,6 +36,12 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
     protected $_modelName = 'OrganizationType';
 
     /**
+     * Overriding associated model information
+     */
+    protected $_associatedModel = 'Organization';
+    protected $_associatedPlural = 'Organizations';
+
+    /**
      * Override to return a human-friendly name
      */
     public function getSingularModelName()
@@ -71,16 +77,18 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
     {
         $form = parent::getForm($formName);
 
-        $icons = Doctrine_Query::create()
-                 ->from('Icon i')
-                 ->select("i.id, CONCAT('/icon/get/id/', i.id) as url")
-                 ->execute()
-                 ->toKeyValueArray('id', 'url');
+        if (!$formName) {
+            $icons = Doctrine_Query::create()
+                     ->from('Icon i')
+                     ->select("i.id, CONCAT('/icon/get/id/', i.id) as url")
+                     ->execute()
+                     ->toKeyValueArray('id', 'url');
 
-        $form->getElement('iconId')
-             ->setImageUrls($icons)
-             // ->setImageManagementUrl("/icon/list") // Don't have time to implement this in this release
-             ->setImageUploadUrl("/icon/upload/format/json");
+            $form->getElement('iconId')
+                 ->setImageUrls($icons)
+                 // ->setImageManagementUrl("/icon/list") // Don't have time to implement this in this release
+                 ->setImageUploadUrl("/icon/upload/format/json");
+       }
 
         return $form;
     }
@@ -144,7 +152,9 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
                         . $this->view->escape($organizationType->nickname, 'url');
             $this->view->priorityMessenger(
                 "This Organization Type is associated with <a href='$searchLink'>$count organization(s)</a>.<br/>" .
-                "Please assign them to other organization types and try again.",
+                "Please associate them with other organization types, or click " .
+                "<a href='#' onclick='Fisma.Util.triggerButton(\"toolbarReassociateButton\");return false;'>here</a> " .
+                "to quickly migrate all of them to another organization type and try again.",
                 "warning"
             );
 

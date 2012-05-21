@@ -88,12 +88,30 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     protected $_enforceAcl = true;
 
     /**
+     * The name of the associated objects if this model is a metadata model.
+     *
+     * This should match the other controller's $_modelName;
+     */
+    protected $_associatedModel;
+
+    /**
+     * The plural form the of the associated model, only for displaying
+     */
+    protected $_associatedPlural;
+
+    /**
+     * The nickname column of the associated model to display in the select menu. Default to "nickname"
+     */
+    protected $_associatedNickname = 'nickname';
+
+    /**
      * Subclasses should override this if they want to use different buttons
      *
      * Default buttons are (subject to ACL):
      *
      * 1) List All <model name>s
      * 2) Create New <model name>
+     * 3) Migrate Associated <associated model name> (if defined, view-page only)
      *
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not
      * @return array Array of Fisma_Yui_Form_Button
@@ -102,6 +120,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $buttons = array();
         $isList = $this->getRequest()->getActionName() === 'list';
+        $isView = $this->getRequest()->getActionName() === 'view';
         $resourceName = $this->getAclResourceName();
 
         if (!$isList && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('read', $resourceName))) {
@@ -120,6 +139,24 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 array(
                     'value' => 'Create New ' . $this->getSingularModelName(),
                     'href' => $this->getBaseUrl() . '/create'
+                )
+            );
+        }
+
+        if (
+            (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('update', $this->getAclResourceName())) &&
+            !empty($this->_associatedModel) &&
+            $isView
+        ) {
+            $buttons['reassociate'] = new Fisma_Yui_Form_Button(
+                'toolbarReassociateButton',
+                array(
+                    'label' => 'Migrate Associated ' . $this->_associatedPlural,
+                    'onClickFunction' => 'Fisma.Util.showReassociatePanel',
+                    'onClickArgument' => array(
+                        'title' => 'Migrate Associated ' . $this->_associatedPlural,
+                        'url'   => $this->getBaseUrl() . '/reassociate/id/' . $this->getRequest()->getParam('id')
+                    )
                 )
             );
         }
@@ -857,6 +894,101 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
             $this->_helper->reportContextSwitch()->setReport($report);
         }
+    }
+
+    /**
+     * Render the re-association form (should probably be loaded in a panel)
+     *
+     * @GETAllowed
+     */
+    public function reassociateAction()
+    {
+        $this->_helper->layout->disableLayout();
+
+        // Sanity checking
+        $this->_acl->requirePrivilegeForClass('update', $this->_modelName);
+        $id = $this->getRequest()->getParam('id');
+
+        // Fetch associated objects
+        $relations = Doctrine::getTable($this->_associatedModel)->getRelations();
+        $relationColumn = null;
+        $relationAlias = null;
+        foreach ($relations as $relation) {
+            if ($relation->getClass() === $this->_modelName) {
+                $relationColumn = $relation->getLocal();
+                $relationAlias = $relation->getAlias();
+                break;
+            }
+        }
+        if (empty($relationColumn)) {
+            throw new Fisma_Zend_Exception("No relation between {$this->_associatedModel} and {$this->_modelName}");
+        }
+        $associatedObjects = Doctrine_Query::create()
+            ->from($this->_associatedModel . ' m')
+            ->where('m.' . $relationColumn . ' = ?', $id)
+            ->execute();
+        $this->view->objects = $associatedObjects;
+
+        // Handle posted data (if any)
+        $values = $this->getRequest()->getPost();
+        if ($values) {
+            try {
+                Doctrine_Manager::connection()->beginTransaction();
+                $destinationObject = Doctrine::getTable($this->_modelName)->find($values['destinationObjectId']);
+                foreach ($associatedObjects as $object) {
+                    if ($this->_associatedModel === 'Finding') { //Finding editable only during specific stages
+                        if (!in_array($object->status, array('NEW', 'DRAFT'))) {
+                            continue;
+                        }
+                    }
+                    if ($this->_associatedModel === 'Incident') { //Incident has a mutator on categoryId
+                        $object->merge(array($relationColumn => $values['destinationObjectId']));
+                    }  else {
+                        $object->$relationAlias = $destinationObject;
+                    }
+                    $object->save();
+                }
+
+                // Commit
+                Doctrine_Manager::connection()->commit();
+                $this->view->priorityMessenger($associatedObjects->count() . " " . $this->_associatedPlural
+                                                . " reassigned successfully.");
+                $this->_redirect($this->getBaseUrl() . '/view/id/' . $this->getRequest()->getParam('id'));
+            } catch (Doctrine_Exception $e) {
+                // We cannot access the view script from here (for priority messenger), so rethrow after roll-back
+                Doctrine_Manager::connection()->rollback();
+                throw $e;
+            }
+        }
+
+        // Render the displayed form
+        $nickname = $this->_associatedNickname;
+        $query = Doctrine_Query::create()
+            ->select('id, ' . $nickname)
+            ->from($this->_modelName . ' m');$associatedTable = Doctrine::getTable($this->_associatedModel);
+        if ($associatedTable instanceof Fisma_Search_CustomIndexBuilder_Interface) {
+            $query = $associatedTable->getSearchIndexQuery($query, array($this->_modelName => 'm'));
+        }
+        $query->andWhere('m.id <> ?', $id);
+        $destinations = $query->execute();
+
+        if ($destinations->count() > 0) {
+            $form = $this->getForm('reassociate_objects');
+            $form->getElement('sourceObjectId')->setValue($id);
+
+            $destinationArray = array();
+            foreach ($destinations as $destination) {
+                $destinationArray[$destination->id] = $destination->$nickname;
+            }
+            $form->getElement('destinationObjectId')->setMultiOptions($destinationArray);
+
+            $this->view->form = $form;
+        } else {
+            $this->view->error = "There are no other " . $this->getPluralModelName() . " to migrate associated "
+                               . $this->_associatedPlural . " to.";
+        }
+        $this->view->associatedPlural = $this->_associatedPlural;
+        $this->renderScript('object/reassociate.phtml');
     }
 
     /**
