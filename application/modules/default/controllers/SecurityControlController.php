@@ -107,7 +107,7 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
                             CONCAT(sc.code, ' ', sc.name, ' [', c.name, ']') AS name"
                         )
                         ->where("CONCAT(sc.code, ' ', sc.name, ' [', c.name, ']') LIKE ?", "%$keyword%")
-                        ->andWhere("c.visible = ?", true)
+                        ->andWhere("c.published = ?", true)
                         ->orderBy("sc.code")
                         ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
