@@ -363,9 +363,10 @@
         _renderUploadButton: function () {
             if (this._uploadUrl) {
                 var maxFilesize = document.getElementsByName("MAX_UPLOAD_FILE_SIZE")[0].value;
+
                 // Create a hidden form for the file upload
                 var config = { action: "/icon/create",
-                               fileEleName: "imageUpload",
+                               fileElementName: "imageUpload",
                                maxValue: maxFilesize,
                                accept: "image/*" // not supported in IE or safari
                              }

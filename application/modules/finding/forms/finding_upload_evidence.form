@@ -4,7 +4,7 @@
 ; Copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
 ; License   http://openfisma.org/content/license
 
-[finding_upload_evident]
+[finding_upload_evidence]
 
 elements.selectFile.type = "Element_Upload"
 elements.selectFile.options.required = true

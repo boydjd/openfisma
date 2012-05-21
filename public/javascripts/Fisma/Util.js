@@ -454,8 +454,11 @@ Fisma.Util = {
     /**
      * Create a file upload form
      *
-     * @param {object} form configuration which should include form action, the name of file input element
-     *  and max upload file size. The accept attribute is optional.
+     * @param {object} config 
+     *     String .action             url to POST to
+     *     String .fileElementName    name of the File input element
+     *     int    .maxValue           the max upload file size 
+     *     String .accept             The accept attribute, not supported in IE or safari. Optional.
      * @return a form element.
      */
     createUploadFileForm : function (config) {
@@ -474,7 +477,7 @@ Fisma.Util = {
 
         var fileElement = document.createElement("input");
         fileElement.type = "file";
-        fileElement.name = config.fileEleName;
+        fileElement.name = config.fileElementName;
         if (!YAHOO.lang.isUndefined(config.accept)) {
             fileElement.setAttribute("accept", config.accept); // not supported in IE or safari
         }
