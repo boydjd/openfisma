@@ -556,12 +556,17 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         // Create the YUI table that will display results
         $searchResultsTable = new Fisma_Yui_DataTable_Remote();
 
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($this->_me->id, 'Fisma.RowsPerPage')
+                                                ->fetchOne();
+        $data = empty($storage) ? '' : $storage->data;
+        $rowsPerPage = empty($storage) ? $this->_paging['count'] : $data['row'];
+
         $searchResultsTable->setResultVariable('records') // Matches searchAction()
                            ->setDataUrl($this->getBaseUrl() . '/search')
                            ->setSortAscending(true)
                            ->setRenderEventFunction('Fisma.Search.highlightSearchResultsTable')
                            ->setRequestConstructor('Fisma.Search.generateRequest')
-                           ->setRowCount($this->_paging['count'])
+                           ->setRowCount($rowsPerPage)
                            ->setClickEventBaseUrl($this->getBaseUrl() . '/view/id/')
                            ->setClickEventVariableName('id');
 
