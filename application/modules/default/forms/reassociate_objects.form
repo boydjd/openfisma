@@ -3,10 +3,9 @@
 ; This form should be loaded through FormManager::loadForm() in order to recieve
 ; the proper decorators, filters, etc.
 ;
-; Author    Mark E. Haase <mhaase@endeavorsystems.com>
-; Copyright (c) Endeavor Systems, Inc. 2008 (http://www.endeavorsystems.com)
+; Author    Duy K. Bui <duy.bui@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
 ; License   http://www.openfisma.org/content/license GPLv3
-; Version   $Id$
 
 [reassociate_objects]
 
