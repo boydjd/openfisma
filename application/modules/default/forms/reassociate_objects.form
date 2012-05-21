@@ -10,7 +10,6 @@
 [reassociate_objects]
 
 name = "reassociate_objectsForm"
-;attribs.onsubmit = "return Fisma.Commentable.postComment();"
 
 elements.sourceObjectId.type = "hidden"
 
