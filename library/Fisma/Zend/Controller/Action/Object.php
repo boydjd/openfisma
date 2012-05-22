@@ -943,7 +943,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     }
                     if ($this->_associatedModel === 'Incident') { //Incident has a mutator on categoryId
                         $object->merge(array($relationColumn => $values['destinationObjectId']));
-                    }  else {
+                    } else {
                         $object->$relationAlias = $destinationObject;
                     }
                     $object->save();

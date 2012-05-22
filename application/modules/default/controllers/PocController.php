@@ -107,7 +107,6 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         $nameCondition = "(p.nameLast LIKE ? OR p.nameFirst LIKE ? OR p.username LIKE ? OR p.email LIKE ?)";
         $nameArgs = array("$keyword%", "$keyword%", "$keyword%", "$keyword%");
 
-
         $pocQuery = Doctrine_Query::create()
                     ->from('Poc p')
                     ->select("p.id")

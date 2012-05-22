@@ -88,7 +88,7 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
                  ->setImageUrls($icons)
                  // ->setImageManagementUrl("/icon/list") // Don't have time to implement this in this release
                  ->setImageUploadUrl("/icon/upload/format/json");
-       }
+            }
 
         return $form;
     }
