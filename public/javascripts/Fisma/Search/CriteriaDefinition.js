@@ -67,6 +67,11 @@ Fisma.Search.CriteriaDefinition = (function () {
         "enum" : {
             enumIs : {label : "Is", renderer : "enumSelect", query : "enumSelect", isDefault : true},
             enumIsNot : {label : "Is Not", renderer : "enumSelect", query : "enumSelect"}
+        },
+
+        "boolean" : {
+            booleanYes : {label : "Is Yes", renderer : "none", query : "noInputs", isDefault : true},
+            booleanNo : {label : "Is No", renderer : "none", query : "noInputs"}
         }
     };
 }());
