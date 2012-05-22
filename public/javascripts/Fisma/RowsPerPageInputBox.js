@@ -40,49 +40,36 @@
     /**
      * Decorates Paginator instances with new attributes. Called during
      * Paginator instantiation.
-     * @method init
      * @param p {Paginator} Paginator instance to decorate
      * @static
      */
     YAHOO.widget.Paginator.ui.RowsPerPageInputBox.init = function (p) { 
-
 
         // Text label for the input box.
         p.setAttributeConfig('inputBoxLabel', { 
             value : 'Results Per Page', 
             validator : YAHOO.lang.isString 
             }); 
-
-
-        // CSS class assigned to the input box node.
-        p.setAttributeConfig('inputBoxClass', { 
-            value : 'rowsPerPageInputBox', 
-            validator : YAHOO.lang.isString 
-        }); 
     }; 
 	 
     YAHOO.widget.Paginator.ui.RowsPerPageInputBox.prototype = { 
 
         /**
          * input node
-         * @property text type.
-         * @type HTMLElement
-         * @private
          */
         inputBox  : null, 
 	 
         construct : function () { 
 
             // When rowsPerPerPage changes, update the UI 
-            this.paginator.subscribe('rowsPerPageChange',this.update,this,true); 
+            this.paginator.subscribe('rowsPerPageChange', this.update, this, true); 
 	 
             // When myPaginator.destroy() is called, destroy this instance  UI 
-            this.paginator.subscribe('beforeDestroy',this.destroy,this,true); 
+            this.paginator.subscribe('beforeDestroy', this.destroy, this, true); 
 	}, 
 	 
         /**
          * Generate the label and input nodes and returns the label node.
-         * @method render
          * @param id_base {string} used to create unique ids for generated nodes
          * @return {HTMLElement}
          */
@@ -99,18 +86,25 @@
             labelEle.innerHTML = this.paginator.get('inputBoxLabel');
             labelEle.appendChild(this.inputBox);
 
-            YAHOO.util.Event.on(this.inputBox, 'change', this.onChange, this, true); 
-
-	    this.update(); 
+            this.initEvents();
+            this.update(); 
 	 
 	    return labelEle; 
 
         }, 
-	 
+	
+        /**
+         * Add the onChange and onKeydown event the inputBox.
+         */
+        initEvents : function() {
+            YAHOO.util.Event.on(this.inputBox, 'change', this.onChange, this, true); 
+
+            // IE does not handle [ENTER] keydown with onChange event, so, have to add onKeydown event.
+            YAHOO.util.Event.on(this.inputBox, "keydown", this.onEnterKeyDown, this, true);
+        },
 
         /**
          * Update the input box value if changed.
-         * @method update
          * @param e {CustomEvent} The calling change event
          */
         update : function (e) { 
@@ -122,7 +116,6 @@
 	 
         /**
          * Listener for the input's onchange event. Sent to setRowsPerPage method.
-         * @method onChange
          * @param e {DOMEvent} The change event
          */
         onChange : function (e) { 
@@ -139,9 +132,26 @@
         }, 
 	 
         /**
+         * Listener for the input's on [Enter] keydown event. Sent to setRowsPerPage method.
+         * @param e {DOMEvent} The keydown event
+         */
+        onEnterKeyDown : function (e) { 
+            if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
+               var rows = parseInt(this.inputBox.value,10);
+              YAHOO.util.Event.stopEvent(e); 
+            
+                if (!isNaN(rows)) {
+                    this.paginator.setRowsPerPage(rows);
+
+                    var rowsPerPageStorage = new Fisma.PersistentStorage('Fisma.RowsPerPage');
+                    rowsPerPageStorage.set('row', rows);
+                    rowsPerPageStorage.sync();
+                }
+            }
+        },
+ 
+        /**
          * Removes the input node and clears event listeners
-         * @method destroy
-         * @private
          */
         destroy : function () { 
             YAHOO.util.Event.purgeElement(this.inputBox, true); 
