@@ -161,4 +161,4 @@
             this.inputBox = null; 
         } 
     }; 
-})();
+}());
