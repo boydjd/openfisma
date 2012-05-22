@@ -256,7 +256,7 @@ class Fisma_FileManager
      * @param fileSize integer
      * @return TRUE if greater , FALSE otherwise
      */
-    static function isGreaterThanMaxUloadSize($filesize) 
+    static function isGreaterThanMaxUploadSize($filesize) 
     {
         $maxUploadFilesize = Fisma::configuration()->getConfig('max_file_upload_size');
         $maxUploadFilesize = Fisma_String::convertFilesizeToInteger($maxUploadFilesize);
@@ -290,7 +290,7 @@ class Fisma_FileManager
             } else {                                                                              
                 $error = "An error occurred while processing the uploaded file {$file['name']}.\n";                
             }                                                                                     
-        } elseif (self::isGreaterThanMaxUloadSize($file['size'])) {                  
+        } elseif (self::isGreaterThanMaxUploadSize($file['size'])) {                  
             $error = "The uploaded file {$file['name']} is too large. The file size should be less than "
                     . Fisma::configuration()->getConfig('max_file_upload_size') . ".\n";
         }
