@@ -137,8 +137,8 @@
          */
         onEnterKeyDown : function (e) { 
             if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
-               var rows = parseInt(this.inputBox.value,10);
-              YAHOO.util.Event.stopEvent(e); 
+                var rows = parseInt(this.inputBox.value,10);
+                YAHOO.util.Event.stopEvent(e); 
             
                 if (!isNaN(rows)) {
                     this.paginator.setRowsPerPage(rows);
