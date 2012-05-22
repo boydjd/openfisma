@@ -100,7 +100,9 @@
             YAHOO.util.Event.on(this.inputBox, 'change', this.onChange, this, true); 
 
             // IE does not handle [ENTER] keydown with onChange event, so, have to add onKeydown event.
-            YAHOO.util.Event.on(this.inputBox, "keydown", this.onEnterKeyDown, this, true);
+            if (YAHOO.env.ua.ie) {
+                YAHOO.util.Event.on(this.inputBox, "keydown", this.onEnterKeyDown, this, true);
+            }
         },
 
         /**
