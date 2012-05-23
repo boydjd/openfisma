@@ -407,6 +407,7 @@ UserPreferences:
             label: What\u2019s New
             link: ""
             onClick: Fisma.Util.showWhatsNewDialog
+            condition: return Fisma_WhatsNew::checkContents();
 
 Debug:
     label: Debug
