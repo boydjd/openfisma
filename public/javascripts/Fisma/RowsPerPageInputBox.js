@@ -82,6 +82,7 @@
             this.inputBox.style.width = '30px';            
 
             var labelEle = document.createElement('label');
+            labelEle.marginLeft = '4px';            
                
             labelEle.innerHTML = this.paginator.get('inputBoxLabel');
             labelEle.appendChild(this.inputBox);
