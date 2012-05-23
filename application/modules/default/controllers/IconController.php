@@ -204,7 +204,7 @@ class IconController extends Fisma_Zend_Controller_Action_Object
             $iconRows[] = array(
                 'id'                => $icon->id,
                 'iconUrl'           => $imageUrl,
-                'uploadedBy'        => $this->view->userInfo("{$user->nameFirst} {$user->nameLast}", $user->username),
+                'uploadedBy'        => $this->view->userInfo($user->displayName, $user->id),
                 'uploadedAt'        => $icon->LargeIconFile->createdTs,
                 'inUse'             => $inUse,
                 'delete'            => $deleteUrl

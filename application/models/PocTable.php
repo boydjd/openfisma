@@ -105,8 +105,8 @@ class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable, 
                 'sortable' => true,
                 'type' => 'enum'
             ),
-            'type' => array(
-                'enumValues' => array('User'),
+            'accountType' => array(
+                'enumValues' => $this->getEnumValues('accountType'),
                 'initiallyVisible' => true,
                 'label' => 'Account Type',
                 'sortable' => true,

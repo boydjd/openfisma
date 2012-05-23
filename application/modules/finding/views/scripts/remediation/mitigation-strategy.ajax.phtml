@@ -149,7 +149,7 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
               'onClickArgument' => array(
                   'args' => $args,
                   'func' => 'Fisma.Util.formPostAction',
-                  'text' => $warning 
+                  'text' => $warning
               )
         )
     );
@@ -185,7 +185,7 @@ if (
               'onClickArgument' => array(
                   'args' =>  $args,
                   'func' => 'Fisma.Util.formPostAction',
-                  'text' => $message 
+                  'text' => $message
             )
         )
     );
@@ -199,7 +199,6 @@ if ($finding->status != 'NEW'
     echo $this->escape('<div class="approval">', 'none');
     foreach ($findingEvaluations = $finding->getFindingEvaluations('action') as $k => $findingEvaluation) {
         $user = $findingEvaluation->User;
-        $fullName = $user->nameFirst . ' ' . $user->nameLast;
 
         $decision = $findingEvaluation->decision;
         echo $this->escape('<div class="approvalStep"><p><b>', 'none');
@@ -209,7 +208,7 @@ if ($finding->status != 'NEW'
             echo $this->escape('<span class="approved"><b>', 'none');
             echo $this->escape($decision);
             echo $this->escape('</b>', 'none');
-            echo $this->escape($this->userInfo($fullName, $user->username), 'none');
+            echo $this->escape($this->userInfo($user->displayName, $user->id), 'none');
             echo $this->escape(' at ', 'none');
             echo $this->escape($findingEvaluation->createdTs);
             echo $this->escape('</span></p>', 'none');

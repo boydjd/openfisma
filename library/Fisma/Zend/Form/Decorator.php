@@ -4,22 +4,22 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * A standard decorator that can be used for most forms in OpenFISMA in order
  * to provide a consistent look-and-feel across the application.
- * 
+ *
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -34,7 +34,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
      *
      * @return string The label rendered in HTML.
      */
-    public function buildLabel() 
+    public function buildLabel()
     {
         $element = $this->getElement();
         if (!$element instanceof Zend_Form_Element_Submit) {
@@ -47,7 +47,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
                 $label = $translator->translate($label);
             }
             $label .= ':';
-            
+
             $attrib = array();
             if ($element->hideLabel) {
                 $attrib['style'] = 'display: none';
@@ -76,7 +76,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
      *
      * @return string The input control rendered in HTML.
      */
-    public function buildInput() 
+    public function buildInput()
     {
         $element = $this->getElement();
         $helper  = $element->helper;
@@ -95,11 +95,11 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
         }
 
         $render = '';
-        
+
         if ($element->readOnly) {
             $element->setAttrib('disabled', 'disabled');
         }
-        
+
         if ($element instanceof Zend_Form_Element_Textarea && $element->readOnly) {
             // Text areas are rendered differently in read only mode:
             $render = "<div class=\"formValue\">$value</div>";
@@ -111,7 +111,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
 
             // To limit the upload file size.
             if ($element instanceof Zend_Form_Element_File) {
-                $maxFileSizeField = '<input type="hidden" name="MAX_FILE_SIZE" value="' 
+                $maxFileSizeField = '<input type="hidden" name="MAX_FILE_SIZE" value="'
                     . Fisma_String::convertFilesizeToInteger(Fisma::configuration()->getConfig('max_file_upload_size'))
                     . '"/>';
             }
@@ -124,7 +124,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
                 $element->options
             );
         }
-        
+
         return $render;
     }
 
@@ -154,7 +154,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
      *
      * @return string The error message rendered in HTML.
      */
-    public function buildErrors() 
+    public function buildErrors()
     {
         $element  = $this->getElement();
         $messages = $element->getErrors();
@@ -172,10 +172,10 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
      * @return string The element rendered in HTML.
      * @throws Fisma_Zend_Exception if the element to be rendered is an unknown class
      */
-    public function render($content) 
+    public function render($content)
     {
         $element = $this->getElement();
-                
+
         // Render the HTML 4.01 strict markup for the form and form elements.
         if ($element instanceof Zend_Form_Element_Hidden) {
             $render = $this->buildInput();
@@ -187,10 +187,12 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
                     . $this->buildDescription()
                     . '</td></tr>';
         } else if ($element instanceof Zend_Form_DisplayGroup) {
-            $render = '<div class=\'subform\'><table class=\'fisma_crud\'>'
+            $clearValue = $element->getAttrib("clear");
+            $clear = !empty($clearValue) && $clearValue ? ' style="clear: both;"' : '';
+            $render = '<div class="subform"' . $clear . '><table class="fisma_crud">'
                     . $content
                     . '</table></div>';
-            
+
         } else if ($element instanceof Zend_Form) {
             $enctype = $element->getAttrib('enctype');
             $id      = $element->getAttrib('id');
@@ -198,7 +200,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
             if ($element->isReadOnly()) {
                 $render = '<div class=\'form\'>'
                         . $content
-                        . '</div><div class="clear"></div>';            
+                        . '</div><div class="clear"></div>';
             } else {
                 $render = "<form method='{$element->getMethod()}'"
                         . " action='{$element->getAction()}'"
@@ -215,7 +217,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
                                     . " class: "
                                     . get_class($element));
         }
-        
+
         return $render;
     }
 }

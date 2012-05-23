@@ -63,12 +63,13 @@ class Fisma_Migration_Helper
      * Execute an SQL statement
      *
      * @param string $sql
+     * @param array $params
      * @return bool|int Number of modified records
      */
-    public function exec($sql)
+    public function exec($sql, $params = array())
     {
         try {
-            $execResult = $this->_db->exec($sql);
+            $execResult = $this->_db->prepare($sql)->execute($params);
         } catch (PDOException $e) {
             // If theres an exception while exec'ing, wrap it in a new exception that contains the full query
             throw new Fisma_Zend_Exception_Migration("Not able to execute query:\n$sql", 0, $e);
@@ -280,7 +281,7 @@ class Fisma_Migration_Helper
      * @param string $definition
      * @param string $after move this column immediately after the $after column.
      */
-    public function moveColumn($table, $column, $definition, $after)
+    public function modifyColumn($table, $column, $definition, $after)
     {
         $sql = "ALTER TABLE `$table` MODIFY COLUMN `$column` $definition AFTER `$after`";
         $this->exec($sql);

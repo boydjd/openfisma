@@ -19,7 +19,7 @@
             <?php
                 $user = CurrentUser::getInstance();
 
-                echo $this->escape($this->userInfo("{$user->nameFirst} {$user->nameLast}", $user->username), 'none');
+                 echo $this->escape($this->userInfo($user->displayName, $user->id), 'none');
             ?>
         </b>
         is currently logged in

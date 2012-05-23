@@ -14,20 +14,20 @@ if (!empty($this->requirements)) {
             </li>
         <?php endforeach; ?>
     </ul>
-<?php 
-} 
+<?php
+}
 ?>
 
 <div class="form_box">
-    <form method="post" action="/User/create">
-        <?php 
+    <form method="post" action="<?php $this->escape($this->form->getAction(), 'none'); ?>">
+        <?php
         echo $this->escape($this->form, 'none');
         echo $this->escape($this->tabView, 'none');
         ?>
     </form>
 </div>
 
-<?php 
+<?php
 Fisma_Format_Section::stopSection();
 $part = $this->partial('yui/roles.phtml', array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0));
 echo $this->escape($part, 'none');

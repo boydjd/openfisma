@@ -45,8 +45,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         parent::init();
         $this->_user = new User();
         $this->_helper->contextSwitch()
-                      ->setAutoJsonSerialization(false)
-                      ->addActionContext('check-account', 'json')
+                      ->addActionContext('ldap-autocomplete', 'json')
                       ->initContext();
     }
 
@@ -93,8 +92,18 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $conn->beginTransaction();
 
             $rolesOrganizations = $this->_request->getPost('organizations', array());
+            $id = $this->getRequest()->getParam('id');
 
-            if (is_null($subject)) {
+            if (is_null($subject) && !empty($id)) {
+                $poc = Doctrine::getTable('Poc')->find($id);
+                if ($poc instanceof User) {
+                    throw new Fisma_Zend_Exception_User('Already a User, cannot convert it to User.');
+                }
+                $poc->type = 'User';
+                $poc->save();
+                $poc->free();
+                $subject = Doctrine::getTable('User')->find($id);
+            } elseif (is_null($subject)) {
                 $subject = new $this->_modelName();
             } elseif (!($subject instanceof Doctrine_Record)) {
                 throw new Fisma_Zend_Exception('Invalid parameter, expected a Doctrine_Model');
@@ -295,7 +304,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         foreach ($logs as $log) {
             $logRows[] = array(
                 'timestamp' => $log['o_createdTs'],
-                'user' => $this->view->userInfo($log['u_username']),
+                'user' => $this->view->userInfo($log['u_displayName'], $log['u_id']),
                 'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
             );
         }
@@ -547,10 +556,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_helper->layout->disableLayout();
 
-        $username = $this->getRequest()->getParam('username');
+        $id = $this->getRequest()->getParam('id');
 
-        if ($username) {
-            $user = Doctrine::getTable('Poc')->findOneByUsername($username);
+        if ($id) {
+            $user = Doctrine::getTable('Poc')->find($id);
         } else {
             $user = null;
         }
@@ -698,11 +707,16 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->from('Role r')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
-
         $this->view->roles = Zend_Json::encode($roles);
         $this->view->tabView = $tabView;
         parent::_createObject();
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
+
+        $id = $this->getRequest()->getParam('id');
+        if (!empty($id)) {
+            $poc = Doctrine::getTable('Poc')->find($id);
+            $this->view->form->setDefaults($poc->toArray());
+        }
     }
 
     /**
@@ -760,86 +774,32 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Check if the specified LDAP distinguished name (Account) exists in the system's specified LDAP directory.
+     * Autocomplete provider for LDAP
      *
      * @GETAllowed
      * @return void
      */
-    public function checkAccountAction()
+    public function ldapAutocompleteAction()
     {
-
         if (! ($this->_acl->hasPrivilegeForClass('read', 'User')
                || $this->_acl->hasPrivilegeForClass('read', 'Poc')) ) {
             throw new Fisma_Zend_Exception_InvalidPrivilege("User does not have privileges to check account.");
         }
 
-        try {
-            $msg = '';
-            $matchedAccounts = null;
-            $account = null;
-
-            $ldapServerConfigurations = LdapConfig::getConfig();
-
-            if (count($ldapServerConfigurations) == 0) {
-                throw new Fisma_Zend_Exception_User('No LDAP servers defined.');
-            }
-
-            $accountInfo = array();
-            $account = $this->_request->getParam('account');
-
-            if (empty($account)) {
-                throw new Fisma_Zend_Exception_User('You did not specify any account name.');
-            } elseif (strlen($account) < 3) {
-                throw new Fisma_Zend_Exception_User('When searching for a user, you must type at least 3 letters.');
-            }
-
-            foreach ($ldapServerConfigurations as $ldapServerConfiguration) {
-                $ldapServer = new Zend_Ldap($ldapServerConfiguration);
-                $type = 'message';
-
-                // Using Zend_Ldap_Filter instead of a string query prevents LDAP injection
-                $searchFilter = Zend_Ldap_Filter::orFilter(
-                    Zend_Ldap_Filter::begins('sAMAccountName', $account),
-                    Zend_Ldap_Filter::begins('uid', $account)
-                );
-
-                $matchedAccounts = $ldapServer->search(
-                    $searchFilter,
-                    null,
-                    Zend_Ldap::SEARCH_SCOPE_SUB,
-                    array('givenname',
-                          'mail',
-                          'mobile',
-                          'sAMAccountName',
-                          'sn',
-                          'telephonenumber',
-                          'title',
-                          'uid'),
-                    'givenname',
-                    null,
-                    10 // limit 10 results to avoid crushing ldap server
-                );
-
-                break;
-            }
-        } catch (Zend_Ldap_Exception $zle) {
-            $type = 'warning';
-            $msg .= 'Error while checking account: ' . $zle->getMessage();
-        } catch (Fisma_Zend_Exception_User $fzeu) {
-            $type = 'warning';
-            $msg .= 'Error while checking account: ' . $fzeu->getMessage();
+        $query = $this->getRequest()->getParam('query');
+        if (empty($query)) {
+            throw new Fisma_Zend_Exception_User('No query provided.');
         }
 
-        echo Zend_Json::encode(
-            array(
-                'accounts' => is_object($matchedAccounts) ? $matchedAccounts->toArray() : null,
-                'msg' => $msg,
-                'query' => $account,
-                'type' => $type,
-            )
-        );
-
-        $this->_helper->viewRenderer->setNoRender();
+        $ldap = new Fisma_Ldap(LdapConfig::getConfig());
+        $results = $ldap->lookup($query);
+        foreach ($results as &$r) {
+            $r['givenname'] = $r['givenname'][0];
+            $r['sn'] = $r['sn'][0];
+            $r['mail'] = $r['mail'][0];
+            $r['label'] = trim($r['givenname'] . ' ' . $r['sn'] . ' <' . $r['mail'] . '>');
+        }
+        $this->view->results = $results;
     }
 
     /**
@@ -883,7 +843,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         foreach ($comments as $comment) {
             $commentRows[] = array(
                 'timestamp' => $comment['createdTs'],
-                'username' => $this->view->userInfo($comment['User']['username']),
+                'username' => $this->view->userInfo($comment['User']['displayName'], $comment['User']['id']),
                 'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment']))
             );
         }
@@ -1068,7 +1028,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $user = Doctrine::getTable('User')->find($userId);
 
         if ('database' == Fisma::configuration()->getConfig('auth_type')) {
-            $form->removeElement('checkAccount');
+            $form->removeElement('lookup');
+            $form->removeElement('seperator');
             $this->view->requirements =  $passwordRequirements->direct();
         } else {
             $form->removeElement('password');
@@ -1094,7 +1055,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         // Populate <select> for responsible organization
         $organizations = Doctrine::getTable('Organization')->getOrganizationSelectQuery(true)->execute();
-        $selectArray = $this->view->systemSelect($organizations);
+        $selectArray = array('' => '') + $this->view->systemSelect($organizations);
         $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
 
         return $form;
@@ -1171,5 +1132,49 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
 
         $this->_redirect('/contact/list' . $fromSearchUrl);
+    }
+
+    /**
+     * convertToContactAction
+     *
+     * @return void
+     */
+    public function convertToContactAction()
+    {
+        $id = $this->getRequest()->getPost('id');
+        $user = Doctrine::getTable('User')->find($id);
+        $user->type = null;
+        $user->save();
+        $user->free();
+        $this->view->priorityMessenger('User converted to Contact successfully.', 'notice');
+        $this->_redirect($this->view->url(array('controller' => 'contact', 'action' => 'view', 'id' => $id)));
+    }
+
+    /**
+     * Add the "Contact Hierarchy" button
+     *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
+     * @return array Array of Fisma_Yui_Form_Button
+     */
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $first = null, $last = null)
+    {
+        $buttons = array();
+        if (!empty($record)) {
+            $buttons['convert'] = new Fisma_Yui_Form_Button (
+                'toolbarConvertButton',
+                array(
+                    'label' => 'Convert to Contact',
+                    'onClickFunction' => 'Fisma.Util.formPostAction',
+                    'onClickArgument' => array(
+                           'action' => '/user/convert-to-contact',
+                           'id' => $this->view->subject->id
+                    )
+                )
+            );
+        }
+
+        $buttons = array_merge($buttons, parent::getToolbarButtons($record));
+
+        return $buttons;
     }
 }
