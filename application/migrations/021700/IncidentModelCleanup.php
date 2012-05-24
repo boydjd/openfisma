@@ -23,6 +23,7 @@
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
+ * @tickets    OFJ-1622 (will not work until 2.17.1)
  */
 class Application_Migration_021700_IncidentModelCleanup extends Fisma_Migration_Abstract
 {

@@ -45,12 +45,12 @@ Migration:
         minorVersion: 17
         tagNumber: 1
         name: MigrateSpreadsheets
-
-    021702_add_privileges_for_system_type:
+    021701_add_privileges_for_system_type:
         majorVersion: 2
         minorVersion: 17
-        tagNumber: 2
+        tagNumber: 1
         name: AddSystemTypePrivileges
+
     021702_finding_config:
         majorVersion: 2
         minorVersion: 17
@@ -66,6 +66,11 @@ Migration:
         minorVersion: 17
         tagNumber: 2
         name: AddEvaluationPrivileges
+    021702_add_privileges_for_icon_management:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 2
+        name: AddIconManagementPrivileges
     021800_add_max_file_upload_size:
         majorVersion: 2
         minorVersion: 18

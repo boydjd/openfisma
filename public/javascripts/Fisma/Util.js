@@ -23,6 +23,62 @@
 
 Fisma.Util = {
     /**
+     * Pop-up the reassogication form
+     *
+     * @param event The HTML Event
+     * @param args The Object literal containing real arguments
+     *      String title    The Title of the page
+     *      String url      The URL of the reassociateAction
+    */
+    showReassociatePanel : function (event, args) {
+        var panel = Fisma.UrlPanel.showPanel(args.title, args.url, function() {
+            // The form contains some scripts that need to be executed
+            var scriptNodes = panel.body.getElementsByTagName('script');
+            var i;
+            for (i = 0; i < scriptNodes.length; i++) {
+                try {
+                    eval(scriptNodes[i].text);
+                } catch (e) {
+                    var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
+                    Fisma.Util.showAlertDialog(message);
+                }
+            }
+
+            // Set the correct action
+            if (panel.body.getElementsByTagName('form').length > 0) {
+                panel.body.getElementsByTagName('form')[0].action = args.url;
+            }
+
+            // make the submit button a YUI widget
+            var inputs = panel.body.getElementsByTagName("input");
+            for (i in inputs) {
+                if (inputs[i].type === 'submit') {
+                    var submitButton = new YAHOO.widget.Button(inputs[i]);
+                }
+            }
+
+            // Fix the bug where the panel doesn't close if opened the second time in IE
+            panel.subscribe("hide", function() {
+                Fisma.Registry.get("messageBoxStack").pop();
+                setTimeout(function () {
+                    panel.destroy();
+                    panel = null;
+                }, 0);
+            }, this, true);
+
+        }, "reassociatePanel");
+    },
+
+    /**
+     * Using jQuery to trigger a not-so-smart YUI Button
+     *
+     * @param buttonName The name of the button, which happens (thanks God) to be the id of the span with onClick
+     */
+    triggerButton : function (buttonName) {
+        jQuery('#' + buttonName).click();
+    },
+
+    /**
      * Escapes the specified string so that it can be included in a regex without special characters affecting
      * the regex's meaning
      *
@@ -484,6 +540,50 @@ Fisma.Util = {
 
         fileForm.appendChild(fileElement);
         return fileForm;
+     },
+
+     /**
+     * Display the description div to the below of element.
+     *
+     * @param {String} targetId The id of element
+     * @param {String} description The description of element
+     */
+    showDescription: function (targetId, description) {
+
+        // Create a description div for showing description
+        var container = document.createElement("div");
+        container.className = 'descriptionBox';
+        container.id = targetId + '_description';
+
+        var containerTop = document.createElement("div");
+        containerTop.className = 'descriptionBoxTop';
+        container.appendChild(containerTop);
+
+        var containerCenter = document.createElement("div");
+        containerCenter.className = 'descriptionBoxCenter';
+        containerCenter.innerHTML = description;
+        container.appendChild(containerCenter);
+
+        var containerBottom = document.createElement("div");
+        containerBottom.className = 'descriptionBoxBottom';
+        container.appendChild(containerBottom);
+
+        var targetEl;
+        if (jQuery('#' + targetId)[0]) {
+            targetEl = jQuery('#' + targetId);
+        } else {
+            targetEl = jQuery('#' + targetId + '-button');
+        }
+
+        // Clone a tr element from the tr of the current element.
+        // Clean the content of cloned tr and insert it to the next sibling of the tr of current element.
+        // Append the description div to the second td of the cloned tr.
+        var tr = targetEl.closest('tr');
+        var cloneTr = tr.clone();
+        cloneTr.children().text("").last().html(container);
+        tr.after(cloneTr);
+
+        // Remove the description attribute from element
+        targetEl.removeAttr('description');
     }
- 
 };

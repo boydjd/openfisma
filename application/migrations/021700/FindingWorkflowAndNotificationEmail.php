@@ -26,6 +26,7 @@
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
+ * @tickets    OFJ-1696 (will not work until 2.17.2), OFJ-1703
  */
 class Application_Migration_021700_FindingWorkflowAndNotificationEmail extends Fisma_Migration_Abstract
 {

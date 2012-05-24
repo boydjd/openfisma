@@ -129,13 +129,15 @@ class Incident extends BaseIncident
         // Handle any pre-existing workflows (e.g. when changing from one category to another)
         $baseCardinality = 0;
 
+        $changedWorkflowName = "Change Workflows";
+
+        $changedWorkflowMessage = "<p>The category has been changed to \"{$category->name}\" and the workflow"
+                                . " has been modified accordingly.</p>";
+
         if ($this->currentWorkflowStepId) {
             if ($this->CurrentWorkflowStep->cardinality > 1) {
                 // The current workflow is already in progress so change the step to show that the workflow has changed
-                $changedWorkflowMessage = "<p>The category has been changed to \"{$category->name}\" and the workflow"
-                                        . " has been modified accordingly.</p>";
-
-                $this->CurrentWorkflowStep->name = "Change Workflows";
+                $this->CurrentWorkflowStep->name = $changedWorkflowName;
                 $this->CurrentWorkflowStep->description = $changedWorkflowMessage;
                 $this->CurrentWorkflowStep->completeStep();
                 $this->CurrentWorkflowStep->save();
@@ -152,6 +154,23 @@ class Incident extends BaseIncident
                                     ->where('w.incidentId = ?', $this->id)
                                     ->andWhere('w.cardinality > ?', $baseCardinality)
                                     ->execute();
+        }
+
+        // Make sure no same cardinalities of workflow step related to an incident
+        if (empty($this->currentWorkflowStepId) && 0 == $baseCardinality && !empty($this->id)) {
+            $irIncidentWorkflow = Doctrine::getTable('IrIncidentWorkflow')->findByIncidentId($this->id);
+            $irIncidentWorkflowCount = $irIncidentWorkflow->count();
+            if ($irIncidentWorkflowCount > 0) {
+                $iw = new IrIncidentWorkflow();
+                $iw->Incident = $this;
+                $iw->name = $changedWorkflowName;
+                $iw->description = $changedWorkflowMessage;
+                $iw->cardinality = $irIncidentWorkflowCount + 1;
+                $iw->completeStep();
+                $iw->save();
+
+                $baseCardinality = $iw->cardinality;
+            }
         }
 
         /*
@@ -223,7 +242,7 @@ class Incident extends BaseIncident
         // Update the completed step first
         $completedStep = Doctrine::getTable('IrIncidentWorkflow')->find($this->currentWorkflowStepId);
         $completedStep->completeStep($comment);
-        $this->save();
+        $completedStep->save();
 
         // Log the completed step
         $logMessage = 'Completed workflow step #'

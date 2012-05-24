@@ -1,0 +1,24 @@
+; This is the standard form for re-assigning associated objects
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Duy K. Bui <duy.bui@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/content/license GPLv3
+
+[reassociate_objects]
+
+name = "reassociate_objectsForm"
+
+elements.sourceObjectId.type = "hidden"
+
+elements.destinationObjectId.type = "select"
+elements.destinationObjectId.options.label = "Destination"
+elements.destinationObjectId.options.required = true
+elements.destinationObjectId.options.tooltip = "<b>Destination</b><p>Please select the destination to reassign associated objects.</p>"
+displayGroups.reassociate_objects.elements.destinationObjectId = "destinationObjectId"
+
+elements.submitButton.type = "submit"
+elements.submitButton.options.label = "Confirm"
+displayGroups.reassociate_objects.elements.submitButton = "submitButton"

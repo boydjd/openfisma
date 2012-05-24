@@ -104,6 +104,13 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'href' => $findingSearchUrl
             )
         );
+        $this->view->listButton = new Fisma_Yui_Form_Button_Link(
+                'toolbarListButton',
+                array(
+                    'value' => 'Return to Search Results',
+                    'href' => $this->getBaseUrl() . '/list'
+                )
+            );
 
         if ($this->_acl->hasPrivilegeForClass('create', 'Organization')) {
 

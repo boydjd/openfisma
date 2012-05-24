@@ -23,8 +23,9 @@
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
+ * @tickets    OFJ-1622 (fixes IncidentModelCleanup in 2.17.0)
  */
-class Application_Migration_021702_AddSystemTypePrivileges extends Fisma_Migration_Abstract
+class Application_Migration_021701_AddSystemTypePrivileges extends Fisma_Migration_Abstract
 {
     /**
      * Add privileges for SystemType and assign to ADMIN
