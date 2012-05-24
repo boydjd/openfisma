@@ -13893,7 +13893,7 @@ SecurityControl:
             the conditions for PIV Card termination that are approved by the 
             head of the organization. 
         externalReferences: >
-            FIPS 201-1 Section 5.3.2.4 -  –  PIV Card Termination 
+            FIPS 201-1 Section 5.3.2.4  –  PIV Card Termination 
     80079_DO_06:
         code: DO-06
         family: Preparation and Maintenance of Documentation

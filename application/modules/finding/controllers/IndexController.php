@@ -166,7 +166,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                     defined.");
             }
 
-            $securityControls = Doctrine::getTAble('SecurityControl')->getPublishedQuery()->execute();
+            $securityControls = Doctrine::getTable('SecurityControl')->getPublishedQuery()->execute();
 
             $this->view->securityControls = array();
             foreach ($securityControls as $sc) {
