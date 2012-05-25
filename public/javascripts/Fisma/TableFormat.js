@@ -429,5 +429,31 @@ Fisma.TableFormat = {
         );
 
         elCell.appendChild(img);
+    },
+
+    /**
+     * A formatter which displays Yes or No for a boolean value
+     *
+     * The highlighting engine seems to do something very strange with boolean values:
+     * true, no highlight: true (boolean value)
+     * false, no highlight: false (boolean value)
+     * true, highlighted: "******T" (string value)
+     * false, highlighted: "******F" (string value)
+     * The code below compensates for this.
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatBoolean : function (elCell, oRecord, oColumn, oData) {
+        var cell = $(elCell);
+        if (oData === true) {
+            cell.text("Yes");
+        } else if (oData === false) {
+            cell.text("No");
+        } else {
+            cell.html($("<span/>").addClass("highlight").text(oData.substr(-1) === "T" ? "Yes" : "No"));
+        }
     }
 };

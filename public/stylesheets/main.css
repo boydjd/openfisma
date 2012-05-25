@@ -342,7 +342,7 @@ table.fisma_crud {
     margin: 0px 15px;
 }
 
-table.fisma_crud tr td, table.fisma_crud tr td input {
+table.fisma_crud tr td, table.fisma_crud tr td input, table.fisma_crud tr td textarea.plaintext {
     font-family: 'Verdana', 'Arial', 'Helvetica';
     font-weight: bold;
     font-size: 12px;
@@ -784,4 +784,13 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
     height: 2px;
     overflow: hidden;
     clear: both;
+}
+
+.rowsPerPageInputBox {
+    margin-left: 10px;
+    width: 30px;
+}
+
+.rowsPerPageInputBoxLabel {
+    margin-left: 4px;
 }

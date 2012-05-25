@@ -9,9 +9,6 @@ SecurityControl:
         name:
             type: string(255)
             comment: Name of the control
-        class:
-            type: enum
-            values: [MANAGEMENT, OPERATIONAL, TECHNICAL]
         family: 
             type: string(255)
                 

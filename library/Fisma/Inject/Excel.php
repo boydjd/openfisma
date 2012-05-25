@@ -49,8 +49,9 @@ class Fisma_Inject_Excel
      * v5 2011-11-04 Remove contactInfo field
      * v6 2012-03-26 Add data validation for 'ecdDate' field
      * v7 2012-04-27 Add owner email for adding POC
+     * v8 2012-05-18 Change Security Control format to include Catalog name.
      */
-    const TEMPLATE_VERSION = 7;
+    const TEMPLATE_VERSION = 8;
 
     /**
      * Maps numerical indexes corresponding to column numbers in the excel upload template onto those
@@ -99,16 +100,6 @@ class Fisma_Inject_Excel
     private $_excelTemplateStartRow = 4;
 
     /**
-     * Holds the 800-53 catalog number that this spreadsheet was generated from
-     *
-     * This is used during parsing to lookup the corresponding security control, since the security control code
-     * (e.g. AC-01) is not a unique key, but the pair (catalog, security control code) is a unique key.
-     *
-     * @var int
-     */
-    private $_securityControlCatalogId;
-
-    /**
      * The primary key of the upload object associated with this spreadsheet. This is used to trace a particular
      * finding back to the file it came from.
      *
@@ -145,9 +136,6 @@ class Fisma_Inject_Excel
                 . " version. Download a new copy of the template and transfer your data into it."
             );
         }
-
-        // Look up the control catalog ID for this template in the spreadsheet properties. This is used later.
-        $this->_securityControlCatalogId = (int)$spreadsheet->CustomDocumentProperties->SecurityControlCatalogId;
 
         $this->_uploadId = $uploadId;
 
@@ -262,18 +250,24 @@ class Fisma_Inject_Excel
             }
             $poam['sourceId'] = $sourceTable->id;
 
-            // Match controls by code (e.g. "AC-01") and security control catalog ID
+            /*
+             * Match controls by their code and catalog name
+             * This requires some funky regex to pull out the distinguishing features of the label used in the excel
+             * sheet, namely "CODE CONTROLNAME (CATALOGNAME)"
+             */
             if (!empty($finding['securityControl'])) {
-                $securityControlTable = Doctrine::getTable('SecurityControl');
+                $error = "Row $currentExcelRowNumber: Invalid security control selected. Your template may"
+                       . " be out of date. Please try downloading it again.";
+                if (preg_match('/([^ ]+) (.+) [(](.+)[)]/', $finding['securityControl'], $matches) != 1) {
+                    throw new Fisma_Zend_Exception_InvalidFileFormat($error);
+                }
 
-                $conditions = 'code = ? and securityControlCatalogId = ?';
-                $parameters = array($finding['securityControl'], $this->_securityControlCatalogId);
-
-                $securityControls = $securityControlTable->findByDql($conditions, $parameters);
+                $securityControls = Doctrine_Query::create()
+                    ->from('SecurityControl sc, sc.Catalog c')
+                    ->where('sc.code = ? AND c.name = ?')
+                    ->execute(array($matches[1], $matches[3]));
 
                 if (count($securityControls) != 1) {
-                    $error = "Row $currentExcelRowNumber: Invalid security control selected. Your template may"
-                           . " be out of date. Please try downloading it again.";
                     throw new Fisma_Zend_Exception_InvalidFileFormat($error);
                 }
                 $poam['securityControlId'] = $securityControls[0]->id;

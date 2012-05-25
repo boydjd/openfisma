@@ -429,6 +429,12 @@ class Fisma_Search_Engine
             $operator = $criterion->getOperator();
 
             switch ($operator) {
+                case 'booleanYes':
+                    $searchTerms[] = "$fieldName:true";
+                    break;
+                case 'booleanNo':
+                    $searchTerms[] = "$fieldName:false";
+                    break;
                 case 'dateAfter':
                     try {
                         $afterDate = $this->_convertToSolrDate($operands[0]);

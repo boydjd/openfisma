@@ -4,9 +4,17 @@
 SecurityControlCatalog:
     800_53_Rev_0:
         name: NIST SP 800-53 Rev. 0
+        description: Recommended Security Controls for Federal Information Systems and Organizations 
     800_53_Rev_1:
         name: NIST SP 800-53 Rev. 1
+        description: Recommended Security Controls for Federal Information Systems and Organizations 
     800_53_Rev_2:
         name: NIST SP 800-53 Rev. 2
+        description: Recommended Security Controls for Federal Information Systems and Organizations 
     800_53_Rev_3:
         name: NIST SP 800-53 Rev. 3
+        description: Recommended Security Controls for Federal Information Systems and Organizations 
+        published: true
+    800_79:
+        name: NIST SP 800-79
+        description: Guidelines for the Accreditation of Personal Identity Verification Card Issuers

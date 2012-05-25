@@ -218,9 +218,9 @@ System:
                 func: hasArea
                 param: system_inventory_admin
             submenu:
-                Controls:
-                    label: Controls
-                    link: /security-control-admin
+                ControlCatalogs:
+                    label: Control Catalogs
+                    link: /security-control-catalog/list
                 DocumentType:
                     label: Document Types
                     link: /document-type/list

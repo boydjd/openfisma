@@ -122,7 +122,8 @@
                         totalRecords: YAHOO.widget.Paginator.VALUE_UNLIMITED,
                         initialPage: YL.isNumber(initialPage) ? initialPage : 1,
                         rowsPerPage : <?php echo $this->escape($this->rowCount, 'javascript'); ?>,
-                        template : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+                        template : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} "
+                                   + "{RowsPerPageInputBox}"
                     }
                 ), 
                 generateRequest : requestConstructor

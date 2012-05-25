@@ -18,7 +18,6 @@ echo $this->escape($xmltag, 'none');
  </DocumentProperties>
  <CustomDocumentProperties xmlns="urn:schemas-microsoft-com:office:office">
   <FismaTemplateVersion dt:dt="float"><?php echo $this->escape($this->templateVersion) ?></FismaTemplateVersion>
-  <SecurityControlCatalogId dt:dt="float"><?php echo $this->escape($this->securityControlCatalogId) ?></SecurityControlCatalogId>
  </CustomDocumentProperties>
  <Styles>
   <Style ss:ID="Default" ss:Name="Normal">
@@ -155,7 +154,7 @@ echo $this->escape($xmltag, 'none');
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="75"/><!-- Course Of Action Type -->
    <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="175"/><!-- Course Of Action Description -->
    <Column ss:StyleID="s47" ss:AutoFitWidth="0" ss:Width="100"/><!-- Expected Completion Date -->
-   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="100"/><!-- NIST 800-53 Control -->
+   <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="100"/><!-- Control -->
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Threat Level -->
    <Column ss:StyleID="s22" ss:AutoFitWidth="0" ss:Width="175"/><!-- Threat Description -->
    <Column ss:StyleID="s24" ss:AutoFitWidth="0" ss:Width="175"/><!-- Countermeasures Effectiveness -->
@@ -165,7 +164,7 @@ echo $this->escape($xmltag, 'none');
     <Cell ss:MergeAcross="13" ss:StyleID="s29"><Data ss:Type="String"><?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?> - Injection Template</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="100" ss:StyleID="s27">
-    <Cell ss:MergeAcross="13" ss:StyleID="m43958186"><Data ss:Type="String">Security Catalog: <?php echo $this->escape($this->securityControlCatalogName); ?>&#10;Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.</Data></Cell>
+    <Cell ss:MergeAcross="13" ss:StyleID="m43958186"><Data ss:Type="String">Instructions: &#10;1) Required fields are indicated by an asterix (*). &#10;2) Leave optional fields blank if you do not have that information.&#10;3) Do not modify the format of this template, or it may not upload into <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>. You may hide rows and columns using Excel's menu option: Format-&gt;Row-&gt;Hide&#10;4) To enter an asset for a finding, complete the Network, Asset IP Address, and Asset Port fields. If you do not enter all 3 of these fields, then the asset will be omitted.&#10;5) To enter a product, complete the Product Name, Product Vendor, and Product Version. If you do not enter all 3 of these fields, then the product will be omitted.</Data></Cell>
    </Row>
    <Row ss:AutoFitHeight="0" ss:Height="28">
     <Cell ss:StyleID="s39"><Data ss:Type="String">Organization/System*</Data><Comment
@@ -192,9 +191,9 @@ echo $this->escape($xmltag, 'none');
     <Cell ss:StyleID="s39"><Data ss:Type="String">Expected Completion Date</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="Verdana" x:Family="Swiss" html:Size="9" html:Color="#000000"> The date by which the course of action will be completed AND evidence uploaded         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">NIST 800-53 Security Control</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String">Security Control</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
-        html:Face="Verdana" x:Family="Swiss" html:Size="9" html:Color="#000000"> The related NIST 800-53 security control.         </Font></ss:Data></Comment></Cell>
+        html:Face="Verdana" x:Family="Swiss" html:Size="9" html:Color="#000000"> The related security control.         </Font></ss:Data></Comment></Cell>
     <Cell ss:StyleID="s39"><Data ss:Type="String">Threat Level*</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="Verdana" x:Family="Swiss" html:Size="9" html:Color="#000000"> The threat imposed by an exploit of this vulnerability.         </Font></ss:Data></Comment></Cell>
