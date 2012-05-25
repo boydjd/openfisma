@@ -107,6 +107,7 @@ See http://manual.openfisma.org/display/ADMIN/Administrator+Manual
         <dynamicField name="*_integer" type="sint" indexed="true" stored="true"/>
         <dynamicField name="*_text" type="text" indexed="true" stored="true"/>
         <dynamicField name="*_textsort" type="textsort" indexed="true" stored="true"/>
+        <dynamicField name="*_boolean" type="boolean" indexed="true" stored="true"/>
     </fields>
 
     <uniqueKey>luceneDocumentId</uniqueKey>

@@ -294,6 +294,10 @@ Role:
             - roles_delete
             - roles_read
             - roles_update
+            - security_control_catalog_create
+            - security_control_catalog_delete
+            - security_control_catalog_read
+            - security_control_catalog_update
             - system_type_create
             - system_type_delete
             - system_type_read

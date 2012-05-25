@@ -45,13 +45,6 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
                 'sortable' => false,
                 'type' => 'text'
             ),
-            'class' => array(
-                'enumValues' => $this->getEnumValues('class'),
-                'initiallyVisible' => true,
-                'label' => 'Class',
-                'sortable' => true,
-                'type' => 'enum'
-            ),
             'family' => array(
                 'initiallyVisible' => true,
                 'label' => 'Family',
@@ -93,6 +86,17 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
                 ),
                 'sortable' => true,
                 'type' => 'text'
+            ),
+            'published' => array(
+                'initiallyVisible' => true,
+                'label' => 'Published',
+                'join' => array(
+                    'model' => 'SecurityControlCatalog',
+                    'relation' => 'Catalog',
+                    'field' => 'published'
+                ),
+                'sortable' => false,
+                'type' => 'boolean'
             )
         );
     }
@@ -105,5 +109,17 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
     public function getAclFields()
     {
         return array();
+    }
+
+    /**
+     * Get a query for the ID and a label for all published security controls.
+     *
+     * @return Doctrine_Query
+     */
+    public function getPublishedQuery()
+    {
+        return Doctrine_Query::create()
+            ->from('SecurityControl sc, sc.Catalog c')
+            ->where('c.published = true');
     }
 }

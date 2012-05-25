@@ -1,0 +1,237 @@
+DO-01,"Operations Plan","Preparation and Maintenance of Documentation","The organization develops and implements a PCI operations plan  according to the template in Appendix D. The operations plan  references other documents as needed. 
+","SP 800-79-1, Section 2.11 – Accreditation Package and Supporting Documentation
+"
+DO-02,"Enrollment / Identity Proofing Policy and Procedures","Preparation and Maintenance of Documentation","The organization has a written policy and procedures for  enrollment/identity proofing that are approved by the head of the  organization. 
+","FIPS 201-1, Section 2.2 – PIV  Identity Proofing and  Registration Requirements
+"
+DO-03,"Issuance Policy and Procedures","Preparation and Maintenance of Documentation","The organization has a written policy and procedures for issuance  that are approved by the head of the organization. 
+","FIPS 201-1, Section 2.3  –  PIV Issuance and Maintenance Requirements 
+"
+DO-04,"Renewal Policy and Procedures","Preparation and Maintenance of Documentation","The organization has a written policy and procedures describing  the conditions for PIV Card renewal that are approved by the  head of the organization. 
+","FIPS 201-1, Section 5.3.2.1  –  PIV Card Renewal 
+"
+DO-05,"Termination Policy and Procedures","Preparation and Maintenance of Documentation","The organization has a written policy and procedures describing  the conditions for PIV Card termination that are approved by the  head of the organization. 
+","FIPS 201-1 Section 5.3.2.4  –  PIV Card Termination 
+"
+DO-06,"Re-Issuance Policy and Procedures","Preparation and Maintenance of Documentation","The organization has a written policy and procedures describing  the conditions for PIV Card re-issuance that are approved by the  head of the organization. 
+","FIPS 201-1 Section 5.3.2.2  –  PIV Card Reissuance 
+"
+DO-07,"Temporary Badge Policy and Procedures","Preparation and Maintenance of Documentation","In cases where a PIV Card is not required, such as temporary  employees and contractors employed for less than 6 months and  visitors, the organization has a written policy and procedures  describing the conditions for temporary badges. 
+","OMB Memorandum 05-24 
+"
+RR-01,"Senior Authorizing Official","Assignment of Roles and Responsibilities","The organization has appointed the role of Senior Authorizing  Official (SAO). 
+","SP 800-79-1, Section 2.6 – Roles and Responsibilities 
+"
+RR-02,"Designated Accreditation Authority","Assignment of Roles and Responsibilities","The organization has appointed the role of Designated  Accreditation Authority (DAA).
+","SP 800-79-1, Section 2.6 – Roles and Responsibilities 
+"
+RR-03,"Organization Identity Management Official","Assignment of Roles and Responsibilities","The organization has appointed the role of Organization Identity  Management Official (OIMO).
+","SP 800-79-1, Section 2.6 – Roles and Responsibilities 
+"
+RR-04,Assessor,"Assignment of Roles and Responsibilities","The organization has appointed the role of Assessor. 
+","SP 800-79-1, Section 2.6 – Roles and Responsibilities 
+"
+RR-05,"Privacy Official","Assignment of Roles and Responsibilities","The organization has appointed the role of Privacy Official (PO). 
+","SP 800-79-1, Section 2.6 – Roles and Responsibilities 
+"
+RR-06,"Separation of Duties","Assignment of Roles and Responsibilities","The PCI Facility employs processes which adhere to the principle  of separation of duties to ensure that no single individual has the  capability to issue a PIV Card without the cooperation of another  authorized person. 
+","FIPS 201-1, Section 5.2 – PIV Identity Proofing and Registration 
+"
+FP-01,"Minimum Physical Controls","Facility and Personnel Readiness","Minimum physical controls at the PCI Facility are implemented.  These include: (i) use of locked rooms, safes, and cabinets (as  appropriate); (ii) physical access to key areas within the facility is  restricted to authorized personnel, (iii) security monitoring and  automated alarms are implemented, (iv) emergency power and  lighting are available, and (v) fire prevention and protection  mechanisms are implemented. 
+","Commonly accepted security readiness measures 
+"
+FP-02,"Documentation Maintenance","Facility and Personnel Readiness","PCI Documentation (e.g., operations plan, standard operating  procedures, and contracts) are maintained at each PCI Facility. 
+","Commonly accepted security readiness measures 
+"
+FP-03,"Contingency / Disaster Recovery Plan Security","Facility and Personnel Readiness","The PCIF Manager(s) has a copy of the contingency/disaster  recovery plan for the information systems, which is stored  securely. 
+","Commonly accepted security readiness measures 
+"
+FP-04,"System Development Life Cycle","Facility and Personnel Readiness","The information systems are managed using a system  development life cycle (SDLC) methodology that includes  information security considerations 
+","Commonly accepted security readiness measures 
+"
+FP-05,"Workstation Privacy","Facility and Personnel Readiness","Enrollment/identity proofing and card activation/issuance  workstations are situated in an enclosed area (wall or partition) to  provide privacy for an applicant or card holder.  
+","Commonly accepted security readiness measures 
+"
+FP-06,"Operator Authentication","Facility and Personnel Readiness","All operators who perform roles within a PCI Facility in the areas  of enrollment/ identity proofing or card activation/issuance are  allowed access to information systems only when authenticated  through a PIV Card.  
+","Commonly accepted security readiness measures 
+"
+FP-07,"Operator Training","Facility and Personnel Readiness","All operators who perform roles within a PCI Facility in the areas  of enrollment/ identity proofing, adjudication and card  activation/issuance have undergone training that is specific to  their duties prior to being allowed to perform in that function.  
+","Commonly accepted security readiness measures 
+"
+FP-08,"Card Stock","Facility and Personnel Readiness","All pre-personalized and personalized smart card stock received  from card vendors and card production facilities are received only  by authorized personnel who ensure that the card stock is stored  securely in the PCI Facility.   
+","Commonly accepted security readiness measures 
+"
+FP-09,"PCIF Points of Contact","Facility and Personnel Readiness","The organization maintains a current list of designated points of  contact and alternate points of contact for all PCIFs used by the  organization for enrollment/identity proofing and card  activation/issuance.  
+","Commonly accepted security readiness measures 
+"
+ST-01,"PII Handling","Protection of Stored and Transmitted Data","The PCI information systems that contain information in  identifiable form are handled in compliance with Federal laws and  policies, including the Privacy Act of 1974.
+","FIPS 201-1, Section 2.4 - PIV Privacy Requirements 
+"
+ST-02,"Transmission Integrity and Confidentiality","Protection of Stored and Transmitted Data","The information systems protect the integrity and confidentiality of  transmitted information. 
+","FIPS 201-1, Section 2.4 - PIV Privacy Requirements 
+"
+PR-01,"Privacy Policy Procedures","Enforcement of Privacy Requirements","Privacy act statement/notice, complaint procedures, appeals  procedures for those denied identification or whose identification  cards are revoked, and sanctions for employees violating privacy  policies shall be developed and posted by the organization in  multiple locations at the PCI facility (e.g., internet site, human  resource offices, regional offices, and contractor orientation  handouts). 
+","OMB Memorandum 05-24 
+"
+PR-02,"Privacy Impact Assessment","Enforcement of Privacy Requirements","The organization has conducted a Privacy Impact Assessment of  their PCI information system (s), compliant with Section 208 of  the E-Government Act of 2002 and based on guidance found in  Appendix E of OMB Memorandum 06-06. 
+","OMB Memorandum 05-24 
+"
+PR-03,"Systems of Records Notices","Enforcement of Privacy Requirements","The organization’s employee and contractor identification  systems of records notices (SORN’s) are updated to reflect any  changes in the disclosure of information to other organizations in  order to be consistent with the Privacy Act of 1974 and OMB  Circular A-130, Appendix 1. 
+","OMB Memorandum 05-24 
+"
+PR-04,"Applicant Notification","Enforcement of Privacy Requirements","The applicant is notified of what information in identifiable form is  collected, how it will be used, what information will be disclosed  and to whom, and what protections are provided to ensure the  security of this information.
+","FIPS 201-1, Section 2.4 – PIV Privacy Requirements 
+"
+PR-05,"Continuous Auditing of Privacy Policies and Practices","Enforcement of Privacy Requirements","The PCI Facility employs technologies that allow for continuous  auditing of compliance with privacy policies and practices. 
+","FIPS 201-1, Section 2.4 – PIV Privacy Requirements 
+"
+PR-06,"PII Disposal","Enforcement of Privacy Requirements","In the case of termination, any personally identifiable information   that has been collected from the cardholder is disposed of in  accordance with the stated privacy and data retention policies. 
+","FIPS 201-1, Section 5.3.2.4 – PIV Card Termination 
+"
+DP-01,"PCI System Authorization","Deployed Products & Information Systems","In order to be compliant with the provisions of OMB Circular A- 130, App III, the PCI information system(s) are certified in  accordance with NIST SP 800-37, Guide for the Security  Certification and Accreditation of Federal Information Systems.
+","FIPS 201-1, Appendix B.2 – Security Certification and Accreditation of IT System(s) 
+"
+DP-02,"Use of Approved Products","Deployed Products & Information Systems","Every product utilized by a PCI facility that it falls within one of the  categories listed by the GSA FIPS 201 Evaluation program,  shall be listed in the GSA FIPS 201 Evaluation Program’s  Approved Product List (APL)  
+","OMB Memorandum 05-24 
+"
+DP-03,"PIV Card Testing and Approval","Deployed Products & Information Systems","The organization has submitted a personalized PIV Card from  their production system to GSA for testing, and it has been  approved. 
+","OMB Memorandum 05-24 
+"
+CI-01,"Legacy PKI Cross-Certification","Implementation of Credentialing Infrastructures","For legacy Public Key Infrastructures (PKI’s), the organization’s  CA shall be cross-certified with the Federal Bridge (FBCA) at a  Medium-HW or High Assurance Level. 
+","FIPS 201-1, Section 5.4.4 – Migration from Legacy PKIs 
+"
+CI-02,"Federal PKI Common Policy","Implementation of Credentialing Infrastructures","For non-legacy PKI’s, the CA that issues certificates to support  PIV Card authentication participates in the hierarchical PKI for the 
+","FIPS 201-1, Section 5.4.1 – Architecture 
+"
+CI-03,"Card Management Keys","Implementation of Credentialing Infrastructures","When cards are personalized, card management keys are set to  be specific to each PIV Card. That is, each PIV Card shall contain  a unique card management key. 
+","FIPS 201-1, Section 4.1.6.2 – Activation by Card Management System 
+"
+CI-04,"Fingerprint Image Format","Implementation of Credentialing Infrastructures","Fingerprint images retained by organizations shall be formatted  according to SP 800-76-1. 
+","SP 800-76-1, Section 3.4 – Fingerprint Template Specifications 
+"
+CI-05,"Facial Image Format","Implementation of Credentialing Infrastructures","Facial images collected during enrollment/identity proofing are  formatted such that they conform to SP 800-76-1. 
+","SP 800-76-1, Section 5.2 – Acquisition and Format 
+"
+CI-06,"Fingerprint Templates","Implementation of Credentialing Infrastructures","The fingerprint templates stored on the PIV Card are prepared  from images of the primary and secondary fingers where the  choice of fingers is based on the order of priority, as provided in  FIPS 201-1, Section 4.4.1.   
+","SP 800-76-1, Section 3.4.1 – Source Images 
+"
+SP-01,"Issuance Requests","Sponsorship Process","A request is created in order to issue a PIV Card.
+","FIPS 201-1, Section 2.1 – Control Objectives 
+"
+SP-02,"PII Collection","Sponsorship Process","The PCI Facility collects personal information using only forms  approved by OMB under the Paperwork Reduction Act of 1995. 
+","OMB Memorandum 07-06 
+"
+EI-01,"Identity Proofing Process","Enrollment / Identity Proofing Process","The PCI Facility has a process in place to verify the authenticity  of the source documents and match them to the identity claimed  by the applicant. 
+","FIPS 201-1, Section 2.1 – Control Objectives 
+"
+EI-02,"Identity Proofing Verification","Enrollment / Identity Proofing Process","The PCI Facility requires the applicant to appear in-person at  least once before the issuance of a PIV Card.
+","FIPS 201-1, Section 2.2 – PIV Identity Proofing and Registration Requirements 
+"
+EI-03,"Identity Proofing Documents","Enrollment / Identity Proofing Process","Two identity source documents are checked in accordance with  the requirements of Form I-9, OMB No. 1115-0136, Employment  Eligibility Verification. 
+","FIPS 201-1, Section 2.2 – PIV Identity Proofing and Registration Requirements
+"
+EI-04,"Identity Proofing Photographic Identification","Enrollment / Identity Proofing Process","One of the identity source documents used to verify the claimed  identity of the applicant is a valid Federal or state government-  issued photo identification.
+","FIPS 201-1, Section 2.2 – PIV Identity Proofing and Registration Requirements 
+"
+EI-05,"Identity Enrollment Process","Enrollment / Identity Proofing Process","The PCI Facility performs the entire identity proofing and  enrollment/identity proofing process prior to re-issuing a PIV  Card
+","FIPS 201-1, Section 5.3.2.2 PIV Card Reissuance 
+"
+EI-06,"Facial Images for Reissuance","Enrollment / Identity Proofing Process","A new facial image is collected at the time of reissuance.
+","FIPS 201-1, Section 4.4 – Biometric Data Specifications 
+"
+EI-07,"Biometric Collection for Personalization","Enrollment / Identity Proofing Process","The biometrics (fingerprints and facial image) that are used to  personalize the PIV Card must be captured during the  enrollment/identity proofing process.
+","FIPS 201-1, Section 5.2 – PIV Identity Proofing and Registration Requirement 
+"
+EI-08,"PIV Card Renewal Application","Enrollment / Identity Proofing Process","A cardholder waits until six weeks prior to the expiration of a valid  PIV Card before applying for renewal (please note: this applies to  normal renewal only and not for lost or damaged cards).  
+","FIPS 201-1, Section 5.3.2.1 – PIV Card Renewal 
+"
+EI-09,"Fingerprint Imaging Mode","Enrollment / Identity Proofing Process","The PCI Facility captures the applicant’s fingerprints in  accordance with any of the three imaging modes: (i) plain live  scan, (ii) rolled live scan, or (iii) rolled ink card.  
+","SP 800-76-1, Section 3.3 – Fingerprint Image Acquisition 
+"
+EI-10,"Fingerprint Attending Official","Enrollment / Identity Proofing Process","The PCI Facility has an attending official present at the time of  fingerprint capture. 
+","SP 800-76-1, Section 3.3 – Fingerprint Image Acquisition 
+"
+EI-11,"Fingerprint Acquisition Process","Enrollment / Identity Proofing Process","The PCI Facility acquires fingerprint images in accordance with  Table 2 in 800-76-1. 
+","SP 800-76-1, Section 3.3 – Fingerprint Image Acquisition 
+"
+EI-12,"Fingerprint Acquisition with Missing Fingers","Enrollment / Identity Proofing Process","The PCI Facility captures the 10 fingerprints of the applicant. In  the case where less than ten fingers are available, the missing  fingers are labeled before transmitting to the FBI. 
+","SP 800-76-1, Section 3.3 –  Fingerprint image acquisition 
+"
+AP-01,"Applicant Investigation","Adjudication Process","The organization conducts a National Agency Check with Written  Inquiries (NACI), or other Office of Personnel Management  (OPM) or National Security community investigation for each  applicant for whom a successfully adjudicated NACI cannot be  referenced on file.
+","FIPS 201-1, Section 2.2 – PIV Identity Proofing and Registration Requirements 
+"
+AP-02,"PIV Card Issuance","Adjudication Process","The organization successfully adjudicates the FBI National  Criminal History Check (fingerprint check) and initiates the  National Agency Check with Written Inquires (NACI) before the  PIV Card is issued. 
+","FIPS 201-1, Section 2.2 – PIV Identity Proofing and Registration Requirements
+"
+CP-01,"PIV Card Conterfiting and Tampering Protection","Card Production Process","The PIV Card implements security features that aid in reducing  counterfeiting, are resistant to tampering, and provide visual  evidence of tampering attempts.   
+","FIPS 201-1, Section 4.1.2 – Tamper Proofing and Resistance 
+"
+CP-02,"PIV Card Embossment","Card Production Process","The PIV Card is not embossed.
+","FIPS 201-1, Section 4.1.3 – Physical Characteristics and Durability 
+"
+CP-03,"PIV Card Decals","Card Production Process","Decals are not adhered to the PIV Card.
+","FIPS 201-1, Section 4.1.3 – Physical Characteristics and Durability
+"
+CP-04,"PIV Card Openings","Card Production Process","If organizations choose to punch an opening in the card body to  enable the card to be worn on a lanyard, all such alterations are  closely coordinated with the card vendor and/or manufacturer to  ensure the card material integrity is not adversely impacted. 
+","FIPS 201-1, Section 4.1.3 – Physical Characteristics and Durability
+"
+AI-01,"Mandatory Front Item Compliance","Card Activation / Issuance Process","The personalized PIV Card complies with all the mandatory items  on the front of the PIV Card.
+","FIPS 201-1, Section 4.1.4.1 – Mandatory Items on the Front of the PIV Card 
+"
+AI-02,"Mandatory Back Item Compliance","Card Activation / Issuance Process","The personalized PIV Card complies with all the mandatory items  on the back of the PIV Card. 
+","FIPS 201-1, Section 4.1.4.2 – Mandatory Items on the Back of the Card 
+"
+AI-03,"Optional Front Item Compliance","Card Activation / Issuance Process","If one or more optional items are printed on the front of the PIV  Card, they comply with the requirements for the optional items on  the front on the PIV Card.
+","FIPS 201-1, Section 4.1.4.3 – Optional Items on the Front of the Card 
+"
+AI-04,"Optional Back Item Compliance","Card Activation / Issuance Process","If one or more optional items are printed on the back of the PIV  Card, they comply with the requirements for the optional items on  the back on the PIV Card.
+","FIPS 201-1, Section 4.1.4.4 – Optional Items on the Back of the Card 
+"
+AI-05,"PIV Card Access Attempt Protection","Card Activation / Issuance Process","The PIV Card includes mechanisms to limit the number of PIN  guesses an adversary can attempt if a card is lost or stolen.
+","FIPS 201-1, Section 4.1.6.1 – Activation by Cardholder
+"
+AI-06,"PIV Card Expiration","Card Activation / Issuance Process","The PIV Card is valid for no more than five years. 
+","FIPS 201-1, Section 5.3.2.1 – PIV Card Renewal 
+"
+AI-07,"Biometric Match of Applicant","Card Activation / Issuance Process","The PCI Facility performs a 1:1 biometric match of the applicant  against the biometric included in the PIV Card or in the PIV  enrollment record before releasing the PIV Card to the applicant.
+","FIPS 201-1, Section 5.3.1 – PIV Card Issuance 
+"
+AI-08,"Biometric Match of Holder","Card Activation / Issuance Process","The PCI Facility performs a 1:1 biometric match of the PIV Card  holder against the biometric included in the PIV Card prior to  renewal.
+","FIPS 201-1, Section 5.3.2.1 – PIV Card Renewal 
+"
+AI-09,"PIN Complexity","Card Activation / Issuance Process","The PCI Facility advises applicants that the PIN on the PIV Card  should not be easily-guess-able or otherwise individuallyidentifiable in nature. 
+","FIPS 201-1, Section 4.1.6.1 Activation by Cardholder
+"
+AI-10,"Electronically Distinguishable PIV Cards","Card Activation / Issuance Process","Identity cards issued to individuals without a completed NACI or  equivalent are electronically distinguishable from identity cards  issued to individuals who have a completed investigation.
+","FIPS 201-1, Section 2.2 – PIV Identity Proofing and Registration Requirements
+"
+AI-11,"PIN Reset","Card Activation / Issuance Process","During a PIN reset on a locked PIV Card, the PCI Facility  performs a 1:1 biometric match of the PIV Card holder against the  biometric included in the PIV Card prior to releasing the unlocked  PIV Card back to the Card holder. 
+","FIPS 201-1, Section 5.3.2.3 – PIV Card PIN Reset 
+"
+AI-12,"PIV Credential Contactless Access Protection","Card Activation / Issuance Process","The PCI Facility issues an electro-magnetically opaque sleeve or  other protection technology to protect against any unauthorized  contactless access to information stored on a PIV credential. 
+","FIPS 201-1, Section 2.4 – Privacy Requirements 
+"
+AI-13,"PIV Cardholder Renewal / Reissuance","Card Activation / Issuance Process","The organization verifies that the PIV cardholder remains in good  standing, and personnel records are current before  renewing/reissuing the card and associated credentials.
+","FIPS 201-1, Section 5.3.2.1 – PIV Card Renewal 
+"
+MP-01,"PIV FASC-N Integrity","Maintenance Process","The PIV FASC-N is not modified post-issuance.
+","FIPS 201-1, Section 4.2 – Cardholder Unique Identifier
+"
+MP-02,"PIV Card Disposal","Maintenance Process","In the case of a renewal, re-issuance and termination, the PIV  Card is collected and destroyed whenever possible. 
+","FIPS 201-1, Section 2.3 – PIV Issuance and Maintenance Requirements 
+"
+MP-03,"Normal Operating Procedures","Maintenance Process","Normal operational procedures must be in place to ensure proper  card revocation during PIV Card re-issuance and termination: (i)  The PIV Card itself is revoked; (ii) Databases containing Federal  Agency Smart Credential Number (FASC-N) values must be  updated to reflect the change in status; (iii) The Certification  Authority (CA) is informed and CRLs are updated ; and (iv) Online  Certificate Status Protocol (OCSP) responders are updated so  that queries with respect to certificates on the PIV Card are  answered appropriately.
+","FIPS 201-1 Section 5.3.2.4 PIV Card Termination 
+"
+MP-04,"Normal Operating Procedures Timespan","Maintenance Process","If the PIV Card cannot be collected and destroyed, normal  operating procedures are completed within 18 hours of  notification.
+","FIPS 201-1, Section 5.3.2.2 – PIV Card Reissuance 
+"
+MP-05,"Systems of Records Updates","Maintenance Process","Upon PIV Card termination, the organization enforces a standard  methodology of updating systems of records to indicate employee  termination, and this status is distributed effectively throughout  systems used for physical and logical access to organization  facilities and resources.
+","FIPS 201-1, Section 5.3.2 - PIV Card Maintenance 
+"
+MP-06,"Quarterly Reporting","Maintenance Process","The organization posts a quarterly report, to the organization’s  website, stating the number of PIV Cards issued to date, and the  link is emailed to OMB.
+","OMB Memorandum 07-06 
+"
+MP-07,"Lifecycle Walkthrough","Maintenance Process","The organization has completed a lifecycle walkthrough at one  year intervals since the last accreditation date, and the results are  documented in a report to the DAA.  
+","SP 800-79-1, Section 5.4 -  Monitoring Phase 
+"
