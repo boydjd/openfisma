@@ -78,11 +78,10 @@
             this.inputBox = document.createElement('input');
             this.inputBox.type = 'text';
             this.inputBox.id = id_base + 'rowsPerPageBox';
-            this.inputBox.style.marginLeft = '10px';            
-            this.inputBox.style.width = '30px';            
+            this.inputBox.className = 'rowsPerPageInputBox';            
 
             var labelEle = document.createElement('label');
-            labelEle.marginLeft = '4px';            
+            labelEle.className = 'rowsPerPageInputBoxLabel';            
                
             labelEle.innerHTML = this.paginator.get('inputBoxLabel');
             labelEle.appendChild(this.inputBox);
@@ -122,16 +121,8 @@
          * @param e {DOMEvent} The change event
          */
         onChange : function (e) { 
-            var rows = parseInt(this.inputBox.value,10);
             YAHOO.util.Event.stopEvent(e); 
-            
-            if (!isNaN(rows)) {
-                this.paginator.setRowsPerPage(rows);
-
-                var rowsPerPageStorage = new Fisma.PersistentStorage('Fisma.RowsPerPage');
-                rowsPerPageStorage.set('row', rows);
-                rowsPerPageStorage.sync();
-            }
+            this.syncToStorage();            
         }, 
 	 
         /**
@@ -140,19 +131,26 @@
          */
         onEnterKeyDown : function (e) { 
             if ((e.which && e.which === 13) || (e.keyCode && e.keyCode === 13)) {
-                var rows = parseInt(this.inputBox.value,10);
                 YAHOO.util.Event.stopEvent(e); 
-            
-                if (!isNaN(rows)) {
-                    this.paginator.setRowsPerPage(rows);
-
-                    var rowsPerPageStorage = new Fisma.PersistentStorage('Fisma.RowsPerPage');
-                    rowsPerPageStorage.set('row', rows);
-                    rowsPerPageStorage.sync();
-                }
+                this.syncToStorage();            
             }
         },
- 
+
+        /**
+         * Sync the changed value to storage.
+         */
+        syncToStorage : function () { 
+            var rows = parseInt(this.inputBox.value,10);
+            
+            if (!isNaN(rows)) {
+                this.paginator.setRowsPerPage(rows);
+
+                var rowsPerPageStorage = new Fisma.PersistentStorage('Fisma.RowsPerPage');
+                rowsPerPageStorage.set('row', rows);
+                rowsPerPageStorage.sync();
+            }
+        },
+
         /**
          * Removes the input node and clears event listeners
          */
