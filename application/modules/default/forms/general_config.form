@@ -93,7 +93,7 @@ elements.max_file_upload_size.type = "text"
 elements.max_file_upload_size.options.label = "Maximum File Upload Size"
 elements.max_file_upload_size.options.validators.maxuploadfilesize.validator = "MaxUploadFilesize"
 elements.max_file_upload_size.options.required = true
-elements.max_file_upload_size.options.tooltip = "<p>Sets the maximum size of files that users can upload to the application, this setting applies to all modules and CANNOT exceed 256MB.</p>"
+elements.max_file_upload_size.options.tooltip = "<p>Sets the maximum size of files that users can upload to the application, this setting applies to all modules and CANNOT exceed 1024MB.</p>"
 displayGroups.general.elements.max_file_upload_size = "max_file_upload_size"
 
 elements.saveGeneral.type = "Form_Button_Submit"

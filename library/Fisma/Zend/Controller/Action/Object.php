@@ -593,12 +593,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         // Create the YUI table that will display results
         $searchResultsTable = new Fisma_Yui_DataTable_Remote();
 
+        $rowsPerPage = $this->_getRowsPerPage();
+
         $searchResultsTable->setResultVariable('records') // Matches searchAction()
                            ->setDataUrl($this->getBaseUrl() . '/search')
                            ->setSortAscending(true)
                            ->setRenderEventFunction('Fisma.Search.highlightSearchResultsTable')
                            ->setRequestConstructor('Fisma.Search.generateRequest')
-                           ->setRowCount($this->_paging['count'])
+                           ->setRowCount($rowsPerPage)
                            ->setClickEventBaseUrl($this->getBaseUrl() . '/view/id/')
                            ->setClickEventVariableName('id');
 
@@ -741,11 +743,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         $format = $this->getRequest()->getParam('format');
+        $rowsPerPage = $this->_getRowsPerPage();
 
         //initialize the data rows
         $searchResults = array(
             'startIndex'      => $this->_paging['startIndex'],
-            'pageSize'        => $this->_paging['count']
+            'pageSize'        => $rowsPerPage
         );
 
         // Setup search parameters
@@ -767,7 +770,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         if (empty($format)) {
             // For HTML UI, add a limit/offset to query
             $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
-            $rows = $this->getRequest()->getParam('count', $this->_paging['count']);
+            $rows = $this->getRequest()->getParam('count', $rowsPerPage);
         } else {
             // For PDF/XLS export, $rows is an arbitrarily high number (that won't DoS the system)
             $start = 0;
@@ -1178,5 +1181,18 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         return $record;
+    }
+
+    /**
+     * Get number of rows per page .
+     *
+     * @return number of rows per page on the list page.
+     */
+    protected function _getRowsPerPage()
+    {
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($this->_me->id, 'Fisma.RowsPerPage')
+                                                ->fetchOne();
+        $data = empty($storage) ? '' : $storage->data;
+        return empty($storage) ? $this->_paging['count'] : $data['row'];
     }
 }

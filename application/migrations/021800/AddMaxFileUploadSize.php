@@ -27,13 +27,13 @@
 class Application_Migration_021800_AddMaxFileUploadSize extends Fisma_Migration_Abstract
 {
     /**
-     * Add a varchar(10) collumn
+     * Add a varchar(6) collumn
      */
     public function migrate()
     {
         $this->message("Adding max_file_upload_size field to Configuration table");
 
-        $option = "varchar(6) DEFAULT '10M' NOT NULL";
+        $option = "varchar(6) DEFAULT '20M' NOT NULL";
 
         $this->getHelper()->addColumn('configuration', 'max_file_upload_size', $option, 'finding_draft_due');
     }

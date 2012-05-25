@@ -211,4 +211,4 @@ Configuration:
             type: string(6)
             notblank: true
             comment: The maximum size of files that users can upload to the application, this setting applies to all modules.
-            default: 10M
+            default: 20M

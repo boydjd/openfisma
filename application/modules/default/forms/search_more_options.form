@@ -16,10 +16,6 @@ elements.exportPdf.options.onClickFunction = "Fisma.Search.exportToFile"
 elements.exportPdf.options.onClickArgument = "pdf"
 elements.exportPdf.options.label = "Export To PDF"
 
-elements.advanced.type = "Form_Button_Checkbox"
-elements.advanced.options.onClickFunction = "Fisma.Search.toggleAdvancedSearchPanel"
-elements.advanced.options.label = "Advanced Search"
-
 elements.columns.type = "Form_Button_Checkbox"
 elements.columns.options.onClickFunction = "Fisma.Search.toggleSearchColumnsPanel"
 elements.columns.options.label = "Toggle Column Visibility"
