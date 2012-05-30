@@ -282,10 +282,11 @@ class Fisma_Search_Engine
 
             $query->addField($documentFieldName);
 
-            // Add keyword terms and highlighting to all non-date fields
+            // Add keyword terms and highlighting to all non-date/non-boolean fields
             if (!empty($trimmedKeyword) &&
                 'date' != $fieldDefinition['type'] &&
-                'datetime' != $fieldDefinition['type']) {
+                'datetime' != $fieldDefinition['type'] &&
+                'boolean' != $fieldDefinition['type']) {
 
                 // Solr can't highlight sortable integer fields
                 if ('integer' != $fieldDefinition['type'] && 'float' != $fieldDefinition['type']) {
