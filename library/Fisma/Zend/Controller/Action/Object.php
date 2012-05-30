@@ -739,16 +739,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $searchMoreOptionsForm = $this->getSearchMoreOptionsForm();
         $this->view->searchMoreOptionsForm = $searchMoreOptionsForm;
 
-        // If there is an advanced parameter, switch the form default from simple to advanced.
-        if ('advanced' == $this->getRequest()->getParam('queryType')) {
-            $searchForm->getElement('searchType')->setValue('advanced');
-            $searchForm->getElement('keywords')->setAttrib('style', 'visibility: hidden;');
-
-            $searchMoreOptionsForm->getElement('advanced')->setAttrib('checked', 'true');
-
-            $searchResultsTable->setDeferData(true);
-        }
-
         $this->view->toolbarButtons = $this->getToolbarButtons(null);
         $this->view->pluralModelName = $this->getPluralModelName();
         $this->view->assign($searchResultsTable->getProperties());
@@ -763,6 +753,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->view->advancedSearchOptions = json_encode($advancedSearchOptions);
         $this->view->searchPreferences = $this->_getSearchPreferences();
+
+        if ($table instanceof Fisma_Search_Facetable) {
+            $this->view->facet = $table->getFacetedFields();
+            $searchForm->removeElement('advanced');
+        }
 
         $this->renderScript('object/list.phtml');
     }

@@ -82,6 +82,13 @@ Fisma.Search.Criteria.prototype = {
     queryInputContainer : null,
 
     /**
+     * The operands array.
+     *
+     * This is used to create and populate a Criteria without rendering its input elements
+     */
+    forcedOperands : null,
+
+    /**
      * The HTML element that holds the add/remove buttons UI.
      *
      * These buttons are used to add and remove criteria rows, respectively.
@@ -361,10 +368,11 @@ Fisma.Search.Criteria.prototype = {
      * The query is returned as an object including the field name, the operator, and 0-n operands
      */
     getQuery : function () {
+        var operands = (this.forcedOperands) ? this.forcedOperands : this.getOperands();
         return {
             field : this.currentField.name,
             operator : this.currentQueryType,
-            operands : this.getOperands()
+            operands : operands
         };
     },
 
@@ -439,7 +447,7 @@ Fisma.Search.Criteria.prototype = {
     },
 
     hasBlankOperands: function() {
-        var operands = this.getOperands();
+        var operands = (this.forcedOperands) ? this.forcedOperands : this.getOperands();
         var i;
         for (i in operands) {
             if ('' === $P.trim(operands[i])) {

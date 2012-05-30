@@ -3,19 +3,19 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
- * 
+ *
  * @fileoverview Implements a UI to display collection of advanced search criteria
- * 
+ *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
@@ -80,6 +80,8 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
             }
         } else if ("show" === keyValuePair[0]) {
             this.showAll = "all" === keyValuePair[1];
+        } else if ("f" === keyValuePair[0]) {
+            setTimeout('document.getElementById("' + keyValuePair[1] + '").onclick();', 500);
         }
     }
 };
@@ -103,7 +105,7 @@ Fisma.Search.Panel.prototype = {
 
     /**
      * Render the advanced search box
-     * 
+     *
      * @param container The HTML container to place the search box inside of
      */
     render : function (container) {
@@ -142,7 +144,7 @@ Fisma.Search.Panel.prototype = {
 
                 for (i = 0; i < numberOfOperands; i++) {
                     operands.push(this.defaultQueryTokens[index]);
-                    index ++; 
+                    index ++;
                 }
 
                 // URI Decode the operands
@@ -205,7 +207,7 @@ Fisma.Search.Panel.prototype = {
             setTimeout(function () {Fisma.Search.executeSearch(searchForm);}, 1);
         });
     },
-  
+
     /**
      * Add a criteria row below the specified row
      *
@@ -295,7 +297,7 @@ Fisma.Search.Panel.prototype = {
 
     /**
      * Returns search metadata for a field (specified by name)
-     * 
+     *
      * @param fieldName
      */
     getFieldDefinition : function (fieldName) {

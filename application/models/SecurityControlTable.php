@@ -25,7 +25,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable, Fisma_Search_Facetable
 {
     /**
      * Implement the interface for Searchable
@@ -121,5 +121,32 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
         return Doctrine_Query::create()
             ->from('SecurityControl sc, sc.Catalog c')
             ->where('c.published = true');
+    }
+
+    /**
+     * Returns an array of faceted filters
+     *
+     * @return array
+     */
+    public function getFacetedFields()
+    {
+        return array(
+            array(
+                'label' => 'Controls',
+                'column' => 'published',
+                'filters' => array(
+                    array(
+                        'label' => 'Published',
+                        'operator' => 'booleanYes',
+                        'operands' => array()
+                    ),
+                    array(
+                        'label' => 'Unpublished',
+                        'operator' => 'booleanNo',
+                        'operands' => array()
+                    )
+                )
+            )
+        );
     }
 }

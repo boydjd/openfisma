@@ -197,7 +197,7 @@ System:
                 param2: Asset
         Controls:
             label: Controls
-            link: /security-control/list
+            link: /security-control/list?f=filter_published_booleanYes
         Documentation:
             label: Documentation
             link: /system-document/list

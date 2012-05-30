@@ -796,7 +796,6 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
     margin-left: 4px;
 }
 
-
 fieldset.uploadFileList {
     border: 1px solid;
     padding-top: 8px;
@@ -815,4 +814,44 @@ fieldset.uploadFileList input {
     width: 100%;
     display: block;
     margin-bottom: 4px;
+}
+
+.facetBox {
+    float: left;
+
+    width: 210px;
+    padding: 10px;
+
+    border: solid thin; -moz-border-radius: 5px 5px 5px 5px; border-radius: 5px 5px 5px 5px;
+
+    background: #EEEEEE; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFF', endColorstr='#EEEEEE'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#EEEEEE)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #FFFFFF,  #EEEEEE); /* for firefox 3.6+ */
+
+    color: #444444;
+}
+
+.facetBox h1 {
+    margin-top:0px;
+    color: #333333;
+}
+
+.facetBox h2 {
+    margin-bottom:0px;
+}
+
+.facetBox ul {
+    margin:0px;
+}
+
+.facetBox li {
+    margin-left:20px;
+    padding:2px;
+}
+
+.facetBox a.selected {
+    color: #444444;
+    text-decoration: none;
+    font-weight: bold;
 }
