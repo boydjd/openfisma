@@ -179,6 +179,16 @@ class IconController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('manage', 'Icon');
 
+        $buttons['upload-image'] = new Fisma_Yui_Form_Button(
+            'uploadImageButton',
+            array(
+                'label' => 'Upload Image',
+                'onClickFunction' => 'Fisma.Icon.showPanel'
+            )
+        );
+
+        $this->view->toolbarButtons = $buttons;
+
         $query = Doctrine_Query::create()
             ->from('Icon i')
             ->leftJoin('i.SystemTypes st')
@@ -293,5 +303,69 @@ class IconController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->_redirect('/icon/manage');
+    }
+
+    /**
+     * Renders the form for uploading icon
+     *
+     * @GETAllowed
+     * @return void
+     */
+    function uploadFormAction()
+    {
+        $this->_helper->layout()->disableLayout();
+
+        $form = Fisma_Zend_Form_Manager::loadForm('upload_icon');
+
+        $this->view->form = $form;
+    }
+    /**
+     * Upload one or more image files
+     *
+     * @GETAllowed
+     * @return void
+     */
+    public function uploadIconAction()
+    {
+        $this->_acl->requirePrivilegeForClass('manage', 'Icon');
+
+        if (isset($_FILES['imageUpload'])) {
+            try {
+                for ($i = 0; $i< count($_FILES['imageUpload']['name']); $i++) {
+                    $file = array();
+                    foreach ($_FILES['imageUpload'] as $key => $value) {
+                        $file[$key] = $value[$i];
+                    }
+
+                    if (Fisma_FileManager::getUploadFileError($file)) {
+                        $message = Fisma_FileManager::getUploadFileError($file);
+                        throw new Fisma_Zend_Exception_User($message);
+                    }
+
+                    // Create thumbnails
+                    $thirtyTwoImage = $this->_makeThumbnail($file, 32, 32);
+                    $thirtyTwoUpload = $this->_saveThumbnail($thirtyTwoImage, $file);
+
+                    $sixteenImage = $this->_makeThumbnail($file, 16, 16);
+                    $sixteenUpload = $this->_saveThumbnail($sixteenImage, $file);
+
+                    // Create the Icon object
+                    $icon = new Icon;
+                    $icon->LargeIconFile = $thirtyTwoUpload;
+                    $icon->SmallIconFile = $sixteenUpload;
+                    $icon->save();
+                }
+
+                $this->view->priorityMessenger("Icon created successfully");
+            } catch (Exception $e) {
+                if ($e instanceof ImagickException) {
+                    $this->view->priorityMessenger("Uploading failed: the file format is not supported.", 'warning');
+                } else if ($e instanceof Fisma_Zend_Exception_User) {
+                    $this->view->priorityMessenger($e->getMessage(), 'warning');
+                }
+            }
+        }
+
+        $this->_redirect("/icon/manage");
     }
 }

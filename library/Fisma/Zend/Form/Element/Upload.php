@@ -45,16 +45,16 @@ class Fisma_Zend_Form_Element_Upload extends Zend_Form_Element_File
         $maxFileSize = Fisma_String::convertFilesizeToInteger($maxUploadSize);
 
         $render = '';
-        $render .= '<fieldset id="evidence_upload_file_list"> ';
+        $render .= '<fieldset id="upload_file_list"> ';
         $render .= '<legend>Select File(s):</legend>';
         $render .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"$maxFileSize\"/>";
  
-        $render .= '<input type="file" name="evidence[]" multiple/>';
+        $render .= '<input type="file" name="' . $this->getName() . '[]" multiple/>';
         $render .= '</fieldset>';
 
         $render .= '<p> <button class="ie7-only ie8-only ie9-only" id="add-another-file-button">';
         $render .= 'Add another file</button>';
-        $render .= '<input type="submit" name="upload_evidence" value="Upload"/></p>';
+        $render .= '<input type="submit" name="upload_' . $this->getName() .'" value="Upload"/></p>';
         $render .= '<ul> <li>Each file must be <b>under ' 
                    . substr($maxUploadSize, 0, -1) . ' megabytes</b> in size</li>';
         $render .= '<li>Please ensure no <b>Personally Identifiable Information</b> is included (eg, SSN, DOB)</li>';

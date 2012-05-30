@@ -794,3 +794,24 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 .rowsPerPageInputBoxLabel {
     margin-left: 4px;
 }
+
+
+fieldset#upload_file_list {
+    border: 1px solid;
+    padding-top: 8px;
+    padding-right: 24px;
+    padding-bottom: 4px;
+    padding-left: 16px;
+    margin-top:8px;
+    margin-bottom:8px;
+}
+
+fieldset#upload_file_list legend {
+    font-weight: bold;
+}
+
+fieldset#upload_file_list input {
+    width: 100%;
+    display: block;
+    margin-bottom: 4px;
+}

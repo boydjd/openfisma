@@ -36,7 +36,7 @@ Fisma.Remediation = {
             function(panel) {
                 // Initialize form action from finding_detail.action since they are separated forms and the form from
                 // from the panel belongs to document body rather than the form document.finding_detail.But they should
-                // have same tart action. So set the latter`s action with the former`s.notherFileButton = new YAHOO.widget.Button("add-another-file-button");
+                // have same tart action. So set the latter`s action with the former`s.
                 document.finding_detail_upload_evidence.action = document.finding_detail.action;
 
                 var addAnotherFileButton = new YAHOO.widget.Button("add-another-file-button");
@@ -167,7 +167,7 @@ Fisma.Remediation = {
      * to attach one more file
      */
     addUploadEvidence : function() {
-        var file_list = document.getElementById('evidence_upload_file_list');
+        var file_list = document.getElementById('upload_file_list');
 
         var new_upload = document.createElement('input');
         new_upload.type = 'file';
