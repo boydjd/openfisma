@@ -266,14 +266,17 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab($firstTab, "/organization/organization/id/$id");
         $tabView->addTab("Users", "/system/user/type/organization/id/$id");
 
-        $toolbarButtons = $this->getToolbarButtons($organization);
+        $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+        $toolbarButtons = $this->getToolbarButtons($organization, $fromSearchParams);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        $this->view->fromSearchParams = $fromSearchUrl; 
 
         if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
             $discardButton = new Fisma_Yui_Form_Button_Link(
                                  'discardChanges',
                                  array(
                                      'value' => 'Discard Changes',
-                                     'href' => "/organization/view/id/$id"
+                                     'href' => "/organization/view/id/$id$fromSearchUrl"
                                  )
                              );
 
@@ -371,11 +374,17 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 }
 
                 $this->view->priorityMessenger($msg, $type);
-                $this->_redirect("/organization/view/id/$id");
             }
         }
 
-        $this->_redirect("/organization/view/id/$id");
+        $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+        $fromSearchUrl = '';
+
+        if (!empty($fromSearchParams)) {
+            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        }
+
+        $this->_redirect("/organization/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -586,7 +595,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
         $buttons = array();
 
@@ -624,6 +633,45 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         }
 
+        if (!empty($fromSearchParams)) {
+            $buttons['previous'] = new Fisma_Yui_Form_Button(
+                'PreviousButton',
+                 array(
+                       'label' => 'Previous',
+                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'onClickArgument' => array(
+                           'url' => $this->getBaseUrl() . '/view/id/',
+                           'id' => $id,
+                           'action' => 'previous',
+                           'modelName' => $this->_modelName
+                    ) 
+                )
+
+            );
+
+            if (isset($fromSearchParams['first']) && $fromSearchParams['first'] == 1) {
+                $buttons['previous']->readOnly = true;
+            }
+
+            $buttons['next'] = new Fisma_Yui_Form_Button(
+                'NextButton',
+                 array(
+                       'label' => 'Next',
+                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'onClickArgument' => array(
+                           'url' => $this->getBaseUrl() . '/view/id/',
+                           'id' => $id,
+                           'action' => 'next',
+                           'modelName' => $this->_modelName
+                    ) 
+                )
+            );
+
+            if (isset($fromSearchParams['last']) && $fromSearchParams['last'] == 1) {
+                $buttons['next']->readOnly = true;
+            }
+        }
+      
         return $buttons;
     }
     
@@ -697,4 +745,5 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->view->form = $form;
         $this->view->form->setAction('/organization/convert-to-system/id/' . $id);
     }
+
 }

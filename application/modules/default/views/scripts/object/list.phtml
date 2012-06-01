@@ -181,11 +181,32 @@
                     Fisma.Util.showAlertDialog(message);
                     return;
                 }
-                
+
+                var storage = new Fisma.Storage('Fisma.PreviousNext');
+                var records = this.getRecordSet().getRecords();
+                var i;
+                var ids = [];
+                for (i in records) {
+                    if(!records[i].getData('deleted_at')) {
+                        ids.push(records[i].getData('id'));
+                    }
+                }            
+
+                storage.set(modelName + 'ids', ids);
+
                 var url = "<?php echo $this->escape($this->clickEventBaseUrl, 'javascript');?>"
                         + escape(rowData._oData['<?php echo $this->escape($this->clickEventVariableName); ?>']);
-    
-                // A shift+click pops up a new window for the record view
+ 
+                url += '/fromSearch/1';                  
+                if (ids[0] == rowData._oData['id']) {
+                    url += '/first/1';
+                } 
+               
+                if (ids[ids.length - 1] == rowData._oData['id']) {
+                    url += '/last/1';
+                }
+
+               // A shift+click pops up a new window for the record view
                 if (clickEvent.event.shiftKey) {
                     var popup = window.open(url);
                     

@@ -51,6 +51,8 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
         $document = Doctrine::getTable('SystemDocument')->find($this->getRequest()->getParam('id'));
         $organization = $document->System->Organization;
 
+        $request = $this->getRequest();
+
         // There are no access control privileges for system documents, access is based on the associated organization
         $this->_acl->requirePrivilegeForObject('read', $organization);
 
@@ -128,7 +130,8 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->document = $document;
 
-        $this->view->toolbarButtons = $this->getToolbarButtons($document);
+        $fromSearchParams = $this->_getFromSearchParams($request);
+        $this->view->toolbarButtons = $this->getToolbarButtons($document, $fromSearchParams);
     }
 
     /**
@@ -179,9 +182,9 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
-        $buttons = parent::getToolbarButtons($record);
+        $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         // Remove the "Create" button, since that function is accessed through the system artifacts screen
         unset($buttons['create']);

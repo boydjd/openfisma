@@ -114,9 +114,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      * 3) Migrate Associated <associated model name> (if defined, view-page only)
      *
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not
+     * @param array $fromSearchParams The array for "Previous" and "Next" button null if not
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
         $buttons = array();
         $isList = $this->getRequest()->getActionName() === 'list';
@@ -148,6 +149,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             !empty($this->_associatedModel) &&
             $isView
         ) {
+            $fromSearchUrl = '';
+            if (!empty($fromSearchParams)) {
+                $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+            }
+ 
             $buttons['reassociate'] = new Fisma_Yui_Form_Button(
                 'toolbarReassociateButton',
                 array(
@@ -156,11 +162,50 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     'onClickArgument' => array(
                         'title' => 'Migrate Associated ' . $this->_associatedPlural,
                         'url'   => $this->getBaseUrl() . '/reassociate/id/' . $this->getRequest()->getParam('id')
+                                   . $fromSearchUrl
                     )
                 )
             );
         }
 
+        if ($isView && !empty($fromSearchParams)) {
+            $buttons['previous'] = new Fisma_Yui_Form_Button(
+                'PreviousButton',
+                 array(
+                       'label' => 'Previous',
+                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'onClickArgument' => array(
+                           'url' => $this->getBaseUrl() . '/view/id/',
+                           'id' => $record->id,
+                           'action' => 'previous',
+                           'modelName' => $this->_modelName
+                    ) 
+                )
+
+            );
+
+            if (isset($fromSearchParams['first'])) {
+                $buttons['previous']->readOnly = true;
+            }
+
+            $buttons['next'] = new Fisma_Yui_Form_Button(
+                'NextButton',
+                 array(
+                       'label' => 'Next',
+                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'onClickArgument' => array(
+                           'url' => $this->getBaseUrl() . '/view/id/',
+                           'id' => $record->id,
+                           'action' => 'next',
+                           'modelName' => $this->_modelName
+                    ) 
+                )
+            );
+
+            if (isset($fromSearchParams['last'])) {
+                $buttons['next']->readOnly = true;
+            }
+        }
         return $buttons;
     }
 
@@ -382,7 +427,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     protected function _viewObject()
     {
-        $id     = $this->_request->getParam('id');
+        $id = $this->_request->getParam('id');
+
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = '';
+        if (!empty($fromSearchParams)) {
+            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        } 
+
         $subject = $this->_getSubject($id);
 
         // Since combine view and edit in one action, it needs read and/or update privilege to access view page
@@ -398,7 +450,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $form   = $this->getForm();
         if ($this->_acl->hasPrivilegeForObject('update', $subject)) {
-            $form->setAction("{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
+            $form->setAction("{$this->_moduleName}/{$this->_controllerName}/view/id/$id$fromSearchUrl");
         } else {
             $form->setReadOnly(true);
         }
@@ -421,7 +473,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     // Refresh the form, in case the changes to the model affect the form
                     $form   = $this->getForm();
                     $this->view->priorityMessenger($msg, $type);
-                    $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id");
+                    $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id$fromSearchUrl");
                 } catch (Doctrine_Exception $e) {
                     //Doctrine_Manager::connection()->rollback();
                     $msg  = "Error while trying to save: ";
@@ -441,10 +493,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         $viewButtons = $this->getViewButtons($subject);
-        $toolbarButtons = $this->getToolbarButtons();
+        $toolbarButtons = $this->getToolbarButtons($subject, $fromSearchParams);
         $buttons = array_merge($toolbarButtons, $viewButtons);
         $this->view->modelName = $this->getSingularModelName();
-        $this->view->toolbarButtons = $this->getToolbarButtons($subject);
+        $this->view->toolbarButtons = $toolbarButtons;
 
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;
@@ -675,7 +727,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->view->toolbarButtons = $this->getToolbarButtons(null);
         $this->view->pluralModelName = $this->getPluralModelName();
-        $this->view->searchResultsTable = $searchResultsTable;
         $this->view->assign($searchResultsTable->getProperties());
 
         // Advanced search options is indexed by name, but for the client side it should be numerically indexed with
@@ -964,9 +1015,15 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
                 // Commit
                 Doctrine_Manager::connection()->commit();
+
+                $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+                $fromSearchUrl = '';
+                if (!empty($fromSearchParams)) {
+                    $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+                } 
                 $this->view->priorityMessenger($associatedObjects->count() . " " . $this->_associatedPlural
                                                 . " reassigned successfully.");
-                $this->_redirect($this->getBaseUrl() . '/view/id/' . $this->getRequest()->getParam('id'));
+                $this->_redirect($this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl);
             } catch (Doctrine_Exception $e) {
                 // We cannot access the view script from here (for priority messenger), so rethrow after roll-back
                 Doctrine_Manager::connection()->rollback();
@@ -1194,5 +1251,34 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                                                 ->fetchOne();
         $data = empty($storage) ? '' : $storage->data;
         return empty($storage) ? $this->_paging['count'] : $data['row'];
+    }
+
+    /**
+     * Contruct fromSearchParams
+     *
+     * @param object $request The http request.
+     * @return array The fromSearchParams 
+     */
+    protected function _getFromSearchParams($request)
+    {
+
+        $first = $request->getParam('first');
+        $last = $request->getParam('last');
+        $fromSearch = $request->getParam('fromSearch');
+        
+        $urlParams = array();
+        if ($first) {
+            $urlParams['first'] = 1;
+        }
+
+        if ($last) {
+            $urlParams['last'] = 1;
+        }
+
+        if ($fromSearch) {
+            $urlParams['fromSearch'] = 1;
+        }
+  
+        return $urlParams;
     }
 }

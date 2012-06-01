@@ -30,7 +30,8 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
         } else {
             $viewRafButton = new Fisma_Yui_Form_Button_Link('viewRaf',
                                    array('value' => 'View Risk Analysis Form', 
-                                         'href' => "/finding/remediation/raf/format/pdf/id/{$finding->id}", 
+                                         'href' => "/finding/remediation/raf/format/pdf/id/{$finding->id}"
+                                                   .  "{$this->fromSearchUrl}",
                                          'imageSrc' => $this->serverUrl('/images/pdf.gif')));
             echo $this->escape($viewRafButton, 'none');
         }

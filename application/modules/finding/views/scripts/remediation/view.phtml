@@ -1,5 +1,5 @@
 <form enctype="multipart/form-data"
-      action="/finding/remediation/modify/id/<?php echo $this->escape($this->finding->id)?>"
+      action="/finding/remediation/modify/id/<?php echo $this->escape($this->finding->id . $this->fromSearchUrl)?>"
       method="post"
       id="finding_detail"
       name="finding_detail">

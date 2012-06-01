@@ -1,7 +1,9 @@
+<form method="post" action="" enctype="application/x-www-form-urlencoded">
 <?php
 echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
 Fisma_Format_Section::startSection('View: ' . $this->modelName) ; 
 ?>
+</form>
 
 <div>
     <?php echo $this->escape($this->form, 'none') ?>

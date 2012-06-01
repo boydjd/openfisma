@@ -234,6 +234,13 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function viewAction()
     {
         $id = $this->_request->getParam('id');
+       
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+        if ($fromSearchUrl) {
+            $this->view->fromSearchUrl = $fromSearchUrl;
+        }
 
         $finding = Doctrine_Query::create()
             ->from('Finding f')->leftJoin('f.Attachments')->where('f.id = ?', $id)
@@ -254,13 +261,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $tabView = new Fisma_Yui_TabView('FindingView', $id);
 
         $tabView->addTab("Finding $id", "/finding/remediation/finding/id/$id/format/html");
-        $tabView->addTab("Mitigation Strategy", "/finding/remediation/mitigation-strategy/id/$id/format/html");
-        $tabView->addTab("Risk Analysis", "/finding/remediation/risk-analysis/id/$id/format/html");
+        $mitigationUrl = "/finding/remediation/mitigation-strategy/id/$id/format/html$fromSearchUrl";
+        $tabView->addTab("Mitigation Strategy", $mitigationUrl);
+        $tabView->addTab("Risk Analysis", "/finding/remediation/risk-analysis/id/$id/format/html$fromSearchUrl");
         $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id/format/html");
         $tabView->addTab("Comments ($commentCount)", "/finding/remediation/comments/id/$id/format/html");
         $tabView->addTab(
             "Evidence (" . $finding->Attachments->count() . ")",
-            "/finding/remediation/artifacts/id/$id/format/html"
+            "/finding/remediation/artifacts/id/$id/format/html$fromSearchUrl"
         );
         $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id/format/html");
 
@@ -298,7 +306,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
                 $discardChangesButtonConfig = array(
                     'value' => 'Discard Changes',
-                    'href' => '/finding/remediation/view/id/' . $finding->id
+                    'href' => '/finding/remediation/view/id/' . $finding->id . $fromSearchUrl
                 );
 
                 $buttons['discard'] = new Fisma_Yui_Form_Button_Link(
@@ -322,6 +330,46 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 'target' => '_new'
             )
         );
+
+        // If the record is from search page, then, show the previous and next buttons.
+        if (!empty($fromSearchParams)) {
+            $buttons['previous'] = new Fisma_Yui_Form_Button(
+                'PreviousButton',
+                 array(
+                       'label' => 'Previous',
+                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'onClickArgument' => array(
+                           'url' => $this->getBaseUrl() . '/view/id/',
+                           'id' => $id,
+                           'action' => 'previous',
+                           'modelName' => $this->_modelName
+                    ) 
+                )
+
+            );
+
+            if (isset($fromSearchParams['first']) && $fromSearchParams['first'] == 1) {
+                $buttons['previous']->readOnly = true;
+            }
+
+            $buttons['next'] = new Fisma_Yui_Form_Button(
+                'NextButton',
+                 array(
+                       'label' => 'Next',
+                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'onClickArgument' => array(
+                           'url' => $this->getBaseUrl() . '/view/id/',
+                           'id' => $id,
+                           'action' => 'next',
+                           'modelName' => $this->_modelName
+                    ) 
+                )
+            );
+
+            if (isset($fromSearchParams['last']) && $fromSearchParams['last'] == 1) {
+                $buttons['next']->readOnly = true;
+            }
+        }
         $this->view->toolbarButtons = $buttons;
     }
 
@@ -437,6 +485,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         // very fine-grained error checking
 
         $id = $this->_request->getParam('id');
+
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
         $findingData = $this->_request->getPost('finding', array());
         $findingSecurityControlId = $this->getRequest()->getPost('securityControlId');
         if (!empty($findingSecurityControlId)) {
@@ -490,7 +542,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $finding->merge($findingData);
             $finding->save();
             Doctrine_Manager::connection()->commit();
-            $this->_redirect("/finding/remediation/view/id/$id");
+
+            $this->_redirect("/finding/remediation/view/id/$id$fromSearchUrl");
         } catch (Fisma_Zend_Exception_User $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         } catch (Exception $e) {
@@ -514,6 +567,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $id       = $this->_request->getParam('id');
         $do       = $this->_request->getParam('do');
         $decision = $this->_request->getPost('decision');
+
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
 
         $finding  = $this->_getSubject($id);
         if (!empty($decision)) {
@@ -556,7 +612,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($message, $model);
         }
 
-        $this->_redirect("/finding/remediation/view/id/$id");
+        $this->_redirect("/finding/remediation/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -577,6 +633,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
+
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
 
         try {
             $auditMessages = array();
@@ -633,7 +692,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
 
-        $this->_redirect("/finding/remediation/view/id/$id");
+        $this->_redirect("/finding/remediation/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -709,6 +768,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $id = $this->_request->getParam('id');
         $finding = $this->_getSubject($id);
 
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
         if ($finding->isDeleted()) {
             $message = "Evidence cannot be uploaded to a deleted finding.";
             throw new Fisma_Zend_Exception_User($message);
@@ -722,7 +784,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
 
-        $this->_redirect("/finding/remediation/view/id/$id");
+        $this->_redirect("/finding/remediation/view/id/$id$fromSearchUrl");
 
     }
 
@@ -738,6 +800,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $finding  = $this->_getSubject($id);
 
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+        if ($fromSearchUrl) {
+            $this->view->fromSearchUrl = $fromSearchUrl;
+        }
         if (!empty($decision)) {
             $this->_acl->requirePrivilegeForObject($finding->CurrentEvaluation->Privilege->action, $finding);
         }
@@ -773,7 +841,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($message, $model);
         }
 
-        $this->_redirect("/finding/remediation/view/id/$id");
+        $this->_redirect("/finding/remediation/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -1235,9 +1303,13 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $finding = $this->_getSubject($id);
         $orgNickname = $finding->Organization->nickname;
 
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
         // Check that the user is permitted to view this finding
         $this->_acl->requirePrivilegeForObject('read', $finding);
         $this->view->finding = $finding;
+        $this->view->fromSearchUrl = $fromSearchUrl;
     }
 
     /**
@@ -1295,5 +1367,4 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         return $editable;
     }
-
 }

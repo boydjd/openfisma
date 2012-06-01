@@ -301,9 +301,9 @@ Fisma.Util = {
         submitForm.method = "POST";
 
         if (YAHOO.lang.isNull(event) || '' === event) {
-            submitForm.action= param1;
+            submitForm.action = param1;
         } else {
-            submitForm.action= param1.action;
+            submitForm.action = param1.action;
         }
 
         var subId = document.createElement('input');
@@ -540,7 +540,7 @@ Fisma.Util = {
 
         fileForm.appendChild(fileElement);
         return fileForm;
-     },
+    },
 
      /**
      * Display the description div to the below of element.
@@ -585,5 +585,37 @@ Fisma.Util = {
 
         // Remove the description attribute from element
         targetEl.removeAttr('description');
+    },
+
+    /**
+     * Display the description div to the below of element.
+     *
+     * @param {Object} event.
+     * @param {Object} config   
+     */
+    getNextPrevious : function (event, config) {
+        var storage = new Fisma.Storage('Fisma.PreviousNext');
+        var ids = storage.get(config.modelName + 'ids'); 
+
+        var i;
+        for (i = 0; i < ids.length; i++) {
+            if (ids[i] == config.id) {
+                if (config.action == 'next') {
+                    if ((ids.length - 1) === i + 1) {
+                        document.location = config.url + ids[i+1] + '/fromSearch/1' + '/last/1';
+                    } else {
+                        document.location = config.url + ids[i+1] + '/fromSearch/1';
+                    }
+                    return;
+                } else {
+                    if ( (i-1) === 0) {
+                        document.location = config.url + ids[i-1] + '/fromSearch/1' +  '/first/1';
+                    } else {
+                        document.location = config.url + ids[i-1] + '/fromSearch/1';
+                    }
+                    return;
+                }
+            }
+        }
     }
 };

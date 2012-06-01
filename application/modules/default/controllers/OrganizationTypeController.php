@@ -102,18 +102,19 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
      * Customize the toolbar buttons
      *
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
+     * @param array $fromSearchParams The array for "Previous" and "Next" button null if not
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
-        $buttons = parent::getToolbarButtons($record);
+        $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         if (
             $this->_acl->hasPrivilegeForClass('delete', 'OrganizationType') &&
             $this->getRequest()->getActionName() == 'view'
         ) {
             $args = array(null, $this->getBaseUrl() . '/delete/', $record['id']);
-            $buttons[] = new Fisma_Yui_Form_Button(
+            $button = new Fisma_Yui_Form_Button(
                 'deleteOrganizationTypeButton',
                 array(
                     'label' => 'Delete Organization Type',
@@ -126,6 +127,24 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
                     )
                 )
             );
+
+            // Put "Previous" and "Next" buttons behind the "delete" button
+            if (isset($buttons['previous'])) {
+                $offset = 0;
+                foreach ($buttons as $key => $value) {
+                    if ($key == 'previous') {
+                        break;
+                    }
+                    $offset++;
+                } 
+
+                $buttons = array_slice($buttons, 0, $offset, true) +
+                    array('importAsset' => $button) +
+                    array_slice($buttons, $offset, NULL, true);
+
+            } else {
+                $buttons[] = $button;
+            }
         }
 
         return $buttons;

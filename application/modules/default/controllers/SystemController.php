@@ -71,6 +71,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $id = $this->getRequest()->getParam('id');
         $organizationId = $this->getRequest()->getParam('oid');
 
+        $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+
         if ($id) {
             $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
         } elseif ($organizationId) {
@@ -130,6 +132,51 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 )
             );
 
+        }
+
+        if (!empty($fromSearchParams)) {
+            $previousButton = new Fisma_Yui_Form_Button(
+                'PreviousButton',
+                 array(
+                       'label' => 'Previous',
+                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'onClickArgument' => array(
+                           'url' => $this->getBaseUrl() . '/view/id/',
+                           'id' => $id,
+                           'action' => 'previous',
+                           'modelName' => $this->_modelName
+                    ) 
+                )
+
+            );
+
+            if (isset($fromSearchParams['first']) && $fromSearchParams['first'] == 1) {
+                $previousButton->readOnly = true;
+            }
+
+            $this->view->previousButton = $previousButton;
+
+            $nextButton = new Fisma_Yui_Form_Button(
+                'NextButton',
+                 array(
+                       'label' => 'Next',
+                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'onClickArgument' => array(
+                           'url' => $this->getBaseUrl() . '/view/id/',
+                           'id' => $id,
+                           'action' => 'next',
+                           'modelName' => $this->_modelName
+                    ) 
+                )
+            );
+
+            if (isset($fromSearchParams['last']) && $fromSearchParams['last'] == 1) {
+                $nextButton->readOnly = true;
+            }
+
+            $this->view->nextButton = $nextButton;
+         
+            $this->view->fromSearchParams = $this->_helper->makeUrlParams($fromSearchParams); 
         }
 
         $this->view->tabView = $tabView;
@@ -434,8 +481,15 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
             $this->view->priorityMessenger($msg, $type);
         }
+ 
+        $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+        $fromSearchUrl = '';
 
-        $this->_redirect("/system/view/oid/$id");
+        if (!empty($fromSearchParams)) {
+            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        }
+        
+        $this->_redirect("/system/view/oid/$id$fromSearchUrl");
     }
 
     /**
@@ -952,10 +1006,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
-        $buttons = parent::getToolbarButtons($record);
-
+        $buttons = parent::getToolbarButtons($record, $fromSearchParams);
         $isList = $this->getRequest()->getActionName() === 'list';
         $resourceName = $this->getAclResourceName();
         $hasReadPrivilege = $this->_acl->hasPrivilegeForClass('read', $resourceName);
