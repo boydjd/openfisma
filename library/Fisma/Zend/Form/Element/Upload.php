@@ -45,7 +45,7 @@ class Fisma_Zend_Form_Element_Upload extends Zend_Form_Element_File
         $maxFileSize = Fisma_String::convertFilesizeToInteger($maxUploadSize);
 
         $render = '';
-        $render .= '<fieldset id="upload_file_list"> ';
+        $render .= '<fieldset id="' . $this->getName() . '_upload_file_list" class="uploadFileList">';
         $render .= '<legend>Select File(s):</legend>';
         $render .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"$maxFileSize\"/>";
  

@@ -796,7 +796,7 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 }
 
 
-fieldset#upload_file_list {
+fieldset.uploadFileList {
     border: 1px solid;
     padding-top: 8px;
     padding-right: 24px;
@@ -806,11 +806,11 @@ fieldset#upload_file_list {
     margin-bottom:8px;
 }
 
-fieldset#upload_file_list legend {
+fieldset.uploadFileList legend {
     font-weight: bold;
 }
 
-fieldset#upload_file_list input {
+fieldset.uploadFileList input {
     width: 100%;
     display: block;
     margin-bottom: 4px;

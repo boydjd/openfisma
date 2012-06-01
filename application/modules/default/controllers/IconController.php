@@ -327,8 +327,6 @@ class IconController extends Fisma_Zend_Controller_Action_Object
      */
     public function uploadIconAction()
     {
-        $this->_acl->requirePrivilegeForClass('manage', 'Icon');
-
         if (isset($_FILES['imageUpload'])) {
             try {
                 for ($i = 0; $i< count($_FILES['imageUpload']['name']); $i++) {

@@ -167,7 +167,7 @@ Fisma.Remediation = {
      * to attach one more file
      */
     addUploadEvidence : function() {
-        var file_list = document.getElementById('upload_file_list');
+        var file_list = document.getElementById('evidence_upload_file_list');
 
         var new_upload = document.createElement('input');
         new_upload.type = 'file';
