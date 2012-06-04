@@ -132,7 +132,7 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
     {
         return array(
             array(
-                'label' => 'Controls',
+                'label' => 'Visibility',
                 'column' => 'published',
                 'filters' => array(
                     array(

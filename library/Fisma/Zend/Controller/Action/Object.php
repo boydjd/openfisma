@@ -886,7 +886,38 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $rows,
                 $showDeletedRecords
             );
-        } else {
+        } else if ('faceted' == $queryType) {
+            // Extract keyword
+            $keywords = $this->getRequest()->getParam('keywords');
+
+            // Extract search criteria from URL query string
+            $searchCriteria = new Fisma_Search_Criteria;
+
+            $queryJson = $this->getRequest()->getParam('query');
+            $query = Zend_Json::decode($queryJson);
+
+            foreach ($query as $queryItem) {
+                $searchCriterion = new Fisma_Search_Criterion(
+                    $queryItem['field'],
+                    $queryItem['operator'],
+                    $queryItem['operands']
+                );
+
+                $searchCriteria->add($searchCriterion);
+            }
+
+            // Run facet search
+            $result = $searchEngine->searchByFacet(
+                $this->_modelName,
+                $keywords,
+                $searchCriteria,
+                $sortColumn,
+                $sortBoolean,
+                $start,
+                $rows,
+                $showDeletedRecords
+            );
+        }else {
             $keywords = $this->getRequest()->getParam('keywords');
 
             // Run simple search

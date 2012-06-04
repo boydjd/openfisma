@@ -229,7 +229,10 @@ Fisma.Search = (function() {
                 query.keywords = form.keywords.value;
             } else if ('advanced' === searchType) {
                 var queryData = this.advancedSearchPanel.getQuery();
-
+                query.query = YAHOO.lang.JSON.stringify(queryData);
+            } else if ('faceted' === searchType) {
+                query.keywords = form.keywords.value;
+                var queryData = this.advancedSearchPanel.getQuery();
                 query.query = YAHOO.lang.JSON.stringify(queryData);
             } else {
                 throw "Invalid value for search type: " + searchType;
@@ -351,6 +354,9 @@ Fisma.Search = (function() {
                 postData.keywords = document.getElementById('keywords').value;
             } else if ('advanced' === searchType) {
                 postData.query = YAHOO.lang.JSON.stringify(Fisma.Search.advancedSearchPanel.getQuery());
+            } else if ('faceted' === searchType) {
+                postData.keywords = document.getElementById('keywords').value;
+                postData.query = YAHOO.lang.JSON.stringify(Fisma.Search.advancedSearchPanel.getQuery());
             } else {
                 throw "Invalid value for search type: " + searchType;
             }
@@ -418,10 +424,10 @@ Fisma.Search = (function() {
         setFacetSearch : function (state) {
             var Dom = YAHOO.util.Dom;
             if (state) {
-                Dom.get('keywords').style.visibility = 'hidden';
-                Dom.get('searchType').value = 'advanced';
+                //Dom.get('keywords').style.visibility = 'hidden';
+                Dom.get('searchType').value = 'faceted';
             } else {
-                Dom.get('keywords').style.visibility = 'visible';
+                //Dom.get('keywords').style.visibility = 'visible';
                 Dom.get('searchType').value = 'simple';
             }
         },
@@ -438,26 +444,34 @@ Fisma.Search = (function() {
                 return false;
             }
             var field = args.shift();
-            var type = args.shift();
             Fisma.Search.setFacetSearch(true);
-            var panel = Fisma.Search.advancedSearchPanel;
 
+            jQuery('a[id^=filter_' + field + '].selected').removeClass('selected');
+            linkElement.className = 'selected';
+
+            var panel = Fisma.Search.advancedSearchPanel;
             panel.criteria = [];
-            if (type != 'all') {
-                var criterion1 = new Fisma.Search.Criteria(panel, panel.searchableFields);
-                criterion1.currentField = criterion1.getField(field);
-                criterion1.currentQueryType = type;
-                criterion1.forcedOperands = args;
-                panel.criteria.push(criterion1);
-            }
+            jQuery('a.selected').each(function(index, element){
+                var args = element.id.split('_');
+                if (args.shift() != 'filter') {
+                    return false;
+                }
+                var field = args.shift();
+                var type = args.shift();
+                if (type != 'all') {
+                    var criterion1 = new Fisma.Search.Criteria(panel, panel.searchableFields);
+                    criterion1.currentField = criterion1.getField(field);
+                    criterion1.currentQueryType = type;
+                    criterion1.forcedOperands = args;
+                    panel.criteria.push(criterion1);
+                }
+            });
 
             Fisma.Search.executeSearch(YAHOO.util.Dom.get('searchForm'), true);
-            if (type == 'all') {
+            /*if (type == 'all') {
                 Fisma.Search.setFacetSearch(false); // re-activate simple search functionality
-            }
+            }*/
 
-            jQuery('a.selected').removeClass('selected');
-            linkElement.className = 'selected';
             return false;
         },
 
