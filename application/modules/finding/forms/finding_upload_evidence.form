@@ -6,6 +6,6 @@
 
 [finding_upload_evidence]
 
-elements.selectFile.type = "Element_Upload"
-elements.selectFile.options.required = true
-displayGroups.finding_upload_evident.elements.selectFile = "selectFile"
+elements.evidence.type = "Element_Upload"
+elements.evidence.options.required = true
+displayGroups.finding_upload_evident.elements.evidence = "evidence"

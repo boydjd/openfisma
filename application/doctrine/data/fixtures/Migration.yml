@@ -71,14 +71,19 @@ Migration:
         minorVersion: 17
         tagNumber: 2
         name: AddIconManagementPrivileges
+    021702_security_controls:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 2
+        name: SecurityControls
+    021702_update_poc_events:
+        majorVersion: 2
+        minorVersion: 17
+        tagNumber: 2
+        name: UpdatePocEvents
 
     021800_add_max_file_upload_size:
         majorVersion: 2
         minorVersion: 18
         tagNumber: 0
         name: AddMaxFileUploadSize
-    021702_security_controls:
-        majorVersion: 2
-        minorVersion: 17
-        tagNumber: 2
-        name: SecurityControls

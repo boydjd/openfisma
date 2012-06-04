@@ -178,19 +178,19 @@ Event:
 
     POC_CREATED:
         name: POC_CREATED
-        description: POC Created
+        description: Contact Created
         Privilege: notification_admin
-        urlPath: /poc/view/id/
+        urlPath: /contact/view/id/
 
     POC_UPDATED:
         name: POC_UPDATED
-        description: POC Modified
+        description: Contact Modified
         Privilege: notification_admin
-        urlPath: /poc/view/id/
+        urlPath: /contact/view/id/
 
     POC_DELETED:
         name: POC_DELETED
-        description: POC Deleted
+        description: Contact Deleted
         Privilege: notification_admin
 
     ORGANIZATION_CREATED:

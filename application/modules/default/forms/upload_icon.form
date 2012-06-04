@@ -1,0 +1,12 @@
+; This is the form for uploading icons
+;
+; Author    Ben Zheng <ben.zheng@reyosoft.com>
+; Copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/content/license
+
+[upload_icon]
+action = /icon/upload-icon
+
+elements.imageUpload.type = "Element_Upload"
+elements.imageUpload.options.required = true
+displayGroups.upload_icon.elements.imageUpload = "imageUpload"

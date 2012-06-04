@@ -49,7 +49,7 @@
                 <td>
                 <span id="pointOfContact"
                       type="autocomplete"
-                      xhr="/poc/autocomplete/format/json"
+                      xhr="/contact/autocomplete/format/json"
                       queryPrepend="/keyword/"
                       schemaObject="pointsOfContact"
                       schemaField="name"
@@ -118,7 +118,7 @@
                     ?>
 
                 <?php if ($finding->uploadId): ?>
-                    <br><?php echo $this->escape($finding->Upload->fileName 
+                    <br><?php echo $this->escape($finding->Upload->fileName
                         . ', uploaded on ' . $finding->Upload->createdTs .'.')?>
                 <?php endif; ?>
                 </td>

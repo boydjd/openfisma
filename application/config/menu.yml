@@ -339,6 +339,13 @@ Administration:
         func: hasArea
         param: admin
     submenu:
+        POC:
+            label: Contacts
+            link: /contact/list
+            privilege:
+                func: hasPrivilegeForClass
+                param1: read
+                param2: Poc
         Email:
             label: E-mail
             link: /config/email
@@ -355,13 +362,6 @@ Administration:
         PasswordPolicy:
             label: Password Policy
             link: /config/password
-        POC:
-            label: Points of Contact
-            link: /poc/list
-            privilege:
-                func: hasPrivilegeForClass
-                param1: read
-                param2: Poc
         Privacy:
             label: Privacy Policy
             link: /config/privacy

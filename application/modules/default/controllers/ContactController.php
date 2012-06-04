@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2011 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,14 +17,14 @@
  */
 
 /**
- * PocController
+ * ContactController
  *
  * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
+ * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
  */
-class PocController extends Fisma_Zend_Controller_Action_Object
+class ContactController extends Fisma_Zend_Controller_Action_Object
 {
     /**
      * The main name of the model.
@@ -40,7 +40,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
      */
     public function getSingularModelName()
     {
-        return 'Point of Contact';
+        return 'Contact';
     }
 
     /**
@@ -120,7 +120,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Display the POC form without any layout
+     * Display the form without any layout
      *
      * @GETAllowed
      */
@@ -139,7 +139,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override _viewObject to work around the permission wonkiness.
      *
-     * A POC can also be a User. If a person has the read/poc privilege but not read/user, then the person won't be
+     * A Contact can also be a User. If a person has the read/poc privilege but not read/user, then the person won't be
      * able to view a User object. So we work around that right here.
      */
     protected function _viewObject()
@@ -154,8 +154,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     /**
      * Override _editObject to work around the permission wonkiness.
      *
-     * A POC can also be a User. If a person has the update/poc privilege but not update/user, then the person won't be
-     * able to modify a User object. So we work around that right here.
+     * A Contact can also be a User. If a person has the update/poc privilege but not update/user, then the person
+     * won't be able to modify a User object. So we work around that right here.
      */
     protected function _editObject()
     {
@@ -167,7 +167,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Add the "POC Hierarchy" button
+     * Add the "Contact Hierarchy" button
      *
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
@@ -180,7 +180,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
             $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
                 'pocTreeButton',
                 array(
-                    'value' => 'View POC Hierarchy',
+                    'value' => 'View Contact Hierarchy',
                     'href' => $this->getBaseUrl() . '/tree'
                 )
             );
@@ -192,8 +192,8 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Display organizations and POCs in tree mode for quick restructuring of the
-     * POC hierarchy.
+     * Display organizations and Contacts in tree mode for quick restructuring of the
+     * Contact hierarchy.
      *
      * @GETAllowed
      */
@@ -204,7 +204,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         $this->view->toolbarButtons = $this->getToolbarButtons();
 
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
-        $this->view->toolbarButtons['list']->setValue("View POC List");
+        $this->view->toolbarButtons['list']->setValue("View Contact List");
         $this->view->csrfToken = $this->_helper->csrf->getToken();
 
         // We're already on the tree screen, so don't show a "view tree" button
@@ -212,7 +212,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Returns a JSON object that describes the POC tree
+     * Returns a JSON object that describes the Contact tree
      *
      * @GETAllowed
      */
@@ -230,7 +230,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
      */
     protected function _getPocTree()
     {
-        // Get a list of POCs
+        // Get a list of Contacts
         $pocQuery = Doctrine_Query::create()
                     ->select('p.id, p.username, p.nameFirst, p.nameLast, p.type, p.reportingOrganizationId')
                     ->from('Poc p')
@@ -239,7 +239,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
                     ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         $pocs = $pocQuery->execute();
 
-        // Group POCs by organization ID
+        // Group Contacts by organization ID
         $pocsByOrgId = array();
 
         foreach ($pocs as $poc) {
@@ -265,7 +265,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
         $organizations = $orgTree->fetchTree();
         $orgTree->resetBaseQuery();
 
-        // Merge organizations and POCs and return.
+        // Merge organizations and Contacts and return.
         $organizationTree = $this->toHierarchy($organizations, $pocsByOrgId);
 
         return $organizationTree;
@@ -277,7 +277,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
      * Doctrine should provide this functionality in a future
      *
      * @param Doctrine_Collection $collection The collection of organization record to hierarchy
-     * @param array $pocsByOrgId Nested array of POCs indexed by the POCs' reporting organization ID
+     * @param array $pocsByOrgId Nested array of Contacts indexed by the Contacts' reporting organization ID
      * @return array The array representation of organization tree
      * @todo review the need for this function in the future
      */
@@ -302,7 +302,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
                 $item['orgTypeLabel'] = $node->getOrgTypeLabel();
                 $item['children'] = array();
 
-                // Merge in any POCs that report to this organization
+                // Merge in any Contacts that report to this organization
                 if (isset($pocsByOrgId[$node->id])) {
                     $item['children'] += $pocsByOrgId[$node->id];
                 }
@@ -382,7 +382,7 @@ class PocController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Moves a POC node from one organization to another.
+     * Moves a Contact node from one organization to another.
      *
      * This is used by the YUI tree node to handle drag and drop of organization nodes. It replies with a JSON object.
      */
