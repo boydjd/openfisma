@@ -132,6 +132,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
 
         $fromSearchParams = $this->_getFromSearchParams($request);
         $this->view->toolbarButtons = $this->getToolbarButtons($document, $fromSearchParams);
+        $this->view->searchButtons = $this->getSearchButtons($document, $fromSearchParams);
     }
 
     /**

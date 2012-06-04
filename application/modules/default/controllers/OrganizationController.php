@@ -268,6 +268,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
         $toolbarButtons = $this->getToolbarButtons($organization, $fromSearchParams);
+        $searchButtons = $this->getSearchButtons($organization, $fromSearchParams);
+
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
         $this->view->fromSearchParams = $fromSearchUrl; 
 
@@ -291,6 +293,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->toolbarButtons = $toolbarButtons;
+        $this->view->searchButtons = $searchButtons;
         $this->view->organizationId = $organization->id;
         $this->view->tabView = $tabView;
     }
@@ -398,10 +401,19 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-
+        $buttons = $this->getToolbarButtons();
+        
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
-        $this->view->toolbarButtons['list']->setValue("View Organization List");
+        $button = new Fisma_Yui_Form_Button_Link(
+            'toolbarListButton',
+            array(
+                'value' => 'View Organization List',
+                'href' => $this->getBaseUrl() . '/list'
+            )
+        );
+
+        array_unshift($buttons, $button);
+        $this->view->toolbarButtons = $buttons;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
         
         // We're already on the tree screen, so don't show a "view tree" button
@@ -633,45 +645,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         }
 
-        if (!empty($fromSearchParams)) {
-            $buttons['previous'] = new Fisma_Yui_Form_Button(
-                'PreviousButton',
-                 array(
-                       'label' => 'Previous',
-                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
-                       'onClickArgument' => array(
-                           'url' => $this->getBaseUrl() . '/view/id/',
-                           'id' => $id,
-                           'action' => 'previous',
-                           'modelName' => $this->_modelName
-                    ) 
-                )
-
-            );
-
-            if (isset($fromSearchParams['first']) && $fromSearchParams['first'] == 1) {
-                $buttons['previous']->readOnly = true;
-            }
-
-            $buttons['next'] = new Fisma_Yui_Form_Button(
-                'NextButton',
-                 array(
-                       'label' => 'Next',
-                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
-                       'onClickArgument' => array(
-                           'url' => $this->getBaseUrl() . '/view/id/',
-                           'id' => $id,
-                           'action' => 'next',
-                           'modelName' => $this->_modelName
-                    ) 
-                )
-            );
-
-            if (isset($fromSearchParams['last']) && $fromSearchParams['last'] == 1) {
-                $buttons['next']->readOnly = true;
-            }
-        }
-      
         return $buttons;
     }
     

@@ -646,6 +646,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
         $this->view->formAction = "/incident/update/id/$id$fromSearchUrl";
         $this->view->toolbarButtons = $this->getToolbarButtons($incident, $fromSearchParams);
+        $this->view->searchButtons = $this->getSearchButtons($incident, $fromSearchParams);
     }
 
     /**
@@ -1849,8 +1850,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         unset($buttons['create']);
-        unset($buttons['previous']);
-        unset($buttons['next']);
 
         $fromSearchUrl = '';
         if (!empty($fromSearchParams)) {
@@ -1920,44 +1919,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                         ) 
                     )
                 );           
-            }
-        }
-
-        if (!empty($fromSearchParams)) {
-            $buttons['previous'] = new Fisma_Yui_Form_Button( 
-                'PreviousButton', 
-                 array(
-                       'label' => 'Previous',
-                       'onClickFunction' => 'Fisma.Util.getNextPrevious', 
-                       'onClickArgument' => array(
-                           'url' => $this->getBaseUrl() . '/view/id/',
-                           'id' => $record->id,
-                           'action' => 'previous',
-                           'modelName' => $this->_modelName
-                    ) 
-                ) 
-            );
-
-            if (isset($fromSearchParams['first'])) {
-                $buttons['previous']->readOnly = true;
-            }
-
-            $buttons['next'] = new Fisma_Yui_Form_Button( 
-                'NextButton',
-                array(
-                      'label' => 'Next',
-                      'onClickFunction' => 'Fisma.Util.getNextPrevious',
-                      'onClickArgument' => array(
-                          'url' => $this->getBaseUrl() . '/view/id/',
-                          'id' => $record->id,
-                          'action' => 'next',
-                          'modelName' => $this->_modelName
-                    )
-                )
-           );
-       
-            if (isset($fromSearchParams['last'])) {
-                $buttons['next']->readOnly = true; 
             }
         }
 

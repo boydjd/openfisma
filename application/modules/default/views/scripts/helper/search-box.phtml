@@ -7,6 +7,16 @@
         ?>
     </div>
     
+    <?php if(isset($this->searchButtons)): ?>
+        <div class="right">
+            <?php
+                foreach ($this->searchButtons as $button):
+                    echo $this->escape($button, 'none');
+                endforeach;
+            ?>
+        </div>
+    <?php endif; ?>
+
     <?php if(isset($this->searchForm)): ?>
         <div class="right">
             <?php

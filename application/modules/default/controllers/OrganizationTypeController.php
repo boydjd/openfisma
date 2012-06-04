@@ -113,8 +113,10 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
             $this->_acl->hasPrivilegeForClass('delete', 'OrganizationType') &&
             $this->getRequest()->getActionName() == 'view'
         ) {
-            $args = array(null, $this->getBaseUrl() . '/delete/', $record['id']);
-            $button = new Fisma_Yui_Form_Button(
+            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+            $args = array(null, $this->getBaseUrl() . '/delete' . $fromSearchUrl, $record['id']);
+
+            $buttons[] = new Fisma_Yui_Form_Button(
                 'deleteOrganizationTypeButton',
                 array(
                     'label' => 'Delete Organization Type',
@@ -128,23 +130,6 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
                 )
             );
 
-            // Put "Previous" and "Next" buttons behind the "delete" button
-            if (isset($buttons['previous'])) {
-                $offset = 0;
-                foreach ($buttons as $key => $value) {
-                    if ($key == 'previous') {
-                        break;
-                    }
-                    $offset++;
-                } 
-
-                $buttons = array_slice($buttons, 0, $offset, true) +
-                    array('importAsset' => $button) +
-                    array_slice($buttons, $offset, NULL, true);
-
-            } else {
-                $buttons[] = $button;
-            }
         }
 
         return $buttons;
@@ -182,11 +167,14 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
                 "warning"
             );
 
-            $this->_redirect($this->getBaseUrl() . '/view/id/' . $id);
+            $fromSearchParams = $this->_getFromSearchParams($this->_request);
+            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+            $this->_redirect($this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl);
         } else {
             $organizationType->delete();
 
-                      $this->view->priorityMessenger("Organization Type deleted successfully");
+            $this->view->priorityMessenger("Organization Type deleted successfully");
 
             $this->_redirect($this->getBaseUrl() . '/list');
         }

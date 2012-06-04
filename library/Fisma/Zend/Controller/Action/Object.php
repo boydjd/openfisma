@@ -122,24 +122,13 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $buttons = array();
         $isList = $this->getRequest()->getActionName() === 'list';
         $isView = $this->getRequest()->getActionName() === 'view';
-        $resourceName = $this->getAclResourceName();
-
-        if (!$isList && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('read', $resourceName))) {
-            $buttons['list'] = new Fisma_Yui_Form_Button_Link(
-                'toolbarListButton',
-                array(
-                    'value' => 'Return to Search Results',
-                    'href' => $this->getBaseUrl() . '/list'
-                )
-            );
-        }
 
         if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
             $buttons['create'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarCreateButton',
                 array(
                     'value' => 'Create New ' . $this->getSingularModelName(),
-                    'href' => $this->getBaseUrl() . '/create'
+                    'href' => $this->getBaseUrl() . '/create',
                 )
             );
         }
@@ -168,12 +157,43 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             );
         }
 
+        return $buttons;
+    }
+
+    /**
+     * A right-aligned group of buttons which include "Return to Search Results", "Previous" and "Next" buttons.
+     *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not
+     * @param array $fromSearchParams The array for "Previous" and "Next" button null if not
+     * @return array Array of Fisma_Yui_Form_Button
+     */
+    public function getSearchButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
+    {
+        $buttons = array();
+        $isList = $this->getRequest()->getActionName() === 'list';
+        $isView = $this->getRequest()->getActionName() === 'view';
+        $resourceName = $this->getAclResourceName();
+        $view = Zend_Layout::getMvcInstance()->getView();
+
+        if (!$isList && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('read', $resourceName))) {
+            $buttons['list'] = new Fisma_Yui_Form_Button_Link(
+                'toolbarListButton',
+                array(
+                    'value' => 'Return to Search Results',
+                    'href' => $this->getBaseUrl() . '/list',
+                    'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png'),
+                    'longText' => 1
+                )
+            );
+        }
+
         if ($isView && !empty($fromSearchParams)) {
             $buttons['previous'] = new Fisma_Yui_Form_Button(
                 'PreviousButton',
                  array(
                        'label' => 'Previous',
                        'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'imageSrc' => $view->serverUrl('/images/control_stop_left.png'),
                        'onClickArgument' => array(
                            'url' => $this->getBaseUrl() . '/view/id/',
                            'id' => $record->id,
@@ -192,6 +212,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 'NextButton',
                  array(
                        'label' => 'Next',
+                       'imageSrc' => $view->serverUrl('/images/control_stop_right.png'),
                        'onClickFunction' => 'Fisma.Util.getNextPrevious',
                        'onClickArgument' => array(
                            'url' => $this->getBaseUrl() . '/view/id/',
@@ -405,6 +426,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->view->modelName = $this->getSingularModelName();
         $this->view->toolbarButtons = $this->getToolbarButtons();
+        $this->view->searchButtons = $this->getSearchButtons();
     }
 
     /**
@@ -494,9 +516,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $viewButtons = $this->getViewButtons($subject);
         $toolbarButtons = $this->getToolbarButtons($subject, $fromSearchParams);
+        $searchButtons = $this->getSearchButtons($subject, $fromSearchParams);
         $buttons = array_merge($toolbarButtons, $viewButtons);
         $this->view->modelName = $this->getSingularModelName();
         $this->view->toolbarButtons = $toolbarButtons;
+        $this->view->searchButtons = $searchButtons;
 
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;

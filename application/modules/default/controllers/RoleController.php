@@ -298,31 +298,13 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
-            $button = new Fisma_Yui_Form_Button_Link(
+            $buttons[] = new Fisma_Yui_Form_Button_Link(
                 'editMatrix',
                 array(
                     'value' => 'View Privilege Matrix',
                     'href' => '/role/view-matrix'
                 )
             );
-
-            // Put "Previous" and "Next" buttons behind the "edit Martix" button
-            if (isset($buttons['previous'])) {
-                $offset = 0;
-                foreach ($buttons as $key => $value) {
-                    if ($key == 'previous') {
-                        break;
-                    }
-                    $offset++;
-                } 
-
-                $buttons = array_slice($buttons, 0, $offset, true) +
-                    array('editMatrix' => $button) +
-                    array_slice($buttons, $offset, NULL, true);
-
-            } else {
-                $buttons[] = $button;
-            }
         }
 
         return $buttons;

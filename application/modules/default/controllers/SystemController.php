@@ -99,6 +99,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $findingSearchUrl = '/finding/remediation/list?q=/organization/textExactMatch/'
                           . $this->view->escape($organization->nickname, 'url');
 
+        $view = Zend_Layout::getMvcInstance()->getView();
+
         $this->view->showFindingsButton = new Fisma_Yui_Form_Button_Link(
             'showFindings',
             array(
@@ -110,7 +112,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'toolbarListButton',
                 array(
                     'value' => 'Return to Search Results',
-                    'href' => $this->getBaseUrl() . '/list'
+                    'href' => $this->getBaseUrl() . '/list',
+                    'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png'),
+                    'longText' => 1
                 )
             );
 
@@ -140,6 +144,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                  array(
                        'label' => 'Previous',
                        'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'imageSrc' => $view->serverUrl('/images/control_stop_left.png'),
                        'onClickArgument' => array(
                            'url' => $this->getBaseUrl() . '/view/id/',
                            'id' => $id,
@@ -161,6 +166,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                  array(
                        'label' => 'Next',
                        'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'imageSrc' => $view->serverUrl('/images/control_stop_right.png'),
                        'onClickArgument' => array(
                            'url' => $this->getBaseUrl() . '/view/id/',
                            'id' => $id,

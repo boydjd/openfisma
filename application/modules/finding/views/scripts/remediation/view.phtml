@@ -5,13 +5,22 @@
       name="finding_detail">
 
     <div class="buttonBar">
-        <?php
-            foreach ($this->toolbarButtons as $button) {
-                echo $this->escape($button, 'none');
-            }
-        ?>
+        <div class="left">
+            <?php
+                foreach ($this->toolbarButtons as $button) {
+                    echo $this->escape($button, 'none');
+                }
+            ?>
+        </div>
+
+        <div class="right">
+            <?php
+                foreach ($this->searchButtons as $button) {
+                    echo $this->escape($button, 'none');
+                }
+            ?>
+        </div>
     </div>
 
     <?php echo $this->escape($this->tabView, 'none'); ?>
-
 </form>

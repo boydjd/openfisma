@@ -100,31 +100,13 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         if ($this->_acl->hasPrivilegeForClass('create', 'Asset')) {
-            $button = new Fisma_Yui_Form_Button_Link(
+            $buttons[] = new Fisma_Yui_Form_Button_Link(
                 'importAssetsButton',
                 array(
                     'value' => 'Import Assets',
                     'href' => $this->getBaseUrl() . '/import'
                 )
             );
-       
-            // Put "Previous" and "Next" buttons behind the "Import Assets" button
-            if (isset($buttons['previous'])) {
-                $offset = 0;
-                foreach ($buttons as $key => $value) {
-                    if ($key == 'previous') {
-                        break;
-                    }
-                    $offset++;
-                } 
-
-                $buttons = array_slice($buttons, 0, $offset, true) +
-                    array('importAsset' => $button) +
-                    array_slice($buttons, $offset, NULL, true);
-
-            } else {
-                $buttons[] = $button;
-            }
         }
 
         return $buttons;

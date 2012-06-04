@@ -275,13 +275,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
 
         $buttons = array();
-        $buttons['list'] = new Fisma_Yui_Form_Button_Link(
-            'toolbarListButton',
-            array(
-                'value' => 'Return to Search Results',
-                'href' => $this->getBaseUrl() . '/list'
-            )
-        );
+
         // Only display controls if the finding has not been deleted
         if (!$finding->isDeleted()) {
             // Display the delete finding button if the user has the delete finding privilege
@@ -331,13 +325,26 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
+        $view = Zend_Layout::getMvcInstance()->getView();
+        $searchButtons = array(); 
+        $searchButtons['list'] = new Fisma_Yui_Form_Button_Link(
+            'toolbarListButton',
+            array(
+                'value' => 'Return to Search Results',
+                'href' => $this->getBaseUrl() . '/list',
+                'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png'),
+                'longText' => 1
+            )
+        );
+
         // If the record is from search page, then, show the previous and next buttons.
         if (!empty($fromSearchParams)) {
-            $buttons['previous'] = new Fisma_Yui_Form_Button(
+            $searchButtons['previous'] = new Fisma_Yui_Form_Button(
                 'PreviousButton',
                  array(
                        'label' => 'Previous',
                        'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'imageSrc' => $view->serverUrl('/images/control_stop_left.png'),
                        'onClickArgument' => array(
                            'url' => $this->getBaseUrl() . '/view/id/',
                            'id' => $id,
@@ -349,14 +356,15 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             );
 
             if (isset($fromSearchParams['first']) && $fromSearchParams['first'] == 1) {
-                $buttons['previous']->readOnly = true;
+                $searchButtons['previous']->readOnly = true;
             }
 
-            $buttons['next'] = new Fisma_Yui_Form_Button(
+            $searchButtons['next'] = new Fisma_Yui_Form_Button(
                 'NextButton',
                  array(
                        'label' => 'Next',
                        'onClickFunction' => 'Fisma.Util.getNextPrevious',
+                       'imageSrc' => $view->serverUrl('/images/control_stop_right.png'),
                        'onClickArgument' => array(
                            'url' => $this->getBaseUrl() . '/view/id/',
                            'id' => $id,
@@ -367,10 +375,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             );
 
             if (isset($fromSearchParams['last']) && $fromSearchParams['last'] == 1) {
-                $buttons['next']->readOnly = true;
+                $searchButtons['next']->readOnly = true;
             }
         }
         $this->view->toolbarButtons = $buttons;
+        $this->view->searchButtons = $searchButtons;
     }
 
     /**
