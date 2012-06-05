@@ -70,7 +70,7 @@ class Fisma_Yui_Form_Button extends Zend_Form_Element_Submit
                            );";
         $image = $this->getAttrib('imageSrc');
         if (isset($image)) {
-           $render .= "button._button.style.background = 'url($image) 10% 50% no-repeat';\n";
+           $render .= "button._button.style.background = 'url($image) 1em 50% no-repeat';\n";
            $render .= "button._button.style.paddingLeft = '3em';\n";
         }
         $render .= "})</script>";

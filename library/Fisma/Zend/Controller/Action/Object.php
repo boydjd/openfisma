@@ -182,7 +182,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     'value' => 'Return to Search Results',
                     'href' => $this->getBaseUrl() . '/list',
                     'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png'),
-                    'longText' => 1
+                    'longText' => 1 // Set button background style differently with long text label.
                 )
             );
         }

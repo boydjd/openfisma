@@ -592,6 +592,9 @@ Fisma.Util = {
      *
      * @param {Object} event.
      * @param {Object} config   
+     *     String  .action  define button action type: previous or next.
+     *     String  .url     url to view the record.
+     *     Integer .id      the current record id. 
      */
     getNextPrevious : function (event, config) {
         var storage = new Fisma.Storage('Fisma.PreviousNext');
@@ -599,15 +602,17 @@ Fisma.Util = {
 
         var i;
         for (i = 0; i < ids.length; i++) {
-            if (ids[i] == config.id) {
-                if (config.action == 'next') {
+            if (parseInt(ids[i], 10) === parseInt(config.id, 10)) {
+
+                // Next button.
+                if (config.action === 'next') {
                     if ((ids.length - 1) === i + 1) {
                         document.location = config.url + ids[i+1] + '/fromSearch/1' + '/last/1';
                     } else {
                         document.location = config.url + ids[i+1] + '/fromSearch/1';
                     }
                     return;
-                } else {
+                } else { // Previous button
                     if ( (i-1) === 0) {
                         document.location = config.url + ids[i-1] + '/fromSearch/1' +  '/first/1';
                     } else {
