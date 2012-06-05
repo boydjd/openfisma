@@ -66,7 +66,7 @@ class Test_Library_Fisma_Yui_Form_Button extends Test_Case_Unit
                            );";
 
         $image = '/resources/icons/test';
-        $fullrender .= "button._button.style.background = 'url($image) 10% 50% no-repeat';\n";
+        $fullrender .= "button._button.style.background = 'url($image) 1em 50% no-repeat';\n";
         $fullrender .= "button._button.style.paddingLeft = '3em';\n";
 
         $fullrender .= "})</script>";
