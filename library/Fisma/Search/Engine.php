@@ -199,124 +199,13 @@ class Fisma_Search_Engine
      */
     public function searchByKeyword($type, $keyword, $sortColumn, $sortDirection, $start, $rows, $deleted)
     {
-        $query = new SolrQuery;
-
-        $table = Doctrine::getTable($type);
-        $searchableFields = $this->_getSearchableFields($type);
-
-        if (!isset($searchableFields[$sortColumn]) || !$searchableFields[$sortColumn]['sortable']) {
-            throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
-        }
-
-        $sortColumnDefinition = $searchableFields[$sortColumn];
-
-        // Text columns have different sorting rules (see design document)
-        if ('text' == $sortColumnDefinition['type']) {
-            $sortColumnParam = $this->escape($sortColumn) . '_textsort';
-        } elseif ('enum' == $sortColumnDefinition['type']) {
-            $sortColumnParam = $this->escape($sortColumn) . '_enumsort';
-        } else {
-            $sortColumnParam = $this->escape($sortColumn) . '_' . $sortColumnDefinition['type'];
-        }
-
-        $sortDirectionParam = $sortDirection ? SolrQuery::ORDER_ASC : SolrQuery::ORDER_DESC;
-
-        // Add required fields to query. The rest of the fields are added below.
-        $query->addField('id')
-              ->addField('luceneDocumentId')
-              ->addSortField($sortColumnParam, $sortDirectionParam);
-
-        if (isset($rows) && isset($start)) {
-              $query->setStart($start)
-                    ->setRows($rows);
-        }
-
-        $trimmedKeyword = trim($keyword);
-
-        $filterQuery = 'luceneDocumentType:' . $this->escape($type);
-
-        // Add ACL constraints to filter query
-        $aclQueryFilter = $this->_getAclQueryFilter($table, $searchableFields);
-
-        if (!empty($aclQueryFilter)) {
-            $filterQuery .= ' AND ('
-                          . $aclQueryFilter
-                          . ')';
-        }
-
-        // Handle soft delete
-        if ($table->hasColumn('deleted_at')) {
-            $query->addField('deleted_at_datetime');
-
-            if (!$deleted) {
-                $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
-            }
-        }
-
-        if (empty($trimmedKeyword)) {
-            // Without keywords, this is just a listing of all documents of a specific type
-            $query->setQuery($filterQuery);
-        } else {
-
-            if ($this->getHighlightingEnabled()) {
-
-                $query->setHighlight(true)
-                      ->setHighlightSimplePre('***')
-                      ->setHighlightSimplePost('***');
-            }
-
-            $query->addFilterQuery($filterQuery);
-
-            // Tokenize keywords and escape all tokens.
-            $keywordTokens = $this->_tokenizeBasicQuery($trimmedKeyword);
-            $keywordTokens = array_filter($keywordTokens);
-            $keywordTokens = array_map(array($this, 'escape'), $keywordTokens);
-        }
-
-        // Enumerate all fields so they can be included in search results
-        $searchTerms = array();
-
-        foreach ($searchableFields as $fieldName => $fieldDefinition) {
-
-            $documentFieldName = $fieldName . '_' . $fieldDefinition['type'];
-
-            $query->addField($documentFieldName);
-
-            // Add keyword terms and highlighting to all non-date/non-boolean fields
-            if (!empty($trimmedKeyword) &&
-                'date' != $fieldDefinition['type'] &&
-                'datetime' != $fieldDefinition['type'] &&
-                'boolean' != $fieldDefinition['type']) {
-
-                // Solr can't highlight sortable integer fields
-                if ('integer' != $fieldDefinition['type'] && 'float' != $fieldDefinition['type']) {
-                    $query->addHighlightField($documentFieldName);
-                }
-
-                foreach ($keywordTokens as $keywordToken) {
-                    // Don't search for strings in integer fields (Solr emits an error)
-                    $isNumberField = ('integer' == $fieldDefinition['type'] || 'float' == $fieldDefinition['type']);
-                    $canSearch = (is_numeric($keywordToken) || !$isNumberField);
-
-                    if ($canSearch) {
-                        $searchTerms[] = $documentFieldName . ':"' . $keywordToken . '"';
-                    }
-                }
-            }
-        }
-
-        if (!empty($trimmedKeyword)) {
-            // If there are search terms, then combine them with the logical OR operator
-            $query->setQuery(implode(' OR ', $searchTerms));
-        }
-
-        $response = $this->_client->query($query)->getResponse();
-
-        return $this->_convertSolrResultToStandardResult($type, $response);
+        return $this->search(
+            $type, $keyword, new Fisma_Search_Criteria, $sortColumn, $sortDirection, $start, $rows, $deleted
+        );
     }
 
     /**
-     * Faceted search: search based on an optional keyword and a list of specific field filters
+     * Search by an optional keyword and a list of specific field filters
      *
      * @param string $type Name of model index to search
      * @param string $keyword
@@ -326,10 +215,11 @@ class Fisma_Search_Engine
      * @param int $start The offset within the result set to begin returning documents from
      * @param int $rows The number of documents to return
      * @param bool $deleted If true, include soft-deleted records in the results
+     * @param bool $highlightCriteria If true, matching from criteria will be highlighted (for advanced search)
      * @return Fisma_Search_Result Rectangular array of search results
      */
-    public function searchByFacet($type, $keyword, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection,
-                                     $start, $rows, $deleted)
+    public function search($type, $keyword, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection,
+                                     $start, $rows, $deleted, $highlightCriteria = false)
     {
         $query = new SolrQuery;
 
@@ -559,6 +449,14 @@ class Fisma_Search_Engine
                 case 'textDoesNotContain':
                 case 'enumIsNot':
                     $searchTerms[] = "-$fieldName:\"{$operands[0]}\"";
+                    break;
+
+                case 'enumIn':
+                    $searchTerms[] = "$fieldName:(" . implode($operands, ' OR ') . ")";
+                    break;
+
+                case 'enumNotIn':
+                    $searchTerms[] = "-$fieldName:(" . implode($operands, ' OR ') . ")";
                     break;
 
                 // Exact text match is a little different. It uses a separate field and it only works for sortable
@@ -643,7 +541,7 @@ class Fisma_Search_Engine
             $query->addFilterQuery($queryString);
             $query->setQuery($keywordQueryString);
         } else {
-            $query->setHighlight(false);
+            $query->setHighlight($highlightCriteria);
             $query->setQuery($queryString);
         }
 
@@ -671,285 +569,7 @@ class Fisma_Search_Engine
     public function searchByCriteria($type, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection,
                                      $start, $rows, $deleted)
     {
-        $query = new SolrQuery;
-
-        $table = Doctrine::getTable($type);
-        $searchableFields = $this->_getSearchableFields($type);
-
-        if (!isset($searchableFields[$sortColumn]) || !$searchableFields[$sortColumn]['sortable']) {
-            throw new Fisma_Search_Exception("Not a sortable column: $sortColumn");
-        }
-
-        $sortColumnDefinition = $searchableFields[$sortColumn];
-
-        // Text columns have different sorting rules (see design document)
-        if ('text' == $sortColumnDefinition['type']) {
-            $sortColumnParam = $this->escape($sortColumn) . '_textsort';
-        } elseif ('enum' == $sortColumnDefinition['type']) {
-            $sortColumnParam = $this->escape($sortColumn) . '_enumsort';
-        } else {
-            $sortColumnParam = $this->escape($sortColumn) . '_' . $sortColumnDefinition['type'];
-        }
-
-        $sortDirectionParam = $sortDirection ? SolrQuery::ORDER_ASC : SolrQuery::ORDER_DESC;
-
-        // Add required fields to query. The rest of the fields are added below.
-        $query->addField('id')
-              ->addField('luceneDocumentId')
-              ->addSortField($sortColumnParam, $sortDirectionParam);
-
-        if (isset($rows) && isset($start)) {
-            $query->setStart($start)
-                  ->setRows($rows);
-        }
-
-        $filterQuery = 'luceneDocumentType:' . $this->escape($type);
-
-        // Add ACL constraints to filter query
-        $aclQueryFilter = $this->_getAclQueryFilter($table, $searchableFields);
-
-        if (!empty($aclQueryFilter)) {
-            $filterQuery .= ' AND ('
-                          . $aclQueryFilter
-                          . ')';
-        }
-
-        // Handle soft delete
-        if ($table->hasColumn('deleted_at')) {
-            $query->addField('deleted_at_datetime');
-
-            if (!$deleted) {
-                $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
-            }
-        }
-
-        // Enable highlighting
-        if ($this->getHighlightingEnabled()) {
-
-            $query->setHighlight(true)
-                  ->setHighlightSimplePre('***')
-                  ->setHighlightSimplePost('***')
-                  ->setHighlightRequireFieldMatch(true);
-        }
-
-        // The filter query is used for efficiency (parts of the query that don't change can be cached separately)
-        $query->addFilterQuery($filterQuery);
-
-        // Add the fields which should be returned in the result set and indicate which should be highlighted
-        foreach ($searchableFields as $fieldName => $fieldDefinition) {
-
-            // Some twiddling to convert Doctrine's field names to Solr's field names
-            $documentFieldName = $fieldName . '_' . $fieldDefinition['type'];
-
-            $query->addField($documentFieldName);
-
-            // Highlighting doesn't work for date, integer, or float fields in Solr 4.1
-            if ('date' != $fieldDefinition['type'] &&
-                'datetime' != $fieldDefinition['type'] &&
-                'integer' != $fieldDefinition['type'] &&
-                'float' != $fieldDefinition['type']) {
-
-                $query->addHighlightField($documentFieldName);
-            }
-        }
-
-        // Add specific query terms based on the user's request
-        $searchTerms = array();
-
-        foreach ($criteria as $criterion) {
-
-            $doctrineFieldName = $this->escape($criterion->getField());
-
-            if (!isset($searchableFields[$doctrineFieldName])) {
-                throw new Fisma_Search_Exception("Invalid field name: " . $doctrineFieldName);
-            }
-
-            $fieldName = $doctrineFieldName . '_' . $searchableFields[$doctrineFieldName]['type'];
-
-            $operands = array_map('addslashes', $criterion->getOperands());
-
-            $operator = $criterion->getOperator();
-
-            switch ($operator) {
-                case 'booleanYes':
-                    $searchTerms[] = "$fieldName:true";
-                    break;
-                case 'booleanNo':
-                    $searchTerms[] = "$fieldName:false";
-                    break;
-                case 'dateAfter':
-                    try {
-                        $afterDate = $this->_convertToSolrDate($operands[0]);
-                        $searchTerms[] = "$fieldName:[$afterDate TO *]";
-                    } catch (Zend_Date_Exception $e) {
-                        // The input date is invalid, return an empty set.
-                        return new Fisma_Search_Result(0, 0, array());
-                    }
-                    break;
-
-                case 'dateBefore':
-                    try  {
-                        $beforeDate = $this->_convertToSolrDate($operands[0]);
-                        $searchTerms[] = "$fieldName:[* TO $beforeDate/DAY-1DAY]";
-                    } catch (Zend_Date_Exception $e) {
-                        // The input date is invalid, return an empty set.
-                        return new Fisma_Search_Result(0, 0, array());
-                    }
-                    break;
-
-                case 'dateBetween':
-                    try {
-                        $afterDate = $this->_convertToSolrDate($operands[0]);
-                        $beforeDate = $this->_convertToSolrDate($operands[1]);
-                        $searchTerms[] = "$fieldName:[$afterDate TO $beforeDate]";
-                    } catch (Zend_Date_Exception $e) {
-                        // The input date is invalid, return an empty set.
-                        return new Fisma_Search_Result(0, 0, array());
-                    }
-                    break;
-
-                case 'dateDay':
-                    try {
-                        $date = $this->_convertToSolrDate($operands[0]);
-                        $searchTerms[] = "$fieldName:[$date/DAY TO $date/DAY+1DAY]";
-                    } catch (Zend_Date_Exception $e) {
-                        // The input date is invalid, return an empty set.
-                        return new Fisma_Search_Result(0, 0, array());
-                    }
-                    break;
-
-                case 'dateThisMonth':
-                    $searchTerms[] = "$fieldName:[NOW/MONTH TO NOW/MONTH+1MONTH]";
-                    break;
-
-                case 'dateThisYear':
-                    $searchTerms[] = "$fieldName:[NOW/YEAR TO NOW/YEAR+1YEAR]";
-                    break;
-
-                case 'dateToday':
-                    $searchTerms[] = "$fieldName:[NOW/DAY TO NOW/DAY+1DAY]";
-                    break;
-
-                case 'floatBetween':
-                    if (!is_numeric($operands[0]) || !is_numeric($operands[1])) {
-                        throw new Fisma_Search_Exception("Invalid operands to floatBetween criterion.");
-                    }
-
-                    if ($operands[0] < $operands[1]) {
-                        $searchTerms[] = "$fieldName:[{$operands[0]} TO {$operands[1]}]";
-                    } else {
-                        $searchTerms[] = "$fieldName:[{$operands[1]} TO {$operands[0]}]";
-                    }
-                    break;
-
-                case 'floatGreaterThan':
-                    if (!is_numeric($operands[0])) {
-                        throw new Fisma_Search_Exception("Invalid operands to floatGreaterThan criterion.");
-                    }
-
-                    $searchTerms[] = "$fieldName:[{$operands[0]} TO *]";
-                    break;
-
-                case 'floatLessThan':
-                    if (!is_numeric($operands[0])) {
-                        throw new Fisma_Search_Exception("Invalid operands to floatLessThan criterion.");
-                    }
-
-                    $searchTerms[] = "$fieldName:[* TO {$operands[0]}]";
-                    break;
-
-                case 'integerBetween':
-                    $lowEndIntValue = intval($operands[0]);
-                    $highEndIntValue = intval($operands[1]);
-
-                    if ($lowEndIntValue < $highEndIntValue) {
-                        $searchTerms[] = "$fieldName:[$lowEndIntValue TO $highEndIntValue]";
-                    } else {
-                        $searchTerms[] = "$fieldName:[$highEndIntValue TO $lowEndIntValue]";
-                    }
-                    break;
-
-                case 'integerDoesNotEqual':
-                    $searchTerms[] = $this->_integerDoesNotEqual($fieldName, $operands[0]);
-                    break;
-
-                case 'integerEquals':
-                    $searchTerms[] = $this->_integerEquals($fieldName, $operands[0]);
-                    break;
-
-                case 'integerGreaterThan':
-                    $intValue = intval($operands[0]);
-                    $searchTerms[] = "$fieldName:[$intValue TO *]";
-                    break;
-
-                case 'integerLessThan':
-                    $intValue = intval($operands[0]);
-                    $searchTerms[] = "$fieldName:[* TO $intValue]";
-                    break;
-
-                // The following cases intentionally fall through
-                case 'textContains':
-                case 'enumIs':
-                    $searchTerms[] = "$fieldName:\"{$operands[0]}\"";
-                    break;
-
-                // The following cases intentionally fall through
-                case 'textDoesNotContain':
-                case 'enumIsNot':
-                    $searchTerms[] = "-$fieldName:\"{$operands[0]}\"";
-                    break;
-
-                // Exact text match is a little different. It uses a separate field and it only works for sortable
-                // fields. Because the sort field is unanalyzed, this is a case sensitive operator.
-                case 'textExactMatch':
-                    $searchTerms[] = "{$doctrineFieldName}_textsort:\"{$operands[0]}\"";
-                    break;
-
-                case 'textNotExactMatch':
-                    $searchTerms[] = "-{$doctrineFieldName}_textsort:\"{$operands[0]}\"";
-                    break;
-
-                default:
-                    // Fields can define custom criteria (that wouldn't match any of the above cases)
-                    if (isset($searchableFields[$doctrineFieldName]['extraCriteria'][$operator])) {
-                        $callback = $searchableFields[$doctrineFieldName]['extraCriteria'][$operator]['idProvider'];
-
-                        $ids = call_user_func_array($callback, $operands);
-
-                        if ($ids === false) {
-                            throw new Fisma_Zend_Exception("Not able to call callback ($callback)");
-                        }
-
-                        $idTerms = array();
-                        $idField = $searchableFields[$doctrineFieldName]['extraCriteria'][$operator]['idField'];
-                        $fieldType = $searchableFields[$idField]['type'];
-
-                        foreach ($ids as $id) {
-                            $idTerms[] = "{$idField}_{$fieldType}:$id";
-                        }
-
-                        $searchTerms[] = '(' . implode($idTerms, ' OR ') . ')';
-                    } else {
-                        throw new Fisma_Search_Exception("Undefined search operator: " . $criterion->getOperator());
-                    }
-            }
-        }
-
-        $queryString = implode($searchTerms, ' AND ');
-
-        if (empty($queryString)) {
-            $queryString = "id:[* TO *]";
-        }
-
-        $query->setQuery($queryString);
-
-        try {
-            $response = $this->_client->query($query)->getResponse();
-        } catch (SolrClientException $e) {
-            return new Fisma_Search_Result(0, 0, array());
-        }
-
-        return $this->_convertSolrResultToStandardResult($type, $response);
+        return $this->search($type, '', $criteria, $sortColumn, $sortDirection, $start, $rows, $deleted, true);
     }
 
     /**

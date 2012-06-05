@@ -628,6 +628,14 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     public function viewAction()
     {
         $id = $this->getRequest()->getParam('id');
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        if ($subject = Doctrine::getTable('Poc')->find($id)) {
+            if (get_class($subject) == 'Poc') {
+                $this->_redirect('/contact/view/id/' . $id . $fromSearchUrl);
+            }
+        }
+
         $tabView = new Fisma_Yui_TabView('UserView');
 
         $q = Doctrine_Query::create()
@@ -1150,5 +1158,18 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
         }
         return false;
+    }
+
+    /**
+     * Redirect User list page to Contact list page
+     *
+     * @GETAllowed
+     */
+    public function listAction()
+    {
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+        $this->_redirect('/contact/list' . $fromSearchUrl);
     }
 }

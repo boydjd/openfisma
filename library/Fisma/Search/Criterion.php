@@ -46,6 +46,8 @@ class Fisma_Search_Criterion
         'dateToday',
         'enumIs',
         'enumIsNot',
+        'enumIn',
+        'enumNotIn',
         'floatBetween',
         'floatGreaterThan',
         'floatLessThan',

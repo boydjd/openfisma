@@ -145,6 +145,14 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
     protected function _viewObject()
     {
         $this->_acl->requirePrivilegeForClass('read', 'Poc');
+        $id = $this->getRequest()->getParam('id');
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        if ($subject = $this->_getSubject($id)) {
+            if (get_class($subject) == 'User') {
+                $this->_redirect('/user/view/id/' . $id . $fromSearchUrl);
+            }
+        }
 
         $this->_enforceAcl = false;
         parent::_viewObject();
@@ -180,7 +188,7 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
             $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
                 'pocTreeButton',
                 array(
-                    'value' => 'View Contact Hierarchy',
+                    'value' => 'Tree View',
                     'href' => $this->getBaseUrl() . '/tree'
                 )
             );
@@ -204,7 +212,7 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
         $this->view->toolbarButtons = $this->getToolbarButtons();
 
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
-        $this->view->toolbarButtons['list']->setValue("View Contact List");
+        $this->view->toolbarButtons['list']->setValue("List View");
         $this->view->csrfToken = $this->_helper->csrf->getToken();
 
         // We're already on the tree screen, so don't show a "view tree" button

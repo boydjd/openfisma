@@ -216,7 +216,7 @@ Fisma.Search.CriteriaRenderer = (function () {
             textEl.type = "text";
 
             if (operands && operands.length > 0) {
-                textEl.value = operands[0];
+                textEl.value = operands.join(',');
             }
 
             container.appendChild(textEl);
