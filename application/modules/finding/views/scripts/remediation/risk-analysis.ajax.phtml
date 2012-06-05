@@ -1,27 +1,27 @@
-<?php 
-    $finding = $this->finding; 
+<?php
+    $finding = $this->finding;
     $organization = $finding->Organization->nickname;
 ?>
 <?php
 if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
-    Fisma_Format_Section::startSection("Risk Analysis Form (RAF)"); 
+    Fisma_Format_Section::startSection("Risk Analysis Form (RAF)");
 ?>
     <p>
-        Risk is calculated by evaluating the security categorization of 
-        the information system along with the threat source and the existence 
-        of current countermeasures. 
+        Risk is calculated by evaluating the security categorization of
+        the information system along with the threat source and the existence
+        of current countermeasures.
     </p>
 
     <p>
-        <?php 
-        // Check to see if the threat level/description and countermeasure level/description are 
+        <?php
+        // Check to see if the threat level/description and countermeasure level/description are
         // set. If so, allow the user to generate a RAF.
         $findingThreat = strip_tags($finding->threat);
         $findingCountermeasures = strip_tags($finding->countermeasures);
 
-        if (empty($findingThreat) 
-            || empty($finding->threatLevel) 
-            || empty($findingCountermeasures) 
+        if (empty($findingThreat)
+            || empty($finding->threatLevel)
+            || empty($findingCountermeasures)
             || empty($finding->countermeasuresEffectiveness)) {
             echo $this->escape(
                 '<i>(Threat and Countermeasure information must be completed to generate a Risk Analysis Form)</i>',
@@ -29,8 +29,8 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
             );
         } else {
             $viewRafButton = new Fisma_Yui_Form_Button_Link('viewRaf',
-                                   array('value' => 'View Risk Analysis Form', 
-                                         'href' => "/finding/remediation/raf/format/pdf/id/{$finding->id}", 
+                                   array('value' => 'View Risk Analysis Form',
+                                         'href' => "/finding/remediation/raf/format/pdf/id/{$finding->id}",
                                          'imageSrc' => $this->serverUrl('/images/pdf.gif')));
             echo $this->escape($viewRafButton, 'none');
         }
@@ -56,7 +56,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
     <b>Threat Level:</b>
 
     <span id ="threat_level" type="select" name="finding[threatLevel]" href="/metainfo/list/o/threat_level/format/html/"
-        <?php 
+        <?php
         if ($this->isThreatLevelEditable) {
             echo $this->escape(' class="editable" target="threat_level"', 'none');
         }
@@ -66,11 +66,11 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
 </p>
 
 <p>
-    <b target="threat" 
+    <b target="threat"
         <?php
         if ($this->isThreatEditable) {
             echo $this->escape('class="editable"', 'none');
-        } 
+        }
         ?>>Threat Description:</b>
 </p>
 
@@ -85,7 +85,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
                             . "the vulnerability being exercised or exploited. This should not include "
                             . "countermeasures that are planned and are not currently in place. Countermeasures "
                             . "or Security controls can be technical and nontechnical methods. Examples of technical "
-                            . "controls would be; access control mechanisms, identification and authentication"
+                            . "controls would be; access control mechanisms, identification and authentication "
                             . "mechanisms, encryption methods, software, etc. Examples of nontechnical controls "
                             . "would be management and operational controls, such as; security policies, operational "
                             . "procedures, personnel, physical, and environmental security.</p>";
@@ -96,9 +96,9 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
 <p>
     <b>Countermeasures Effectiveness:</b>
 
-    <span type="select" 
-          name="finding[countermeasuresEffectiveness]" 
-          id="effectiveness" 
+    <span type="select"
+          name="finding[countermeasuresEffectiveness]"
+          id="effectiveness"
           href="/metainfo/list/o/countermeasures-effectiveness/format/html/"
         <?php
         if ($this->isCountermeasuresEffectivenessEditable) {
@@ -110,11 +110,11 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
 </p>
 
 <p>
-    <b target="countermeasures" 
-        <?php 
+    <b target="countermeasures"
+        <?php
             if ($this->isCountermeasuresEditable) {
                 echo $this->escape('class="editable"', 'none');
-            } 
+            }
         ?>>
         Description of Countermeasures:</b>
 </p>

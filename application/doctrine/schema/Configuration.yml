@@ -209,6 +209,7 @@ Configuration:
             default: 30
         max_file_upload_size:
             type: string(6)
+            notnull: true
             notblank: true
             comment: The maximum size of files that users can upload to the application, this setting applies to all modules.
             default: 20M

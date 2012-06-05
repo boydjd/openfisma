@@ -4905,7 +4905,7 @@ SecurityControl:
             The organization determines, documents, and allocates as part of its capital planning and investment 
             control process, the resources required to adequately protect the information system.
         supplementalGuidance: >
-            TThe organization includes the determination of security requirements for the information system in 
+            The organization includes the determination of security requirements for the information system in 
             mission/business case planning and establishes a discrete line item for information system security in 
             the organization's programming and budgeting documentation. NIST Special Publication 800-65 provides 
             guidance on integrating security into the capital planning and investment control process.

@@ -40,7 +40,7 @@ elements.send_type.options.label = "Email Configuration Type"
 elements.send_type.options.multiOptions.sendmail = "sendmail"
 elements.send_type.options.multiOptions.smtp = "smtp"
 elements.send_type.options.required = true
-elements.send_type.options.tooltip = "<p><b>Email Configuration Type</b></p><p>The Email Configuration Type is used to tell OpenFISMA which mail program or protocol to use for sending messages. Generally, sendmail is installed locally on the same machine as OpenFISMA and can be used to send outgoing mail without specifying a username, password or host. You may want to configure an external smtp server which will require a host address ans should require a username and passwoord.</p>"
+elements.send_type.options.tooltip = "<p><b>Email Configuration Type</b></p><p>The Email Configuration Type is used to tell OpenFISMA which mail program or protocol to use for sending messages. Generally, sendmail is installed locally on the same machine as OpenFISMA and can be used to send outgoing mail without specifying a username, password or host. You may want to configure an external smtp server which will require a host address and should require a username and passwoord.</p>"
 displayGroups.general.elements.send_type = "send_type"
 
 elements.smtp_host.type = "text"
