@@ -316,7 +316,7 @@ class Fisma_Search_Engine
     }
 
     /**
-     * Advanced search: search based on a list of specific field criteria
+     * Faceted search: search based on an optional keyword and a list of specific field filters
      *
      * @param string $type Name of model index to search
      * @param string $keyword

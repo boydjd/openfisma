@@ -81,7 +81,9 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
         } else if ("show" === keyValuePair[0]) {
             this.showAll = "all" === keyValuePair[1];
         } else if ("f" === keyValuePair[0]) {
-            setTimeout('document.getElementById("' + keyValuePair[1] + '").onclick();', 500);
+            YAHOO.util.Event.onContentReady('advancedSearchCriteria', function() {
+                document.getElementById(keyValuePair[1]).onclick();
+            });
         }
     }
 };
