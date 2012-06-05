@@ -92,17 +92,20 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
      * Customize the toolbar buttons
      *
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
+     * @param array $fromSearchParams The array for "Previous" and "Next" button null if not  
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
-        $buttons = parent::getToolbarButtons($record);
+        $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         if (
             $this->_acl->hasPrivilegeForClass('delete', 'SystemType') &&
             $this->getRequest()->getActionName() == 'view'
         ) {
-            $args = array(null, $this->getBaseUrl() . '/delete/', $record['id']);
+            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+            $args = array(null, $this->getBaseUrl() . '/delete' . $fromSearchUrl, $record['id']);
+
             $buttons[] = new Fisma_Yui_Form_Button(
                 'deleteSystemTypeButton',
                 array(
@@ -152,7 +155,10 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
                 "warning"
             );
 
-            $this->_redirect($this->getBaseUrl() . '/view/id/' . $id);
+            $fromSearchParams = $this->_getFromSearchParams($this->_request);
+            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+            $this->_redirect($this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl);
         } else {
             $systemType->delete();
             $this->view->priorityMessenger("System Type deleted successfully");

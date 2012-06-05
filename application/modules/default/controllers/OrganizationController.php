@@ -266,14 +266,19 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab($firstTab, "/organization/organization/id/$id");
         $tabView->addTab("Users", "/system/user/type/organization/id/$id");
 
-        $toolbarButtons = $this->getToolbarButtons($organization);
+        $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+        $toolbarButtons = $this->getToolbarButtons($organization, $fromSearchParams);
+        $searchButtons = $this->getSearchButtons($organization, $fromSearchParams);
+
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        $this->view->fromSearchParams = $fromSearchUrl; 
 
         if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
             $discardButton = new Fisma_Yui_Form_Button_Link(
                                  'discardChanges',
                                  array(
                                      'value' => 'Discard Changes',
-                                     'href' => "/organization/view/id/$id"
+                                     'href' => "/organization/view/id/$id$fromSearchUrl"
                                  )
                              );
 
@@ -288,6 +293,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->toolbarButtons = $toolbarButtons;
+        $this->view->searchButtons = $searchButtons;
         $this->view->organizationId = $organization->id;
         $this->view->tabView = $tabView;
     }
@@ -371,11 +377,17 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 }
 
                 $this->view->priorityMessenger($msg, $type);
-                $this->_redirect("/organization/view/id/$id");
             }
         }
 
-        $this->_redirect("/organization/view/id/$id");
+        $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+        $fromSearchUrl = '';
+
+        if (!empty($fromSearchParams)) {
+            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        }
+
+        $this->_redirect("/organization/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -389,10 +401,19 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-
+        $buttons = $this->getToolbarButtons();
+        
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
-        $this->view->toolbarButtons['list']->setValue("View Organization List");
+        $button = new Fisma_Yui_Form_Button_Link(
+            'toolbarListButton',
+            array(
+                'value' => 'View Organization List',
+                'href' => $this->getBaseUrl() . '/list'
+            )
+        );
+
+        array_unshift($buttons, $button);
+        $this->view->toolbarButtons = $buttons;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
         
         // We're already on the tree screen, so don't show a "view tree" button
@@ -586,7 +607,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
         $buttons = array();
 
@@ -697,4 +718,5 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->view->form = $form;
         $this->view->form->setAction('/organization/convert-to-system/id/' . $id);
     }
+
 }

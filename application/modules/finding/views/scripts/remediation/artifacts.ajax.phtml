@@ -29,7 +29,7 @@ if (!(
                 'label' => 'Submit Evidence Package',
                 'onClickFunction' => 'Fisma.Util.formPostAction',
                 'onClickArgument' => array(
-                       'action' => '/finding/remediation/submit-evidence/',
+                       'action' => '/finding/remediation/submit-evidence' . $this->fromSearchUrl,
                        'id' => $this->finding->id
                 )
             )

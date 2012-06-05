@@ -33,13 +33,14 @@ class View_Helper_SearchBox extends Zend_View_Helper_Abstract
      * @param Zend_Form $searchForm The form used for submitting a search query
      * @return string
      */
-    public function searchBox($toolbarButtons, $searchForm = null)
+    public function searchBox($toolbarButtons, $searchForm = null, $searchButtons = null)
     {
         $view = Zend_Layout::getMvcInstance()->getView();
         
         $viewParameters = array(
             'searchForm' => $searchForm,
-            'toolbarButtons' => $toolbarButtons
+            'toolbarButtons' => $toolbarButtons,
+            'searchButtons' => $searchButtons
         );
 
         return $view->partial('helper/search-box.phtml', 'default', $viewParameters);

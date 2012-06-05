@@ -293,12 +293,12 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
-        $buttons = parent::getToolbarButtons($record);
+        $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
-            $buttons['editMatrix'] = new Fisma_Yui_Form_Button_Link(
+            $buttons[] = new Fisma_Yui_Form_Button_Link(
                 'editMatrix',
                 array(
                     'value' => 'View Privilege Matrix',

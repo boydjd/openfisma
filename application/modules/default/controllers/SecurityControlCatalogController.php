@@ -57,9 +57,9 @@ class SecurityControlCatalogController extends Fisma_Zend_Controller_Action_Obje
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
-        $buttons = parent::getToolbarButtons($record);
+        $buttons = parent::getToolbarButtons($record, $fromSearchParams);
         unset($buttons['create']);
         return $buttons;
     }

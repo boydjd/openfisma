@@ -281,9 +281,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $user = Doctrine::getTable('User')->find($id);
 
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
         $this->view->username = $user->username;
         $this->view->columns = array('Timestamp', 'User', 'Message');
-        $this->view->viewLink = "/user/view/id/$id";
+        $this->view->viewLink = "/user/view/id/$id$fromSearchUrl";
 
         $logs = $user->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
 
@@ -658,8 +661,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
 
-        $this->view->auditLogLink = "/user/log/id/$id";
-        $this->view->commentLink = "/user/comments/id/$id";
+        $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+        $this->view->fromSearchUrl = $fromSearchUrl;
+        $this->view->auditLogLink = "/user/log/id/$id$fromSearchUrl";
+        $this->view->commentLink = "/user/comments/id/$id$fromSearchUrl";
         $this->view->tabView = $tabView;
         $this->view->roles = Zend_Json::encode($roles);
 
@@ -909,8 +916,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->dataTable = $dataTable;
 
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
         $this->view->username = $user->username;
-        $this->view->viewLink = "/user/view/id/$id";
+        $this->view->viewLink = "/user/view/id/$id$fromSearchUrl";
 
         $commentButton = new Fisma_Yui_Form_Button(
             'commentButton',

@@ -2,6 +2,7 @@
     Fisma_Format_Section::startSection("Mitigation Strategy");
     $finding = $this->finding;
     $organization = $finding->Organization->nickname;
+    $fromSearchUrl = $this->fromSearchUrl;
 ?>
 <p>
     <b>Type:</b>
@@ -137,7 +138,7 @@ foreach ($array as $row) {
 
 $warning = "WARNING: You are about to submit mitigation strategy. This action cannot be undone. "
            . 'Please click "YES" to confirm your action or click "No" to stop.';
-$args = array(null, '/finding/remediation/msa/do/submitmitigation/id/', $finding->id);
+$args = array(null, '/finding/remediation/msa/do/submitmitigation' . $fromSearchUrl . '/id/', $finding->id);
 
 if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
     $submitMitigationButton = new Fisma_Yui_Form_Button(
@@ -175,7 +176,7 @@ if (
 ) {
     $message = 'The revised mitigation strategy must be fully approved before evidence can be re-submitted.'
              . ' Are you sure that you want to continue?';
-    $args = array(null, '/finding/remediation/msa/do/revisemitigation/id/', $finding->id);
+    $args = array(null, '/finding/remediation/msa/do/revisemitigation' . $fromSearchUrl . '/id/', $finding->id);
     $reviseMitigationButton = new Fisma_Yui_Form_Button(
         'reviseMitigationButton',
         array(

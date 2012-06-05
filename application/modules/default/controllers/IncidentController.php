@@ -625,6 +625,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->view->id = $id;
         $this->view->incident = $incident;
 
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
         // Put a span around the comment count so that it can be updated from Javascript
         $commentCount = '<span id=\'incidentCommentsCount\'>' . $incident->getComments()->count() . '</span>';
 
@@ -641,8 +644,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab('Audit Log', "/incident/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
-        $this->view->formAction = "/incident/update/id/$id";
-        $this->view->toolbarButtons = $this->getToolbarButtons($incident);
+        $this->view->formAction = "/incident/update/id/$id$fromSearchUrl";
+        $this->view->toolbarButtons = $this->getToolbarButtons($incident, $fromSearchParams);
+        $this->view->searchButtons = $this->getSearchButtons($incident, $fromSearchParams);
     }
 
     /**
@@ -705,7 +709,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $incident->getAuditLog()->write("The incident has been locked.");
 
-        $this->_redirect("/incident/view/id/$id");
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+        $this->_redirect("/incident/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -725,7 +732,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $incident->getAuditLog()->write("The incident has been unlocked.");
 
-        $this->_redirect("/incident/view/id/$id");
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+        $this->_redirect("/incident/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -1481,6 +1491,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             throw new Fisma_Zend_Exception_User("Invalid Incident ID");
         }
 
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
         if ($this->getRequest()->getPost('reject')) {
             $incident->reject();
             $incident->save();
@@ -1509,7 +1522,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($e->getMessage(), 'warning');
         }
 
-        $this->_redirect("/incident/view/id/$id");
+        $this->_redirect("/incident/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -1829,13 +1842,19 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      * Replace the default "Create" button with a "Report Incident" button
      *
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
+     * @param array $fromSearchParams The array for "Previous" and "Next" button null if not
      * @return array Array of Fisma_Yui_Form_Button
      */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null)
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
-        $buttons = parent::getToolbarButtons($record);
+        $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         unset($buttons['create']);
+
+        $fromSearchUrl = '';
+        if (!empty($fromSearchParams)) {
+            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        }
 
         $buttons['report'] = new Fisma_Yui_Form_Button_Link(
             'toolbarReportIncidentButton',
@@ -1851,7 +1870,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'discardChanges',
                 array(
                     'value' => 'Discard Changes',
-                    'href' => "/incident/view/id/{$record->id}"
+                    'href' => "/incident/view/id/{$record->id}$fromSearchUrl"
                 )
             );
 
@@ -1883,7 +1902,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                           'label' => 'Unlock Incident',
                           'onClickFunction' => 'Fisma.Util.formPostAction',
                           'onClickArgument' => array(
-                              'action' => '/incident/unlock/', 
+                              'action' => "/incident/unlock$fromSearchUrl", 
                                'id' => $record->id
                         ) 
                     )
@@ -1895,7 +1914,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                            'label' => 'Lock Incident',
                            'onClickFunction' => 'Fisma.Util.formPostAction',
                            'onClickArgument' => array(
-                           'action' => '/incident/lock/', 
+                           'action' => "/incident/lock$fromSearchUrl", 
                            'id' => $record->id
                         ) 
                     )
