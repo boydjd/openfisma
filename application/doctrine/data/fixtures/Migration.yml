@@ -87,3 +87,8 @@ Migration:
         minorVersion: 18
         tagNumber: 0
         name: AddMaxFileUploadSize
+    021800_move_lock_type_to_poc:
+        majorVersion: 2
+        minorVersion: 18
+        tagNumber: 0
+        name: MoveLockTypeToPoc
