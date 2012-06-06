@@ -117,14 +117,14 @@ Fisma.Search = (function() {
          * two to use while handling this event.
          *
          * @param form Reference to the search form
-         * @param fromSearchForm {Boolean} indicate whether a search action comes from search form submission 
+         * @param fromSearchForm {Boolean} indicate whether a search action comes from search form submission
          */
         executeSearch: function (form, fromSearchForm) {
             var dataTable = Fisma.Search.yuiDataTable;
 
             var onDataTableRefresh = {
                 success : function (request, response, payload) {
- 
+
                     // It sets start to 0 when fromSearchForm is true, so does payload.pagination.recordOffset
                     if (fromSearchForm) {
                         payload.pagination.recordOffset = 0;
@@ -137,11 +137,11 @@ Fisma.Search = (function() {
 
                     do {
                         sortColumn = dataTable.getColumn(sortColumnIndex);
-                        
+
                         sortColumnIndex++;
                     } while (sortColumn.formatter === Fisma.TableFormat.formatCheckbox);
 
-                    // Reset the page to 1 if search form is submitted 
+                    // Reset the page to 1 if search form is submitted
                     if (!YAHOO.lang.isUndefined(form.search)  && 'Search' === form.search.value) {
                         dataTable.get('paginator').setPage(1);
                     }
@@ -229,7 +229,10 @@ Fisma.Search = (function() {
                 query.keywords = form.keywords.value;
             } else if ('advanced' === searchType) {
                 var queryData = this.advancedSearchPanel.getQuery();
-
+                query.query = YAHOO.lang.JSON.stringify(queryData);
+            } else if ('faceted' === searchType) {
+                query.keywords = form.keywords.value;
+                var queryData = this.advancedSearchPanel.getQuery();
                 query.query = YAHOO.lang.JSON.stringify(queryData);
             } else {
                 throw "Invalid value for search type: " + searchType;
@@ -351,6 +354,9 @@ Fisma.Search = (function() {
                 postData.keywords = document.getElementById('keywords').value;
             } else if ('advanced' === searchType) {
                 postData.query = YAHOO.lang.JSON.stringify(Fisma.Search.advancedSearchPanel.getQuery());
+            } else if ('faceted' === searchType) {
+                postData.keywords = document.getElementById('keywords').value;
+                postData.query = YAHOO.lang.JSON.stringify(Fisma.Search.advancedSearchPanel.getQuery());
             } else {
                 throw "Invalid value for search type: " + searchType;
             }
@@ -397,17 +403,71 @@ Fisma.Search = (function() {
                 advancedSearch.style.display = 'block';
                 Dom.get('keywords').style.visibility = 'hidden';
                 Dom.get('searchType').value = 'advanced';
-                yuiButton.set("checked", true);
+                if (yuiButton) { yuiButton.set("checked", true); }
             } else {
                 advancedSearch.style.display = 'none';
                 Dom.get('keywords').style.visibility = 'visible';
                 Dom.get('searchType').value = 'simple';
-                yuiButton.set("checked", false);
+                if (yuiButton) { yuiButton.set("checked", false); }
 
                 // The error message of advance search should not be displayed
                 // after the advanced search options is hidden
                 Dom.get('msgbar').style.display = 'none';
             }
+        },
+
+        /**
+         * Toggle internal logic of advanced search without manipulating the layout
+         *
+         * @param boolean state The state to set to
+         */
+        setFacetSearch : function (state) {
+            var Dom = YAHOO.util.Dom;
+            if (state) {
+                Dom.get('searchType').value = 'faceted';
+            } else {
+                Dom.get('searchType').value = 'simple';
+            }
+        },
+
+        /**
+         * Handle facet links
+         *
+         * @param linkElement The HTML anchor element, whose id contains the filter
+         * @return false
+         */
+        facetSearch : function (linkElement) {
+            var args = linkElement.id.split('_');
+            if (args.shift() != 'filter') {
+                return false;
+            }
+            var field = args.shift();
+            Fisma.Search.setFacetSearch(true);
+
+            jQuery('a[id^=filter_' + field + '].selected').removeClass('selected');
+            linkElement.className = 'selected';
+
+            var panel = Fisma.Search.advancedSearchPanel;
+            panel.criteria = [];
+            jQuery('a.selected').each(function(index, element){
+                var args = element.id.split('_');
+                if (args.shift() != 'filter') {
+                    return false;
+                }
+                var field = args.shift();
+                var type = args.shift();
+                if (type != 'all') {
+                    var criterion1 = new Fisma.Search.Criteria(panel, panel.searchableFields);
+                    criterion1.currentField = criterion1.getField(field);
+                    criterion1.currentQueryType = type;
+                    criterion1.forcedOperands = args;
+                    panel.criteria.push(criterion1);
+                }
+            });
+
+            Fisma.Search.executeSearch(YAHOO.util.Dom.get('searchForm'), true);
+
+            return false;
         },
 
         /**
@@ -544,12 +604,12 @@ Fisma.Search = (function() {
          */
         toggleShowDeletedRecords : function () {
             Fisma.Search.showDeletedRecords = !Fisma.Search.showDeletedRecords;
-            
+
             var searchForm = document.getElementById('searchForm');
 
             Fisma.Search.handleSearchEvent(searchForm);
         },
-        
+
         /**
          * Delete the records selected in the YUI data table
          */
@@ -577,14 +637,14 @@ Fisma.Search = (function() {
             var deleteRecords = [];
             deleteRecords.push(YAHOO.lang.JSON.stringify(checkedRecords));
 
-            var warningMessage = '';  
+            var warningMessage = '';
             if (1 === checkedRecords.length) {
                 warningMessage = 'Delete 1 record?';
             } else {
                 warningMessage = "Delete " + checkedRecords.length + " records?";
             }
-            var config = {text : warningMessage, 
-                          func : 'Fisma.Search.doDelete', 
+            var config = {text : warningMessage,
+                          func : 'Fisma.Search.doDelete',
                           args : deleteRecords  };
             var e = null;
             Fisma.Util.showConfirmDialog(e, config);
@@ -614,7 +674,7 @@ Fisma.Search = (function() {
 
                     do {
                         sortColumn = dataTable.getColumn(sortColumnIndex);
-                        
+
                         sortColumnIndex++;
                     } while (sortColumn.formatter === Fisma.TableFormat.formatCheckbox);
 
@@ -634,7 +694,7 @@ Fisma.Search = (function() {
 
             // Submit request to delete records
             YAHOO.util.Connect.asyncRequest(
-                'POST', 
+                'POST',
                 multiDeleteUrl,
                 {
                     success : function(o) {
@@ -642,7 +702,7 @@ Fisma.Search = (function() {
 
                         if (o.responseText !== undefined) {
                             var response = YAHOO.lang.JSON.parse(o.responseText);
-                            
+
                             Fisma.Util.message(response.msg, response.status, true);
                         }
 
@@ -658,7 +718,7 @@ Fisma.Search = (function() {
                     },
                     failure : function(o) {
                         var text = 'An error occurred while trying to delete the records.';
-                        text += ' The error has been logged for administrator review.'; 
+                        text += ' The error has been logged for administrator review.';
                         Fisma.Util.message(text, "warning", true);
                     }
                 },
@@ -691,7 +751,7 @@ Fisma.Search = (function() {
 
         /**
          * Key press listener
-         * 
+         *
          * @param element The element to which the key event sould be attached
          */
         onKeyPress : function (element) {

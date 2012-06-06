@@ -739,16 +739,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $searchMoreOptionsForm = $this->getSearchMoreOptionsForm();
         $this->view->searchMoreOptionsForm = $searchMoreOptionsForm;
 
-        // If there is an advanced parameter, switch the form default from simple to advanced.
-        if ('advanced' == $this->getRequest()->getParam('queryType')) {
-            $searchForm->getElement('searchType')->setValue('advanced');
-            $searchForm->getElement('keywords')->setAttrib('style', 'visibility: hidden;');
-
-            $searchMoreOptionsForm->getElement('advanced')->setAttrib('checked', 'true');
-
-            $searchResultsTable->setDeferData(true);
-        }
-
         $this->view->toolbarButtons = $this->getToolbarButtons(null);
         $this->view->pluralModelName = $this->getPluralModelName();
         $this->view->assign($searchResultsTable->getProperties());
@@ -763,6 +753,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->view->advancedSearchOptions = json_encode($advancedSearchOptions);
         $this->view->searchPreferences = $this->_getSearchPreferences();
+
+        if ($table instanceof Fisma_Search_Facetable) {
+            $this->view->facet = $table->getFacetedFields();
+            $searchForm->removeElement('advanced');
+        }
 
         $this->renderScript('object/list.phtml');
     }
@@ -884,6 +879,37 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             // Run advanced search
             $result = $searchEngine->searchByCriteria(
                 $this->_modelName,
+                $searchCriteria,
+                $sortColumn,
+                $sortBoolean,
+                $start,
+                $rows,
+                $showDeletedRecords
+            );
+        } else if ('faceted' == $queryType) {
+            // Extract keyword
+            $keywords = $this->getRequest()->getParam('keywords');
+
+            // Extract search criteria from URL query string
+            $searchCriteria = new Fisma_Search_Criteria;
+
+            $queryJson = $this->getRequest()->getParam('query');
+            $query = Zend_Json::decode($queryJson);
+
+            foreach ($query as $queryItem) {
+                $searchCriterion = new Fisma_Search_Criterion(
+                    $queryItem['field'],
+                    $queryItem['operator'],
+                    $queryItem['operands']
+                );
+
+                $searchCriteria->add($searchCriterion);
+            }
+
+            // Run facet search
+            $result = $searchEngine->searchByFacet(
+                $this->_modelName,
+                $keywords,
                 $searchCriteria,
                 $sortColumn,
                 $sortBoolean,

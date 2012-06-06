@@ -38,6 +38,7 @@
         };
     QueryState.TYPE_SIMPLE = "simple";
     QueryState.TYPE_ADVANCED = "advanced";
+    QueryState.TYPE_FACETED = "faceted";
     QueryState.prototype = {
         /**
          * Basic getter for all state information.
@@ -69,10 +70,11 @@
             var state = this.getState();
             if (!Lang.isObject(state) || !Lang.isValue(state.searchType)) {
                 return QueryState.TYPE_SIMPLE;
-            } 
+            }
             switch (state.searchType) {
                 case QueryState.TYPE_SIMPLE:
                 case QueryState.TYPE_ADVANCED:
+                case QueryState.TYPE_FACETED:
                     return state.searchType;
                 default:
                     throw "Invalid search type encountered.";
@@ -91,7 +93,7 @@
             newData.searchType = type;
             if (type === "simple") {
                 newData.keywords = oldData.keywords || "";
-            } else if (type === "advanced") {
+            } else if (type === "advanced" || type === "faceted") {
                 newData.advancedQuery = oldData.advancedQuery || [];
             } else {
                 throw "Invalid search type specified.";
@@ -109,7 +111,7 @@
             var state = this.getState();
             if (!Lang.isObject(state) || !Lang.isValue(state.keywords)) {
                 return "";
-            } 
+            }
             return state.keywords;
         },
 
