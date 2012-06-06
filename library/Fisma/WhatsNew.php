@@ -35,8 +35,8 @@ class Fisma_WhatsNew
     public static function checkContents($throwException = false)
     {
         $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
-        $configFile = realpath(Fisma::getPath('config')) . '/whatsnew/'
-                    . substr($versions['application'], 0, -2) . '/whatsnew.yml';
+        $appVersion = substr($versions['application'], 0, -2);
+        $configFile = realpath(Fisma::getPath('config')) . '/whatsnew/' . $appVersion . '/whatsnew.yml';
 
         if (!file_exists($configFile)) {
             if ($throwException) {
@@ -49,7 +49,7 @@ class Fisma_WhatsNew
 
         if (!is_array($contents) || count($contents) <= 0) {
             if ($throwException) {
-                throw new Fisma_Zend_Exception_User('There is no content for ' .  substr($versions['application'], 0, -2));
+                throw new Fisma_Zend_Exception_User('There is no content for ' . $appVersion);
             }
             return false;
         }
