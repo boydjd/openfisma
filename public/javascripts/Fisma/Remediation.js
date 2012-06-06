@@ -60,7 +60,6 @@ Fisma.Remediation = {
                 panel.hideEvent.subscribe(function () {
                     setTimeout(function () {
                         panel.destroy();
-                        uploadIconTooltipObj.destroy();
                     }, 0);
                 });
             }
@@ -167,6 +166,14 @@ Fisma.Remediation = {
                 return false;
             }}});
         }
+
+        // Register listener for the panel close event
+        panel.hideEvent.subscribe(function () {
+            setTimeout(function () {
+                panel.destroy();
+            }, 0);
+        });
+
         return true;
     },
 
