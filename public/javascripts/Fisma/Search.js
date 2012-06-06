@@ -424,10 +424,8 @@ Fisma.Search = (function() {
         setFacetSearch : function (state) {
             var Dom = YAHOO.util.Dom;
             if (state) {
-                //Dom.get('keywords').style.visibility = 'hidden';
                 Dom.get('searchType').value = 'faceted';
             } else {
-                //Dom.get('keywords').style.visibility = 'visible';
                 Dom.get('searchType').value = 'simple';
             }
         },
@@ -468,9 +466,6 @@ Fisma.Search = (function() {
             });
 
             Fisma.Search.executeSearch(YAHOO.util.Dom.get('searchForm'), true);
-            /*if (type == 'all') {
-                Fisma.Search.setFacetSearch(false); // re-activate simple search functionality
-            }*/
 
             return false;
         },
