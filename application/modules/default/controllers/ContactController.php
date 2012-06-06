@@ -183,15 +183,41 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
     public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $first = null, $last = null)
     {
         $buttons = array();
+        $view = $this->view;
 
         if ($this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
-            $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
-                'pocTreeButton',
-                array(
-                    'value' => 'Tree View',
-                    'href' => $this->getBaseUrl() . '/tree'
-                )
-            );
+            if ($this->getRequest()->getActionName() === 'list') {
+                $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
+                    'pocTreeButton',
+                    array(
+                        'value' => 'Tree View',
+                        'href' => $this->getBaseUrl() . '/tree',
+                        'imageSrc' => $view->serverUrl('/images/tree_view.png')
+                    )
+                );
+            }
+            if ($this->getRequest()->getActionName() === 'tree') {
+                $buttons['list'] = new Fisma_Yui_Form_Button_Link(
+                    'pocListButton',
+                    array(
+                        'value' => 'List View',
+                        'href' => $this->getBaseUrl() . '/list',
+                        'imageSrc' => $view->serverUrl('/images/list_view.png')
+                    )
+                );
+            }
+        }
+
+        if ($this->_acl->hasPrivilegeForClass('create', 'User')) {
+            if ($this->getRequest()->getActionName() !== 'view') {
+                $buttons['createUser'] = new Fisma_Yui_Form_Button_Link(
+                    'createUserButton',
+                    array(
+                        'value' => 'Create New User',
+                        'href' => '/user/create'
+                    )
+                );
+            }
         }
 
         $buttons = array_merge($buttons, parent::getToolbarButtons($record));
@@ -211,8 +237,6 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->toolbarButtons = $this->getToolbarButtons();
 
-        // "Return To Search Results" doesn't make sense on this screen, so rename that button:
-        $this->view->toolbarButtons['list']->setValue("List View");
         $this->view->csrfToken = $this->_helper->csrf->getToken();
 
         // We're already on the tree screen, so don't show a "view tree" button
