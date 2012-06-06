@@ -87,3 +87,9 @@ Migration:
         minorVersion: 18
         tagNumber: 0
         name: AddMaxFileUploadSize
+    021800_rev1_sa_02:
+        majorVersion: 2
+        minorVersion: 18
+        tagNumber: 0
+        name: Rev1Sa02
+
