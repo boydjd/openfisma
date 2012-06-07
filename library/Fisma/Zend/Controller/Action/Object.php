@@ -130,8 +130,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 array(
                     'value' => 'Create New ' . $this->getSingularModelName(),
                     'href' => $this->getBaseUrl() . '/create',
-                    'imageSrc' => $view->serverUrl('/images/create.png'),
-                    'longText' => 1
+                    'imageSrc' => $view->serverUrl('/images/create.png')
                 )
             );
         }
@@ -181,22 +180,22 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 )
             );
 
-            $buttons['toggleSearchColumnPanel'] = new Fisma_Yui_Form_Button(
-                'toolbartoggleSearchColumnPanelButton',
+            $buttons['configureColumn'] = new Fisma_Yui_Form_Button(
+                'toolbarConfigureColumnButton',
                 array(
-                    'label' => 'Toggle Column Visibility',
+                    'label' => 'Configure Columns',
+                    'imageSrc' => $view->serverUrl('/images/application_view_columns.png'),
                     'onClickFunction' => 'Fisma.Search.toggleSearchColumnsPanel'
                 )
             );
 
-            $buttons['toggleSearchColumnPanel'] = new Fisma_Yui_Form_Button(
-                'toolbartoggleSearchColumnPanelButton',
+            $buttons['moreAction'] = new Fisma_Yui_Form_Button(
+                'toolbarMoreActionButton',
                 array(
-                    'label' => 'Toggle Column Visibility',
-                    'onClickFunction' => 'Fisma.Search.toggleSearchColumnsPanel'
+                    'label' => 'More Action',
+                    'onClickFunction' => 'Fisma.Search.toggleMoreButton'
                 )
             );
-
         }    
         return $buttons;
     }
@@ -222,8 +221,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 array(
                     'value' => 'Return to Search Results',
                     'href' => $this->getBaseUrl() . '/list',
-                    'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png'),
-                    'longText' => 1 // Set button background style differently with long text label.
+                    'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png')
                 )
             );
         }
