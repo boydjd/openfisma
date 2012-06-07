@@ -6,20 +6,6 @@
 
 [search_more_options]
 
-elements.exportXls.type = "Form_Button"
-elements.exportXls.options.onClickFunction = "Fisma.Search.exportToFile"
-elements.exportXls.options.onClickArgument = "xls"
-elements.exportXls.options.label = "Export To Excel"
-
-elements.exportPdf.type = "Form_Button"
-elements.exportPdf.options.onClickFunction = "Fisma.Search.exportToFile"
-elements.exportPdf.options.onClickArgument = "pdf"
-elements.exportPdf.options.label = "Export To PDF"
-
-elements.columns.type = "Form_Button_Checkbox"
-elements.columns.options.onClickFunction = "Fisma.Search.toggleSearchColumnsPanel"
-elements.columns.options.label = "Toggle Column Visibility"
-
 elements.showDeleted.type = "Form_Button_Checkbox"
 elements.showDeleted.options.onClickFunction = "Fisma.Search.toggleShowDeletedRecords"
 elements.showDeleted.options.label = "Display Deleted Records"
@@ -27,4 +13,4 @@ elements.showDeleted.options.label = "Display Deleted Records"
 elements.deleteSelected.type = "Form_Button"
 elements.deleteSelected.options.onClickFunction = "Fisma.Search.deleteSelectedRecords"
 elements.deleteSelected.options.label = "Delete Selected Records"
-
+elements.deleteSelected.options.imageSrc = "/images/trash_recyclebin_empty_closed.png"

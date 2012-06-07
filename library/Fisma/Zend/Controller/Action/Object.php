@@ -122,6 +122,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $buttons = array();
         $isList = $this->getRequest()->getActionName() === 'list';
         $isView = $this->getRequest()->getActionName() === 'view';
+        $view = Zend_Layout::getMvcInstance()->getView();
 
         if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
             $buttons['create'] = new Fisma_Yui_Form_Button_Link(
@@ -129,6 +130,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 array(
                     'value' => 'Create New ' . $this->getSingularModelName(),
                     'href' => $this->getBaseUrl() . '/create',
+                    'imageSrc' => $view->serverUrl('/images/create.png'),
+                    'longText' => 1
                 )
             );
         }
@@ -157,6 +160,44 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             );
         }
 
+        if ($isList) {
+            $buttons['exportXls'] = new Fisma_Yui_Form_Button(
+                'toolbarExportXlsButton',
+                array(
+                    'label' => 'Export To Excel',
+                    'onClickFunction' => 'Fisma.Search.exportToFile',
+                    'imageSrc' => $view->serverUrl('/images/xls.gif'),
+                    'onClickArgument' => 'xls'
+                )
+            );
+
+            $buttons['exportPdf'] = new Fisma_Yui_Form_Button(
+                'toolbarExportPdfButton',
+                array(
+                    'label' => 'Export To PDF',
+                    'imageSrc' => $view->serverUrl('/images/pdf.gif'),
+                    'onClickFunction' => 'Fisma.Search.exportToFile',
+                    'onClickArgument' => 'pdf'
+                )
+            );
+
+            $buttons['toggleSearchColumnPanel'] = new Fisma_Yui_Form_Button(
+                'toolbartoggleSearchColumnPanelButton',
+                array(
+                    'label' => 'Toggle Column Visibility',
+                    'onClickFunction' => 'Fisma.Search.toggleSearchColumnsPanel'
+                )
+            );
+
+            $buttons['toggleSearchColumnPanel'] = new Fisma_Yui_Form_Button(
+                'toolbartoggleSearchColumnPanelButton',
+                array(
+                    'label' => 'Toggle Column Visibility',
+                    'onClickFunction' => 'Fisma.Search.toggleSearchColumnsPanel'
+                )
+            );
+
+        }    
         return $buttons;
     }
 
@@ -1194,14 +1235,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $searchForm = Fisma_Zend_Form_Manager::loadForm('search_more_options');
 
-        // Remove the "Show Deleted" button if this model doesn't support soft-delete
-        if (!Doctrine::getTable($this->_modelName)->hasColumn('deleted_at')) {
-            $searchForm->removeElement('showDeleted');
-        }
-
         // Remove the delete button if the user doesn't have the right to click it
         if (!$this->_isDeletable() || !$this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
             $searchForm->removeElement('deleteSelected');
+        }
+
+        // Remove the "Show Deleted" button if this model doesn't support soft-delete
+        if (!Doctrine::getTable($this->_modelName)->hasColumn('deleted_at')) {
+            $searchForm->removeElement('showDeleted');
         }
 
         $searchForm->setDecorators(
