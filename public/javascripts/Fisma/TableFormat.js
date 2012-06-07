@@ -157,7 +157,7 @@ Fisma.TableFormat = {
      */
     yesNo : function (elCell, oRecord, oColumn, oData) {
         elCell.innerHTML = oData;
-        elCell.parentNode.style.textAlign = 'center'
+        elCell.parentNode.style.textAlign = 'center';
 
         if ('YES' === oData) {
             Fisma.TableFormat.green(elCell.parentNode);
@@ -200,7 +200,7 @@ Fisma.TableFormat = {
         icon.src = '/images/del.png';
 
         elCell.appendChild(icon);
-        elCell.parentNode.style.textAlign = 'center'
+        elCell.parentNode.style.textAlign = 'center';
 
         YAHOO.util.Event.on(icon, "click", function() {
             Fisma.Util.formPostAction(null, oData, null);
