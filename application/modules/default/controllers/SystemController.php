@@ -352,9 +352,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         foreach ($documents as $document) {
             $documentRows[] = array(
-                'fileName' => "<a href=/system-document/download/id/{$document->id}>"
-                            . "<img src={$this->view->escape($document->getIconUrl())}>"
-                            . "<div>{$this->view->escape($document->DocumentType->name)}</div></a>",
+                'iconUrl'      => "<a href=\"/system-document/download/id/{$document->id}\">"
+                                 . "<img src=\"{$this->view->escape($document->getIconUrl())}\"></a>",
+                'fileName' => $this->view->escape($document->DocumentType->name),
+                'fileNameLink' => "<a href=\"/system-document/download/id/{$document->id}\">"
+                                . $this->view->escape($document->DocumentType->name) . "</a>",
                 'size' => $document->getSizeKb(),
                 'version' => $document->version,
                 'description' => $this->view->textToHtml($this->view->escape($document->description)),
@@ -368,10 +370,34 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable->addColumn(
             new Fisma_Yui_DataTable_Column(
+                'Icon',
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'icon'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'File Name',
+                false,
+                null,
+                null,
+                'fileName',
+                true
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
                 'File Name',
                 true,
                 'Fisma.TableFormat.formatHtml',
                 null,
+                'fileNameLink',
+                false,
+                'string',
                 'fileName'
             )
         );
