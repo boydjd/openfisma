@@ -636,7 +636,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Create tab view
         $tabView = new Fisma_Yui_TabView('SystemView', $id);
 
-        $tabView->addTab("Incident #$id", "/incident/incident/id/$id");
+        $tabView->addTab("Incident $id", "/incident/incident/id/$id");
         $tabView->addTab('Workflow', "/incident/workflow/id/$id");
         $tabView->addTab('Actors & Observers', "/incident/users/id/$id");
         $tabView->addTab("Comments ($commentCount)", "/incident/comments/id/$id");
@@ -1430,7 +1430,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
             $this->_assertCurrentUserCanUpdateIncident($id);
 
-            $file = $_FILES['file']; 
+            $file = $_FILES['file'];
             if (Fisma_FileManager::getUploadFileError($file)) {
                $error = Fisma_FileManager::getUploadFileError($file);
                throw new Fisma_Zend_Exception_User($error);
@@ -1902,9 +1902,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                           'label' => 'Unlock Incident',
                           'onClickFunction' => 'Fisma.Util.formPostAction',
                           'onClickArgument' => array(
-                              'action' => "/incident/unlock$fromSearchUrl", 
+                              'action' => "/incident/unlock$fromSearchUrl",
                                'id' => $record->id
-                        ) 
+                        )
                     )
                 );
             } else {
@@ -1914,11 +1914,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                            'label' => 'Lock Incident',
                            'onClickFunction' => 'Fisma.Util.formPostAction',
                            'onClickArgument' => array(
-                           'action' => "/incident/lock$fromSearchUrl", 
+                           'action' => "/incident/lock$fromSearchUrl",
                            'id' => $record->id
-                        ) 
+                        )
                     )
-                );           
+                );
             }
         }
 

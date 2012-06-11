@@ -181,10 +181,24 @@ For example, two columns can be arranged like this:
 <div class="column left"></div>
 <div class="column right"></div>
 <div class="clear"></div>
+<div class="column66 left"></div>
+<div class="column33 right"></div>
+<div class="clear"></div>
 */
+div.column, div.column66, div.column33 {
+    margin-bottom: 0px;
+}
+
 div.column {
 	width: 49%;
-	margin-bottom: 0px;
+}
+
+div.column66 {
+    width: 66%;
+}
+
+div.column33 {
+    width: 33%;
 }
 
 div.left {
@@ -224,9 +238,11 @@ div#footerLinks {
 /* This table is used to display key-value pairs, such as on the remediation
    detail page. */
 table.keyValues tr:nth-child(even) {
-	background-color: #eef5fe;
+	/*background-color: #eef5fe;*/
 }
-
+table.keyValues {
+    margin-bottom: 0px;
+}
 table.keyValues td {
     padding: 5px;
     vertical-align: middle;

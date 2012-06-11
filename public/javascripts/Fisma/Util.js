@@ -52,7 +52,7 @@ Fisma.Util = {
             // make the submit button a YUI widget
             var inputs = panel.body.getElementsByTagName("input");
             for (i in inputs) {
-                if (inputs[i].type === 'submit') {
+                if (!YAHOO.lang.isUndefined(inputs[i]) && inputs[i].type === 'submit') {
                     var submitButton = new YAHOO.widget.Button(inputs[i]);
                 }
             }
