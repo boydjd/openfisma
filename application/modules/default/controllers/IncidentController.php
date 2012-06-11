@@ -281,7 +281,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             'irReportCancel',
             array(
                 'label' => 'Cancel Report',
-                'imageSrc' => $this->view->serverUrl("/images/del.png"),
+                'imageSrc' => '/images/del.png',
             )
         );
         $formPart->addElement($cancelButton);
@@ -291,7 +291,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'irReportBackwards',
                 array(
                     'label' => 'Go Back',
-                    'imageSrc' => $this->view->serverUrl("/images/left_arrow.png"),
+                    'imageSrc' => '/images/left_arrow.png',
                 )
             );
             $formPart->addElement($backwardButton);
@@ -301,7 +301,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             'irReportForwards',
             array(
                 'label' => 'Continue',
-                'imageSrc' => $this->view->serverUrl("/images/right_arrow.png"),
+                'imageSrc' => '/images/right_arrow.png',
             )
         );
         $formPart->addElement($forwardButton);

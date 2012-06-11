@@ -286,7 +286,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     'deleteFinding',
                     array(
                           'label' => 'Delete Finding',
-                          'imageSrc' => $view->serverUrl('/images/trash_recyclebin_empty_closed.png'),
+                          'imageSrc' => '/images/trash_recyclebin_empty_closed.png',
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
                               'args' => $args,
@@ -302,7 +302,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
                 $discardChangesButtonConfig = array(
                     'value' => 'Discard Changes',
-                    'imageSrc' => $view->serverUrl('/images/no_entry.png'),
+                    'imageSrc' => '/images/no_entry.png',
                     'href' => '/finding/remediation/view/id/' . $finding->id . $fromSearchUrl
                 );
 
@@ -315,7 +315,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     'saveChanges',
                     array(
                           'label' => 'Save Changes',
-                          'imageSrc' => $view->serverUrl('/images/ok.png'),
+                          'imageSrc' => '/images/ok.png',
                          )
                 );
             }
@@ -338,8 +338,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             array(
                 'value' => 'Return to Search Results',
                 'href' => $this->getBaseUrl() . '/list',
-                'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png'),
-                'longText' => 1
+                'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png')
             )
         );
 
