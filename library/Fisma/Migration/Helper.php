@@ -273,6 +273,20 @@ class Fisma_Migration_Helper
     }
 
     /**
+     * Move a column in a table
+     *
+     * @param string $table
+     * @param string $column
+     * @param string $definition
+     * @param string $after move this column immediately after the $after column.
+     */
+    public function moveColumn($table, $column, $definition, $after)
+    {
+        $sql = "ALTER TABLE `$table` MODIFY COLUMN `$column` $definition AFTER `$after`";
+        $this->exec($sql);
+    }
+
+    /**
      * Add columns to a table
      *
      * @see addColumn

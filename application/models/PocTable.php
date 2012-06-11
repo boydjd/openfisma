@@ -25,7 +25,7 @@
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable, Fisma_Search_Facetable
 {
     /**
      * Implement the interface for Searchable
@@ -34,7 +34,7 @@ class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
     {
         return array (
             'username' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Contact Name',
                 'sortable' => true,
                 'type' => 'text'
@@ -86,6 +86,31 @@ class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'label' => 'Modified Date',
                 'sortable' => true,
                 'type' => 'datetime'
+            ),
+            'reportingOrganizationId' => array(
+                'initiallyVisible' => true,
+                'label' => 'Reporting Organization',
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'ReportingOrganization',
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'lockType' => array(
+                'enumValues' => $this->getEnumValues('lockType'),
+                'initiallyVisible' => false,
+                'label' => 'Account Lock',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'type' => array(
+                'enumValues' => array('User'),
+                'initiallyVisible' => true,
+                'label' => 'Account Type',
+                'sortable' => true,
+                'type' => 'enum'
             )
         );
     }
@@ -98,5 +123,74 @@ class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
     public function getAclFields()
     {
         return array();
+    }
+
+    /**
+     * Returns an array of faceted filters
+     *
+     * @return array
+     */
+    public function getFacetedFields()
+    {
+        return array(
+            array(
+                'label' => 'Account Type',
+                'column' => 'type',
+                'filters' => array(
+                    array(
+                        'label' => 'Contacts',
+                        'operator' => 'enumIsNot',
+                        'operands' => array('User')
+                    ),
+                    array(
+                        'label' => 'Users',
+                        'operator' => 'enumIs',
+                        'operands' => array('User')
+                    )
+                )
+            ),
+            array(
+                'label' => 'Account Status',
+                'column' => 'lockType',
+                'filters' => array(
+                    array(
+                        'label' => 'Active',
+                        'operator' => 'enumNotIn',
+                        'operands' => $this->getEnumValues('lockType')
+                    ),
+                    array(
+                        'label' => 'Disabled',
+                        'operator' => 'enumIs',
+                        'operands' => array('manual')
+                    ),
+                    array(
+                        'label' => 'Locked',
+                        'operator' => 'enumIn',
+                        'operands' => array('expired', 'inactive', 'password')
+                    )
+                )
+            ),
+            array(
+                'label' => 'Lock Reason',
+                'column' => 'lockType',
+                'filters' => array(
+                    array(
+                        'label' => 'Inactivity',
+                        'operator' => 'enumIs',
+                        'operands' => array('inactive')
+                    ),
+                    array(
+                        'label' => 'Password Expiration',
+                        'operator' => 'enumIs',
+                        'operands' => array('expired')
+                    ),
+                    array(
+                        'label' => 'Invalid Login Attempts',
+                        'operator' => 'enumIs',
+                        'operands' => array('password')
+                    )
+                )
+            )
+        );
     }
 }

@@ -142,7 +142,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             if (!empty($fromSearchParams)) {
                 $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
             }
- 
+
             $buttons['reassociate'] = new Fisma_Yui_Form_Button(
                 'toolbarReassociateButton',
                 array(
@@ -173,6 +173,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $isList = $this->getRequest()->getActionName() === 'list';
         $isView = $this->getRequest()->getActionName() === 'view';
         $resourceName = $this->getAclResourceName();
+        $modelName = ($this->_modelName === 'User') ? 'Poc' : $this->_modelName;
         $view = Zend_Layout::getMvcInstance()->getView();
 
         if (!$isList && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('read', $resourceName))) {
@@ -198,8 +199,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                            'url' => $this->getBaseUrl() . '/view/id/',
                            'id' => $record->id,
                            'action' => 'previous',
-                           'modelName' => $this->_modelName
-                    ) 
+                           'modelName' => $modelName
+                    )
                 )
 
             );
@@ -218,8 +219,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                            'url' => $this->getBaseUrl() . '/view/id/',
                            'id' => $record->id,
                            'action' => 'next',
-                           'modelName' => $this->_modelName
-                    ) 
+                           'modelName' => $modelName
+                    )
                 )
             );
 
@@ -455,7 +456,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $fromSearchUrl = '';
         if (!empty($fromSearchParams)) {
             $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
-        } 
+        }
 
         $subject = $this->_getSubject($id);
 
@@ -907,7 +908,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
 
             // Run facet search
-            $result = $searchEngine->searchByFacet(
+            $result = $searchEngine->search(
                 $this->_modelName,
                 $keywords,
                 $searchCriteria,
@@ -1070,7 +1071,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $fromSearchUrl = '';
                 if (!empty($fromSearchParams)) {
                     $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
-                } 
+                }
                 $this->view->priorityMessenger($associatedObjects->count() . " " . $this->_associatedPlural
                                                 . " reassigned successfully.");
                 $this->_redirect($this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl);
@@ -1307,7 +1308,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      * Contruct fromSearchParams
      *
      * @param object $request The http request.
-     * @return array The fromSearchParams 
+     * @return array The fromSearchParams
      */
     protected function _getFromSearchParams($request)
     {
@@ -1315,7 +1316,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $first = $request->getParam('first');
         $last = $request->getParam('last');
         $fromSearch = $request->getParam('fromSearch');
-        
+
         $urlParams = array();
         if ($first) {
             $urlParams['first'] = 1;
@@ -1328,7 +1329,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         if ($fromSearch) {
             $urlParams['fromSearch'] = 1;
         }
-  
+
         return $urlParams;
     }
 }

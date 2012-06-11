@@ -120,9 +120,9 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
     }
 
     /**
-     * getUserByUserRoleIdQuery 
-     * 
-     * @param mixed $userRoleId 
+     * getUserByUserRoleIdQuery
+     *
+     * @param mixed $userRoleId
      * @access public
      * @return void
      */
@@ -135,9 +135,9 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
     }
 
     /**
-     * getUsersLikeUsernameQuery 
-     * 
-     * @param mixed $query 
+     * getUsersLikeUsernameQuery
+     *
+     * @param mixed $query
      * @access public
      * @return void
      */
@@ -146,19 +146,19 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
         $query = Doctrine_query::create()
                ->from('User u')
                ->where('u.username LIKE ?', $query . '%');
- 
-        // Do not display locked user with locktype of manual 
-        if (!$includeLockedUser) { 
+
+        // Do not display locked user with locktype of manual
+        if (!$includeLockedUser) {
             $query->andWhere('(u.locktype is null or u.locktype != ?)', 'manual');
         }
 
-        return $query;    
+        return $query;
     }
 
     /**
      * Build the query for getRoles()
      *
-     * @param mixed $userId 
+     * @param mixed $userId
      * @param mixed $hydrationMode Optional, defaults to Doctrine::HYDRATE_SCALAR.
      * @return Doctrine_Query
      */

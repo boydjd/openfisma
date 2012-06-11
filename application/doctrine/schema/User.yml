@@ -32,10 +32,6 @@ User:
             extra:
                 notify: true
         lockTs: timestamp
-        lockType:
-            type: enum
-            values: [manual, password, inactive, expired]
-            comment: Manual lock means the admin locked the account. Password lock means several consecutive password failures. Inactive lock means the user has not logged in recently enough. Expired locked means the password has expired.
         failureCount:
             type: integer
             default: 0

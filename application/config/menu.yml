@@ -340,7 +340,7 @@ Administration:
         param: admin
     submenu:
         POC:
-            label: Contacts
+            label: Contacts and Users
             link: /contact/list
             privilege:
                 func: hasPrivilegeForClass
@@ -378,13 +378,6 @@ Administration:
         Contact:
             label: Technical Contact
             link: /config/contact
-        User:
-            label: Users
-            link: /user/list
-            privilege:
-                func: hasPrivilegeForClass
-                param1: read
-                param2: user
 
 UserPreferences:
     label: User Preferences

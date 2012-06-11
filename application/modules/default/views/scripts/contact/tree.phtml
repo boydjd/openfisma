@@ -2,7 +2,7 @@
 
 echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm), 'none');
 
-Fisma_Format_Section::startSection("Contacts: Hierarchy View");
+Fisma_Format_Section::startSection("Tree View");
 
 ?>
 
@@ -26,9 +26,13 @@ YAHOO.util.Event.onDOMReady(
         treeView.render();
 
         var expandAllButton = new YAHOO.widget.Button("expandAllButton");
+        expandAllButton._button.style.background = "url('/images/expand.png') 1em 50% no-repeat";
+        expandAllButton._button.style.paddingLeft = '3em';
         expandAllButton.on("click", treeView.expandAll, treeView, true);
 
         var collapseAllButton = new YAHOO.widget.Button("collapseAllButton");
+        collapseAllButton._button.style.background = "url('/images/collapse.png') 1em 50% no-repeat";
+        collapseAllButton._button.style.paddingLeft = '3em';
         collapseAllButton.on("click", treeView.collapseAll, treeView, true);
     }
 );
