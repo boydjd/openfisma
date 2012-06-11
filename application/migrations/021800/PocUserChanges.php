@@ -61,5 +61,8 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
             'locktype'
         );
         $this->getHelper()->addUniqueKey('poc', array('email'), 'email');
+
+        $this->getHelper()->addColumn('poc', 'published', "tinyint(1) NOT NULL DEFAULT '1'", 'mustresetpassword');
+
     }
 }

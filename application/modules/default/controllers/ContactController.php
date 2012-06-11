@@ -106,6 +106,7 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
                     ->select("p.id, p.displayName AS name")
                     ->where('p.displayName LIKE ?', '%'.$keyword.'%')
                     ->andWhere('(p.lockType IS NULL OR p.lockType <> ?)', 'manual')
+                    ->andWhere('p.accountType = ? OR p.published', 'Contact')
                     ->orderBy("p.nameFirst")
                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 

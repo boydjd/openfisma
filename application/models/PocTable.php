@@ -111,6 +111,12 @@ class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable, 
                 'label' => 'Account Type',
                 'sortable' => true,
                 'type' => 'enum'
+            ),
+            'published' => array(
+                'type' => 'boolean',
+                'label' => 'Visible',
+                'initiallyVisible' => true,
+                'sortable' => true
             )
         );
     }
@@ -188,6 +194,22 @@ class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable, 
                         'label' => 'Invalid Login Attempts',
                         'operator' => 'enumIs',
                         'operands' => array('password')
+                    )
+                )
+            ),
+            array(
+                'label' => 'Visible',
+                'column' => 'published',
+                'filters' => array(
+                    array(
+                        'label' => 'Visible',
+                        'operator' => 'booleanYes',
+                        'operands' => array()
+                    ),
+                    array(
+                        'label' => 'Not Visible',
+                        'operator' => 'booleanNo',
+                        'operands' => array()
                     )
                 )
             )
