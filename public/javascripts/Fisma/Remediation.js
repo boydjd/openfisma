@@ -55,6 +55,13 @@ Fisma.Remediation = {
                         var submitButton = new YAHOO.widget.Button(inputs[i]);
                     }
                 }
+            
+                // Register listener for the panel close event
+                panel.hideEvent.subscribe(function () {
+                    setTimeout(function () {
+                        panel.destroy();
+                    }, 0);
+                });
             }
         );
         return false;
@@ -159,6 +166,14 @@ Fisma.Remediation = {
                 return false;
             }}});
         }
+
+        // Register listener for the panel close event
+        panel.hideEvent.subscribe(function () {
+            setTimeout(function () {
+                panel.destroy();
+            }, 0);
+        });
+
         return true;
     },
 

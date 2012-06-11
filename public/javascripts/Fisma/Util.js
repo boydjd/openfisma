@@ -588,7 +588,7 @@ Fisma.Util = {
     },
 
     /**
-     * Display the description div to the below of element.
+     * Get Previous/Next record based on the id passed by config and then view the record.
      *
      * @param {Object} event.
      * @param {Object} config   
