@@ -275,6 +275,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
 
         $buttons = array();
+        $view = Zend_Layout::getMvcInstance()->getView();
 
         // Only display controls if the finding has not been deleted
         if (!$finding->isDeleted()) {
@@ -285,6 +286,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     'deleteFinding',
                     array(
                           'label' => 'Delete Finding',
+                          'imageSrc' => $view->serverUrl('/images/trash_recyclebin_empty_closed.png'),
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
                               'args' => $args,
@@ -300,6 +302,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
                 $discardChangesButtonConfig = array(
                     'value' => 'Discard Changes',
+                    'imageSrc' => $view->serverUrl('/images/no_entry.png'),
                     'href' => '/finding/remediation/view/id/' . $finding->id . $fromSearchUrl
                 );
 
@@ -310,7 +313,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
                 $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
                     'saveChanges',
-                    array('label' => 'Save Changes')
+                    array(
+                          'label' => 'Save Changes',
+                          'imageSrc' => $view->serverUrl('/images/ok.png'),
+                         )
                 );
             }
         }

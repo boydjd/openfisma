@@ -100,13 +100,15 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         if ($this->_acl->hasPrivilegeForClass('create', 'Asset')) {
-            $buttons[] = new Fisma_Yui_Form_Button_Link(
+            $button = new Fisma_Yui_Form_Button_Link(
                 'importAssetsButton',
                 array(
                     'value' => 'Import Assets',
                     'href' => $this->getBaseUrl() . '/import'
                 )
             );
+        
+            array_unshift($buttons, $button);
         }
 
         return $buttons;

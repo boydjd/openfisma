@@ -1870,6 +1870,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'discardChanges',
                 array(
                     'value' => 'Discard Changes',
+                    'imageSrc' => '/images/no_entry.png',
                     'href' => "/incident/view/id/{$record->id}$fromSearchUrl"
                 )
             );
@@ -1877,7 +1878,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
                 'saveChanges',
                 array(
-                    'label' => 'Save Changes'
+                    'label' => 'Save Changes',
+                    'imageSrc' => '/images/ok.png'
                 )
             );
         }

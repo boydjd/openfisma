@@ -268,6 +268,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
         $toolbarButtons = $this->getToolbarButtons($organization, $fromSearchParams);
+
+        if (isset($toolbarButtons['tree'])) {
+            unset($toolbarButtons['tree']);
+        }
+
         $searchButtons = $this->getSearchButtons($organization, $fromSearchParams);
 
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
@@ -278,6 +283,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                                  'discardChanges',
                                  array(
                                      'value' => 'Discard Changes',
+                                     'imageSrc' => '/images/no_entry.png',
                                      'href' => "/organization/view/id/$id$fromSearchUrl"
                                  )
                              );
@@ -285,7 +291,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             $submitButton = new Fisma_Yui_Form_Button_Submit(
                                 'saveChanges',
                                 array(
-                                    'label' => 'Save Changes'
+                                    'label' => 'Save Changes',
+                                     'imageSrc' => '/images/ok.png'
                                 )
                             );
 
@@ -407,7 +414,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $button = new Fisma_Yui_Form_Button_Link(
             'toolbarListButton',
             array(
-                'value' => 'View Organization List',
+                'value' => 'List View',
+                'imageSrc' => '/images/list_view.png',
                 'href' => $this->getBaseUrl() . '/list'
             )
         );
@@ -615,7 +623,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
                 'organizationTreeButton',
                 array(
-                    'value' => 'View Organization Hierarchy',
+                    'value' => 'Tree View',
+                    'imageSrc' => '/images/tree_view.png',
                     'href' => $this->getBaseUrl() . '/tree'
                 )
             );

@@ -118,6 +118,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                 'saveButton',
                 array(
                     'label' => 'Save',
+                    'imageSrc' => '/images/ok.png',
                     'onClickFunction' => 'Fisma.FindingWorkflow.forceSubmit'
                 )
             );
@@ -125,6 +126,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                 'cancelButton',
                 array(
                     'value' => 'Cancel',
+                    'imageSrc' => '/images/no_entry.png',
                     'href' => '/finding/workflow/view'
                 )
             );

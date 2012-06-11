@@ -32,6 +32,7 @@ displayGroups.source.elements.description = "description"
 
 elements.submit.type = "Form_Button"
 elements.submit.options.label = "Save"
+elements.submit.options.imageSrc = "/images/ok.png"
 elements.submit.options.onClickFunction = "function() {this.submitForm();}"
 displayGroups.source.elements.submit = "submit"
 

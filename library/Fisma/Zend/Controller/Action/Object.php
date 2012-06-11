@@ -189,13 +189,17 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 )
             );
 
-            $buttons['moreAction'] = new Fisma_Yui_Form_Button(
-                'toolbarMoreActionButton',
-                array(
-                    'label' => 'More Action',
-                    'onClickFunction' => 'Fisma.Search.toggleMoreButton'
-                )
-            );
+            // Show the "More" button only when there is element in the form. 
+            $elements = $this->getSearchMoreOptionsForm()->getElements();
+            if (!empty($elements)) {
+                $buttons['moreAction'] = new Fisma_Yui_Form_Button(
+                    'toolbarMoreActionButton',
+                    array(
+                        'label' => 'More',
+                        'onClickFunction' => 'Fisma.Search.toggleMoreButton'
+                    )
+                );
+            }
         }    
         return $buttons;
     }
@@ -1265,6 +1269,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function getViewButtons(Fisma_Doctrine_Record $subject)
     {
         $buttons = array();
+        $view = Zend_Layout::getMvcInstance()->getView();
 
         if ($this->_isDeletable() && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $postAction = "{$this->_moduleName}/{$this->_controllerName}/delete/";
@@ -1273,6 +1278,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 'delete' . $this->_modelName,
                  array(
                        'label' => 'Delete '. $this->_modelName,
+                       'imageSrc' => $view->serverUrl('/images/trash_recyclebin_empty_closed.png'),
                        'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                        'onClickArgument' => array(
                            'args' => array(null, $postAction, $subject->id),

@@ -91,4 +91,5 @@ displayGroups.finding.elements.threat = "threat"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Create Finding"
+elements.save.options.imageSrc = "/images/ok.png"
 displayGroups.finding.elements.save = "save"

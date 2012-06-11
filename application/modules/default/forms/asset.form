@@ -51,4 +51,5 @@ displayGroups.assetInfo.elements.networkId = "networkId"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save"
+elements.save.options.imageSrc = "/images/ok.png"
 displayGroups.assetInfo.elements.save = "save"

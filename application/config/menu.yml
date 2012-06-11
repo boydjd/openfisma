@@ -203,7 +203,7 @@ System:
             link: /system-document/list
         Organizations:
             label: Organizations
-            link: /organization/tree
+            link: /organization/list
         Systems:
             label: Systems
             link: /system/list

@@ -33,6 +33,7 @@ displayGroups.role.elements.description = "description"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save"
+elements.save.options.imageSrc = "/images/ok.png"
 displayGroups.role.elements.save = "save"
 
 ; I'm disabling this temporarily because it doesn't work quite right...

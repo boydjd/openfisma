@@ -54,6 +54,7 @@ displayGroups.organization.elements.copyOrganizationId = "copyOrganizationId"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save"
+elements.save.options.imageSrc = "/images/ok.png"
 displayGroups.organization.elements.save = "save"
 
 ; I'm disabling this temporarily because it doesn't work quite right...
