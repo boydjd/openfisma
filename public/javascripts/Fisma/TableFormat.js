@@ -456,7 +456,7 @@ Fisma.TableFormat = {
         } else if (oData === false) {
             cell.text("No");
         } else {
-            cell.html($("<span/>").addClass("highlight").text(oData.substr(-1) === "T" ? "Yes" : "No"));
+            cell.html($("<span/>").addClass("highlight").text(oData.substr(oData.length - 1) === "T" ? "Yes" : "No"));
         }
     }
 };
