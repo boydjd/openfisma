@@ -17,7 +17,7 @@
  */
 
 /**
- * Renders a simple seperator or gap in the form.
+ * Renders a simple separator or gap in the form.
  *
  * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
@@ -25,7 +25,7 @@
  * @package    Fisma
  * @subpackage Fisma_Zend_Form
  */
-class Fisma_Zend_Form_Element_Seperator extends Zend_Form_Element
+class Fisma_Zend_Form_Element_Separator extends Zend_Form_Element
 {
     /**
      * Render the form element

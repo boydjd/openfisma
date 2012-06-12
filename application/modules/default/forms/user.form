@@ -28,8 +28,8 @@ elements.lookup.options.attribs.setupCallback = "Fisma.User.setupLookupAutocompl
 elements.lookup.options.tooltip = "<p><b>Lookup</b></p><p>Enter the name or email address to search LDAP and retrieve details.</p>"
 displayGroups.accountInfo.elements.lookup = "lookup"
 
-elements.seperator.type = "Element_Seperator"
-displayGroups.accountInfo.elements.seperator = "seperator"
+elements.separator.type = "Element_Separator"
+displayGroups.accountInfo.elements.separator = "separator"
 
 elements.username.type = "text"
 elements.username.options.label = "Username"

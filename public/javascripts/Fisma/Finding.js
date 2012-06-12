@@ -350,9 +350,11 @@ Fisma.Finding = {
         // this method is called in the wrong scope :(
         Fisma.Finding.createPocMessageBox();
 
-        // Fill in the username
-        var usernameEl = document.getElementById('username');
-        usernameEl.value = Fisma.Finding.createPocDefaultUsername;
+        var populateEl = YAHOO.util.Dom.get("lookup");
+        if (!YAHOO.lang.isObject(populateEl)) {
+            populateEl = YAHOO.util.Dom.get("nameFirst");
+        }
+        populateEl.value = Fisma.Finding.createPocDefaultUsername;
 
         // The form contains some scripts that need to be executed
         var scriptNodes = Fisma.Finding.createPocPanel.body.getElementsByTagName('script');

@@ -59,18 +59,15 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     private function _getProfileForm()
     {
         $form = Fisma_Zend_Form_Manager::loadForm('user');
-        $form->removeElement('username');
-        $form->removeElement('password');
-        $form->removeElement('confirmPassword');
-        $form->removeElement('checkAccount');
-        $form->removeElement('generate_password');
-        $form->removeElement('role');
-        $form->removeElement('locked');
-        $form->removeElement('lockReason');
-        $form->removeElement('lockTs');
-        $form->removeElement('comment');
-        $form->removeElement('reportingOrganizationId');
-        $form->removeElement('mustResetPassword');
+        $fieldsToOmit = array(
+            'password', 'confirmPassword', 'generate_password', 'role', 'locked', 'lockReason', 'lockTs',
+            'comment', 'reportingOrganizationId', 'mustResetPassword', 'lookup', 'separator', 'username'
+        );
+
+        foreach ($fieldsToOmit as $field) {
+            $form->removeElement($field);
+        }
+
         return $form;
     }
 
@@ -1029,7 +1026,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         if ('database' == Fisma::configuration()->getConfig('auth_type')) {
             $form->removeElement('lookup');
-            $form->removeElement('seperator');
+            $form->removeElement('');
             $this->view->requirements =  $passwordRequirements->direct();
         } else {
             $form->removeElement('password');

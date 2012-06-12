@@ -322,6 +322,7 @@ Fisma.User = {
             $("#nameLast").val(data["sn"]);
             $("#phoneOffice").val(data["telephonenumber"]);
         });
+        autocomplete.sendQuery($("#lookup").val());
     },
 
 

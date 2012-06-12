@@ -135,12 +135,12 @@ class PocTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable, 
         return array(
             array(
                 'label' => 'Account Type',
-                'column' => 'type',
+                'column' => 'accountType',
                 'filters' => array(
                     array(
                         'label' => 'Contacts',
-                        'operator' => 'enumIsNot',
-                        'operands' => array('User')
+                        'operator' => 'enumIs',
+                        'operands' => array('Contact')
                     ),
                     array(
                         'label' => 'Users',
