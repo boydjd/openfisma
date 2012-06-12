@@ -697,7 +697,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     public function listAction()
     {
-        if ($this->_enforceAcl) {
+        if ($this->_enforceAcl && $this->getAclResourceName() !== 'Finding') {
             $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
         }
 

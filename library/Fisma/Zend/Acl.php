@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Provides access control primitives
- * 
+ *
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -29,7 +29,7 @@ class Fisma_Zend_Acl extends Zend_Acl
 {
     /**
      * to hold the username of the user creating $this
-     * 
+     *
      * @var string
      */
     private $_username;
@@ -37,9 +37,9 @@ class Fisma_Zend_Acl extends Zend_Acl
     /**
      * should not be called directly (except for testing purposes)
      * as the logic is for each User object to create its own Acl object
-     * 
+     *
      * @param string $username
-     * 
+     *
      */
     public function __construct($username)
     {
@@ -47,7 +47,7 @@ class Fisma_Zend_Acl extends Zend_Acl
     }
     /**
      * Check whether the current user has access to the specified area in OpenFISMA
-     * 
+     *
      * @param string $area
      * @return bool
      */
@@ -55,10 +55,10 @@ class Fisma_Zend_Acl extends Zend_Acl
     {
         return $this->isAllowed(null, 'area', $area);
     }
-    
+
     /**
      * Require the current user to have access to the specified area, or else throw an exception
-     * 
+     *
      * @param string $area
      * @throws Fisma_Zend_Exception_InvalidPrivilege
      */
@@ -68,18 +68,18 @@ class Fisma_Zend_Acl extends Zend_Acl
             throw new Fisma_Zend_Exception_InvalidPrivilege("User does not have access to this area: '$area'");
         }
     }
-    
+
     /**
      * Check whether the current user has a particular privilege on a particular object
-     * 
+     *
      * This method checks to see if the object has an ACL dependency on a particular organization, and adjusts the ACL
      * query accordingly.
-     * 
-     * Privilege is allowed to contain a wildcard character, '*', which indicates that it could match ANY one of 
+     *
+     * Privilege is allowed to contain a wildcard character, '*', which indicates that it could match ANY one of
      * multiple, similar privileges.
-     * 
+     *
      * @see Fisma_Zend_Acl_OrganizationDependency
-     * 
+     *
      * @param string $privilege
      * @param object $object
      * @return bool
@@ -90,9 +90,10 @@ class Fisma_Zend_Acl extends Zend_Acl
         if (!is_object($object)) {
             throw new Fisma_Zend_Exception("\$object is not an object");
         }
-        $resourceName = Doctrine_Inflector::tableize(get_class($object));               
+        $resourceName = Doctrine_Inflector::tableize(get_class($object));
+        $user = Doctrine::getTable('User')->findOneByUsername(str_replace('user_', '', $this->_username));
         $hasPrivilege = false;
-        
+
         if (!$this->_privilegeContainsWildcard($privilege)) {
             // Handle objects with organization ACL dependency
             if ($object instanceof Fisma_Zend_Acl_OrganizationDependency) {
@@ -104,9 +105,12 @@ class Fisma_Zend_Acl extends Zend_Acl
                     $resourceName = self::getResourceNameForOrganizationDependency($resourceName, $orgId);
                 }
             }
+            // As a POC to a finding outside my systems, I should have the same privileges like other findings
+            if ($object instanceOf Finding && ($object->pocId === $user->id)) {
+                $resourceName = get_class($object);
+            }
             $hasPrivilege = $this->hasPrivilegeForClass($privilege, $resourceName, true);
         } else {
-
             // Loop over all matching privileges and check them one-by-one to see if the user has any of them
             $matchedPrivileges = $this->_getPrivilegesForWildcard($resourceName, $privilege);
             foreach ($matchedPrivileges as $matchedPrivilege) {
@@ -115,6 +119,11 @@ class Fisma_Zend_Acl extends Zend_Acl
                     break;
                 }
             }
+        }
+        // As a POC to a finding, I should at least have some basic privileges
+        $generalFindingPrivileges = array('read', 'comment');
+        if ($object instanceOf Finding && in_array($privilege, $generalFindingPrivileges)) {
+            $hasPrivilege = $hasPrivilege || ($object->pocId === $user->id);
         }
         return $hasPrivilege;
     }
@@ -126,10 +135,10 @@ class Fisma_Zend_Acl extends Zend_Acl
     {
         return $organizationId.'/'.$resourceName;
     }
-   
+
     /**
      * Require the current user to have a particular privilege on a particular object, or else throw an exception
-     * 
+     *
      * @param string $privilege
      * @param object $object
      * @throws Fisma_Zend_Exception_InvalidPrivilege
@@ -141,13 +150,13 @@ class Fisma_Zend_Acl extends Zend_Acl
             throw new Fisma_Zend_Exception_InvalidPrivilege($message);
         }
     }
-    
+
     /**
      * Check whether a user has a particular privilege on a class of objects
-     * 
-     * Privilege is allowed to contain a wildcard character, '*', which indicates that it could match any one of 
+     *
+     * Privilege is allowed to contain a wildcard character, '*', which indicates that it could match any one of
      * multiple privileges.
-     * 
+     *
      * @param string $privilege
      * @param string $className
      * @return bool
@@ -179,11 +188,11 @@ class Fisma_Zend_Acl extends Zend_Acl
         }
         return $hasPrivilege;
     }
-    
+
     /**
-     * Require the current user to have a particular privilege on a particular class of objects, 
+     * Require the current user to have a particular privilege on a particular class of objects,
      * or else throw an exception
-     * 
+     *
      * @param string $privilege
      * @param string $className
      * @throws Fisma_Zend_Exception_InvalidPrivilege
@@ -195,12 +204,12 @@ class Fisma_Zend_Acl extends Zend_Acl
             throw new Fisma_Zend_Exception_InvalidPrivilege($message);
         }
     }
-    
+
     /**
      * A wrapper to the ACL isAllowed() method which catches Zend_Acl_Exception
-     * 
+     *
      * This is an unfortunate hack, because Zend_Acl throws an exception if you query a resources that doesn't exist.
-     * 
+     *
      * @param User $role    should not be provided, but kept for overridding parent::isAllowed()
      * @param string $resource
      * @param string $privilege
@@ -216,25 +225,25 @@ class Fisma_Zend_Acl extends Zend_Acl
             // Add prefix 'user_' to match the role identifier
             $username = 'user_' . $role->username;
         }
-        
+
         /**
          * Root can do anything
          * Add prefix 'user_' to match the role identifier
-         */ 
+         */
         if ('user_root' == $username) {
             return true;
         }
-        
+
         try {
             return parent::isAllowed($username, $resource, $privilege);
         } catch (Zend_Acl_Exception $e) {
             return false;
         }
     }
-    
+
     /**
      * Search for privileges matching a given resource and a privilege name which contains a wildcard '*' character
-     * 
+     *
      * @param string $resource
      * @param string $privilege
      * @return array Array of matched privilege names
@@ -243,22 +252,22 @@ class Fisma_Zend_Acl extends Zend_Acl
     {
         // Convert the * wildcard into a SQL % wildcard
         $privilegeMatchString = str_replace('*', '%', $privilege);
-        
+
         $privilegeQuery = Doctrine_Query::create()
                           ->select('action')
                           ->from('Privilege INDEXBY action')
                           ->where('resource LIKE ?', $resource)
                           ->andWhere('action LIKE ?', $privilegeMatchString)
                           ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-        
+
         $resultSet = $privilegeQuery->execute();
 
         return array_keys($resultSet);
     }
-    
+
     /**
      * Returns true if the specified privilege name contains a wildcard character (*)
-     * 
+     *
      * @param string $privilege
      * @return bool
      */
@@ -266,5 +275,4 @@ class Fisma_Zend_Acl extends Zend_Acl
     {
         return strpos($privilege, '*') !== false;
     }
-    
 }

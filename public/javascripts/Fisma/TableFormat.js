@@ -463,7 +463,7 @@ Fisma.TableFormat = {
     },
 
     /**
-     * A formatter which displays date as Jun 12, 2012 
+     * A formatter which displays date as Jun 12, 2012
      *
      * @param elCell Reference to a container inside the <td> element
      * @param oRecord Reference to the YUI row object
@@ -474,7 +474,7 @@ Fisma.TableFormat = {
         if (oData) {
             var month = parseInt(oData.substr(5, 2)) - 1;
 
-            var date = new Date(); 
+            var date = new Date();
             date.setFullYear(oData.substr(0,4));
             date.setMonth(month);
             date.setDate(oData.substr(8, 2));
@@ -483,7 +483,7 @@ Fisma.TableFormat = {
                               + ' '
                               + date.getDate()
                               + ', '
-                              + date.getFullYear(); 
+                              + date.getFullYear();
         }
     },
 
@@ -499,7 +499,7 @@ Fisma.TableFormat = {
         if (oData) {
             var month = parseInt(oData.substr(5, 2)) - 1;
 
-            var date = new Date(); 
+            var date = new Date();
             date.setFullYear(oData.substr(0,4));
             date.setMonth(month);
             date.setDate(oData.substr(8, 2));
@@ -521,12 +521,111 @@ Fisma.TableFormat = {
                               + ' '
                               + date.getDate()
                               + ', '
-                              + date.getFullYear() 
+                              + date.getFullYear()
                               + ' at '
                               + hours
                               + ':'
                               + date.getMinutes()
-                              + (am ? ' AM' : ' PM'); 
+                              + (am ? ' AM' : ' PM');
         }
+    },
+
+    /**
+     * A formatter for organization / system with an icon
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The jsonified literal object
+     *     {
+     *         iconId,
+     *         iconSize ('small' or 'large'),
+     *         orgId (optional, will generate an <a> element if provided),
+     *         displayName
+     *     }
+     */
+    formatOrganization : function (elCell, oRecord, oColumn, oData) {
+        oData = YAHOO.lang.JSON.parse(oData);
+        if (oData) {
+            if (oData.displayName) {
+                elCell.innerHTML = oData.displayName;
+            }
+            if (oData.orgId) {
+                elCell.innerHTML = "<span class='organizationInfo' "
+                                 + "style='background: url(/icon/get/id/" + oData.iconId + "/size/small) no-repeat 0 1px;' "
+                                 + "onclick='Fisma.Organization.displayInfo(this, " + oData.orgId + ");'"
+                                 + "title='Click to show detailed information'>"
+                                 + elCell.innerHTML
+                                 + "</span>";
+            }
+        }
+    },
+
+    /**
+     * A formatter for a link
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The jsonified literal object
+     *     {
+     *         url,
+     *         displayText
+     *     }
+     */
+    formatLink : function (elCell, oRecord, oColumn, oData) {
+        oData = YAHOO.lang.JSON.parse(oData);
+        if (oData) {
+            if (oData.displayText) {
+                elCell.innerHTML = oData.displayText;
+            }
+            if (oData.url) {
+                elCell.innerHTML = "<a href='" + oData.url + "'>" + elCell.innerHTML + "</a>";
+            }
+        }
+    },
+
+    /**
+     * A formatter for a stacked bar by threat
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The jsonified literal object
+     *     {
+     *         LOW,
+     *         MODERATE,
+     *         HIGH,
+     *         criteriaQuery (field/operator/),
+     *         total (to calculate percentage)
+     *     }
+     */
+    formatThreatBar : function (elCell, oRecord, oColumn, oData) {
+        oData = YAHOO.lang.JSON.parse(oData);
+        var linkData = YAHOO.lang.JSON.parse(oRecord.getData('displayTotal'));
+        var html = "";
+        if (oData.LOW) {
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "LOW' title='" + oData.LOW + "'>";
+            html += "<span class='bar LOW' style='width:" + oData.LOW / oData.total * 80 + "%;'></span>";
+            html += "</a>";
+        }
+        if (oData.MODERATE) {
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "MODERATE' title='" + oData.MODERATE + "'>";
+            html += "<span class='bar MODERATE' style='width:" + oData.MODERATE / oData.total * 80 + "%;'></span>";
+            html += "</a>";
+        }
+        if (oData.HIGH) {
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "HIGH' title='" + oData.HIGH + "'>";
+            html += "<span class='bar HIGH' style='width:" + oData.HIGH / oData.total * 80 + "%;'></span>";
+            html += "</a>";
+        }
+        var percentage = (oData.LOW + oData.MODERATE + oData.HIGH) / oData.total;
+        if (percentage > 0 && percentage < 1) {
+            html += 'less than 1%';
+        } else {
+            html += Math.round(percentage) + '%';
+        }
+        elCell.innerHTML = html;
+        elCell.width = '200px';
     }
 };

@@ -5,7 +5,7 @@
 
 YAHOO.util.Event.onDOMReady(function () {
     var url = '/finding/summary/data/format/json';
-    
+
     var msApprovals = <?php echo $this->escape($this->msApprovals, 'json'); ?>;
     var evApprovals = <?php echo $this->escape($this->evApprovals, 'json'); ?>;
 
@@ -13,7 +13,7 @@ YAHOO.util.Event.onDOMReady(function () {
     var columnCount = HARDCODED_COLUMN_COUNT + msApprovals.length + evApprovals.length;
 
     var storage = new Fisma.PersistentStorage("Finding.Summary");
-    
+
     Fisma.Storage.onReady(function () {
         var summaryTable = new Fisma.FindingSummary(url, columnCount, msApprovals, evApprovals);
 
@@ -58,7 +58,7 @@ YAHOO.util.Event.onDOMReady(function () {
             storage.sync();
         });
 
-        summaryTable.render(document.getElementById('summaryContainer'));        
+        summaryTable.render(document.getElementById('summaryContainer'));
     });
 });
 

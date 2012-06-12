@@ -1,16 +1,19 @@
 /* Style for the UserInfo view helper */
 
-span.userInfo {
+span.userInfo, span.organizationInfo {
 	padding-left: 17px;
 	padding-right: 1px;
     border-bottom: 1px dashed black;
+}
+
+span.userInfo {
     background: url(/images/user-info.png) no-repeat 0 1px;
 }
 
-span.userInfo:hover {
+span.userInfo:hover, span.organizationInfo:hover {
 	cursor: pointer;
 }
 
-span.userInfo:active {
+span.userInfo:active, span.organizationInfo:active {
 	color: #416ed7;
 }

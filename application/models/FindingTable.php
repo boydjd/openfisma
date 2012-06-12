@@ -282,7 +282,10 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
      */
     public function getAclFields()
     {
-        return array('responsibleOrganizationId' => 'FindingTable::getOrganizationIds');
+        return array(
+            'pocUser' => 'FindingTable::getPoc',
+            'responsibleOrganizationId' => 'FindingTable::getOrganizationIds'
+        );
     }
 
     /**
@@ -290,13 +293,24 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
      *
      * @return array
      */
-    static function getOrganizationIds()
+    public static function getOrganizationIds()
     {
         $currentUser = CurrentUser::getInstance();
 
         $organizationIds = $currentUser->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id');
 
         return $organizationIds;
+    }
+
+    /**
+     * Provide POC list for ACL filter
+     *
+     * @return array
+     */
+    public static function getPoc()
+    {
+        $currentUser = CurrentUser::getInstance();
+        return array($currentUser->displayName);
     }
 
     /**

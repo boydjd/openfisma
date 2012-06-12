@@ -27,26 +27,12 @@
 #
 ########################################################################################################################
 
-Dashboard:
-    label: Dashboard
-    link: /dashboard
-    privilege:
-        func: hasArea
-        param: dashboard
-
 Finding:
     label: Findings
     privilege:
         func: hasArea
         param: finding
     submenu:
-        Summary:
-            label: Summary
-            link: /finding/summary
-            privilege:
-                func: hasPrivilegeForClass
-                param1: read
-                param2: Finding
         Search:
             label: Search
             link: /finding/remediation/list
@@ -62,7 +48,6 @@ Finding:
                 func: hasPrivilegeForClass
                 param1: read
                 param2: Finding
-
         Separator1:
             label: Separator
             condition: >
@@ -86,20 +71,20 @@ Finding:
         Dashboard:
             label: Dashboard
             link: /finding/dashboard
-        Workflow:
-            label: Workflow
-            link: /finding/workflow/view
         Administration:
             label: Administration
             privilege:
                 func: hasArea
                 param: finding_admin
             submenu:
+                Finding_Workflow:
+                    label: Workflow
+                    link: /finding/workflow/view
                 Finding_General:
-                    label: Finding General
+                    label: General
                     link: /finding/config/general
                 Finding_Source:
-                    label: Finding Sources
+                    label: Sources
                     link: /finding/source/list
                     privilege:
                         func: hasPrivilegeForClass
@@ -181,6 +166,66 @@ Vulnerability:
                 Services:
                     label: Vulnerable Services
                     link: /vm/vulnerability-report/vulnerable-service/format/html
+
+Incident:
+    label: Incidents
+    module: Incident Reporting
+    privilege:
+        func: hasArea
+        param: incident
+    submenu:
+        Search:
+            label: Search
+            link: /incident/list
+        Goto:
+            label: Go To...
+            model: Incident
+            click: /incident
+        Separator1:
+            label: Separator
+        ReportIncident:
+            label: Report An Incident
+            link: /incident/report
+        Separator2:
+            label: Separator
+        Dashboard:
+            label: Dashboard
+            link: /incident-dashboard
+        Administration:
+            label: Administration
+            privilege:
+                func: hasArea
+                param: incident_admin
+            submenu:
+                IrSubCategory:
+                    label: Categories
+                    link: /ir-category/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: IrSubCategory
+                IrWorkflowDef:
+                    label: Workflows
+                    link: /ir-workflow/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: IrWorkflowDef
+        Reports:
+            label: Reports
+            privilege:
+                func: hasArea
+                param: incident_report
+            submenu:
+                IncidentOrganizations:
+                    label: Incident Organizations
+                    link: /incident-report/organization/format/html
+                IncidentCategories:
+                    label: Incident Categories
+                    link: /incident-report/category/format/html
+                History:
+                    label: Incident History
+                    link: /incident-report/history/format/html
 
 System:
     label: System Inventory
@@ -274,64 +319,6 @@ System:
                 SecurityAuthorizations:
                     label: Security Authorizations
                     link: /organization-report/security-authorization/format/html
-
-Incident:
-    label: Incidents
-    module: Incident Reporting
-    privilege:
-        func: hasArea
-        param: incident
-    submenu:
-        ReportIncident:
-            label: Report An Incident
-            link: /incident/report
-        Search:
-            label: Search
-            link: /incident/list
-        Goto:
-            label: Go To...
-            model: Incident
-            click: /incident
-        Separator1:
-            label: Separator
-        Dashboard:
-            label: Dashboard
-            link: /incident-dashboard
-        Administration:
-            label: Administration
-            privilege:
-                func: hasArea
-                param: incident_admin
-            submenu:
-                IrSubCategory:
-                    label: Categories
-                    link: /ir-category/list
-                    privilege:
-                        func: hasPrivilegeForClass
-                        param1: read
-                        param2: IrSubCategory
-                IrWorkflowDef:
-                    label: Workflows
-                    link: /ir-workflow/list
-                    privilege:
-                        func: hasPrivilegeForClass
-                        param1: read
-                        param2: IrWorkflowDef
-        Reports:
-            label: Reports
-            privilege:
-                func: hasArea
-                param: incident_report
-            submenu:
-                IncidentOrganizations:
-                    label: Incident Organizations
-                    link: /incident-report/organization/format/html
-                IncidentCategories:
-                    label: Incident Categories
-                    link: /incident-report/category/format/html
-                History:
-                    label: Incident History
-                    link: /incident-report/history/format/html
 
 Administration:
     label: Administration

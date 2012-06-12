@@ -185,7 +185,7 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
                     array(
                         'value' => 'Tree View',
                         'href' => $this->getBaseUrl() . '/tree',
-                        'imageSrc' => $view->serverUrl('/images/tree_view.png')
+                        'imageSrc' => '/images/tree_view.png'
                     )
                 );
             }
@@ -195,7 +195,7 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
                     array(
                         'value' => 'List View',
                         'href' => $this->getBaseUrl() . '/list',
-                        'imageSrc' => $view->serverUrl('/images/list_view.png')
+                        'imageSrc' => '/images/list_view.png'
                     )
                 );
             }
@@ -207,7 +207,8 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
                     'createUserButton',
                     array(
                         'value' => 'Create New User',
-                        'href' => '/user/create'
+                        'href' => '/user/create',
+                        'imageSrc' => '/images/create.png'
                     )
                 );
             }

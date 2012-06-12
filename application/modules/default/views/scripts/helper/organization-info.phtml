@@ -1,0 +1,8 @@
+<?php if (!empty($this->orgId)): ?>
+<span
+    class='organizationInfo'
+    onclick="Fisma.Organization.displayInfo(this, '<?php echo $this->escape($this->orgId, 'javascript'); ?>');"
+    title="Click to show organization information">
+    <?php echo $this->escape($this->displayText); ?>
+</span>
+<?php endif; ?>

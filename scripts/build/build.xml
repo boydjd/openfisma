@@ -13,7 +13,7 @@
     <target name="-js.concat">
         <echo message="Concatenating JavaScript..."/>
         <concat destfile="${location.js}/combined.js" force="no">
-            <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,Fisma.js,jquery-min.js,groupeddatatable.js"/>
+            <filelist dir="${location.js}" files="php.js,tiny_mce_config.js,Fisma.js,jquery-min.js,jquery-ui-min.js,groupeddatatable.js"/>
             <filelist dir="${location.js}" files="Fisma/Storage.js,Fisma/TreeTable.js"/>
             <fileset dir="${location.js}/Fisma" includes="**/*.js" excludes="Storage.js,TreeTable.js"/>
             <fileset dir="${location.js}/jqPlot" includes="**/*.js"/>
@@ -61,7 +61,7 @@
     <target name="-js.clean">
         <echo message="Removing minified scripts..."/>
         <delete>
-            <fileset dir="${location.js}" includes="**/*-min.js,Fisma/*-min.js" excludes="jquery-min.js,jquery-scrollTo-1-4-2-min.js,jquery-serialScroll-1-2-2-min.js,jquery-localscroll-1-2-7-min.js"/>
+            <fileset dir="${location.js}" includes="**/*-min.js,Fisma/*-min.js" excludes="jquery-min.js,jquery-ui-min.js,jquery-scrollTo-1-4-2-min.js,jquery-serialScroll-1-2-2-min.js,jquery-localscroll-1-2-7-min.js"/>
         </delete>
         <delete>
             <filelist dir="${location.js}" files="combined.js"/>
