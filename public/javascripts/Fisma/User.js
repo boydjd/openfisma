@@ -213,6 +213,7 @@ Fisma.User = {
     setupLookupAutocomplete : function (autocomplete, params) {
         autocomplete.itemSelectEvent.subscribe(function (ev, args) {
             var data = args[2][1];
+            $("#username").val(data["username"]);
             $("#email").val(data["mail"]);
             $("#nameFirst").val(data["givenname"]);
             $("#nameLast").val(data["sn"]);

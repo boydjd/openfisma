@@ -791,14 +791,27 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $ldap = new Fisma_Ldap(LdapConfig::getConfig());
         $results = $ldap->lookup($query);
         foreach ($results as &$r) {
-            $r['givenname'] = $r['givenname'][0];
-            $r['sn'] = $r['sn'][0];
-            if (!empty($r['mail'][0])) {
-                $r['mail'] = $r['mail'][0];
+            $r['givenname'] = empty($r['givenname'][0]) ? '' : $r['givenname'][0];
+            $r['sn'] = empty($r['sn'][0]) ? '' : $r['sn'][0];
+            $r['mail'] = empty($r['mail'][0]) ? '' : $r['mail'][0];
+
+            if (!empty($r['uid'][0])) {
+                $r['username'] = $r['uid'][0];
+            } else if (!empty($r['samaccountname'][0])) {
+                $r['username'] = $r['samaccountname'][0];
             } else {
-                $r['mail'] = '';
+                $r['username'] = '';
             }
-            $r['label'] = trim($r['givenname'] . ' ' . $r['sn'] . ' <' . $r['mail'] . '>');
+            unset($r['uid']);
+            unset($r['samaccountname']);
+
+            $r['label'] = trim($r['givenname'] . ' ' . $r['sn']);
+            if (!empty($r['username'])) {
+                $r['label'] = trim($r['label'] . ' (' . $r['username'] . ')');
+            }
+            if (!empty($r['mail'])) {
+                $r['label'] = trim($r['label'] . ' <' . $r['mail'] . '>');
+            }
         }
         $this->view->results = $results;
     }
