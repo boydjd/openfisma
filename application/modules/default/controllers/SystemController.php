@@ -113,7 +113,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 array(
                     'value' => 'Return to Search Results',
                     'href' => $this->getBaseUrl() . '/list',
-                    'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png'),
+                    'imageSrc' => '/images/arrow_return_down_left.png',
                     'longText' => 1
                 )
             );
