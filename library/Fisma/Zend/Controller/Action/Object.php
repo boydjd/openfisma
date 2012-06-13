@@ -391,6 +391,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
                     if ($format == 'json') {
                         $jsonResponse->succeed($object->id);
+                        $jsonResponse->object = $object->toArray();
                     } else {
                         $msg   = $this->getSingularModelName() . ' created successfully';
                         $type = 'notice';

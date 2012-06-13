@@ -91,7 +91,6 @@ elements.email.type = "text"
 elements.email.options.label = "E-Mail"
 elements.email.options.required = true
 elements.email.options.attribs.size = 35
-elements.email.options.attribs.onblur = "Fisma.User.checkAccount()"
 elements.email.options.validators.email.validator = "EmailAddress"
 displayGroups.accountInfo.elements.email = "email"
 

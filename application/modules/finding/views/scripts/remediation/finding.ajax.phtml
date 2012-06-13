@@ -177,10 +177,14 @@
                 <?php endif; ?>
                     value="<?php echo $this->escape($finding->pocId); ?>"
                     defaultValue="<?php echo $this->escape($finding->PointOfContact->username); ?>">
-                    <?php echo $this->escape(
-                        $this->userInfo($finding->PointOfContact->displayName, $finding->pocId),
-                        'none'
-                    );?>
+                    <?php
+                        if (!empty($finding->pocId)) {
+                            echo $this->escape(
+                                $this->userInfo($finding->PointOfContact->displayName, $finding->pocId),
+                                'none'
+                            );
+                        }
+                    ?>
                 </span>
             <?php if ($this->isPocEditable): ?>
                 <span class="editable" target="pointOfContact">&nbsp;</span>

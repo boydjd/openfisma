@@ -51,6 +51,11 @@ class Fisma_AsyncResponse
     public $message;
 
     /**
+     * Extra object for responses to things like FZCAO::createAction
+     */
+    public $object = null;
+
+    /**
      * Mark response as succeeded
      *
      * @param string $message Optional message which is safe to display to the end user

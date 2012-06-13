@@ -451,14 +451,16 @@
                     setupCallback="Fisma.Finding.setupPocAutocomplete"
                 <?php endif; ?>
                     value="<?php echo $this->escape($this->incident['pocId']); ?>"
-                    defaultValue="<?php echo $this->escape($this->incident['PointOfContact']['username']); ?>"><?php
-                        echo $this->escape(
-                            $this->userInfo(
-                                $this->incident['PointOfContact']['displayName'],
-                                $this->incident['PointOfContact']['id']
-                            ),
-                            'none'
-                        );
+                    defaultValue="<?php echo $this->escape($this->incident['PointOfContact']['displayName']); ?>"><?php
+                        if (!empty($this->incident['pocId'])) {
+                            echo $this->escape(
+                                $this->userInfo(
+                                    $this->incident['PointOfContact']['displayName'],
+                                    $this->incident['PointOfContact']['id']
+                                ),
+                                'none'
+                            );
+                        }
                     ?></span>
                 <?php if ($this->updateIncidentPrivilege): ?>
                     <span class="editable" target="pointOfContact">&nbsp;</span>

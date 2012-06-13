@@ -36,32 +36,11 @@ Fisma.User = {
     generatePasswordBusy : false,
 
     /**
-     * A boolean which indicates if an account is currently being checked in LDAP
-     */
-    checkAccountBusy : false,
-
-    /**
      * A reference to a YUI table which contains comments for the current page
      * 
      * This reference will be set when the page loads by the script which initializes the table
      */
     commentTable : null,
-
-    /**
-     * Map LDAP column names onto names of fields in this form
-     *
-     * ldap name => field name
-     */
-    ldapColumnMap : {
-        'givenname' : 'nameFirst',
-        'mail' : 'email',
-        'mobile' : 'phoneMobile',
-        'samaccountname' : 'username',
-        'sn' : 'nameLast',
-        'telephonenumber' : 'phoneOffice',
-        'title' : 'title',
-        'uid' : 'username'
-    },
 
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
@@ -223,89 +202,6 @@ Fisma.User = {
             null);
 
         return false;
-    },
-
-    checkAccount : function () {
-
-        if (Fisma.User.checkAccountBusy) {
-            return;
-        }
-
-        Fisma.User.checkAccountBusy = true;
-
-        var emailElem = $("#email").get(0);
-        var email = emailElem.value;
-        var url = "/user/check-account/format/json/email/" + encodeURIComponent(email);
-
-        var spinner = new Fisma.Spinner(emailElem.parentNode);
-        spinner.show();
-
-        YAHOO.util.Connect.asyncRequest(
-            'GET',
-            url,
-            {
-                success : function (o) {
-                    try {
-                        var data = YAHOO.lang.JSON.parse(o.responseText);
-
-                        // Query comes originally from the user. Escape it just to be safe.
-                        data.query = encodeURI(data.query);
-
-                        // Make sure each column value is not null in LDAP account, then populate to related elements.
-                        if (YAHOO.lang.isValue(data.accounts)) {
-                            if (data.accounts.length === 0) {
-                                Fisma.Util.message('No account matches your query: '
-                                    + encodeURI(data.query) + '.', 'warning', true);
-                            } else {
-                                Fisma.User.populateAccountForm(data.accounts[0]);
-                            }
-                        } else {
-                            Fisma.Util.message(data.msg, data.type, true);
-                        }
-                    } catch (e) {
-                        if (YAHOO.lang.isValue(e.message)) {
-                            Fisma.Util.message('Error: ' + e.message, 'warning', true);
-                        } else {
-                            Fisma.Util.message('An unknown error occurred.', 'warning', true);
-                        }
-                    }
-
-                    Fisma.User.checkAccountBusy = false;
-                    spinner.hide();
-                },
-
-                failure : function(o) {
-                    Fisma.User.checkAccountBusy = false;
-                    spinner.hide();
-
-                    var alertMessage = "Failed to check account password: " + o.statusText;
-                    Fisma.Util.showAlertDialog(alertMessage);
-                }
-            },
-            null);
-    },
-
-    /**
-     * Fill in the account info for one user and display a success message
-     *
-     * @param account {Object} A dictionary of LDAP data for an account.
-     */
-    populateAccountForm : function (account) {
-        Fisma.Util.message('Your search matched one user: ' + account.dn, 'info', true);
-
-        var ldapColumn;
-        for (ldapColumn in Fisma.User.ldapColumnMap) {
-            if (!Fisma.User.ldapColumnMap.hasOwnProperty(ldapColumn)) {
-                continue;
-            }
-
-            var fieldName = Fisma.User.ldapColumnMap[ldapColumn];
-            var fieldValue = account[ldapColumn];
-        
-            if (YAHOO.lang.isValue(fieldValue)) {
-                document.getElementById(fieldName).value = fieldValue;
-            }
-        }
     },
 
     /**

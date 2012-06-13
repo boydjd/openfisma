@@ -402,9 +402,6 @@ Fisma.Finding = {
         // Disable the submit button
         button.set("disabled", true);
 
-        // Save the username so we can populate it back on the create finding form
-        var username = document.getElementById("username").value;
-
         YAHOO.util.Connect.setForm(form);
         YAHOO.util.Connect.asyncRequest('POST', '/contact/create/format/json', {
             success : function(o) {
@@ -427,9 +424,8 @@ Fisma.Finding = {
                     Fisma.Finding.pocAutocomplete._bItemSelected = true;
 
                     // Populate the autocomplete with the values corresponding to this new POC
-                    var pocId = parseInt(result.message, 10);
-                    Fisma.Finding.pocHiddenEl.value = pocId;
-                    Fisma.Finding.pocAutocomplete.getInputEl().value = username;
+                    Fisma.Finding.pocHiddenEl.value = parseInt(result.object.id, 10);
+                    Fisma.Finding.pocAutocomplete.getInputEl().value = result.object.displayName;
 
                     Fisma.Util.message('A contact has been created.', 'info', true);
                 } else {
