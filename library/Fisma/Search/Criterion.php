@@ -61,7 +61,8 @@ class Fisma_Search_Criterion
         'textContains',
         'textDoesNotContain',
         'textExactMatch',
-        'textNotExactMatch'
+        'textNotExactMatch',
+        'unspecified'
     );
 
     /**

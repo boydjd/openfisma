@@ -30,7 +30,8 @@ Fisma.Search.CriteriaDefinition = (function () {
             dateDay : {label : "Is", renderer : 'singleDate', query : 'oneInput', isDefault : true},
             dateThisMonth : {label : "This Month", renderer : 'none', query : 'noInputs'},
             dateThisYear : {label : "This Year", renderer : 'none', query : 'noInputs'},
-            dateToday : {label : "Today", renderer : 'none', query : 'noInputs'}
+            dateToday : {label : "Today", renderer : 'none', query : 'noInputs'},
+            unspecified : {label : "Unspecified", renderer : 'none', query : 'noInputs'}
         },
 
         "float" : {
@@ -41,7 +42,8 @@ Fisma.Search.CriteriaDefinition = (function () {
                 query : 'oneInput',
                 isDefault : true
             },
-            floatLessThan : {label : "Less Than", renderer : 'singleFloat', query : 'oneInput'}
+            floatLessThan : {label : "Less Than", renderer : 'singleFloat', query : 'oneInput'},
+            unspecified : {label : "Unspecified", renderer : 'none', query : 'noInputs'}
         },
 
         integer : {
@@ -49,31 +51,36 @@ Fisma.Search.CriteriaDefinition = (function () {
             integerDoesNotEqual : {label : "Does Not Equal", renderer : 'singleInteger', query : 'oneInput'},
             integerEquals : {label : "Equals", renderer : 'singleInteger', query : 'oneInput', isDefault : true},
             integerGreaterThan : {label : "Greater Than", renderer : 'singleInteger', query : 'oneInput'},
-            integerLessThan : {label : "Less Than", renderer : 'singleInteger', query : 'oneInput'}
+            integerLessThan : {label : "Less Than", renderer : 'singleInteger', query : 'oneInput'},
+            unspecified : {label : "Unspecified", renderer : 'none', query : 'noInputs'}
         },
 
         nonSortableText : {
             textContains : {label : "Contains Words", renderer : 'text', query : 'oneInput', isDefault : true},
-            textDoesNotContain : {label : "Does Not Contain Words", renderer : 'text', query : 'oneInput'}
+            textDoesNotContain : {label : "Does Not Contain Words", renderer : 'text', query : 'oneInput'},
+            unspecified : {label : "Unspecified", renderer : 'none', query : 'noInputs'}
         },
 
         sortableText : {
             textContains : {label : "Contains Words", renderer : 'text', query : 'oneInput', isDefault : true},
             textDoesNotContain : {label : "Does Not Contain Words", renderer : 'text', query : 'oneInput'},
             textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'},
-            textNotExactMatch : {label : "Not Exact Match", renderer : 'text', query : 'oneInput'}
+            textNotExactMatch : {label : "Not Exact Match", renderer : 'text', query : 'oneInput'},
+            unspecified : {label : "Unspecified", renderer : 'none', query : 'noInputs'}
         },
 
         "enum" : {
             enumIs : {label : "Is", renderer : "enumSelect", query : "enumSelect", isDefault : true},
             enumIsNot : {label : "Is Not", renderer : "enumSelect", query : "enumSelect"},
             enumIn : {label : "Is In", renderer : "text", query : "csvInput"},
-            enumNotIn : {label : "Is Not In", renderer : "text", query : "csvInput"}
+            enumNotIn : {label : "Is Not In", renderer : "text", query : "csvInput"},
+            unspecified : {label : "Unspecified", renderer : 'none', query : 'noInputs'}
         },
 
         "boolean" : {
             booleanYes : {label : "Is Yes", renderer : "none", query : "noInputs", isDefault : true},
-            booleanNo : {label : "Is No", renderer : "none", query : "noInputs"}
+            booleanNo : {label : "Is No", renderer : "none", query : "noInputs"},
+            unspecified : {label : "Unspecified", renderer : 'none', query : 'noInputs'}
         }
     };
 }());
