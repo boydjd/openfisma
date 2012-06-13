@@ -675,6 +675,25 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incident = $results[0];
 
         $this->view->incident = $incident;
+        $createdDateTime = new Zend_Date($incident['reportTs'], Fisma_Date::FORMAT_DATETIME);
+        $this->view->createDateTime = $createdDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR) 
+                                      . ' at ' 
+                                      . $createdDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+
+        $incidentDateTime = $incident['incidentDate'] . ' ' . $incident['incidentTime'];
+        $incidentDate = new Zend_Date($incidentDateTime, Fisma_Date::FORMAT_DATETIME);
+
+        $this->view->incidentDateTime = $incidentDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                       . ' at '
+                                       . $incidentDate->toString(Fisma_Date::FORMAT_AM_PM_TIME)
+                                       . ' ' . $incident['incidentTimezone'];
+
+        if (!empty($incident['closedTs'])) {
+            $closedDateTime = new Zend_Date($incident['closedTs'], Fisma_Date::FORMAT_DATETIME);
+            $this->view->closedTs = $closedDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                      . ' at ' 
+                                      . $closedDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+        }
 
         $this->_assertCurrentUserCanViewIncident($id);
 

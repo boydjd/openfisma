@@ -391,27 +391,24 @@
     <?php Fisma_Format_Section::startSection('Dates'); ?>
         <table class="keyValues">
             <tr>
-                <td>Incident Occurred:</td>
+                <td>Discovered:</td>
                 <td>
-                    <?php echo $this->escape($this->incident['incidentDate'])?>
-                    <?php echo $this->escape($this->incident['incidentTime'])?>
-                    <?php echo $this->escape($this->incident['incidentTimezone'])?>
+                    <?php echo $this->escape($this->incidentDateTime)?>
                 </td>
             </tr>
             <tr>
-                <td>Incident Reported:</td>
+                <td>Created:</td>
                 <td>
-                    <?php echo $this->escape($this->incident['reportTs'])?>
-                    <?php echo $this->escape($this->incident['reportTz'])?>
+                    <?php echo $this->escape($this->createDateTime)?>
                 </td>
             </tr>
             <?php if (!empty($this->incident['closedTs'])): ?>
             <tr>
                 <td>
-                    Closed Timestamp:
+                    Resolved:
                 </td>
                 <td>
-                    <?php echo $this->escape($this->incident['closedTs']); ?>
+                    <?php echo $this->escape($this->closedTs); ?>
                 </td>
             </tr>
             <?php endif; ?>
@@ -421,7 +418,7 @@
     <?php Fisma_Format_Section::startSection('People'); ?>
         <table class="keyValues">
             <tr>
-                <td>Opened By:</td>
+                <td>Reporter:</td>
                 <td>
                     <?php
                         if (isset($this->incident['ReportingUser'])):

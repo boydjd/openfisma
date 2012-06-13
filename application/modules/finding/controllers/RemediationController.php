@@ -937,6 +937,15 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->onTimeState = $onTimeState;
+        $discoveredDate = new Zend_Date($finding->discoveredDate, Fisma_Date::FORMAT_DATE);
+        $this->view->discoveredDate = $discoveredDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
+        $createdTs = new Zend_Date($finding->createdTs, Fisma_Date::FORMAT_DATE);
+        $this->view->createdTs = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
+
+        if (!is_null($finding->closedTs)) {
+            $closedDate = new Zend_Date($finding->closedTs, Fisma_Date::FORMAT_DATE);
+            $this->view->closedTs = $closedDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
+        }
     }
 
     /**

@@ -66,21 +66,24 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             ),
             'reportTs' => array(
                 'initiallyVisible' => true,
-                'label' => 'Report Date',
+                'label' => 'Created',
                 'sortable' => true,
-                'type' => 'datetime'
+                'type' => 'datetime',
+                'formatter' => 'datetime'
             ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Modification Date',
+                'label' => 'Updated',
                 'sortable' => true,
-                'type' => 'datetime'
+                'type' => 'datetime',
+                'formatter' => 'datetime'
             ),
             'closedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Closed Date',
+                'label' => 'Resolved',
                 'sortable' => true,
-                'type' => 'datetime'
+                'type' => 'datetime',
+                'formatter' => 'datetime'
             ),
             'status' => array(
                 'enumValues' => $this->getEnumValues('status'),
@@ -120,9 +123,10 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 ),
             'incidentDate' => array(
                 'initiallyVisible' => false,
-                'label' => 'Incident Date',
+                'label' => 'Discovered',
                 'sortable' => true,
-                'type' => 'date'
+                'type' => 'date',
+                'formatter' => 'date'
             ),
             'additionalInfo' => array(
                 'initiallyVisible' => true,
