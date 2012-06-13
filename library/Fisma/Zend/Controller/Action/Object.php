@@ -130,7 +130,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 array(
                     'value' => 'Create New ' . $this->getSingularModelName(),
                     'href' => $this->getBaseUrl() . '/create',
-                    'imageSrc' => $view->serverUrl('/images/create.png')
+                    'imageSrc' => '/images/create.png'
                 )
             );
         }
@@ -225,7 +225,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 array(
                     'value' => 'Return to Search Results',
                     'href' => $this->getBaseUrl() . '/list',
-                    'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png')
+                    'imageSrc' => '/images/arrow_return_down_left.png'
                 )
             );
         }

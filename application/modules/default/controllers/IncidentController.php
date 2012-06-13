@@ -576,7 +576,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->createNewButton = new Fisma_Yui_Form_Button_Link(
             'createNewButton',
-            array('value' => 'Create New Incident', 'href' => '/incident/report')
+            array('value' => 'Create New Incident', 'href' => '/incident/report', 'imageSrc' => '/images/create.png')
         );
     }
 
@@ -1856,13 +1856,15 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
         }
 
-        $buttons['report'] = new Fisma_Yui_Form_Button_Link(
+        $button = new Fisma_Yui_Form_Button_Link(
             'toolbarReportIncidentButton',
             array(
                 'value' => 'Report New Incident',
                 'href' => $this->getBaseUrl() . '/report'
             )
         );
+
+        array_unshift($buttons, $button);
 
         // Add Save/Discard buttons for authenticated users
         if ($record && $this->_currentUserCanUpdateIncident($record->id)) {

@@ -7,7 +7,7 @@ function discardChanges(event) {
 <form enctype="multipart/form-data"
       action="/system/edit/id/<?php echo $this->escape($this->organization->id . $this->fromSearchParams, 'none') ?>"
       method="post">
-    <div class="buttonBar">
+    <div class="searchBox">
         <div class="left">
             <?php
                 if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -39,6 +39,8 @@ function discardChanges(event) {
                 }
             ?>
         </div>
+
+        <div class="clear"></div>
     </div>
 
     <?php echo $this->escape($this->tabView, 'none'); ?>

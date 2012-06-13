@@ -19,13 +19,14 @@
 }
 
 .searchBox input[type=text] {
-	position: relative;
-	top: -.4em;
+    position: relative;
+    top: -.1em;
     border: 1px solid #808080;
     background-color: white;
     height: 1.7em;
     margin-left: 2px;
     width: 20em;
+    vertical-align: text-bottom;
 }
 
 .searchBox p {

@@ -32,7 +32,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
                                    array('value' => 'View Risk Analysis Form',
                                          'href' => "/finding/remediation/raf/format/pdf/id/{$finding->id}"
                                                    .  "{$this->fromSearchUrl}",
-                                         'imageSrc' => $this->serverUrl('/images/pdf.gif')));
+                                         'imageSrc' => '/images/pdf.gif'));
             echo $this->escape($viewRafButton, 'none');
         }
         ?>

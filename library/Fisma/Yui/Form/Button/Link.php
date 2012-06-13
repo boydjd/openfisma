@@ -70,6 +70,9 @@ class Fisma_Yui_Form_Button_Link extends Fisma_Yui_Form_Button
                         ";
         $image = $this->getAttrib('imageSrc');
         if (isset($image)) {
+            $view = Zend_Layout::getMvcInstance()->getView();
+            $image = $view->serverUrl($image);
+
             $render .= "button._button.style.background = 'url($image) 1em 50% no-repeat';\n";
             $render .= "button._button.style.paddingLeft = '3em';\n";
         }
