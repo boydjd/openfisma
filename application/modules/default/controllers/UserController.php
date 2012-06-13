@@ -793,7 +793,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         foreach ($results as &$r) {
             $r['givenname'] = $r['givenname'][0];
             $r['sn'] = $r['sn'][0];
-            $r['mail'] = $r['mail'][0];
+            if (!empty($r['mail'][0])) {
+                $r['mail'] = $r['mail'][0];
+            } else {
+                $r['mail'] = '';
+            }
             $r['label'] = trim($r['givenname'] . ' ' . $r['sn'] . ' <' . $r['mail'] . '>');
         }
         $this->view->results = $results;
@@ -1026,7 +1030,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         if ('database' == Fisma::configuration()->getConfig('auth_type')) {
             $form->removeElement('lookup');
-            $form->removeElement('');
+            $form->removeElement('separator');
             $this->view->requirements =  $passwordRequirements->direct();
         } else {
             $form->removeElement('password');

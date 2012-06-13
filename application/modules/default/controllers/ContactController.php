@@ -79,9 +79,9 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
 
         $authType = Fisma::configuration()->getConfig('auth_type');
         if ($authType == 'database') {
-            // Remove the lookup and seperator elements
+            // Remove the lookup and separator elements
             $form->removeElement('lookup');
-            $form->removeElement('seperator');
+            $form->removeElement('separator');
         }
 
         // Populate <select> for responsible organization
