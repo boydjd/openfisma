@@ -32,12 +32,17 @@ Poc:
             comment: The users last name
         email:
             type: string(255)
+            unique: true
+            notnull: true
             extra:
                 logicalName: E-mail Address
                 notify: true
             email:
                 check_mx: false
             comment: The users primary e-mail address
+        displayName:
+            type: string
+            comment: An internally-modified field which combines first/last/email together.
         phoneOffice:
             type: string(15)
             fixed: true
@@ -66,6 +71,11 @@ Poc:
             type: enum
             values: [manual, password, inactive, expired]
             comment: Manual lock means the admin locked the account. Password lock means several consecutive password failures. Inactive lock means the user has not logged in recently enough. Expired locked means the password has expired.
+        accountType:
+            type: enum
+            values: [Contact, User]
+            notnull: true
+            default: Contact
 
     relations:
         # Each POC can have 1 reporting organization, but each organization can have 0-n reporting POCs

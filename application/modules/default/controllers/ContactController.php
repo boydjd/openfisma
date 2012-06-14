@@ -79,17 +79,14 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
 
         $authType = Fisma::configuration()->getConfig('auth_type');
         if ($authType == 'database') {
-            // Remove the "Check Account" button if we're not using external authentication
-            $form->removeElement('checkAccount');
-        } elseif ($authType == 'ldap') {
-            $form->getElement('nameFirst')->setAttrib("readonly", "readonly");
-            $form->getElement('nameLast')->setAttrib("readonly", "readonly");
-            $form->getElement('email')->setAttrib("readonly", "readonly");
+            // Remove the lookup and separator elements
+            $form->removeElement('lookup');
+            $form->removeElement('separator');
         }
 
         // Populate <select> for responsible organization
         $organizations = Doctrine::getTable('Organization')->getOrganizationSelectQuery(true)->execute();
-        $selectArray = $this->view->systemSelect($organizations);
+        $selectArray = array('' => '') + $this->view->systemSelect($organizations);
         $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
 
         return $form;
@@ -104,14 +101,10 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
     {
         $keyword = $this->getRequest()->getParam('keyword');
 
-        $nameCondition = "(p.nameLast LIKE ? OR p.nameFirst LIKE ? OR p.username LIKE ? OR p.email LIKE ?)";
-        $nameArgs = array("$keyword%", "$keyword%", "$keyword%", "$keyword%");
-
         $pocQuery = Doctrine_Query::create()
                     ->from('Poc p')
-                    ->select("p.id")
-                    ->addSelect("CONCAT(p.username, ' [', p.nameFirst, ' ', p.nameLast, '] <', p.email, '>') AS name")
-                    ->where($nameCondition, $nameArgs)
+                    ->select("p.id, p.displayName AS name")
+                    ->where('p.displayName LIKE ?', '%'.$keyword.'%')
                     ->andWhere('(p.lockType IS NULL OR p.lockType <> ?)', 'manual')
                     ->orderBy("p.nameFirst")
                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
@@ -218,6 +211,16 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
                     )
                 );
             }
+        }
+
+        if (!empty($record)) {
+            $buttons['convert'] = new Fisma_Yui_Form_Button_Link(
+                'toolbarConvertButton',
+                array(
+                    'value' => 'Convert to User',
+                    'href' => $this->view->url(array('controller' => 'user', 'action' => 'create', 'id' => $record->id))
+                )
+            );
         }
 
         $buttons = array_merge($buttons, parent::getToolbarButtons($record));

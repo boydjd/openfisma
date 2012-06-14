@@ -16,6 +16,21 @@ elementPrefixPath.prefix = Fisma_Zend_Form
 elementPrefixPath.path = Fisma/Zend/Form
 elementPrefixPath.type = Validate
 
+elements.lookup.type = "Form_AutoComplete"
+elements.lookup.options.label = "Lookup"
+elements.lookup.options.attribs.size = 35
+elements.lookup.options.attribs.resultsList = "results"
+elements.lookup.options.attribs.fields = "label"
+elements.lookup.options.attribs.xhr = "/user/ldap-autocomplete/format/json"
+elements.lookup.options.attribs.queryPrepend = "/query/"
+elements.lookup.options.attribs.containerId = "lookupContainer"
+elements.lookup.options.attribs.setupCallback = "Fisma.User.setupLookupAutocomplete"
+elements.lookup.options.tooltip = "<p><b>Lookup</b></p><p>Enter the name or email address to search LDAP and retrieve details.</p>"
+displayGroups.accountInfo.elements.lookup = "lookup"
+
+elements.separator.type = "Element_Separator"
+displayGroups.accountInfo.elements.separator = "separator"
+
 elements.username.type = "text"
 elements.username.options.label = "Username"
 elements.username.options.required = true
@@ -42,11 +57,6 @@ elements.generate_password.options.onClickFunction = "Fisma.User.generatePasswor
 elements.generate_password.options.attribs.id = "generatePasswordButton"
 displayGroups.accountInfo.elements.generate_password = "generate_password"
 
-elements.checkAccount.type = "Form_Button"
-elements.checkAccount.options.label = "Check Account"
-elements.checkAccount.options.onClickFunction = "Fisma.User.checkAccount"
-displayGroups.accountInfo.elements.checkAccount = "checkAccount"
-
 elements.mustResetPassword.type = "checkbox"
 elements.mustResetPassword.options.label = "Must Reset Password"
 elements.mustResetPassword.options.value = "1"
@@ -65,31 +75,6 @@ elements.nameLast.options.required = true
 elements.nameLast.options.attribs.size = 35
 displayGroups.accountInfo.elements.nameLast = "nameLast"
 
-elements.phoneOffice.type = "Element_Phone"
-elements.phoneOffice.options.label = "Office Phone"
-elements.phoneOffice.options.attribs.size = 35
-displayGroups.accountInfo.elements.phoneOffice = "phoneOffice"
-
-elements.phoneMobile.type = "Element_Phone"
-elements.phoneMobile.options.label = "Mobile Phone"
-elements.phoneMobile.options.attribs.size = 35
-displayGroups.accountInfo.elements.phoneMobile = "phoneMobile"
-
-elements.email.type = "text"
-elements.email.options.label = "E-Mail"
-elements.email.options.required = true
-elements.email.options.attribs.size = 35
-elements.email.options.validators.email.validator = "EmailAddress"
-displayGroups.accountInfo.elements.email = "email"
-
-; The roles are populated dynamically in Fisma_Zend_Form_Manager_User since they can
-; change at any time.
-elements.role.type = "multiselect"
-elements.role.options.label = "Role(s)"
-elements.role.options.required = true
-elements.role.options.size = 10
-displayGroups.accountInfo.elements.roles = "role"
-
 elements.title.type = "text"
 elements.title.options.label = "Title"
 elements.title.options.attribs.size = 35
@@ -101,6 +86,31 @@ elements.reportingOrganizationId.options.label = "Reporting Organization"
 elements.reportingOrganizationId.options.required = true
 elements.reportingOrganizationId.options.tooltip = "<p><b>Reporting Organization</b></p><p>The reporting organization is the organization within the enterprise that this contact or user reports to. In other words, it is this person's managing organization.</p>"
 displayGroups.accountInfo.elements.reportingOrganizationId = "reportingOrganizationId"
+
+elements.email.type = "text"
+elements.email.options.label = "E-Mail"
+elements.email.options.required = true
+elements.email.options.attribs.size = 35
+elements.email.options.validators.email.validator = "EmailAddress"
+displayGroups.accountInfo.elements.email = "email"
+
+elements.phoneOffice.type = "Element_Phone"
+elements.phoneOffice.options.label = "Office Phone"
+elements.phoneOffice.options.attribs.size = 35
+displayGroups.accountInfo.elements.phoneOffice = "phoneOffice"
+
+elements.phoneMobile.type = "Element_Phone"
+elements.phoneMobile.options.label = "Mobile Phone"
+elements.phoneMobile.options.attribs.size = 35
+displayGroups.accountInfo.elements.phoneMobile = "phoneMobile"
+
+; The roles are populated dynamically in Fisma_Zend_Form_Manager_User since they can
+; change at any time.
+elements.role.type = "multiselect"
+elements.role.options.label = "Role(s)"
+elements.role.options.required = true
+elements.role.options.size = 10
+displayGroups.accountInfo.elements.roles = "role"
 
 ; The values in the status menu are static so it is hardcoded here.
 ; (ie. "Active" and "Locked").

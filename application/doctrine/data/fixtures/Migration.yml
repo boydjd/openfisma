@@ -93,8 +93,8 @@ Migration:
         tagNumber: 0
         name: Rev1Sa02
 
-    021800_move_lock_type_to_poc:
+    021800_poc_user_changes::
         majorVersion: 2
         minorVersion: 18
         tagNumber: 0
-        name: MoveLockTypeToPoc
+        name: PocUserChanges

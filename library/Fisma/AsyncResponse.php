@@ -51,26 +51,35 @@ class Fisma_AsyncResponse
     public $message;
 
     /**
+     * Extra object for responses to things like FZCAO::createAction
+     */
+    public $object = null;
+
+    /**
      * Mark response as succeeded
      *
      * @param string $message Optional message which is safe to display to the end user
+     * @param mixed $object Extra object/value
      */
-    public function succeed($message = null)
+    public function succeed($message = null, $object = null)
     {
         $this->success = true;
 
         $this->message = empty($message) ? null : $message;
+        $this->object = $object;
     }
 
     /**
      * Mark response as failed
      *
      * @param string $message Optional message which is safe to display to the end user
+     * @param mixed $object Extra object/value
      */
-    public function fail($message = null)
+    public function fail($message = null, $object = null)
     {
         $this->success = false;
 
         $this->message = empty($message) ? null : $message;
+        $this->object = $object;
     }
 }

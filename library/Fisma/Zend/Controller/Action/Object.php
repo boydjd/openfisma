@@ -377,7 +377,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         // Get the subject form
         $form   = $this->getForm();
-        $form->setAction("{$this->_moduleName}/{$this->_controllerName}/create");
+        $form->setAction($this->getRequest()->getRequestUri());
+        $form->setDefaults($this->getRequest()->getParams());
 
         if ($this->_request->isPost()) {
             $post = $this->_request->getPost();
@@ -389,7 +390,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     Doctrine_Manager::connection()->commit();
 
                     if ($format == 'json') {
-                        $jsonResponse->succeed($object->id);
+                        $jsonResponse->succeed($object->id, $object->toArray());
                     } else {
                         $msg   = $this->getSingularModelName() . ' created successfully';
                         $type = 'notice';
@@ -473,7 +474,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $form   = $this->getForm();
         if ($this->_acl->hasPrivilegeForObject('update', $subject)) {
-            $form->setAction("{$this->_moduleName}/{$this->_controllerName}/view/id/$id$fromSearchUrl");
+            $form->setAction($this->getRequest()->getRequestUri());
         } else {
             $form->setReadOnly(true);
         }

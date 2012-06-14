@@ -360,7 +360,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 'size' => $document->getSizeKb(),
                 'version' => $document->version,
                 'description' => $this->view->textToHtml($this->view->escape($document->description)),
-                'username' => $this->view->userInfo($document->Upload->User->username),
+                'username' => $this->view->userInfo($document->Upload->User->displayName, $document->Upload->User->id),
                 'date' => $document->Upload->createdTs,
                 'view' => "<a href=/system-document/view/id/{$document->id}>Version History</a>"
             );

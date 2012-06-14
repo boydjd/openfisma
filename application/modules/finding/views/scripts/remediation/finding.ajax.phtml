@@ -155,7 +155,12 @@
         <table class="keyValues">
             <tr>
                 <td>Opened By:</td>
-                <td><?php echo $this->escape($this->userInfo($finding->CreatedBy->username), 'none'); ?></td>
+                <td>
+                    <?php echo $this->escape(
+                        $this->userInfo($finding->CreatedBy->displayName, $finding->CreatedBy->id),
+                        'none'
+                    ); ?>
+                </td>
             </tr>
             <tr>
                 <td>Point Of Contact:</td>
@@ -171,8 +176,15 @@
                     setupCallback="Fisma.Finding.setupPocAutocomplete"
                 <?php endif; ?>
                     value="<?php echo $this->escape($finding->pocId); ?>"
-                    defaultValue="<?php echo $this->escape($finding->PointOfContact->username); ?>"
-                    ><?php echo $this->escape($this->userInfo($finding->PointOfContact->username), 'none');?>
+                    defaultValue="<?php echo $this->escape($finding->PointOfContact->username); ?>">
+                    <?php
+                        if (!empty($finding->pocId)) {
+                            echo $this->escape(
+                                $this->userInfo($finding->PointOfContact->displayName, $finding->pocId),
+                                'none'
+                            );
+                        }
+                    ?>
                 </span>
             <?php if ($this->isPocEditable): ?>
                 <span class="editable" target="pointOfContact">&nbsp;</span>

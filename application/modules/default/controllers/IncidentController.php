@@ -757,11 +757,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $logs = $incident->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
 
         $logRows = array();
-
         foreach ($logs as $log) {
             $logRows[] = array(
                 'timestamp' => $log['o_createdTs'],
-                'user' => $this->view->userInfo($log['u_username']),
+                'user' => !empty($log['u_id']) ? $this->view->userInfo($log['u_displayName'], $log['u_id']) : '',
                 'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
             );
         }
@@ -1184,7 +1183,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         foreach ($comments as $comment) {
             $commentRows[] = array(
                 'timestamp' => $comment['createdTs'],
-                'username' => $this->view->userInfo($comment['User']['username']),
+                'username' => $this->view->userInfo($comment['User']['displayName'], $comment['User']['id']),
                 'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment']))
             );
         }
@@ -1311,7 +1310,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'fileName' => $this->view->escape($artifact->fileName),
                 'fileNameLink' => "<a href=\"$downloadUrl\">" . $this->view->escape($artifact->fileName) . "</a>",
                 'fileSize' => $artifact->getFileSize(),
-                'user'     => $this->view->userInfo($artifact->User->username),
+                'user'     => $this->view->userInfo($artifact->User->displayName, $artifact->User->id),
                 'date'     => $artifact->createdTs,
                 'comment'  => $this->view->textToHtml($this->view->escape($artifact->description))
             );

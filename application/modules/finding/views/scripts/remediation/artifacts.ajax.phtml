@@ -101,7 +101,7 @@ foreach ($this->approvalHistory as $findingEvaluation):
     endif;
 
     $user = $findingEvaluation->User;
-    $userHtml = $this->userInfo($user->nameFirst . ' ' . $user->nameLast, $user->username);
+    $userHtml = $this->userInfo($user->displayName, $user->id);
     $decision = $findingEvaluation->decision;
     $spanClass = strtolower($decision);
     $comment = (!empty($findingEvaluation->comment)) ?

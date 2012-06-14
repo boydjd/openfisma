@@ -419,7 +419,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         foreach ($comments as $comment) {
             $commentRows[] = array(
                 'timestamp' => $comment['createdTs'],
-                'username' => $this->view->userInfo($comment['User']['username']),
+                'username' => $this->view->userInfo($comment['User']['displayName'], $comment['User']['id']),
                 'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment']))
             );
         }
@@ -1025,7 +1025,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 'fileNameLink' => "<a href=\"{$baseUrl}download-evidence{$currentUrl}\">"
                                 . $this->view->escape($attachment->fileName) . "</a>",
                 'fileSize'     => $attachment->getFileSize(),
-                'user'         => $this->view->userInfo($attachment->User->username),
+                'user'         => $this->view->userInfo($attachment->User->displayName, $attachment->User->id),
                 'date'         => $attachment->createdTs,
                 'action'       => 'Delete',
                 'id'           => $this->view->finding->id,
@@ -1169,11 +1169,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $logs = $this->view->finding->getAuditLog()->fetch(Doctrine::HYDRATE_SCALAR);
 
         $logRows = array();
-
         foreach ($logs as $log) {
             $logRows[] = array(
                 'timestamp' => $log['o_createdTs'],
-                'user' => $this->view->userInfo($log['u_username']),
+                'user' => $this->view->userInfo($log['u_displayName'], $log['u_id']),
                 'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
             );
         }

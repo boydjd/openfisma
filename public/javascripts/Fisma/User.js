@@ -36,32 +36,11 @@ Fisma.User = {
     generatePasswordBusy : false,
 
     /**
-     * A boolean which indicates if an account is currently being checked in LDAP
-     */
-    checkAccountBusy : false,
-
-    /**
      * A reference to a YUI table which contains comments for the current page
      * 
      * This reference will be set when the page loads by the script which initializes the table
      */
     commentTable : null,
-
-    /**
-     * Map LDAP column names onto names of fields in this form
-     *
-     * ldap name => field name
-     */
-    ldapColumnMap : {
-        'givenname' : 'nameFirst',
-        'mail' : 'email',
-        'mobile' : 'phoneMobile',
-        'samaccountname' : 'username',
-        'sn' : 'nameLast',
-        'telephonenumber' : 'phoneOffice',
-        'title' : 'title',
-        'uid' : 'username'
-    },
 
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
@@ -111,24 +90,24 @@ Fisma.User = {
      * Display a dialog which shows user information for the specified user.
      *
      * @param referenceElement The panel will be displayed near this element
-     * @param username The name of the user to get info for
+     * @param userId The ID number of the user to get info for
      */
-    displayUserInfo : function (referenceElement, username) {
+    displayUserInfo : function (referenceElement, userId) {
 
         var panel;
 
-        if (typeof Fisma.User.userInfoPanelList[username] === 'undefined') {
+        if (typeof Fisma.User.userInfoPanelList[userId] === 'undefined') {
 
             // Create new panel
-            panel = Fisma.User.createUserInfoPanel(referenceElement, username);
+            panel = Fisma.User.createUserInfoPanel(referenceElement, userId);
 
-            Fisma.User.userInfoPanelList[username] = panel;
+            Fisma.User.userInfoPanelList[userId] = panel;
 
             panel.show();
         } else {
 
             // Panel already exists
-            panel = Fisma.User.userInfoPanelList[username];
+            panel = Fisma.User.userInfoPanelList[userId];
 
             // If panel is hidden then display it, or if its already visible, then hide it.
             if (panel.cfg.getProperty("visible")) {
@@ -144,10 +123,10 @@ Fisma.User = {
      * Create the user info panel and position it near the referenceElement
      *
      * @param referenceElement
-     * @param username The name of the user to get info for
+     * @param userId The ID number of the user to get info for
      * @return YAHOO.widget.Panel
      */
-    createUserInfoPanel : function (referenceElement, username) {
+    createUserInfoPanel : function (referenceElement, userId) {
 
         var PANEL_WIDTH = 350; // in pixels
         var panel = new YAHOO.widget.Panel(
@@ -161,7 +140,7 @@ Fisma.User = {
         );
 
         panel.setHeader('User Profile');
-        panel.setBody("Loading user profile for <em>" + username + "</em>...");
+        panel.setBody("Loading user profile for <em>" + $(referenceElement).text().trim() + "</em>...");
         panel.render(document.body);
 
         Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
@@ -169,7 +148,7 @@ Fisma.User = {
         // Load panel content using asynchronous request
         YAHOO.util.Connect.asyncRequest(
             'GET', 
-            '/user/info/username/' + encodeURI(username),
+            '/user/info/id/' + encodeURI(userId),
             {
                 success: function(o) {
                     panel.setBody(o.responseText);
@@ -225,129 +204,24 @@ Fisma.User = {
         return false;
     },
 
-    checkAccount : function () {
-
-        if (Fisma.User.checkAccountBusy) {
-            return;
-        }
-
-        Fisma.User.checkAccountBusy = true;
-
-        var account = document.getElementById('username').value;
-        var url = "/user/check-account/format/json/account/" + encodeURIComponent(account);
-
-        var checkAccountButton = document.getElementById('checkAccount');
-        checkAccountButton.className = "yui-button yui-push-button yui-button-disabled";
-
-        var spinner = new Fisma.Spinner(checkAccountButton.parentNode);
-        spinner.show();
-
-        YAHOO.util.Connect.asyncRequest(
-            'GET',
-            url,
-            {
-                success : function (o) {
-                    try {
-                        var data = YAHOO.lang.JSON.parse(o.responseText);
-
-                        // Query comes originally from the user. Escape it just to be safe.
-                        data.query = encodeURI(data.query);
-
-                        // Make sure each column value is not null in LDAP account, then populate to related elements.
-                        if (YAHOO.lang.isValue(data.accounts)) {
-                            if (data.accounts.length === 0) {
-                                Fisma.Util.message('No account matches your query: '
-                                    + encodeURI(data.query) + '.', 'warning', true);
-                            } else if (data.accounts.length === 1) {
-                                Fisma.User.populateAccountForm(data.accounts[0]);
-                            } else {
-                                Fisma.User.showMultipleAccounts(data.accounts);
-                            }
-                        } else {
-                            Fisma.Util.message(data.msg, data.type, true);
-                        }
-                    } catch (e) {
-                        if (YAHOO.lang.isValue(e.message)) {
-                            Fisma.Util.message('Error: ' + e.message, 'warning', true);
-                        } else {
-                            Fisma.Util.message('An unknown error occurred.', 'warning', true);
-                        }
-                    }
-
-                    Fisma.User.checkAccountBusy = false;
-                    checkAccountButton.className = "yui-button yui-push-button";
-                    spinner.hide();
-                },
-
-                failure : function(o) {
-                    Fisma.User.checkAccountBusy = false;
-                    checkAccountButton.className = "yui-button yui-push-button";
-                    spinner.hide();
-
-                    var alertMessage = "Failed to check account password: " + o.statusText;
-                    Fisma.Util.showAlertDialog(alertMessage);
-                }
-            },
-            null);
-    },
-
     /**
-     * Fill in the account info for one user and display a success message
-     *
-     * @param account {Object} A dictionary of LDAP data for an account.
+     * Configure the autocomplete that is used for lookint up an LDAP account
+     * 
+     * @param autocomplete {YAHOO.widget.AutoComplete}
+     * @param params {Array} The arguments passed to the autocomplete constructor
      */
-    populateAccountForm : function (account) {
-        Fisma.Util.message('Your search matched one user: ' + account.dn, 'info', true);
-
-        var ldapColumn;
-        for (ldapColumn in Fisma.User.ldapColumnMap) {
-            if (!Fisma.User.ldapColumnMap.hasOwnProperty(ldapColumn)) {
-                continue;
-            }
-
-            var fieldName = Fisma.User.ldapColumnMap[ldapColumn];
-            var fieldValue = account[ldapColumn];
-        
-            if (YAHOO.lang.isValue(fieldValue)) {
-                document.getElementById(fieldName).value = fieldValue;
-            }
-        }
+    setupLookupAutocomplete : function (autocomplete, params) {
+        autocomplete.itemSelectEvent.subscribe(function (ev, args) {
+            var data = args[2][1];
+            $("#username").val(data["username"]);
+            $("#email").val(data["mail"]);
+            $("#nameFirst").val(data["givenname"]);
+            $("#nameLast").val(data["sn"]);
+            $("#phoneOffice").val(data["telephonenumber"]);
+        });
+        autocomplete.sendQuery($("#lookup").val());
     },
 
-    /**
-     * Display a list of accounts that a user can select from
-     *
-     * @param accounts {Object} An array of LDAP account dictionaries.
-     */
-    showMultipleAccounts : function (accounts) {
-        Fisma.Util.message('<p>Multiple accounts match your query. Click a name to select it.</p>', 'info', 'true');
-        var msgBar = document.getElementById('msgbar');
-
-        var accountsContainer = document.createElement('p');
-        var index;
-
-        for (index in accounts) {
-            var account = accounts[index];
-
-            var accountLink = document.createElement('a');
-            accountLink.setAttribute('href', '#');
-            accountLink.account = account;
-            YAHOO.util.Event.on(accountLink, "click", Fisma.User.populateAccountForm, this.account);
-
-            var accountText = account.givenname
-                            + ' '
-                            + account.sn
-                            + ' ['
-                            + (YAHOO.lang.isValue(account.samaccountname) ? account.samaccountname : account.uid)
-                            + ']';
-            accountLink.appendChild(document.createTextNode(accountText));
-            accountLink.appendChild(document.createElement('br'));
-
-            accountsContainer.appendChild(accountLink);
-        }
-
-        msgBar.appendChild(accountsContainer);
-    },
 
     /**
      * Show the comment panel
@@ -415,5 +289,9 @@ Fisma.User = {
         });
 
         return;
+    },
+
+    convertToContact: function(ev, arg) {
+        YAHOO.util.Event.stopEvent(ev);
     }
 };

@@ -322,9 +322,13 @@ class Fisma_Inject_Excel
 
             if (!empty($finding['pocEmail'])) {
                 $poc = Doctrine::getTable('Poc')->findOneByEmail($finding['pocEmail']);
-                if ($poc) {
-                    $poam['pocId'] = $poc->id;
+                if (!$poc) {
+                    $poc = new Poc();
+                    $poc->email = $finding['pocEmail'];
+                    $poc->reportingOrganizationId = $poam['responsibleOrganizationId'];
+                    $poc->save();
                 }
+                $poam['pocId'] = $poc->id;
             }
 
             // Finally, create the finding

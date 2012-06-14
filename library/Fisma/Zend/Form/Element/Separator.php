@@ -17,24 +17,24 @@
  */
 
 /**
- * Move lockType to Poc model, for OFJ-1819.
+ * Renders a simple separator or gap in the form.
  *
- * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
- * @package    Migration
+ * @package    Fisma
+ * @subpackage Fisma_Zend_Form
  */
-class Application_Migration_021800_MoveLockTypeToPoc extends Fisma_Migration_Abstract
+class Fisma_Zend_Form_Element_Separator extends Zend_Form_Element
 {
     /**
-     * Move the column to after reportingOrganizationId
+     * Render the form element
+     *
+     * @param Zend_View_Interface $view Provided for compatibility
+     * @return string The rendered element
      */
-    public function migrate()
+    function render(Zend_View_Interface $view = null)
     {
-        $this->message("Moving lockType field from User to Poc");
-
-        $option = "enum('manual','password','inactive','expired')";
-
-        $this->getHelper()->moveColumn('poc', 'locktype', $option, 'reportingorganizationid');
+        return '<tr><td colspan="2"><hr/></td></tr>';
     }
 }

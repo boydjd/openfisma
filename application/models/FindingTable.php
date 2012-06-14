@@ -163,7 +163,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'threatLevel' => array(
                 'enumValues' => $this->getEnumValues('threatLevel'),
-                'initiallyVisible' => 
+                'initiallyVisible' =>
                     Fisma::configuration()->getConfig('threat_type') == 'threat_level' ? true : false,
                 'label' => 'Threat Level',
                 'sortable' => true,
@@ -224,7 +224,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'join' => array(
                     'model' => 'Poc',
                     'relation' => 'PointOfContact',
-                    'field' => 'username'
+                    'field' => 'displayName'
                 ),
                 'sortable' => true,
                 'type' => 'text'

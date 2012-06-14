@@ -425,7 +425,13 @@
                 <td>
                     <?php
                         if (isset($this->incident['ReportingUser'])):
-                            echo $this->escape($this->userInfo($this->incident['ReportingUser']['username']), 'none');
+                            echo $this->escape(
+                                $this->userInfo(
+                                    $this->incident['ReportingUser']['displayName'],
+                                    $this->incident['ReportingUser']['id']
+                                ),
+                                'none'
+                            );
                         else:
                             echo $this->escape("Not reported by a registered user. (See below.)");
                         endif;
@@ -445,8 +451,16 @@
                     setupCallback="Fisma.Finding.setupPocAutocomplete"
                 <?php endif; ?>
                     value="<?php echo $this->escape($this->incident['pocId']); ?>"
-                    defaultValue="<?php echo $this->escape($this->incident['PointOfContact']['username']); ?>"><?php
-                        echo $this->escape($this->userInfo($this->incident['PointOfContact']['username']), 'none');
+                    defaultValue="<?php echo $this->escape($this->incident['PointOfContact']['displayName']); ?>"><?php
+                        if (!empty($this->incident['pocId'])) {
+                            echo $this->escape(
+                                $this->userInfo(
+                                    $this->incident['PointOfContact']['displayName'],
+                                    $this->incident['PointOfContact']['id']
+                                ),
+                                'none'
+                            );
+                        }
                     ?></span>
                 <?php if ($this->updateIncidentPrivilege): ?>
                     <span class="editable" target="pointOfContact">&nbsp;</span>
