@@ -368,7 +368,7 @@ Fisma.Search.Criteria.prototype = {
      * The query is returned as an object including the field name, the operator, and 0-n operands
      */
     getQuery : function () {
-        var operands = (this.forcedOperands) ? this.forcedOperands : this.getOperands();
+        var operands = this.forcedOperands || this.getOperands();
         return {
             field : this.currentField.name,
             operator : this.currentQueryType,
@@ -447,7 +447,7 @@ Fisma.Search.Criteria.prototype = {
     },
 
     hasBlankOperands: function() {
-        var operands = (this.forcedOperands) ? this.forcedOperands : this.getOperands();
+        var operands = this.forcedOperands || this.getOperands();
         var i;
         for (i in operands) {
             if ('' === $P.trim(operands[i])) {

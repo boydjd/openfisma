@@ -224,15 +224,16 @@ Fisma.Search = (function() {
         getQuery : function (form) {
             var searchType = document.getElementById('searchType').value;
             var query = {queryType : searchType};
+            var queryData;
 
             if ('simple' === searchType) {
                 query.keywords = form.keywords.value;
             } else if ('advanced' === searchType) {
-                var queryData = this.advancedSearchPanel.getQuery();
+                queryData = this.advancedSearchPanel.getQuery();
                 query.query = YAHOO.lang.JSON.stringify(queryData);
             } else if ('faceted' === searchType) {
                 query.keywords = form.keywords.value;
-                var queryData = this.advancedSearchPanel.getQuery();
+                queryData = this.advancedSearchPanel.getQuery();
                 query.query = YAHOO.lang.JSON.stringify(queryData);
             } else {
                 throw "Invalid value for search type: " + searchType;
@@ -438,7 +439,7 @@ Fisma.Search = (function() {
          */
         facetSearch : function (linkElement) {
             var args = linkElement.id.split('_');
-            if (args.shift() != 'filter') {
+            if (args.shift() !== 'filter') {
                 return false;
             }
             var field = args.shift();
@@ -451,12 +452,12 @@ Fisma.Search = (function() {
             panel.criteria = [];
             jQuery('a.selected').each(function(index, element){
                 var args = element.id.split('_');
-                if (args.shift() != 'filter') {
+                if (args.shift() !== 'filter') {
                     return false;
                 }
                 var field = args.shift();
                 var type = args.shift();
-                if (type != 'all') {
+                if (type !== 'all') {
                     var criterion1 = new Fisma.Search.Criteria(panel, panel.searchableFields);
                     criterion1.currentField = criterion1.getField(field);
                     criterion1.currentQueryType = type;

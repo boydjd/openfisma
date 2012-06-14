@@ -68,10 +68,10 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
     for (i in urlParams) {
         var urlParam = urlParams[i];
         var keyValuePair = urlParam.split("=");
+        var criteriaString = keyValuePair[1];
 
         // parse parameters
         if ("q" === keyValuePair[0]) {
-            var criteriaString = keyValuePair[1];
             this.defaultQueryTokens = criteriaString.split("/");
 
             // Remove first element if it's empty
@@ -79,11 +79,10 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
                 this.defaultQueryTokens.splice(0, 1);
             }
         } else if ("show" === keyValuePair[0]) {
-            this.showAll = "all" === keyValuePair[1];
+            this.showAll = "all" === criteriaString;
         } else if ("f" === keyValuePair[0]) {
-            YAHOO.util.Event.onContentReady('advancedSearchCriteria', function() {
-                document.getElementById(keyValuePair[1]).onclick();
-            });
+            var obj = document.getElementById(criteriaString);
+            YAHOO.util.Event.onContentReady('advancedSearchCriteria', obj.onclick, obj, true);
         }
     }
 };
