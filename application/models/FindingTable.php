@@ -211,9 +211,9 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => false,
                 'label' => 'Created By User',
                 'join' => array(
-                    'model' => 'User',
+                    'model' => 'Poc',
                     'relation' => 'CreatedBy',
-                    'field' => 'username'
+                    'field' => 'displayName'
                 ),
                 'sortable' => true,
                 'type' => 'text'

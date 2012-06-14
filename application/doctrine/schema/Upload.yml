@@ -20,6 +20,7 @@ Upload:
 
     relations:
         User:
+            class: Poc
             local: userId
             foreign: id
             foreignAlias: Uploads

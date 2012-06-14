@@ -28,6 +28,7 @@ FindingEvaluation:
             foreign: id
             foreignAlias: FindingEvaluations
         User:
+            class: Poc
             local: userId
             foreign: id
             foreignAlias: FindingEvaluations        
