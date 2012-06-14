@@ -1165,7 +1165,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Add the "Contact Hierarchy" button
+     * Add the "Convert to Contact" button
      *
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
      * @return array Array of Fisma_Yui_Form_Button
