@@ -773,5 +773,91 @@ Fisma.TableFormat = {
         } catch (e) {
             Fisma.TableFormat.formatHtml(elCell, oRecord, oColumn, oData);
         }
+    },
+
+    /**
+     * A formatter which displays buttons for task operation
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatTaskAction : function (elCell, oRecord, oColumn, oData) {
+        var deleteButton= new YAHOO.widget.Button({
+            label: "Delete",
+            id: YAHOO.util.Dom.generateId(),
+            container: elCell,
+            onclick: {
+                fn: Fisma.Task.deleteRecord,
+                obj: {
+                    id : oRecord.getData('id'),
+                    objectId: oRecord.getData('objectId'),
+                    type: "Finding"
+                }
+            },
+            disabled: true
+        });
+
+        var findingStatus = oRecord.getData('findingStatus');
+        if (findingStatus === 'NEW' || findingStatus === 'DRAFT') {
+            deleteButton.set('disabled', false);
+        }
+
+        var commentButton = new YAHOO.widget.Button({
+            label: "Add Comment",
+            id: YAHOO.util.Dom.generateId(),
+            container: elCell,
+            onclick: {
+                fn: Fisma.Task.showCommentPanel,
+                obj: {
+                    id : oRecord.getData('id'),
+                    objectId: oRecord.getData('objectId'),
+                    type: "Finding",
+                    target: oRecord,
+                    callback: {object: "Task", method: "handleCommentCallback"}
+                }
+            }
+        });
+
+        var menuButton = new YAHOO.widget.Button({
+            label: "Change Status",
+            type: "menu",
+            menu: [
+                {text: "OPEN", onclick: {
+                    fn: Fisma.Task.statusMenuItemClick,
+                    obj: {
+                        id: oRecord.getData('id'),
+                        objectId: oRecord.getData('objectId'),
+                        target: oRecord,
+                        type: 'Finding'
+                    }
+                }},
+                {text: "PENDING", onclick: {
+                    fn: Fisma.Task.statusMenuItemClick,
+                    obj: {
+                        id: oRecord.getData('id'),
+                        objectId: oRecord.getData('objectId'),
+                        target: oRecord,
+                        type: 'Finding'
+                    }
+                }},
+                {text: "CLOSED", onclick: {
+                    fn: Fisma.Task.statusMenuItemClick,
+                    obj: {
+                        id: oRecord.getData('id'),
+                        objectId: oRecord.getData('objectId'),
+                        target: oRecord,
+                        type: 'Finding'
+                    }
+                }}
+            ],
+            container: elCell,
+            disabled: true
+        });
+
+        if (findingStatus === 'EN') {
+            menuButton.set('disabled', false);
+        }
     }
 };

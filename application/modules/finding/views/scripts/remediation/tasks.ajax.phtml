@@ -1,0 +1,234 @@
+<?php
+Fisma_Format_Section::startSection('Tasks' . "<span id=\"searchResultsTotalFound\"></span>");
+?>
+<div class="buttonBar">
+    <?php echo $this->escape($this->taskButton, 'none'); ?>
+</div>
+<div id="task-container"></div>
+<script type="text/javascript">
+YAHOO.util.Event.onContentReady("task-container", function() {
+    var pocData = <?php echo $this->escape($this->poc, 'json'); ?>;
+
+    var columnDefs = [
+        {
+            key: "description",
+            label: "Description",
+            sortable: false,
+            formatter: Fisma.TableFormat.formatHtml
+            <?php if ($this->crudPrivilege) :?>
+                ,editor: new YAHOO.widget.TextareaCellEditor()
+            <?php endif ?>
+        },
+        {
+            key: "poc",
+            label: "Assignee",
+            sortable: true
+            <?php if ($this->crudPrivilege) :?>
+                ,editor: new YAHOO.widget.DropdownCellEditor({dropdownOptions:pocData})
+            <?php endif ?>
+        },
+        {
+            key: "expectedCost",
+            label: "Cost",
+            sortable: true,
+            formatter: "currency"
+            <?php if ($this->crudPrivilege) :?>
+                ,editor: new YAHOO.widget.TextboxCellEditor({validator:YAHOO.widget.DataTable.validateNumber})
+            <?php endif ?>
+        },
+        {
+            key: "ecd",
+            label: "Due Date",
+            sortable: true,
+            formatter: YAHOO.widget.DataTable.formatDate
+            <?php if ($this->crudPrivilege) :?>
+                ,editor: new YAHOO.widget.DateCellEditor()
+            <?php endif ?>
+        },
+        {
+            key: "status",
+            label: "Status",
+            sortable: true
+        },
+        {
+            key: "comment",
+            label: "Comments",
+            formatter: Fisma.TableFormat.formatHtml
+        },
+        {
+            key: "action",
+            label: "Action",
+            formatter: Fisma.TableFormat.formatTaskAction
+        },
+        {
+            key: "findingStatus",
+            label: "findingStatus",
+            hidden: true
+        }
+    ];
+
+    var requestConstructor = function (tableState, self) {
+        // Build custom request
+        var request = "/sort/" + tableState.sortedBy.key +
+                      "/dir/" + (tableState.sortedBy.dir == 'yui-dt-asc' ? 'asc' : 'desc') +
+                      "/start/" + tableState.pagination.recordOffset +
+                      "/count/" + tableState.pagination.rowsPerPage;
+
+        return request;
+    };
+
+    // DataSource instance
+    var dataSource = new YAHOO.util.XHRDataSource('<?php echo $this->escape($this->dataUrl); ?>');
+    dataSource.connMethodPost = false;
+    dataSource.responseType = YAHOO.util.DataSource.TYPE_JSON;
+    dataSource.responseSchema = {
+        resultsList : "tasksData",
+        metaFields : {
+            totalRecords : "totalRecords"
+        },
+        fields : [
+            {key: 'id'},
+            {key: 'description'},
+            {key: 'poc'},
+            {key: 'expectedCost', parser: 'currency'},
+            {key: 'ecd', parser: 'date'},
+            {key: 'status'},
+            {key: 'comment'},
+            {key: 'action'},
+            {key: 'objectId'},
+            {key: 'findingStatus'}
+        ]
+    };
+
+    // DataTable configuration
+    var configs = {
+        initialRequest : "/sort/ecd"
+                       + "/dir/asc"
+                       + "/count/10",
+        dynamicData : true,
+        sortedBy : {key: "ecd", dir:YAHOO.widget.DataTable.CLASS_ASC},
+        paginator: new YAHOO.widget.Paginator(
+            {
+                rowsPerPage : 10,
+                template : "{FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink}"
+            }
+        ),
+        generateRequest : requestConstructor,
+        dateOptions: {format: '%F'}
+    };
+
+    var dataTable = new YAHOO.widget.DataTable("task-container", columnDefs, dataSource, configs);
+
+    Fisma.Registry.set("taskDataTable", dataTable);
+
+    // Update number of returned records
+    dataTable.handleDataReturnPayload = function(request, response, payload) {
+        payload.totalRecords = response.meta.totalRecords;
+
+        // Display total records in the search results header
+        var searchResultsHeader = document.getElementById('searchResultsTotalFound');
+        if (searchResultsHeader) {
+            var totalRecords = response.meta.totalRecords ? response.meta.totalRecords : 0;
+            var searchResultsTotalFound = document.createTextNode('(' + totalRecords + ' records found)');
+
+            if (searchResultsHeader.firstChild) {
+                searchResultsHeader.removeChild(searchResultsHeader.firstChild);
+            }
+
+            searchResultsHeader.appendChild(searchResultsTotalFound);
+        }
+
+        return payload;
+    }
+
+    // Highlight the editable cell when the mouseover event is fired
+    var highlightEditableCell = function(oArgs) {
+        var elCell = oArgs.target;
+        if(YAHOO.util.Dom.hasClass(elCell, "yui-dt-editable")) {
+            this.highlightCell(elCell);
+        }
+    };
+
+    dataTable.subscribe("cellMouseoverEvent", highlightEditableCell);
+    dataTable.subscribe("cellMouseoutEvent", dataTable.onEventUnhighlightCell);
+    dataTable.subscribe("cellClickEvent", dataTable.onEventShowCellEditor);
+
+    // Decode the textarea content when the field is 'description'
+    dataTable.subscribe("editorShowEvent", function (oArgs) {
+        var editor = oArgs.editor;
+        var column = editor.getColumn();
+        var key = column.getKey();
+        if (key === 'description') {
+            editor.textarea.value = $P.htmlspecialchars_decode(editor.getInputValue(), 'ENT_QUOTES');
+        }
+    });
+
+    // Update the field when the cellUpdateEvent is fired
+    dataTable.subscribe("cellUpdateEvent", function (oArgs) {
+        var column = oArgs.column;
+        var record = oArgs.record;
+        var data = record.getData();
+        var key = column.getKey();
+        var elCell = column.editor.getTdEl();
+        var cellValue = data[key];
+
+        // Format the ecd date with '%Y-%m-%d' format
+        if (key === 'ecd' && cellValue instanceof Date) {
+            cellValue = YAHOO.util.Date.format(cellValue, {format: '%F'});
+        }
+
+        var postData = Fisma.Util.convertObjectToPostData({
+            csrf: document.getElementById('finding_detail').elements.csrf.value,
+            id: data.id,
+            objectId: data.objectId,
+            field: key,
+            value: cellValue
+        });
+
+        YAHOO.util.Connect.asyncRequest(
+            'POST',
+            '/task/edit/type/finding/format/json',
+            {
+                success : function (asyncResponse) {
+                    var result;
+
+                    try {
+                        result = YAHOO.lang.JSON.parse(asyncResponse.responseText).response;
+                    } catch (e) {
+                        result = {success : false, message : e};
+                    }
+
+                    if (result.success) {
+                        if (key === 'description') {
+                            jQuery(elCell.firstChild).text(cellValue);
+                        }
+
+                        var rowBlinker = new Fisma.Blinker(
+                                100,
+                                6,
+                                function () {
+                                    dataTable.highlightCell(elCell);
+                                },
+                                function () {
+                                    dataTable.unhighlightCell(elCell);
+                                }
+                            );
+
+                        rowBlinker.start();
+
+                        Fisma.Util.message(result.message, 'info', true);
+                    } else {
+                        Fisma.Util.message(result.message, 'warning', true);
+                    }
+                },
+
+                failure : function (o) {
+                    Fisma.Util.showAlertDialog('Save task failed.');
+                }
+            },
+            postData);
+    });
+});
+</script>
+
+<?php Fisma_Format_Section::stopSection(); ?>

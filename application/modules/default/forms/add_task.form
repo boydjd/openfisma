@@ -1,0 +1,49 @@
+; This is the form for adding a task to an object
+;
+; Author    Ben Zheng <ben.zheng@reyosoft.com>
+; Copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/content/license
+
+[add_task]
+
+name = "addTaskForm"
+attribs.onsubmit = "return Fisma.Task.postTask();"
+
+elements.description.type = "textarea"
+elements.description.options.label = "Description"
+elements.description.options.cols = 50
+elements.description.options.rows = 6
+displayGroups.task.elements.description = "description"
+
+elements.pocAutocomplete.type = "Form_AutoComplete"
+elements.pocAutocomplete.options.label = "Point Of Contact"
+elements.pocAutocomplete.options.attribs.resultsList = "pointsOfContact"
+elements.pocAutocomplete.options.attribs.fields = "name"
+elements.pocAutocomplete.options.attribs.xhr = "/contact/autocomplete/format/json"
+elements.pocAutocomplete.options.attribs.hiddenField = "pocId"
+elements.pocAutocomplete.options.attribs.queryPrepend = "/keyword/"
+elements.pocAutocomplete.options.attribs.containerId = "pointOfContactAutocompleteContainer"
+elements.pocAutocomplete.options.attribs.setupCallback = "Fisma.Finding.setupPocAutocomplete"
+elements.pocAutocomplete.options.tooltip = "<b>Contact</b><p>A contact is a person who is assigned responsibility for this finding. All existing users of this sytem are eligible to be a contact. In addition, the administrator of this system can add additional contacts as needed.</p>"
+displayGroups.task.elements.pocAutocomplete = "pocAutocomplete"
+
+elements.pocId.type = "hidden"
+elements.pocId.options.id = "pocId"
+displayGroups.task.elements.pocId = "pocId"
+
+elements.expectedCost.type = "text"
+elements.expectedCost.options.label = "Expected Cost"
+elements.expectedCost.options.attribs.size = 10
+displayGroups.task.elements.expectedCost = "expectedCost"
+
+elements.ecd.type = "text"
+elements.ecd.options.label = "Expected Completion Date"
+elements.ecd.options.class = "date"
+elements.ecd.options.required = true
+elements.ecd.options.validators.dateValidator.validator = "date"
+displayGroups.task.elements.ecd = "ecd"
+
+elements.save.type = "Form_Button"
+elements.save.options.label = "Save"
+elements.save.options.onClickFunction = "Fisma.Task.createTask"
+displayGroups.task.elements.save = "save"

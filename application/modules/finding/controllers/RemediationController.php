@@ -91,6 +91,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
              ->addActionContext('artifacts', 'html')
              ->addActionContext('audit-log', 'html')
              ->addActionContext('can-submit-mitigation-strategy', 'json')
+             ->addActionContext('tasks', 'html')
              ->initContext();
 
         parent::init();
@@ -302,6 +303,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("Finding $id", "/finding/remediation/finding/id/$id/format/html");
         $mitigationUrl = "/finding/remediation/mitigation-strategy/id/$id/format/html$fromSearchUrl";
         $tabView->addTab("Mitigation Strategy", $mitigationUrl);
+        $tabView->addTab("Tasks", "/finding/remediation/tasks/id/$id/format/html$fromSearchUrl");
         $tabView->addTab("Risk Analysis", "/finding/remediation/risk-analysis/id/$id/format/html$fromSearchUrl");
         $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id/format/html");
         $tabView->addTab("Comments ($commentCount)", "/finding/remediation/comments/id/$id/format/html");
@@ -1428,5 +1430,135 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         return $editable;
+    }
+
+    /**
+     * Display tasks for this finding
+     * 
+     * @GETAllowed
+     * @return void
+     */
+    public function tasksAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $finding = $this->_getSubject($id);
+
+        $this->_acl->requirePrivilegeForObject('read', $finding);
+
+        $this->view->dataUrl = "/finding/remediation/tasks-data/id/{$id}/format/json";
+
+        $taskButton = new Fisma_Yui_Form_Button(
+            'taskButton',
+            array(
+                'label' => 'Add task',
+                'onClickFunction' => 'Fisma.Task.showPanel',
+                'onClickArgument' => array(
+                    'id' => $id,
+                    'type' => 'Finding',
+                    'callback' => array(
+                        'object' => 'Finding',
+                        'method' => 'taskCallback'
+                    )
+                )
+            )
+        );
+
+        // Get the all poc user for the drop down editor
+        $poc = Doctrine_Query::create()
+               ->select('p.username')
+               ->from('Poc p')
+               ->where('(p.lockType IS NULL OR p.lockType <> ?)', 'manual')
+               ->orderBy("p.username")
+               ->execute()
+               ->toKeyValueArray('id', 'username');
+
+        $pocData = array();
+        foreach ($poc as $username) {
+            $pocData[] = $username;
+        }
+
+        array_unshift($pocData, '');
+
+        // Check the CRUD privilege for this task
+        $crudPrivilege = false;
+        if (!$finding->isDeleted()
+            && $this->_acl->hasPrivilegeForObject('update_*', $finding)
+            && in_array($finding->status, array('NEW', 'DRAFT'))) {
+            $crudPrivilege = true;
+        } else {
+            $taskButton->readOnly = true;
+        }
+
+        $this->view->crudPrivilege = $crudPrivilege;
+        $this->view->poc = $pocData;
+        $this->view->taskButton = $taskButton;
+    }
+
+    /**
+     * Returns a JSON object that describe the tasks
+     *
+     * @GETAllowed
+     * @return void
+     */
+    public function tasksDataAction()
+    {
+        $this->_helper->layout->setLayout('ajax');
+
+        $id    = $this->getRequest()->getParam('id');
+        $count = $this->getRequest()->getParam('count', $this->_paging['count']);
+        $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
+        $sort  = $this->getRequest()->getParam('sort', 'ecd');
+        $dir   = $this->getRequest()->getParam('dir', 'asc');
+
+        $finding = Doctrine::getTable('Finding')->find($id);
+        $query = $finding->getTasks()->query();
+
+        if ($sort == 'poc') {
+            $query->orderBy("p.username {$dir}");
+        } else {
+            $query->orderBy("o.{$sort} {$dir}");
+        }
+
+        $tasks = $query->andWhere('o.deleted_at is Null')
+                       ->limit($count)
+                       ->offset($start)
+                       ->execute();
+
+        $taskRows = array();
+        foreach ($tasks as $row) {
+
+            // Aggregated all Comments
+            $comments = $row->getComments()->fetch(Doctrine::HYDRATE_ARRAY);
+            $commentBlcok = '';
+            foreach ($comments as $comment) {
+                $firstLine = $this->view->userInfo($comment['User']['username']) . ' ' . $comment['createdTs'];
+                $secondLine = $this->view->textToHtml($this->view->escape($comment['comment']));
+
+                $commentBlcok .= '<p>' . $firstLine . '<br>' . $secondLine . '</p>';
+            }
+
+            // Format the date with 'MM/dd/yyyy' format
+            list($date, $time) = explode(' ', $row->ecd);
+            $date = explode('-', $date);
+            $date = $date[1] . '/' . $date[2] . '/' . $date[0];
+
+            $taskRows[] = array(
+                'description'   => $this->view->escape($row->description),
+                'poc'           => isset($row->Poc) ? $this->view->escape($row->Poc->username) : null,
+                'expectedCost'  => $this->view->escape($row->expectedCost),
+                'status'        => $this->view->escape($row->status),
+                'id'            => $this->view->escape($row->id),
+                'objectId'      => $this->view->escape($row->objectId),
+                'comment'       => $commentBlcok,
+                'ecd'           => $this->view->escape($date),
+                'findingStatus' => $this->view->escape($finding->status)
+            );
+        }
+
+        $tasksData = array();
+        $tasksData['totalRecords'] = $finding->getTasks()->count();
+        $tasksData['tasksData'] = $taskRows;
+
+        return $this->_helper->json($tasksData);
     }
 }

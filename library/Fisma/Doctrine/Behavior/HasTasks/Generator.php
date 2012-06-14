@@ -204,8 +204,11 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
 
         $commentableBehavior = new Fisma_Doctrine_Behavior_Commentable();
 
+        $softdeleteBehavior = new Doctrine_Template_SoftDelete();
+
         $this->actAs($auditloggableBehavior);
         $this->actAs($commentableBehavior);
+        $this->actAs($softdeleteBehavior);
     }
 
     /**

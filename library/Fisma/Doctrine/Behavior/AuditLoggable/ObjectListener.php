@@ -111,7 +111,8 @@ class Fisma_Doctrine_Behavior_AuditLoggable_ObjectListener extends Doctrine_Reco
                     }
 
                     // The log always shows the old and new values for the field.
-                    $oldValue = $invoker->getOriginalValue($field);
+                    $oldValue = $invoker->getLastModified(true);
+                    $oldValue = $oldValue[$field];
                     $newValue = $invoker->$field;
 
                     //if the field is a foreign key and an id type, then get the name from foreign table

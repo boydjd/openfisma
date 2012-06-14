@@ -285,3 +285,5 @@ Finding:
         SoftDelete: true
 
         Fisma_Doctrine_Behavior_HasAttachments: true
+        
+        Fisma_Doctrine_Behavior_HasTasks: true
