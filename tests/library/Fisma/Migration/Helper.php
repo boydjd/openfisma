@@ -145,12 +145,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testAddForeignKeyWithName()
     {
-        $db = $this->getMock('Mock_Pdo');
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
 
         $addIndexRegex = '/alter\s+table\s+`footable`\s+add\s+index.*`foocolumn_idx`\s+\(`foocolumn`\)/Usi';
         $addFkRegex = '/alter\s+table\s+`footable`\s+add\s+constraint.*foobar/Usi';
 
-        $db->expects($this->exactly(2))
+        $helper->expects($this->exactly(2))
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->logicalOr(
@@ -158,7 +158,6 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
                 $this->matchesRegularExpression($addFkRegex)
            ));
 
-        $helper = new Fisma_Migration_Helper($db);
         $helper->addForeignKey('footable', 'foocolumn', 'bartable', 'barcolumn', 'foobar');
     }
 
@@ -167,12 +166,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testAddForeignKeyWithoutName()
     {
-        $db = $this->getMock('Mock_Pdo');
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
 
         $addIndexRegex = '/alter\s+table\s+`footable`\s+add\s+index.*`foocolumn_idx`\s+\(`foocolumn`\)/Usi';
         $addFkRegex = '/alter\s+table\s+`footable`\s+add\s+constraint.*footable_foocolumn_bartable_barcolumn/Usi';
 
-        $db->expects($this->exactly(2))
+        $helper->expects($this->exactly(2))
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->logicalOr(
@@ -180,7 +179,6 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
                 $this->matchesRegularExpression($addFkRegex)
            ));
 
-        $helper = new Fisma_Migration_Helper($db);
         $helper->addForeignKey('footable', 'foocolumn', 'bartable', 'barcolumn');
     }
 
@@ -189,13 +187,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testUniqueKeyWithOneColumn()
     {
-        $db = $this->getMock('Mock_Pdo');
-        $db->expects($this->once())
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression('/alter\s+table\s+`foo`\s+add\s+unique\s+`bar`\s+\(`bar`\)/Usi'));
 
-        $helper = new Fisma_Migration_Helper($db);
         $helper->addUniqueKey('foo', 'bar');
     }
 
@@ -204,13 +201,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testUniqueKeyWithMultipleColumns()
     {
-        $db = $this->getMock('Mock_Pdo');
-        $db->expects($this->once())
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression('/`my_idx`\s+\(`apple`,\s*`banana`\)/Usi'));
 
-        $helper = new Fisma_Migration_Helper($db);
         $helper->addUniqueKey('foo', array('apple', 'banana'), 'my_idx');
     }
 
@@ -221,8 +217,7 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testUniqueKeyWithMultipleColumnsAndNoName()
     {
-        $db = $this->getMock('Mock_Pdo');
-        $helper = new Fisma_Migration_Helper($db);
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
         $helper->addUniqueKey('foo', array('apple', 'banana'));
     }
 
@@ -231,13 +226,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testAddColumn()
     {
-        $db = $this->getMock('Mock_Pdo');
-        $db->expects($this->once())
+        $helper = $this->getMock('Fisma_Migration_helper', array('exec'), array(null));
+        $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression('/alter\s+table\s+`foo`\s+add\s+column\s+`bar`\s+bigint/Usi'));
 
-        $helper = new Fisma_Migration_Helper($db);
         $helper->addColumn('foo', 'bar', 'bigint(20) NOT NULL');
     }
 
@@ -246,13 +240,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testAddColumnAfterColumn()
     {
-        $db = $this->getMock('Mock_Pdo');
-        $db->expects($this->once())
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression('/add\s+column.*\s+after\s+`unladen_swallow`/Usi'));
 
-        $helper = new Fisma_Migration_Helper($db);
         $helper->addColumn('foo', 'bar', 'bigint(20) NOT NULL', 'unladen_swallow');
     }
 
@@ -261,13 +254,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testDropColumn()
     {
-        $db = $this->getMock('Mock_Pdo');
-        $db->expects($this->once())
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression('/alter\s+table\s+`foo`\s+drop\s+column\s+`bar`/Usi'));
 
-        $helper = new Fisma_Migration_Helper($db);
         $helper->dropColumn('foo', 'bar');
     }
 
@@ -276,14 +268,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testDropForeignKey()
     {
-        $db = $this->getMock('Mock_Pdo');
-        $db->expects($this->once())
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression('/alter\s+table\s+`Foo`\s+drop\s+foreign\s+key\s+`bar`/Usi'));
 
-        // The real meaning in this test is in the with() calls, so no assertions performed here.
-        $helper = new Fisma_Migration_Helper($db);
         $helper->dropForeignKeys('Foo', array('bar'));
     }
 
@@ -294,14 +284,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
     {
         $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`bar`\s+\(`alpha`\)/Usi';
 
-        $db = $this->getMock('Mock_Pdo');
-        $db->expects($this->once())
+        $helper = $this->getMock('Fisma_Migration_helper', array('exec'), array(null));
+        $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression($regex));
 
-        // The real meaning in this test is in the with() calls, so no assertions performed here.
-        $helper = new Fisma_Migration_Helper($db);
         $helper->addIndex('Foo', 'alpha', 'bar');
     }
 
@@ -312,14 +300,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
     {
         $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`bar`\s+\(`alpha`,\s*`beta`\)/Usi';
 
-        $db = $this->getMock('Mock_Pdo');
-        $db->expects($this->once())
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression($regex));
 
-        // The real meaning in this test is in the with() calls, so no assertions performed here.
-        $helper = new Fisma_Migration_Helper($db);
         $helper->addIndex('Foo', array('alpha', 'beta'), 'bar');
     }
 
@@ -330,14 +316,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
     {
         $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`alpha_idx`\s+\(`alpha`\)/Usi';
 
-        $db = $this->getMock('Mock_Pdo');
-        $db->expects($this->once())
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression($regex));
 
-        // The real meaning in this test is in the with() calls, so no assertions performed here.
-        $helper = new Fisma_Migration_Helper($db);
         $helper->addIndex('Foo', 'alpha');
     }
 
@@ -350,10 +334,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
     {
         $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`alpha_idx`\s+\(`alpha`\)/Usi';
 
-        $db = $this->getMock('Mock_Pdo');
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
 
-        // The real meaning in this test is in the with() calls, so no assertions performed here.
-        $helper = new Fisma_Migration_Helper($db);
         $helper->addIndex('Foo', array('alpha', 'beta'));
     }
 
@@ -362,14 +344,12 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testDropIndex()
     {
-        $db = $this->getMock('Mock_Pdo');
-        $db->expects($this->once())
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
            ->with($this->matchesRegularExpression('/alter\s+table\s+`Foo`\s+drop\s+index\s+`bar`/Usi'));
 
-        // The real meaning in this test is in the with() calls, so no assertions performed here.
-        $helper = new Fisma_Migration_Helper($db);
         $helper->dropIndexes('Foo', array('bar'));
     }
 }

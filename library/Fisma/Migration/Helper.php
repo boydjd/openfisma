@@ -314,7 +314,7 @@ class Fisma_Migration_Helper
         $view->column = $column;
 
         $alterTableSql = $view->render('drop_column.phtml');
-        $this->_db->exec($alterTableSql);
+        $this->exec($alterTableSql);
     }
 
     /**
@@ -365,7 +365,7 @@ class Fisma_Migration_Helper
         }
 
         $alterTableSql = $view->render('add_index.phtml');
-        $this->_db->exec($alterTableSql);
+        $this->exec($alterTableSql);
     }
 
     /**
@@ -386,7 +386,7 @@ class Fisma_Migration_Helper
             $view->index = $indexes;
 
             $alterTableSql = $view->render('drop_key_or_index.phtml');
-            $this->_db->exec($alterTableSql);
+            $this->exec($alterTableSql);
         }
     }
 
@@ -408,7 +408,7 @@ class Fisma_Migration_Helper
             $view->foreignKey = $foreignKeys;
 
             $alterTableSql = $view->render('drop_key_or_index.phtml');
-            $this->_db->exec($alterTableSql);
+            $this->exec($alterTableSql);
         }
     }
 }
