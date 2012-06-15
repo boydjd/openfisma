@@ -200,8 +200,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         $mySqlDumpCmd =
             "mysqldump --user=" . $dbUser .
             " --password=" . $dbPass .
-            " --add-drop-database" .
-            " --compact " . $dbSchema .
+            " --add-drop-database" . $dbSchema .
             " --result-file=" . $backupFileSql;
 
         $rtnShell = shell_exec($mySqlDumpCmd);
