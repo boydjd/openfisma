@@ -219,7 +219,7 @@ if ($finding->status != 'NEW'
             echo $this->escape('<span class="denied"><b>', 'none');
             echo $this->escape($decision);
             echo $this->escape('</b>', 'none');
-            echo $this->escape($this->userInfo($fullName, $user->username), 'none');
+            echo $this->escape($this->userInfo($user->displayName, $user->id), 'none');
             echo $this->escape(' at ', 'none');
             echo $this->escape($findingEvaluation->createdTs);
             echo $this->escape('</span></p>', 'none');
