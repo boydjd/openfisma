@@ -492,11 +492,10 @@ Fisma.Finding = {
                 success: function (connection) {
                     var result = YAHOO.lang.JSON.parse(connection.responseText);
 
-                    var pocIdInputEle = document.getElementById('pocId');
-                    pocIdInputEle.value = result.pocId;
+                    Fisma.Finding.pocAutocomplete._bItemSelected = true;
+                    Fisma.Finding.pocHiddenEl.value = result.pocId;
+                    Fisma.Finding.pocAutocomplete.getInputEl().value = result.value;
 
-                    var pocAutocompleteEle = document.getElementById('pocAutocomplete');
-                    pocAutocompleteEle.value = result.value;
                 },
 
                 failure : function (connection) {

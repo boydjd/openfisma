@@ -41,8 +41,8 @@
                     jQuery(selectElement).trigger('change');
                 }
                
-                // Populate the autocomplete poc field while organization is changed. 
                 <?php if (!empty($callback)): ?> 
+                    // Populate the autocomplete poc field with default poc when organization is changed. 
                     <?php echo $this->escape($callback, 'none')?>(p_aArgs[1].srcElement.value);
                 <?php endif;?>
             }
