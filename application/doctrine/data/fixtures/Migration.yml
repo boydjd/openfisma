@@ -98,3 +98,8 @@ Migration:
         minorVersion: 18
         tagNumber: 0
         name: MoveLockTypeToPoc
+    021800_add_default_poc_to_organization:
+        majorVersion: 2
+        minorVersion: 18
+        tagNumber: 0
+        name: AddDefaultPocToOrganization

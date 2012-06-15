@@ -60,6 +60,9 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->ajaxContext()
                       ->addActionContext('convert-to-system-form', 'html')
                       ->initContext();
+        $this->_helper->contextSwitch()
+                      ->addActionContext('get-poc', 'json')
+                      ->initContext();
     }
 
     /**
@@ -318,6 +321,13 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->organization = $organization;
         $this->view->editable = $editable;
+
+        $createdDate = new Zend_Date($organization->createdTs, Fisma_Date::FORMAT_DATE);
+        $this->view->createdDate = $createdDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
+
+        $updatedDate = new Zend_Date($organization->modifiedTs, Fisma_Date::FORMAT_DATE);
+        $this->view->updatedDate = $updatedDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
+
         $this->render();
     }
 
@@ -717,6 +727,35 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->form = $form;
         $this->view->form->setAction('/organization/convert-to-system/id/' . $id);
+    }
+
+    /**
+     * AJAX action to an organization's default Poc.
+     *
+     * @GETAllowed
+     * @return void
+     */
+    public function getPocAction()
+    {
+        $this->_helper->contextSwitch()->setAutoJsonSerialization(false);
+
+        $this->_acl->requirePrivilegeForClass('read', 'Poc');
+        $id = $this->_request->getParam('id');
+ 
+        $organization = Doctrine::getTable('Organization')->find($id);
+
+        if ($organization->pocId) { 
+            $username = $organization->Poc->username ? $organization->Poc->username : 
+                                                       '<' . $organization->Poc->email . '>'; 
+        }
+
+        $data = array('value' => empty($organization->pocId) ? '' : $username,
+                      'pocId' => empty($organization->pocId) ? '' : $organization->pocId
+                );
+
+         echo Zend_Json::encode($data);
+        $this->_helper->viewRenderer->setNoRender();
+ 
     }
 
 }

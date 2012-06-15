@@ -476,5 +476,32 @@ Fisma.Finding = {
                 that.deleteRow(oArgs.target);
             }
         });
+    },
+
+    /**
+     * Set the default Poc of an organization to Poc autocomplete field.
+     *
+     * @param id {String} The ID of organization.
+     */
+    setDefaultPoc : function (id) {
+    
+        YAHOO.util.Connect.asyncRequest(
+            'GET', 
+            '/organization/get-poc/format/json/id/' + id, 
+            {
+                success: function (connection) {
+                    var result = YAHOO.lang.JSON.parse(connection.responseText);
+
+                    var pocIdInputEle = document.getElementById('pocId');
+                    pocIdInputEle.value = result.pocId;
+
+                    var pocAutocompleteEle = document.getElementById('pocAutocomplete');
+                    pocAutocompleteEle.value = result.value;
+                },
+
+                failure : function (connection) {
+                }
+            }
+        );
     }
 };

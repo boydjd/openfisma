@@ -1,5 +1,6 @@
 <?php
     $name = $this->element->getName();
+    $callback = $this->element->getAttrib('setDefaultPocCallback');
     $chunks = explode('<select', $this->content);
 
     // YUI 2.9 fails to generate the submenus when the optgroups have 'id' attribute
@@ -39,6 +40,11 @@
                     selectElement.value = p_aArgs[1].srcElement.value;
                     jQuery(selectElement).trigger('change');
                 }
+               
+                // Populate the autocomplete poc field while organization is changed. 
+                <?php if (!empty($callback)): ?> 
+                    <?php echo $this->escape($callback, 'none')?>(p_aArgs[1].srcElement.value);
+                <?php endif;?>
             }
         });
     });

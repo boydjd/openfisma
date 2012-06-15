@@ -73,4 +73,9 @@ class Fisma_Date
      * The literal 'Z' means a timezone offset of zero, i.e. Grenwich Mean Time, which is required in Solr.
      */
     const FORMAT_SOLR_DATETIME = 'yyyy-MM-ddTHH:mm:ss';
+
+    /**
+     * set format like 'Oct 10, 2012'
+     */
+    const FORMAT_MONTH_DAY_YEAR = 'F';
 }
