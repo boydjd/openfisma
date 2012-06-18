@@ -100,17 +100,30 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
     public function autocompleteAction()
     {
         $keyword = $this->getRequest()->getParam('keyword');
+        $expr = 'p.nameFirst LIKE ? OR p.nameLast LIKE ? OR p.email LIKE ? OR p.username LIKE ?';
+        $params = array_fill(0, 4, '%' . $keyword . '%');
 
         $pocQuery = Doctrine_Query::create()
                     ->from('Poc p')
-                    ->select("p.id, p.displayName AS name")
-                    ->where('p.displayName LIKE ?', '%'.$keyword.'%')
+                    ->select("p.id, p.nameFirst, p.nameLast, p.username, p.email")
+                    ->where($expr, $params)
                     ->andWhere('(p.lockType IS NULL OR p.lockType <> ?)', 'manual')
                     ->andWhere('p.accountType = ? OR p.published', 'Contact')
-                    ->orderBy("p.nameFirst")
+                    ->orderBy("p.nameFirst, p.nameLast, p.username, p.email")
                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
-        $this->view->pointsOfContact = $pocQuery->execute();
+        $pointsOfContact = $pocQuery->execute();
+        foreach ($pointsOfContact as &$poc) {
+            $poc['name'] = $poc['nameFirst'] . ' ' . $poc['nameLast'] . ' ';
+            if (!empty($poc['username'])) {
+                $poc['name'] .= '(' . $poc['username'] . ') ';
+            }
+            $poc['name'] .= '<' . $poc['email'] . '>';
+            $poc['name'] = trim(preg_replace('/\s+/', ' ', $poc['name']));
+            unset($poc['nameFirst'], $poc['nameLast'], $poc['username'], $poc['email']);
+        }
+
+        $this->view->pointsOfContact = $pointsOfContact;
     }
 
     /**
