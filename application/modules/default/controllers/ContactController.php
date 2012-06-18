@@ -169,6 +169,36 @@ class ContactController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
+     * Override from parent.
+     * Check that the email address posted doesn't already exist by a hidden user.
+     *
+     * @return void
+     */
+    public function _createObject()
+    {
+        $msg = '';
+        if ($this->getRequest()->isPost()) {
+            $email = $this->getRequest()->getPost('email');
+            $poc = Doctrine::getTable('Poc')->findOneByEmail($email);
+            if (!empty($poc)) {
+                $msg = 'A ' . $poc->accountType . ' with this E-Mail address already exists';
+                if (!$poc->published) {
+                    $msg .= ' and cannot be selected as a Point of Contact';
+                }
+                $msg .= '.';
+            }
+        }
+        parent::_createObject();
+        if (!empty($msg)) {
+            if ($this->getRequest()->getParam('format') === 'json') {
+                $this->view->result->fail($msg);
+            } else {
+                $this->view->priorityMessenger($msg, 'warning');
+            }
+        }
+    }
+
+    /**
      * Add the "Contact Hierarchy" button
      *
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
