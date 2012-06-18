@@ -1,3 +1,4 @@
+<div class="column66 left">
 <?php
 Fisma_Format_Section::startSection('Details');
 ?>
@@ -148,3 +149,49 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
     <?php echo $this->escape($this->organization->description, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
+</div>
+
+<div class="column33 right">
+    <?php Fisma_Format_Section::startSection('Dates'); ?>
+        <table class="keyValues">
+            <tr>
+                <td>Created:</td>
+                <td>
+                    <?php echo $this->escape($this->createdDate)?>
+                </td>
+            </tr>
+            <tr>
+                <td>Updated:</td>
+                <td>
+                    <?php echo $this->escape($this->updatedDate)?>
+                </td>
+            </tr>
+        </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('People'); ?>
+        <table class="keyValues">
+            <tr>
+                <td>Point of Contact:</td>
+                <td class="autocomplete-width"><span id="pointOfContact"
+                    type="autocomplete"
+                    xhr="/contact/autocomplete/format/json"
+                    queryPrepend="/keyword/"
+                    schemaObject="pointsOfContact"
+                    schemaField="name"
+                    name="pocId"
+                <?php if ($this->acl()->hasPrivilegeForClass('create', 'Poc')): ?>
+                    setupCallback="Fisma.Finding.setupPocAutocomplete"
+                <?php endif; ?>
+                    value="<?php echo $this->escape($this->organization->Poc->username); ?>"
+                    defaultValue="<?php echo $this->escape($this->organization->Poc->username); ?>"><?php
+                        echo $this->escape($this->userInfo($this->organization->Poc->username), 'none');
+                    ?></span>
+                <?php if ($this->editable): ?>
+                    <span class="editable" target="pointOfContact">&nbsp;</span>
+                <?php endif; ?>
+                </td>
+            </tr>
+        </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+</div>

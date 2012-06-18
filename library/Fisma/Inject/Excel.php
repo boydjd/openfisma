@@ -329,6 +329,10 @@ class Fisma_Inject_Excel
                     $poc->save();
                 }
                 $poam['pocId'] = $poc->id;
+            } else {
+                if ($organization->pocId) {
+                    $poam['pocId'] = $organization->pocId;
+                }
             }
 
             // Finally, create the finding

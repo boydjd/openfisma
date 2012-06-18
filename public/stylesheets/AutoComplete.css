@@ -34,3 +34,7 @@ div.yui-ac img.spinner {
     top: 4px;
     left: 2px;
 }
+
+td.autocomplete-width {
+    width:200px
+}

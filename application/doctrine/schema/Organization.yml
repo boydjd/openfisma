@@ -18,6 +18,8 @@ Organization:
             type: integer
         systemId:
             type: integer
+        pocId:
+            type: integer
         description: 
             type: string
             extra:
@@ -34,6 +36,11 @@ Organization:
             local: orgTypeId
             foreign: id
             foreignAlias: Organizations
+
+        Poc:
+            local: pocId
+            foreign: id
+            foreignAlias: Organization
 
     actAs:
         NestedSet:

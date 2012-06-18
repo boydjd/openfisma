@@ -190,7 +190,18 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         // Populate <select> for responsible organization
         $systems = $this->_me->getOrganizationsByPrivilege('finding', 'create');
         $selectArray = $this->view->systemSelect($systems);
+
         $form->getElement('responsibleOrganizationId')->addMultiOptions($selectArray);
+
+        $organizationIds = array_keys($selectArray);
+        $defaultOrgId = array_shift($organizationIds);
+
+        $organization = Doctrine::getTable('Organization')->find($defaultOrgId);
+        if ($organization->pocId) {
+            $value = $organization->Poc->username ? $organization->Poc->username : '<' . $organization->email . '>';
+            $form->setDefault('pocAutocomplete', $value);
+            $form->setDefault('pocId', $organization->pocId);
+        }
 
         // If the user can't create a POC object, then don't set up the POC create form
         if (!$this->_acl->hasPrivilegeForClass('create', 'Poc')) {
