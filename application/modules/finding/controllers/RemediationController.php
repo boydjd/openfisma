@@ -234,7 +234,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function viewAction()
     {
         $id = $this->_request->getParam('id');
-       
+        $view = $this->view;
+
         $fromSearchParams = $this->_getFromSearchParams($this->_request);
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
 
@@ -275,7 +276,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->view->tabView = $tabView;
 
         $buttons = array();
-        $view = Zend_Layout::getMvcInstance()->getView();
 
         // Only display controls if the finding has not been deleted
         if (!$finding->isDeleted()) {
@@ -331,8 +331,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
-        $view = Zend_Layout::getMvcInstance()->getView();
-        $searchButtons = array(); 
+        $searchButtons = array();
         $searchButtons['list'] = new Fisma_Yui_Form_Button_Link(
             'toolbarListButton',
             array(
@@ -355,7 +354,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                            'id' => $id,
                            'action' => 'previous',
                            'modelName' => $this->_modelName
-                    ) 
+                    )
                 )
 
             );
@@ -375,7 +374,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                            'id' => $id,
                            'action' => 'next',
                            'modelName' => $this->_modelName
-                    ) 
+                    )
                 )
             );
 
