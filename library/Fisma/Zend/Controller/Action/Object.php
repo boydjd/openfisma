@@ -724,6 +724,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $formatter = 'Fisma.TableFormat.formatBoolean';
             }
 
+            if (isset($searchParams['formatter']) && $searchParams['formatter'] === 'date') {
+                $formatter = 'Fisma.TableFormat.formatDate';
+            }
+
+            if (isset($searchParams['formatter']) && $searchParams['formatter'] === 'datetime') {
+                $formatter = 'Fisma.TableFormat.formatDateTime';
+            }
+
             $column = new Fisma_Yui_DataTable_Column($label,
                                                      $sortable,
                                                      $formatter,

@@ -37,6 +37,8 @@ Fisma.TableFormat = {
      */
     redColor : 'pink',
 
+    month : ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+
     /**
      * Color an element green
      */
@@ -457,6 +459,74 @@ Fisma.TableFormat = {
             cell.text("No");
         } else {
             cell.html($("<span/>").addClass("highlight").text(oData.substr(oData.length - 1) === "T" ? "Yes" : "No"));
+        }
+    },
+
+    /**
+     * A formatter which displays date as Jun 12, 2012 
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatDate : function (elCell, oRecord, oColumn, oData) {
+        if (oData) {
+            var month = parseInt(oData.substr(5, 2)) - 1;
+
+            var date = new Date(); 
+            date.setFullYear(oData.substr(0,4));
+            date.setMonth(month);
+            date.setDate(oData.substr(8, 2));
+
+            elCell.innerHTML = Fisma.TableFormat.month[date.getMonth()]
+                              + ' '
+                              + date.getDate()
+                              + ', '
+                              + date.getFullYear(); 
+        }
+    },
+
+    /**
+     * A formatter which displays date and time as Jun 12, 2012 at 2:24 AM
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatDateTime : function (elCell, oRecord, oColumn, oData) {
+        if (oData) {
+            var month = parseInt(oData.substr(5, 2)) - 1;
+
+            var date = new Date(); 
+            date.setFullYear(oData.substr(0,4));
+            date.setMonth(month);
+            date.setDate(oData.substr(8, 2));
+            date.setHours(oData.substr(11, 2));
+            date.setMinutes(oData.substr(14, 2));
+
+            var hours = date.getHours();
+            var am = true;
+            if (hours > 12) {
+                am = false;
+                hours -= 12;
+            } else if (hours === 12) {
+                am = false;
+            } else if (hours === 0) {
+                hours = 12;
+            }
+
+            elCell.innerHTML = Fisma.TableFormat.month[date.getMonth()]
+                              + ' '
+                              + date.getDate()
+                              + ', '
+                              + date.getFullYear() 
+                              + ' at '
+                              + hours
+                              + ':'
+                              + date.getMinutes()
+                              + (am ? ' AM' : ' PM'); 
         }
     }
 };

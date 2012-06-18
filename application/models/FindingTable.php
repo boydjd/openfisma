@@ -89,27 +89,31 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'createdTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Creation Date',
+                'label' => 'Created',
                 'sortable' => true,
-                'type' => 'datetime'
+                'type' => 'datetime',
+                'formatter' => 'date'
             ),
             'discoveredDate' => array(
                 'initiallyVisible' => true,
-                'label' => 'Discovered Date',
+                'label' => 'Discovered',
                 'sortable' => true,
-                'type' => 'date'
+                'type' => 'date',
+                'formatter' => 'date'
             ),
             'nextDueDate' => array(
                 'initiallyVisible' => true,
                 'label' => 'Next Due Date',
                 'sortable' => true,
-                'type' => 'date'
+                'type' => 'date',
+                'formatter' => 'date'
             ),
             'closedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Closed Date',
+                'label' => 'Resolved',
                 'sortable' => true,
-                'type' => 'datetime'
+                'type' => 'datetime',
+                'formatter' => 'date'
             ),
             'legacyFindingKey' => array(
                 'initiallyVisible' => false,
@@ -153,13 +157,15 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => false,
                 'label' => 'Original ECD',
                 'sortable' => true,
-                'type' => 'date'
+                'type' => 'date',
+                'formatter' => 'date'
             ),
             'currentEcd' => array(
                 'initiallyVisible' => true,
                 'label' => 'Current ECD',
                 'sortable' => true,
-                'type' => 'date'
+                'type' => 'date',
+                'formatter' => 'date'
             ),
             'threatLevel' => array(
                 'enumValues' => $this->getEnumValues('threatLevel'),
@@ -209,7 +215,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'createdByUser' => array(
                 'initiallyVisible' => false,
-                'label' => 'Created By User',
+                'label' => 'Reporter',
                 'join' => array(
                     'model' => 'User',
                     'relation' => 'CreatedBy',

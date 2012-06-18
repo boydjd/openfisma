@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Set ISO format date constants for OpenFisma
- * 
+ *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -61,15 +61,15 @@ class Fisma_Date
      * set format like '20101027-112502'
      */
     const FORMAT_FILENAME_DATETIMESTAMP = 'yyyyMMdd-HHmmss';
-    
+
     /**
      * The format of dates returned by Solr
      */
     const FORMAT_SOLR_DATETIME_TIMEZONE = 'YYYY-MM-ddTHH:mm:ssZ';
-    
+
     /**
      * When storing dates in Solr, use this format and append a literal 'Z' to the timestamp value.
-     * 
+     *
      * The literal 'Z' means a timezone offset of zero, i.e. Grenwich Mean Time, which is required in Solr.
      */
     const FORMAT_SOLR_DATETIME = 'yyyy-MM-ddTHH:mm:ss';
@@ -78,4 +78,9 @@ class Fisma_Date
      * set format like 'Oct 10, 2012'
      */
     const FORMAT_MONTH_DAY_YEAR = 'F';
+
+    /**
+     * set format like '2:45 AM'
+     */
+    const FORMAT_AM_PM_TIME = 'h:mm a';
 }
