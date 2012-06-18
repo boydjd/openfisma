@@ -84,7 +84,7 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                 'join' => array(
                     'model' => 'User',
                     'relation' => 'Upload.User',
-                    'field' => 'username'
+                    'field' => 'displayName'
                 ),
                 'sortable' => true,
                 'type' => 'text'

@@ -38,6 +38,7 @@ IrIncidentWorkflow:
             foreign: id
             foreignAlias: IncidentWorkflows
         User:
+            class: Poc
             local: userId
             foreign: id
             foreignAlias: WorkflowSteps

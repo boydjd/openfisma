@@ -243,7 +243,7 @@ Finding:
             foreign: id
             foreignAlias: Findings
         CreatedBy:
-            class: User
+            class: Poc
             local: createdByUserId
             foreign: id
             foreignAlias: Findings
