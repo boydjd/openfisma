@@ -354,6 +354,10 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             $post = $this->_request->getPost();
             if ($post) {
                 try {
+                    if (isset($post['pocId']) && empty($post['pocId'])) {
+                        $post['pocId'] = null;
+                    }
+
                     $organization->merge($post);
                     if ($organization->isValid(true)) {
                         $organization->save();

@@ -104,3 +104,7 @@ div.section {
     margin-top: 37px;
     margin-left: -120px;
 }
+
+.yui-ac-input {
+    position: absolute ! important;
+}
