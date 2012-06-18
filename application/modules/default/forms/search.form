@@ -20,12 +20,9 @@ elements.keywords.type = "text"
 elements.keywords.options.attribs.title = "Keyword Search"
 
 elements.search.type = "Form_Button_Submit"
-elements.search.options.label = "Search"
+elements.search.options.label = ""
+elements.search.options.imageSrc = "/images/find.png"
 
 elements.advanced.type = "Form_Button_Checkbox"
 elements.advanced.options.onClickFunction = "Fisma.Search.toggleAdvancedSearchPanel"
 elements.advanced.options.label = "Advanced"
-
-elements.more.type = "Form_Button_Checkbox"
-elements.more.options.onClickFunction = "Fisma.Search.toggleMoreButton"
-elements.more.options.label = "More"

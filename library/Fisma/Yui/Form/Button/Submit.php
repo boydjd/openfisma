@@ -54,7 +54,10 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
         $image = $this->getAttrib('imageSrc');
         $imageRender = '';
         if (isset($image)) {
-           $imageRender .= "{$this->getName()}._button.style.background = 'url($image) 10% 50% no-repeat';\n";
+           $view = Zend_Layout::getMvcInstance()->getView();
+           
+           $image = $view->serverUrl($image);
+           $imageRender .= "{$this->getName()}._button.style.background = 'url($image) 1em 50% no-repeat';\n";
            $imageRender .= "{$this->getName()}._button.style.paddingLeft = '3em';\n";
         }
 

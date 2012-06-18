@@ -31,4 +31,5 @@ displayGroups.general_config.elements.use_legacy_finding_key = "use_legacy_findi
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save"
+elements.save.options.imageSrc = "/images/ok.png"
 displayGroups.general_config.elements.save = "save"

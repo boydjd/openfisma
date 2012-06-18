@@ -23,6 +23,7 @@ displayGroups.general.elements.privacy_policy = "privacy_policy"
 
 elements.savePrivacyPolicy.type = "Form_Button_Submit"
 elements.savePrivacyPolicy.options.label = "Save Changes"
+elements.savePrivacyPolicy.options.imageSrc = "/images/ok.png"
 displayGroups.general.elements.savePrivacyPolicy = "savePrivacyPolicy"
 
 ; I'm disabling this temporarily because it doesn't work quite right...

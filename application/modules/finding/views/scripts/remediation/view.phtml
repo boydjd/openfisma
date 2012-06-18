@@ -4,7 +4,7 @@
       id="finding_detail"
       name="finding_detail">
 
-    <div class="buttonBar">
+    <div class="searchBox">
         <div class="left">
             <?php
                 foreach ($this->toolbarButtons as $button) {
@@ -20,6 +20,8 @@
                 }
             ?>
         </div>
+
+        <div class="clear"> </div>
     </div>
 
     <?php echo $this->escape($this->tabView, 'none'); ?>

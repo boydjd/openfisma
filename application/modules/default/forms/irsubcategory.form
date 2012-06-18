@@ -33,4 +33,5 @@ displayGroups.irsubcategory.elements.description = "description"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save"
+elements.save.options.imageSrc = "/images/ok.png"
 displayGroups.irsubcategory.elements.save = "save"

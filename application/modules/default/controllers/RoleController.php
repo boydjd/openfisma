@@ -82,9 +82,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
             $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Submit(
                 'saveChanges',
-                'Save Changes',
                 array(
-                    'label' => 'Save Changes'
+                    'label' => 'Save Changes',
+                    'imageSrc' => '/images/ok.png'
                 )
             );
         }

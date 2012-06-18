@@ -122,6 +122,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $buttons = array();
         $isList = $this->getRequest()->getActionName() === 'list';
         $isView = $this->getRequest()->getActionName() === 'view';
+        $view = Zend_Layout::getMvcInstance()->getView();
 
         if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
             $buttons['create'] = new Fisma_Yui_Form_Button_Link(
@@ -129,6 +130,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 array(
                     'value' => 'Create New ' . $this->getSingularModelName(),
                     'href' => $this->getBaseUrl() . '/create',
+                    'imageSrc' => '/images/create.png'
                 )
             );
         }
@@ -157,6 +159,48 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             );
         }
 
+        if ($isList) {
+            $buttons['exportXls'] = new Fisma_Yui_Form_Button(
+                'toolbarExportXlsButton',
+                array(
+                    'label' => 'Export To Excel',
+                    'onClickFunction' => 'Fisma.Search.exportToFile',
+                    'imageSrc' => $view->serverUrl('/images/xls.gif'),
+                    'onClickArgument' => 'xls'
+                )
+            );
+
+            $buttons['exportPdf'] = new Fisma_Yui_Form_Button(
+                'toolbarExportPdfButton',
+                array(
+                    'label' => 'Export To PDF',
+                    'imageSrc' => $view->serverUrl('/images/pdf.gif'),
+                    'onClickFunction' => 'Fisma.Search.exportToFile',
+                    'onClickArgument' => 'pdf'
+                )
+            );
+
+            $buttons['configureColumn'] = new Fisma_Yui_Form_Button(
+                'toolbarConfigureColumnButton',
+                array(
+                    'label' => 'Configure Columns',
+                    'imageSrc' => $view->serverUrl('/images/application_view_columns.png'),
+                    'onClickFunction' => 'Fisma.Search.toggleSearchColumnsPanel'
+                )
+            );
+
+            // Show the "More" button only when there is element in the form. 
+            $elements = $this->getSearchMoreOptionsForm()->getElements();
+            if (!empty($elements)) {
+                $buttons['moreAction'] = new Fisma_Yui_Form_Button(
+                    'toolbarMoreActionButton',
+                    array(
+                        'label' => 'More',
+                        'onClickFunction' => 'Fisma.Search.toggleMoreButton'
+                    )
+                );
+            }
+        }    
         return $buttons;
     }
 
@@ -182,8 +226,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 array(
                     'value' => 'Return to Search Results',
                     'href' => $this->getBaseUrl() . '/list',
-                    'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png'),
-                    'longText' => 1 // Set button background style differently with long text label.
+                    'imageSrc' => '/images/arrow_return_down_left.png'
                 )
             );
         }
@@ -1204,14 +1247,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     {
         $searchForm = Fisma_Zend_Form_Manager::loadForm('search_more_options');
 
-        // Remove the "Show Deleted" button if this model doesn't support soft-delete
-        if (!Doctrine::getTable($this->_modelName)->hasColumn('deleted_at')) {
-            $searchForm->removeElement('showDeleted');
-        }
-
         // Remove the delete button if the user doesn't have the right to click it
         if (!$this->_isDeletable() || !$this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
             $searchForm->removeElement('deleteSelected');
+        }
+
+        // Remove the "Show Deleted" button if this model doesn't support soft-delete
+        if (!Doctrine::getTable($this->_modelName)->hasColumn('deleted_at')) {
+            $searchForm->removeElement('showDeleted');
         }
 
         $searchForm->setDecorators(
@@ -1236,6 +1279,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function getViewButtons(Fisma_Doctrine_Record $subject)
     {
         $buttons = array();
+        $view = Zend_Layout::getMvcInstance()->getView();
 
         if ($this->_isDeletable() && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('delete', $subject))) {
             $postAction = "{$this->_moduleName}/{$this->_controllerName}/delete/";
@@ -1244,6 +1288,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 'delete' . $this->_modelName,
                  array(
                        'label' => 'Delete '. $this->_modelName,
+                       'imageSrc' => $view->serverUrl('/images/trash_recyclebin_empty_closed.png'),
                        'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                        'onClickArgument' => array(
                            'args' => array(null, $postAction, $subject->id),

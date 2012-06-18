@@ -243,7 +243,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
                     array(
                         'value' => 'Export Excel',
                         'href' => $this->_getFormatUrl('xls'),
-                        'imageSrc' => $view->serverUrl('/images/xls.gif')
+                        'imageSrc' => '/images/xls.gif'
                     )
                 );
             }
@@ -254,7 +254,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
                     array(
                         'value' => 'Export PDF',
                         'href' => $this->_getFormatUrl('pdf'),
-                        'imageSrc' => $view->serverUrl('/images/pdf.gif')
+                        'imageSrc' => '/images/pdf.gif'
                     )
                 );
             }

@@ -245,7 +245,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     public function viewAction()
     {
         $id = $this->_request->getParam('id');
-       
+        $view = $this->view;
+
         $fromSearchParams = $this->_getFromSearchParams($this->_request);
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
 
@@ -296,6 +297,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     'deleteFinding',
                     array(
                           'label' => 'Delete Finding',
+                          'imageSrc' => '/images/trash_recyclebin_empty_closed.png',
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
                               'args' => $args,
@@ -311,6 +313,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
                 $discardChangesButtonConfig = array(
                     'value' => 'Discard Changes',
+                    'imageSrc' => '/images/no_entry.png',
                     'href' => '/finding/remediation/view/id/' . $finding->id . $fromSearchUrl
                 );
 
@@ -321,7 +324,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
                 $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
                     'saveChanges',
-                    array('label' => 'Save Changes')
+                    array(
+                          'label' => 'Save Changes',
+                          'imageSrc' => '/images/ok.png',
+                         )
                 );
             }
         }
@@ -336,15 +342,13 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
-        $view = Zend_Layout::getMvcInstance()->getView();
-        $searchButtons = array(); 
+        $searchButtons = array();
         $searchButtons['list'] = new Fisma_Yui_Form_Button_Link(
             'toolbarListButton',
             array(
                 'value' => 'Return to Search Results',
                 'href' => $this->getBaseUrl() . '/list',
-                'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png'),
-                'longText' => 1
+                'imageSrc' => '/images/arrow_return_down_left.png'
             )
         );
 
@@ -361,7 +365,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                            'id' => $id,
                            'action' => 'previous',
                            'modelName' => $this->_modelName
-                    ) 
+                    )
                 )
 
             );
@@ -381,7 +385,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                            'id' => $id,
                            'action' => 'next',
                            'modelName' => $this->_modelName
-                    ) 
+                    )
                 )
             );
 

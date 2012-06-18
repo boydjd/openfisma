@@ -113,7 +113,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 array(
                     'value' => 'Return to Search Results',
                     'href' => $this->getBaseUrl() . '/list',
-                    'imageSrc' => $view->serverUrl('/images/arrow_return_down_left.png'),
+                    'imageSrc' => '/images/arrow_return_down_left.png',
                     'longText' => 1
                 )
             );
@@ -974,7 +974,19 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
-        $this->view->toolbarButtons = $this->getToolbarButtons();
+        $buttons = $this->getToolbarButtons();
+
+        $button = new Fisma_Yui_Form_Button_Link(
+            'toolbarListButton',
+            array(
+                'value' => 'List View',
+                'imageSrc' => '/images/list_view.png',
+                'href' => $this->getBaseUrl() . '/list'
+            )
+        );
+
+        array_unshift($buttons, $button);
+        $this->view->toolbarButtons = $buttons;
     }
 
     /**
@@ -1066,7 +1078,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $buttons['aggregation'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarAggregationButton',
                 array(
-                    'value' => 'View System Aggregation',
+                    'value' => 'Tree View',
+                    'imageSrc' => '/images/tree_view.png',
                     'href' => $this->getBaseUrl() . '/aggregation'
                 )
             );

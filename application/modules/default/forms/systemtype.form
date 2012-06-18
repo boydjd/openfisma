@@ -29,4 +29,5 @@ displayGroups.organizationType.elements.description = "description"
 
 elements.save.type = "Form_Button_Submit"
 elements.save.options.label = "Save Changes"
+elements.save.options.imageSrc = "/images/ok.png"
 displayGroups.organizationType.elements.save = "save"

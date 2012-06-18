@@ -86,6 +86,7 @@ displayGroups.general.elements.sendTestEmail = "sendTestEmail"
 
 elements.saveNotificationConfig.type = "Form_Button_Submit"
 elements.saveNotificationConfig.options.label = "Save Changes"
+elements.saveNotificationConfig.options.imageSrc = "/images/ok.png"
 displayGroups.general.elements.saveNotificationConfig = "saveNotificationConfig"
 
 ; Disabling this because I don't know how to make this work. see the comments

@@ -69,15 +69,11 @@ class Fisma_Yui_Form_Button_Link extends Fisma_Yui_Form_Button
                             });
                         ";
         $image = $this->getAttrib('imageSrc');
-        $longText = $this->getAttrib('longText');
         if (isset($image)) {
+            $view = Zend_Layout::getMvcInstance()->getView();
+            $image = $view->serverUrl($image);
 
-            if (isset($longText)) {
-                $render .= "button._button.style.background = 'url($image) 5% 50% no-repeat';\n";
-            } else {
-                $render .= "button._button.style.background = 'url($image) 10% 50% no-repeat';\n";
-            }
-
+            $render .= "button._button.style.background = 'url($image) 1em 50% no-repeat';\n";
             $render .= "button._button.style.paddingLeft = '3em';\n";
         }
         $render .= "\n});</script>";
