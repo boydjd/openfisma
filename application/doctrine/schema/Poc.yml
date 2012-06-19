@@ -76,6 +76,10 @@ Poc:
             values: [Contact, User]
             notnull: true
             default: Contact
+        published:
+            type: boolean
+            notnull: true
+            default: true
 
     relations:
         # Each POC can have 1 reporting organization, but each organization can have 0-n reporting POCs

@@ -58,10 +58,16 @@ elements.generate_password.options.attribs.id = "generatePasswordButton"
 displayGroups.accountInfo.elements.generate_password = "generate_password"
 
 elements.mustResetPassword.type = "checkbox"
-elements.mustResetPassword.options.label = "Must Reset Password"
+elements.mustResetPassword.options.label = "Password Reset"
 elements.mustResetPassword.options.value = "1"
-elements.mustResetPassword.options.attribs.description = "The user will be forced to change his or her password during their next successful login."
+elements.mustResetPassword.options.tooltip = "The user will be forced to change his or her password during their next successful login."
 displayGroups.accountInfo.elements.mustResetPassword = "mustResetPassword"
+
+elements.published.type = "checkbox"
+elements.published.options.label = "Visible"
+elements.published.options.value = 1
+elements.published.options.tooltip = "When a user is visible in the contact list, he or she can be assigned to objects in the application. If a user is not visible, he or she will not be available in the contact list and therefore cannot be assigned to items in the application."
+displayGroups.accountInfo.elements.published = "published"
 
 elements.nameFirst.type = "text"
 elements.nameFirst.options.label = "First Name"
