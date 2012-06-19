@@ -46,9 +46,9 @@ Fisma_Format_Section::startSection('Details');
     <tr>
        <td>Organization Type: </td>
         <td>
-            <span id="organizationType" 
-                          type="select" 
-                          name="orgTypeId" 
+            <span id="organizationType"
+                          type="select"
+                          name="orgTypeId"
                           href="/metainfo/list/o/organizationType/format/html/">
         <?php
             echo $this->escape($this->organization->OrganizationType->nickname);
@@ -61,9 +61,9 @@ Fisma_Format_Section::startSection('Details');
     <tr>
        <td>Parent Organization/System: </td>
         <td>
-            <span id="organization" 
-                          type="select" 
-                          name="parent" 
+            <span id="organization"
+                          type="select"
+                          name="parent"
                           href="/metainfo/list/o/organization/format/html/">
         <?php
             $parentOrganization = $this->organization->getNode()->getParent();
@@ -72,7 +72,7 @@ Fisma_Format_Section::startSection('Details');
                 $parentOrganizationName = $parentOrganization->nickname . ' - ' . $parentOrganization->name;
                 if ($this->acl()->hasPrivilegeForObject('read', $parentOrganization)) {
                     $parentOrgType = 'system' == $organizationTypeNickname ? 'system' : 'organization';
-                    $parentOrganizationId = 'system' == $parentOrgType ? 
+                    $parentOrganizationId = 'system' == $parentOrgType ?
                                             $parentOrganization->systemId : $parentOrganization->id;
                     echo $this->escape('<a href="/' . $parentOrgType . '/view/id/', 'none');
                     echo $this->escape($parentOrganizationId, 'url');
@@ -101,7 +101,7 @@ if ($this->editable) {
     Fisma_Format_Section::startSection('Organization Description');
 }
 ?>
-<div name="description" id="organization_description" type="textarea" rows="3" cols="120"> 
+<div name="description" id="organization_description" type="textarea" rows="3" cols="120">
     <?php echo $this->escape($this->organization->description, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
@@ -139,9 +139,17 @@ if ($this->editable) {
                 <?php if ($this->acl()->hasPrivilegeForClass('create', 'Poc')): ?>
                     setupCallback="Fisma.Finding.setupPocAutocomplete"
                 <?php endif; ?>
-                    value="<?php echo $this->escape($this->organization->Poc->username); ?>"
+                    value="<?php echo $this->escape($this->organization->pocId); ?>"
                     defaultValue="<?php echo $this->escape($this->organization->Poc->username); ?>"><?php
-                        echo $this->escape($this->userInfo($this->organization->Poc->username), 'none');
+                    if (!empty($this->organization->pocId)) {
+                        echo $this->escape(
+                            $this->userInfo(
+                                $this->organization->Poc->displayName,
+                                $this->organization->pocId
+                            ),
+                            'none'
+                        );
+                    }
                     ?></span>
                 <?php if ($this->editable): ?>
                     <span class="editable" target="pointOfContact">&nbsp;</span>
