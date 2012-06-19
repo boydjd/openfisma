@@ -36,5 +36,6 @@ class Application_Migration_021800_AddDefaultPocToOrganization extends Fisma_Mig
         $option = "bigint(20) DEFAULT NULL";
 
         $this->getHelper()->addColumn('organization', 'pocid', $option, 'systemid');
+        $this->getHelper()->addForeignKey('organization', 'pocid', 'poc', 'id');
     }
 }

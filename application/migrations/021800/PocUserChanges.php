@@ -39,8 +39,8 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
             // get a list of entities with this email account
             $pocs = $this->getHelper()->query('SELECT id FROM poc WHERE email = ?', array($dup->email));
             for ($i = 1; $i < count($pocs); $i++) {
-                $newAddress = $name . '.' . $i . '@' . $domain;
-                $this->getHelper()->exec('UPDATE poc SET email = ? WHERE id = ?', array($newAddress, $i));
+                $newAddress = "$name.$i@$domain";
+                $this->getHelper()->exec('UPDATE poc SET email = ? WHERE id = ?', array($newAddress, $pocs[$i]->id));
                 $this->message('Duplicate email "' . $dup->email . '" updated to "' . $newAddress . '"');
             }
         }
@@ -61,8 +61,13 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
             'locktype'
         );
         $this->getHelper()->addUniqueKey('poc', array('email'), 'email');
+        $this->getHelper()->addColumn('poc', 'published', "tinyint(1) NOT NULL DEFAULT '1'", 'accounttype');
 
-        $this->getHelper()->addColumn('poc', 'published', "tinyint(1) NOT NULL DEFAULT '1'", 'mustresetpassword');
+        // set account type to User where type is User
+        $this->getHelper()->exec('UPDATE poc SET accounttype = ? WHERE type = ?', array('User', 'User'));
 
+        // initialize displayNames
+        $emailExpr = "IF(LENGTH(nameFirst) > 0 AND LENGTH(nameLast) > 0, '', CONCAT('<', email, '>'))";
+        $this->getHelper()->exec("UPDATE poc SET displayname = TRIM(CONCAT_WS(nameFirst, nameLast, $emailExpr))");
     }
 }
