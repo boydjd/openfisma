@@ -183,9 +183,17 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
                 <?php if ($this->acl()->hasPrivilegeForClass('create', 'Poc')): ?>
                     setupCallback="Fisma.Finding.setupPocAutocomplete"
                 <?php endif; ?>
-                    value="<?php echo $this->escape($this->organization->Poc->username); ?>"
+                    value="<?php echo $this->escape($this->organization->pocId); ?>"
                     defaultValue="<?php echo $this->escape($this->organization->Poc->username); ?>"><?php
-                        echo $this->escape($this->userInfo($this->organization->Poc->username), 'none');
+                    if (!empty($this->organization->pocId)) {
+                        echo $this->escape(
+                            $this->userInfo(
+                                $this->organization->Poc->displayName,
+                                $this->organization->pocId
+                            ),
+                            'none'
+                        );
+                    }
                     ?></span>
                 <?php if ($this->editable): ?>
                     <span class="editable" target="pointOfContact">&nbsp;</span>
