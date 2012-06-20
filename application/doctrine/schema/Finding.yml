@@ -243,12 +243,12 @@ Finding:
             foreign: id
             foreignAlias: Findings
         CreatedBy:
-            class: Poc
+            class: User
             local: createdByUserId
             foreign: id
             foreignAlias: Findings
         PointOfContact:
-            class: Poc
+            class: User
             local: pocId
             foreign: id
             foreignAlias: Findings

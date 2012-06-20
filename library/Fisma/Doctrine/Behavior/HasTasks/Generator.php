@@ -18,7 +18,7 @@
 
 /**
  * Generator for the task behavior
- * 
+ *
  * @author     Ben Zheng
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -152,7 +152,7 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
         $this->hasColumn(
             'userId',
             'integer',
-            null, 
+            null,
             array('comment' => 'The user who created task')
         );
     }
@@ -178,7 +178,7 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
 
         // Relation for the poc class
         $this->hasOne(
-            'Poc',
+            'User',
             array(
                 'local' => 'pocId',
                 'foreign' => 'id'
@@ -288,7 +288,7 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
     public function count($instance)
     {
         $query = $this->query($instance);
-        
+
         return $query->count();
     }
 
@@ -302,7 +302,6 @@ class Fisma_Doctrine_Behavior_HasTasks_Generator extends Doctrine_Record_Generat
     {
         $query = Doctrine_Query::create()->from("{$this->_options['className']} o")
                                          ->leftJoin('o.User u')
-                                         ->leftJoin('o.Poc p')
                                          ->where('o.objectId = ?', $instance->id)
                                          ->orderBy('o.createdTs desc, o.id desc');
 

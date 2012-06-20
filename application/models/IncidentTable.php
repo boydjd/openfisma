@@ -156,7 +156,7 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'initiallyVisible' => false,
                 'label' => 'Point Of Contact',
                 'join' => array(
-                    'model' => 'Poc',
+                    'model' => 'User',
                     'relation' => 'PointOfContact',
                     'field' => 'displayName'
                 ),

@@ -25,7 +25,7 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable, Fisma_Search_Facetable
 {
     /**
      * Implement the interface for Searchable
@@ -100,11 +100,86 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'sortable' => true,
                 'type' => 'enum'
             ),
+            'published' => array(
+                'type' => 'boolean',
+                'label' => 'Visible',
+                'initiallyVisible' => true,
+                'sortable' => true
+            ),
             'lastLoginIp' => array(
                 'initiallyVisible' => false,
                 'label' => 'Last Login IP',
                 'sortable' => true,
                 'type' => 'text'
+            )
+        );
+    }
+
+    /**
+     * Returns an array of faceted filters
+     *
+     * @return array
+     */
+    public function getFacetedFields()
+    {
+        return array(
+            array(
+                'label' => 'Account Status',
+                'column' => 'lockType',
+                'filters' => array(
+                    array(
+                        'label' => 'Active',
+                        'operator' => 'enumNotIn',
+                        'operands' => $this->getEnumValues('lockType')
+                    ),
+                    array(
+                        'label' => 'Disabled',
+                        'operator' => 'enumIs',
+                        'operands' => array('manual')
+                    ),
+                    array(
+                        'label' => 'Locked',
+                        'operator' => 'enumIn',
+                        'operands' => array('expired', 'inactive', 'password')
+                    )
+                )
+            ),
+            array(
+                'label' => 'Lock Reason',
+                'column' => 'lockType',
+                'filters' => array(
+                    array(
+                        'label' => 'Inactivity',
+                        'operator' => 'enumIs',
+                        'operands' => array('inactive')
+                    ),
+                    array(
+                        'label' => 'Password Expiration',
+                        'operator' => 'enumIs',
+                        'operands' => array('expired')
+                    ),
+                    array(
+                        'label' => 'Invalid Login Attempts',
+                        'operator' => 'enumIs',
+                        'operands' => array('password')
+                    )
+                )
+            ),
+            array(
+                'label' => 'Visible',
+                'column' => 'published',
+                'filters' => array(
+                    array(
+                        'label' => 'Visible',
+                        'operator' => 'booleanYes',
+                        'operands' => array()
+                    ),
+                    array(
+                        'label' => 'Not Visible',
+                        'operator' => 'booleanNo',
+                        'operands' => array()
+                    )
+                )
             )
         );
     }

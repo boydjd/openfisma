@@ -63,6 +63,9 @@ class User extends BaseUser
 
         $this->hasMutator('lastRob', 'setLastRob');
         $this->hasMutator('password', 'setPassword');
+        $this->hasMutator('nameFirst', 'setNameFirst');
+        $this->hasMutator('nameLast', 'setNameLast');
+        $this->hasMutator('email', 'setEmail');
     }
 
     /**
@@ -651,29 +654,6 @@ class User extends BaseUser
             throw new Fisma_Zend_Exception_User('The root user\'s username cannot be modified.');
         }
     }
-
-    /**
-     * After saving a user object, update the associated poc index.
-     *
-     * @param Doctrine_Event $event
-     * @return void
-     */
-    public function postSave($event)
-    {
-        if (Fisma::mode() == Fisma::RUN_MODE_WEB_APP) {
-            $searchEngine = Zend_Registry::get('search_engine');
-            $indexer = new Fisma_Search_Indexer($searchEngine);
-            $indexQuery = $indexer->getRecordFetchQuery('Poc', $relationAliases);
-
-            // Relation aliases are derived from doctrine table metadata and are safe to interpolate
-            $baseClassAlias = $relationAliases['Poc'];
-            $indexQuery->andWhere("$baseClassAlias.id = ?", $this->id);
-
-            $indexer->indexRecordsFromQuery($indexQuery, 'Poc');
-            $searchEngine->commit();
-        }
-    }
-
     /**
      * Prevent the root user from being deleted
      *
@@ -788,4 +768,55 @@ class User extends BaseUser
         $this->mostRecentNotifyTs = Fisma::now();
         $this->save();
     }
+
+    /**
+     * Update displayName
+     *
+     * @return void
+     */
+    protected function _updateDisplayName()
+    {
+        $displayName = trim($this->nameFirst . ' ' . $this->nameLast);
+        if (empty($this->nameFirst) || empty($this->nameLast)) {
+            $displayName = trim($displayName. ' <' . $this->email . '>');
+        }
+        $this->_set('displayName', $displayName);
+    }
+
+    /**
+     * Update displayName when nameFirst is updated
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setNameFirst($value)
+    {
+        $this->_set('nameFirst', $value);
+        $this->_updateDisplayName();
+    }
+
+    /**
+     * Update displayName when nameLast is updated
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setNameLast($value)
+    {
+        $this->_set('nameLast', $value);
+        $this->_updateDisplayName();
+    }
+
+    /**
+     * Update displayName when email is updated
+     *
+     * @param string $value
+     * @return void
+     */
+    public function setEmail($value)
+    {
+        $this->_set('email', $value);
+        $this->_updateDisplayName();
+    }
+
 }

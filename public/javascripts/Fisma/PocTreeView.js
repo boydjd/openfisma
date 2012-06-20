@@ -151,7 +151,7 @@
         _renderTreeView: function (container) {
             this._showLoadingImage();
 
-            var url = '/contact/tree-data/format/json';
+            var url = '/user/tree-data/format/json';
 
             YAHOO.util.Connect.asyncRequest(
                 'GET',
@@ -274,17 +274,17 @@
             var nodeText = "<img src='"
                          + imageUrl
                          + "'>&nbsp;<b>"
-                         + node.p_nameFirst
+                         + node.u_nameFirst
                          + " "
-                         + node.p_nameLast
+                         + node.u_nameLast
                          + " ("
-                         + node.p_username
-                         + ")</b> - <i>" + (node.p_type === "User" ? "User" : "Contact") + "</i>";
+                         + node.u_username
+                         + ")</b> - <i>User</i>";
 
             var yuiNode = new YAHOO.widget.HTMLNode(
                 {
                     html: nodeText,
-                    pocId: node.p_id
+                    pocId: node.u_id
                 },
                 parent,
                 false
@@ -351,7 +351,7 @@
                             ? ('&destPoc=' + destNode.data.pocId)
                             : ('&destOrg=' + destNode.data.organizationId);
 
-            var query = '/contact/move-node/';
+            var query = '/user/move-node/';
             var postData = 'src=' + srcNode.data.pocId + destination + '&dragLocation=' + dragLocation
                            + '&csrf=' + $('[name="csrf"]').val();
 

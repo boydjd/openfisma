@@ -204,7 +204,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         // If the user can't create a POC object, then don't set up the POC create form
-        if (!$this->_acl->hasPrivilegeForClass('create', 'Poc')) {
+        if (!$this->_acl->hasPrivilegeForClass('create', 'User')) {
             $form->getElement('pocAutocomplete')->setAttrib('setupCallback', null);
         }
 

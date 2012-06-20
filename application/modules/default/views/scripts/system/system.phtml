@@ -175,12 +175,12 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
                 <td>Point of Contact:</td>
                 <td class="autocomplete-width"><span id="pointOfContact"
                     type="autocomplete"
-                    xhr="/contact/autocomplete/format/json"
+                    xhr="/user/autocomplete/format/json"
                     queryPrepend="/keyword/"
                     schemaObject="pointsOfContact"
                     schemaField="name"
                     name="pocId"
-                <?php if ($this->acl()->hasPrivilegeForClass('create', 'Poc')): ?>
+                <?php if ($this->acl()->hasPrivilegeForClass('create', 'User')): ?>
                     setupCallback="Fisma.Finding.setupPocAutocomplete"
                 <?php endif; ?>
                     value="<?php echo $this->escape($this->organization->pocId); ?>"
