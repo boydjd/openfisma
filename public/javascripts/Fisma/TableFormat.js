@@ -619,7 +619,7 @@ Fisma.TableFormat = {
             html += "<span class='bar HIGH' style='width:" + oData.HIGH / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
-        var percentage = (oData.LOW + oData.MODERATE + oData.HIGH) / oData.total;
+        var percentage = 100 * (parseInt(oData.LOW) + parseInt(oData.MODERATE) + parseInt(oData.HIGH)) / oData.total;
         if (percentage > 0 && percentage < 1) {
             html += 'less than 1%';
         } else {

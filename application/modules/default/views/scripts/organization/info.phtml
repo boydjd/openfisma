@@ -4,7 +4,9 @@
             <td>Type</td>
             <td>
                 <img
-                    src='/icon/get/id/<?php echo $this->escape($organization->OrganizationType->Icon->id); ?>/size/small'
+                    src='/icon/get/id/<?php
+                        echo $this->escape($organization->OrganizationType->Icon->id);
+                    ?>/size/small'
                     style='vertical-align:middle'
                 />
                 <?php echo $this->escape($organization->OrganizationType->name); ?>
@@ -19,7 +21,9 @@
             <td>Parent Organization</td>
             <td>
                 <img
-                    src='/icon/get/id/<?php echo $this->escape($parentOrganization->OrganizationType->Icon->id); ?>'
+                    src='/icon/get/id/<?php
+                        echo $this->escape($parentOrganization->OrganizationType->Icon->id);
+                    ?>/size/small'
                     style='vertical-align:middle'
                 />
                 <a href='/organization/view/id/<?php echo $this->escape($parentOrganization->id); ?>'>
@@ -38,9 +42,7 @@
         </tr>
     <?php endif; ?>
     </table>
-<?php if ($this->organization->description): ?>
-    Description: <?php echo $this->escape($organization->description, 'none'); ?>
-<?php endif; ?>
+    <?php if ($organization->description): echo $this->escape($organization->description, 'none'); endif; ?>
 <?php elseif ($system = $this->system): ?>
     <?php $organization = $system->Organization; ?>
     <table class="keyValues" style="background-color: white; width: 100%;">
@@ -48,7 +50,9 @@
             <td>Type</td>
             <td>
                 <img
-                    src='/icon/get/id/<?php echo $this->escape($system->SystemType->Icon->id); ?>'
+                    src='/icon/get/id/<?php
+                        echo $this->escape($system->SystemType->Icon->id);
+                    ?>/size/small'
                     style='vertical-align:middle'
                 />
                 <?php echo $this->escape($system->SystemType->name); ?>
@@ -63,7 +67,9 @@
             <td>Parent Organization</td>
             <td>
                 <img
-                    src='/icon/get/id/<?php echo $this->escape($parentOrganization->OrganizationType->Icon->id); ?>'
+                    src='/icon/get/id/<?php
+                        echo $this->escape($parentOrganization->OrganizationType->Icon->id);
+                    ?>/size/small'
                     style='vertical-align:middle'
                 />
                 <a href='/organization/view/id/<?php echo $this->escape($parentOrganization->id); ?>'>
@@ -78,7 +84,9 @@
             <td>Parent System</td>
             <td>
                 <img
-                    src='/icon/get/id/<?php echo $this->escape($parentSystem->SystemType->Icon->id); ?>'
+                    src='/icon/get/id/<?php
+                        echo $this->escape($parentSystem->SystemType->Icon->id);
+                    ?>/size/small'
                     style='vertical-align:middle'
                 />
                 <a href="/system/view/id/<?php echo $this->escape($parentSystem->id); ?>">
@@ -98,9 +106,7 @@
         </tr>
     <?php endif; ?>
     </table>
-<?php if ($organization->description): ?>
-    Description: <?php echo $this->escape($organization->description, 'none'); ?>
-<?php endif; ?>
+    <?php if ($organization->description): echo $this->escape($organization->description, 'none'); endif; ?>
 <?php else: ?>
     <p>No organization/system found.</p>
 <?php endif; ?>

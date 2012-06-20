@@ -393,7 +393,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->byPocTable->setData($byPoc);
 
         $this->view->bySystem = Doctrine_Query::create()
-            ->select('COUNT(f.id) as count, o.nickname, f.threatlevel, o.id, o.lft, o.rgt, o.level, o.name as criteria, f.responsibleorganizationid, ot.iconId as icon')
+            ->select('COUNT(f.id) as count, o.nickname as criteria, f.threatlevel, o.id, o.lft, o.rgt, o.level, f.responsibleorganizationid, ot.iconId as icon')
             ->from('Organization o')
             ->leftJoin('o.OrganizationType ot')
             ->leftJoin('o.Findings f')
@@ -480,7 +480,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 'total' => $statistic['count'],
                 'displayTotal' => json_encode(array(
                     'url' => '/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/'
-                           . 'organization/textContains/' . $statistic['nickname'],
+                           . 'organization/textContains/' . $statistic['criteria'],
                     'displayText' => $statistic['count']
                 ))
             );

@@ -786,7 +786,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         if ($id) {
             $organization = Doctrine::getTable('Organization')->find($id);
             if ($organization->OrganizationType->nickname === 'system') {
-                $this->view->system = Doctrine::getTable('System')->find($id);
+                $this->view->system = $organization->System;
             } else {
                 $this->view->organization = $organization;
             }
