@@ -552,11 +552,15 @@ Fisma.TableFormat = {
             }
             if (oData.orgId) {
                 elCell.innerHTML = "<span class='organizationInfo' "
-                                 + "style='background: url(/icon/get/id/" + oData.iconId + "/size/small) no-repeat 0 1px;' "
                                  + "onclick='Fisma.Organization.displayInfo(this, " + oData.orgId + ");'"
                                  + "title='Click to show detailed information'>"
                                  + elCell.innerHTML
                                  + "</span>";
+            }
+            if (oData.iconId) {
+                elCell.innerHTML = "<img "
+                                 + "style='vertical-align:text-bottom;' "
+                                 + "src='/icon/get/id/" + oData.iconId + "/size/small'/> " + elCell.innerHTML;
             }
         }
     },

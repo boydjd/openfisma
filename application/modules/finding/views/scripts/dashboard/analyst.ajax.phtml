@@ -6,8 +6,8 @@
     <div class='right'>
         <input type="submit" id="menuLayout" name="menuLayout_button" value="Change Layout">
         <div id="menuLayoutSelect" name="menuLayoutSelect" class="yui-overlay">
-            <div id='layoutLeft'><img src='/images/left_sidebar.png'/>Left Sidebar</div>
-            <div id='layoutRight'><img src='/images/right_sidebar.png'/>Right Sidebar</div>
+            <div id='layoutLeft'><img src='/images/left_sidebar.png'/> Left Sidebar</div>
+            <div id='layoutRight'><img src='/images/right_sidebar.png'/> Right Sidebar</div>
         </div>
     </div>
     <div class='clear'></div>
@@ -148,11 +148,13 @@ $(function() {
 
     if (leftColumn) {
         $.each(leftColumn.split(','), function(index, id){
+            $('#' + id).find('script').remove();
             $('#' + id).appendTo('#findingAnalystLeft');
         });
     }
     if (rightColumn) {
         $.each(rightColumn.split(','), function(index, id){
+            $('#' + id).find('script').remove();
             $('#' + id).appendTo('#findingAnalystRight');
         });
     }
@@ -164,6 +166,8 @@ $(function() {
             }
         })
         .disableSelection()
+        .find('.sectionHeader')
+            .css('cursor', 'move')
     ;
 
     //collapsible
@@ -171,7 +175,6 @@ $(function() {
         return ($('span.ui-icon', this).length < 1);
     })
         .prepend("<span class='ui-icon ui-icon-minusthick'></span>")
-        .css('cursor', 'move')
         .find(".ui-icon")
             .click(function() {
                 $(this).toggleClass("ui-icon-minusthick").toggleClass("ui-icon-plusthick");
