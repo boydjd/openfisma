@@ -49,13 +49,6 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
     private $_sampleUsers;
 
     /**
-     * Some points of contact (poc's) to randomly assign to findings
-     *
-     * @var Doctrine_Collection
-     */
-    private $_samplePocs;
-
-    /**
      * A sample upload
      *
      * @var Upload
@@ -104,27 +97,6 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
             }
         }
         return $this->_sampleUsers[rand(0, count($this->_sampleUsers)-1)];
-    }
-
-    /**
-     * Return a random POC
-     *
-     * @return Poc
-     */
-    protected function _getRandomPoc()
-    {
-        if (empty($this->_samplePocs)) {
-            // Get some POCs
-            $this->_samplePocs = Doctrine_Query::create()
-                ->from('Poc p')
-                ->where('p.username NOT LIKE ?', 'root')
-                ->limit(50)
-                ->execute();
-            if (0 == count($this->_samplePocs)) {
-                throw new Fisma_Exception("Cannot generate sample data because the application has no POCs.");
-            }
-        }
-        return $this->_samplePocs[rand(0, count($this->_samplePocs))];
     }
 
     /**

@@ -35,16 +35,6 @@ Fisma.Finding = {
     POC_MESSAGE_CONTAINER_ID : "findingPocNotMatched",
 
     /**
-     * A static reference to the POC create form panel
-     */
-    createPocPanel : null,
-
-    /**
-     * A static reference to the username that should prepopulate the POC create panel
-     */
-    createPocDefaultUsername : null,
-
-    /**
      * A static reference to the autocomplete which is used for matching a POC
      */
     pocAutocomplete : null,
@@ -239,9 +229,9 @@ Fisma.Finding = {
             );
         }
 
-        container.firstChild.nodeValue = "No contact or user named \"" 
+        container.firstChild.nodeValue = "No user named \"" 
                                        + unmatchedQuery
-                                       + "\" was found. Click here to create one.";
+                                       + "\" was found.";
         container.style.display = 'block';
 
         Fisma.Finding.createPocDefaultUsername = unmatchedQuery;
@@ -256,7 +246,6 @@ Fisma.Finding = {
     _createPocNotFoundContainer : function (id, parent) {
         var container = document.createElement('div');
 
-        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm, this, true);
         container.className = 'pocNotMatched';
         container.id = id;
         container.appendChild(document.createTextNode(""));
@@ -275,169 +264,6 @@ Fisma.Finding = {
         if (YAHOO.lang.isValue(container)) {
             container.style.display = 'none';
         }
-    },
-
-    /**
-     * Display a POC creation form inside a modal dialog.
-     *
-     * When setting a finding POC, if the user doesn't select from the autocomplete list, then prompt them to see if
-     * they want to create a new POC instead.
-     */
-    displayCreatePocForm : function () {
-        if (YAHOO.lang.isNull(Fisma.Finding.createPocPanel)) {
-            var panelConfig = {width : "50em", modal : true};
-
-            Fisma.Finding.createPocPanel = Fisma.UrlPanel.showPanel(
-                'Create New Contact',
-                '/contact/form',
-                Fisma.Finding.populatePocForm,
-                'createPocPanel',
-                panelConfig
-            );
-
-            Fisma.Finding.createPocPanel.subscribe("hide", this.removePocMessageBox, this, true);
-
-            Fisma.Finding.createPocPanel.hideEvent.subscribe(function (e) {
-                setTimeout(function () {
-                    Fisma.Finding.createPocPanel.destroy();
-                    Fisma.Finding.createPocPanel = null;
-                }, 0);
-            });
-        } else {
-            // Handle OFJ-1579 IE7 bug.
-            if (YAHOO.env.ua.ie === 7) {
-                Fisma.Finding.createPocPanel.center();
-            }
-
-            Fisma.Finding.createPocPanel.show();
-            document.getElementById("username").value = Fisma.Finding.createPocDefaultUsername;
-            Fisma.Finding.createPocMessageBox();
-        }
-    },
-
-    /**
-     * Create POC modal dialog's custom message box
-     */
-    createPocMessageBox: function () {
-        var messageBarContainer = document.getElementById("pocMessageBar");
-
-        if (YAHOO.lang.isNull(messageBarContainer)) {
-            throw "No message bar container found.";
-        }
-
-        var pocMessageBox = new Fisma.MessageBox(messageBarContainer);
-        Fisma.Registry.get("messageBoxStack").push(pocMessageBox);
-    },
-
-    /**
-     * Remove the POC modal dialog's custom message box
-     * 
-     * @param event {YAHOO.util.Event} The YUI event subscriber signature.
-     */
-    removePocMessageBox: function (event) {
-        Fisma.Registry.get("messageBoxStack").pop();
-
-        // Handle OFJ-1579 IE7 bug.
-        if (YAHOO.env.ua.ie === 7) {
-            this.createPocPanel.moveTo(5000,0);
-        }
-    },
-
-    /**
-     * Populate the POC create form with some default values
-     */
-    populatePocForm : function () {
-        // this method is called in the wrong scope :(
-        Fisma.Finding.createPocMessageBox();
-
-        var populateEl = YAHOO.util.Dom.get("lookup");
-        if (!YAHOO.lang.isObject(populateEl)) {
-            populateEl = YAHOO.util.Dom.get("nameFirst");
-        }
-        populateEl.value = Fisma.Finding.createPocDefaultUsername;
-
-        // The form contains some scripts that need to be executed
-        var scriptNodes = Fisma.Finding.createPocPanel.body.getElementsByTagName('script');
-
-        var i;
-        for (i = 0; i < scriptNodes.length; i++) {
-            try {
-                eval(scriptNodes[i].text);
-            } catch (e) {
-                var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
-                Fisma.Util.showAlertDialog(message);
-            } 
-        }
-
-        // The tool tips will display underneath the modal dialog mask, so we'll move them up to a higher layer.
-        var tooltips = YAHOO.util.Dom.getElementsByClassName('yui-tt', 'div');
-
-        var index;
-        for (index in tooltips) {
-            var tooltip = tooltips[index];
-
-            // The yui panel is usually 4, so anything higher is good.
-            tooltip.style.zIndex = 5;
-        }
-    },
-
-    /**
-     * Submit an XHR to create a POC object
-     */
-    createPoc : function () {
-        // The scope is the button that was clicked, so save it for closures
-        var button = this;
-        var form = Fisma.Finding.createPocPanel.body.getElementsByTagName('form')[0];
-
-        // Since the form misses reportingOrganizationId element, it needs to get the value manually.
-        var menu = YAHOO.widget.Button.getButton('reportingOrganizationId-button').getMenu();
-        var reportingOrganization = YAHOO.lang.isNull(menu.activeItem) ? menu.srcElement.value : menu.activeItem.value;
-
-        var reportingOrgEle = document.createElement('input');
-        reportingOrgEle.type = 'hidden';
-        reportingOrgEle.name = 'reportingOrganizationId';
-        reportingOrgEle.value = reportingOrganization;
-        form.appendChild(reportingOrgEle);
-
-        // Disable the submit button
-        button.set("disabled", true);
-
-        YAHOO.util.Connect.setForm(form);
-        YAHOO.util.Connect.asyncRequest('POST', '/contact/create/format/json', {
-            success : function(o) {
-                var result;
-
-                try {
-                    result = YAHOO.lang.JSON.parse(o.responseText).result;
-                } catch (e) {
-                    result = {success : false, message : e};
-                }
-
-                if (result.success) {
-                    Fisma.Finding.createPocPanel.hide();
-                    Fisma.Finding.hidePocNotFoundMessage();
-
-                    /* Trick the autocomplete into think it has selected an item. This violates it's abstraction (by
-                     * accessing a private member) but there is no public api to do this. Otherwise, if the user clicks
-                     * on the field, YUI will clear it out due to the "enforce selection" feature. 
-                     */
-                    Fisma.Finding.pocAutocomplete._bItemSelected = true;
-
-                    // Populate the autocomplete with the values corresponding to this new POC
-                    Fisma.Finding.pocHiddenEl.value = parseInt(result.object.id, 10);
-                    Fisma.Finding.pocAutocomplete.getInputEl().value = result.object.displayName;
-
-                    Fisma.Util.message('A contact has been created.', 'info', true);
-                } else {
-                    Fisma.Util.message(result.message, 'warning', true);
-                    button.set("disabled", false);
-                }
-            },
-            failure : function(o) {
-                var alertMessage = 'Failed to create new contact: ' + o.statusText;
-                Fisma.Finding.createPocPanel.setBody(alertMessage);
-            }
-        }, null);
     },
 
     /**
