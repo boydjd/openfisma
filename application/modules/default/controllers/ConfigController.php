@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -29,14 +29,14 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * The Config module
-     * 
+     *
      * @var Configuration
      */
     private $_config = null;
 
     /**
      * Initialize internal members.
-     * 
+     *
      * @return void
      */
     public function init()
@@ -51,7 +51,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                       ->addActionContext('delete-ldap', 'json')
                       ->initContext();
     }
-    
+
     /**
      * Hook into the pre-dispatch to do an ACL check
      */
@@ -79,7 +79,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Display and update the persistent configurations
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -89,7 +89,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         if ($this->getRequest()->isPost()) {
             $this->_saveConfigurationForm($form, $this->getRequest()->getPost());
-            
+
             $this->_redirect('/config/general');
         }
 
@@ -99,19 +99,19 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             if ($element instanceof Zend_Form_Element_Submit) {
                 continue;
             }
-            
-            $name = $element->getName();            
+
+            $name = $element->getName();
             $value = Fisma::configuration()->getConfig($name);
 
             $form->setDefault($name, $value);
         }
-        
+
         $this->view->generalConfig = $form;
     }
 
     /**
      * Get Ldap configuration list
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -121,7 +121,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                      ->select('id, username, host, port, useSsl')
                      ->from('LdapConfig')
                      ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-                     
+
         $ldapConfigs = $ldapQuery->execute();
 
         // Construct the table data for the LDAP list, including edit icon and delete button
@@ -129,12 +129,12 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         foreach ($ldapConfigs as $ldapConfig) {
             $url = $this->_makeLdapUrl(
-                $ldapConfig['username'], 
-                $ldapConfig['host'], 
-                $ldapConfig['port'], 
+                $ldapConfig['username'],
+                $ldapConfig['host'],
+                $ldapConfig['port'],
                 $ldapConfig['useSsl']
             );
-            
+
             $editUrl = "/config/update-ldap/id/{$ldapConfig['id']}";
             $deleteUrl = "javascript:Fisma.Util.formPostAction('', '/config/delete-ldap/', " . $ldapConfig['id'] . ')';
 
@@ -142,22 +142,22 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $dataTable = new Fisma_Yui_DataTable_Local();
-            
+
         $dataTable->addColumn(new Fisma_Yui_DataTable_Column('Connection', false, 'YAHOO.widget.DataTable.formatText'))
                   ->addColumn(new Fisma_Yui_DataTable_Column('Edit', false, 'Fisma.TableFormat.editControl'))
                   ->addColumn(new Fisma_Yui_DataTable_Column('Delete', false, 'Fisma.TableFormat.deleteControl'))
                   ->setData($ldapList);
 
-        $dataTable->addEventListener("buttonClickEvent", 'Fisma.Ldap.deleteLdap'); 
+        $dataTable->addEventListener("buttonClickEvent", 'Fisma.Ldap.deleteLdap');
         $this->view->dataTable = $dataTable;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
     }
 
     /**
      * Return a displayable LDAP URL
-     * 
+     *
      * The password is masked so that it is not displayed to the end user in this view
-     * 
+     *
      * @param string $username
      * @param string $host
      * @param string $port
@@ -177,23 +177,23 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         if (!empty($port)) {
             $url .= ":$port";
         }
-        
+
         return $url;
     }
 
     /**
      * Add/Update Technical Contact Information configurations
-     * 
+     *
      * @GETAllowed
      * @return void
      */
     public function contactAction()
-    {        
+    {
         $form = $this->_getConfigForm('contact_config');
 
         if ($this->getRequest()->isPost()) {
             $this->_saveConfigurationForm($form, $this->getRequest()->getPost());
-            
+
             $this->_redirect('/config/contact');
         }
 
@@ -203,10 +203,10 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             if ($element instanceof Zend_Form_Element_Submit) {
                 continue;
             }
-            
-            $name = $element->getName();            
+
+            $name = $element->getName();
             $value = Fisma::configuration()->getConfig($name);
-            
+
             $form->setDefault($name, $value);
         }
 
@@ -221,13 +221,13 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      * @return void
      */
     public function updateLdapAction()
-    {        
+    {
         $form = $this->_getConfigForm('ldap');
         $id = $this->_request->getParam('id');
 
         if (!empty($id)) {
             $ldap = Doctrine::getTable('LdapConfig')->find($id);
-        
+
             if (!$ldap) {
                 throw new Fisma_Zend_Exception("No LDAP configuration found for id ($id)");
             }
@@ -242,7 +242,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 // If password is all ********, then don't overwrite the existing password
                 if (preg_match('/^\*+$/', $values['password'])) {
                     unset($values['password']);
-                } 
+                }
 
                 if (!isset($ldap)) {
                     $ldap = new LdapConfig();
@@ -250,7 +250,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
                 $ldap->merge($values);
                 $ldap->save();
-                
+
                 $msg = 'Configuration updated successfully';
                 $this->view->priorityMessenger($msg, 'notice');
                 $this->_redirect('/config/list-ldap');
@@ -265,13 +265,13 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         if (isset($ldap)) {
             // Mask password for view script @see http://jira.openfisma.org/browse/OFJ-30
             $ldapView = $ldap->toArray();
-            
+
             $ldapView['password'] = '********';
 
             $form->getElement('password')->setRenderPassword(true);
             $form->setDefaults($ldapView);
         }
-        
+
         $this->view->form = $form;
         $this->render();
     }
@@ -282,7 +282,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
      * @return void
      */
     public function deleteLdapAction()
-    {        
+    {
         $id = $this->getRequest()->getParam('id');
         Doctrine::getTable('LdapConfig')->find($id)->delete();
 
@@ -293,14 +293,14 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Validate the configuration
-     * 
+     *
      * This is only happens in ajax context
-     * 
+     *
      * @GETAllowed
      * @return void
      */
     public function validateLdapAction()
-    {        
+    {
         $id = $this->getRequest()->getParam('id');
         $form = $this->_getConfigForm('ldap');
 
@@ -321,11 +321,11 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
                 unset($ldapConfig['SaveLdap']);
                 unset($ldapConfig['Reset']);
-                
+
                 $ldapServer = new Zend_Ldap($ldapConfig);
                 $ldapServer->connect();
                 $ldapServer->bind();
-                
+
                 $msg = "Connected successfully!";
                 $type = 'notice';
             } catch (Exception $e) {
@@ -336,7 +336,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $msg = Fisma_Zend_Form_Manager::getErrors($form);
             $type = 'warning';
         }
-        
+
         $this->view->msg = $msg;
         $this->view->type = $type;
     }
@@ -352,8 +352,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                        ->from('Module m')
                        ->orderBy('m.name')
                        ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-        
-        $modules = $moduleQuery->execute();        
+
+        $modules = $moduleQuery->execute();
 
         foreach ($modules as &$module) {
 
@@ -362,9 +362,9 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
                 // Need a javascript/DOM safe ID to represent this switch
                 $id = preg_replace('/[^A-Za-z0-9]+/', '_', $module['name']);
-                
-                $module['control'] = new Fisma_Js_SwitchButton($id, 
-                                                               $module['enabled'], 
+
+                $module['control'] = new Fisma_Js_SwitchButton($id,
+                                                               $module['enabled'],
                                                                'Fisma.Module.handleSwitchButtonStateChange',
                                                                array('id' => $module['id']));
             } else {
@@ -375,33 +375,33 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         $this->view->csrfToken = $this->_helper->csrf->getToken();
         $this->view->modules = $modules;
     }
-    
+
     /**
      * Update a module's status.
-     * 
+     *
      * This is called asynchronously and returns a JSON response
      */
     public function setModuleAction()
-    {        
+    {
         $response = new Fisma_AsyncResponse();
 
-        try {            
+        try {
             // Load module object
             $moduleId = $this->getRequest()->getParam('id');
-            
+
             if (empty($moduleId)) {
                 throw new Fisma_Zend_Exception('ID parameter is required');
             }
-            
+
             $module = Doctrine::getTable('Module')->find($moduleId);
-            
+
             if (!$module) {
                 throw new Fisma_Zend_Exception("Module with id '$moduleId' not found");
             }
 
             // Handle the 'enabled' parameter, which is a string value either 'true' or 'false'
             $enabled = $this->getRequest()->getParam('enabled');
-            
+
             if ('true' == $enabled) {
                 $module->enabled = true;
             } elseif ('false' == $enabled) {
@@ -411,53 +411,65 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             }
 
             $module->save();
-            
+
         } catch (Fisma_User_Exception $userException) {
             $response->fail($userException->getMessage());
         } catch (Fisma_Zend_Exception_InvalidPrivilege $invalidPrivilege) {
             $response->fail('User is not authorized to perform this action.');
         }
-        
+
         $this->view->response = $response;
     }
 
     /**
      * Generic save method.
-     * 
+     *
      * This will validate and save post variables into the system configuration
-     * 
+     *
      * @param Zend_Form $form The form which was submitted
      * @param array $post Posted variables
      */
     private function _saveConfigurationForm($form, $post)
     {
-        if ($form->isValid($post)) {        
+        if ($form->isValid($post)) {
             $values = $form->getValues();
-        
+            $modifiedFields = array();
             foreach ($values as $item => &$value) {
+                if (Fisma::configuration()->getConfig($item) === $value) {
+                    continue;
+                }
                 Fisma::configuration()->setConfig($item, $value);
+                $modifiedFields[] = $item;
             }
 
             $this->view->priorityMessenger('Configuration updated successfully', 'notice');
+            if (!empty($modifiedFields)) {
+                Notification::notify(
+                    'CONFIGURATION_UPDATED',
+                    null,
+                    CurrentUser::getInstance(),
+                    array('modifiedFields' => $modifiedFields)
+                );
+            }
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'warning');
         }
     }
-    
+
     /**
      * Email event system base setting
-     * 
+     *
      * @GETAllowed
      * @return void
      */
     public function emailAction()
     {
         $form = $this->_getConfigForm('email_config');
-        
+
         if ($this->getRequest()->isPost()) {
             $post = $this->getRequest()->getPost();
-            
+
             /**
              * @todo The wiring on this is screwy because the test email panel uses the same form to submit, even though
              * its submitting to a different action and submitting different data! This needs fixing!
@@ -466,29 +478,29 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $form->removeElement('recipient');
 
             $this->_saveConfigurationForm($form, $post);
-            
+
             $this->_redirect('/config/email');
         }
-        
-        $configurations = array('sender', 
-                                'subject', 
-                                'send_type', 
-                                'smtp_host', 
+
+        $configurations = array('sender',
+                                'subject',
+                                'send_type',
+                                'smtp_host',
                                 'smtp_port',
-                                'smtp_tls', 
-                                'smtp_username', 
+                                'smtp_tls',
+                                'smtp_username',
                                 'smtp_password');
-                         
+
         foreach ($configurations as $configuration) {
             $form->setDefault($configuration, Fisma::configuration()->getConfig($configuration));
         }
-        
+
         $this->view->form = $form;
     }
 
     /**
      * Validate the email configuration
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -529,8 +541,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         try{
             // The test e-mail template content
-            $mailContent = "This is a test e-mail from OpenFISMA. This is sent by the" 
-                         . " administrator to determine if the e-mail configuration is" 
+            $mailContent = "This is a test e-mail from OpenFISMA. This is sent by the"
+                         . " administrator to determine if the e-mail configuration is"
                          . " working correctly. There is no need to reply to this e-mail.";
 
             $transport = $this->_getTransportFromPost($emailConfiguration);
@@ -569,9 +581,9 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         try {
             $searchEngine = Zend_Registry::get('search_engine');
-        
+
             $result = $searchEngine->validateConfiguration();
-    
+
             if ($result !== true) {
                 $response->fail($result);
             }
@@ -579,22 +591,22 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $response->fail($fse->getMessage());
         }
 
-        $this->view->response = $response;        
+        $this->view->response = $response;
     }
 
     /**
      * Add/Update Privacy Policy configurations
-     * 
+     *
      * @GETAllowed
      * @return void
      */
     public function privacyAction()
-    {        
+    {
         $form = $this->_getConfigForm('privacy_policy_config');
 
         if ($this->getRequest()->isPost()) {
             $this->_saveConfigurationForm($form, $this->getRequest()->getPost());
-            
+
             $this->_redirect('/config/privacy');
         }
 
@@ -604,29 +616,29 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             if ($element instanceof Zend_Form_Element_Submit) {
                 continue;
             }
-            
-            $name = $element->getName();            
+
+            $name = $element->getName();
             $value = Fisma::configuration()->getConfig($name);
-            
+
             $form->setDefault($name, $value);
         }
 
         $this->view->form = $form;
     }
-     
+
     /**
      * Password Complexity Policy configurations
-     * 
+     *
      * @GETAllowed
      * @return void
      */
     public function passwordAction()
-    {        
+    {
         $form = $this->_getConfigForm('password_config');
 
         if ($this->getRequest()->isPost()) {
             $this->_saveConfigurationForm($form, $this->getRequest()->getPost());
-            
+
             $this->_redirect('/config/password');
         }
 
@@ -636,8 +648,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             if ($element instanceof Zend_Form_Element_Submit) {
                 continue;
             }
-            
-            $name = $element->getName();            
+
+            $name = $element->getName();
             $value = Fisma::configuration()->getConfig($name);
 
             $form->setDefault($name, $value);
@@ -645,7 +657,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->form = $form;
     }
-    
+
     /**
      * Configurations related to searching
      *
@@ -654,23 +666,23 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     public function searchAction()
     {
         $this->view->parameters = Fisma::$appConf['search'];
-        
+
         $this->view->testSearchButton = new Fisma_Yui_Form_Button(
             'testConfiguration',
             array(
-                'label' => 'Test Search Configuration', 
+                'label' => 'Test Search Configuration',
                 'onClickFunction' => 'Fisma.Search.testConfiguration'
             )
         );
-        
+
         $this->view->csrfToken = $this->_helper->csrf->getToken();
     }
 
     /**
      * Return the appropriate Zend_Mail_Transport subclass,
      * based on the system's configuration.
-     * 
-     * @param array $email the array of post values from email config form 
+     *
+     * @param array $email the array of post values from email config form
      * @return Zend_Mail_Transport_Smtp|Zend_Mail_Transport_Sendmail The initialized email sender
      */
     private function _getTransportFromPost($email)

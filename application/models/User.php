@@ -105,18 +105,20 @@ class User extends BaseUser
 
         // If the account is locked due to password failure, etc., then there is no current user. In that case, we log
         // with a null user and include the remote IP address in the log entry instead.
-        if (CurrentUser::getInstance()) {
+        if ($user = CurrentUser::getInstance()) {
             $message = 'Locked: ' . $this->getLockReason();
             $this->getAuditLog()->write($message);
+            Notification::notify('ACCOUNT_DISABLED', $this, $user);
+            Notification::notify('USER_DISABLED', $this, $user, array('userId' => $this->id));
         } else {
             $message = 'Locked by unknown user ('
-                    . $_SERVER['REMOTE_ADDR']
-                    . '): '
-                . $this->getLockReason();
+                     . $_SERVER['REMOTE_ADDR']
+                     . '): '
+                     . $this->getLockReason();
             $this->getAuditLog()->write($message);
+            Notification::notify('ACCOUNT_LOCKED', $this, $user);
+            Notification::notify('USER_LOCKED', $this, $user, array('userId' => $this->id));
         }
-
-        Notification::notify('USER_LOCKED', $this, CurrentUser::getInstance());
     }
 
     /**
@@ -819,4 +821,30 @@ class User extends BaseUser
         $this->_updateDisplayName();
     }
 
+    /**
+     * Decide whether to show the What's New dialog
+     *
+     * @return mixed Version String or false
+     */
+    public function showWhatsNew()
+    {
+        $showWhatsNew = false;
+        if ($showWhatsNew = Fisma_WhatsNew::checkContents()) {
+            $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
+            $storage = Doctrine::getTable('Storage')
+                ->getUserIdAndNamespaceQuery($user->id, 'WhatsNew.Checked')
+                ->fetchOne();
+
+            if (empty($storage)) {
+                $showWhatsNew = true;
+            } else {
+                $data = $storage->data;
+                // Use only main version number
+                if ($data['version'] != substr($versions['application'], 0, -2)) {
+                    $showWhatsNew = true;
+                }
+            }
+        }
+        return ($showWhatsNew) ? $versions['application'] : false;
+    }
 }

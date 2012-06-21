@@ -218,6 +218,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $mail->mailTemplate('send_account_info', $options);
 
                 Zend_Registry::get('mail_handler')->setMail($mail)->send();
+                $defaultActiveEvents = Doctrine::getTable('Event')->findByDefaultActive(true);
+                $subject->Events->merge($defaultActiveEvents);
+                $subject->save();
             } else if ('view' === $actionName
                        && !empty($values['password'])
                        && ('root' !== $subject->username || $this->_me->username !== 'root')) {
@@ -453,41 +456,53 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $user = Doctrine::getTable('User')->find($this->_me->id);
 
         if ($this->_request->isPost()) {
-            $notifyFrequency = $this->_request->getParam('notify_frequency');
+            $postEvents = $this->_request->getPost('event');
+            try {
+                Doctrine_Manager::connection()->beginTransaction();
 
-            $postEvents = $this->_request->getPost('existEvents');
-            if (Inspekt::isInt($notifyFrequency)) {
-                try {
-                    Doctrine_Manager::connection()->beginTransaction();
-                    $modified = $user->getModified();
-
-                    $user->unlink('Events');
-
-                    if (!empty($postEvents)) {
-                        $user->link('Events', $postEvents);
-                    }
-
-                    $user->notifyFrequency = $notifyFrequency;
-                    $user->save();
-                    Doctrine_Manager::connection()->commit();
-
-                    $message = "Notification events modified successfully";
-                    $model   = 'notice';
-                } catch (Doctrine_Exception $e) {
-                    Doctrine_Manager::connection()->rollback();
-                    $message = $e->getMessage();
-                    $model   = 'warning';
+                $user->unlink('Events');
+                if (!empty($postEvents)) {
+                    $user->link('Events', array_keys($postEvents));
                 }
-            } else {
-                /** @todo English */
-                $message = "Notify Frequency: '$notifyFrequency' is not a valid value";
+                $user->save();
+                Doctrine_Manager::connection()->commit();
+
+                $message = "Notification events modified successfully";
+                $model   = 'notice';
+            } catch (Doctrine_Exception $e) {
+                Doctrine_Manager::connection()->rollback();
+                $message = $e->getMessage();
                 $model   = 'warning';
             }
             $this->view->priorityMessenger($message, $model);
             $this->_redirect('/user/notification');
         }
 
-        $this->view->me = $user;
+        if ($this->_acl->hasPrivilegeForClass('admin', 'Notification')) {
+            $this->view->adminEvents = Doctrine::getTable('Event')->findByCategory('admin');
+        }
+
+        $this->view->userEvents = Doctrine::getTable('Event')->findByCategory('user');
+
+        if ($this->_acl->hasPrivilegeForClass('asset', 'Notification')) {
+            $this->view->inventoryEvents = Doctrine::getTable('Event')->findByCategory('inventory');
+        }
+
+        if ($this->_acl->hasPrivilegeForClass('finding', 'Notification')) {
+            $this->view->findingEvents = Doctrine::getTable('Event')->findByCategory('finding');
+            $this->view->evaluationEvents = Doctrine::getTable('Event')->findByCategory('evaluation');
+        }
+
+        if ($this->_acl->hasPrivilegeForClass('incident', 'Notification')) {
+            $this->view->incidentEvents = Doctrine::getTable('Event')->findByCategory('incident');
+        }
+
+        if ($this->_acl->hasPrivilegeForClass('vulnerability', 'Notification')) {
+            $this->view->vulnerabilityEvents = Doctrine::getTable('Event')->findByCategory('vulnerability');
+        }
+
+        $this->view->user = $user;
+        $this->view->toolbar = $this->getToolbarButtons();
     }
 
     /**
@@ -1133,6 +1148,25 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     {
         $buttons = array();
 
+        if ($this->_request->getActionName() === 'notification') {
+            $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
+                'saveChanges',
+                array(
+                    'label' => 'Save Changes',
+                    'imageSrc' => '/images/ok.png'
+                )
+            );
+            $buttons['discard'] =  new Fisma_Yui_Form_Button_Link(
+                'discardChanges',
+                array(
+                    'value' => 'Discard Changes',
+                    'imageSrc' => '/images/no_entry.png',
+                    'href' => "/user/notification"
+                )
+            );
+            return $buttons;
+        }
+
         if ($this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
             if ($this->getRequest()->getActionName() === 'list') {
                 $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
@@ -1140,7 +1174,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     array(
                         'value' => 'Tree View',
                         'href' => $this->getBaseUrl() . '/tree',
-                        'imageSrc' => $this->view->serverUrl('/images/tree_view.png')
+                        'imageSrc' => '/images/tree_view.png'
                     )
                 );
             }
@@ -1150,12 +1184,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     array(
                         'value' => 'List View',
                         'href' => $this->getBaseUrl() . '/list',
-                        'imageSrc' => $this->view->serverUrl('/images/list_view.png')
+                        'imageSrc' => '/images/list_view.png'
                     )
                 );
             }
         }
-
         $buttons = array_merge($buttons, parent::getToolbarButtons($record));
 
         return $buttons;

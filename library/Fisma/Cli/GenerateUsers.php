@@ -78,6 +78,9 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
         $organizationsCount = count($organizations)-1;
         $roleIdsCount = count($roleIds)-1;
 
+        // Get defaultActive Events
+        $defaultActiveEvents = Doctrine::getTable('Event')->findByDefaultActive(true);
+
         // Include timestamp in username to make them unique
         $timestamp = time();
 
@@ -121,6 +124,7 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
                 $u = new User();
 
                 $u->merge($user);
+                $u->Events->merge($defaultActiveEvents);
                 $u->save();
                 $uId = $u->id;
                 $u->free();
@@ -132,6 +136,7 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
                 foreach ($organizations as $o) {
                     $ur->Organizations[] = $o;
                 }
+
                 $ur->save();
                 $ur->free();
                 unset($ur);

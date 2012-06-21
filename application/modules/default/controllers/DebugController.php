@@ -27,18 +27,6 @@
 class DebugController extends Zend_Controller_Action
 {
     /**
-     * Prepares actions
-     *
-     * @return void
-     * @throws Fisma_Zend_Exception if Debug mode is not enabled
-     */
-    public function preDispatch()
-    {
-        if (!Fisma::debug())
-            throw new Fisma_Zend_Exception('Action is only allowed in debug mode.');
-    }
-
-    /**
      * Display phpinfo()
      *
      * @GETAllowed

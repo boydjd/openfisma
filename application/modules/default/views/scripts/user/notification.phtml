@@ -1,106 +1,172 @@
-<script type="text/javascript">
-    function addNotificationEvents(event, obj) {
-        var options = YAHOO.util.Selector.query('#availableEvents option');
-        for (var i = 0; i < options.length; i ++) {
-            if (options[i].selected == true) {
-                document.getElementById('existEvents').appendChild(options[i]);
-            }
-        }
-    }
-    function removeNotificationEvents(event, obj) {
-        var options = YAHOO.util.Selector.query('#existEvents option');
-        for (var i = 0; i < options.length; i ++) {
-            if (options[i].selected == true) {
-                document.getElementById('availableEvents').appendChild(options[i]);
-            }
-        }
-    }
-    function saveEvents(event, obj) {
-        var options = YAHOO.util.Selector.query('#existEvents option');
-        for (var i = 0; i < options.length; i ++) {
-            options[i].selected = true;
-        }
-        document.event_form.submit();
-    }
-</script>
-<?php Fisma_Format_Section::startSection("Notification Events"); ?>
+<form method='post'>
+<?php echo $this->escape($this->searchBox($this->toolbar), 'none'); ?>
+<div class='column left'>
+    <?php if ($this->adminEvents): Fisma_Format_Section::startSection(
+        'Administration Alerts ' .
+        " (<a href='#' onclick='return checkAll(this);'>all</a> | " .
+        "<a href='#' onclick='return checkNone(this);'>none</a>)"
+    ); ?>
+    <table class='keyValues'>
+        <tr>
+            <td>Email me whenever</td>
+            <td><?php foreach($this->adminEvents as $event): ?>
+                <input
+                    type='checkbox'
+                    name='event[<?php echo $this->escape($event->id); ?>]'
+                    id='chkEvent[<?php echo $this->escape($event->id); ?>]'
+                    <?php if (in_array($this->user, $event->Users->getData())): ?>checked<?php endif; ?>
+                />
+                <label for='chkEvent[<?php echo $this->escape($event->id); ?>]'>
+                    <?php echo $event->description; ?>
+                </label>
+                <br/>
+            <?php endforeach; ?></td>
+        </tr>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); endif; ?>
 
-<div class='eventNotifyBlock'>
-    <form name="event_form" id="event_form" enctype="application/x-www-form-urlencoded" method="post">
-    <table>
+    <?php if ($this->userEvents): Fisma_Format_Section::startSection(
+        'User Alerts ' .
+        " (<a href='#' onclick='return checkAll(this);'>all</a> | " .
+        "<a href='#' onclick='return checkNone(this);'>none</a>)"
+    ); ?>
+    <table class='keyValues'>
         <tr>
-            <td colspan="2" width="700px"><i>You can limit how often the system sends you e-mails:</i></td>
+            <td>Email me whenever</td>
+            <td><?php foreach($this->userEvents as $event): ?>
+                <input
+                    type='checkbox'
+                    name='event[<?php echo $this->escape($event->id); ?>]'
+                    id='chkEvent[<?php echo $this->escape($event->id); ?>]'
+                    <?php if (in_array($this->user, $event->Users->getData())): ?>checked<?php endif; ?>
+                />
+                <label for='chkEvent[<?php echo $this->escape($event->id); ?>]'>
+                    <?php echo $event->description; ?>
+                </label>
+                <br/>
+            <?php endforeach; ?></td>
         </tr>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); endif; ?>
+
+    <?php if ($this->inventoryEvents): Fisma_Format_Section::startSection(
+        'System Inventory Alerts ' .
+        " (<a href='#' onclick='return checkAll(this);'>all</a> | " .
+        "<a href='#' onclick='return checkNone(this);'>none</a>)"
+    ); ?>
+    <table class='keyValues'>
         <tr>
-            <td><b><label for="notify_frequency">Notify Frequency (hours):</label></b></td>
-            <td>
-                <input name="notify_frequency" id="notify_frequency" type="text" 
-                    value="<?php echo $this->escape(round($this->me->notifyFrequency, 2), 'none')?>" size="30"/>
-            </td>
+            <td>Email me whenever</td>
+            <td><?php foreach($this->inventoryEvents as $event): ?>
+                <input
+                    type='checkbox'
+                    name='event[<?php echo $this->escape($event->id); ?>]'
+                    id='chkEvent[<?php echo $this->escape($event->id); ?>]'
+                    <?php if (in_array($this->user, $event->Users->getData())): ?>checked<?php endif; ?>
+                />
+                <label for='chkEvent[<?php echo $this->escape($event->id); ?>]'>
+                    <?php echo $event->description; ?>
+                </label>
+                <br/>
+            <?php endforeach; ?></td>
         </tr>
-        <tr>
-            <td colspan="2"><p>
-        <div class="left"><b><label for="availableEvents">Available events:</label></b><br/>
-            <?php 
-            $formSelect = $this->formSelect(
-                'availableEvents',
-                null, 
-                array(
-                    'multiple' => 'multiple', 
-                    'size' => '20'
-                ), 
-                $this->me->getAvailableEvents()
-            );
-            echo $this->escape($formSelect, 'none');
-            unset($formSelect);
-            ?>
-        </div>
-        <div class="left" id="move">
-            <p>
-                <?php 
-                $addEvent = new Fisma_Yui_Form_Button('addNotificationEvents',
-                                                      array('label' => 'Select',
-                                                            'onClickFunction' => 'addNotificationEvents'));
-                $addEvent->imageSrc = $this->serverUrl('/images/right_arrow.png');
-                echo $this->escape($addEvent, 'none');
-                ?>
-            </p>
-            <p>
-                <?php 
-                $removeEvent = new Fisma_Yui_Form_Button('removeNotificationEvents',
-                                                         array('label' => 'Remove',
-                                                               'onClickFunction' => 'removeNotificationEvents'));
-                $removeEvent->imageSrc = $this->serverUrl('/images/left_arrow.png');
-                echo $this->escape($removeEvent, 'none');
-                ?>
-            </p>
-        </div>
-        <div class="left" id="enable"><b><label for="existEvents">Selected events:</label></b><br />
-        <?php 
-            $opts = array('multiple' => 'multiple', 'size' => '20');
-            $formSelect = $this->formSelect('existEvents', null, $opts, $this->me->getExistEvents());
-            echo $this->escape($formSelect, 'none');
-            unset($opts);
-            unset($formSelect);
-        ?>
-        </div>
-        </td></tr>
-        <tr>
-            <td colspan="2" align="center">
-            <div id="actionButton">
-                <?php
-                    $submitButton = new Fisma_Yui_Form_Button(
-                        'submit',
-                        array('label' => 'Save', 'onClickFunction' => 'saveEvents', 'imageSrc' => '/images/ok.png')
-                    );
-                    echo $this->escape($submitButton, 'none');
-                    unset($submitButton);
-                ?>
-            </div>
-            </td>
-        </tr>
-        </table>
-    </form>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); endif; ?>
 </div>
+<div class='column right'>
+    <?php if ($this->findingEvents): Fisma_Format_Section::startSection(
+        'Findings Alerts ' .
+        " (<a href='#' onclick='return checkAll(this);'>all</a> | " .
+        "<a href='#' onclick='return checkNone(this);'>none</a>)"
+    ); ?>
+    <table class='keyValues'>
+        <tr>
+            <td>Email me whenever</td>
+            <td><?php foreach($this->findingEvents as $event): ?>
+                <input
+                    type='checkbox'
+                    name='event[<?php echo $this->escape($event->id); ?>]'
+                    id='chkEvent[<?php echo $this->escape($event->id); ?>]'
+                    <?php if (in_array($this->user, $event->Users->getData())): ?>checked<?php endif; ?>
+                />
+                <label for='chkEvent[<?php echo $this->escape($event->id); ?>]'>
+                    <?php echo $event->description; ?>
+                </label>
+                <br/>
+            <?php endforeach; ?>
+            <hr/>
+            <?php foreach($this->evaluationEvents as $event): ?>
+                <input
+                    type='checkbox'
+                    name='event[<?php echo $this->escape($event->id); ?>]'
+                    id='chkEvent[<?php echo $this->escape($event->id); ?>]'
+                    <?php if (in_array($this->user, $event->Users->getData())): ?>checked<?php endif; ?>
+                />
+                <label for='chkEvent[<?php echo $this->escape($event->id); ?>]'>
+                    <?php echo $event->description; ?>
+                </label>
+                <br/>
+            <?php endforeach; ?></td>
+        </tr>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); endif; ?>
 
-<?php Fisma_Format_Section::stopSection(); ?>
+    <?php if ($this->vulnerabilityEvents): Fisma_Format_Section::startSection(
+        'Vulnerabilities Alerts ' .
+        " (<a href='#' onclick='return checkAll(this);'>all</a> | " .
+        "<a href='#' onclick='return checkNone(this);'>none</a>)"
+    ); ?>
+    <table class='keyValues'>
+        <tr>
+            <td>Email me whenever</td>
+            <td><?php foreach($this->vulnerabilityEvents as $event): ?>
+                <input
+                    type='checkbox'
+                    name='event[<?php echo $this->escape($event->id); ?>]'
+                    id='chkEvent[<?php echo $this->escape($event->id); ?>]'
+                    <?php if (in_array($this->user, $event->Users->getData())): ?>checked<?php endif; ?>
+                />
+                <label for='chkEvent[<?php echo $this->escape($event->id); ?>]'>
+                    <?php echo $event->description; ?>
+                </label>
+                <br/>
+            <?php endforeach; ?></td>
+        </tr>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); endif; ?>
+
+    <?php if ($this->incidentEvents): Fisma_Format_Section::startSection(
+        'Incidents Alerts ' .
+        " (<a href='#' onclick='return checkAll(this);'>all</a> | " .
+        "<a href='#' onclick='return checkNone(this);'>none</a>)"
+    ); ?>
+    <table class='keyValues'>
+        <tr>
+            <td>Email me whenever</td>
+            <td><?php foreach($this->incidentEvents as $event): ?>
+                <input
+                    type='checkbox'
+                    name='event[<?php echo $this->escape($event->id); ?>]'
+                    id='chkEvent[<?php echo $this->escape($event->id); ?>]'
+                    <?php if (in_array($this->user, $event->Users->getData())): ?>checked<?php endif; ?>
+                />
+                <label for='chkEvent[<?php echo $this->escape($event->id); ?>]'>
+                    <?php echo $event->description; ?>
+                </label>
+                <br/>
+            <?php endforeach; ?></td>
+        </tr>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); endif; ?>
+</div>
+</form>
+<script>
+function checkAll(linkElement) {
+    $(linkElement).parents('.sectionContainer').find('input[type=checkbox]').attr('checked', true);
+    return false;
+}
+function checkNone(linkElement) {
+    $(linkElement).parents('.sectionContainer').find('input[type=checkbox]').attr('checked', false);
+    return false;
+}
+</script>

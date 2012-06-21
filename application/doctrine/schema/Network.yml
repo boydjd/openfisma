@@ -1,8 +1,8 @@
 Network:
-    listeners: [IndexListener, NotificationListener]
-    
+    listeners: [IndexListener]
+
     columns:
-        name: 
+        name:
             type: string(255)
             extra:
                 logicalName: Network Name
@@ -13,7 +13,7 @@ Network:
             extra:
                 logicalName: Network Nickname
                 notify: true
-        description: 
+        description:
             type: string
             extra:
                 logicalName: Description

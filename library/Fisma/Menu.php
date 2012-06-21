@@ -43,7 +43,7 @@ class Fisma_Menu
         $menuConfig = Doctrine_Parser_YamlSf::load($path . '/menu.yml');
 
         self::buildMenu($user, $menuConfig, self::$_mainMenuBar, $parent = null);
-       
+
         return self::$_mainMenuBar;
     }
 
@@ -53,13 +53,13 @@ class Fisma_Menu
      * @param string $type The menu item type.
      * @param string $label The label shows on the menu.
      * @param string $link The link of the menu item.
-     * @param mixed string|null $model The model shows on the Go to.. menu item, 
-     * null if the $type is not Fisma_Yui_MenuItem_GoTo 
+     * @param mixed string|null $model The model shows on the Go to.. menu item,
+     * null if the $type is not Fisma_Yui_MenuItem_GoTo
      * @param integer $onClick  The the javascript function for onclick event.
      * @param integer $target  The target of the link.
      * @param integer $count Add the submenu to its parent menu when $count is 1.
-     * @param Fisma_Yui_Menu $root The menu holds the menu items. 
-     * @param Fisma_Yui_Menu $parent The parent menu holds the menu items. 
+     * @param Fisma_Yui_Menu $root The menu holds the menu items.
+     * @param Fisma_Yui_Menu $parent The parent menu holds the menu items.
      * @return Fisma_Yui_MenuBar The assembled Fisma YUI menu bar object
      */
     private static function addMenuItem($type, $label, $link, $model, $onClick, $target, $count, $root, $parent = null)
@@ -84,20 +84,20 @@ class Fisma_Menu
         if ($count == 1 && !is_null($parent)) {
             $parent->add($root);
         }
-    }    
+    }
 
     /**
      * Build a main menu recursively.
      *
      * @param User $user
      * @param array $menuValue The data from configure file.
-     * @param Fisma_Yui_Menu $root The menu holds the menu items. 
-     * @param Fisma_Yui_Menu $parent The parent menu holds the menu items. 
+     * @param Fisma_Yui_Menu $root The menu holds the menu items.
+     * @param Fisma_Yui_Menu $parent The parent menu holds the menu items.
      * @return Fisma_Yui_MenuBar The assembled Fisma YUI menu bar object
      */
-    protected static function buildMenu($user, $menuValue, $root, $parent = null) 
+    protected static function buildMenu($user, $menuValue, $root, $parent = null)
     {
-        $i = 0; 
+        $i = 0;
         $acl = $user->acl();
         foreach ($menuValue as $key => $value) {
             if (isset($value['module'])) {
@@ -107,21 +107,44 @@ class Fisma_Menu
                 } else if (strstr($value['module'], 'Incident')) {
                     $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
                 }
-     
+
                 // Skip the module if the module is not enable
-                if (!$module || !$module->enabled 
+                if (!$module || !$module->enabled
                     || !$acl->$value['privilege']['func']($value['privilege']['param'])) {
-                    continue;  
+                    continue;
                 }
             }
 
             // Skip the menuItem and its submenu if it does not have the privilege
             if (isset($value['privilege']) && 'hasArea' == $value['privilege']['func']) {
                 if (!$acl->$value['privilege']['func']($value['privilege']['param'])) {
-                     continue;  
+                     continue;
                 }
             }
-            
+
+            // Handle dynamic values
+            if (isset($value['label'])) {
+                // Replace $systemName with information from Fisma::configuration in label
+                $systemName = Fisma::configuration()->getConfig('system_name');
+                $value['label'] = str_replace('$systemName', $systemName, $value['label']);
+
+                // Replace $currentUser with information from CurrentUser in label
+                $currentUser = CurrentUser::getAttribute('displayName');
+                $value['label'] = str_replace('$currentUser', $currentUser, $value['label']);
+
+                // Replace $notificationCount with information from CurrentUser in label
+                $notificationCount = CurrentUser::getAttribute('Notifications')->count();
+                $value['label'] = str_replace('$notificationCount', $notificationCount, $value['label']);
+            }
+
+            // Replace $mailToAdmin with information from Fisma::configuration in link
+            if (isset($value['link']) && $value['link'] == '$mailToAdmin') {
+                $view = self::_getCurrentView();
+                $mailurl = 'mailto:' . Fisma::configuration()->getConfig('contact_email')
+                         . '?Subject='. $view->escape(Fisma::configuration()->getConfig('contact_subject'), 'url');
+                $value['link'] = $mailurl;
+            }
+
             if (isset($value['submenu'])) {
 
                 // Skip the menu if condition is not true
@@ -130,8 +153,8 @@ class Fisma_Menu
                         $menu = new Fisma_Yui_Menu($value['label']);
                     } else {
                         continue;
-                    } 
-                } else { 
+                    }
+                } else {
                     $menu = new Fisma_Yui_Menu($value['label']);
                 }
 
@@ -139,9 +162,9 @@ class Fisma_Menu
             } else {
                 $i++; // Track the loop count, adding the submenu to its parent when it is 1.
 
-                // Handle the different types of menu items 
+                // Handle the different types of menu items
                 if ('Go To...' == $value['label']) {
-                    if (isset($value['privilege'])) { 
+                    if (isset($value['privilege'])) {
                         if ( $acl->$value['privilege']['func']($value['privilege']['param1'],
                             $value['privilege']['param2'])) {
                             self::addMenuItem(
@@ -177,7 +200,7 @@ class Fisma_Menu
                             $root->addSeparator();
                         } else {
                             $i--;
-                        } 
+                        }
                     } else {
                         if ($i == 1) {
                             $i--; // Do not need to add separator if it is the first menuItem.
@@ -185,9 +208,14 @@ class Fisma_Menu
                             $root->addSeparator();
                         }
                     }
+                } else if ('$mailToAdmin' == $value['label']) {
+                    $view = $this->_getCurrentView();
+                    $mailurl = 'mailto:' . Fisma::configuration()->getConfig('contact_email')
+                             . '?Subject='. $view->escape(Fisma::configuration()->getConfig('contact_subject'), 'url');
+                    $value['label'] = $mailurl;
                 } else {
 
-                    // Do not need to check hasArea privilege here because it has been checked previously 
+                    // Do not need to check hasArea privilege here because it has been checked previously
                     if (isset($value['privilege']) && 'hasArea' != $value['privilege']['func']) {
                         if ($acl->$value['privilege']['func'](
                                 $value['privilege']['param1'],
@@ -209,7 +237,7 @@ class Fisma_Menu
                         }
                     } else {
                         if (isset($value['condition'])) {
-                            
+
                             // Add the menu item based on the return of Evaluating the condition
                             if (eval($value['condition'])) {
                                 self::addMenuItem(
@@ -243,5 +271,15 @@ class Fisma_Menu
                 }
             }
         }
+    }
+
+    /**
+     * Get the current view object, mainly used for escaping
+     *
+     * @param Zend_View $view Optional. Used for mocking in unittesting
+     * @return Zend_View
+     */
+    protected static function _getCurrentView($view = null) {
+        return (empty($view)) ? Zend_Layout::getMvcInstance()->getView() : $view;
     }
 }

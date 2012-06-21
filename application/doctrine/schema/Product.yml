@@ -1,6 +1,6 @@
 Product:
-    listeners: [IndexListener, NotificationListener]
-    
+    listeners: [IndexListener]
+
     columns:
         vendor:
             type: string(255)

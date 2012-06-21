@@ -150,7 +150,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                            'id' => $id,
                            'action' => 'previous',
                            'modelName' => $this->_modelName
-                    ) 
+                    )
                 )
 
             );
@@ -172,7 +172,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                            'id' => $id,
                            'action' => 'next',
                            'modelName' => $this->_modelName
-                    ) 
+                    )
                 )
             );
 
@@ -181,8 +181,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             }
 
             $this->view->nextButton = $nextButton;
-         
-            $this->view->fromSearchParams = $this->_helper->makeUrlParams($fromSearchParams); 
+
+            $this->view->fromSearchParams = $this->_helper->makeUrlParams($fromSearchParams);
         }
 
         $this->view->tabView = $tabView;
@@ -529,15 +529,16 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             }
 
             $this->view->priorityMessenger($msg, $type);
+            Notification::notify('ORGANIZATION_UPDATED', $organization, CurrentUser::getInstance());
         }
- 
+
         $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
         $fromSearchUrl = '';
 
         if (!empty($fromSearchParams)) {
             $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
         }
-        
+
         $this->_redirect("/system/view/oid/$id$fromSearchUrl");
     }
 
@@ -551,9 +552,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
      */
     protected function saveValue($form, $system=null)
     {
+        $createNew = false;
         // Create a new object if one is not provided (this indicates a "create" action rather than an "update")
         if (is_null($system)) {
             $system = new System();
+            $createNew = true;
             $system->Organization = new Organization();
             $systemType = Doctrine::getTable('OrganizationType')->findOneByNickname('system');
             $system->Organization->orgTypeId = $systemType->id;
@@ -616,6 +619,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $userRoles->save();
         }
 
+        if ($createNew) {
+            Notification::notify('ORGANIZATION_CREATED', $system, CurrentUser::getInstance());
+        } else {
+            Notification::notify('ORGANIZATION_UPDATED', $system, CurrentUser::getInstance());
+        }
         return $system;
     }
 

@@ -1,5 +1,5 @@
 SystemType:
-    listeners: [IndexListener, NotificationListener]
+    listeners: [IndexListener]
 
     columns:
         createdTs: timestamp
@@ -9,24 +9,17 @@ SystemType:
             type: string(255)
             notblank: true
             notnull: true
-            extra:
-                notify: true
         nickname:
             type: string(255)
             unique: true
             notblank: true
             notnull: true
-            extra:
-                notify: true
         iconId:
             type: integer
-            extra:
-                notify: true
         description:
             type: string
             extra:
                 purify: html
-                notify: true
     actAs:
         Timestampable:
             created:

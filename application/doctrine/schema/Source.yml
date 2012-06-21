@@ -1,24 +1,21 @@
 Source:
-    listeners: [IndexListener, NotificationListener]
-        
+    listeners: [IndexListener]
+
     columns:
-        name: 
+        name:
             type: string(255)
             extra:
                 logicalName: Source Name
-                notify: true
-        nickname: 
+        nickname:
             type: string(255)
             unique: true
             extra:
                 logicalName: Source Nickname
-                notify: true    
-        description: 
+        description:
             type: string
             extra:
                 logicalName: Description
                 purify: html
-                notify: true
             comment: Any extra information about this finding source
 
     actAs:

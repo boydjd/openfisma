@@ -1,13 +1,13 @@
 SystemDocument:
-    listeners: [IndexListener, NotificationListener]
-    
-    indexes: 
+    listeners: [IndexListener]
+
+    indexes:
         uniqueTypePerSystem:
             fields:
                  systemId: []
                  documentTypeId: []
             type: unique
-    
+
     columns:
         description:
             type: string

@@ -294,10 +294,11 @@ class Fisma_Migration_Helper
      * @param $table
      * @param array $columns Array of column definitions with key = column name and value = column definition.
      */
-    public function addColumns($table, $columns)
+    public function addColumns($table, $columns, $after = null)
     {
         foreach ($columns as $columnName => $columnDefinition) {
-            $this->addColumn($table, $columnName, $columnDefinition);
+            $this->addColumn($table, $columnName, $columnDefinition, $after);
+            $after = $columnName;
         }
     }
 

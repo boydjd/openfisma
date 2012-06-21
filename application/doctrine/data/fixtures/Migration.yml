@@ -103,3 +103,8 @@ Migration:
         minorVersion: 18
         tagNumber: 0
         name: AddDefaultPocToOrganization
+    021800_migrate_user_notifications:
+        majorVersion: 2
+        minorVersion: 18
+        tagNumber: 0
+        name: MigrateEvents

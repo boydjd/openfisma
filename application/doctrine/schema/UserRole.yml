@@ -21,7 +21,7 @@ UserRole:
         Organizations:
             class: Organization
             refClass: UserRoleOrganization
-            local: userRoleId 
+            local: userRoleId
             foreign: organizationId
     indexes:
         userRoleIndex:

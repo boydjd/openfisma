@@ -314,36 +314,27 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     }
 
     /**
-     * A post-insert hook to send notifications
+     * A pre-save hook to send notifications
      *
-     * @param Doctrine_Event $event The triggered doctrine event
+     * @param Doctrine_Event event The triggered doctrine event
      * @return void
      */
-    public function postInsert($event)
+    public function preSave($event)
     {
-        // This model can generate events for organization objects AND system objects
-        if ('system' != $this->OrganizationType->nickname) {
-            $eventName = 'ORGANIZATION_CREATED';
-        } else {
-            $eventName = 'SYSTEM_CREATED';
-        }
-
-        Notification::notify($eventName, $this, CurrentUser::getInstance());
-    }
-
-    /**
-     * A post-update hook to send notifications
-     *
-     * @param Doctrine_Event $event The triggered doctrine event
-     * @return void
-     */
-    public function postUpdate($event)
-    {
-        // The system model will handle update events on its own, but we need to filter them out here
-        // in case the system model somehow triggers a save() on its related organization object
-        if ('system' != $this->OrganizationType->nickname) {
-            $eventName = 'ORGANIZATION_UPDATED';
-            Notification::notify($eventName, $this, CurrentUser::getInstance());
+        $modifyValues = $this->getModified(true);
+        if (!empty($modifyValues)) {
+            foreach ($modifyValues as $key => $value) {
+                $newValue = $this->$key;
+                if ($key === 'pocId') {
+                    Notification::notify(
+                        'USER_POC',
+                        $this,
+                        CurrentUser::getInstance(),
+                        array('userId' => $newValue)
+                    );
+                    break;
+                }
+            }
         }
     }
 
@@ -356,12 +347,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
     public function postDelete($event)
     {
         // This model can generate events for organization objects AND system objects
-        if ('system' != $this->OrganizationType->nickname) {
-            $eventName = 'ORGANIZATION_DELETED';
-        } else {
-            $eventName = 'SYSTEM_DELETED';
-        }
-
+        $eventName = 'ORGANIZATION_DELETED';
         Notification::notify($eventName, $this, CurrentUser::getInstance());
     }
 

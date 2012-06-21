@@ -62,7 +62,7 @@ ul li {
 ol li {
     display: list-item;
     list-style: decimal outside;
-    margin-left: 35px;
+   margin-left: 35px;
     text-align: left;
 }
 
@@ -93,21 +93,11 @@ body {
 }
 
 /* The logo is floated to the left */
-div#logo {
-    float: left;
-    margin-bottom: 10px;
-}
-
-/* The logout form is floated to the right and
-   moved down a bit from the corner. */
-div#logout {
-    float: right;
-    text-align: right;
-    margin-top: 10px;
-}
-
-div#logout p {
-    margin-top: 8px;
+div#mainmenu span.logo {
+    padding-left: 24px;
+    background-image: url('/images/logo_notext.png');
+    background-size:contain;
+    background-repeat:no-repeat;
 }
 
 /* Styling for the menubar. The min-height reserves the space required for the menubar while it loads. */
@@ -116,6 +106,32 @@ div#menubar {
     font-weight: bold;
     min-height: 25px;
     background-color: #d3d3d3;
+}
+
+a[target=_blank] {
+    padding-right: 36px;
+    background-image: url('/images/external_link.png');
+    background-size: 12px 12px;
+    background-repeat:no-repeat;
+    background-position:97% center;
+}
+
+.notification {
+    background: darkred;
+}
+.notification a {
+    color: white !important;
+    padding-right: 10px !important;
+}
+.notification a.yuimenubaritemlabel-selected {
+    color: darkred !important;
+}
+
+div#mainmenu span.currentUser {
+    padding-left: 24px;
+    background-image: url('/images/user-info.png');
+    background-size:contain;
+    background-repeat:no-repeat;
 }
 
 div#tab1 td {
@@ -201,15 +217,15 @@ div.column33 {
     width: 33%;
 }
 
-div.left {
+.left {
     float: left;
 }
 
-div.right {
+.right {
     float: right;
 }
 
-div.clear {
+.clear {
     clear: both;
 }
 
@@ -237,9 +253,6 @@ div#footerLinks {
 
 /* This table is used to display key-value pairs, such as on the remediation
    detail page. */
-table.keyValues tr:nth-child(even) {
-	/*background-color: #eef5fe;*/
-}
 table.keyValues {
     margin-bottom: 0px;
 }
@@ -247,11 +260,11 @@ table.keyValues td {
     padding: 5px;
     vertical-align: middle;
 }
-
 /* The first column in a keyValues table is bold text */
 table.keyValues td:first-child {
     font-weight: bold;
     text-align: right;
+    vertical-align: top;
 }
 
 table.keyValues th {

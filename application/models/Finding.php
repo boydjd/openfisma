@@ -28,26 +28,6 @@
 class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependency
 {
     /**
-     * Notification type with each keys. The ECD logic is a little more complicated so it is handled separately.
-     * Threat & countermeasures are also handled separately.
-     *
-     * @var array
-     */
-    private static $_notificationKeys = array(
-        'mitigationStrategy'        => 'UPDATE_COURSE_OF_ACTION',
-        'securityControlId'         => 'UPDATE_SECURITY_CONTROL',
-        'responsibleOrganizationId' => 'UPDATE_RESPONSIBLE_SYSTEM',
-        'countermeasures'           => 'UPDATE_COUNTERMEASURES',
-        'threat'                    => 'UPDATE_THREAT',
-        'resourcesRequired'         => 'UPDATE_RESOURCES_REQUIRED',
-        'description'               => 'UPDATE_DESCRIPTION',
-        'recommendation'            => 'UPDATE_RECOMMENDATION',
-        'type'                      => 'UPDATE_MITIGATION_TYPE',
-        'legacyFindingKey'          => 'UPDATE_LEGACY_FINDING_KEY',
-        'sourceId'                  => 'UPDATE_FINDING_SOURCE'
-    );
-
-    /**
      * Threshold of overdue for various status
      *
      * @var array
@@ -480,26 +460,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                                 $this,
                                 CurrentUser::getInstance()
                             );
-                        } elseif ('EN' == $value && 'DRAFT' == $newValue) {
-                            Notification::notify(
-                                'MITIGATION_REVISE',
-                                $this,
-                                CurrentUser::getInstance()
-                            );
-                        } elseif ('EA' == $newValue) {
-                            Notification::notify(
-                                'EVIDENCE_UPLOADED',
-                                $this,
-                                CurrentUser::getInstance()
-                            );
-                        } elseif ( ('EA' == $value && 'EN' == $newValue)
-                             || ('MSA' == $value && 'DRAFT' == $newValue) ) {
-                            Notification::notify(
-                                'APPROVAL_DENIED',
-                                $this,
-                                CurrentUser::getInstance()
-                            );
-                        } elseif ('EA' == $value && 'CLOSED' == $newValue) {
+                        } elseif ('CLOSED' == $newValue) {
                             Notification::notify(
                                 'FINDING_CLOSED',
                                 $this,
@@ -522,20 +483,13 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                             );
                         }
                         break;
-                    case 'currentEcd':
-                        if ($this->ecdLocked && '' == trim($this->ecdChangeDescription)) {
-                            $error = 'The ECD was previously approved and cannot be changed without'
-                                   . ' providing a justification.';
-                            throw new Fisma_Zend_Exception_User($error);
-                        }
-                        if ($this->ecdLocked) {
-                            CurrentUser::getInstance()->acl()->requirePrivilegeForObject('update_ecd', $this);
-                            Notification::notify(
-                                'UPDATE_ECD',
-                                $this,
-                                CurrentUser::getInstance()
-                            );
-                        }
+                    case 'pocId':
+                        Notification::notify(
+                            'USER_POC',
+                            $this,
+                            CurrentUser::getInstance(),
+                            array('userId' => $newValue)
+                        );
                         break;
                     default:
                         break;
@@ -584,15 +538,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                                 . implode(", ", $updateStatus));
                         }
                     }
-                }
-
-                // Check whether this field generates any notification events
-                if (array_key_exists($key, self::$_notificationKeys)) {
-                    $type = self::$_notificationKeys[$key];
-                }
-
-                if (isset($type)) {
-                    Notification::notify($type, $this, CurrentUser::getInstance());
                 }
             }
         }

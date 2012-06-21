@@ -443,25 +443,4 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         // export as array, the context switch will translate it to a JSON responce
         $this->view->chart = $thisChart->export('array');
     }
-
-    /**
-     * Delete user's notification.
-     *
-     * @return void
-     */
-    public function dismissAction()
-    {
-        $id = $this->getRequest()->getParam('id');
-
-        $user = Doctrine::getTable('User')->find($id);
-        if (empty($user)) {
-            throw new Fisma_Zend_Exception('Invalid user ID');
-        }
-
-        $user->Notifications->delete();
-        $user->mostRecentNotifyTs = Fisma::now();
-        $user->save();
-
-        $this->_redirect("/index/index");
-    }
 }

@@ -1,40 +1,11 @@
-<div id="logo">
-    <a href="/"><img id="logoImg" alt="Logo" src="/images/logo.png"></a>
-</div>
-
-<div id="logout">
-    <?php
-    $logoutButton = new Fisma_Yui_Form_Button_Link(
-        'logoutButton',
-        array(
-            'value' => 'Log Out',
-            'imageSrc' => '/images/logout.png',
-            'href' => '/auth/logout'
-        )
-    );
-    echo $this->escape($logoutButton, 'none');
-    ?>
-    <p>
-        <b>
-            <?php
-                $user = CurrentUser::getInstance();
-
-                echo $this->escape($this->userInfo($user->displayName, $user->id), 'none');
-            ?>
-        </b>
-        is currently logged in
-    </p>
-</div>
-
-<div id="menubar"><!-- YUI renders the menubar into this div --></div>
+<div id="menubar"><!-- YUI renders the menubar here --></div>
 
 <script type="text/javascript">
 YAHOO.util.Event.onDOMReady(function () {
     //Constructs the YUI menu bar for OpenFISMA
-    var jsonMenuData = '<?php
+    var menuData = <?php
         echo $this->escape(Fisma_Menu::getMainMenu(CurrentUser::getInstance())->getMenus(), 'json')
-    ?>';
-    var menuData = YAHOO.lang.JSON.parse(jsonMenuData);
+    ?>;
     for (var i in menuData) {
         Fisma.Menu.resolveOnClickObjects(menuData[i]);
     }
@@ -52,6 +23,12 @@ YAHOO.util.Event.onDOMReady(function () {
 
     menuBar.addItems(menuData);
     menuBar.render('menubar');
+
+    $('div#mainmenu > div > ul > li:last-child').addClass('right');
+    <?php if (CurrentUser::getAttribute('Notifications')->count() > 0): ?>
+        $('div#mainmenu > div > ul > li:last-child').addClass('notification');
+        $('div#mainmenu > div > ul > li:nth-last-child(2)').addClass('right');
+    <?php endif; ?>
 });
 </script>
 

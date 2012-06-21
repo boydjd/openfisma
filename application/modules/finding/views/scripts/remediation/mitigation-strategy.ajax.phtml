@@ -138,7 +138,7 @@ foreach ($array as $row) {
 
 $warning = "WARNING: You are about to submit mitigation strategy. This action cannot be undone. "
            . 'Please click "YES" to confirm your action or click "No" to stop.';
-$args = array(null, '/finding/remediation/msa/do/submitmitigation' . $fromSearchUrl . '/id/', $finding->id);
+$args = array(null, '/finding/remediation/msa/do/submitmitigation' . $fromSearchUrl, $finding->id);
 
 if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
     $submitMitigationButton = new Fisma_Yui_Form_Button(

@@ -58,7 +58,7 @@ class AuthController extends Zend_Controller_Action
      * be performed against the database or LDAP provider, according to the application's
      * configuration. Also, it enforces the security policies set by the
      * application.
-     * 
+     *
      * @GETAllowed
      *
      * @return void
@@ -115,7 +115,8 @@ class AuthController extends Zend_Controller_Action
             // Generate log entries and notifications
             if (!$authResult->isValid()) {
                 $user->getAuditLog()->write("Failed login ({$_SERVER['REMOTE_ADDR']})");
-                Notification::notify('LOGIN_FAILURE', $user, $user);
+                Notification::notify('ACCOUNT_LOGIN_FAILURE', $user, $user);
+                Notification::notify('USER_LOGIN_FAILURE', $user, $user, array('userId' => $user->id));
                 throw new Zend_Auth_Exception(self::CREDENTIAL_ERROR_MESSAGE);
             }
 
@@ -125,7 +126,8 @@ class AuthController extends Zend_Controller_Action
             }
 
             $user->login();
-            Notification::notify('LOGIN_SUCCESS', $user, $user);
+            Notification::notify('ACCOUNT_LOGIN_SUCCESS', $user, $user);
+            Notification::notify('USER_LOGIN_SUCCESS', $user, $user, array('userId' => $user->id));
             $user->getAuditLog()->write("Logged in ({$_SERVER['REMOTE_ADDR']})");
 
             // Register rulesOfBehavior forced action so that user can't view other pages
@@ -213,7 +215,7 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Returns a suitable authentication adapter based on system configuration and current user
-     * 
+     *
      * @GETAllowed
      * @param User $user Authentication adapters may be different for different users
      * @param string $password The corresponding password of the specified user
@@ -248,7 +250,7 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Close out the current user's session
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -258,7 +260,6 @@ class AuthController extends Zend_Controller_Action
 
         if ($currentUser) {
             $currentUser->getAuditLog()->write('Logged out');
-            Notification::notify('LOGOUT', $currentUser, $currentUser);
         }
 
         $auth = Zend_Auth::getInstance();
@@ -270,7 +271,7 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Display the system's privacy policy.
-     * 
+     *
      * @GETAllowed
      * @return void
      * @todo the business logic is stored in the view instead of the controller
@@ -281,7 +282,7 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Display the system's Rules Of Behavior.
-     * 
+     *
      * @GETAllowed
      * @return void
      * @todo the business logic is stored in the view instead of the controller

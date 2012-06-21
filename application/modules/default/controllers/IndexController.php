@@ -28,6 +28,18 @@
 class IndexController extends Fisma_Zend_Controller_Action_Security
 {
     /**
+     * Set ajaxContect on analystAction and chartsAction
+     */
+    public function init()
+    {
+        $this->_helper->ajaxContext()
+            ->addActionContext('notification', 'html')
+            ->addActionContext('dismiss', 'json')
+            ->initContext();
+        parent::init();
+    }
+
+    /**
      * The default action - show the home page
      *
      * @GETAllowed
@@ -49,6 +61,43 @@ class IndexController extends Fisma_Zend_Controller_Action_Security
                 . ' administrator to correct your account privileges.'
             );
         }
+    }
 
+    /**
+     * @GETAllowed
+     */
+    public function notificationAction()
+    {
+        if ($this->_me->Notifications->count() > 0) {
+            $this->view->notifications = $this->_me->Notifications;
+            $this->view->submitUrl = "javascript:Fisma.Util.formPostAction('', '/index/dismiss/', "
+                                     . $this->_me->id . ')';
+        }
+    }
+
+    /**
+     * Delete user's notification.
+     *
+     * @return void
+     */
+    public function dismissAction()
+    {
+        $format = $this->getRequest()->getParam('format');
+        if ($format == 'json') {
+            $jsonResponse = new Fisma_AsyncResponse;
+        }
+        try {
+            $user = CurrentUser::getInstance();
+
+            $user->Notifications->delete();
+            $user->mostRecentNotifyTs = Fisma::now();
+            $user->save();
+
+            if ($jsonResponse) {
+                $jsonResponse->succeed();
+            }
+        } catch (Exception $e) {
+            $jsonResponse->fail($e->getMessage());
+        }
     }
 }

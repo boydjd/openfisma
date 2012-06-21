@@ -1,28 +1,25 @@
 Role:
-    listeners: [IndexListener, NotificationListener]
-    
+    listeners: [IndexListener]
+
     columns:
         createdTs: timestamp
         modifiedTs: timestamp
-        
-        name: 
+
+        name:
             type: string(255)
             extra:
                 logicalName: Role Name
-                notify: true
-        nickname: 
+        nickname:
             type: string(255)
             unique: true
             extra:
                 logicalName: Role Nickname
-                notify: true      
             unique: true;
-        description: 
+        description:
             type: string
             extra:
                 logicalName: Description
                 purify: html
-                notify: true
             comment: Any extra information about this role, such as security clearances required to hold it, etc.
 
     relations:
@@ -32,7 +29,7 @@ Role:
             local: roleId
             foreign: userId
             refClass: UserRole
-        
+
         # Privileges is a many-to-many relation
         Privileges:
             class: Privilege

@@ -1,0 +1,33 @@
+<?php
+if (isset($this->notifications)) {
+?>
+    <form id='dismissNotificationForm'><div class="panel clear">
+        <p><em>Notifications</em></p>
+        <p>
+            You have new notifications that you have not received in e-mail yet.
+            Click <a href="#" onclick='return Fisma.User.dismissNotifications();'>here</a>
+            to dismiss these notifications.
+        </p>
+        <div style='overflow:auto;max-height:300px;display:inline-block'>
+        <ol>
+            <?php
+            foreach ($this->notifications as $notification) {
+            ?>
+                <li>
+                <?php if ($url = $notification['url']): ?>
+                    <a href='<?php echo $this->escape($url); ?>'>
+                <?php endif; ?>
+                    <?php echo $this->escape($notification['eventText']); ?>
+                    at
+                    <?php echo $this->escape($notification['createdTs']); ?>
+                <?php if ($url): ?></a><?php endif; ?>
+                </li>
+            <?php
+            }
+            ?>
+        </ol>
+        </div>
+    </div></form>
+<?php
+}
+?>

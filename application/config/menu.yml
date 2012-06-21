@@ -27,6 +27,34 @@
 #
 ########################################################################################################################
 
+Home:
+    label: <span class=logo>$systemName</span>
+    link: /
+    submenu:
+        Home:
+            label: Home
+            link: /
+        Privacy:
+            label: Privacy Policies
+            link: /auth/privacy/
+        ROB:
+            label: Rules of Behavior
+            link: /auth/rob/
+        Separator:
+            label: Separator
+        About:
+            label: About OpenFISMA
+            link: http://openfisma.org/
+            target: _blank
+        Contact:
+            label: Contact Administrator
+            link: $mailToAdmin
+            target: _blank
+        Manual:
+            label: Online Help
+            link: http://manual.openfisma.org/
+            target: _blank
+
 Finding:
     label: Findings
     privilege:
@@ -51,7 +79,7 @@ Finding:
         Separator1:
             label: Separator
             condition: >
-                if ($acl->hasPrivilegeForClass('read', 'Finding') and ($acl->hasPrivilegeForClass('create', 'Finding') || $acl->hasPrivilegeForClass('inject', 'Finding'))) return true;
+                return ($acl->hasPrivilegeForClass('read', 'Finding') and ($acl->hasPrivilegeForClass('create', 'Finding') || $acl->hasPrivilegeForClass('inject', 'Finding')));
         Create:
             label: Create New Finding
             link: /finding/remediation/create
@@ -335,7 +363,7 @@ Administration:
         LDAP:
             label: LDAP
             link: /config/list-ldap
-            condition: if ('ldap' == Fisma::configuration()->getConfig('auth_type')) return true;
+            condition: return ('ldap' == Fisma::configuration()->getConfig('auth_type'));
         Modules:
             label: Modules
             link: /config/modules
@@ -365,46 +393,51 @@ Administration:
                 func: hasPrivilegeForClass
                 param1: read
                 param2: User
-
+        Separator1:
+            label: Separator
+        Debug:
+            label: Diagnostics
+            submenu:
+                SystemCache:
+                    label: APC System Cache
+                    link: /debug/apc-cache/type/system
+                UserCache:
+                    label: APC User Cache
+                    link: /debug/apc-cache/type/user
+                ErrorLog:
+                    label: Error log
+                    link: /debug/errorlog
+                PHPInfo:
+                    label: PHP Info
+                    link: /debug/phpinfo
+                PHPlog:
+                    label: PHP Log
+                    link: /debug/phplog
 UserPreferences:
-    label: User Preferences
+    label: <span class=currentUser>$currentUser</span>
     submenu:
         ChangePassword:
             label: Change Password
             link: /user/password
-            condition: if ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username) return TRUE;
+            condition: return ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username);
         Notifications:
             label: E-mail Notifications
             link: /user/notification
-        Online:
-            label: Online Help
-            link: http://manual.openfisma.org
-            target: _blank
         Profile:
-            label: Profile
+            label: My Profile
             link: /user/profile
         Whatsnew:
             label: What\u2019s New
             link: ""
             onClick: Fisma.Util.showWhatsNewDialog
             condition: return Fisma_WhatsNew::checkContents();
-
-Debug:
-    label: Debug
-    condition: if (Fisma::debug()) return TRUE;
-    submenu:
-        SystemCache:
-            label: APC System Cache
-            link: /debug/apc-cache/type/system
-        UserCache:
-            label: APC User Cache
-            link: /debug/apc-cache/type/user
-        ErrorLog:
-            label: Error log
-            link: /debug/errorlog
-        PHPInfo:
-            label: PHP Info
-            link: /debug/phpinfo
-        PHPlog:
-            label: PHP Log
-            link: /debug/phplog
+        Separator:
+            label: Separator
+        Logout:
+            label: Log Out
+            link: /auth/logout
+Notifications:
+    label: $notificationCount
+    link: ""
+    onClick: Fisma.User.showNotifications
+    condition: return (CurrentUser::getAttribute('Notifications')->count() > 0);

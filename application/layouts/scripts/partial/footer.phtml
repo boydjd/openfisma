@@ -1,15 +1,8 @@
-<?php
-    $mailurl = 'mailto:' . Fisma::configuration()->getConfig('contact_email')
-             . '?Subject='. $this->escape(Fisma::configuration()->getConfig('contact_subject'), 'url');
-    $versions = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('versions');
-?>
-<div id="footerLinks">
-    <a href="<?php echo $this->escape($mailurl)?>">Contact Administrator</a>&nbsp;|&nbsp;
-    <a href="http://manual.openfisma.org" target='_blank'>Online Help</a>&nbsp;|&nbsp;
-    <a href="/auth/rob/">Rules of Behavior</a>&nbsp;|&nbsp;
-    <a href="/auth/privacy/">Privacy Policy</a>&nbsp;|&nbsp;
-    <i>Powered by <a href="http://www.openfisma.org" target='_blank'>OpenFISMA</a> 
-        <?php echo $this->escape($versions['application']); ?>  
-    </i>
-</div>
+<?php if ($version = CurrentUser::getInstance()->showWhatsNew()): ?>
+<script>
+    YAHOO.util.Event.onDOMReady(function() {
+        Fisma.Util.showWhatsNewDialog(<?php echo $this->escape("'" . $version . "'", 'none'); ?>);
+    });
+</script>
+<?php endif; ?>
 <div class="clear">

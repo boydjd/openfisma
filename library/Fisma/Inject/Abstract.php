@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -21,7 +21,7 @@
  *
  * This class (and it's subclasses) use the array key "finding" throughout.  However, this injection actually creates
  * vulnerabilities; we maintain the use of the term "finding" due to legacy code using this convention.
- * 
+ *
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
@@ -33,49 +33,49 @@ abstract class Fisma_Inject_Abstract
 {
     /**
      * The full xml file path to be used to the injection plugin
-     * 
+     *
      * @var string
      */
     protected $_file;
-    
+
     /**
      * The network id to be used for injection
-     * 
+     *
      * @var string
      */
     protected $_networkId;
-    
+
     /**
      * The organization id to be used for injection
-     * 
+     *
      * @var string
      */
     protected $_orgSystemId;
 
     /**
-     * The finding source id to be used for injected 
-     * 
+     * The finding source id to be used for injected
+     *
      * @var string
      */
     protected $_findingSourceId;
-    
+
     /**
      * The summary counts array
-     * 
+     *
      * @var array
      */
     private $_totals = array('reopened' => 0, 'created' => 0, 'deleted' => 0, 'reviewed' => 0);
 
     /**
-     * collection of findings to be created 
-     * 
+     * collection of findings to be created
+     *
      * @var array
      */
     private $_findings = array();
 
     /**
      * collection of duplicates to be logged
-     * 
+     *
      * @var array
      */
     private $_duplicates = array();
@@ -88,29 +88,29 @@ abstract class Fisma_Inject_Abstract
     protected $_uploadId;
 
     /**
-     * Collection of messages 
-     * 
+     * Collection of messages
+     *
      * @var array
      */
 
     protected $_messages = array();
 
     /**
-     * Number of items imported 
-     * 
-     * @var int 
+     * Number of items imported
+     *
+     * @var int
      */
     protected $_numImported = 0;
 
     /**
      * Number of items suppressed
-     * 
-     * @var int 
+     *
+     * @var int
      */
     protected $_numSuppressed = 0;
 
-    /** 
-     * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and 
+    /**
+     * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and
      * then _commit() to commit to database.
      *
      * This method wraps the protected override _parse()
@@ -126,8 +126,8 @@ abstract class Fisma_Inject_Abstract
         return $this->_parse($uploadId);
     }
 
-    /** 
-     * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and 
+    /**
+     * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and
      * then _commit() to commit to database.
      *
      * Throws an exception if the file is an invalid format.
@@ -139,12 +139,12 @@ abstract class Fisma_Inject_Abstract
 
     /**
      * Create and initialize a new plug-in instance for the specified file
-     * 
+     *
      * @param string $file The specified xml file path
      * @param string $networkId The specified network id
      * @param string $orgSystemId The specified organization id
      */
-    public function __construct($file, $networkId, $orgSystemId) 
+    public function __construct($file, $networkId, $orgSystemId)
     {
         $this->_file        = $file;
         $this->_networkId   = $networkId;
@@ -156,21 +156,21 @@ abstract class Fisma_Inject_Abstract
      * this plug-in.
      *
      * Example: echo "Created {$plugin->created} findings";
-     * 
+     *
      * @param string $field The specified summary counts key
      * @return int The summary count value of the specified key
      */
-    public function __get($field) 
+    public function __get($field)
     {
         return (!empty($this->_totals[$field])) ? $this->_totals[$field] : 0;
     }
 
     /**
-     * Save data to instance 
-     * 
-     * @param array $findingData 
-     * @param array $assetData 
-     * @param array $productData 
+     * Save data to instance
+     *
+     * @param array $findingData
+     * @param array $assetData
+     * @param array $productData
      */
     protected function _save($findingData, $assetData = NULL, $productData = NULL)
     {
@@ -181,6 +181,7 @@ abstract class Fisma_Inject_Abstract
         // Add data to provided assetData
         if (!empty($assetData)) {
             $assetData['networkId'] = $this->_networkId;
+            $assetData['orgSystemId'] = $this->_orgSystemId;
             $assetData['id'] = $this->_prepareAsset($assetData);
             $findingData['assetId'] = $assetData['id'];
         }
@@ -232,11 +233,11 @@ abstract class Fisma_Inject_Abstract
     }
 
     /**
-     * Commit all data that has been saved 
+     * Commit all data that has been saved
      *
      * Subclasses should call this function to commit findings rather than committing new findings directly.
      */
-    protected function _commit() 
+    protected function _commit()
     {
         Doctrine_Manager::connection()->beginTransaction();
 
@@ -278,7 +279,7 @@ abstract class Fisma_Inject_Abstract
                     $vuln->status = 'OPEN';
                     $vuln->save();
                 } else {
-                    if (!isset($this->_totals['suppressed'])) { 
+                    if (!isset($this->_totals['suppressed'])) {
                         $this->_totals['suppressed'] = 0;
                     }
                     $this->_totals['suppressed']++;
@@ -301,11 +302,11 @@ abstract class Fisma_Inject_Abstract
             $createdWord    = $this->created > 1 ? ' vulnerabilities were' : ' vulnerability was';
             $reopenedWord   = $this->reopened > 1 ? ' vulnerabilities were' : ' vulnerability was';
             $suppressedWord = $this->suppressed > 1 ? ' vulnerabilities were' : ' vulnerability was';
-            
-            $message = 'Your scan report was successfully uploaded.<br>'                  
+
+            $message = 'Your scan report was successfully uploaded.<br>'
                 . $this->created . $createdWord . ' created.<br>'
-                . $this->reopened . $reopenedWord . ' reopened.<br>'               
-                . $this->suppressed . $suppressedWord . ' suppressed.';    
+                . $this->reopened . $reopenedWord . ' reopened.<br>'
+                . $this->suppressed . $suppressedWord . ' suppressed.';
 
            $this->_setMessage(array('notice' => $message));
 
@@ -317,7 +318,7 @@ abstract class Fisma_Inject_Abstract
 
     /**
      * Get a duplicate of the specified finding
-     * 
+     *
      * @param $finding A finding to check for duplicates
      * @return bool|Vulnerability Return a duplicate finding or FALSE if none exists
      */
@@ -334,7 +335,7 @@ abstract class Fisma_Inject_Abstract
          */
         $xssListener = new XssListener();
         $cleanDescription = $xssListener->getPurifier()->purify($finding->description);
-        
+
         $duplicateFindings = Doctrine_Query::create()
             ->select('v.id, v.status')
             ->from('Vulnerability v')
@@ -344,12 +345,12 @@ abstract class Fisma_Inject_Abstract
 
         return $duplicateFindings->count() > 0 ? $duplicateFindings[0] : FALSE;
     }
-    
+
     /**
-     * Get the existing asset id if it exists 
-     * 
-     * @param mixed $passetData 
-     * @return int|boolean 
+     * Get the existing asset id if it exists
+     *
+     * @param mixed $passetData
+     * @return int|boolean
      */
     private function _prepareAsset($assetData)
     {
@@ -389,7 +390,7 @@ abstract class Fisma_Inject_Abstract
      * Save the asset
      *
      * @param array $assetData The asset data to save
-     * @return int id of saved asset 
+     * @return int id of saved asset
      */
     private function _saveAsset($assetData)
     {
@@ -397,10 +398,10 @@ abstract class Fisma_Inject_Abstract
 
         $asset->merge($assetData);
         $asset->save();
-        
+
         $id = $asset->id;
 
-        // Check to see if any of the pending assets are duplicates, if so, update the finding to point to the correct 
+        // Check to see if any of the pending assets are duplicates, if so, update the finding to point to the correct
         // asset id
         foreach ($this->_findings as &$findingData) {
             if (empty($findingData['finding']->Asset) && $findingData['asset'] == $assetData) {
@@ -416,9 +417,9 @@ abstract class Fisma_Inject_Abstract
 
     /**
      * Get the existing product id if it exists_
-     * 
-     * @param array $productData 
-     * @return int|boolean 
+     *
+     * @param array $productData
+     * @return int|boolean
      */
     private function _prepareProduct($productData)
     {
@@ -437,7 +438,7 @@ abstract class Fisma_Inject_Abstract
             } else {
                 $productRecordQuery->andWhere('p.name = ?', $productData['name']);
             }
-            
+
             if (empty($productData['vendor'])) {
                 $productRecordQuery->andWhere('p.vendor IS NULL');
             } else {
@@ -455,7 +456,7 @@ abstract class Fisma_Inject_Abstract
 
         return ($productRecord) ? $productRecord[0][0] : FALSE;
     }
-    
+
     /**
      * Save product and update asset's product
      *
@@ -485,9 +486,9 @@ abstract class Fisma_Inject_Abstract
     }
 
     /**
-     * Return array of messages. 
-     * 
-     * @return array 
+     * Return array of messages.
+     *
+     * @return array
      */
     public function getMessages()
     {
@@ -496,8 +497,8 @@ abstract class Fisma_Inject_Abstract
 
     /**
      * Add a new message
-     * 
-     * @param string $err 
+     *
+     * @param string $err
      * @return void
      */
     protected function _setMessage($msg)

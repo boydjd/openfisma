@@ -197,7 +197,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
                     $userRoles->save();
                 }
-
+                Notification::notify('ORGANIZATION_CREATED', $organization, CurrentUser::getInstance());
             } else {
                 $organization = $subject;
 
@@ -218,6 +218,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                     }
                 }
                 $organization->save();
+                Notification::notify('ORGANIZATION_UPDATED', $subject, CurrentUser::getInstance());
             }
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
@@ -387,6 +388,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                         }
                     }
 
+                    Notification::notify('ORGANIZATION_UPDATED', $organization, CurrentUser::getInstance());
                 } catch (Doctrine_Exception $e) {
                     $msg  = "Error while trying to save: ";
                     $msg .= $e->getMessage();

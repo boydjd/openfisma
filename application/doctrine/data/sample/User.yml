@@ -8,6 +8,25 @@ User:
         phoneOffice: (202) 555-7261
         hashType: sha1
         ReportingOrganization: RNI_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     sample_1:
         username: sample1
         password: Sample1
@@ -17,6 +36,25 @@ User:
         phoneOffice: (202) 555-7261
         hashType: sha1
         ReportingOrganization: RNI_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     sample_5:
         username: sample5
         password: Sample1
@@ -26,6 +64,25 @@ User:
         phoneOffice: (202) 555-7261
         hashType: sha1
         ReportingOrganization: RNI_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     mike_green:
         username: mike.green
         password: Sample1
@@ -34,6 +91,25 @@ User:
         nameLast: Green
         phoneOffice: (202) 555-9271
         ReportingOrganization: MIDWEST_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     alexander_ovechkin:
         username: alex.ovechkin
         password: Sample1
@@ -42,6 +118,25 @@ User:
         nameLast: Ovechkin
         phoneOffice: (202) 555-9627
         ReportingOrganization: NORTHEAST_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     alexander_semin:
         username: alexander.semin
         password: Sample1
@@ -50,6 +145,25 @@ User:
         nameLast: Semin
         phoneOffice: (301) 555-1462
         ReportingOrganization: SOUTHEAST_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     mike_knuble:
         username: mike.knuble
         password: Sample1
@@ -58,6 +172,25 @@ User:
         nameLast: Knuble
         phoneOffice: (571) 555-5821
         ReportingOrganization: WEST_COAST_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     nicklas_backstrom:
         username: nicklas.backstrom
         password: Sample1
@@ -66,6 +199,25 @@ User:
         nameLast: Bäckström
         phoneOffice: (301) 555-7751
         ReportingOrganization: OCIO_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     michael_neuvirth:
         username: michael.neuvirth
         password: Sample1
@@ -74,6 +226,25 @@ User:
         nameLast: Neuvirth
         phoneOffice: (571) 555-8129
         ReportingOrganization: OCOO_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     bruce_boudreau:
         username: bruce.boudreau
         password: Sample1
@@ -82,6 +253,25 @@ User:
         nameLast: Boudreau
         phoneOffice: (571) 555-8130
         ReportingOrganization: OIG_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     george_mcphee:
         username: george.mcphee
         password: Sample1
@@ -90,6 +280,25 @@ User:
         nameLast: McPhee
         phoneOffice: (571) 555-8231
         ReportingOrganization: ARP_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     semyon_varlamov:
         username: semyon.varlamov
         password: Sample1
@@ -98,6 +307,25 @@ User:
         nameLast: Varlamov
         phoneOffice: (571) 555-8132
         ReportingOrganization: PRINT_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     braden_holtby:
         username: braden.holtby
         password: Sample1
@@ -106,6 +334,25 @@ User:
         nameLast: Holtby
         phoneOffice: (571) 555-8233
         ReportingOrganization: HIWAY_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     john_erskine:
         username: john.erskine
         password: Sample1
@@ -114,6 +361,25 @@ User:
         nameLast: Erskine
         phoneOffice: (571) 555-8134
         ReportingOrganization: RAIL_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     matt_hendricks:
         username: matt.hendricks
         password: Sample1
@@ -122,6 +388,25 @@ User:
         nameLast: Hendricks
         phoneOffice: (571) 555-8235
         ReportingOrganization: MARITIME_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     matt_bradley:
         username: matt.bradley
         password: Sample1
@@ -130,6 +415,25 @@ User:
         nameLast: Bradley
         phoneOffice: (571) 555-8136
         ReportingOrganization: OS_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     john_carlson:
         username: john.carlson
         password: Sample1
@@ -138,6 +442,25 @@ User:
         nameLast: Carlson
         phoneOffice: (571) 555-8237
         ReportingOrganization: OCIO_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     jeff_schultz:
         username: jeff.schultz
         password: Sample1
@@ -146,6 +469,25 @@ User:
         nameLast: Schultz
         phoneOffice: (571) 555-8138
         ReportingOrganization: OCIO_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     karl_alzner:
         username: karl.alzner
         password: Sample1
@@ -154,6 +496,25 @@ User:
         nameLast: Alzner
         phoneOffice: (571) 555-8239
         ReportingOrganization: OCOO_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     jason_chimera:
         username: jason.chimera
         password: Sample1
@@ -162,6 +523,25 @@ User:
         nameLast: Chimera
         phoneOffice: (571) 555-8401
         ReportingOrganization: OCOO_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     boyd_gordon:
         username: boyd.gordon
         password: Sample1
@@ -170,6 +550,25 @@ User:
         nameLast: Gordon
         phoneOffice: (571) 555-8502
         ReportingOrganization: NRL_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     marcus_johansson:
         username: marcus.johansson
         password: Sample1
@@ -178,6 +577,25 @@ User:
         nameLast: Johansson
         phoneOffice: (571) 555-8403
         ReportingOrganization: ARP_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     mathieu_perreault:
         username: mathieu.perreault
         password: Sample1
@@ -186,6 +604,25 @@ User:
         nameLast: Perreault
         phoneOffice: (571) 555-8504
         ReportingOrganization: RNI_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     brooks_laich:
         username: brooks.laich
         password: Sample1
@@ -194,6 +631,25 @@ User:
         nameLast: Laich
         phoneOffice: (571) 555-8405
         ReportingOrganization: PRINT_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     marco_sturm:
         username: marco.sturm
         password: Sample1
@@ -202,6 +658,25 @@ User:
         nameLast: Sturm
         phoneOffice: (571) 555-8506
         ReportingOrganization: OIG_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     jason_chimera:
         username: jason.chimera
         password: Sample1
@@ -210,6 +685,25 @@ User:
         nameLast: Chimera
         phoneOffice: (571) 555-8407
         ReportingOrganization: NRL_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     dennis_wideman:
         username: dennis.wideman
         password: Sample1
@@ -218,6 +712,25 @@ User:
         nameLast: Wideman
         phoneOffice: (571) 555-8508
         ReportingOrganization: OCIO_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     tom_poti:
         username: tom.poti
         password: Sample1
@@ -226,6 +739,25 @@ User:
         nameLast: Poti
         phoneOffice: (571) 555-8409
         ReportingOrganization: HIWAY_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED
     sean_collins:
         username: sean.collins
         password: Sample1
@@ -234,3 +766,22 @@ User:
         nameLast: Collins
         phoneOffice: (571) 555-8510
         ReportingOrganization: MARITIME_ORG
+        Events:
+            - CONFIGURATION_UPDATED
+            - USER_CREATED
+            - USER_UPDATED
+            - ACCOUNT_LOCKED
+            - ACCOUNT_DISABLED
+            - USER_DELETED
+            - ORGANIZATION_CREATED
+            - ORGANIZATION_UPDATED
+            - ASSET_CREATED
+            - ASSET_UPDATED
+            - USER_LOCKED
+            - USER_DISABLED
+            - USER_LOGIN_FAILURE
+            - USER_POC
+            - VULNERABILITY_CREATED
+            - VULNERABILITY_DELETED
+            - FINDING_CREATED
+            - FINDING_DELETED

@@ -247,17 +247,6 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
     }
 
     /**
-     * A post-update hook to send notifications
-     *
-     * @param Doctrine_Event $event The triggered doctrine event
-     * @return void
-     */
-    public function postUpdate($event)
-    {
-        Notification::notify('SYSTEM_UPDATED', $this->Organization, CurrentUser::getInstance());
-    }
-
-    /**
      * Mutator for availability. Updates the FIPS 199 automatically.
      *
      * @param string $value The value of availability to set

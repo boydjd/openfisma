@@ -3,24 +3,24 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
- * 
+ *
  * @fileoverview Client-side code for various operations on user objects
- * 
+ *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
  */
- 
+
 Fisma.User = {
 
     /**
@@ -37,14 +37,14 @@ Fisma.User = {
 
     /**
      * A reference to a YUI table which contains comments for the current page
-     * 
+     *
      * This reference will be set when the page loads by the script which initializes the table
      */
     commentTable : null,
 
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
-     * 
+     *
      * @param comment An object containing the comment record values
      * @param yuiPanel A reference to the modal YUI dialog
      */
@@ -130,10 +130,10 @@ Fisma.User = {
 
         var PANEL_WIDTH = 350; // in pixels
         var panel = new YAHOO.widget.Panel(
-            YAHOO.util.Dom.generateId(), 
+            YAHOO.util.Dom.generateId(),
             {
-                width: PANEL_WIDTH + 'px', 
-                modal : false, 
+                width: PANEL_WIDTH + 'px',
+                modal : false,
                 close : true,
                 constraintoviewport : true
             }
@@ -147,7 +147,7 @@ Fisma.User = {
 
         // Load panel content using asynchronous request
         YAHOO.util.Connect.asyncRequest(
-            'GET', 
+            'GET',
             '/user/info/id/' + encodeURI(userId),
             {
                 success: function(o) {
@@ -166,7 +166,7 @@ Fisma.User = {
     },
 
     generatePassword : function () {
-        
+
         if (Fisma.User.generatePasswordBusy) {
             return true;
         }
@@ -206,7 +206,7 @@ Fisma.User = {
 
     /**
      * Configure the autocomplete that is used for lookint up an LDAP account
-     * 
+     *
      * @param autocomplete {YAHOO.widget.AutoComplete}
      * @param params {Array} The arguments passed to the autocomplete constructor
      */
@@ -289,5 +289,47 @@ Fisma.User = {
         });
 
         return;
+    },
+
+    /**
+     * Fisma.UrlPanel A placeholder for the notification panel object
+     */
+    notificationPanel: null,
+
+    /**
+     * Display the notification panel
+     */
+    showNotifications: function() {
+        Fisma.User.notificationPanel = Fisma.UrlPanel.showPanel(
+            'Notifications',
+            '/index/notification/format/html',
+            function() {
+
+            }
+        );
+        return false;
+    },
+
+    /**
+     * Dismiss notifications and update the UI
+     */
+    dismissNotifications: function() {
+        YAHOO.util.Connect.setForm('dismissNotificationForm');
+        YAHOO.util.Connect.asyncRequest(
+            'POST',
+            '/index/dismiss/format/json',
+            {
+                success: function(o) {
+                    Fisma.User.notificationPanel.destroy();
+                    $('.notification').remove();
+                },
+
+                failure: function(o) {
+                    //Fisma.User.notificationPanel
+                }
+            },
+            null
+        );
+        return false;
     }
 };

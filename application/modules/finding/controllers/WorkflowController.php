@@ -211,8 +211,9 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
 
                         $newStep->Event = new Event();
                         $newStep->Event->name = $step['nickname'];
-                        $newStep->Event->description = $step['name'];
+                        $newStep->Event->description = "a finding is awaiting " . $step['name'];
                         $newStep->Event->Privilege = $notificationPrivilege;
+                        $newStep->Event->category = 'evaluation';
                         $newStep->Event->urlPath = '/finding/remediation/view/id/';
 
                         $privilege = Doctrine_Query::create()
@@ -284,7 +285,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
                     $evaluation->setDaysUntilDue($step['due']);
 
                     $evaluation->Event->name = $step['nickname'];
-                    $evaluation->Event->description = $step['name'];
+                    $evaluation->Event->description = "a finding is awaiting " . $step['name'];
 
                     $evaluation->Privilege->description = $step['nickname'] . " Approval";
 
