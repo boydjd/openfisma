@@ -56,12 +56,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         parent::init();
         $this->_helper->contextSwitch()
                       ->addActionContext('tree-data', 'json')
+                      ->addActionContext('get-poc', 'json')
                       ->initContext();
         $this->_helper->ajaxContext()
                       ->addActionContext('convert-to-system-form', 'html')
-                      ->initContext();
-        $this->_helper->contextSwitch()
-                      ->addActionContext('get-poc', 'json')
+                      ->addActionContext('info', 'html')
                       ->initContext();
     }
 
@@ -779,10 +778,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      */
     public function infoAction()
     {
-        $this->_helper->layout->disableLayout();
-
         $id = $this->getRequest()->getParam('id');
-
         if ($id) {
             $organization = Doctrine::getTable('Organization')->find($id);
             if ($organization->OrganizationType->nickname === 'system') {

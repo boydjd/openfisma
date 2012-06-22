@@ -47,28 +47,6 @@
     </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 
-    <!--<?php Fisma_Format_Section::startSection('Unresolved: By Status', null, null, 'byTime'); ?>
-    <table class='custom-widget no-border'>
-    <?php foreach($this->byTime as $statistic): ?>
-        <tr>
-            <td class='criteria'><?php echo $statistic['criteria']; ?></td>
-            <td class='value'><?php echo $statistic['count']; ?></td>
-            <td width='70%'>
-                <span
-                class='bar <?php echo $statistic['criteria']; ?>'
-                style='width:<?php echo ($statistic['count']/$this->total*80); ?>%;'
-                >
-                </span>
-                <span class='percentage'><?php
-                    echo ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
-                         ? 'less than 1' : round($statistic['count']/$this->total*100);
-                ?>%</span>
-            </td>
-        </tr>
-    <?php endforeach; ?>
-    </table>
-    <?php Fisma_Format_Section::stopSection(); ?>-->
-
     <?php Fisma_Format_Section::startSection('Unresolved: By Workflow', null, null, 'byType'); ?>
     <table class='custom-widget no-border'>
     <?php foreach($this->byType as $statistic):
@@ -141,74 +119,7 @@
 <div class='clear'></div>
 <script>
 $(function() {
-    //sortable
-    var storage = new Fisma.Storage('finding.dashboard');
-    var leftColumn = storage.get('findingAnalystLeft');
-    var rightColumn = storage.get('findingAnalystRight');
-
-    if (leftColumn) {
-        $.each(leftColumn.split(','), function(index, id){
-            $('#' + id).find('script').remove();
-            $('#' + id).appendTo('#findingAnalystLeft');
-        });
-    }
-    if (rightColumn) {
-        $.each(rightColumn.split(','), function(index, id){
-            $('#' + id).find('script').remove();
-            $('#' + id).appendTo('#findingAnalystRight');
-        });
-    }
-    $(".column33, .column66")
-        .sortable({
-            placeholder : 'ui-sortable-proxy',
-            update: function(event, ui) {
-                storage.set(event.target.id, $(event.target).sortable("toArray").join());
-            }
-        })
-        .disableSelection()
-        .find('.sectionHeader')
-            .css('cursor', 'move')
-    ;
-
-    //collapsible
-    $(".column33 .sectionHeader,.column66 .sectionHeader").filter(function(index){
-        return ($('span.ui-icon', this).length < 1);
-    })
-        .prepend("<span class='ui-icon ui-icon-minusthick'></span>")
-        .find(".ui-icon")
-            .click(function() {
-                $(this).toggleClass("ui-icon-minusthick").toggleClass("ui-icon-plusthick");
-                var container = $(this).parents(".sectionContainer:first");
-                container.find(".section").toggle();
-                storage.set(container.attr('id'), $(this).hasClass("ui-icon-plusthick"));
-            })
-            .each(function() {
-                var container = $(this).parents(".sectionContainer:first");
-                var collapsed = storage.get(container.attr('id'));
-                if (collapsed) {
-                    $(this).click();
-                }
-            })
-    ;
-
-    //layout switch
-    var layoutButton = new YAHOO.widget.Button("menuLayout", {type: "menu", menu: "menuLayoutSelect"});
-    $("#layoutLeft").click(function() {
-        $(".column33").removeClass('right').addClass('left');
-        $(".column66").removeClass('left').addClass('right');
-        layoutButton.getMenu().hide();
-        storage.set('analystLayout', 'layoutLeft');
-    });
-    $("#layoutRight").click(function() {
-        $(".column33").removeClass('left').addClass('right');
-        $(".column66").removeClass('right').addClass('left');
-        layoutButton.getMenu().hide();
-        storage.set('analystLayout', 'layoutRight');
-    });
-    var layout = storage.get('analystLayout');
-    if (layout) {
-        $('#' + layout).click();
-    }
+    Fisma.Finding.initDashboard();
 });
 </script>
 <?php endif; ?>

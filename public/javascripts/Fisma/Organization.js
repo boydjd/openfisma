@@ -92,7 +92,7 @@
             // Load panel content using asynchronous request
             YAHOO.util.Connect.asyncRequest(
                 'GET',
-                '/organization/info/id/' + encodeURI(userId),
+                '/organization/info/format/html/id/' + encodeURI(userId),
                 {
                     success: function(o) {
                         panel.setBody(o.responseText);
