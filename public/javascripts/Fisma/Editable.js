@@ -59,6 +59,11 @@
     FE.setupEditFields = function() {
         var editable = YAHOO.util.Selector.query('.editable');
         YAHOO.util.Event.on(editable, 'click', function (o){
+            // ignore clicks on anchor tags
+            if (o.target.tagName === "A") {
+                return;
+            }
+
             var t_name = this.getAttribute('target');
             YAHOO.util.Dom.removeClass(this, 'editable');
             this.removeAttribute('target');
