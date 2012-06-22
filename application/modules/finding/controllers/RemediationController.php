@@ -1196,7 +1196,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         foreach ($logs as $log) {
             $logRows[] = array(
                 'timestamp' => $log['o_createdTs'],
-                'user' => $this->view->userInfo($log['u_displayName'], $log['u_id']),
+                'user' => empty($log['u_id']) ? '' : $this->view->userInfo($log['u_displayName'], $log['u_id']),
                 'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
             );
         }
