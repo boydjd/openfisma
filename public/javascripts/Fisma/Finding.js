@@ -3,28 +3,28 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
- * 
+ *
  * @fileoverview Client-side behavior related to the Finding module
- * 
+ *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
  */
- 
+
 Fisma.Finding = {
     /**
      * A reference to a YUI table which contains comments for the current page
-     * 
+     *
      * This reference will be set when the page loads by the script which initializes the table
      */
     commentTable : null,
@@ -56,7 +56,7 @@ Fisma.Finding = {
 
     /**
      * Handle successful comment events by inserting the latest comment into the top of the comment table
-     * 
+     *
      * @param comment An object containing the comment record values
      * @param yuiPanel A reference to the modal YUI dialog
      */
@@ -105,7 +105,7 @@ Fisma.Finding = {
 
     /**
      * A function which is called when the ECD needs to be changed and a justification needs to be provided.
-     * 
+     *
      * This function will convert the ECD justification into an editable text field that can be submitted with the
      * form.
      */
@@ -155,8 +155,8 @@ Fisma.Finding = {
         var securityControlId = window.escape(securityControlElement.value);
 
         YAHOO.util.Connect.asyncRequest(
-            'GET', 
-            '/security-control/single-control/id/' + securityControlId, 
+            'GET',
+            '/security-control/single-control/id/' + securityControlId,
             {
                 success: function (connection) {
                     controlContainer.innerHTML = connection.responseText;
@@ -171,7 +171,7 @@ Fisma.Finding = {
 
     /**
      * Configure the autocomplete that is used for selecting a POC
-     * 
+     *
      * @param autocomplete {YAHOO.widget.AutoComplete}
      * @param params {Array} The arguments passed to the autocomplete constructor
      */
@@ -210,7 +210,7 @@ Fisma.Finding = {
         }
 
         /* Don't show the POC message if the user selected an item.
-         * 
+         *
          * There's no way to do this without using autocomplete's private member _bItemSelected.
          */
         if (type === "containerCollapse" && autocomplete._bItemSelected) {
@@ -224,7 +224,7 @@ Fisma.Finding = {
 
         var unmatchedQuery = autocomplete.getInputEl().value;
 
-        // Don't show the POC not found message if the 
+        // Don't show the POC not found message if the
         if (unmatchedQuery.match(/^\s*$/)) {
             return;
         }
@@ -234,12 +234,12 @@ Fisma.Finding = {
 
         if (YAHOO.lang.isNull(container)) {
             container = Fisma.Finding._createPocNotFoundContainer(
-                Fisma.Finding.POC_MESSAGE_CONTAINER_ID, 
+                Fisma.Finding.POC_MESSAGE_CONTAINER_ID,
                 autocomplete.getInputEl().parentNode
             );
         }
 
-        container.firstChild.nodeValue = "No contact or user named \"" 
+        container.firstChild.nodeValue = "No contact or user named \""
                                        + unmatchedQuery
                                        + "\" was found. Click here to create one.";
         container.style.display = 'block';
@@ -331,7 +331,7 @@ Fisma.Finding = {
 
     /**
      * Remove the POC modal dialog's custom message box
-     * 
+     *
      * @param event {YAHOO.util.Event} The YUI event subscriber signature.
      */
     removePocMessageBox: function (event) {
@@ -366,7 +366,7 @@ Fisma.Finding = {
             } catch (e) {
                 var message = 'Not able to execute one of the scripts embedded in this page: ' + e.message;
                 Fisma.Util.showAlertDialog(message);
-            } 
+            }
         }
 
         // The tool tips will display underneath the modal dialog mask, so we'll move them up to a higher layer.
@@ -419,7 +419,7 @@ Fisma.Finding = {
 
                     /* Trick the autocomplete into think it has selected an item. This violates it's abstraction (by
                      * accessing a private member) but there is no public api to do this. Otherwise, if the user clicks
-                     * on the field, YUI will clear it out due to the "enforce selection" feature. 
+                     * on the field, YUI will clear it out due to the "enforce selection" feature.
                      */
                     Fisma.Finding.pocAutocomplete._bItemSelected = true;
 
@@ -442,7 +442,7 @@ Fisma.Finding = {
 
     /**
      * Configure the autocomplete that is used for selecting a security control
-     * 
+     *
      * @param autocomplete {YAHOO.widget.AutoComplete}
      * @param params {Array} The arguments passed to the autocomplete constructor
      */
@@ -482,10 +482,10 @@ Fisma.Finding = {
      * @param id {String} The ID of organization.
      */
     setDefaultPoc : function (id) {
-    
+
         YAHOO.util.Connect.asyncRequest(
-            'GET', 
-            '/organization/get-poc/format/json/id/' + id, 
+            'GET',
+            '/organization/get-poc/format/json/id/' + id,
             {
                 success: function (connection) {
                     var result = YAHOO.lang.JSON.parse(connection.responseText);
@@ -500,5 +500,83 @@ Fisma.Finding = {
                 }
             }
         );
+    },
+
+    /**
+     * Initialize the dashboard
+     */
+    initDashboard : function () {
+        //sortable
+        var storage = new Fisma.Storage('finding.dashboard');
+        var leftColumn = storage.get('findingAnalystLeft');
+        var rightColumn = storage.get('findingAnalystRight');
+
+        if (leftColumn) {
+            $.each(leftColumn.split(','), function(index, id){
+                $('#' + id).find('script').remove();
+                $('#' + id).appendTo('#findingAnalystLeft');
+            });
+        }
+        if (rightColumn) {
+            $.each(rightColumn.split(','), function(index, id){
+                $('#' + id).find('script').remove();
+                $('#' + id).appendTo('#findingAnalystRight');
+            });
+        }
+        $(".column33, .column66")
+            .sortable({
+                placeholder : 'ui-sortable-proxy',
+                update: function(event, ui) {
+                    storage.set(event.target.id, $(event.target).sortable("toArray").join());
+                }
+            })
+            .disableSelection()
+            .find('.sectionHeader')
+                .css('cursor', 'move')
+        ;
+
+        //collapsible
+        $(".column33 .sectionHeader,.column66 .sectionHeader").filter(function(index){
+            return ($('span.ui-icon', this).length < 1);
+        })
+            .prepend("<span class='ui-icon ui-icon-minusthick'></span>")
+            .dblclick(function() {
+                $(this).find('.ui-icon').click();
+            })
+            .find(".ui-icon")
+                .css('cursor', 'pointer')
+                .click(function() {
+                    $(this).toggleClass("ui-icon-minusthick").toggleClass("ui-icon-plusthick");
+                    var container = $(this).parents(".sectionContainer:first");
+                    container.find(".section").toggle();
+                    storage.set(container.attr('id'), $(this).hasClass("ui-icon-plusthick"));
+                })
+                .each(function() {
+                    var container = $(this).parents(".sectionContainer:first");
+                    var collapsed = storage.get(container.attr('id'));
+                    if (collapsed) {
+                        $(this).click();
+                    }
+                })
+        ;
+
+        //layout switch
+        var layoutButton = new YAHOO.widget.Button("menuLayout", {type: "menu", menu: "menuLayoutSelect"});
+        $("#layoutLeft").click(function() {
+            $(".column33").removeClass('right').addClass('left');
+            $(".column66").removeClass('left').addClass('right');
+            layoutButton.getMenu().hide();
+            storage.set('analystLayout', 'layoutLeft');
+        });
+        $("#layoutRight").click(function() {
+            $(".column33").removeClass('left').addClass('right');
+            $(".column66").removeClass('right').addClass('left');
+            layoutButton.getMenu().hide();
+            storage.set('analystLayout', 'layoutRight');
+        });
+        var layout = storage.get('analystLayout');
+        if (layout) {
+            $('#' + layout).click();
+        }
     }
 };

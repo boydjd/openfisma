@@ -97,6 +97,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Util.js',
                                       '/javascripts/Fisma/Vulnerability.js',
                                       '/javascripts/jquery-min.js',
+                                      '/javascripts/jquery-ui-min.js',
                                       '/javascripts/jqPlot/core/jquery_jqplot.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasTextRenderer.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasAxisLabelRenderer.js',

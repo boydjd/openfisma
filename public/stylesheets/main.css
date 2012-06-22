@@ -871,3 +871,108 @@ fieldset.uploadFileList input {
     text-decoration: none;
     font-weight: bold;
 }
+
+.criteria {
+    font-weight: bold;
+}
+.value {
+    text-align: right;
+}
+
+span.bar {
+    display: inline-block;
+    margin: 0px;
+    top: 1px;
+    position: relative;
+    height: 0.75em;
+    border-top: solid thin gray;
+    border-bottom: solid thin gray;
+}
+span.bar.normal {
+    background: #C8E1FA; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8E1FA', endColorstr='#3264C8'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#C8E1FA), to(#3264C8)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #C8E1FA,  #3264C8); /* for firefox 3.6+ */
+}
+span.bar.LOW, span.bar.On-Time {
+    background: #E1FAC8; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E1FAC8', endColorstr='#64C832'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#E1FAC8), to(#64C832)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #E1FAC8,  #64C832); /* for firefox 3.6+ */
+}
+span.bar.MODERATE {
+    background: #FAE164; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FAE164', endColorstr='#969632'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#FAE164), to(#969632)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #FAE164,  #969632); /* for firefox 3.6+ */
+}
+span.bar.HIGH, span.bar.Overdue {
+    background: #FAC8E1; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FAC8E1', endColorstr='#C83264'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#FAC8E1), to(#C83264)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #FAC8E1,  #C83264); /* for firefox 3.6+ */
+}
+
+table.custom-widget {
+    width: 100%;
+    border: solid thin gray;
+    margin-bottom: 0px;
+}
+
+table.custom-widget.no-border {
+    border: 0px;
+}
+
+table.custom-widget tr:nth-child(even) {
+    background-color: #eef5fe;
+}
+
+table.custom-widget.no-border tr:nth-child(even) {
+    background: none;
+}
+
+table.custom-widget td {
+    border: solid thin gray;
+    border-top: 0px;
+    border-bottom: 0px;
+    padding-top: 2px;
+    padding-bottom: 2px;
+    height: 2em;
+}
+
+table.custom-widget th {
+    border: solid thin gray;
+    background: #EEEEEE; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFFFFF', endColorstr='#CCCCCC'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#FFFFFF), to(#CCCCCC)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #FFFFFF,  #CCCCCC); /* for firefox 3.6+ */
+    font-weight: normal;
+    height: 2em;
+    padding-top: 2px;
+    padding-bottom: 2px;
+}
+
+table.custom-widget.no-border td {
+    border: 0px;
+}
+
+.sectionHeader .ui-icon { float: right; }
+.ui-icon { display: block; width: 16px; height: 16px; background-repeat: no-repeat; background-position: center; }
+.ui-icon-minusthick { background-image: url('/images/arrow-up.gif'); }
+.ui-icon-plusthick { background-image: url('/images/arrow-down.gif'); }
+.ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 50px !important; }
+.ui-sortable-placeholder * { visibility: hidden; }
+.ui-sortable-proxy { margin-top:10px; height: 1.5em; line-height: 1.2em; background: #FAE164; }
+
+.searchBox img {
+    vertical-align: middle;
+}
+
+#menuLayoutSelect {
+    background-color: #ebebeb;
+    border: solid thin black;
+}
+#menuLayoutSelect div {
+    padding: 4px;
+    cursor: default;
+}

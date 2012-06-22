@@ -8,6 +8,24 @@ User:
         phoneOffice: (202) 555-7261
         hashType: sha1
         ReportingOrganization: RNI_ORG
+    sample_1:
+        username: sample1
+        password: Sample1
+        email: sample1@department.gov
+        nameFirst: Sample
+        nameLast: ISSO 1
+        phoneOffice: (202) 555-7261
+        hashType: sha1
+        ReportingOrganization: RNI_ORG
+    sample_5:
+        username: sample5
+        password: Sample1
+        email: sample5@department.gov
+        nameFirst: Sample
+        nameLast: ISSO 5
+        phoneOffice: (202) 555-7261
+        hashType: sha1
+        ReportingOrganization: RNI_ORG
     mike_green:
         username: mike.green
         password: Sample1

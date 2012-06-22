@@ -37,6 +37,10 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                       ->addActionContext('data', 'json')
                       ->initContext();
 
+        $this->_helper->ajaxContext()
+             ->addActionContext('index', 'html')
+             ->initContext();
+
         parent::init();
     }
 

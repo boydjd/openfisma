@@ -93,3 +93,21 @@ form#finding_workflow td input[readonly], form#finding_workflow td textarea[read
     background-color: white ! important;
     border: none;
 }
+
+/* New Dashboard Analyst View */
+div#bySystem .yui-dt table {
+    width: 100%;
+}
+.yui-dt-col-displayOrganization, .yui-dt-col-displayPoc {
+    width: 20%;
+}
+.yui-dt-col-displayParentOrganization {
+    width: 20%;
+}
+.yui-dt-col-threatLevel {
+    width: 55%;
+}
+.yui-dt-col-displayTotal {
+    width: 5%;
+    text-align: center !important;
+}

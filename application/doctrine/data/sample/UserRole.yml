@@ -41,6 +41,20 @@ UserRole:
             - WEST_COAST_ORG
             - WILDLIFE_ORG
             - WIND_ORG
+    sample_1_user_role:
+        User: sample_1
+        Role: isso_role
+        Organizations:
+            - ARP_ORG
+    sample_5_user_role:
+        User: sample_5
+        Role: isso_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
     mike_green_user_role:
         User: mike_green
         Role: ao_role

@@ -56,12 +56,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         parent::init();
         $this->_helper->contextSwitch()
                       ->addActionContext('tree-data', 'json')
+                      ->addActionContext('get-poc', 'json')
                       ->initContext();
         $this->_helper->ajaxContext()
                       ->addActionContext('convert-to-system-form', 'html')
-                      ->initContext();
-        $this->_helper->contextSwitch()
-                      ->addActionContext('get-poc', 'json')
+                      ->addActionContext('info', 'html')
                       ->initContext();
     }
 
@@ -279,7 +278,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $searchButtons = $this->getSearchButtons($organization, $fromSearchParams);
 
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
-        $this->view->fromSearchParams = $fromSearchUrl; 
+        $this->view->fromSearchParams = $fromSearchUrl;
 
         if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
             $discardButton = new Fisma_Yui_Form_Button_Link(
@@ -423,7 +422,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForClass('read', 'Organization');
 
         $buttons = $this->getToolbarButtons();
-        
+
         // "Return To Search Results" doesn't make sense on this screen, so rename that button:
         $button = new Fisma_Yui_Form_Button_Link(
             'toolbarListButton',
@@ -437,7 +436,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         array_unshift($buttons, $button);
         $this->view->toolbarButtons = $buttons;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
-        
+
         // We're already on the tree screen, so don't show a "view tree" button
         unset($this->view->toolbarButtons['tree']);
 
@@ -670,7 +669,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         return $buttons;
     }
-    
+
     /**
      * Convert an organization to system.
      *
@@ -754,12 +753,12 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
         $this->_acl->requirePrivilegeForClass('read', 'Poc');
         $id = $this->_request->getParam('id');
- 
+
         $organization = Doctrine::getTable('Organization')->find($id);
 
-        if ($organization->pocId) { 
-            $username = $organization->Poc->username ? $organization->Poc->username : 
-                                                       '<' . $organization->Poc->email . '>'; 
+        if ($organization->pocId) {
+            $username = $organization->Poc->username ? $organization->Poc->username :
+                                                       '<' . $organization->Poc->email . '>';
         }
 
         $data = array('value' => empty($organization->pocId) ? '' : $username,
@@ -768,7 +767,25 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
 
          echo Zend_Json::encode($data);
         $this->_helper->viewRenderer->setNoRender();
- 
+
     }
 
+    /**
+     * Display organization information in a popup panel
+     *
+     * @GETAllowed
+     * @return void
+     */
+    public function infoAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        if ($id) {
+            $organization = Doctrine::getTable('Organization')->find($id);
+            if ($organization->OrganizationType->nickname === 'system') {
+                $this->view->system = $organization->System;
+            } else {
+                $this->view->organization = $organization;
+            }
+        }
+    }
 }

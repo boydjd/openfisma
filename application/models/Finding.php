@@ -837,25 +837,25 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     /**
      * Return a user-friendly status
      *
+     * @param String $status The acronym status, if called by static
      * @return String
      */
-    public function getLongStatus()
+    public function getLongStatus($status = null)
     {
-        $activeEvaluation = $this->CurrentEvaluation;
-        switch ($this->status) {
+        $activeEvaluation = (empty($status)) ? $this->CurrentEvaluation : Doctrine::getTable('Evaluation')->findOneByNickname($status);
+        $status = (empty($status)) ? $this->denormalizedStatus : $status;
+
+        switch ($status) {
             case 'NEW':
-                return "{$this->denormalizedStatus}: Awaiting Mitigation Strategy";
+                return "{$status}: Awaiting Mitigation Strategy";
             case 'DRAFT':
-                return "{$this->denormalizedStatus}: Awaiting Mitigation Strategy Submission";
-            case 'MSA':
-            case 'EA':
-                return "{$this->denormalizedStatus}: Awaiting {$activeEvaluation->name}";
+                return "{$status}: Awaiting Mitigation Strategy Submission";
             case 'EN':
-                return "{$this->denormalizedStatus}: Awaiting Evidence Package Submission";
+                return "{$status}: Awaiting Evidence Package Submission";
             case 'CLOSED':
-                return "{$this->denormalizedStatus}: Finding Officially Closed";
+                return "{$status}: Finding Officially Closed";
             default:
-                return "Unknown Status";
+                return "{$status}: Awaiting {$activeEvaluation->name}";
         }
     }
 }

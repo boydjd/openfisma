@@ -1,0 +1,66 @@
+<div class="column left" id="findingChartsLeft">
+    <div style='text-align: center;' id='chartFindForecastContainer'>
+        <?php
+            echo $this->escape($this->chartFindForecast, 'none');
+        ?>
+    </div>
+    <div style='text-align: center;' id='chartTotalStatusContainer'>
+        <?php
+            echo $this->escape($this->chartTotalStatus, 'none');
+        ?>
+    </div>
+</div>
+
+<div class="column right" id="findingChartsRight">
+    <div style='text-align: center;' id='chartOverdueFindingContainer'>
+        <?php
+            echo $this->escape($this->chartOverdueFinding, 'none');
+        ?>
+    </div>
+    <div style='text-align: center;' id='chartNoMitContainer'>
+        <?php
+            echo $this->escape($this->chartNoMit, 'none');
+        ?>
+    </div>
+</div>
+
+<div class="clear"></div>
+
+<div class='dashboardChart' id='findingOrgChartContainer'>
+    <?php echo $this->escape($this->findingOrgChart, 'none'); ?>
+</div>
+
+<div class='dashboardChart' id='controlDeficienciesChartContainer'>
+    <?php echo $this->escape($this->controlDeficienciesChart, 'none'); ?>
+</div>
+
+<script>
+$(function(){
+    var storage = new Fisma.Storage('finding.dashboard');
+    var leftColumn = storage.get('findingChartsLeft');
+    var rightColumn = storage.get('findingChartsRight');
+
+    if (leftColumn) {
+        $.each(leftColumn.split(','), function(index, id){
+            $('#' + id).appendTo('#findingChartsLeft');
+        });
+    }
+    if (rightColumn) {
+        $.each(rightColumn.split(','), function(index, id){
+            $('#' + id).appendTo('#findingChartsRight');
+        });
+    }
+    $('div.column')
+        .sortable({
+            placeholder : 'ui-sortable-proxy',
+            connectWith : '.column',
+            update: function(event, ui) {
+                storage.set(event.target.id, $(event.target).sortable("toArray").join());
+            }
+        })
+        .disableSelection()
+        .find('.sectionHeader')
+            .css('cursor', 'move')
+    ;
+});
+</script>

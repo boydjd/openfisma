@@ -31,7 +31,7 @@
     var Organization = {
         /**
          * Organization type filter callback function
-         * It set the default organization type, store the selected organization type and refresh window with url 
+         * It set the default organization type, store the selected organization type and refresh window with url
          *
          * @method Organization.typeHandle
          * @param event {String} The name of the event
@@ -44,7 +44,7 @@
 
             // Store the selected organizationTypeId to storage table
             var orgTypeStorage = new Fisma.PersistentStorage(config.namespace);
-            orgTypeStorage.set('orgType', selectedType.value); 
+            orgTypeStorage.set('orgType', selectedType.value);
             orgTypeStorage.sync();
 
             Fisma.Storage.onReady(function() {
@@ -54,6 +54,86 @@
                     window.location.href = url;
                 }
             });
+        },
+
+        /**
+         * A dictionary of info panels that have already been created.
+         *
+         * We use this to make sure that we don't create multiple panels for the same object.
+         */
+        infoPanelList : {},
+
+        /**
+         * Create the user info panel and position it near the referenceElement
+         *
+         * @param referenceElement
+         * @param userId The ID number of the user to get info for
+         * @return YAHOO.widget.Panel
+         */
+        createInfoPanel : function (referenceElement, userId) {
+
+            var PANEL_WIDTH = 500; // in pixels
+            var panel = new YAHOO.widget.Panel(
+                YAHOO.util.Dom.generateId(),
+                {
+                    width: PANEL_WIDTH + 'px',
+                    modal : false,
+                    close : true,
+                    constraintoviewport : true
+                }
+            );
+
+            panel.setHeader('Organization/System Details');
+            panel.setBody("Loading detailed information for <em>" + $(referenceElement).text().trim() + "</em>...");
+            panel.render(document.body);
+
+            Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
+
+            // Load panel content using asynchronous request
+            YAHOO.util.Connect.asyncRequest(
+                'GET',
+                '/organization/info/format/html/id/' + encodeURI(userId),
+                {
+                    success: function(o) {
+                        panel.setBody(o.responseText);
+                        Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
+                    },
+
+                    failure: function(o) {
+                        panel.setBody('Information cannot be loaded.');
+                        Fisma.Util.positionPanelRelativeToElement(panel, referenceElement);
+                    }
+                },
+                null);
+
+            return panel;
+        },
+
+        /**
+         * Display a dialog which shows information for the specified organization/syste,.
+         *
+         * @param referenceElement The panel will be displayed near this element
+         * @param orgId The ID number of the org/sys to get info for
+         */
+        displayInfo : function (referenceElement, orgId) {
+            var panel;
+            if (typeof Fisma.Organization.infoPanelList[orgId] === 'undefined') {
+                // Create new panel
+                panel = Fisma.Organization.createInfoPanel(referenceElement, orgId);
+                Fisma.Organization.infoPanelList[orgId] = panel;
+                panel.show();
+            } else {
+                // Panel already exists
+                panel = Fisma.Organization.infoPanelList[orgId];
+
+                // If panel is hidden then display it, or if its already visible, then hide it.
+                if (panel.cfg.getProperty("visible")) {
+                    panel.hide();
+                } else {
+                    panel.bringToTop();
+                    panel.show();
+                }
+            }
         }
     };
 
