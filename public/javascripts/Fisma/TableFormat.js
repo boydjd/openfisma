@@ -472,7 +472,7 @@ Fisma.TableFormat = {
      */
     formatDate : function (elCell, oRecord, oColumn, oData) {
         if (oData) {
-            var month = parseInt(oData.substr(5, 2)) - 1;
+            var month = parseInt(oData.substr(5, 2), 10) - 1;
 
             var date = new Date();
             date.setFullYear(oData.substr(0,4));
@@ -497,7 +497,7 @@ Fisma.TableFormat = {
      */
     formatDateTime : function (elCell, oRecord, oColumn, oData) {
         if (oData) {
-            var month = parseInt(oData.substr(5, 2)) - 1;
+            var month = parseInt(oData.substr(5, 2), 10) - 1;
 
             var date = new Date();
             date.setFullYear(oData.substr(0,4));
@@ -623,7 +623,9 @@ Fisma.TableFormat = {
             html += "<span class='bar HIGH' style='width:" + oData.HIGH / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
-        var percentage = 100 * (parseInt(oData.LOW) + parseInt(oData.MODERATE) + parseInt(oData.HIGH)) / oData.total;
+        var percentage = 100 * (
+            parseInt(oData.LOW, 10) + parseInt(oData.MODERATE, 10) + parseInt(oData.HIGH, 10)
+        ) / oData.total;
         if (percentage > 0 && percentage < 1) {
             html += 'less than 1%';
         } else {

@@ -91,14 +91,14 @@ class Fisma_Zend_Acl extends Zend_Acl
             throw new Fisma_Zend_Exception("\$object is not an object");
         }
         $resourceName = Doctrine_Inflector::tableize(get_class($object));
-        $user = Doctrine::getTable('User')->findOneByUsername(preg_replace('/^user_/', '', $this->_username));
+        $username = preg_replace('/^user_/', '', $this->_username);
         $hasPrivilege = false;
 
         if (!$this->_privilegeContainsWildcard($privilege)) {
             // Handle objects with organization ACL dependency
             if ($object instanceof Fisma_Zend_Acl_OrganizationDependency &&
                 // As a POC to a finding outside my systems, I should have the same privileges like other findings
-                !($object instanceOf Finding && $object->pocId === $user->id)
+                !($object instanceOf Finding && $object->Poc->username === $username)
             ) {
                 $orgId = $object->getOrganizationDependencyId();
                 if (empty($orgId)) {
@@ -122,7 +122,7 @@ class Fisma_Zend_Acl extends Zend_Acl
         // As a POC to a finding, I should at least have some basic privileges
         $generalFindingPrivileges = array('read', 'comment');
         if ($object instanceOf Finding && in_array($privilege, $generalFindingPrivileges)) {
-            $hasPrivilege = $hasPrivilege || ($object->pocId === $user->id);
+            $hasPrivilege = $hasPrivilege || ($object->Poc->username === $username);
         }
         return $hasPrivilege;
     }
