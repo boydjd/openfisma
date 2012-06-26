@@ -98,7 +98,7 @@ class Fisma_Zend_Acl extends Zend_Acl
             // Handle objects with organization ACL dependency
             if ($object instanceof Fisma_Zend_Acl_OrganizationDependency &&
                 // As a POC to a finding outside my systems, I should have the same privileges like other findings
-                !($object instanceOf Finding && $object->Poc->username === $username)
+                !($object instanceOf Finding && $object->PointOfContact->username === $username)
             ) {
                 $orgId = $object->getOrganizationDependencyId();
                 if (empty($orgId)) {
@@ -122,7 +122,7 @@ class Fisma_Zend_Acl extends Zend_Acl
         // As a POC to a finding, I should at least have some basic privileges
         $generalFindingPrivileges = array('read', 'comment');
         if ($object instanceOf Finding && in_array($privilege, $generalFindingPrivileges)) {
-            $hasPrivilege = $hasPrivilege || ($object->Poc->username === $username);
+            $hasPrivilege = $hasPrivilege || ($object->PointOfContact->username === $username);
         }
         return $hasPrivilege;
     }
