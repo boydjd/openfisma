@@ -125,9 +125,9 @@ class Fisma_Doctrine_Behavior_AuditLoggable_Generator extends Doctrine_Record_Ge
             )
         );
 
-        // Relation for the Poc class
+        // Relation for the User class
         $this->hasOne(
-            'Poc as User',
+            'User',
             array(
                 'local' => 'userId',
                 'foreign' => 'id'

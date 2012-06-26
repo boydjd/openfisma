@@ -676,8 +676,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->incident = $incident;
         $createdDateTime = new Zend_Date($incident['reportTs'], Fisma_Date::FORMAT_DATETIME);
-        $this->view->createDateTime = $createdDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR) 
-                                      . ' at ' 
+        $this->view->createDateTime = $createdDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                      . ' at '
                                       . $createdDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
 
         $incidentDateTime = $incident['incidentDate'] . ' ' . $incident['incidentTime'];
@@ -691,7 +691,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         if (!empty($incident['closedTs'])) {
             $closedDateTime = new Zend_Date($incident['closedTs'], Fisma_Date::FORMAT_DATETIME);
             $this->view->closedTs = $closedDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
-                                      . ' at ' 
+                                      . ' at '
                                       . $closedDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
         }
 
@@ -1958,7 +1958,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     private function _sendMailToAssignedUser($userId, $incidentId, $mailSubject)
     {
-        $user = Doctrine::getTable('Poc')->find($userId);
+        $user = Doctrine::getTable('User')->find($userId);
 
         $options = array(
             'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incidentId,

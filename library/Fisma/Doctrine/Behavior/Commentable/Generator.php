@@ -119,7 +119,7 @@ class Fisma_Doctrine_Behavior_Commentable_Generator extends Doctrine_Record_Gene
 
         // Relation for the user class
         $this->hasOne(
-            'Poc as User',
+            'User',
             array(
                 'local' => 'userId',
                 'foreign' => 'id'

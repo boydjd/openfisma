@@ -35,16 +35,6 @@ Fisma.Finding = {
     POC_MESSAGE_CONTAINER_ID : "findingPocNotMatched",
 
     /**
-     * A static reference to the POC create form panel
-     */
-    createPocPanel : null,
-
-    /**
-     * A static reference to the username that should prepopulate the POC create panel
-     */
-    createPocDefaultUsername : null,
-
-    /**
      * A static reference to the autocomplete which is used for matching a POC
      */
     pocAutocomplete : null,
@@ -239,9 +229,9 @@ Fisma.Finding = {
             );
         }
 
-        container.firstChild.nodeValue = "No contact or user named \""
+        container.firstChild.nodeValue = "No user named \"" 
                                        + unmatchedQuery
-                                       + "\" was found. Click here to create one.";
+                                       + "\" was found.";
         container.style.display = 'block';
 
         Fisma.Finding.createPocDefaultUsername = unmatchedQuery;
@@ -256,7 +246,6 @@ Fisma.Finding = {
     _createPocNotFoundContainer : function (id, parent) {
         var container = document.createElement('div');
 
-        YAHOO.util.Event.addListener(container, "click", Fisma.Finding.displayCreatePocForm, this, true);
         container.className = 'pocNotMatched';
         container.id = id;
         container.appendChild(document.createTextNode(""));
@@ -278,6 +267,7 @@ Fisma.Finding = {
     },
 
     /**
+<<<<<<< HEAD
      * Display a POC creation form inside a modal dialog.
      *
      * When setting a finding POC, if the user doesn't select from the autocomplete list, then prompt them to see if
@@ -441,6 +431,8 @@ Fisma.Finding = {
     },
 
     /**
+=======
+>>>>>>> origin/ofj1876
      * Configure the autocomplete that is used for selecting a security control
      *
      * @param autocomplete {YAHOO.widget.AutoComplete}

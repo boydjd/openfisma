@@ -38,6 +38,7 @@ Organization:
             foreignAlias: Organizations
 
         Poc:
+            class: User
             local: pocId
             foreign: id
             foreignAlias: Organization

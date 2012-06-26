@@ -45,8 +45,9 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
             }
         }
 
+        $this->_dropStuff();
+
         // make schema changes
-        $this->getHelper()->addColumn('poc', 'displayname', 'text NULL', 'email');
         $this->getHelper()->modifyColumn('poc', 'email', 'varchar(255) NOT NULL', 'namelast');
         $this->getHelper()->modifyColumn(
             'poc',
@@ -54,20 +55,144 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
             "enum('manual','password','inactive','expired')",
             'reportingorganizationid'
         );
-        $this->getHelper()->addColumn(
-            'poc',
-            'accounttype',
-            "enum('Contact','User') NOT NULL DEFAULT 'Contact'",
-            'locktype'
-        );
-        $this->getHelper()->addUniqueKey('poc', array('email'), 'email');
-        $this->getHelper()->addColumn('poc', 'published', "tinyint(1) NOT NULL DEFAULT '1'", 'accounttype');
 
-        // set account type to User where type is User
-        $this->getHelper()->exec('UPDATE poc SET accounttype = ? WHERE type = ?', array('User', 'User'));
+        $this->getHelper()->exec("RENAME TABLE poc TO user");
+
+        $this->_createStuff();
+
+        /*
+         * Some last-minute tweaks.  doctrine seems inconsistent about its naming conventions and it seems to be
+         * throwing everything off.
+         */
+        $this->getHelper()->exec(
+            'ALTER TABLE `ir_incident_user` ' .
+            'ADD INDEX `ir_incident_user_userid_user_id` (`userid`) USING BTREE, ' .
+            'DROP INDEX `userid_idx`'
+        );
+        $this->getHelper()->dropIndexes('user_event', 'userid_idx');
+
+    }
+
+    protected function _dropStuff()
+    {
+        $this->getHelper()->exec(
+            'INSERT INTO user_audit_log (userid, createdts, message, objectid) ' .
+            'SELECT userid, createdts, message, objectid FROM poc_audit_log'
+        );
+        $this->getHelper()->dropTable('poc_audit_log');
+
+        $this->getHelper()->exec(
+            'INSERT INTO user_comment (createdts, comment, objectid, userid) ' .
+            'SELECT createdts, comment, objectid, userid FROM poc_comment'
+        );
+        $this->getHelper()->dropTable('poc_comment');
+
+        $this->getHelper()->dropColumn('poc', 'type');
+
+        foreach ($this->_foreignKeysToDrop as $table => $keys) {
+            $this->gethelper()->dropForeignKeys($table, $keys);
+        }
+        foreach ($this->_indexesToDrop as $table => $indexes) {
+            $this->getHelper()->dropIndexes($table, $indexes);
+        }
+    }
+
+    protected function _createStuff()
+    {
+        $this->getHelper()->addColumn('user', 'published', "tinyint(1) NOT NULL DEFAULT '1'", 'locktype');
+        $this->getHelper()->addColumn('user', 'displayname', 'text NULL', 'email');
 
         // initialize displayNames
         $emailExpr = "IF(LENGTH(nameFirst) > 0 AND LENGTH(nameLast) > 0, '', CONCAT('<', email, '>'))";
-        $this->getHelper()->exec("UPDATE poc SET displayname = TRIM(CONCAT_WS(nameFirst, nameLast, $emailExpr))");
+        $this->getHelper()->exec("UPDATE user SET displayname = TRIM(CONCAT_WS(' ', nameFirst, nameLast, $emailExpr))");
+
+        $this->getHelper()->addUniqueKey('user', array('email'), 'email');
+
+        foreach ($this->_foreignKeysToCreate as $table => $keys) {
+            foreach ($keys as $key) {
+                $this->getHelper()->addForeignKey($table, $key[0], $key[1], $key[2]);
+            }
+        }
     }
+
+    protected $_foreignKeysToDrop = array(
+        'comment' => 'comment_userid_poc_id',
+        'finding' => array('finding_createdbyuserid_poc_id', 'finding_pocid_poc_id'),
+        'finding_audit_log' => 'finding_audit_log_userid_poc_id',
+        'finding_comment' => 'finding_comment_userid_poc_id',
+        'finding_evaluation' => 'finding_evaluation_userid_poc_id',
+        'incident' => array('incident_pocid_poc_id','incident_reportinguserid_poc_id'),
+        'incident_audit_log' => 'incident_audit_log_userid_poc_id',
+        'incident_comment' => 'incident_comment_userid_poc_id',
+        'ir_incident_user' => 'ir_incident_user_userid_poc_id',
+        'ir_incident_workflow' => 'ir_incident_workflow_userid_poc_id',
+        'notification' => 'notification_userid_poc_id',
+        'organization' => 'organization_pocid_poc_id',
+        'upload' => 'upload_userid_poc_id',
+        'poc' => 'poc_reportingorganizationid_organization_id',
+        'user_audit_log' => 'user_audit_log_userid_poc_id',
+        'user_comment' => 'user_comment_userid_poc_id',
+        'user_event' => array('user_event_userid_poc_id'),
+        'user_role' => 'user_role_userid_poc_id',
+        'vulnerability' => 'vulnerability_createdbyuserid_poc_id',
+        'vulnerability_audit_log' => 'vulnerability_audit_log_userid_poc_id',
+        'vulnerability_comment' => 'vulnerability_comment_userid_poc_id'
+    );
+
+    protected $_indexesToDrop = array(
+        'comment' => 'userid_idx',
+        'finding' => array('createdbyuserid_idx', 'pocid_idx'),
+        'finding_audit_log' => 'userid_idx',
+        'finding_comment' => 'userid_idx',
+        'finding_evaluation' => 'userid_idx',
+        'incident' => array('pocid_idx', 'reportinguserid_idx'),
+        'incident_audit_log' => 'userid_idx',
+        'incident_comment' => 'userid_idx',
+        'ir_incident_user' => array('ir_incident_user_userid_poc_id'),
+        'ir_incident_workflow' => 'userid_idx',
+        'notification' => 'userid_idx',
+        'organization'  => 'pocid_idx',
+        'poc' => 'reportingorganizationid_idx',
+        'upload'  => 'userid_idx',
+        'user_audit_log'  => 'userid_idx',
+        'user_comment'  => 'userid_idx',
+        'user_role'  => 'userid_idx',
+        'vulnerability'  => 'createdbyuserid_idx',
+        'vulnerability_audit_log'  => 'userid_idx',
+        'vulnerability_comment'  => 'userid_idx'
+    );
+
+    protected $_foreignKeysToCreate = array(
+        'comment' => array(
+            array('userid', 'user', 'id')
+        ),
+        'finding' => array(
+            array('createdbyuserid', 'user', 'id'),
+            array('pocid', 'user', 'id')
+        ),
+        'finding_audit_log' => array(
+            array('userid', 'user', 'id')
+        ),
+        'finding_comment' => array(array('userid', 'user', 'id')),
+        'finding_evaluation' => array(array('userid', 'user', 'id')),
+        'incident' => array(
+            array('pocid', 'user', 'id'),
+            array('reportinguserid', 'user', 'id')
+        ),
+        'incident_audit_log' => array(array('userid', 'user', 'id')),
+        'incident_comment' => array(array('userid', 'user', 'id')),
+        'ir_incident_user' => array(array('userid', 'user', 'id')),
+        'ir_incident_workflow' => array(array('userid', 'user', 'id')),
+        'notification' => array(array('userid', 'user', 'id')),
+        'organization'  => array(array('pocid', 'user', 'id')),
+        'upload'  => array(array('userid', 'user', 'id')),
+        'user'  => array(array('reportingorganizationid', 'organization', 'id')),
+        'user_audit_log'  => array(array('userid', 'user', 'id')),
+        'user_comment'  => array(array('userid', 'user', 'id')),
+        'user_event'  => array(array('userid', 'user', 'id')),
+        'user_role'  => array(array('userid', 'user', 'id')),
+        'vulnerability'  => array(array('createdbyuserid', 'user', 'id')),
+        'vulnerability_audit_log'  => array(array('userid', 'user', 'id')),
+        'vulnerability_comment'  => array(array('userid', 'user', 'id'))
+    );
 }

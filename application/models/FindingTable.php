@@ -217,7 +217,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => false,
                 'label' => 'Reporter',
                 'join' => array(
-                    'model' => 'Poc',
+                    'model' => 'User',
                     'relation' => 'CreatedBy',
                     'field' => 'displayName'
                 ),
@@ -228,7 +228,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => false,
                 'label' => 'Point Of Contact',
                 'join' => array(
-                    'model' => 'Poc',
+                    'model' => 'User',
                     'relation' => 'PointOfContact',
                     'field' => 'displayName'
                 ),

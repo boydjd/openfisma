@@ -175,7 +175,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
 
                 $f->merge($finding);
                 $f->CreatedBy = $this->_getRandomUser();
-                $f->pocId = $this->_getRandomPoc()->id;
+                $f->pocId = $this->_getRandomUser()->id;
 
                 if ($f->status == 'MSA') {
                     $f->updateDenormalizedStatus();

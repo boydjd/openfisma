@@ -311,7 +311,7 @@ Incident:
             local: currentWorkflowStepId
             foreign: id
         ReportingUser:
-            class: Poc
+            class: User
             local: reportingUserId
             foreign: id
             foreignType: one
@@ -326,12 +326,12 @@ Incident:
             foreign: id
             foreignAlias: Incidents
         PointOfContact:
-            class: Poc
+            class: User
             local: pocId
             foreign: id
             foreignAlias: Incidents
         Users:
-            class: Poc
+            class: User
             local: incidentId
             foreign: userId
             refClass: IrIncidentUser

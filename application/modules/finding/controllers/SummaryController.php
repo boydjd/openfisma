@@ -445,16 +445,16 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         // Get list of point of contacts
         $pointOfContactQuery = Doctrine_Query::create()
-                               ->from('Poc p')
-                               ->addSelect('p.id, p.reportingOrganizationId, "poc" AS type')
-                               ->addSelect("CONCAT(p.nameFirst, ' ', p.nameLast) AS label")
+                               ->from('User u')
+                               ->addSelect('u.id, u.reportingOrganizationId, "poc" AS type')
+                               ->addSelect("CONCAT(u.nameFirst, ' ', u.nameLast) AS label")
                                ->addSelect("CONCAT('Point\ Of\ Contact') AS typeLabel")
-                               ->addSelect("'poc' AS icon, p.username AS rowLabel")
+                               ->addSelect("'poc' AS icon, u.username AS rowLabel")
                                ->addSelect("'pocUser' AS searchKey")
-                               ->where('p.reportingOrganizationId IS NOT NULL')
-                               ->andWhere('(p.lockType IS NULL OR p.lockType <> ?)', 'manual')
-                               ->groupBy('p.id')
-                               ->orderBy('p.reportingOrganizationId, p.nameFirst, p.nameLast');
+                               ->where('u.reportingOrganizationId IS NOT NULL')
+                               ->andWhere('(u.lockType IS NULL OR u.lockType <> ?)', 'manual')
+                               ->groupBy('u.id')
+                               ->orderBy('u.reportingOrganizationId, u.nameFirst, u.nameLast');
 
         $pocList = $pointOfContactQuery->execute(null, Doctrine::HYDRATE_SCALAR);
 
@@ -462,7 +462,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $pointsOfContact = array();
 
         foreach ($pocList as $poc) {
-            $organizationId = $poc['p_reportingOrganizationId'];
+            $organizationId = $poc['u_reportingOrganizationId'];
 
             if (!isset($pointsOfContact[$organizationId])) {
                 $pointsOfContact[$organizationId] = array();
@@ -530,8 +530,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                 $level = $organizations[$currentOrganization]['o_level'];
 
                 foreach ($pointsOfContact[$currentOrganizationId] as &$poc) {
-                    if (isset($findings[$poc['p_id']])) {
-                        $poc = array_merge($poc, $findings[$poc['p_id']]);
+                    if (isset($findings[$poc['u_id']])) {
+                        $poc = array_merge($poc, $findings[$poc['u_id']]);
                     }
                     $poc['p_level'] = $level + 1;
                 }

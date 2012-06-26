@@ -370,7 +370,7 @@ class Incident extends BaseIncident
             $this->_set('pocId', $sanitized);
 
             // Make sure the POC is an actor
-            $poc = Doctrine::getTable('Poc')->find($value);
+            $poc = Doctrine::getTable('User')->find($value);
 
             if ($poc instanceof User) {
                 $pocIsActorQuery = Doctrine_Query::create()->from('IrIncidentUser iu')

@@ -326,13 +326,6 @@ Administration:
         func: hasArea
         param: admin
     submenu:
-        POC:
-            label: Contacts and Users
-            link: /contact/list
-            privilege:
-                func: hasPrivilegeForClass
-                param1: read
-                param2: Poc
         Email:
             label: E-mail
             link: /config/email
@@ -365,6 +358,13 @@ Administration:
         Contact:
             label: Technical Contact
             link: /config/contact
+        Users:
+            label: Users
+            link: /user/list
+            privilege:
+                func: hasPrivilegeForClass
+                param1: read
+                param2: User
 
 UserPreferences:
     label: User Preferences

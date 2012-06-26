@@ -751,7 +751,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_helper->contextSwitch()->setAutoJsonSerialization(false);
 
-        $this->_acl->requirePrivilegeForClass('read', 'Poc');
+        $this->_acl->requirePrivilegeForClass('read', 'User');
         $id = $this->_request->getParam('id');
 
         $organization = Doctrine::getTable('Organization')->find($id);
@@ -761,9 +761,10 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                                                        '<' . $organization->Poc->email . '>';
         }
 
-        $data = array('value' => empty($organization->pocId) ? '' : $username,
-                      'pocId' => empty($organization->pocId) ? '' : $organization->pocId
-                );
+        $data = array(
+            'value' => empty($organization->pocId) ? '' : $organization->Poc->username,
+            'pocId' => empty($organization->pocId) ? '' : $organization->pocId
+        );
 
          echo Zend_Json::encode($data);
         $this->_helper->viewRenderer->setNoRender();

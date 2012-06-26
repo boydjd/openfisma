@@ -189,7 +189,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 )
             );
 
-            // Show the "More" button only when there is element in the form. 
+            // Show the "More" button only when there is element in the form.
             $elements = $this->getSearchMoreOptionsForm()->getElements();
             if (!empty($elements)) {
                 $buttons['moreAction'] = new Fisma_Yui_Form_Button(
@@ -200,7 +200,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     )
                 );
             }
-        }    
+        }
         return $buttons;
     }
 
@@ -217,7 +217,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $isList = $this->getRequest()->getActionName() === 'list';
         $isView = $this->getRequest()->getActionName() === 'view';
         $resourceName = $this->getAclResourceName();
-        $modelName = ($this->_modelName === 'User') ? 'Poc' : $this->_modelName;
+        $modelName = $this->_modelName;
         $view = Zend_Layout::getMvcInstance()->getView();
 
         if (!$isList && (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('read', $resourceName))) {
