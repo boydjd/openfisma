@@ -289,9 +289,5 @@ Fisma.User = {
         });
 
         return;
-    },
-
-    convertToContact: function(ev, arg) {
-        YAHOO.util.Event.stopEvent(ev);
     }
 };

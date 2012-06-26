@@ -767,8 +767,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     public function ldapAutocompleteAction()
     {
-        if (! ($this->_acl->hasPrivilegeForClass('read', 'User')
-               || $this->_acl->hasPrivilegeForClass('read', 'User')) ) {
+        if (!$this->_acl->hasPrivilegeForClass('read', 'User')) {
             throw new Fisma_Zend_Exception_InvalidPrivilege("User does not have privileges to check account.");
         }
 
@@ -1122,22 +1121,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
         }
         return false;
-    }
-
-    /**
-     * convertToContactAction
-     *
-     * @return void
-     */
-    public function convertToContactAction()
-    {
-        $id = $this->getRequest()->getPost('id');
-        $user = Doctrine::getTable('User')->find($id);
-        $user->type = null;
-        $user->save();
-        $user->free();
-        $this->view->priorityMessenger('User converted to Contact successfully.', 'notice');
-        $this->_redirect($this->view->url(array('controller' => 'contact', 'action' => 'view', 'id' => $id)));
     }
 
     /**

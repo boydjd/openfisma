@@ -61,7 +61,7 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
         $this->_createStuff();
 
         /*
-         * some last-minute tweaks.  doctrine seems inconsistant about it's naming conventions and it seem to be
+         * Some last-minute tweaks.  doctrine seems inconsistent about its naming conventions and it seems to be
          * throwing everything off.
          */
         $this->getHelper()->exec(
@@ -104,7 +104,7 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
 
         // initialize displayNames
         $emailExpr = "IF(LENGTH(nameFirst) > 0 AND LENGTH(nameLast) > 0, '', CONCAT('<', email, '>'))";
-        $this->getHelper()->exec("UPDATE user SET displayname = TRIM(CONCAT_WS(nameFirst, nameLast, $emailExpr))");
+        $this->getHelper()->exec("UPDATE user SET displayname = TRIM(CONCAT_WS(' ', nameFirst, nameLast, $emailExpr))");
 
         $this->getHelper()->addUniqueKey('user', array('email'), 'email');
 
