@@ -186,7 +186,6 @@ Finding:
             extra:
                 auditLog: true
                 logicalName: Organization
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_assignment
         sourceId:
             type: integer
