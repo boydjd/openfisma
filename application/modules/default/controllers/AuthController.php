@@ -58,7 +58,7 @@ class AuthController extends Zend_Controller_Action
      * be performed against the database or LDAP provider, according to the application's
      * configuration. Also, it enforces the security policies set by the
      * application.
-     * 
+     *
      * @GETAllowed
      *
      * @return void
@@ -94,17 +94,6 @@ class AuthController extends Zend_Controller_Action
                 throw new Zend_Auth_Exception(self::CREDENTIAL_ERROR_MESSAGE);
             }
             $user->checkAccountLock();
-
-            // Check if account has expired
-            $accountExpiration = new Zend_Date($user->lastLoginTs, Zend_Date::ISO_8601);
-            $expirationPeriod = Fisma::configuration()->getConfig('account_inactivity_period');
-            $accountExpiration->addDay($expirationPeriod);
-            $now = Zend_Date::now();
-            if ($accountExpiration->isEarlier($now)) {
-                $user->lockAccount(User::LOCK_TYPE_INACTIVE);
-                $reason = $user->getLockReason();
-                throw new Fisma_Zend_Exception_AccountLocked("Account is locked ($reason)");
-            }
 
             // Perform authentication
             $auth = Zend_Auth::getInstance();
@@ -213,7 +202,7 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Returns a suitable authentication adapter based on system configuration and current user
-     * 
+     *
      * @GETAllowed
      * @param User $user Authentication adapters may be different for different users
      * @param string $password The corresponding password of the specified user
@@ -248,7 +237,7 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Close out the current user's session
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -270,7 +259,7 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Display the system's privacy policy.
-     * 
+     *
      * @GETAllowed
      * @return void
      * @todo the business logic is stored in the view instead of the controller
@@ -281,7 +270,7 @@ class AuthController extends Zend_Controller_Action
 
     /**
      * Display the system's Rules Of Behavior.
-     * 
+     *
      * @GETAllowed
      * @return void
      * @todo the business logic is stored in the view instead of the controller
