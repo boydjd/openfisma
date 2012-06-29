@@ -82,8 +82,6 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->addActionContext('chartfindingbyorgdetail', 'json')
             ->initContext();
 
-
-
         $this->_visibleOrgs = $this->_me
             ->getOrganizationsByPrivilegeQuery('finding', 'read')
             ->select('o.id')
@@ -210,7 +208,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     $type['tooltip'] = "<b>CAP - Corrective Action Plan</b><br/>"
                                      . "<p>A corrective action plan is a mitigation strategy that aims to reduce the "
                                      . "overall risk of a finding by correcting the underlying deficiency.</p>";
-                break;
+                    break;
                 case 'FP':
                     $type['tooltip'] = "<b>FP - False Positive</b><br/>"
                                      . "<p>A false positive is not a true mitigation strategy, per se, but it is a plan"
@@ -218,15 +216,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                                      . "that it was observed. Notice that if a finding was true at the time it was "
                                      . "reported by the auditor but has since become invalid, that is not considered a "
                                      . "false positive.</p>";
-                break;
+                    break;
                 case 'AR':
                     $type['tooltip'] = "<b>AR - Accepted Risk</b><br/><p>"
                                      . "An accept risk is a mitigation strategy that aims to reduce risk down to an acc"
                                      . "eptable level, then seek official sign-off from the authorizing official.</p>";
-                break;
+                    break;
                 case 'NONE':
                     $type['tooltip'] = "<b>NONE - No Mitigation Strategy Selected</b>";
-                break;
+                    break;
             }
         }
 
@@ -244,7 +242,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->execute();
 
         $this->view->byPoc = Doctrine_Query::create()
-            ->select('COUNT(f.id) as count, f.threatlevel, i.id as icon, o.id, o.nickname, f.pocid, u.id, u.displayName')
+            ->select(
+                'COUNT(f.id) as count, f.threatlevel, i.id as icon, o.id, o.nickname, f.pocid, u.id, u.displayName'
+            )
             ->from('Finding f')
             ->leftJoin('f.PointOfContact u')
             ->leftJoin('u.ReportingOrganization o')
@@ -393,7 +393,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->byPocTable->setData($byPoc);
 
         $this->view->bySystem = Doctrine_Query::create()
-            ->select('COUNT(f.id) as count, o.nickname as criteria, f.threatlevel, o.id, o.lft, o.rgt, o.level, f.responsibleorganizationid, ot.iconId as icon')
+            ->select(
+                'COUNT(f.id) as count, o.nickname as criteria, f.threatlevel, o.id, o.lft, o.rgt, o.level, ' .
+                'f.responsibleorganizationid, ot.iconId as icon'
+            )
             ->from('Organization o')
             ->leftJoin('o.OrganizationType ot')
             ->leftJoin('o.Findings f')

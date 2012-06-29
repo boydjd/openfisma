@@ -279,7 +279,8 @@ class Fisma_Menu
      * @param Zend_View $view Optional. Used for mocking in unittesting
      * @return Zend_View
      */
-    protected static function _getCurrentView($view = null) {
+    protected static function _getCurrentView($view = null)
+    {
         return (empty($view)) ? Zend_Layout::getMvcInstance()->getView() : $view;
     }
 }

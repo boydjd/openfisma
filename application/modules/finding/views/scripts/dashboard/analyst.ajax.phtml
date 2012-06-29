@@ -27,19 +27,21 @@
     <table class='custom-widget no-border'>
     <?php foreach($this->byThreat as $statistic): ?>
         <tr>
-            <td class='criteria'><?php echo $statistic['criteria']; ?></td>
-            <td class='value'><?php echo $statistic['count']; ?></td>
+            <td class='criteria'><?php echo $this->escape($statistic['criteria']); ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
             <td width='70%'>
                 <a href='/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/threatLevel/enumIs/<?php
-                    echo $statistic['criteria'];
+                    echo $this->escape($statistic['criteria']);
                 ?>'><span
-                class='bar <?php echo $statistic['criteria']; ?>'
-                style='width:<?php echo ($statistic['count']/$this->total*80); ?>%;'
+                class='bar <?php echo $this->escape($statistic['criteria']); ?>'
+                style='width:<?php echo $this->escape($statistic['count']/$this->total*80); ?>%;'
                 >
                 </span></a>
                 <span class='percentage'><?php
-                    echo ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
-                         ? 'less than 1' : round($statistic['count']/$this->total*100);
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
                 ?>%</span>
             </td>
         </tr>
@@ -54,15 +56,17 @@
     ?>
         <tr>
             <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
-            <td class='value'><?php echo $statistic['count']; ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
             <td width='70%'>
                 <a href='/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/type/enumIs/<?php
-                    echo $statistic['criteria'];
-                ?>'><span class='bar normal' style='width:<?php echo ($statistic['count']/$this->total*80); ?>%;'>
+                    echo $this->escape($statistic['criteria']);
+                ?>'><span class='bar normal' style='width:<?php echo $this->escape($statistic['count']/$this->total*80); ?>%;'>
                 </span></a>
                 <span class='percentage'><?php
-                    echo ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
-                         ? 'less than 1' : round($statistic['count']/$this->total*100);
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
                 ?>%</span>
             </td>
         </tr>
@@ -77,15 +81,17 @@
     ?>
         <tr>
             <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
-            <td class='value'><?php echo $statistic['count']; ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
             <td width='70%'>
                 <a href='/finding/remediation/list?q=denormalizedStatus/enumIs/<?php
-                    echo $statistic['criteria'];
-                ?>'><span class='bar normal' style='width:<?php echo ($statistic['count']/$this->total*80); ?>%;'>
+                    echo $this->escape($statistic['criteria']);
+                ?>'><span class='bar normal' style='width:<?php echo $this->escape($statistic['count']/$this->total*80); ?>%;'>
                 </span></a>
                 <span class='percentage'><?php
-                    echo ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
-                         ? 'less than 1' : round($statistic['count']/$this->total*100);
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
                 ?>%</span>
             </td>
         </tr>
@@ -100,15 +106,17 @@
     ?>
         <tr>
             <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
-            <td class='value'><?php echo $statistic['count']; ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
             <td width='70%'>
                 <a href='/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/source/textContains/<?php
-                    echo $statistic['criteria'];
-                ?>'><span class='bar normal' style='width:<?php echo ($statistic['count']/$this->total*80); ?>%;'>
+                    echo $this->escape($statistic['criteria']);
+                ?>'><span class='bar normal' style='width:<?php echo $this->escape($statistic['count']/$this->total*80); ?>%;'>
                 </span></a>
                 <span class='percentage'><?php
-                    echo ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
-                         ? 'less than 1' : round($statistic['count']/$this->total*100);
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
                 ?>%</span>
             </td>
         </tr>
