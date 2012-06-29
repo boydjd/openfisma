@@ -233,7 +233,7 @@ div.column33 {
 p.stacktrace {
     margin: 10px;
     border: 1px solid #d3d3d3;
-    #ffffff-space: pre;
+    pre-space: #ffffff;
     font-family: monospace;
     overflow: auto;
     white-space: pre-wrap;
