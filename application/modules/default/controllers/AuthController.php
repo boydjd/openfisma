@@ -95,17 +95,6 @@ class AuthController extends Zend_Controller_Action
             }
             $user->checkAccountLock();
 
-            // Check if account has expired
-            $accountExpiration = new Zend_Date($user->lastLoginTs, Zend_Date::ISO_8601);
-            $expirationPeriod = Fisma::configuration()->getConfig('account_inactivity_period');
-            $accountExpiration->addDay($expirationPeriod);
-            $now = Zend_Date::now();
-            if ($accountExpiration->isEarlier($now)) {
-                $user->lockAccount(User::LOCK_TYPE_INACTIVE);
-                $reason = $user->getLockReason();
-                throw new Fisma_Zend_Exception_AccountLocked("Account is locked ($reason)");
-            }
-
             // Perform authentication
             $auth = Zend_Auth::getInstance();
             $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());

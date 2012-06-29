@@ -161,25 +161,47 @@ class User extends BaseUser
     /**
      * Verifies that this account is not locked. If it is locked, then this throws an authentication exception.
      *
-     * @return void
+     * @param boolean $cli If sets to true, the function will not throw Exception.
+     * @return boolean True if the user is locked (only when $cli is true)
      * @throws Fisma_Zend_Exception_AccountLocked if the account is locked
      */
-    public function checkAccountLock()
+    public function checkAccountLock($cli = false)
     {
         if ($this->locked) {
             // Check if this is a lock which should be released
-            if (self::LOCK_TYPE_PASSWORD == $this->lockType && Fisma::configuration()->getConfig('unlock_enabled')) {
+            if (User::LOCK_TYPE_PASSWORD == $this->lockType && Fisma::configuration()->getConfig('unlock_enabled')) {
                 $lockRemainingMinutes = $this->getLockRemainingMinutes();
                 // A negative or zero value indicates the lock has expired
                 if ($lockRemainingMinutes <= 0) {
                     $this->unlockAccount();
                 }
             }
+        } else {
+            // Check if account is inactive
+            $accountExpiration = new Zend_Date($this->lastLoginTs, Zend_Date::ISO_8601);
+            $expirationPeriod = Fisma::configuration()->getConfig('account_inactivity_period');
+            $accountExpiration->addDay($expirationPeriod);
+            $now = Zend_Date::now();
+            if ($accountExpiration->isEarlier($now)) {
+                $this->lockAccount(User::LOCK_TYPE_INACTIVE);
+            }
 
-            // Construct an error message based on the lock type
-            $reason = $this->getLockReason();
-            throw new Fisma_Zend_Exception_AccountLocked("Account is locked ($reason)");
+            // If password has expired, then the user cannot be authenticated
+            if ($this->passwordIsExpired()) {
+                $this->lockAccount(User::LOCK_TYPE_EXPIRED);
+            }
         }
+
+        // Construct an error message based on the lock type
+        if ($this->locked) {
+            $reason = $this->getLockReason();
+            if (!$cli) {
+                throw new Fisma_Zend_Exception_AccountLocked("Account is locked ($reason)");
+            } else {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
@@ -846,5 +868,20 @@ class User extends BaseUser
             }
         }
         return ($showWhatsNew) ? $versions['application'] : false;
+    }
+
+    /**
+     * Check if the password has expired
+     *
+     * @return boolean Ture if the password has expired, false otherwise
+     */
+    public function passwordIsExpired()
+    {
+        $passExpireTs = new Zend_Date($this->passwordTs, Zend_Date::ISO_8601);
+        $passExpirePeriod = Fisma::configuration()->getConfig('pass_expire');
+        $passExpireTs->add($passExpirePeriod, Zend_Date::DAY);
+        $expired = $passExpireTs->isEarlier(Zend_Date::now());
+
+        return $expired;
     }
 }
