@@ -1,41 +1,4 @@
-<?php 
-echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
-
-$operation = '';
-
-if ($this->acl()->hasPrivilegeForObject('read', $this->subject)) {
-    $operation .= "&nbsp;&nbsp;[<a href='{$this->auditLogLink}'>Audit Log</a>]";
-}
-
-$operation .= "&nbsp;&nbsp;[<a href='{$this->escape($this->commentLink)}'>Comments</a>]";
-
-Fisma_Format_Section::startSection("User Account Information $operation"); ?>
-
-<?php 
-if (!empty($this->requirements)) {
+<?php
+//    echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
+    echo $this->escape($this->tabView, 'none');
 ?>
-    <p>The password must meet the following complexity criteria:</p>
-    <ul>
-    <?php foreach ($this->requirements as $requirement): ?>
-        <li>
-            <?php echo $this->escape($requirement, 'none'); ?>
-        </li>
-    <?php endforeach; ?>
-    </ul>
-<?php 
-} 
-?>
-
-<div class="form_box">
-    <form method="post" action="/User/view/id/<?php echo $this->escape($this->id . $this->fromSearchUrl); ?>">
-    <?php 
-        echo $this->escape($this->form, 'none');
-        echo $this->escape($this->tabView, 'none');
-    ?>
-    </form>
-</div>
-<?php 
-Fisma_Format_Section::stopSection();
-$opts = array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0);
-echo $this->escape($this->partial('yui/roles.phtml', $opts), 'none');
-unset($opts);

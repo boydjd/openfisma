@@ -95,7 +95,7 @@ Fisma_Format_Section::startSection('Details');
         </td>
     </tr>
     <tr>
-        <td>Parent Organization/System: </td>
+        <td>Parent Organization: </td>
         <td>
         <?php
             $parentOrganization = $this->organization->getNode()->getParent();
@@ -122,7 +122,7 @@ Fisma_Format_Section::startSection('Details');
         </td>
     </tr>
     <tr>
-        <td>Aggregate System</td>
+        <td>Parent System: </td>
         <td>
         <?php if (!empty($this->aggregateSystem)): ?>
             <a href="/system/view/id/<?php echo $this->escape($this->aggregateSystem->id); ?>">

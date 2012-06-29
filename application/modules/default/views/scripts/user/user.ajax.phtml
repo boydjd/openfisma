@@ -1,0 +1,31 @@
+<?php Fisma_Format_Section::startSection("User Account Information"); ?>
+
+<?php
+if (!empty($this->requirements)) {
+?>
+    <p>The password must meet the following complexity criteria:</p>
+    <ul>
+    <?php foreach ($this->requirements as $requirement): ?>
+        <li>
+            <?php echo $this->escape($requirement, 'none'); ?>
+        </li>
+    <?php endforeach; ?>
+    </ul>
+<?php
+}
+?>
+
+<div class="form_box">
+    <form method="post" action="/User/user/id/<?php echo $this->escape($this->id . $this->fromSearchUrl); ?>">
+    <?php
+        echo $this->escape($this->form, 'none');
+        echo $this->escape($this->tabView, 'none');
+    ?>
+    </form>
+</div>
+<?php
+Fisma_Format_Section::stopSection();
+$opts = array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0);
+echo $this->escape($this->partial('yui/roles.phtml', $opts), 'none');
+unset($opts);
+?>

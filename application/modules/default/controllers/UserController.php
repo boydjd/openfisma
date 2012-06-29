@@ -49,6 +49,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                       ->addActionContext('tree-data', 'json')
                       ->addActionContext('autocomplete', 'json')
                       ->initContext();
+        $this->_helper->ajaxContext()
+                      ->addActionContext('log', 'html')
+                      ->addActionContext('comments', 'html')
+                      ->addActionContext('user', 'html')
+                      ->initContext();
     }
 
     /**
@@ -634,12 +639,29 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Override parent to add a link for audit logs
+     * TabView
+     *
+     * @GETAllowed
+     */
+    public function viewAction()
+    {
+        $id = $this->_request->getParam('id');
+        $tabView = new Fisma_Yui_TabView('FindingView', $id);
+
+        $commentCount = '<span id=\'commentsCount\'>' . $this->_getSubject($id)->getComments()->count() . '</span>';
+        $tabView->addTab("User $id", "/user/user/id/$id/format/html");
+        $tabView->addTab("Comments ($commentCount)", "/user/comments/id/$id/format/html");
+        $tabView->addTab("Audit Log", "/user/log/id/$id/format/html");
+
+        $this->view->tabView = $tabView;
+    }
+    /**
+     * Show user details
      *
      * @GETAllowed
      * @return void
      */
-    public function viewAction()
+    public function userAction()
     {
         $id = $this->getRequest()->getParam('id');
         $fromSearchParams = $this->_getFromSearchParams($this->_request);

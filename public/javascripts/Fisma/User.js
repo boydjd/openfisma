@@ -81,6 +81,10 @@ Fisma.User = {
 
         rowBlinker.start();
 
+        // Update the comment count in the tab UI
+        var commentCountEl = document.getElementById('commentsCount').firstChild;
+        commentCountEl.nodeValue++;
+
         // Hide YUI dialog
         yuiPanel.hide();
         yuiPanel.destroy();

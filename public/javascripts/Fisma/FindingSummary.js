@@ -80,7 +80,7 @@
     FS.SUMMARY_TYPES = {
         organizationHierarchy: "Organization Hierarchy",
         pointOfContact: "Point Of Contact",
-        systemAggregation: "System Aggregation"
+        systemAggregation: "System Hierarchy"
     };
 
     /**

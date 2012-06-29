@@ -1,8 +1,0 @@
-<?php 
-$operation = "[<a href='{$this->viewLink}'>Back To User View</a>]";
-
-Fisma_Format_Section::startSection(
-    sprintf('User Audit Log (%s)&nbsp;&nbsp;%s', $this->escape($this->username), $operation)
-);
-
-echo $this->escape($this->dataTable, 'none');
