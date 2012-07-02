@@ -787,7 +787,8 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
      */
     public function getLongStatus($status = null)
     {
-        $activeEvaluation = (empty($status)) ? $this->CurrentEvaluation : Doctrine::getTable('Evaluation')->findOneByNickname($status);
+        $activeEvaluation = (empty($status)) ? $this->CurrentEvaluation
+		                                     : Doctrine::getTable('Evaluation')->findOneByNickname($status);
         $status = (empty($status)) ? $this->denormalizedStatus : $status;
 
         switch ($status) {
