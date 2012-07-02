@@ -46,6 +46,10 @@
         <img src="/images/alert.png" style="float: left; position: relative; top: 10px; margin-right: 5px;">
         <p><em>This user account is locked and may be inactive.</em></p>
     <?php endif; ?>
+    <?php if ($this->user->deleted_at): ?>
+        <img src="/images/alert.png" style="float: left; position: relative; top: 10px; margin-right: 5px;">
+        <p><em>This user account has been removed from the system.</em></p>
+    <?php endif; ?>
 <?php else: ?>
     <p>No user information found.</p>
 <?php endif; ?>

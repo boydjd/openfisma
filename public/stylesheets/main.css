@@ -128,8 +128,8 @@ a[target=_blank] {
 }
 
 div#mainmenu span.currentUser {
-    padding-left: 24px;
-    background-image: url('/images/user-info.png');
+    padding-left: 20px;
+    background-image: url('/images/userinfo.png');
     background-size:contain;
     background-repeat:no-repeat;
 }

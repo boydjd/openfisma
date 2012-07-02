@@ -40,11 +40,18 @@ class View_Helper_UserInfo extends Zend_View_Helper_Abstract
         }
 
         $view = Zend_Layout::getMvcInstance()->getView();
+        $user = Doctrine::getTable('User')->find($userId);
 
         $render = $view->partial(
             'helper/user-info.phtml',
             'default',
-            array('displayText' => $displayText, 'userId' => $userId)
+            array(
+                'displayText' => $displayText,
+                'userId' => $userId,
+                'classNames' => 'userInfo' .
+                                (($user->locked) ? ' locked' : '') .
+                                (($user->deleted_at) ? ' deleted' : '')
+            )
         );
 
         return $render;
