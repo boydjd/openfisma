@@ -109,7 +109,7 @@ div#menubar {
 }
 
 a[target=_blank] {
-    padding-right: 36px;
+    padding-right: 20px;
     background-image: url('/images/external_link.png');
     background-size: 12px 12px;
     background-repeat:no-repeat;

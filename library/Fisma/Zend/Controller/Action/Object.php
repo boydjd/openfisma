@@ -419,7 +419,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         // Get the subject form
-        $form   = $this->getForm();
+        $form = $this->getForm();
         $form->setAction($this->getRequest()->getRequestUri());
         $form->setDefaults($this->getRequest()->getParams());
 
@@ -515,7 +515,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->view->subject = $subject;
 
-        $form   = $this->getForm();
+        $form = $this->getForm();
         if ($this->_acl->hasPrivilegeForObject('update', $subject)) {
             $form->setAction($this->getRequest()->getRequestUri());
         } else {
@@ -534,11 +534,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             if ($form->isValid($post)) {
                 try {
                     $this->saveValue($form, $subject);
-                    $msg   = $this->getSingularModelName() . ' updated successfully';
+                    $msg  = $this->getSingularModelName() . ' updated successfully';
                     $type = 'notice';
 
                     // Refresh the form, in case the changes to the model affect the form
-                    $form   = $this->getForm();
+                    $form = $this->getForm();
                     $this->view->priorityMessenger($msg, $type);
                     $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id$fromSearchUrl");
                 } catch (Doctrine_Exception $e) {

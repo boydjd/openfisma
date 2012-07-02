@@ -203,6 +203,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $userRole->free();
                 unset($userRole);
             }
+
+            if ($subject->deleted_at) {
+                $subject->deleted_at = null;
+                $subject->save();
+            }
+
             $conn->commit();
 
             // Just send out email when create a new account or change password by admin user,
@@ -646,6 +652,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     public function viewAction()
     {
         $id = $this->_request->getParam('id');
+        $subject = $this->_getSubject($id);
+		$fromSearchParams = $this->_getFromSearchParams($this->_request);
         $tabView = new Fisma_Yui_TabView('FindingView', $id);
 
         $commentCount = '<span id=\'commentsCount\'>' . $this->_getSubject($id)->getComments()->count() . '</span>';
@@ -654,6 +662,14 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("Audit Log", "/user/log/id/$id/format/html");
 
         $this->view->tabView = $tabView;
+
+		$viewButtons = $this->getViewButtons($subject);
+        $toolbarButtons = $this->getToolbarButtons($subject, $fromSearchParams);
+        $searchButtons = $this->getSearchButtons($subject, $fromSearchParams);
+        $buttons = array_merge($toolbarButtons, $viewButtons);
+        $this->view->modelName = $this->getSingularModelName();
+        $this->view->toolbarButtons = $toolbarButtons;
+        $this->view->searchButtons = $searchButtons;
     }
     /**
      * Show user details
@@ -723,6 +739,22 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     public function createAction()
     {
+        // Manually handling re-creation of deleted user
+        if ($this->_request->isPost()) {
+            if ($username = $this->_request->getPost('username')) {
+                $subject = Doctrine::getTable('User')->findOneByUsername($username);
+                if ($subject && $subject->deleted_at) {
+                    $id = $subject->id;
+
+                    // recycle old account and update it
+                    $this->_request->setParam('id', $id);
+                    $this->_viewObject();
+
+                    $this->_redirect('/user/view/id/' . $subject->id);
+                }
+            }
+         }
+
         $tabView = new Fisma_Yui_TabView('UserView');
 
         $roles = Doctrine_Query::create()
@@ -1211,6 +1243,21 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 );
             }
         }
+
+		if (!empty($record) && $this->_acl->hasPrivilegeForObject('delete', $record)) {
+			if ($this->getRequest()->getActionName() === 'view') {
+				$buttons['delete'] = new Fisma_Yui_Form_Button(
+					'deleteButton',
+					array(
+		                'label' => 'Delete User',
+		                'onClickFunction' => 'Fisma.User.deleteUser',
+		                'onClickArgument' => array('id' => $record->id),
+		                'imageSrc' => '/images/trash_recyclebin_empty_closed.png'
+		            )
+				);
+			}
+		}
+
         $buttons = array_merge($buttons, parent::getToolbarButtons($record));
 
         return $buttons;
@@ -1472,4 +1519,98 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         print Zend_Json::encode($response);
     }
+
+	/**
+	 * @GETAllowed
+	 */
+	public function deleteAction()
+	{
+		$id = $this->getRequest()->getParam('id');
+		$subject = $this->_getSubject($id);
+
+		if (!$subject) {
+			throw new Fisma_Zend_Exception_User("No active user found with id #{$id}.");
+		}
+
+        $messages = array();
+
+        // Check for deleting root or self
+        if ($subject->username === 'root') {
+            throw new Fisma_Zend_Exception_User("Root account cannot be deleted.");
+        } else if ($subject->username === CurrentUser::getAttribute('username')) {
+            throw new Fisma_Zend_Exception_User("You cannot delete yourself.");
+        }
+
+		// Check for open findings
+		$findingCount = Doctrine_Query::create()
+            ->from('Finding f')
+            ->where('f.pocId = ?', $id)
+            ->andWhere('f.status <> ?', 'CLOSED')
+            ->count();
+		if ($findingCount > 0) {
+            $messages[] = "<a href='/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED/pocUser"
+                        . "/textExactMatch/" . $subject->displayName . "' target='_blank'>"
+                        . $findingCount . ' open finding' . (($findingCount > 1) ? 's' : '')
+                        . "</a>";
+        }
+        // Check for open incidents
+        $incidentCount = Doctrine_Query::create()
+            ->from('Incident i')
+            ->where('i.pocId = ?', $id)
+            ->andWhere('i.status <> ?', 'closed')
+            ->count();
+        if ($incidentCount > 0) {
+            $messages[] = "<a href='/incident/list?q=/status/enumIsNot/closed/pocUser/textExactMatch/"
+                        . $subject->displayName . "' target='_blank'>"
+                        . $incidentCount . ' open incident' . (($incidentCount > 1) ? 's' : '')
+                        . "</a>";
+        }
+        // Check for organizatinos
+        $organizationCount = Doctrine_Query::create()
+            ->from('Organization o')
+            ->leftJoin('o.OrganizationType ot')
+            ->where('o.pocId = ?', $id)
+            ->andWhere('ot.nickname <> ?', 'system')
+            ->count();
+        if ($organizationCount > 0) {
+            $messages[] = "<a href='/organization/list?q=/pocUser/textExactMatch/"
+                        . $subject->displayName . "' target='_blank'>"
+                        . $organizationCount . ' organization' . (($organizationCount > 1) ? 's' : '')
+                        . "</a>";
+        }
+        // Check for active systems
+        $systemCount = Doctrine_Query::create()
+            ->from('Organization o')
+            ->innerJoin('o.System s')
+            ->where('o.pocId = ?', $id)
+            ->andWhere('s.sdlcPhase <> ?', 'disposal')
+            ->count();
+        if ($systemCount > 0) {
+            $messages[] = "<a href='/system/list?q=/pocUser/textExactMatch/"
+                        . $subject->displayName . "' target='_blank'>"
+                        . $systemCount . ' system' . (($systemCount > 1) ? 's' : '')
+                        . "</a>";
+        }
+
+        if (count($messages) > 0) {
+            $this->view->priorityMessenger(
+                "Cannot delete user.<br/>This user is currently assigned to: " . implode(', ', $messages),
+                'warning'
+            );
+            $this->_redirect('/user/view/id/' . $id);
+        }
+
+		$subject->published = false;
+		$subject->deleted_at = Fisma::now();
+		foreach ($subject->UserRole as $role) {
+            $role->unlink('Organizations');
+        }
+        $subject->save();
+        $subject->unlink('Roles');
+        $subject->unlink('Events');
+		$subject->save();
+
+        $this->view->priorityMessenger('User deleted successfully.', 'notice');
+		$this->_redirect('/user/list');
+	}
 }

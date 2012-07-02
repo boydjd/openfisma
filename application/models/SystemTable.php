@@ -55,6 +55,17 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'pocUser' => array(
+                'initiallyVisible' => false,
+                'label' => 'Point Of Contact',
+                'join' => array(
+                    'model' => 'User',
+                    'relation' => 'Organization.Poc',
+                    'field' => 'displayName'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
             'description' => array(
                 'initiallyVisible' => false,
                 'label' => 'Description',

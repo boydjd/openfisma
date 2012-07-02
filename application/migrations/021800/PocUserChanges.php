@@ -71,6 +71,9 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
         );
         $this->getHelper()->dropIndexes('user_event', 'userid_idx');
 
+        // Add deleted_at column
+        $this->getHelper()->addColumn('deleted_at', 'datetime', 'modifiedts');
+
     }
 
     protected function _dropStuff()

@@ -4,6 +4,7 @@ User:
     columns:
         createdTs: timestamp
         modifiedTs: timestamp
+        deleted_at: timestamp
 
         username:
             type: string(255)
