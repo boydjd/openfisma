@@ -108,3 +108,23 @@ div.section {
 .yui-ac-input {
     position: absolute ! important;
 }
+
+span.userInfo {
+    background-image: url(/images/userinfo.small.png);
+}
+
+span.userInfo.locked {
+    background-image: url(/images/userinfo-locked.small.png);
+}
+
+span.userInfo.deleted {
+    background-image: url(/images/userinfo-deleted.small.png);
+}
+
+div#mainmenu span.logo {
+    background-image: url('/images/logo_notext.small.png');
+}
+
+div#mainmenu span.currentUser {
+    background-image: url('/images/userinfo.png');
+}

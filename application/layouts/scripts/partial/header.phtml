@@ -25,10 +25,10 @@ YAHOO.util.Event.onDOMReady(function () {
     menuBar.render('menubar');
 
     $('div#mainmenu > div > ul > li:last-child').addClass('right');
-    <?php if (CurrentUser::getAttribute('Notifications')->count() > 0): ?>
-        $('div#mainmenu > div > ul > li:last-child').addClass('notification');
-        $('div#mainmenu > div > ul > li:nth-last-child(2)').addClass('right');
-    <?php endif; ?>
+<?php if (CurrentUser::getAttribute('Notifications')->count() > 0): ?>
+    $('div#mainmenu > div > ul > li:last-child').addClass('notification');
+    $('div#mainmenu > div > ul > li').filter(':not(.right)').last().addClass('right');
+<?php endif; ?>
 });
 </script>
 
