@@ -406,7 +406,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      *
      * @return void
      */
-    public function _createObject()
+    public function _createObject($ignorePost)
     {
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForClass('create', $this->getAclResourceName());
@@ -423,7 +423,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $form->setAction($this->getRequest()->getRequestUri());
         $form->setDefaults($this->getRequest()->getParams());
 
-        if ($this->_request->isPost()) {
+        if ($this->_request->isPost() && !$ignorePost) {
             $post = $this->_request->getPost();
 
             if ($form->isValid($post)) {
@@ -570,6 +570,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
+
+        return (!isset($error));
     }
 
     /**

@@ -206,6 +206,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             if ($subject->deleted_at) {
                 $subject->deleted_at = null;
+                $subject->lastRob = null;
                 $subject->save();
             }
 
@@ -748,9 +749,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
                     // recycle old account and update it
                     $this->_request->setParam('id', $id);
-                    $this->_viewObject();
-
-                    $this->_redirect('/user/view/id/' . $subject->id);
+                    if ($this->_viewObject()) {
+                        $this->_redirect('/user/view/id/' . $subject->id);
+                    }
                 }
             }
          }
@@ -764,7 +765,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->execute();
         $this->view->roles = Zend_Json::encode($roles);
         $this->view->tabView = $tabView;
-        parent::_createObject();
+        parent::_createObject(true);
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
 
         $id = $this->getRequest()->getParam('id');
