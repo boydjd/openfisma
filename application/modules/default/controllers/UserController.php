@@ -654,7 +654,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     {
         $id = $this->_request->getParam('id');
         $subject = $this->_getSubject($id);
-		$fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
         $tabView = new Fisma_Yui_TabView('FindingView', $id);
 
         $commentCount = '<span id=\'commentsCount\'>' . $this->_getSubject($id)->getComments()->count() . '</span>';
@@ -664,7 +664,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->tabView = $tabView;
 
-		$viewButtons = $this->getViewButtons($subject);
+        $viewButtons = $this->getViewButtons($subject);
         $toolbarButtons = $this->getToolbarButtons($subject, $fromSearchParams);
         $searchButtons = $this->getSearchButtons($subject, $fromSearchParams);
         $buttons = array_merge($toolbarButtons, $viewButtons);
@@ -1245,19 +1245,19 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
         }
 
-		if (!empty($record) && $this->_acl->hasPrivilegeForObject('delete', $record)) {
-			if ($this->getRequest()->getActionName() === 'view') {
-				$buttons['delete'] = new Fisma_Yui_Form_Button(
-					'deleteButton',
-					array(
-		                'label' => 'Delete User',
-		                'onClickFunction' => 'Fisma.User.deleteUser',
-		                'onClickArgument' => array('id' => $record->id),
-		                'imageSrc' => '/images/trash_recyclebin_empty_closed.png'
-		            )
-				);
-			}
-		}
+        if (!empty($record) && $this->_acl->hasPrivilegeForObject('delete', $record)) {
+            if ($this->getRequest()->getActionName() === 'view') {
+                $buttons['delete'] = new Fisma_Yui_Form_Button(
+                    'deleteButton',
+                    array(
+                        'label' => 'Delete User',
+                        'onClickFunction' => 'Fisma.User.deleteUser',
+                        'onClickArgument' => array('id' => $record->id),
+                        'imageSrc' => '/images/trash_recyclebin_empty_closed.png'
+                    )
+                );
+            }
+        }
 
         $buttons = array_merge($buttons, parent::getToolbarButtons($record));
 
@@ -1521,17 +1521,19 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         print Zend_Json::encode($response);
     }
 
-	/**
-	 * @GETAllowed
-	 */
-	public function deleteAction()
-	{
-		$id = $this->getRequest()->getParam('id');
-		$subject = $this->_getSubject($id);
+    /**
+     * Delete a user if not associated with any open findings / incidents / organizations / or systems
+     *
+     * @return void
+     */
+    public function deleteAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $subject = $this->_getSubject($id);
 
-		if (!$subject) {
-			throw new Fisma_Zend_Exception_User("No active user found with id #{$id}.");
-		}
+        if (!$subject) {
+            throw new Fisma_Zend_Exception_User("No active user found with id #{$id}.");
+        }
 
         $messages = array();
 
@@ -1542,13 +1544,13 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             throw new Fisma_Zend_Exception_User("You cannot delete yourself.");
         }
 
-		// Check for open findings
-		$findingCount = Doctrine_Query::create()
+        // Check for open findings
+        $findingCount = Doctrine_Query::create()
             ->from('Finding f')
             ->where('f.pocId = ?', $id)
             ->andWhere('f.status <> ?', 'CLOSED')
             ->count();
-		if ($findingCount > 0) {
+        if ($findingCount > 0) {
             $messages[] = "<a href='/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED/pocUser"
                         . "/textExactMatch/" . $subject->displayName . "' target='_blank'>"
                         . $findingCount . ' open finding' . (($findingCount > 1) ? 's' : '')
@@ -1601,17 +1603,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $this->_redirect('/user/view/id/' . $id);
         }
 
-		$subject->published = false;
-		$subject->deleted_at = Fisma::now();
-		foreach ($subject->UserRole as $role) {
+        $subject->published = false;
+        $subject->deleted_at = Fisma::now();
+        foreach ($subject->UserRole as $role) {
             $role->unlink('Organizations');
         }
         $subject->save();
         $subject->unlink('Roles');
         $subject->unlink('Events');
-		$subject->save();
+        $subject->save();
 
         $this->view->priorityMessenger('User deleted successfully.', 'notice');
-		$this->_redirect('/user/list');
-	}
+        $this->_redirect('/user/list');
+    }
 }

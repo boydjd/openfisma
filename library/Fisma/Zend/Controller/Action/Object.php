@@ -404,9 +404,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     /**
      * A protected method which holds all of the logic for the create page but does not actually render a view
      *
+     * @param boolean $ignorePost Optional. If set to true, will not process posted data.
      * @return void
      */
-    public function _createObject($ignorePost)
+    public function _createObject($ignorePost = false)
     {
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForClass('create', $this->getAclResourceName());

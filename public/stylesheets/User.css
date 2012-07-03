@@ -27,3 +27,10 @@ span.userInfo:hover, span.organizationInfo:hover {
 span.userInfo:active, span.organizationInfo:active {
 	color: #416ed7;
 }
+
+img.userInfoAlert {
+    float: left;
+    position: relative;
+    top: 10px;
+    margin-right: 5px;
+}
