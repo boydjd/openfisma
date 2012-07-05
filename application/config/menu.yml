@@ -392,44 +392,44 @@ UserPreferences:
     label: <span class=currentUser>$currentUser</span>
     submenu:
         Logout:
-            label: Log Out
+            label: <span class=logout>Log Out</span>
             link: /auth/logout
         Separator1:
             label: Separator
         ChangePassword:
-            label: Change Password
+            label: <span class=password>Change Password</span>
             link: /user/password
             condition: return ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username);
         Notifications:
-            label: E-mail Notifications
+            label: <span class=emailPreferences>E-mail Notifications</span>
             link: /user/notification
         Profile:
-            label: My Profile
+            label: <span class=profile>My Profile</span>
             link: /user/profile
         Whatsnew:
-            label: What\u2019s New
+            label: <span class=whatsnew>What\u2019s New</span>
             link: ""
             onClick: Fisma.Util.showWhatsNewDialog
             condition: return Fisma_WhatsNew::checkContents();
         Separator2:
             label: Separator
         About:
-            label: About OpenFISMA
+            label: <span class=openfisma>About OpenFISMA</span>
             link: http://openfisma.org/
             target: _blank
         Contact:
-            label: Contact Administrator
+            label: <span class=contact>Contact Administrator</span>
             link: $mailToAdmin
             target: _blank
         Privacy:
-            label: Privacy Policy
+            label: <span class=privacy>Privacy Policy</span>
             link: /auth/privacy/
         Manual:
-            label: Online Help
+            label: <span class=help>Online Help</span>
             link: http://manual.openfisma.org/
             target: _blank
         ROB:
-            label: Rules of Behavior
+            label: <span class=rob>Rules of Behavior</span>
             link: /auth/rob/
 Notifications:
     label: $notificationCount

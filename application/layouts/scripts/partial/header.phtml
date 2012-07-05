@@ -29,6 +29,21 @@ YAHOO.util.Event.onDOMReady(function () {
     $('div#mainmenu > div > ul > li:last-child').addClass('notification');
     $('div#mainmenu > div > ul > li').filter(':not(.right)').last().addClass('right');
 <?php endif; ?>
+
+    if (document.URL.match('/finding/')) {
+        module = 'Findings';
+    } else if (document.URL.match('/vm/')) {
+        module = 'Vulnerabilities';
+    } else if (document.URL.match('/incident/') || document.URL.match('/incident-') || document.URL.match('/ir-')) {
+        module = 'Incidents';
+    } else if (document.URL.match('/config/')) {
+        module = 'Administration';
+    } else if (document.URL.match('/user/')) {
+        module = 'nothing';
+    } else {
+        module = 'System Inventory';
+    }
+    $('div#mainmenu > div > ul > li > a:contains("' + module + '")').parents('li').addClass('currentModule');
 });
 </script>
 
