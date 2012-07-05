@@ -1572,7 +1572,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->from('Incident i')
             ->where('i.pocId = ?', $id)
             ->andWhere('i.status <> ?', 'closed')
-            ->andWhere('f.deleted_at is NULL')
+            ->andWhere('i.deleted_at is NULL')
             ->count();
         if ($incidentCount > 0) {
             $messages[] = "<a href='/incident/list?q=/status/enumIsNot/closed/pocUser/textExactMatch/"
@@ -1607,14 +1607,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                         . "</a>";
         }
 
-        if (count($messages) > 0) {
-            $this->view->priorityMessenger(
-                "Cannot delete user.<br/>This user is currently assigned to: " . implode(', ', $messages),
-                'warning'
-            );
-            $this->_redirect('/user/view/id/' . $id . $fromSearchUrl);
-        }
-
         try {
             Doctrine_Manager::connection()->beginTransaction();
 
@@ -1629,7 +1621,16 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $subject->save();
 
             Doctrine_Manager::connection()->commit();
-            $this->view->priorityMessenger('User deleted successfully.', 'notice');
+            if (count($messages) > 0) {
+                $this->view->priorityMessenger(
+                    "User deleted successfully.<br/>" .
+                    "Please note that this user is still appointed to: " . implode(', ', $messages),
+                    'notice'
+                );
+            } else {
+                $this->view->priorityMessenger('User deleted successfully.', 'info');
+            }
+
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollback();
             $error = "User cannot be deleted due to an error: {$e->getMessage()}";
