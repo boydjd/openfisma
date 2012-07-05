@@ -741,6 +741,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     public function createAction()
     {
         // Manually handling re-creation of deleted user
+        $manuallyOveride = false;
         if ($this->_request->isPost()) {
             if ($username = $this->_request->getPost('username')) {
                 $subject = Doctrine::getTable('User')->findOneByUsername($username);
@@ -751,10 +752,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     $this->_request->setParam('id', $id);
                     if ($this->_viewObject()) {
                         $this->_redirect('/user/view/id/' . $subject->id);
+                    } else {
+                        $manuallyOveride = true;
                     }
                 }
             }
-         }
+        }
 
         $tabView = new Fisma_Yui_TabView('UserView');
 
@@ -765,7 +768,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->execute();
         $this->view->roles = Zend_Json::encode($roles);
         $this->view->tabView = $tabView;
-        parent::_createObject(true);
+        parent::_createObject($manuallyOveride);
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
 
         $id = $this->getRequest()->getParam('id');
@@ -1556,6 +1559,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->from('Finding f')
             ->where('f.pocId = ?', $id)
             ->andWhere('f.status <> ?', 'CLOSED')
+            ->andWhere('f.deleted_at is NULL')
             ->count();
         if ($findingCount > 0) {
             $messages[] = "<a href='/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED/pocUser"
@@ -1568,6 +1572,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             ->from('Incident i')
             ->where('i.pocId = ?', $id)
             ->andWhere('i.status <> ?', 'closed')
+            ->andWhere('f.deleted_at is NULL')
             ->count();
         if ($incidentCount > 0) {
             $messages[] = "<a href='/incident/list?q=/status/enumIsNot/closed/pocUser/textExactMatch/"

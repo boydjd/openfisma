@@ -93,18 +93,30 @@ body {
 }
 
 /* The logo is floated to the left */
-div#mainmenu span.logo {
-    padding-left: 24px;
-    background-image: url('/images/logo_notext.png');
-    background-size:contain;
-    background-repeat:no-repeat;
+div#mainmenu span.home {
+    padding-left: 32px;
+    line-height: 24px;
+    background-image: url('/images/home.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+    cursor: pointer;
 }
 
+div#mainmenu  > div > ul > li:first-child > a {
+    padding-right: 0px;
+}
+
+div#mainmenu  > div > ul > li > a {
+    min-height: 36px;
+    line-height: 36px;
+
+}
 /* Styling for the menubar. The min-height reserves the space required for the menubar while it loads. */
 div#menubar {
     clear: both;
     font-weight: bold;
-    min-height: 25px;
+    min-height: 36px;
     background-color: #d3d3d3;
 }
 
@@ -128,10 +140,12 @@ a[target=_blank] {
 }
 
 div#mainmenu span.currentUser {
-    padding-left: 20px;
+    padding-left: 32px;
+    line-height: 24px;
     background-image: url('/images/userinfo.png');
-    background-size:contain;
-    background-repeat:no-repeat;
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
 }
 
 div#tab1 td {

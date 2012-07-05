@@ -28,33 +28,8 @@
 ########################################################################################################################
 
 Home:
-    label: <span class=logo>$systemName</span>
+    label: <span class=home>&nbsp;</span>
     link: /
-    submenu:
-        Home:
-            label: Home
-            link: /
-        Privacy:
-            label: Privacy Policies
-            link: /auth/privacy/
-        ROB:
-            label: Rules of Behavior
-            link: /auth/rob/
-        Separator:
-            label: Separator
-        About:
-            label: About OpenFISMA
-            link: http://openfisma.org/
-            target: _blank
-        Contact:
-            label: Contact Administrator
-            link: $mailToAdmin
-            target: _blank
-        Manual:
-            label: Online Help
-            link: http://manual.openfisma.org/
-            target: _blank
-
 Finding:
     label: Findings
     privilege:
@@ -416,6 +391,11 @@ Administration:
 UserPreferences:
     label: <span class=currentUser>$currentUser</span>
     submenu:
+        Logout:
+            label: Log Out
+            link: /auth/logout
+        Separator1:
+            label: Separator
         ChangePassword:
             label: Change Password
             link: /user/password
@@ -431,11 +411,26 @@ UserPreferences:
             link: ""
             onClick: Fisma.Util.showWhatsNewDialog
             condition: return Fisma_WhatsNew::checkContents();
-        Separator:
+        Separator2:
             label: Separator
-        Logout:
-            label: Log Out
-            link: /auth/logout
+        About:
+            label: About OpenFISMA
+            link: http://openfisma.org/
+            target: _blank
+        Contact:
+            label: Contact Administrator
+            link: $mailToAdmin
+            target: _blank
+        Privacy:
+            label: Privacy Policy
+            link: /auth/privacy/
+        Manual:
+            label: Online Help
+            link: http://manual.openfisma.org/
+            target: _blank
+        ROB:
+            label: Rules of Behavior
+            link: /auth/rob/
 Notifications:
     label: $notificationCount
     link: ""
