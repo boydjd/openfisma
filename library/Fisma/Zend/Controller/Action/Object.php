@@ -492,6 +492,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /**
      * A protected method which holds all of the logic for the view/edit page but does not actually render a view
+     *
+     * @return boolean
      */
     protected function _viewObject()
     {

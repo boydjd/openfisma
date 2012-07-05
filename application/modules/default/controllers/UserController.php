@@ -1247,12 +1247,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         if (!empty($record) && $this->_acl->hasPrivilegeForObject('delete', $record)) {
             if ($this->getRequest()->getActionName() === 'view') {
+                $fromSearchParams = $this->_getFromSearchParams($this->_request);
+                $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
                 $buttons['delete'] = new Fisma_Yui_Form_Button(
                     'deleteButton',
                     array(
                         'label' => 'Delete User',
                         'onClickFunction' => 'Fisma.User.deleteUser',
-                        'onClickArgument' => array('id' => $record->id),
+                        'onClickArgument' => array(
+                            'link'  => "/user/delete$fromSearchUrl",
+                            'id' => $record->id
+                        ),
                         'imageSrc' => '/images/trash_recyclebin_empty_closed.png'
                     )
                 );
@@ -1529,6 +1534,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     public function deleteAction()
     {
         $id = $this->getRequest()->getParam('id');
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
         $subject = $this->_getSubject($id);
 
         if (!$subject) {
@@ -1600,20 +1607,32 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 "Cannot delete user.<br/>This user is currently assigned to: " . implode(', ', $messages),
                 'warning'
             );
-            $this->_redirect('/user/view/id/' . $id);
+            $this->_redirect('/user/view/id/' . $id . $fromSearchUrl);
         }
 
-        $subject->published = false;
-        $subject->deleted_at = Fisma::now();
-        foreach ($subject->UserRole as $role) {
-            $role->unlink('Organizations');
-        }
-        $subject->save();
-        $subject->unlink('Roles');
-        $subject->unlink('Events');
-        $subject->save();
+        try {
+            Doctrine_Manager::connection()->beginTransaction();
 
-        $this->view->priorityMessenger('User deleted successfully.', 'notice');
+            foreach ($subject->UserRole as $role) {
+                $role->unlink('Organizations');
+            }
+            $subject->UserRole->save();
+            $subject->unlink('Roles');
+            $subject->unlink('Events');
+            $subject->published = false;
+            $subject->deleted_at = Fisma::now();
+            $subject->save();
+
+            Doctrine_Manager::connection()->commit();
+            $this->view->priorityMessenger('User deleted successfully.', 'notice');
+        } catch (Exception $e) {
+            Doctrine_Manager::connection()->rollback();
+            $error = "User cannot be deleted due to an error: {$e->getMessage()}";
+            $type  = 'warning';
+            $this->view->priorityMessenger($error, $type);
+            $this->_redirect('/user/view/id/' . $id . $fromSearchUrl);
+        }
+
         $this->_redirect('/user/list');
     }
 }
