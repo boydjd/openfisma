@@ -1671,6 +1671,19 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form = Fisma_Zend_Form_Manager::loadForm('user_preferences');
         $form = Fisma_Zend_Form_Manager::prepareForm($form);
 
+        if (!$this->_acl->hasArea('finding')) {
+            $form->getElement('homeSelect')->removeMultiOption('finding');
+        }
+        if (!$this->_acl->hasArea('incident')) {
+            $form->getElement('homeSelect')->removeMultiOption('incident');
+        }
+        if (!$this->_acl->hasArea('vulnerability')) {
+            $form->getElement('homeSelect')->removeMultiOption('vulnerability');
+        }
+        if (!$this->_acl->hasArea('system_inventory')) {
+            $form->getElement('homeSelect')->removeMultiOption('inventory');
+        }
+
         $form->getElement('homeSelect')->setOptions(array('onChange' => 'Fisma.User.populateHomeUrl(this)'));
         $form->setDefault('homeUrl', $currentHomeUrl);
 

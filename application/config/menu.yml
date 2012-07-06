@@ -397,7 +397,7 @@ UserPreferences:
         Separator1:
             label: Separator
         ChangePassword:
-            label: Change Password
+            label: <span class=password>Change Password</span>
             link: /user/password
             condition: return ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username);
         Notifications:
@@ -407,7 +407,7 @@ UserPreferences:
             label: <span class=profile>My Profile</span>
             link: /user/profile
         Preferences:
-            label: <span class=password>Preferences</span>
+            label: <span class=preferences>Preferences</span>
             link: /user/preferences
         Whatsnew:
             label: <span class=whatsnew>What\u2019s New</span>

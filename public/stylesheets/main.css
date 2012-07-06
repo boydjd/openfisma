@@ -123,6 +123,15 @@ div#mainmenu span.emailPreferences {
 
 div#mainmenu span.password {
     padding-left: 20px;
+    background-image: url('/images/password.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    display: inline-block;
+    cursor: pointer;
+}
+
+div#mainmenu span.preferences {
+    padding-left: 20px;
     background-image: url('/images/settings.png');
     background-size: contain;
     background-repeat: no-repeat;

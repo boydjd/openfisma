@@ -77,6 +77,10 @@ div#mainmenu span.emailPreferences {
 }
 
 div#mainmenu span.password {
+    background-image: url('/images/password-small.png');
+}
+
+div#mainmenu span.preferences {
     background-image: url('/images/settings-small.png');
 }
 
