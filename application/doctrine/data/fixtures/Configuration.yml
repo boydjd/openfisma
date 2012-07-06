@@ -4,7 +4,7 @@ Configuration:
 
         failure_threshold: 3
 
-        session_inactivity_period: 20 
+        session_inactivity_period: 20
 
         session_inactivity_notice: 18
 
@@ -28,7 +28,7 @@ Configuration:
 
         contact_subject: OpenFISMA Tech Support
 
-        use_notification: <p>This is a United States Government Computer system. We encourage its use by authorized staff, auditors, and contractors. Activity on this system is subject to monitoring in the course of systems administration and to protect the system from unauthorized use. Users are further advised that they have no expectation of privacy while using this system or in any material on this system. Unauthorized use of this system is a violation of Federal Law and will be punished with fines or imprisonment (P.L. 99-474) Anyone using this system expressly consents to such monitoring and acknowledges that unauthorized use may be reported to the proper authorities.</p>
+        use_notification: <p>This is a United States Government Computer system. We encourage its use by authorized staff, auditors, and contractors. Activity on this system is subject to monitoring in the course of systems administration and to protect the system from unauthorized use. Users are further advised that they have no expectation of privacy while using this system or in any material on this system. Unauthorized use of this system is a violation of Federal Law and will be punished with fines or imprisonment (P.L. 99-474). Anyone using this system expressly consents to such monitoring and acknowledges that unauthorized use may be reported to the proper authorities.</p>
 
         behavior_rule: <p>SENSITIVE BUT UNCLASSIFIED INFORMATION PROPERTY OF THE UNITED STATES GOVERNMENT</p><p>DISCLOSURE, COPYING, DISSEMINATION, OR DISTRIBUTION OF SENSITIVE BUT UNCLASSIFIED INFORMATION TO UNAUTHORIZED USERS IS PROHIBITED.</p><p>Please dispose of sensitive but unclassified information when no longer needed.</p><p>I. Usage Agreement</p><p>This is a Federal computer system and is the property of the United States Government. It is for authorized use only. Users (authorized or unauthorized) have no explicit or implicit expectation of privacy in anything viewed, created, downloaded, or stored on this system, including e-mail, Internet, and Intranet use. Any or all uses of this system (including all peripheral devices and output media) and all files on this system may be intercepted, monitored, read, captured, recorded, disclosed, copied, audited, and/or inspected by authorized Agency personnel, the Office of Inspector General (OIG),and/or other law enforcement personnel, as well as authorized officials of other agencies. Access or use of this computer by any person, whether authorized or unauthorized, constitutes consent to such interception, monitoring, reading, capturing, recording, disclosure, copying, auditing, and/or inspection at the discretion of authorized Agency personnel, law enforcement personnel (including the OIG),and/or authorized officials other agencies. Unauthorized use of this system is prohibited and may constitute a violation of 18 U.S.C. 1030 or other Federal laws and regulations and may result in criminal, civil, and/or administrative action. By continuing to use this system, you indicate your awareness of, and consent to, these terms and conditions and acknowledge that there is no reasonable expectation of privacy in the access or use of this computer system.</p>
 
@@ -44,7 +44,7 @@ Configuration:
 
         pass_numerical: true
 
-        pass_special: 0 
+        pass_special: 0
 
         pass_min_length: 8
 
