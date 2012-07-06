@@ -900,6 +900,7 @@ span.bar {
     height: 0.75em;
     border-top: solid thin gray;
     border-bottom: solid thin gray;
+    cursor: pointer;
 }
 span.bar.normal {
     background: #C8E1FA; /* for non-css3 browsers */
