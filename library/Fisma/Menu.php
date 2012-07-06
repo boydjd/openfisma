@@ -208,13 +208,7 @@ class Fisma_Menu
                             $root->addSeparator();
                         }
                     }
-                } else if ('$mailToAdmin' == $value['label']) {
-                    $view = $this->_getCurrentView();
-                    $mailurl = 'mailto:' . Fisma::configuration()->getConfig('contact_email')
-                             . '?Subject='. $view->escape(Fisma::configuration()->getConfig('contact_subject'), 'url');
-                    $value['label'] = $mailurl;
                 } else {
-
                     // Do not need to check hasArea privilege here because it has been checked previously
                     if (isset($value['privilege']) && 'hasArea' != $value['privilege']['func']) {
                         if ($acl->$value['privilege']['func'](

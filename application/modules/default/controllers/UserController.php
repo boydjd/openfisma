@@ -1674,12 +1674,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         if (!$this->_acl->hasArea('finding')) {
             $form->getElement('homeSelect')->removeMultiOption('finding');
         }
-        if (!$this->_acl->hasArea('incident')) {
+
+        $irModule = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+        if (!$irModule || !$irModule->enabled || !$this->_acl->hasArea('incident')) {
             $form->getElement('homeSelect')->removeMultiOption('incident');
         }
-        if (!$this->_acl->hasArea('vulnerability')) {
+
+        $vmModule = Doctrine::getTable('Module')->findOneByName('Vulnerability Management');
+        if (!$vmModule || !$vmModule->enabled || !$this->_acl->hasArea('vulnerability')) {
             $form->getElement('homeSelect')->removeMultiOption('vulnerability');
         }
+
         if (!$this->_acl->hasArea('system_inventory')) {
             $form->getElement('homeSelect')->removeMultiOption('inventory');
         }
