@@ -167,6 +167,15 @@ class User extends BaseUser
      */
     public function checkAccountLock($cli = false)
     {
+        // Check if this account is marked as "deleted"
+        if ($this->deleted_at) {
+            if ($cli) {
+                return true;
+            } else {
+                throw new Fisma_Zend_Exception_AccountLocked("Account has been deleted.");
+            }
+        }
+
         if ($this->locked) {
             // Check if this is a lock which should be released
             if (User::LOCK_TYPE_PASSWORD == $this->lockType && Fisma::configuration()->getConfig('unlock_enabled')) {

@@ -404,9 +404,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     /**
      * A protected method which holds all of the logic for the create page but does not actually render a view
      *
+     * @param boolean $ignorePost Optional. If set to true, will not process posted data.
      * @return void
      */
-    public function _createObject()
+    public function _createObject($ignorePost = false)
     {
         if ($this->_enforceAcl) {
             $this->_acl->requirePrivilegeForClass('create', $this->getAclResourceName());
@@ -419,11 +420,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         // Get the subject form
-        $form   = $this->getForm();
+        $form = $this->getForm();
         $form->setAction($this->getRequest()->getRequestUri());
         $form->setDefaults($this->getRequest()->getParams());
 
-        if ($this->_request->isPost()) {
+        if ($this->_request->isPost() && !$ignorePost) {
             $post = $this->_request->getPost();
 
             if ($form->isValid($post)) {
@@ -491,6 +492,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
     /**
      * A protected method which holds all of the logic for the view/edit page but does not actually render a view
+     *
+     * @return boolean
      */
     protected function _viewObject()
     {
@@ -515,7 +518,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->view->subject = $subject;
 
-        $form   = $this->getForm();
+        $form = $this->getForm();
         if ($this->_acl->hasPrivilegeForObject('update', $subject)) {
             $form->setAction($this->getRequest()->getRequestUri());
         } else {
@@ -534,11 +537,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             if ($form->isValid($post)) {
                 try {
                     $this->saveValue($form, $subject);
-                    $msg   = $this->getSingularModelName() . ' updated successfully';
+                    $msg  = $this->getSingularModelName() . ' updated successfully';
                     $type = 'notice';
 
                     // Refresh the form, in case the changes to the model affect the form
-                    $form   = $this->getForm();
+                    $form = $this->getForm();
                     $this->view->priorityMessenger($msg, $type);
                     $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id$fromSearchUrl");
                 } catch (Doctrine_Exception $e) {
@@ -570,6 +573,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $form = $this->setForm($subject, $form);
         $this->view->form = $form;
         $this->view->id   = $id;
+
+        return (!isset($error));
     }
 
     /**

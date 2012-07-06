@@ -329,11 +329,19 @@ Fisma.User = {
                 },
 
                 failure: function(o) {
-                    //Fisma.User.notificationPanel
                 }
             },
             null
         );
         return false;
+    },
+
+    /**
+     * POST to deleteAction
+     */
+    deleteUser: function(event, args) {
+    	var id = args.id;
+        var link = args.link;
+    	Fisma.Util.formPostAction(null, link, id);
     }
 };

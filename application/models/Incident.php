@@ -389,6 +389,12 @@ class Incident extends BaseIncident
                     $actor->save();
                 }
             }
+            Notification::notify(
+                'USER_POC',
+                $this,
+                CurrentUser::getInstance(),
+                array('userId' => $sanitized)
+            );
         }
     }
 }

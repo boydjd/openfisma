@@ -6,9 +6,18 @@ span.userInfo, span.organizationInfo {
 }
 
 span.userInfo {
-    background: url(/images/user-info.png) no-repeat 0 1px;
+    background: url(/images/userinfo.png) no-repeat;
+    background-size: 14px 14px;
+    background-position: 0px 1px;
     padding-left: 17px;
+}
 
+span.userInfo.locked {
+    background-image: url(/images/userinfo-locked.png);
+}
+
+span.userInfo.deleted {
+    background-image: url(/images/userinfo-deleted.png);
 }
 
 span.userInfo:hover, span.organizationInfo:hover {
@@ -17,4 +26,11 @@ span.userInfo:hover, span.organizationInfo:hover {
 
 span.userInfo:active, span.organizationInfo:active {
 	color: #416ed7;
+}
+
+img.userInfoAlert {
+    float: left;
+    position: relative;
+    top: 10px;
+    margin-right: 5px;
 }

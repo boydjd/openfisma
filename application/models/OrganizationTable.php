@@ -69,6 +69,17 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'pocUser' => array(
+                'initiallyVisible' => false,
+                'label' => 'Point Of Contact',
+                'join' => array(
+                    'model' => 'User',
+                    'relation' => 'Poc',
+                    'field' => 'displayName'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
             'description' => array(
                 'initiallyVisible' => true,
                 'label' => 'Description',
@@ -84,7 +95,7 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
 
     /**
      * Return a list of fields which are used for access control
-     * 
+     *
      * @return array
      */
     public function getAclFields()
@@ -94,23 +105,23 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
 
     /**
      * Provide ID list for ACL filter
-     * 
+     *
      * @return array
      */
     static function getOrganizationIds()
     {
         $currentUser = CurrentUser::getInstance();
- 
-        // the ID list would contain the systems in the disposal phase 
+
+        // the ID list would contain the systems in the disposal phase
         $organizationIds = $currentUser->getOrganizationsByPrivilege('organization', 'read', true)
                                        ->toKeyValueArray('id', 'id');
 
         return $organizationIds;
     }
-    
+
     /**
      * Modifies the search index collection query to filter out system objects
-     * 
+     *
      * @param Doctrine_Query $baseQuery
      * @param array $relationAliases An array that maps relation names to table aliases in the query
      * @return Doctrine_Query
@@ -151,13 +162,13 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
         $idResult = $idQuery->execute();
 
         $ids = array();
-        
+
         foreach ($idResult as $row) {
             foreach ($row as $column => $value) {
                 $ids[] = $value;
             }
         }
-        
+
         return $ids;
     }
 
@@ -214,9 +225,9 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     }
 
     /**
-     * getUsersAndRolesByOrganizationIdQuery 
-     * 
-     * @param mixed $organizationId 
+     * getUsersAndRolesByOrganizationIdQuery
+     *
+     * @param mixed $organizationId
      * @access public
      * @return void
      */
@@ -235,9 +246,9 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     }
 
     /**
-     * getSystemsLikeNameQuery 
-     * 
-     * @param mixed $query 
+     * getSystemsLikeNameQuery
+     *
+     * @param mixed $query
      * @access public
      * @return void
      */
@@ -249,11 +260,11 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
             ->where('o.name LIKE ?', $query . '%')
             ->orWhere('o.nickname LIKE ?', $query . '%');
     }
-    
+
     /**
      * Get the basic items needed for an organization select UI: id, nickname and name
      *  (systems can be optionally excluded).
-     * 
+     *
      * @param bool $excludeSystem Optional, default to FALSE
      * @return Doctrine_Query
      */

@@ -28,33 +28,8 @@
 ########################################################################################################################
 
 Home:
-    label: <span class=logo>$systemName</span>
+    label: <span class=home>&nbsp;</span>
     link: /
-    submenu:
-        Home:
-            label: Home
-            link: /
-        Privacy:
-            label: Privacy Policies
-            link: /auth/privacy/
-        ROB:
-            label: Rules of Behavior
-            link: /auth/rob/
-        Separator:
-            label: Separator
-        About:
-            label: About OpenFISMA
-            link: http://openfisma.org/
-            target: _blank
-        Contact:
-            label: Contact Administrator
-            link: $mailToAdmin
-            target: _blank
-        Manual:
-            label: Online Help
-            link: http://manual.openfisma.org/
-            target: _blank
-
 Finding:
     label: Findings
     privilege:
@@ -416,26 +391,46 @@ Administration:
 UserPreferences:
     label: <span class=currentUser>$currentUser</span>
     submenu:
+        Logout:
+            label: <span class=logout>Log Out</span>
+            link: /auth/logout
+        Separator1:
+            label: Separator
         ChangePassword:
-            label: Change Password
+            label: <span class=password>Change Password</span>
             link: /user/password
             condition: return ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username);
         Notifications:
-            label: E-mail Notifications
+            label: <span class=emailPreferences>E-mail Notifications</span>
             link: /user/notification
         Profile:
-            label: My Profile
+            label: <span class=profile>My Profile</span>
             link: /user/profile
         Whatsnew:
-            label: What\u2019s New
+            label: <span class=whatsnew>What\u2019s New</span>
             link: ""
             onClick: Fisma.Util.showWhatsNewDialog
             condition: return Fisma_WhatsNew::checkContents();
-        Separator:
+        Separator2:
             label: Separator
-        Logout:
-            label: Log Out
-            link: /auth/logout
+        About:
+            label: <span class=openfisma>About OpenFISMA</span>
+            link: http://openfisma.org/
+            target: _blank
+        Contact:
+            label: <span class=contact>Contact Administrator</span>
+            link: $mailToAdmin
+            target: _blank
+        Privacy:
+            label: <span class=privacy>Privacy Policy</span>
+            link: /auth/privacy/
+        Manual:
+            label: <span class=help>Online Help</span>
+            link: http://manual.openfisma.org/
+            target: _blank
+        ROB:
+            label: <span class=rob>Rules of Behavior</span>
+            link: /auth/rob/
 Notifications:
     label: $notificationCount
     link: ""
