@@ -138,11 +138,11 @@ class Fisma_Menu
             }
 
             // Replace $mailToAdmin with information from Fisma::configuration in link
-            if (isset($value['link']) && $value['link'] == '$mailToAdmin') {
+            if (isset($value['link'])) {
                 $view = self::_getCurrentView();
                 $mailurl = 'mailto:' . Fisma::configuration()->getConfig('contact_email')
                          . '?Subject='. $view->escape(Fisma::configuration()->getConfig('contact_subject'), 'url');
-                $value['link'] = $mailurl;
+                $value['link'] = str_replace('$mailToAdmin', $mailurl, $value['link']);
             }
 
             if (isset($value['submenu'])) {

@@ -343,5 +343,26 @@ Fisma.User = {
     	var id = args.id;
         var link = args.link;
     	Fisma.Util.formPostAction(null, link, id);
+    },
+
+    /**
+     * Populate homeUrl with built-in values if any
+     */
+    populateHomeUrl: function(selectElement) {
+        var builtins = [];
+        builtins['system'] = '/';
+        builtins['finding'] = '/finding/dashboard';
+        builtins['vulnerability'] = '/vm/vulnerability/list';
+        builtins['incident'] = '/incident-dashboard';
+        builtins['inventory'] = '/organization-dashboard';
+
+        var builtin = selectElement.value;
+        var input = $('input#homeUrl');
+        if (builtin && input.length == 1 && builtins[builtin]) {
+            input.val(builtins[builtin]);
+        } else {
+            input.focus();
+            input.select();
+        }
     }
 };

@@ -1,0 +1,37 @@
+; Set user preferences
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Duy K. Bui <duy.bui@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/content/license GPLv3
+; Version   $Id$
+
+[user_preferences]
+name = "userPreferences"
+method = "post"
+elementFilters.tags = "StripTags"
+
+elements.homeSelect.type = "select"
+elements.homeSelect.options.label = "Home page"
+elements.homeSelect.options.multiOptions.custom = "Custom URL ..."
+elements.homeSelect.options.multiOptions.system = "System Default"
+elements.homeSelect.options.multiOptions.finding = "Finding Module"
+elements.homeSelect.options.multiOptions.vulnerability = "Vulnerability Module"
+elements.homeSelect.options.multiOptions.incident = "Incident Module"
+elements.homeSelect.options.multiOptions.inventory = "System Inventory Module"
+elements.homeSelect.options.validators.notEmpty.validator = "NotEmpty"
+elements.homeSelect.options.required = true
+displayGroups.home.elements.homeSelect = "homeSelect"
+
+elements.homeUrl.type = "text"
+elements.homeUrl.options.label = "URL"
+elements.homeUrl.options.required = true
+elements.homeUrl.options.tooltip = "This URL should be internal; please omit host name from the URL. For example, if you want the home page to be 'https://openfisma.yourdomain.com<b>/finding/list?q=/denormalizedStatus/enumIsNot/CLOSED/pocUser/MyName</b>', please enter only the bold-faced part (including the <b>/</b>) into the textbox."
+displayGroups.home.elements.homeUrl = "homeUrl"
+
+elements.submitButton.type = "Form_Button_Submit"
+elements.submitButton.options.label = "Save Preferences"
+elements.submitButton.options.imageSrc = "/images/ok.png"
+displayGroups.home.elements.submitButton = "submitButton"

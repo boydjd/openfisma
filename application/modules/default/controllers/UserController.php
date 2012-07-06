@@ -1641,4 +1641,39 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $this->_redirect('/user/list');
     }
+
+    /**
+     * Set preferences
+     *
+     * @GETAllowed
+     * @return null
+     */
+    public function preferencesAction()
+    {
+        $currentHomeUrl = CurrentUser::getAttribute('homeUrl');
+
+        if ($this->_request->isPost()) {
+            $newUrl = $this->_request->getPost('homeUrl');
+            if ($newUrl !== $currentHomeUrl) {
+                if (filter_var(Fisma_Url::customUrl($newUrl), FILTER_VALIDATE_URL)) {
+                    $user = CurrentUser::getInstance();
+                    $user->homeUrl = $newUrl;
+                    $user->save();
+                    $user->refresh();
+                    $currentHomeUrl = $newUrl;
+                    $this->view->priorityMessenger('Your preferences has been updated.', 'info');
+                } else {
+                    $this->view->priorityMessenger('Invalid URL submitted.', 'warning');
+                }
+            }
+        }
+
+        $form = Fisma_Zend_Form_Manager::loadForm('user_preferences');
+        $form = Fisma_Zend_Form_Manager::prepareForm($form);
+
+        $form->getElement('homeSelect')->setOptions(array('onChange' => 'Fisma.User.populateHomeUrl(this)'));
+        $form->setDefault('homeUrl', $currentHomeUrl);
+
+        $this->view->form = $form;
+    }
 }

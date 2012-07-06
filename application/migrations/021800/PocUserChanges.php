@@ -74,6 +74,13 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
         // Add deleted_at column
         $this->getHelper()->addColumn('user', 'deleted_at', 'datetime', 'modifiedts');
 
+        // Add homeurl column
+        $this->getHelper()->addColumn(
+            'user',
+            "homeurl VARCHAR(255) NOT NULL DEFAULT '/'",
+            'datetime',
+            'mustresetpassword'
+        );
     }
 
     protected function _dropStuff()

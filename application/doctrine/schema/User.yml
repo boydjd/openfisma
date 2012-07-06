@@ -124,6 +124,12 @@ User:
             type: boolean
             default: false
 
+        homeUrl:
+            type: string
+            notnull: true
+            notblank: true
+            default: /
+
     relations:
         ReportingOrganization:
             class: Organization

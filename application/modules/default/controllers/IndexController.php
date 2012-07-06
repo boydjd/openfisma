@@ -94,10 +94,24 @@ class IndexController extends Fisma_Zend_Controller_Action_Security
             $user->save();
 
             if ($jsonResponse) {
-                $jsonResponse->succeed();
+                // $jsonResponse->succeed();
             }
         } catch (Exception $e) {
             $jsonResponse->fail($e->getMessage());
+        }
+    }
+
+    /**
+     * Go to User's home page
+     *
+     * @GETAllowed
+     */
+    public function homeAction()
+    {
+        if ($user = CurrentUser::getInstance()) {
+            $this->_redirect($user->homeUrl);
+        } else {
+            $this->_redirect('/auth/login');
         }
     }
 }

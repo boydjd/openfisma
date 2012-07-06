@@ -186,7 +186,7 @@ class AuthController extends Zend_Controller_Action
                 $this->_response->setRedirect($path);
             } else {
                 $this->_helper->layout->setLayout('layout');
-                $this->_redirect('/index/index');
+                $this->_redirect('/index/home');
             }
         } catch (Zend_Auth_Exception $zae) {
             // If any Auth exceptions are caught during login,
