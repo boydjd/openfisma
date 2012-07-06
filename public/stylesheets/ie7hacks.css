@@ -121,10 +121,50 @@ span.userInfo.deleted {
     background-image: url(/images/userinfo-deleted-small.png);
 }
 
-div#mainmenu span.logo {
+div#mainmenu span.currentUser {
+    background-image: url('/images/userinfo-medium.png');
+}
+
+div#mainmenu span.home {
+    background-image: url('/images/home-medium.png');
+}
+
+div#mainmenu span.logout {
+    background-image: url('/images/logout-small.png');
+}
+
+div#mainmenu span.emailPreferences {
+    background-image: url('/images/email-small.png');
+}
+
+div#mainmenu span.password {
+    background-image: url('/images/settings-small.png');
+}
+
+div#mainmenu span.profile {
+    background-image: url('/images/profile-small.png');
+}
+
+div#mainmenu span.rob {
+    background-image: url('/images/rob-small.png');
+}
+
+div#mainmenu span.privacy {
+    background-image: url('/images/privacy-small.png');
+}
+
+div#mainmenu span.contact {
+    background-image: url('/images/contact-small.png');
+}
+
+div#mainmenu span.openfisma {
     background-image: url('/images/logo_notext-small.png');
 }
 
-div#mainmenu span.currentUser {
-    background-image: url('/images/userinfo-small.png');
+div#mainmenu span.help {
+    background-image: url('/images/help-small.png');
+}
+
+div#mainmenu span.whatsnew {
+    background-image: url('/images/whatsnew-small.png');
 }
