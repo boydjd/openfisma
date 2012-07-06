@@ -68,7 +68,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form = Fisma_Zend_Form_Manager::loadForm('user');
         $fieldsToOmit = array(
             'password', 'confirmPassword', 'generate_password', 'role', 'locked', 'lockReason', 'lockTs',
-            'comment', 'reportingOrganizationId', 'mustResetPassword', 'lookup', 'separator', 'username'
+            'comment', 'reportingOrganizationId', 'mustResetPassword', 'lookup', 'separator', 'username', 'published'
         );
 
         foreach ($fieldsToOmit as $field) {
