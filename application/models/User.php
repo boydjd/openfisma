@@ -168,7 +168,7 @@ class User extends BaseUser
     public function checkAccountLock($cli = false)
     {
         // Check if this account is marked as "deleted"
-        if ($this->deleted_at) {
+        if ($this->{'deleted_at'}) {
             if ($cli) {
                 return true;
             } else {

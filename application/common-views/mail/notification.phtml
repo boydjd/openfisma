@@ -1,10 +1,11 @@
 This is an automatically generated message. Please do not reply to this address.
-You have chosen to receive event notifications at this e-mail address. If you want
-to modify your notification preferences, please log in to the system and select 
-"User Preferences".
+You have chosen to receive e-mail notifications at this e-mail address. If you want
+to modify your notification preferences, please log in to the system and select
+"E-mail Notifications" under the User Menu located on the right side of the tool bar
+or click <a href="<?php echo $this->escape(Fisma_Url::customUrl('/user/notification')); ?>">here</a>.
 
 <?php
-foreach ( $this->notifyData as $row ) { 
+foreach ( $this->notifyData as $row ) {
 ?>
 ---------------------------------------
 Event: <?php echo $this->escape($row->eventText, 'none')?>
@@ -13,7 +14,7 @@ Time:  <?php echo $this->escape($row->createdTs, 'none')?>
 
 URL:  <?php echo $this->escape($row->url, 'none')?>
 
-<?php 
-} 
+<?php
+}
 ?>
 ---------------------------------------

@@ -61,11 +61,11 @@ span.userInfo.deleted {
 }
 
 div#mainmenu span.currentUser {
-    background-image: url('/images/userinfo-medium.png');
+    background-image: url('/images/userinfo-small.png');
 }
 
 div#mainmenu span.home {
-    background-image: url('/images/home-medium.png');
+    background-image: url('/images/home-small.png');
 }
 
 div#mainmenu span.logout {

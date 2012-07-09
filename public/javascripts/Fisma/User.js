@@ -340,21 +340,22 @@ Fisma.User = {
      * POST to deleteAction
      */
     deleteUser: function(event, args) {
-    	var id = args.id;
+        var id = args.id;
         var link = args.link;
-    	Fisma.Util.formPostAction(null, link, id);
+        Fisma.Util.formPostAction(null, link, id);
     },
 
     /**
      * Populate homeUrl with built-in values if any
      */
     populateHomeUrl: function(selectElement) {
-        var builtins = [];
-        builtins['system'] = '/';
-        builtins['finding'] = '/finding/dashboard';
-        builtins['vulnerability'] = '/vm/vulnerability/list';
-        builtins['incident'] = '/incident-dashboard';
-        builtins['inventory'] = '/organization-dashboard';
+        var builtins = {
+            'system'        : '/',
+            'finding'       : '/finding/dashboard',
+            'vulnerability' : '/vm/vulnerability/list',
+            'incident'      : '/incident-dashboard',
+            'inventory'     : '/organization-dashboard'
+        };
 
         var builtin = selectElement.value;
         var input = $('input#homeUrl');

@@ -50,7 +50,7 @@ class View_Helper_UserInfo extends Zend_View_Helper_Abstract
                 'userId' => $userId,
                 'classNames' => 'userInfo' .
                                 (($user->locked) ? ' locked' : '') .
-                                (($user->deleted_at) ? ' deleted' : '')
+                                (($user->{'deleted_at'}) ? ' deleted' : '')
             )
         );
 

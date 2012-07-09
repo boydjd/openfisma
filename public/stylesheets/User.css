@@ -1,6 +1,6 @@
 /* Style for the UserInfo view helper */
 
-span.userInfo, span.organizationInfo {
+span.userInfo span, span.organizationInfo {
 	padding-right: 1px;
     border-bottom: 1px dashed black;
 }

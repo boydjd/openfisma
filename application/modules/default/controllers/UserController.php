@@ -204,8 +204,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 unset($userRole);
             }
 
-            if ($subject->deleted_at) {
-                $subject->deleted_at = null;
+            if ($subject->{'deleted_at'}) {
+                $subject->{'deleted_at'} = null;
                 $subject->lastRob = null;
                 $subject->save();
             }
@@ -745,7 +745,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         if ($this->_request->isPost()) {
             if ($username = $this->_request->getPost('username')) {
                 $subject = Doctrine::getTable('User')->findOneByUsername($username);
-                if ($subject && $subject->deleted_at) {
+                if ($subject && $subject->{'deleted_at'}) {
                     $id = $subject->id;
 
                     // recycle old account and update it
@@ -1617,7 +1617,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $subject->unlink('Roles');
             $subject->unlink('Events');
             $subject->published = false;
-            $subject->deleted_at = Fisma::now();
+            $subject->{'deleted_at'} = Fisma::now();
             $subject->save();
 
             Doctrine_Manager::connection()->commit();

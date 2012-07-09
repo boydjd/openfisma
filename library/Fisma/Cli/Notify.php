@@ -33,31 +33,23 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
     /**
      * Get all notifications grouped by user_id
      *
-     * @todo can't find a way to do this in DQL... substituting a mysql raw connection for now.
-     * @return Doctrine_RawSql
+     * @return Doctrine_Query
      */
     function getNotificationQuery()
     {
-         /*$query = Doctrine_Query::create()
-                    ->select('n.*, u.email, u.notifyFrequency')
-                    ->from('Notification n')
-                    ->innerJoin('n.User u')
-                    ->where('u.emailValidate = 1')
-                    ->addWhere('u.mostRecentNotifyTs is NULL OR u.mostRecentNotifyTs <= ?'.
-                               new Doctrine_Expression("DATE_SUB(NOW(), INTERVAL u.notifyFrequency HOUR)"))
-                    ->orderBy('n.userId');*/
-        $query = new Doctrine_RawSql();
+        $query = Doctrine_Query::create()
+            ->select('n.*, u.email, u.displayName, e.description')
+            ->from('Notification n')
+            ->innerJoin('n.User u')
+            ->innerJoin('n.Event e')
+            ->orderBy('n.userId, n.eventId, n.createdTs');
+        /*$query = new Doctrine_RawSql();
         $query->select('{n.eventtext}, {n.createdts}, {n.url}, {u.email}, {u.nameFirst}, {u.nameLast}')
               ->addComponent('n', 'Notification n')
               ->addComponent('u', 'n.User u')
               ->from('poc u INNER JOIN notification n on u.id = n.userid')
-              ->where('u.type = "User"')
-              ->andWhere(
-                  '(u.mostrecentnotifyts IS NULL '
-                 .'OR u.mostrecentnotifyts <= DATE_SUB(NOW(), INTERVAL u.notifyFrequency HOUR))'
-              )
-              ->andWhere('(u.locked = FALSE OR (u.locked = TRUE AND u.locktype = "manual"))')
-              ->orderBy('u.id, n.createdts');
+              ->where('(u.locked = FALSE OR (u.locked = TRUE AND u.locktype = "manual"))')
+              ->orderBy('u.id, n.createdts');*/
         return $query;
     }
 
@@ -81,12 +73,12 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
             $currentNotifications[] = $notifications[$i];
 
             // If this is the last entry OR if the next entry has a different
-            // user ID, then this current message is completed and should be
+            // user ID or event ID, then this current message is completed and should be
             // e-mailed to the user.
-            if ($i == (count($notifications) - 1)
-                || ($notifications[$i]->userId !=
-                    $notifications[$i+1]->userId)) {
-
+            if (($i == (count($notifications) - 1)) ||
+                ($notifications[$i]->userId != $notifications[$i+1]->userId) ||
+                ($notifications[$i]->eventId != $notifications[$i+1]->eventId)
+            ) {
                 $this->sendNotificationEmail($currentNotifications);
                 $this->purgeNotifications($currentNotifications);
                 $notifications[$i]->User->updateNotificationTs();
@@ -109,14 +101,15 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
     function sendNotificationEmail($notifications, $mailHandler = null)
     {
         $user = $notifications[0]->User;
+        $event = $notifications[0]->Event;
 
         $options = array('notifyData' => $notifications);
 
         $mail = new Mail();
 
         $mail->recipient     = $user->email;
-        $mail->recipientName = $user->nameFirst . ' ' . $user->nameLast;
-        $mail->subject       = "Your notifications for " . Fisma::configuration()->getConfig('system_name');
+        $mail->recipientName = $user->displayName;
+        $mail->subject       = "[" . Fisma::configuration()->getConfig('system_name') . "] " . $event->description;
 
         $mail->mailTemplate('notification', $options);
 

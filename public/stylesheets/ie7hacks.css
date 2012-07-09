@@ -122,15 +122,15 @@ span.userInfo.deleted {
 }
 
 div#mainmenu span.currentUser {
-    background-image: url('/images/userinfo-medium.png');
-    background-position: 4px 6px;
-    line-height: 36px;
+    background-image: url('/images/userinfo-small.png');
+    line-height: 23px;
+    background-position: 0px 4px;
 }
 
 div#mainmenu span.home {
-    background-image: url('/images/home-medium.png');
-    background-position: 0px 6px;
-    line-height: 36px;
+    background-image: url('/images/home-small.png');
+    line-height: 23px;
+    background-position: 0px 4px;
 }
 
 div#mainmenu span.logout {
