@@ -87,24 +87,6 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
     }
 
     /**
-     * Test the query to getNotification
-     *
-     * @return void
-     * @todo pending on the re-implementation of source method
-     */
-    public function testQuery()
-    {
-        $notify = new Fisma_Cli_Notify();
-        $notify->setLog($this->getMock("Zend_Log"));
-        $query = $notify->getNotificationQuery()->getSql();
-        $conditions = 'FROM poc u INNER JOIN notification n on u.id = n.userid '
-                     .'WHERE u.type = "User" AND (u.mostrecentnotifyts IS NULL '
-                     .'OR u.mostrecentnotifyts <= DATE_SUB(NOW(), INTERVAL u.notifyFrequency HOUR)) '
-                     .'AND (u.locked = FALSE OR (u.locked = TRUE AND u.locktype = "manual"))';
-        $this->assertContains($conditions, $query);
-    }
-
-    /**
      * Test the sending of notifications (in a very simple way)
      *
      * @return void

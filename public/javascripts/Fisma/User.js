@@ -359,7 +359,7 @@ Fisma.User = {
 
         var builtin = selectElement.value;
         var input = $('input#homeUrl');
-        if (builtin && input.length == 1 && builtins[builtin]) {
+        if (builtin && input.length === 1 && builtins[builtin]) {
             input.val(builtins[builtin]);
         } else {
             input.focus();
