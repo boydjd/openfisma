@@ -277,4 +277,18 @@ class Fisma_Menu
     {
         return (empty($view)) ? Zend_Layout::getMvcInstance()->getView() : $view;
     }
+
+    /**
+     * Returns whether the application is using APC
+     *
+     * @return boolean
+     */
+    public static function isApc()
+    {
+        $resources = Zend_Controller_Front::getInstance()->getParam('bootstrap')->getOption('resources');
+        $usingApc = (strtolower($resources['cachemanager']['default']['backend']['name']) == 'apc');
+        $apcAvailable = in_array('apc', get_loaded_extensions());
+
+        return ($apcAvailable && $usingApc);
+    }
 }

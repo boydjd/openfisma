@@ -376,9 +376,11 @@ Administration:
                 SystemCache:
                     label: APC System Cache
                     link: /debug/apc-cache/type/system
+                    condition: return Fisma_Menu::isApc();
                 UserCache:
                     label: APC User Cache
                     link: /debug/apc-cache/type/user
+                    condition: return Fisma_Menu::isApc();
                 ErrorLog:
                     label: Error log
                     link: /debug/errorlog
