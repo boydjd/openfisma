@@ -88,6 +88,10 @@ class DebugController extends Zend_Controller_Action
      */
     public function apcCacheAction()
     {
+        if (!Fisma_Menu::isApc()) {
+            throw new Fisma_Zend_Exception_User('The application is not using APC.');
+        }
+
         // Cache type can be 'system' or 'user'. Defaults to 'system'.
         $cacheType = $this->getRequest()->getParam('type', 'system');
 
@@ -132,6 +136,10 @@ class DebugController extends Zend_Controller_Action
      */
     public function invalidateApcCacheAction()
     {
+        if (!Fisma_Menu::isApc()) {
+            throw new Fisma_Zend_Exception_User('The application is not using APC.');
+        }
+
         // Cache type can be 'system' or 'user'
         $cacheType = $this->getRequest()->getParam('type', 'system');
 
