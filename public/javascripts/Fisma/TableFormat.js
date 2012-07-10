@@ -633,5 +633,30 @@ Fisma.TableFormat = {
         }
         elCell.innerHTML = html;
         elCell.width = '200px';
+    },
+
+    /**
+     * A formatter for comments
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The jsonified literal array:
+     *      [
+     *          ['first comment username', 'first comment date', 'first comment text'],
+     *          ['second comment username', 'second comment date', 'second comment text'],
+     *          ...
+     *      ]
+     */
+    formatComments : function (elCell, oRecord, oColumn, oData) {
+        oData = YAHOO.lang.JSON.parse(oData);
+        var cell = $(elCell);
+        cell.html("");
+        $.each(oData, function(i, v) {
+            var div = $("<div>");
+            div.text(v[0] + " at " + v[1] + ": " + v[2]);
+            div.html(div.html().replace(/\*\*\*(.+?)\*\*\*/, "<span class=\"highlight\">$1</span>"));
+            div.appendTo(cell);
+        });
     }
 };

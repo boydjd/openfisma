@@ -77,10 +77,16 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
         // Add homeurl column
         $this->getHelper()->addColumn(
             'user',
-            "homeurl VARCHAR(255) NOT NULL DEFAULT '/'",
-            'datetime',
+            "homeurl",
+            "VARCHAR(255) NOT NULL DEFAULT '/'",
             'mustresetpassword'
         );
+
+        // Add jsonComments field for new commentable behavior (depends on user table)
+        $this->_addJsonComments('finding');
+        $this->_addJsonComments('incident', 'deleted_at');
+        $this->_addJsonComments('vulnerability', 'modifiedts');
+        $this->_addJsonComments('user');
     }
 
     protected function _dropStuff()
@@ -205,4 +211,37 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
         'vulnerability_audit_log'  => array(array('userid', 'user', 'id')),
         'vulnerability_comment'  => array(array('userid', 'user', 'id'))
     );
+
+    /**
+     * Adds jsoncomments field to table and populates it with the associated comments
+     */
+    protected function _addJsonComments($table, $after = null)
+    {
+        $helper = $this->getHelper();
+        $helper->addColumn($table, 'jsoncomments', 'text NULL', $after);
+        // get all related comments and build them into a data set
+        $comments = $helper->query(
+            'SELECT o.id AS oid, ocu.displayName, oc.createdts, oc.comment ' .
+            'FROM ' . $table . ' o ' .
+            'INNER JOIN ' . $table . '_comment oc ON o.id = oc.objectid ' .
+            'INNER JOIN user ocu ON oc.userid = ocu.id ' .
+            'ORDER BY oid'
+        );
+        if (!count($comments)) {
+            return; // no comments, we're done
+        }
+        $toStore = array();
+        $currId = $comments[0]->oid;
+        foreach ($comments as $comment) {
+            if ($comment->oid !== $currId) {
+                $json = Zend_Json::encode($toStore);
+                $toStore = array();
+                $helper->exec("UPDATE $table SET jsoncomments = ? WHERE id = $currId", array($json));
+                $currId = $comment->oid;
+            }
+            $toStore[] = array($comment->displayName, $comment->createdts, $comment->comment);
+        }
+        $json = Zend_Json::encode($toStore);
+        $helper->exec("UPDATE $table SET jsoncomments = ? WHERE id = $currId", array($json));
+    }
 }

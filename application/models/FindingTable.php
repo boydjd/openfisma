@@ -121,6 +121,13 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'jsonComments' => array(
+                'initiallyVisible' => false,
+                'label' => 'Comments',
+                'sortable' => false,
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.formatComments'
+            ),
             'type' => array(
                 'enumValues' => $this->getEnumValues('type'),
                 'initiallyVisible' => true,
