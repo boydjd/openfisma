@@ -77,8 +77,8 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
         // Add homeurl column
         $this->getHelper()->addColumn(
             'user',
-            "homeurl VARCHAR(255) NOT NULL DEFAULT '/'",
-            'datetime',
+            "homeurl",
+            "VARCHAR(255) NOT NULL DEFAULT '/'",
             'mustresetpassword'
         );
     }

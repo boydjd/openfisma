@@ -16,6 +16,8 @@ Configuration:
 
         smtp_tls: 0
 
+        sender: openfisma@department.gov
+
         unlock_enabled: true
 
         unlock_duration: 5

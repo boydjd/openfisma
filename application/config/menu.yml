@@ -329,47 +329,48 @@ Administration:
         func: hasArea
         param: admin
     submenu:
-        Email:
-            label: E-mail
-            link: /config/email
-        Policies:
-            label: General Policies
-            link: /config/general
-        LDAP:
-            label: LDAP
-            link: /config/list-ldap
-            condition: return ('ldap' == Fisma::configuration()->getConfig('auth_type'));
-        Modules:
-            label: Modules
-            link: /config/modules
-        PasswordPolicy:
-            label: Password Policy
-            link: /config/password
-        Privacy:
-            label: Privacy Policy
-            link: /config/privacy
-        Roles:
-            label: Roles
-            link: /role/list
-            privilege:
-                func: hasPrivilegeForClass
-                param1: read
-                param2: Role
-        Search:
-            label: Search
-            link: /config/search
-        Contact:
-            label: Technical Contact
-            link: /config/contact
-        Users:
-            label: Users
-            link: /user/list
-            privilege:
-                func: hasPrivilegeForClass
-                param1: read
-                param2: User
-        Separator1:
-            label: Separator
+        SysConfig:
+            label: System Configuration
+            submenu:
+                Email:
+                    label: E-mail
+                    link: /config/email
+                Policies:
+                    label: General Policies
+                    link: /config/general
+                LDAP:
+                    label: LDAP
+                    link: /config/list-ldap
+                    condition: return (true || 'ldap' == Fisma::configuration()->getConfig('auth_type'));
+                PasswordPolicy:
+                    label: Password Policy
+                    link: /config/password
+                Privacy:
+                    label: Privacy Policy
+                    link: /config/privacy
+                Search:
+                    label: Search
+                    link: /config/search
+                Contact:
+                    label: Technical Contact
+                    link: /config/contact
+        UserManagement:
+            label: User Management
+            submenu:
+                Roles:
+                    label: Roles
+                    link: /role/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: Role
+                Users:
+                    label: Users
+                    link: /user/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: User
         Debug:
             label: Diagnostics
             submenu:
@@ -388,6 +389,12 @@ Administration:
                 PHPlog:
                     label: PHP Log
                     link: /debug/phplog
+        Separator1:
+            label: Separator
+        AdminManual:
+            label: Administrator Manual
+            link: http://manual.openfisma.org/display/ADMIN/Administrator+Manual
+            target: _blank
 UserPreferences:
     label: <span class=currentUser>$currentUser</span>
     submenu:

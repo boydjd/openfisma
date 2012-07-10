@@ -1,5 +1,5 @@
 <?php
-Fisma_Format_Section::startSection("Download Template File"); 
+Fisma_Format_Section::startSection("Download Template File");
 $microsoftUrl = 'http://www.microsoft.com/downloads/details.aspx?'
               . 'FamilyID=941b3470-3ae9-4aee-8f43-c6bb74cd1466&displaylang=en';
 ?>
@@ -11,15 +11,15 @@ $microsoftUrl = 'http://www.microsoft.com/downloads/details.aspx?'
 </p>
 <p>
     <em>The template file requires Excel 2007 or the Office Compatibility Pack, which can be downloaded for free from
-    <a href="<?php echo $this->escape($microsoftUrl, 'none') target="_blank" ?>">Microsoft</a>.</em>
+    <a href="<?php echo $this->escape($microsoftUrl, 'none') ?>" target="_blank">Microsoft</a>.</em>
 </p>
 
-<?php 
+<?php
 echo $this->escape($this->downloadForm, 'none');
 
-Fisma_Format_Section::stopSection(); 
+Fisma_Format_Section::stopSection();
 
-Fisma_Format_Section::startSection("Upload Completed Template File"); 
+Fisma_Format_Section::startSection("Upload Completed Template File");
 ?>
 
 <p>
@@ -27,7 +27,7 @@ Fisma_Format_Section::startSection("Upload Completed Template File");
     may render the file unusable.
 </p>
 
-<?php 
+<?php
 echo $this->escape($this->uploadForm, 'none');
 
 Fisma_Format_Section::stopSection();

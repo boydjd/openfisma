@@ -60,7 +60,8 @@
         var editable = YAHOO.util.Selector.query('.editable');
         YAHOO.util.Event.on(editable, 'click', function (o){
             // ignore clicks on anchor tags
-            if (o.target.tagName === "A") {
+            var target = (o.target) ? o.target : o.srcElement;
+            if (target.tagName === "A") {
                 return;
             }
 
@@ -177,7 +178,7 @@
     FE.makeAutocomplete = function (element) {
 
         // Create an autocomplete form control
-        var container = document.createElement('div'); 
+        var container = document.createElement('div');
         container.className = "yui-ac";
         YAHOO.util.Dom.generateId(container);
 

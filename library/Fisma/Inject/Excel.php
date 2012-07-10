@@ -321,14 +321,18 @@ class Fisma_Inject_Excel
             $poam['resourcesRequired'] = 'None';
 
             if (!empty($finding['pocEmail'])) {
-                $poc = Doctrine::getTable('Poc')->findOneByEmail($finding['pocEmail']);
-                if (!$poc) {
-                    $poc = new Poc();
-                    $poc->email = $finding['pocEmail'];
-                    $poc->reportingOrganizationId = $poam['responsibleOrganizationId'];
-                    $poc->save();
+                if (
+                    ($poc = Doctrine::getTable('User')->findOneByEmail($finding['pocEmail'])) &&
+                    !$poc->locked &&
+                    $poc->published
+                ) {
+                    $poam['pocId'] = $poc->id;
+                } else {
+                    throw new Fisma_Zend_Exception_InvalidFileFormat(
+                        "Row $currentExcelRowNumber: " .
+                        "The provided POC Email is not associated with an active, pubslished user."
+                    );
                 }
-                $poam['pocId'] = $poc->id;
             } else {
                 if ($organization->pocId) {
                     $poam['pocId'] = $organization->pocId;

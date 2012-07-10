@@ -483,7 +483,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $configurations = array('sender',
-                                'subject',
+                                //'subject',
                                 'send_type',
                                 'smtp_host',
                                 'smtp_port',
@@ -510,7 +510,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         $configuration = Fisma::configuration();
         $storedConfig = array(
             'sender' => $configuration->getConfig('sender'),
-            'subject' => $configuration->getConfig('subject'),
+            //'subject' => $configuration->getConfig('subject'),
             'smtp_host' => $configuration->getConfig('smtp_host'),
             'smtp_username' => $configuration->getConfig('smtp_username'),
             'smtp_password' => $configuration->getConfig('smtp_password'),
@@ -525,7 +525,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         $formConfig = array(
             'recipient' => $request->getParam('recipient'),
             'sender' => $request->getParam('sender'),
-            'subject' => $request->getParam('subject'),
+            //'subject' => $request->getParam('subject'),
             'smtp_host' => $request->getParam('smtp_host'),
             'smtp_username' => $request->getParam('smtp_username'),
             'smtp_password' => $request->getParam('smtp_password'),
@@ -551,7 +551,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $mail = new Mail();
             $mail->recipient = $emailConfiguration['recipient'];
             $mail->sender    = $emailConfiguration['sender'];
-            $mail->subject   = $emailConfiguration['subject'];
+            $mail->subject   = "Test message from OpenFISMA";
             $mail->body      = $mailContent;
 
             $mailHandler = new Fisma_MailHandler_Immediate();
