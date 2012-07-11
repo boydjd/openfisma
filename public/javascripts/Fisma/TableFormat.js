@@ -649,6 +649,11 @@ Fisma.TableFormat = {
      *      ]
      */
     formatComments : function (elCell, oRecord, oColumn, oData) {
+        // null/undefined: just bail
+        if (!oData) {
+            return;
+        }
+
         oData = YAHOO.lang.JSON.parse(oData);
         var cell = $(elCell);
         cell.html("");
