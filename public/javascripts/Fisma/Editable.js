@@ -60,8 +60,8 @@
         var editable = YAHOO.util.Selector.query('.editable');
         YAHOO.util.Event.on(editable, 'click', function (o){
             // ignore clicks on anchor tags
-            var target = (o.target) ? o.target : o.srcElement;
-            if (target.tagName === "A") {
+            var targetElement = o.target || o.srcElement;
+            if (targetElement.tagName === "A") {
                 return;
             }
 
