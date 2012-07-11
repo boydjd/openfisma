@@ -239,7 +239,10 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
                 $helper->exec("UPDATE $table SET jsoncomments = ? WHERE id = $currId", array($json));
                 $currId = $comment->oid;
             }
-            $toStore[] = array($comment->displayName, $comment->createdts, $comment->comment);
+            $date = new Zend_Date($comment->createdts, Fisma_Date::FORMAT_DATETIME);
+            $dt = $date->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
+            $tm = $date->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+            $toStore[] = array($comment->displayName, $dt . ' at ' . $tm, $comment->comment);
         }
         $json = Zend_Json::encode($toStore);
         $helper->exec("UPDATE $table SET jsoncomments = ? WHERE id = $currId", array($json));

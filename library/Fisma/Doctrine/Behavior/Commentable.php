@@ -86,9 +86,12 @@ class Fisma_Doctrine_Behavior_Commentable extends Doctrine_Template
     {
         $comments = array();
         foreach ($this->getComments()->fetch() as $comment) {
+            $date = new Zend_Date($comment->createdTs, Fisma_Date::FORMAT_DATETIME);
             $comments[] = array(
                 $comment->User->displayName,
-                $comment->createdTs,
+                $date->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                    . ' at '
+                    . $date->toString(Fisma_Date::FORMAT_AM_PM_TIME),
                 $comment->comment
             );
         }
