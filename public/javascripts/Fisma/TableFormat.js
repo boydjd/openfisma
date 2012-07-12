@@ -680,11 +680,13 @@ Fisma.TableFormat = {
         var cell = $(elCell);
         cell.html("");
         $.each(oData, function(i, v) {
-            var div = $("<div>");
-            div.append(highlightAndEscape(v[0]));
+            var div = $("<div>")
+                .css('border-bottom', 'black thin dashed')
+                .css('padding-bottom', '8px');
+            div.append('<b>' + highlightAndEscape(v[0]) + '</b>');
             div.append(" on ");
             div.append(highlightAndEscape(v[1]));
-            div.append(": ");
+            div.append(":<br/>");
             div.append(highlightAndEscape(v[2]));
             div.appendTo(cell);
         });

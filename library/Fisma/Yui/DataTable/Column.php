@@ -103,7 +103,8 @@ class Fisma_Yui_DataTable_Column
                                 $name = null,
                                 $hidden = false,
                                 $parser = 'string',
-                                $sortField = null)
+                                $sortField = null,
+                                $resizable = false)
     {
         $this->_label = $label;
         $this->_sortable = $sortable;
@@ -112,6 +113,7 @@ class Fisma_Yui_DataTable_Column
         $this->_hidden = $hidden;
         $this->_parser = $parser;
         $this->_sortField = $sortField;
+        $this->_resizable = $resizable;
 
         if (is_null($name)) {
             $this->_name = Fisma_String::convertToJavascriptName($label);
@@ -195,5 +197,15 @@ class Fisma_Yui_DataTable_Column
     public function getHidden()
     {
         return $this->_hidden;
+    }
+
+    /**
+     * True if this column is resizable, false otherwise
+     *
+     * @return bool
+     */
+    public function getResizable()
+    {
+        return $this->_resizable;
     }
 }

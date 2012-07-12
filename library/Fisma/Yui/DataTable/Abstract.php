@@ -92,7 +92,8 @@ abstract class Fisma_Yui_DataTable_Abstract
                 'key' => $column->getName(),
                 'label' => $column->getLabel(),
                 'sortable' => $column->getSortable(),
-                'hidden' => $column->getHidden()
+                'hidden' => $column->getHidden(),
+                'resizeable' => $column->getResizable()
             );
 
             // Add the formatter key only if the column has a formatter

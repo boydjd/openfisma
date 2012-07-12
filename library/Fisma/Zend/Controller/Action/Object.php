@@ -787,7 +787,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                                                      $formatter,
                                                      null,
                                                      $fieldName,
-                                                     !$visible);
+                                                     !$visible,
+                                                     'string',
+                                                     null,
+                                                     true);
 
             $searchResultsTable->addColumn($column);
         }
