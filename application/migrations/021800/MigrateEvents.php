@@ -250,7 +250,7 @@ class Application_Migration_021800_MigrateEvents extends Fisma_Migration_Abstrac
         );
         $this->message("> Updating categories for " . count($events) . "events.");
         foreach ($events as $key => $value) {
-            $this->getHelper()->update('event', array('name' => $value), array('name' => $key));
+            $this->getHelper()->update('event', array('category' => $value), array('name' => $key));
         }
     }
 
