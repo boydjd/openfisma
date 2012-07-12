@@ -80,7 +80,9 @@
 
 /* Style for the div liners of comment columns */
 .yui-dt-col-jsonComments .yui-dt-liner div {
-    margin-bottom: 0.5em;
+    margin-bottom: 0.8em;
+    border-bottom: black 1px dashed;
+    padding-bottom: 0.8em;
 }
 
 div#searchColumnsButtons div {
