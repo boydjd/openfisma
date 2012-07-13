@@ -36,24 +36,6 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
     protected $_modelName = 'Role';
 
     /**
-     * Override the parent class to add a link for editing privileges
-     *
-     * @param Fisma_Doctrine_Record $subject
-     */
-    public function getViewLinks(Fisma_Doctrine_Record $subject)
-    {
-        $links = array();
-
-        if ($this->_acl->hasPrivilegeForObject('read', $subject)) {
-            $links['Edit Privilege Matrix'] = '/role/view-matrix';
-        }
-
-        $links = array_merge($links, parent::getViewLinks($subject));
-
-        return $links;
-    }
-
-    /**
      * Displays a (checkbox-)table of privileges associated with each role
      *
      * @GETAllowed
@@ -65,6 +47,25 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
 
         // Add button to save changes (submit form)
         $this->view->toolbarButtons = array();
+
+        if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
+            $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Submit(
+                'saveChanges',
+                array(
+                    'label' => 'Save',
+                    'imageSrc' => '/images/ok.png'
+                )
+            );
+
+            $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Link(
+                'discardChanges',
+                array(
+                    'value' => 'Discard',
+                    'imageSrc' => '/images/no_entry.png',
+                    'href' => '/role/view-matrix'
+                )
+            );
+        }
 
         $expandAll = new Fisma_Yui_Form_Button('expandAll',
                                                array('label' => 'Expand All',
@@ -79,15 +80,15 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $this->view->toolbarButtons[] = $expandAll;
         $this->view->toolbarButtons[] = $collapseAll;
 
-        if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
-            $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Submit(
-                'saveChanges',
-                array(
-                    'label' => 'Save Changes',
-                    'imageSrc' => '/images/ok.png'
-                )
-            );
-        }
+        $this->view->searchButtons = array();
+        $this->view->searchButtons[] = new Fisma_Yui_Form_Button_Link(
+            'toolbarListButton',
+            array(
+                'value' => 'Return',
+                'href' => $this->getBaseUrl() . '/list',
+                'imageSrc' => '/images/arrow_return_down_left.png'
+            )
+        );
 
         // YUI data-table to show user
         $dataTable = new Fisma_Yui_DataTable_Local();
@@ -297,14 +298,16 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
     {
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
-        if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
-            $buttons[] = new Fisma_Yui_Form_Button_Link(
+        if ($this->_request->getActionName() == 'list' && $this->_acl->hasPrivilegeForClass('update', 'Role')) {
+            $matrixView = new Fisma_Yui_Form_Button_Link(
                 'editMatrix',
                 array(
                     'value' => 'View Privilege Matrix',
-                    'href' => '/role/view-matrix'
+                    'href' => '/role/view-matrix',
+                    'imageSrc' => '/images/list_view.png'
                 )
             );
+            array_unshift($buttons, $matrixView);
         }
 
         return $buttons;

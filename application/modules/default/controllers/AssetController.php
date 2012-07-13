@@ -104,10 +104,11 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                 'importAssetsButton',
                 array(
                     'value' => 'Import Assets',
-                    'href' => $this->getBaseUrl() . '/import'
+                    'href' => $this->getBaseUrl() . '/import',
+                    'imageSrc' => '/images/up.png'
                 )
             );
-        
+
             array_unshift($buttons, $button);
         }
 
@@ -137,15 +138,15 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $filesReceived = ($uploadForm->selectFile->receive()) ? TRUE : FALSE;
 
             if (!$uploadForm->isValid($postValues)) {
-               
-                $file = $_FILES['selectFile']; 
+
+                $file = $_FILES['selectFile'];
                 if (Fisma_FileManager::getUploadFileError($file)) {
                     $msgs[] = array('warning' => Fisma_FileManager::getUploadFileError($file));
                 } else {
                     $errorString = Fisma_Zend_Form_Manager::getErrors($uploadForm);
                     $msgs[] = array('warning' => $errorString);
                 }
-                 
+
                 $err = TRUE;
             } elseif (!$filesReceived) {
                 $msgs[] = array('warning' => "File not received.");
@@ -171,8 +172,8 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                     'name' => $originalName,
                     'type' => $uploadForm->selectFile->getMimeType()
                 ));
-           
-                // Need to save again after instantiate. 
+
+                // Need to save again after instantiate.
                 $upload->save();
             }
 

@@ -510,10 +510,10 @@ Fisma.Util = {
     /**
      * Create a file upload form
      *
-     * @param {object} config 
+     * @param {object} config
      *     String .action             url to POST to
      *     String .fileElementName    name of the File input element
-     *     int    .maxValue           the max upload file size 
+     *     int    .maxValue           the max upload file size
      *     String .accept             The accept attribute, not supported in IE or safari. Optional.
      * @return a form element.
      */
@@ -591,14 +591,14 @@ Fisma.Util = {
      * Get Previous/Next record based on the id passed by config and then view the record.
      *
      * @param {Object} event.
-     * @param {Object} config   
+     * @param {Object} config
      *     String  .action  define button action type: previous or next.
      *     String  .url     url to view the record.
-     *     Integer .id      the current record id. 
+     *     Integer .id      the current record id.
      */
     getNextPrevious : function (event, config) {
         var storage = new Fisma.Storage('Fisma.PreviousNext');
-        var ids = storage.get(config.modelName + 'ids'); 
+        var ids = storage.get(config.modelName + 'ids');
 
         var i;
         for (i = 0; i < ids.length; i++) {
@@ -622,5 +622,20 @@ Fisma.Util = {
                 }
             }
         }
+    },
+
+    /**
+     * Submit the first form on the page
+     */
+    submitFirstForm : function(event, config) {
+        var form = $('form').eq(0);
+        var buttons = $('.yui-menu-button', form).get();
+        for (var i = 0; i < buttons.length; i++) {
+            button = YAHOO.widget.Button.getButton(buttons[i].id);
+            if (button.getMenu()) {
+                button.createHiddenFields();
+            }
+        }
+        form.submit();
     }
 };

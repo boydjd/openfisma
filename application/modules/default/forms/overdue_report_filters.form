@@ -20,3 +20,4 @@ elements.sourceId.options.value = "0"
 
 elements.filter.type = "Form_Button_Submit"
 elements.filter.options.label = "Filter"
+elements.filter.options.imageSrc = "/images/filter.png"

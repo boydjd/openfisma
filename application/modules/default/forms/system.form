@@ -77,14 +77,3 @@ elements.cloneOrganizationId.options.validators.strlen.options.min = "1"
 elements.cloneOrganizationId.options.validators.strlen.options.max = "10"
 elements.cloneOrganizationId.options.required = false
 displayGroups.system.elements.cloneOrganizationId = "cloneOrganizationId"
-
-elements.save.type = "Form_Button_Submit"
-elements.save.options.label = "Save Changes"
-displayGroups.system.elements.save = "save"
-
-; I'm disabling this temporarily because it doesn't work quite right...
-; After you click submit, the value of this input is changed to "Reset" so the
-; name changes...
-;elements.reset.type = "reset"
-;elements.reset.options.value = "Clear Changes"
-;displayGroups.system.elements.reset = "reset"

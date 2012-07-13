@@ -95,15 +95,3 @@ elements.max_file_upload_size.options.validators.maxuploadfilesize.validator = "
 elements.max_file_upload_size.options.required = true
 elements.max_file_upload_size.options.tooltip = "<p>Sets the maximum size of files that users can upload to the application, this setting applies to all modules and CANNOT exceed 1024MB.</p>"
 displayGroups.general.elements.max_file_upload_size = "max_file_upload_size"
-
-elements.saveGeneral.type = "Form_Button_Submit"
-elements.saveGeneral.options.label = "Save Changes"
-elements.saveGeneral.options.imageSrc = "/images/ok.png"
-displayGroups.general.elements.saveGeneral = "saveGeneral"
-
-; I'm disabling this temporarily because it doesn't work quite right...
-; After you click submit, the value of this input is changed to "Reset" so the
-; name changes...
-;elements.reset.type = "reset"
-;elements.reset.options.value = "Clear Changes"
-;displayGroups.general.elements.reset = "reset"

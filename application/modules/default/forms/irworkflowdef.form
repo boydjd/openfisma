@@ -25,8 +25,3 @@ elements.description.options.rows = "7"
 displayGroups.irworkflowdef.elements.description = "description"
 
 ; The steps are added programmatically by the controller
-
-elements.save.type = "Form_Button_Submit"
-elements.save.options.label = "Save"
-elements.save.options.imageSrc = "/images/ok.png"
-displayGroups.irworkflowdef.elements.save = "save"

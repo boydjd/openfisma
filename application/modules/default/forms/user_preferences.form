@@ -30,8 +30,3 @@ elements.homeUrl.options.label = "URL"
 elements.homeUrl.options.required = true
 elements.homeUrl.options.tooltip = "This URL should be internal; please omit host name from the URL. For example, if you want the home page to be 'https://openfisma.yourdomain.com<b>/finding/list?q=/denormalizedStatus/enumIsNot/CLOSED/pocUser/MyName</b>', please enter only the bold-faced part (including the <b>/</b>) into the textbox."
 displayGroups.home.elements.homeUrl = "homeUrl"
-
-elements.submitButton.type = "Form_Button_Submit"
-elements.submitButton.options.label = "Save Preferences"
-elements.submitButton.options.imageSrc = "/images/ok.png"
-displayGroups.home.elements.submitButton = "submitButton"

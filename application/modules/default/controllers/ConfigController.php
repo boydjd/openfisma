@@ -107,6 +107,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->generalConfig = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -211,6 +212,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->form = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -374,6 +376,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->csrfToken = $this->_helper->csrf->getToken();
         $this->view->modules = $modules;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -496,6 +499,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->form = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -624,6 +628,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->form = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -656,6 +661,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->form = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -671,7 +677,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             'testConfiguration',
             array(
                 'label' => 'Test Search Configuration',
-                'onClickFunction' => 'Fisma.Search.testConfiguration'
+                'onClickFunction' => 'Fisma.Search.testConfiguration',
+                'imageSrc' => '/images/reload.png'
             )
         );
 
@@ -707,5 +714,38 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         return $transport;
+    }
+
+    public function getToolbarButtons($record = null, $fromSearchParams = null)
+    {
+        $buttons = array();
+        $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+            'saveChanges',
+            array(
+                'label' => 'Save',
+                'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                'imageSrc' => '/images/ok.png'
+            )
+        );
+        $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+            'discardChanges',
+            array(
+                'value' => 'Discard',
+                'imageSrc' => '/images/no_entry.png',
+                'href' => '/user/password'
+            )
+        );
+
+        if ($this->getRequest()->getActionName() == 'email') {
+            $buttons['testEmail'] = new Fisma_Yui_Form_Button(
+                'testConfiguration',
+                array(
+                    'label' => 'Test Configuration',
+                    'onClickFunction' => 'Fisma.Email.showRecipientDialog',
+                    'imageSrc' => '/images/reload.png'
+                )
+            );
+        }
+        return $buttons;
     }
 }

@@ -69,7 +69,7 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
 
         $maxSize = Fisma_String::convertFilesizeToInteger(Fisma::configuration()->getConfig('max_file_upload_size'));
         $maxFilesizeEle = new Zend_Form_Element_Hidden("MAX_UPLOAD_FILE_SIZE");
-        $maxFilesizeEle->setValue($maxSize); 
+        $maxFilesizeEle->setValue($maxSize);
         $form->addElement($maxFilesizeEle);
 
         if (!$formName) {
@@ -92,7 +92,7 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
      * Customize the toolbar buttons
      *
      * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
-     * @param array $fromSearchParams The array for "Previous" and "Next" button null if not  
+     * @param array $fromSearchParams The array for "Previous" and "Next" button null if not
      * @return array Array of Fisma_Yui_Form_Button
      */
     public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
@@ -109,14 +109,15 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
             $buttons[] = new Fisma_Yui_Form_Button(
                 'deleteSystemTypeButton',
                 array(
-                    'label' => 'Delete System Type',
+                    'label' => 'Delete',
                     'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                     'onClickArgument' => array(
                         'args' => $args,
                         'text' => "WARNING: You are about to delete this system type. This action cannot be "
                                 . "undone. Do you want to continue?",
                         'func' => 'Fisma.Util.formPostAction'
-                    )
+                    ),
+                    'imageSrc' => '/images/trash_recyclebin_empty_closed.png'
                 )
             );
         }

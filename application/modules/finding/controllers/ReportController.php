@@ -127,7 +127,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      * @return void
      */
     public function fismaAction()
-    {        
+    {
         $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()
                                                     ->toString(Fisma_Date::FORMAT_DATE);
         $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString(Fisma_Date::FORMAT_DATE);
@@ -151,7 +151,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
 
         // Submission Date
         $this->view->submissionDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
-        
+
         // Bureau Statistics
         $bureaus = Organization::getBureaus($bureauId);
         $stats = array();
@@ -179,10 +179,10 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         // Agency Name
         $agency = Organization::getAgency();
         $this->view->agencyName = $agency->name;
-         
+
         // Submission Date
         $this->view->submissionDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
-        
+
         // Bureau Statistics
         $bureaus = Organization::getBureaus($bureauId);
         $stats = array();
@@ -225,6 +225,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
 
         // Set up the filter options in the toolbar
         $toolbarForm = Fisma_Zend_Form_Manager::loadForm('overdue_report_filters');
+        $toolbarForm = Fisma_Zend_Form_Manager::prepareForm($toolbarForm);
 
         $toolbarForm->getElement('organizationId')->setMultiOptions($organizationList);
         $toolbarForm->getElement('sourceId')->setMultiOptions($sourceList);

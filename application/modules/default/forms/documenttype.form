@@ -25,9 +25,3 @@ elements.required.options.validators.between.validator = "between"
 elements.required.options.validators.between.options.min = "0"
 elements.required.options.validators.between.options.max = "1"
 displayGroups.document_type.elements.required = "required"
-
-elements.save.type = "Form_Button_Submit"
-elements.save.options.label = "Save"
-elements.save.options.imageSrc = "/images/ok.png"
-displayGroups.document_type.elements.save = "save"
-

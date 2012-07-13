@@ -125,7 +125,7 @@ class Finding_WorkflowController extends Fisma_Zend_Controller_Action_Security
             $this->view->cancelButton = new Fisma_Yui_Form_Button_Link(
                 'cancelButton',
                 array(
-                    'value' => 'Cancel',
+                    'value' => 'Discard',
                     'imageSrc' => '/images/no_entry.png',
                     'href' => '/finding/workflow/view'
                 )

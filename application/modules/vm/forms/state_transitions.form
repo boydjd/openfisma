@@ -13,9 +13,11 @@ elements.id.type = "hidden"
 
 elements.open.type = "Form_Button_Submit"
 elements.open.options.label = "Open"
+elements.open.options.imageSrc = "/images/create.png"
 
 elements.fixed.type = "Form_Button_Submit"
 elements.fixed.options.label = "Fixed"
+elements.fixed.options.imageSrc = "/images/ok.png"
 
 elements.wontFixButton.type = "Submit"
 elements.wontFixButton.options.label = "Won't Fix"

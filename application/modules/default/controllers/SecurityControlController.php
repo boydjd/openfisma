@@ -69,6 +69,9 @@ class SecurityControlController extends Fisma_Zend_Controller_Action_Object
             throw new Fisma_Zend_Exception("No security control with id ($securityControlId) found.");
         }
 
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $this->view->toolbarButtons = $this->getToolbarButtons($securityControl);
+        $this->view->searchButtons = $this->getSearchButtons($securityControl, $fromSearchParams);
         $this->view->securityControl = $securityControl;
     }
 

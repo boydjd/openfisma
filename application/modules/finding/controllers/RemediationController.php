@@ -286,17 +286,37 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->tabView = $tabView;
 
-        $buttons = array();
+        $buttons = $this->getToolbarButtons($finding);
 
         // Only display controls if the finding has not been deleted
         if (!$finding->isDeleted()) {
+            // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
+            if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
+                $buttons['submitButton'] = new Fisma_Yui_Form_Button_Submit(
+                    'saveChanges',
+                    array(
+                        'label' => 'Save',
+                        'imageSrc' => '/images/ok.png',
+                    )
+                );
+
+                $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+                    'discardChanges',
+                    array(
+                        'value' => 'Discard',
+                        'imageSrc' => '/images/no_entry.png',
+                        'href' => '/finding/remediation/view/id/' . $finding->id . $fromSearchUrl
+                    )
+                );
+            }
+
             // Display the delete finding button if the user has the delete finding privilege
             if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
                 $args = array(null, '/finding/remediation/delete/', $id);
                 $buttons['delete'] = new Fisma_Yui_Form_Button(
                     'deleteFinding',
                     array(
-                          'label' => 'Delete Finding',
+                          'label' => 'Delete',
                           'imageSrc' => '/images/trash_recyclebin_empty_closed.png',
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
@@ -308,28 +328,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     )
                 );
             }
-
-            // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
-            if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
-                $discardChangesButtonConfig = array(
-                    'value' => 'Discard Changes',
-                    'imageSrc' => '/images/no_entry.png',
-                    'href' => '/finding/remediation/view/id/' . $finding->id . $fromSearchUrl
-                );
-
-                $buttons['discard'] = new Fisma_Yui_Form_Button_Link(
-                    'discardChanges',
-                    $discardChangesButtonConfig
-                );
-
-                $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
-                    'saveChanges',
-                    array(
-                          'label' => 'Save Changes',
-                          'imageSrc' => '/images/ok.png',
-                         )
-                );
-            }
         }
 
         // printer friendly version
@@ -338,61 +336,12 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             array(
                 'value' => 'Printer Friendly Version',
                 'href' => $this->getBaseUrl() . '/print/id/' . $id,
-                'target' => '_new'
+                'imageSrc' => '/images/printer.png',
+                'target' => '_blank'
             )
         );
 
-        $searchButtons = array();
-        $searchButtons['list'] = new Fisma_Yui_Form_Button_Link(
-            'toolbarListButton',
-            array(
-                'value' => 'Return to Search Results',
-                'href' => $this->getBaseUrl() . '/list',
-                'imageSrc' => '/images/arrow_return_down_left.png'
-            )
-        );
-
-        // If the record is from search page, then, show the previous and next buttons.
-        if (!empty($fromSearchParams)) {
-            $searchButtons['previous'] = new Fisma_Yui_Form_Button(
-                'PreviousButton',
-                 array(
-                       'label' => 'Previous',
-                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
-                       'imageSrc' => $view->serverUrl('/images/control_stop_left.png'),
-                       'onClickArgument' => array(
-                           'url' => $this->getBaseUrl() . '/view/id/',
-                           'id' => $id,
-                           'action' => 'previous',
-                           'modelName' => $this->_modelName
-                    )
-                )
-
-            );
-
-            if (isset($fromSearchParams['first']) && $fromSearchParams['first'] == 1) {
-                $searchButtons['previous']->readOnly = true;
-            }
-
-            $searchButtons['next'] = new Fisma_Yui_Form_Button(
-                'NextButton',
-                 array(
-                       'label' => 'Next',
-                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
-                       'imageSrc' => $view->serverUrl('/images/control_stop_right.png'),
-                       'onClickArgument' => array(
-                           'url' => $this->getBaseUrl() . '/view/id/',
-                           'id' => $id,
-                           'action' => 'next',
-                           'modelName' => $this->_modelName
-                    )
-                )
-            );
-
-            if (isset($fromSearchParams['last']) && $fromSearchParams['last'] == 1) {
-                $searchButtons['next']->readOnly = true;
-            }
-        }
+        $searchButtons = $this->getSearchButtons($finding, $fromSearchParams);
         $this->view->toolbarButtons = $buttons;
         $this->view->searchButtons = $searchButtons;
     }

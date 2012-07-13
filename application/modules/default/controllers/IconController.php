@@ -90,7 +90,7 @@ class IconController extends Fisma_Zend_Controller_Action_Object
         $response = new Fisma_AsyncResponse;
         $this->view->response = $response;
 
-        $file = $_FILES['imageUpload']; 
+        $file = $_FILES['imageUpload'];
         if (Fisma_FileManager::getUploadFileError($file)) {
             $response->fail(Fisma_FileManager::getUploadFileError($file));
             return;
@@ -183,7 +183,8 @@ class IconController extends Fisma_Zend_Controller_Action_Object
             'uploadImageButton',
             array(
                 'label' => 'Upload Image',
-                'onClickFunction' => 'Fisma.Icon.showPanel'
+                'onClickFunction' => 'Fisma.Icon.showPanel',
+                'imageSrc' => '/images/up.png'
             )
         );
 

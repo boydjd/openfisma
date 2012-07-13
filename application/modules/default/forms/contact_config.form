@@ -31,14 +31,3 @@ elements.contact_subject.type = "text"
 elements.contact_subject.options.label = "Technical Support Email Subject Text"
 elements.contact_subject.options.required = true
 displayGroups.general.elements.contact_subject = "contact_subject"
-
-elements.saveContactConfig.type = "Form_Button_Submit"
-elements.saveContactConfig.options.label = "Save Changes"
-elements.saveContactConfig.options.imageSrc = "/images/ok.png"
-displayGroups.general.elements.saveContactConfig = "saveContactConfig"
-
-; Disabling this because I don't know how to make this work. see the comments
-; at the bottom of general_config.form
-;elements.reset.type = "reset"
-;elements.reset.options.label = "Clear Changes"
-;displayGroups.general.elements.reset = "reset"

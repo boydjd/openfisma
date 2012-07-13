@@ -1,3 +1,6 @@
+<div class='searchBox'>
+    <?php echo $this->escape($this->testSearchButton, 'none'); ?>
+</div>
 <?php Fisma_Format_Section::startSection("Search Configuration "); ?>
 
 <p>
@@ -16,9 +19,5 @@
         </tr>
     <?php endforeach; ?>
 </table>
-
-<p>
-    <?php echo $this->escape($this->testSearchButton, 'none'); ?>
-</p>
 
 <?php Fisma_Format_Section::stopSection(); ?>

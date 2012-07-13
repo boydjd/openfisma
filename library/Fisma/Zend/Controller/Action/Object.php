@@ -122,48 +122,89 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $buttons = array();
         $isList = $this->getRequest()->getActionName() === 'list';
         $isView = $this->getRequest()->getActionName() === 'view';
+        $isCreate = $this->getRequest()->getActionName() === 'create';
         $view = Zend_Layout::getMvcInstance()->getView();
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
-            $buttons['create'] = new Fisma_Yui_Form_Button_Link(
-                'toolbarCreateButton',
-                array(
-                    'value' => 'Create New ' . $this->getSingularModelName(),
-                    'href' => $this->getBaseUrl() . '/create',
-                    'imageSrc' => '/images/create.png'
-                )
-            );
+        if ((!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName()))) {
+            if ($isCreate) {
+                $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+                    'saveChanges',
+                    array(
+                        'label' => 'Save',
+                        'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                        'imageSrc' => '/images/ok.png'
+                    )
+                );
+
+                $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+                    'discardChanges',
+                    array(
+                        'value' => 'Discard',
+                        'imageSrc' => '/images/no_entry.png',
+                        'href' => $this->getBaseUrl() . '/create'
+                    )
+                );
+            } else {
+                $buttons['create'] = new Fisma_Yui_Form_Button_Link(
+                    'toolbarCreateButton',
+                    array(
+                        'value' => 'Create ' . $this->getSingularModelName(),
+                        'href' => $this->getBaseUrl() . '/create',
+                        'imageSrc' => '/images/create.png'
+                    )
+                );
+            }
         }
 
         if (
             (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('update', $this->getAclResourceName())) &&
-            !empty($this->_associatedModel) &&
-            $isView
+            $isView && $id = $this->getRequest()->getParam('id')
         ) {
             $fromSearchUrl = '';
+            $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
             if (!empty($fromSearchParams)) {
                 $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
             }
 
-            $buttons['reassociate'] = new Fisma_Yui_Form_Button(
-                'toolbarReassociateButton',
+            $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+                'saveChanges',
                 array(
-                    'label' => 'Migrate Associated ' . $this->_associatedPlural,
-                    'onClickFunction' => 'Fisma.Util.showReassociatePanel',
-                    'onClickArgument' => array(
-                        'title' => 'Migrate Associated ' . $this->_associatedPlural,
-                        'url'   => $this->getBaseUrl() . '/reassociate/id/' . $this->getRequest()->getParam('id')
-                                   . $fromSearchUrl
-                    )
+                    'label' => 'Save',
+                    'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                    'imageSrc' => '/images/ok.png'
                 )
             );
+
+            $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+                'discardChanges',
+                array(
+                    'value' => 'Discard',
+                    'imageSrc' => '/images/no_entry.png',
+                    'href' => $this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl
+                )
+            );
+
+            if (!empty($this->_associatedModel)) {
+                $buttons['reassociate'] = new Fisma_Yui_Form_Button(
+                    'toolbarReassociateButton',
+                    array(
+                        'label' => 'Migrate Associated ' . $this->_associatedPlural,
+                        'onClickFunction' => 'Fisma.Util.showReassociatePanel',
+                        'onClickArgument' => array(
+                            'title' => 'Migrate Associated ' . $this->_associatedPlural,
+                            'url'   => $this->getBaseUrl() . '/reassociate/id/' . $id . $fromSearchUrl
+                        ),
+                        'imageSrc' => '/images/move.png'
+                    )
+                );
+            }
         }
 
         if ($isList) {
             $buttons['exportXls'] = new Fisma_Yui_Form_Button(
                 'toolbarExportXlsButton',
                 array(
-                    'label' => 'Export To Excel',
+                    'label' => 'XLS',
                     'onClickFunction' => 'Fisma.Search.exportToFile',
                     'imageSrc' => $view->serverUrl('/images/xls.gif'),
                     'onClickArgument' => 'xls'
@@ -173,7 +214,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $buttons['exportPdf'] = new Fisma_Yui_Form_Button(
                 'toolbarExportPdfButton',
                 array(
-                    'label' => 'Export To PDF',
+                    'label' => 'PDF',
                     'imageSrc' => $view->serverUrl('/images/pdf.gif'),
                     'onClickFunction' => 'Fisma.Search.exportToFile',
                     'onClickArgument' => 'pdf'
@@ -183,7 +224,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $buttons['configureColumn'] = new Fisma_Yui_Form_Button(
                 'toolbarConfigureColumnButton',
                 array(
-                    'label' => 'Configure Columns',
+                    'label' => 'Columns',
                     'imageSrc' => $view->serverUrl('/images/application_view_columns.png'),
                     'onClickFunction' => 'Fisma.Search.toggleSearchColumnsPanel'
                 )
@@ -224,7 +265,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $buttons['list'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarListButton',
                 array(
-                    'value' => 'Return to Search Results',
+                    'value' => 'Return',
                     'href' => $this->getBaseUrl() . '/list',
                     'imageSrc' => '/images/arrow_return_down_left.png'
                 )

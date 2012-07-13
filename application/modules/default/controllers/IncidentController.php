@@ -1867,50 +1867,28 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     {
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
-        unset($buttons['create']);
-
         $fromSearchUrl = '';
         if (!empty($fromSearchParams)) {
             $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
         }
 
-        $button = new Fisma_Yui_Form_Button_Link(
+        $buttons['create'] = new Fisma_Yui_Form_Button_Link(
             'toolbarReportIncidentButton',
             array(
-                'value' => 'Report New Incident',
-                'href' => $this->getBaseUrl() . '/report'
+                'value' => 'Report Incident',
+                'href' => $this->getBaseUrl() . '/report',
+                'imageSrc' => '/images/create.png'
             )
         );
-
-        array_unshift($buttons, $button);
-
-        // Add Save/Discard buttons for authenticated users
-        if ($record && $this->_currentUserCanUpdateIncident($record->id)) {
-            $buttons['discard'] =  new Fisma_Yui_Form_Button_Link(
-                'discardChanges',
-                array(
-                    'value' => 'Discard Changes',
-                    'imageSrc' => '/images/no_entry.png',
-                    'href' => "/incident/view/id/{$record->id}$fromSearchUrl"
-                )
-            );
-
-            $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
-                'saveChanges',
-                array(
-                    'label' => 'Save Changes',
-                    'imageSrc' => '/images/ok.png'
-                )
-            );
-        }
 
         // Add a "Reject" button if the incident is still in "new" status
         if ($record && 'new' == $record->status) {
             $buttons['reject'] = new Fisma_Yui_Form_Button(
                 'reject',
                 array(
-                    'label' => 'Reject Incident',
-                    'onClickFunction' => 'Fisma.Incident.confirmReject'
+                    'label' => 'Reject',
+                    'onClickFunction' => 'Fisma.Incident.confirmReject',
+                    'imageSrc' => '/images/trash_recyclebin_empty_closed.png'
                 )
             );
         }
@@ -1921,24 +1899,26 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $buttons['unlock'] = new Fisma_Yui_Form_Button(
                     'unlock',
                     array(
-                          'label' => 'Unlock Incident',
-                          'onClickFunction' => 'Fisma.Util.formPostAction',
-                          'onClickArgument' => array(
-                              'action' => "/incident/unlock$fromSearchUrl",
-                               'id' => $record->id
-                        )
+                        'label' => 'Unlock',
+                        'onClickFunction' => 'Fisma.Util.formPostAction',
+                        'onClickArgument' => array(
+                            'action' => "/incident/unlock$fromSearchUrl",
+                            'id' => $record->id,
+                        ),
+                        'imageSrc' => '/images/privacy-small.png'
                     )
                 );
             } else {
                 $buttons['lock'] = new Fisma_Yui_Form_Button(
                     'lock',
-                     array(
-                           'label' => 'Lock Incident',
-                           'onClickFunction' => 'Fisma.Util.formPostAction',
-                           'onClickArgument' => array(
-                           'action' => "/incident/lock$fromSearchUrl",
-                           'id' => $record->id
-                        )
+                    array(
+                        'label' => 'Lock',
+                        'onClickFunction' => 'Fisma.Util.formPostAction',
+                        'onClickArgument' => array(
+                            'action' => "/incident/lock$fromSearchUrl",
+                            'id' => $record->id
+                        ),
+                        'imageSrc' => '/images/privacy-small.png'
                     )
                 );
             }
