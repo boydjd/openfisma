@@ -488,7 +488,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                             'USER_POC',
                             $this,
                             CurrentUser::getInstance(),
-                            array('userId' => $newValue)
+                            array('userId' => $newValue, 'url' => '/finding/remediation/view/id/')
                         );
                         break;
                     default:

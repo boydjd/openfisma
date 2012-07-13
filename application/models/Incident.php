@@ -393,7 +393,7 @@ class Incident extends BaseIncident
                 'USER_POC',
                 $this,
                 CurrentUser::getInstance(),
-                array('userId' => $sanitized)
+                array('userId' => $sanitized, 'url' => '/incident/view/id/')
             );
         }
     }
