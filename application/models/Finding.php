@@ -484,12 +484,14 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                         }
                         break;
                     case 'pocId':
-                        Notification::notify(
-                            'USER_POC',
-                            $this,
-                            CurrentUser::getInstance(),
-                            array('userId' => $newValue, 'url' => '/finding/remediation/view/id/')
-                        );
+                        if ($this->id) {
+                            Notification::notify(
+                                'USER_POC',
+                                $this,
+                                CurrentUser::getInstance(),
+                                array('userId' => $newValue, 'url' => '/finding/remediation/view/id/')
+                            );
+                        }
                         break;
                     default:
                         break;
@@ -802,6 +804,24 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 return "{$status}: Finding Officially Closed";
             default:
                 return "{$status}: Awaiting {$activeEvaluation->name}";
+        }
+    }
+
+    /**
+     * Doctrine hook
+     *
+     * @param Doctrine_Event $event The listened doctrine event to be processed
+     * @return void
+     */
+    public function postInsert($event)
+    {
+        if ($newValue = $this->pocId) {
+            Notification::notify(
+                'USER_POC',
+                $this,
+                CurrentUser::getInstance(),
+                array('userId' => $newValue, 'url' => '/finding/remediation/view/id/')
+            );
         }
     }
 }
