@@ -4,7 +4,10 @@
     if ($this->acl()->hasPrivilegeForClass('create', 'Source')) :
 ?>
     Required fields are denoted by an asterisk (*)
-    <?php echo $this->escape($this->form, 'none');?>
+    <?php echo $this->escape($this->form, 'none'); ?>
+    <?php foreach ($this->toolbarButtons as $button):
+        echo $this->escape($button, 'none');
+    endforeach; ?>
 <?php
     else:
         $mailurl = 'mailto:' . $this->escape(Fisma::configuration()->getConfig('contact_email'))

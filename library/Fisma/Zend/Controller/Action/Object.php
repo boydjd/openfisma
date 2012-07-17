@@ -130,25 +130,25 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $buttons['submitButton'] = new Fisma_Yui_Form_Button(
                     'saveChanges',
                     array(
-                        'label' => 'Save',
+                        'label' => 'Submit',
                         'onClickFunction' => 'Fisma.Util.submitFirstForm',
                         'imageSrc' => '/images/ok.png'
                     )
                 );
 
-                $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+                $buttons['discardButton'] = new Fisma_Yui_Form_Button(
                     'discardChanges',
                     array(
-                        'value' => 'Discard',
-                        'imageSrc' => '/images/no_entry.png',
-                        'href' => $this->getBaseUrl() . '/create'
+                        'label' => 'Cancel',
+                        'onClickFunction' => 'Fisma.Util.goBack',
+                        'imageSrc' => '/images/no_entry.png'
                     )
                 );
             } else {
                 $buttons['create'] = new Fisma_Yui_Form_Button_Link(
                     'toolbarCreateButton',
                     array(
-                        'value' => 'Create ' . $this->getSingularModelName(),
+                        'value' => 'New',// . $this->getSingularModelName(),
                         'href' => $this->getBaseUrl() . '/create',
                         'imageSrc' => '/images/create.png'
                     )
@@ -188,7 +188,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $buttons['reassociate'] = new Fisma_Yui_Form_Button(
                     'toolbarReassociateButton',
                     array(
-                        'label' => 'Migrate Associated ' . $this->_associatedPlural,
+                        'label' => 'Migrate',// Associated ' . $this->_associatedPlural,
                         'onClickFunction' => 'Fisma.Util.showReassociatePanel',
                         'onClickArgument' => array(
                             'title' => 'Migrate Associated ' . $this->_associatedPlural,

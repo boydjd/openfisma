@@ -237,6 +237,32 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
+     * Override in order to remove the "Create new" button, which does not make sense for vulnerabilities. Instead,
+     * add an "upload vulnerabilities" button.
+     *
+     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
+     * @return array Array of Fisma_Yui_Form_Button
+     */
+    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchUrlParams = null)
+    {
+        $buttons = parent::getToolbarButtons($record);
+        $isCreate = ($this->getRequest()->getActionName() === 'create');
+
+        if (CurrentUser::getInstance()->acl()->hasPrivilegeForClass('inject', 'Finding') && !$isCreate) {
+            array_unshift($buttons, new Fisma_Yui_Form_Button_Link(
+                'toolbarUploadFindingsButton',
+                array(
+                    'value' => 'Import',
+                    'imageSrc' => '/images/up.png',
+                    'href' => '/finding/index/injection'
+                )
+            ));
+        }
+
+        return $buttons;
+    }
+
+    /**
      * View details of a finding object
      *
      * @GETAllowed
@@ -334,7 +360,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $buttons['print'] = new Fisma_Yui_Form_Button_Link(
             'toolbarPrintButton',
             array(
-                'value' => 'Printer Friendly Version',
+                'value' => 'Printer Friendly',
                 'href' => $this->getBaseUrl() . '/print/id/' . $id,
                 'imageSrc' => '/images/printer.png',
                 'target' => '_blank'

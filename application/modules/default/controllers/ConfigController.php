@@ -732,7 +732,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             array(
                 'value' => 'Discard',
                 'imageSrc' => '/images/no_entry.png',
-                'href' => '/user/password'
+                'href' => '/config/' . $this->getRequest()->getActionName()
             )
         );
 

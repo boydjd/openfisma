@@ -103,7 +103,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $button = new Fisma_Yui_Form_Button_Link(
                 'importAssetsButton',
                 array(
-                    'value' => 'Import Assets',
+                    'value' => 'Import',
                     'href' => $this->getBaseUrl() . '/import',
                     'imageSrc' => '/images/up.png'
                 )

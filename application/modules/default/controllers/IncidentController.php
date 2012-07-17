@@ -1875,7 +1875,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $buttons['create'] = new Fisma_Yui_Form_Button_Link(
             'toolbarReportIncidentButton',
             array(
-                'value' => 'Report Incident',
+                'value' => 'New',
                 'href' => $this->getBaseUrl() . '/report',
                 'imageSrc' => '/images/create.png'
             )

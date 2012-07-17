@@ -6,7 +6,7 @@
         endforeach;
         ?>
     </div>
-    
+
     <?php if(isset($this->searchButtons)): ?>
         <div class="right">
             <?php
@@ -18,7 +18,7 @@
     <?php endif; ?>
 
     <?php if(isset($this->searchForm)): ?>
-        <div class="right">
+        <div class="<?php echo $this->escape(($this->searchFormLeft) ? 'left' : 'right'); ?>" style='margin-left:5px;'>
             <?php
             echo $this->escape($this->searchForm, 'none');
             ?>

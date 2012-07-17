@@ -637,5 +637,9 @@ Fisma.Util = {
             }
         }
         form.submit();
+    },
+
+    goBack : function() {
+        history.go(-1);
     }
 };
