@@ -49,6 +49,15 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $this->view->toolbarButtons = array();
 
         if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
+            $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Link(
+                'listView',
+                array(
+                    'value' => 'List View',
+                    'href' => '/role/list',
+                    'imageSrc' => '/images/list_view.png'
+                )
+            );
+
             $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Submit(
                 'saveChanges',
                 array(
@@ -298,16 +307,29 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
     {
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
-        if ($this->_request->getActionName() == 'list' && $this->_acl->hasPrivilegeForClass('update', 'Role')) {
-            $matrixView = new Fisma_Yui_Form_Button_Link(
-                'editMatrix',
-                array(
-                    'value' => 'View Privilege Matrix',
-                    'href' => '/role/view-matrix',
-                    'imageSrc' => '/images/list_view.png'
-                )
-            );
-            array_unshift($buttons, $matrixView);
+        if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
+            if ($this->_request->getActionName() == 'list') {
+                $matrixView = new Fisma_Yui_Form_Button_Link(
+                    'editMatrix',
+                    array(
+                        'value' => 'Matrix View',
+                        'href' => '/role/view-matrix',
+                        'imageSrc' => '/images/list_view.png'
+                    )
+                );
+            } else if ($this->_request->getActionName() == 'view') {
+                $matrixView = new Fisma_Yui_Form_Button_Link(
+                    'editMatrix',
+                    array(
+                        'value' => 'Edit Privileges',
+                        'href' => '/role/view-matrix',
+                        'imageSrc' => '/images/list_view.png'
+                    )
+                );
+            }
+            if ($matrixView) {
+                array_unshift($buttons, $matrixView);
+            }
         }
 
         return $buttons;

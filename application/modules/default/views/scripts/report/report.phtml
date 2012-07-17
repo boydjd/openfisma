@@ -7,6 +7,14 @@ endforeach;
 <div class="searchBox">
     <div class="left">
         <?php
+        echo $this->escape(new Fisma_Yui_Form_Button(
+            'backButton',
+            array(
+                'label' => 'Back',
+                'imageSrc' => '/images/back.png',
+                'onClickFunction' => 'Fisma.Util.goBack'
+            )
+        ), 'none');
         if (isset($this->exportXlsButton)):
             echo $this->escape($this->exportXlsButton, 'none');
         endif;

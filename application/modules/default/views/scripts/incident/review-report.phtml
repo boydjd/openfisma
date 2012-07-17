@@ -1,4 +1,5 @@
-<?php 
+<?php
+echo $this->escape($this->searchBox(array()), 'none');
 Fisma_Format_Section::startSection("Review Incident Report");
 ?>
 
@@ -17,7 +18,7 @@ Fisma_Format_Section::startSection("Review Incident Report");
     <table class="keyValues">
         <?php
         foreach ($this->incidentReview as $key => $value):
-        ?>    
+        ?>
             <tr>
                 <td><?php echo $this->escape($key); ?>:</td>
                 <?php if(!empty($this->richColumns[$key]) && $this->richColumns[$key] == 'html'): ?>
@@ -37,9 +38,9 @@ Fisma_Format_Section::startSection("Review Incident Report");
           style="display: inline">
         <?php
         $saveReportButton = new Fisma_Yui_Form_Button_Submit(
-                'irReportSave', 
+                'irReportSave',
                 array(
-                    'label' => 'Submit Report', 
+                    'label' => 'Submit Report',
                     'imageSrc' => '/images/add.png',
                     'class' => 'left'
                 )
@@ -47,13 +48,13 @@ Fisma_Format_Section::startSection("Review Incident Report");
         echo $this->escape($saveReportButton, 'none');
         ?>
     </form>
-    
+
     <form method="post" action="/incident/cancel-report" style="display: inline;">
         <?php
         $irReportCancelButton = new Fisma_Yui_Form_Button_Submit(
-            'irReportCancel', 
+            'irReportCancel',
             array(
-                'label' => 'Cancel Report', 
+                'label' => 'Cancel Report',
                 'imageSrc' => '/images/del.png',
             )
         );
@@ -62,15 +63,15 @@ Fisma_Format_Section::startSection("Review Incident Report");
         $formAction = $this->actionUrlBase . '/report/step/' . $this->escape($this->step);
         ?>
     </form>
-    
-    <form method="post" 
-          action="<?php echo $this->escape($formAction, 'none'); ?>" 
+
+    <form method="post"
+          action="<?php echo $this->escape($formAction, 'none'); ?>"
           style="display: inline;">
         <?php
         $backwardButton = new Fisma_Yui_Form_Button_Submit(
-                'irReportBackwards', 
+                'irReportBackwards',
                 array(
-                    'label' => 'Go Back', 
+                    'label' => 'Go Back',
                     'imageSrc' => '/images/left_arrow.png',
                     'class' => 'left'
                 )
