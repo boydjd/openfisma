@@ -182,9 +182,9 @@ class IconController extends Fisma_Zend_Controller_Action_Object
         $buttons['upload-image'] = new Fisma_Yui_Form_Button(
             'uploadImageButton',
             array(
-                'label' => 'Upload Image',
+                'label' => 'New',
                 'onClickFunction' => 'Fisma.Icon.showPanel',
-                'imageSrc' => '/images/up.png'
+                'imageSrc' => '/images/create.png'
             )
         );
 

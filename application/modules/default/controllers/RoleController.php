@@ -52,9 +52,9 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             $this->view->toolbarButtons[] = new Fisma_Yui_Form_Button_Link(
                 'listView',
                 array(
-                    'value' => 'List View',
+                    'value' => 'Edit Roles',
                     'href' => '/role/list',
-                    'imageSrc' => '/images/list_view.png'
+                    'imageSrc' => '/images/role.png'
                 )
             );
 
@@ -308,16 +308,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         if ($this->_acl->hasPrivilegeForClass('update', 'Role')) {
-            if ($this->_request->getActionName() == 'list') {
-                $matrixView = new Fisma_Yui_Form_Button_Link(
-                    'editMatrix',
-                    array(
-                        'value' => 'Matrix View',
-                        'href' => '/role/view-matrix',
-                        'imageSrc' => '/images/list_view.png'
-                    )
-                );
-            } else if ($this->_request->getActionName() == 'view') {
+            if ($this->_request->getActionName() == 'list' || $this->_request->getActionName() == 'view') {
                 $matrixView = new Fisma_Yui_Form_Button_Link(
                     'editMatrix',
                     array(
@@ -326,8 +317,6 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                         'imageSrc' => '/images/list_view.png'
                     )
                 );
-            }
-            if ($matrixView) {
                 array_unshift($buttons, $matrixView);
             }
         }

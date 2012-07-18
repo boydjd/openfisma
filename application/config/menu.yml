@@ -348,9 +348,6 @@ Administration:
                 Privacy:
                     label: Privacy Policy
                     link: /config/privacy
-                Search:
-                    label: Search
-                    link: /config/search
                 Contact:
                     label: Technical Contact
                     link: /config/contact
@@ -391,6 +388,9 @@ Administration:
                 PHPlog:
                     label: PHP Log
                     link: /debug/phplog
+                Search:
+                    label: Search
+                    link: /config/search
         Separator1:
             label: Separator
         AdminManual:
