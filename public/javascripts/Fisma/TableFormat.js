@@ -633,5 +633,60 @@ Fisma.TableFormat = {
         }
         elCell.innerHTML = html;
         elCell.width = '200px';
+    },
+
+    /**
+     * A formatter for comments
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The jsonified literal array:
+     *      [
+     *          ['first comment username', 'first comment date', 'first comment text'],
+     *          ['second comment username', 'second comment date', 'second comment text'],
+     *          ...
+     *      ]
+     */
+    formatComments : function (elCell, oRecord, oColumn, oData) {
+        // null/undefined: just bail
+        if (!oData) {
+            return;
+        }
+
+        // helper function
+        function highlightAndEscape(val) {
+            // hold the result in an element
+            var elem = $("<div />");
+            elem.text(val); // escape
+            // split on the highlight delimiter, ***
+            var peices = elem.html().split("***");
+            // clear out the element
+            elem.html("");
+            $.each(peices, function (i, v) {
+                // odd peices are highlighted
+                if (i % 2) {
+                    var span = $("<span>" + v + "</span>");
+                    span.addClass("highlight");
+                    elem.append(span);
+                // even peices are not highlighted, append the HTMLified text
+                } else {
+                    elem.append(v);
+                }
+            });
+            return elem.html();
+        }
+        oData = YAHOO.lang.JSON.parse(oData);
+        var cell = $(elCell);
+        cell.html("");
+        $.each(oData, function(i, v) {
+            var div = $("<div>");
+            div.append('<b>' + highlightAndEscape(v[0]) + '</b>');
+            div.append(" on ");
+            div.append(highlightAndEscape(v[1]));
+            div.append(":<br/>");
+            div.append(highlightAndEscape(v[2]));
+            div.appendTo(cell);
+        });
     }
 };

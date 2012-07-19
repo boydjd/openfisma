@@ -44,7 +44,7 @@
 	width: 10em;
 }
 
-.searchCriteria {    
+.searchCriteria {
     border-top: 1px dotted #bfbfbf;
     max-width: 60em;
     padding-top: 5px;
@@ -62,20 +62,27 @@
 }
 
 .searchAddCriteriaButton {
-    background: url(/images/add.png) center center no-repeat; 
-    overflow: hidden; 
+    background: url(/images/add.png) center center no-repeat;
+    overflow: hidden;
     width: 2em;
 }
 
 .searchRemoveCriteriaButton {
-    background: url(/images/remove.png) center center no-repeat; 
-    overflow: hidden; 
+    background: url(/images/remove.png) center center no-repeat;
+    overflow: hidden;
     width: 2em;
 }
 
 /* The style for highlighted text matching search results */
 .highlight {
     background-color: yellow;
+}
+
+/* Style for the div liners of comment columns */
+.yui-dt-col-jsonComments .yui-dt-liner div {
+    margin-bottom: 0.8em;
+    border-bottom: black 1px dashed;
+    padding-bottom: 0.8em;
 }
 
 div#searchColumnsButtons div {

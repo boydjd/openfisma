@@ -772,12 +772,14 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $formatter = 'Fisma.TableFormat.formatBoolean';
             }
 
-            if (isset($searchParams['formatter']) && $searchParams['formatter'] === 'date') {
-                $formatter = 'Fisma.TableFormat.formatDate';
-            }
-
-            if (isset($searchParams['formatter']) && $searchParams['formatter'] === 'datetime') {
-                $formatter = 'Fisma.TableFormat.formatDateTime';
+            if (isset($searchParams['formatter'])) {
+                if ($searchParams['formatter'] === 'date') {
+                    $formatter = 'Fisma.TableFormat.formatDate';
+                } elseif ($searchParams['formatter'] === 'datetime') {
+                    $formatter = 'Fisma.TableFormat.formatDateTime';
+                } else {
+                    $formatter = $searchParams['formatter'];
+                }
             }
 
             $column = new Fisma_Yui_DataTable_Column($label,
@@ -785,7 +787,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                                                      $formatter,
                                                      null,
                                                      $fieldName,
-                                                     !$visible);
+                                                     !$visible,
+                                                     'string',
+                                                     null,
+                                                     true);
 
             $searchResultsTable->addColumn($column);
         }

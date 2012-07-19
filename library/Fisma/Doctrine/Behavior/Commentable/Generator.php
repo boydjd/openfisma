@@ -96,6 +96,10 @@ class Fisma_Doctrine_Behavior_Commentable_Generator extends Doctrine_Record_Gene
             null,
             array('comment' => 'The user who created comment')
         );
+
+        $this->addListener(new Fisma_Doctrine_Behavior_Commentable_Listener(
+            $this->getOption('table')->getComponentName()
+        ));
     }
 
     /**
