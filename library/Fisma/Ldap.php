@@ -58,7 +58,6 @@ class Fisma_Ldap
         }
 
         $matchedAccounts = array();
-        $exceptions = array();
         // Using Zend_Ldap_Filter instead of a string query prevents LDAP injection
         $searchFilter = Zend_Ldap_Filter::orFilter(
             Zend_Ldap_Filter::contains('mail', $query),
@@ -67,9 +66,9 @@ class Fisma_Ldap
         );
 
         foreach ($this->_configs as $config) {
+
             try {
                 $ldapServer = new Zend_Ldap($config);
-
                 $result = $ldapServer->search(
                     $searchFilter,
                     null,
@@ -86,5 +85,40 @@ class Fisma_Ldap
         }
 
         return $matchedAccounts;
+    }
+
+    public function match($query)
+    {
+        if (empty($query)) {
+            throw new Fisma_Zend_Exception_User('You did not specified a query.');
+        }
+
+        $matchedAccounts = array();
+        // Using Zend_Ldap_Filter instead of a string query prevents LDAP injection
+        $searchFilter = Zend_Ldap_Filter::orFilter(
+            Zend_Ldap_Filter::equals('uid', $query),
+            Zend_Ldap_Filter::equals('samaccountname', $query)
+        );
+
+        foreach ($this->_configs as $config) {
+
+            try {
+                $ldapServer = new Zend_Ldap($config);
+                $result = $ldapServer->search(
+                    $searchFilter,
+                    null,
+                    Zend_Ldap::SEARCH_SCOPE_SUB,
+                    $this->_resultFields,
+                    'givenname',
+                    null,
+                    10 // limit 10 results to avoid crushing ldap server
+                );
+                $matchedAccounts += $result->toArray();
+            } catch (Zend_Ldap_Exception $e) {
+                $this->_log->err('Problem querying LDAP server.', $e);
+            }
+        }
+
+        return (count($matchedAccounts)) ? $matchedAccounts[0] : null;
     }
 }

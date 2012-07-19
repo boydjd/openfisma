@@ -1,10 +1,45 @@
-<?php 
-Fisma_Format_Section::startSection('LDAP Configurations</b>&nbsp;[<a href="/config/update-ldap">New</a>]'); 
-?>
+<?php echo $this->escape($this->searchBox($this->toolbarButtons), 'none'); ?>
+<?php Fisma_Format_Section::startSection('LDAP Configurations'); ?>
 
-<input name="csrf" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
 <?php echo $this->escape($this->dataTable, 'none'); ?>
 
-<?php
-Fisma_Format_Section::stopSection(); 
-?>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php Fisma_Format_Section::startSection('Automatic synchronization'); ?>
+<form method='POST' action='/config/list-ldap'>
+    <input name="csrf" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
+    <p>
+        <input type='checkbox' name='autorun' <?php
+        if ($this->task['enabled']):
+            ?>checked<?php
+        endif;
+    ?>/>
+        Run every <input size='1' name='day' value ='<?php
+            echo $this->escape($this->task['number']);
+        ?>' /> day(s) at <input size='6' name='time' value ='<?php
+            echo $this->escape($this->task['time']);
+        ?>'/>.
+    </p>
+    <p>Last ran: <i><?php
+        if (isset($this->task['lastRunTs'])):
+            echo $this->escape($this->task['lastRunTs']);
+        else:
+            ?>never<?php
+        endif;
+    ?></i>.</p>
+    <blockquote><pre><?php
+        $filePath = Fisma::getPath('log') . '/refresh-user.log';
+        if (file_exists($filePath)):
+            $logs = explode("\n\n", trim(file_get_contents($filePath)));
+            echo $this->escape(array_pop($logs));
+        endif;
+    ?></pre></blockquote>
+    <p><input type='checkbox' name='notification' <?php
+        $user = Doctrine::getTable('User')->find(CurrentUser::getAttribute('id'));
+        $event = Doctrine::getTable('Event')->findOneByName('LDAP_SYNC');
+        if (in_array($user, $event->Users->getData())):
+            ?>checked<?php
+        endif;
+    ?>/> Receive a notification when synchronization completes.</p>
+</form>
+<?php Fisma_Format_Section::stopSection(); ?>

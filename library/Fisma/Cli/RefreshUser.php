@@ -17,7 +17,7 @@
  */
 
 /**
- * Check users' (un)locking conditions
+ * Refresh user information from LDAP
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
@@ -26,8 +26,20 @@
  * @subpackage Fisma_Cli
  */
 
-class Fisma_Cli_LockUser extends Fisma_Cli_Abstract
+class Fisma_Cli_RefreshUser extends Fisma_Cli_Abstract
 {
+    /**
+     * Set up logging
+     */
+    public function __construct()
+    {
+        // Log all migration messages to a dedicated log.
+        $fileWriter = new Zend_Log_Writer_Stream(Fisma::getPath('log') . '/refresh-user.log');
+        $fileWriter->setFormatter(new Zend_Log_Formatter_Simple("[%timestamp%] %message%\n"));
+
+        parent::getLog()->addWriter($fileWriter);
+    }
+
     /**
      * Run the check on lock/unlock
      */
@@ -35,36 +47,23 @@ class Fisma_Cli_LockUser extends Fisma_Cli_Abstract
     {
         $enabledUsers = Doctrine_Query::create()
             ->from('User u')
-            ->where('u.lockType <> ?', 'manual')
-            ->orWhere('u.lockType is null')
+            ->where('u.deleted_at is null')
+            ->andWhere('u.username <> ?', 'root')
             ->execute();
-        $this->getLog()->info("Found " . $enabledUsers->count() . " enabled users.");
-
-        $lockedUsers = array();
-        $unlockedUsers = array();
+        $log = "Found " . $enabledUsers->count() . " existing users to sync.";
+        $this->getLog()->info($log);
 
         foreach ($enabledUsers as $user) {
-            $locked = $user->locked;
-
-            $user->checkAccountLock(true);
-
-            if ($locked && !$user->locked) {
-                $unlockedUsers[] = $user->username;
-            } else if (!$locked && $user->locked) {
-                $lockedUsers[] = $user->username;
+            try {
+                $user->syncWithLdap();
+                $user->save();
+            } catch (Exception $e) {
+                $log .= "\n" . $user->username . ' - ' . $e->getMessage();
+                $this->getLog()->err($user->username . ' - ' . $e->getMessage());
             }
         }
-
-        if (count($lockedUsers) > 0) {
-            $this->getLog()->info(
-                count($lockedUsers) . ' users have been locked: {' . implode(', ', $lockedUsers) . '}'
-            );
-        }
-
-        if (count($unlockedUsers) > 0) {
-            $this->getLog()->info(
-                count($unlockedUsers) . ' users have been unlocked: {' . implode(', ', $unlockedUsers) . '}'
-            );
-        }
+        $log .= "\nSynchronization completed.";
+        $this->getLog()->info("Synchronization completed.");
+        Notification::notify('LDAP_SYNC', null, null, array('log' => $log));
     }
 }

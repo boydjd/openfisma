@@ -7,6 +7,13 @@ Event:
         urlPath: /config/general
         category: admin
 
+    LDAP_SYNC:
+        name: LDAP_SYNC
+        description: system finishes refreshing user information from LDAP
+        Privilege: notification_admin
+        urlPath: /config/list-ldap
+        category: script
+
     USER_CREATED:
         defaultActive: true
         name: USER_CREATED

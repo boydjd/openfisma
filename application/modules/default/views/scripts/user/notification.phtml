@@ -25,6 +25,30 @@
     </table>
     <?php Fisma_Format_Section::stopSection(); endif; ?>
 
+    <?php if ($this->scriptEvents): Fisma_Format_Section::startSection(
+        'Background Task Alerts ' .
+        " (<a href='#' onclick='return checkAll(this);'>all</a> | " .
+        "<a href='#' onclick='return checkNone(this);'>none</a>)"
+    ); ?>
+    <table class='keyValues'>
+        <tr>
+            <td>Email me whenever</td>
+            <td><?php foreach($this->scriptEvents as $event): ?>
+                <input
+                    type='checkbox'
+                    name='event[<?php echo $this->escape($event->id); ?>]'
+                    id='chkEvent[<?php echo $this->escape($event->id); ?>]'
+                    <?php if (in_array($this->user, $event->Users->getData())): ?>checked<?php endif; ?>
+                />
+                <label for='chkEvent[<?php echo $this->escape($event->id); ?>]'>
+                    <?php echo $this->escape($event->description); ?>
+                </label>
+                <br/>
+            <?php endforeach; ?></td>
+        </tr>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); endif; ?>
+
     <?php if ($this->userEvents): Fisma_Format_Section::startSection(
         'User Alerts ' .
         " (<a href='#' onclick='return checkAll(this);'>all</a> | " .

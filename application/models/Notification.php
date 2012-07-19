@@ -112,6 +112,10 @@ class Notification extends BaseNotification
             }
         }
 
+        if (!empty($extra['log'])) {
+            $eventText .= "\n" . $extra['log'];
+        }
+
         $notifications = new Doctrine_Collection('Notification');
         foreach ($userEvents as $userEvent) {
             $notification = new Notification();
