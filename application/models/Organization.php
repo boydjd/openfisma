@@ -330,7 +330,7 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
                         'USER_POC',
                         $this,
                         CurrentUser::getInstance(),
-                        array('userId' => $newValue)
+                        array('userId' => $newValue, 'url' => '/organization/view/id/')
                     );
                     break;
                 }

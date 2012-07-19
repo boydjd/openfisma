@@ -101,7 +101,7 @@ class Notification extends BaseNotification
         $userEvents = $eventsQuery->execute();
 
         $baseUrl = rtrim(Fisma_Url::baseUrl(), '/');
-        $urlPath = $event->urlPath;
+        $urlPath = (isset($extra['url'])) ? $extra['url'] : $event->urlPath;
         $url = '';
 
         if (isset($record) && $urlPath) {
