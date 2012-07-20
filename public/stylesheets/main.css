@@ -81,6 +81,10 @@ input[readonly] {
     background-color: #f0f0f0 ! important;
 }
 
+table.fisma_crud div.readonly {
+    padding-top: 5px;
+}
+
 /* This next section contains application-specific styles. Each style should
    be named for what it *does*, and not what it *looks like*. This standard
    improves application maintenance. */
