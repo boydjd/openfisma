@@ -86,6 +86,13 @@ class Fisma_Yui_DataTable_Column
     private $_sortField;
 
     /**
+     * The width of this column
+     *
+     * @var int
+     */
+    private $_width;
+
+    /**
      * Create a column with a human-friendly name
      *
      * @param string $label A human-friendly label for this column
@@ -95,6 +102,7 @@ class Fisma_Yui_DataTable_Column
      * @param string $name A javascript-friendly name. If not specified, then it is derived from the label.
      * @param bool $hidden Whether column should be hidden
      * @param string $parser The name of a javascript parser function to use on this column.
+     * @param int $width The width of the column, automatically determined if left blank.
      */
     public function __construct($label,
                                 $sortable,
@@ -104,7 +112,8 @@ class Fisma_Yui_DataTable_Column
                                 $hidden = false,
                                 $parser = 'string',
                                 $sortField = null,
-                                $resizable = false)
+                                $resizable = false,
+                                $width = null)
     {
         $this->_label = $label;
         $this->_sortable = $sortable;
@@ -114,6 +123,7 @@ class Fisma_Yui_DataTable_Column
         $this->_parser = $parser;
         $this->_sortField = $sortField;
         $this->_resizable = $resizable;
+        $this->_width = $width;
 
         if (is_null($name)) {
             $this->_name = Fisma_String::convertToJavascriptName($label);
@@ -207,5 +217,15 @@ class Fisma_Yui_DataTable_Column
     public function getResizable()
     {
         return $this->_resizable;
+    }
+
+    /**
+     * Return width (int) if set or null if auto
+     *
+     * @return mixed
+     */
+    public function getWidth()
+    {
+        return $this->_width;
     }
 }

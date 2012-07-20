@@ -44,6 +44,7 @@
             if (YL.isObject(data)) {
                 this._state = YL.merge(data, this._state);
             }
+            this._storage.set(this._model, this._state);
         }, this, true);
     };
 
@@ -85,7 +86,8 @@
          * @return {Object}
          */
         getSort: function() {
-            var data = this._localStorage.get(this._model);
+            this._stateReady();
+            var data = this._state;
             return YL.isObject(data) && YL.isObject(data.sort) ? data.sort : null;
         },
 
@@ -97,10 +99,11 @@
          * @param dir {String} Sort direction
          */
         setSort: function(column, dir) {
-            var data = this._localStorage.get(this._model);
+            this._stateReady();
+            var data = this._state;
             data = YL.isObject(data) ? data : {};
             data.sort = {column: column, dir: dir};
-            this._localStorage.set(this._model, data);
+            this._storage.set(this._model, data);
         },
 
         /**
@@ -135,9 +138,11 @@
          */
         persist: function (callback) {
             var m = this._model,
-                s = this._storage;
+                s = this._storage,
+                d = s.get(m);
             // force a "set" to ensure sync will know it's been modified
-            s.set(m, s.get(m));
+            this.getColumnOrder(d);
+            s.set(m, d);
             s.sync([m], callback);
         },
 
@@ -154,6 +159,19 @@
             if (typeof(this._state.columnVisibility) === 'undefined') {
                 this._state.columnVisibility = {};
             }
+        },
+
+        /**
+         * Fetch order
+         */
+        getColumnOrder: function(data) {
+            var columnOrder = {};
+            var columns = Fisma.Search.yuiDataTable.getColumnSet().keys;
+            $.each(columns, function (index, column){
+                var fieldName = column.field;
+                columnOrder[fieldName] = column.width;
+            });
+            data.columnOrder = columnOrder;
         }
     };
     Fisma.Search.TablePreferences = FSTP;
