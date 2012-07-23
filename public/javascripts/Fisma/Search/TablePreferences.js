@@ -77,6 +77,7 @@
             this._stateReady();
             this._state.columnVisibility[column] = value;
             this._storage.set(this._model, this._state);
+            this.persist();
         },
 
         /**
@@ -104,6 +105,7 @@
             data = YL.isObject(data) ? data : {};
             data.sort = {column: column, dir: dir};
             this._storage.set(this._model, data);
+            this.persist();
         },
 
         /**
@@ -134,7 +136,7 @@
          * Save table preferences
          *
          * @method TablePreferences.persist
-         * @param callback {Function|Object} Callback on completion.
+         * @param callback {Function|Object|null} Callback on completion.
          */
         persist: function (callback) {
             var m = this._model,
@@ -143,6 +145,44 @@
             // force a "set" to ensure sync will know it's been modified
             this.getColumnOrder(d);
             s.set(m, d);
+            if (callback == null) {
+                callback = {
+                    success : function (response, object) {
+                        if (object.status !== "ok") {
+                            Fisma.Util.message(object.status, "warning", true);
+                        }
+                    },
+                    failure : function (response) {
+                        Fisma.Util.message('Error: ' + response.statusText, 'warning', true);
+                    }
+                };
+            }
+            s.sync([m], callback);
+        },
+
+        /**
+         * Clear table preferences
+         *
+         * @method TablePreferences.clear
+         * @param callback {Function|Object|null} Callback on completion.
+         */
+        clear: function (callback) {
+            var m = this._model,
+                s = this._storage,
+                d = null;
+            s.set(m, d);
+            if (callback == null) {
+                callback = {
+                    success : function (response, object) {
+                        if (object.status !== "ok") {
+                            Fisma.Util.message(object.status, "warning", true);
+                        }
+                    },
+                    failure : function (response) {
+                        Fisma.Util.message('Error: ' + response.statusText, 'warning', true);
+                    }
+                };
+            }
             s.sync([m], callback);
         },
 

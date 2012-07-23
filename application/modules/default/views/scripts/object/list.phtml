@@ -325,6 +325,14 @@
                 prefs.setSort(event.column.key, event.dir);
             }, tablePrefs);
 
+            dataTable.subscribe("columnResizeEvent", function(event, prefs) {
+                prefs.persist();
+            }, tablePrefs);
+
+            dataTable.subscribe("columnReorderEvent", function(event, prefs) {
+                prefs.persist();
+            }, tablePrefs);
+
             Fisma.Search.initializeSearchColumnsPanel(Dom.get("searchColumnsButtons"));
         });
     });
