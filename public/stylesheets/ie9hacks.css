@@ -52,3 +52,7 @@
 dl {
   margin : 0
 }
+
+.yui-button.yui-menu-button button{
+    min-width:0px;
+}

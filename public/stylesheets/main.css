@@ -1046,6 +1046,10 @@ table.custom-widget.no-border td {
     vertical-align: middle;
 }
 
+.searchBox label {
+    display: inline-block;
+}
+
 #menuLayoutSelect {
     background-color: #ebebeb;
     border: solid thin black;
