@@ -55,7 +55,7 @@ Fisma.Remediation = {
                         var submitButton = new YAHOO.widget.Button(inputs[i]);
                     }
                 }
-            
+
                 // Register listener for the panel close event
                 panel.hideEvent.subscribe(function () {
                     setTimeout(function () {
@@ -382,5 +382,12 @@ Fisma.Remediation = {
                 Fisma.Remediation.createSourcePanel.setBody(alertMessage);
             }
         }, null);
+    },
+
+    /**
+     * Hide the panel when user click "Cancel"
+     */
+    closeSourcePanel : function () {
+        Fisma.Remediation.createSourcePanel.hide();
     }
 };

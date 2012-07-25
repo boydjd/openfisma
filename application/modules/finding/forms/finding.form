@@ -89,8 +89,3 @@ elements.threat.options.cols = "100"
 elements.threat.options.rows = "8"
 elements.threat.options.validators.mce.validator = "MceNotEmpty"
 displayGroups.finding.elements.threat = "threat"
-
-elements.save.type = "Form_Button_Submit"
-elements.save.options.label = "Create Finding"
-elements.save.options.imageSrc = "/images/ok.png"
-displayGroups.finding.elements.save = "save"

@@ -141,10 +141,4 @@ elements.comment.options.hideLabel = true
 elements.comment.options.filters.stringtrim.filter = "StringTrim"
 displayGroups.accountInfo.elements.comment = "comment"
 
-elements.save.type = "Form_Button"
-elements.save.options.label = "Save"
-elements.save.options.onClickFunction = "Fisma.User.showCommentPanel"
-elements.save.options.imageSrc = "/images/ok.png"
-displayGroups.accountInfo.elements.save = "save"
-
 ; The systems part of the account form is generated dynamically at runtime

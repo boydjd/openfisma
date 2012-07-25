@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * A controller for the incident reporting
- * 
+ *
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -36,10 +36,10 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
                       ->addActionContext('history', array('html', 'pdf', 'xls'))
                       ->addActionContext('organization', array('html', 'pdf', 'xls'))
                       ->initContext();
-        
-        parent::init();        
+
+        parent::init();
     }
-    
+
     /**
      * Check that the user has the privilege to run reports
      */
@@ -64,16 +64,16 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
     public function historyAction()
     {
         /*
-         * This data is gotten in 2 separate queries and then glued together in PHP. These are base queries which are 
+         * This data is gotten in 2 separate queries and then glued together in PHP. These are base queries which are
          * extended below. First query gets the stats for reported incidents, second query gets stats for rejected and
-         * resolved incidents. This can't be done in one query because one query operates on reportTs and the other 
+         * resolved incidents. This can't be done in one query because one query operates on reportTs and the other
          * operates on closedTs.
          */
         $reportedIncidentsQuery = Doctrine_Query::create()
                                   ->from('Incident i')
                                   ->having('COUNT(*) > 0')
                                   ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-        
+
         $closedIncidentsQuery = Doctrine_Query::create()
                                 ->from('Incident i')
                                 ->select('i.resolution')
@@ -94,7 +94,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
 
         for ($monthOffset = 0; $monthOffset < 12; $monthOffset++) {
             $startDate->addMonth(1);
-            
+
             $report->addColumn(
                 new Fisma_Report_Column(
                     $startDate->get(Zend_Date::MONTH_NAME_SHORT),
@@ -108,18 +108,18 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
 
             // Get month number without leading zero
             $month = $startDate->get(Zend_Date::MONTH_SHORT);
-            
+
             // Get year number
             $year = $startDate->get(Zend_Date::YEAR);
-            
+
             // Column name must be unique for each month
             $columnName = "month_{$month}_year_{$year}";
 
             $months['i_' . $columnName] = $startDate->get(Zend_Date::MONTH_NAME_SHORT);
-            
+
             /*
-             * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or 
-             * addSelect() so they must be interpolated. This is safe, however, because the interpolated parameters 
+             * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or
+             * addSelect() so they must be interpolated. This is safe, however, because the interpolated parameters
              * are generated based off of internal dates and then filtered through Zend_Date.
              */
             $reportedSelect = "SUM(IF(MONTH(i.reportTs) = $month AND YEAR(i.reportTs) = $year, 1, 0)) AS $columnName";
@@ -154,9 +154,9 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
                 // Rejected and resolved incidents found. Rejected will always be in index 0 due to sort in query.
                 $history['Rejected'] = $closedIncidents[0];
                 unset($history['Rejected']['i_resolution']);
-                
+
                 $history['Resolved'] = $closedIncidents[1];
-                unset($history['Resolved']['i_resolution']);                
+                unset($history['Resolved']['i_resolution']);
             } elseif ('resolved' == $closedIncidents[0]['i_resolution']) {
                 // No rejected incidents were found but resolved incidents were found
                 $history['Rejected'] = array_combine(array_keys($months), array_fill(0, 12, 0));
@@ -171,7 +171,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
                 $history['Resolved'] = array_combine(array_keys($months), array_fill(0, 12, 0));
             }
         }
-        
+
         // Each array is missing its first column, the "Action", so add it now
         array_unshift($history['Reported'], 'Reported');
         array_unshift($history['Rejected'], 'Rejected');
@@ -181,7 +181,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
 
         $this->_helper->reportContextSwitch()->setReport($report);
     }
-        
+
     /**
      * Break down of all incidents by status
      *
@@ -198,26 +198,26 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
                          ->groupBy('c.id, sc.id')
                          ->orderBy('c.category, sc.name')
                          ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-        
+
         // Create the base report object -- additional columns are added below
         $report = new Fisma_Report();
 
         $report->setTitle('Incidents Reported By Category (Previous 12 Months)')
                ->addColumn(new Fisma_Report_Column('Category', true))
                ->addColumn(new Fisma_Report_Column('Sub Category', true));
-                       
+
         // Now add one column for each of last 12 months (including current month)
         $startDate = Zend_Date::now()->setDay(1)->subMonth(12);
 
         for ($monthOffset = 0; $monthOffset < 12; $monthOffset++) {
             $startDate->addMonth(1);
-            
+
             // Get month number without leading zero
             $month = $startDate->get(Zend_Date::MONTH_SHORT);
-            
+
             // Get year number
             $year = $startDate->get(Zend_Date::YEAR);
-                        
+
             $report->addColumn(
                 new Fisma_Report_Column(
                     $startDate->get(Zend_Date::MONTH_NAME_SHORT),
@@ -233,12 +233,12 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
             $columnName = "month_{$month}_year_{$year}";
 
             /*
-             * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or 
-             * addSelect() so they must be interpolated. This is safe, however, because the interpolated parameters 
+             * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or
+             * addSelect() so they must be interpolated. This is safe, however, because the interpolated parameters
              * are generated based off of internal dates and then filtered through Zend_Date.
              */
             $select = "SUM(IF(MONTH(i.reportTs) = $month AND YEAR(i.reportTs) = $year, 1, 0)) AS $columnName";
-            
+
             $categoryQuery->addSelect($select);
         }
 
@@ -248,7 +248,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
 
         $this->_helper->reportContextSwitch()->setReport($report);
     }
-    
+
     /**
      * Show incidents by organization type
      *
@@ -260,7 +260,7 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
         $orgTypeId = $this->_helper->OrganizationType
                           ->getOrganizationTypeIdByStorageOrRequest($this->_me->id, $storageNamespace, false);
 
-        $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId, false);
+        $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId);
 
         $this->view->orgTypeId = $orgTypeId;
         $this->view->organizationTypeForm = $filterForm;
@@ -284,19 +284,19 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
 
         $report->setTitle('Incidents Reported Per Organization (Previous 12 Months)')
                ->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true));
-                       
+
         // Now add one column for each of last 12 months (including current month)
         $startDate = Zend_Date::now()->setDay(1)->subMonth(12);
 
         for ($monthOffset = 0; $monthOffset < 12; $monthOffset++) {
             $startDate->addMonth(1);
-            
+
             // Get month number without leading zero
             $month = $startDate->get(Zend_Date::MONTH_SHORT);
-            
+
             // Get year number
             $year = $startDate->get(Zend_Date::YEAR);
-                        
+
             $report->addColumn(
                 new Fisma_Report_Column(
                     $startDate->get(Zend_Date::MONTH_NAME_SHORT),
@@ -312,12 +312,12 @@ class IncidentReportController extends Fisma_Zend_Controller_Action_Security
             $columnName = "month_{$month}_year_{$year}";
 
             /*
-             * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or 
-             * addSelect() so they must be interpolated. This is safe, however, because the interpolated parameters 
+             * Notice interpolated parameters in the addSelect()... There is no way to bind parameters in a select() or
+             * addSelect() so they must be interpolated. This is safe, however, because the interpolated parameters
              * are generated based off of internal dates and then filtered through Zend_Date.
              */
             $select = "SUM(IF(MONTH(i.reportTs) = $month AND YEAR(i.reportTs) = $year, 1, 0)) AS $columnName";
-            
+
             $bureauQuery->addSelect($select);
         }
 

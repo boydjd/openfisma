@@ -79,7 +79,7 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
 
         $maxSize = Fisma_String::convertFilesizeToInteger(Fisma::configuration()->getConfig('max_file_upload_size'));
         $maxFilesizeEle = new Zend_Form_Element_Hidden("MAX_UPLOAD_FILE_SIZE");
-        $maxFilesizeEle->setValue($maxSize); 
+        $maxFilesizeEle->setValue($maxSize);
         $form->addElement($maxFilesizeEle);
 
         if (!$formName) {
@@ -116,20 +116,20 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
             $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
             $args = array(null, $this->getBaseUrl() . '/delete' . $fromSearchUrl, $record['id']);
 
-            $buttons[] = new Fisma_Yui_Form_Button(
+            $buttons['delete'] = new Fisma_Yui_Form_Button(
                 'deleteOrganizationTypeButton',
                 array(
-                    'label' => 'Delete Organization Type',
+                    'label' => 'Delete',
                     'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                     'onClickArgument' => array(
                         'args' => $args,
                         'text' => "WARNING: You are about to delete this organization type. This action cannot be "
                                 . "undone. Do you want to continue?",
                         'func' => 'Fisma.Util.formPostAction'
-                    )
+                    ),
+                    'imageSrc' => '/images/trash_recyclebin_empty_closed.png'
                 )
             );
-
         }
 
         return $buttons;

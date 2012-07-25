@@ -241,7 +241,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
                 $view->exportXlsButton = new Fisma_Yui_Form_Button_Link(
                     'exportXls',
                     array(
-                        'value' => 'Export Excel',
+                        'value' => 'XLS',
                         'href' => $this->_getFormatUrl('xls'),
                         'imageSrc' => '/images/xls.gif'
                     )
@@ -252,7 +252,7 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
                 $view->exportPdfButton = new Fisma_Yui_Form_Button_Link(
                     'exportPdf',
                     array(
-                        'value' => 'Export PDF',
+                        'value' => 'PDF',
                         'href' => $this->_getFormatUrl('pdf'),
                         'imageSrc' => '/images/pdf.gif'
                     )
@@ -284,6 +284,9 @@ class Fisma_Zend_Controller_Action_Helper_ReportContextSwitch extends Zend_Contr
             $view->partialViews = $this->_partialViews;
 
             $view->form = $this->_toolbarForm;
+            if ($view->form) {
+                Fisma_Zend_Form_Manager::addDefaultElementDecorators($view->form);
+            }
 
             $this->_getViewRenderer()->renderScript('/report/report.phtml');
 

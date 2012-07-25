@@ -272,34 +272,25 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
         $toolbarButtons = $this->getToolbarButtons($organization, $fromSearchParams);
 
-        if (isset($toolbarButtons['tree'])) {
-            unset($toolbarButtons['tree']);
-        }
-
         $searchButtons = $this->getSearchButtons($organization, $fromSearchParams);
 
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
         $this->view->fromSearchParams = $fromSearchUrl;
 
-        if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
-            $discardButton = new Fisma_Yui_Form_Button_Link(
-                                 'discardChanges',
-                                 array(
-                                     'value' => 'Discard Changes',
-                                     'imageSrc' => '/images/no_entry.png',
-                                     'href' => "/organization/view/id/$id$fromSearchUrl"
-                                 )
-                             );
-
-            $submitButton = new Fisma_Yui_Form_Button_Submit(
-                                'saveChanges',
-                                array(
-                                    'label' => 'Save Changes',
-                                     'imageSrc' => '/images/ok.png'
-                                )
-                            );
-
-            array_unshift($toolbarButtons, $discardButton, $submitButton);
+        if ($this->_acl->hasPrivilegeForClass('create', 'Organization')) {
+            $toolbarButtons['convertToSystem'] = new Fisma_Yui_Form_Button(
+                'convertToSys',
+                array(
+                    'label' => 'Convert To System',
+                    'onClickFunction' => 'Fisma.System.convertToOrgOrSystem',
+                    'onClickArgument' => array(
+                        'id' => $this->view->escape($id, 'url'),
+                        'text' => "Are you sure you want to convert this organization to a system?",
+                        'func' => 'Fisma.System.askForOrgToSysInput'
+                    ),
+                    'imageSrc' => '/images/convert.png'
+                )
+            );
         }
 
         $this->view->toolbarButtons = $toolbarButtons;
@@ -633,8 +624,9 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
         $buttons = array();
+        $isList = $this->getRequest()->getActionName() === 'list';
 
-        if ($this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
+        if ($isList && $this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
             $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
                 'organizationTreeButton',
                 array(
@@ -646,28 +638,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $buttons = array_merge($buttons, parent::getToolbarButtons($record));
-
-        $id = $this->getRequest()->getParam('id');
-        if (
-            !empty($id)
-            && $this->_acl->hasPrivilegeForClass('create', 'Organization')
-        ) {
-
-            $buttons['convertToSystem'] = new Fisma_Yui_Form_Button(
-                'convertToSys',
-                array(
-                      'label' => 'Convert To System',
-                      'onClickFunction' => 'Fisma.System.convertToOrgOrSystem',
-                      'onClickArgument' => array(
-                          'id' => $this->view->escape($id, 'url'),
-                          'text' => "Are you sure you want to convert this organization to a system?",
-                          'func' => 'Fisma.System.askForOrgToSysInput'
-
-                    )
-                )
-            );
-
-        }
 
         return $buttons;
     }

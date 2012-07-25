@@ -19,4 +19,10 @@ elements.sourceId.options.label = "Source"
 elements.sourceId.options.value = "0"
 
 elements.filter.type = "Form_Button_Submit"
-elements.filter.options.label = "Filter"
+elements.filter.options.label = "Apply"
+elements.filter.options.imageSrc = "/images/filter.png"
+
+elements.noFilter.type = "Form_Button_Link"
+elements.noFilter.options.value = "Reset"
+elements.noFilter.options.href = "/finding/report/overdue/format/html"
+elements.noFilter.options.imageSrc = "/images/reload.png"

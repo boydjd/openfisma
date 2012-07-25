@@ -8,6 +8,11 @@
     padding: 5px 10px;
 }
 
+.searchBox label {
+    vertical-align: top;
+    line-height: 26px;
+}
+
 .searchBox #keywords {
     width: 15em;
 }

@@ -39,7 +39,7 @@
          */
         typeHandle : function (event, config) {
             // Set the selected organization type
-            var organizationTypeFilter = YAHOO.util.Dom.get('orgTypeFilter');
+            var organizationTypeFilter = YAHOO.widget.Button.getButton('orgTypeFilter-button').getMenu().srcElement;
             var selectedType = organizationTypeFilter.options[organizationTypeFilter.selectedIndex];
 
             // Store the selected organizationTypeId to storage table

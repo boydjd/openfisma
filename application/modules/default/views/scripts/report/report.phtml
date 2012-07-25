@@ -7,32 +7,35 @@ endforeach;
 <div class="searchBox">
     <div class="left">
         <?php
+        echo $this->escape(new Fisma_Yui_Form_Button(
+            'backButton',
+            array(
+                'label' => 'Back',
+                'imageSrc' => '/images/back.png',
+                'onClickFunction' => 'Fisma.Util.goBack'
+            )
+        ), 'none');
         if (isset($this->exportXlsButton)):
             echo $this->escape($this->exportXlsButton, 'none');
         endif;
 
-        if (isset($this->exportPdfButton)):            
+        if (isset($this->exportPdfButton)):
             echo $this->escape($this->exportPdfButton, 'none');
         endif;
         ?>
     </div>
 
-    <?php if (isset($this->form)): ?>
-        <div class="right">
+    <div class="right">
+        <?php if (isset($this->form)): ?>
             <?php echo $this->escape($this->form, 'none'); ?>
-        </div>
-    <?php endif; ?>
-    
-    <div class="clear"></div>        
-</div>
+        <?php endif; ?>
 
-<?php if (isset($this->orgTypeId)): ?> 
-<div  class="searchBox">
-         <?php echo $this->escape($this->organizationTypeForm, 'none'); ?>
-    <div class="clear"></div>        
+        <?php if (isset($this->orgTypeId)): ?>
+            <?php echo $this->escape($this->organizationTypeForm, 'none'); ?>
+        <?php endif; ?>
+    </div>
+    <div class="clear"></div>
 </div>
-<?php endif; ?>
-
 
 <?php
 Fisma_Format_Section::startSection($this->title);
@@ -47,12 +50,11 @@ Fisma_Format_Section::stopSection();
 <script type="text/javascript">
     YAHOO.util.Event.onDOMReady(function () {
         Fisma.Storage.onReady(function() {
-            var organizationTypeElement = YAHOO.util.Dom.get('orgTypeFilter');
-            var orgTypeId = "<?php echo $this->escape($this->orgTypeId); ?>"; 
-
             var config = {namespace : "<?php echo $this->escape($this->namespace); ?>",
-                          url : "<?php echo $this->escape($this->url); ?>"}; 
-            YAHOO.util.Event.addListener("orgTypeFilter", "change", Fisma.Organization.typeHandle, config);
+                          url : "<?php echo $this->escape($this->url); ?>"};
+            Fisma.Organization.typeSelector = function(event) {
+                Fisma.Organization.typeHandle(event, config);
+            }
         });
     });
 </script>

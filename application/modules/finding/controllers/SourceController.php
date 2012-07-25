@@ -49,11 +49,24 @@ class Finding_SourceController extends Fisma_Zend_Controller_Action_Object
     {
         $this->_helper->layout()->disableLayout();
 
-        // The standard form needs to be modified to work inside a modal yui dialog
-        $form = $this->getForm();
-        $submit = $form->getElement('submit');
-        $submit->onClickFunction = 'Fisma.Remediation.createSource';
-
-        $this->view->form = $form;
+        $this->view->form = $this->getForm();
+        $this->view->toolbarButtons = array(
+            new Fisma_Yui_Form_Button(
+                'createSource',
+                array(
+                    'label' => 'Submit',
+                    'onClickFunction' => 'Fisma.Remediation.createSource',
+                    'imageSrc' => '/images/ok.png'
+                )
+            ),
+            new Fisma_Yui_Form_Button(
+                'cancelSource',
+                array(
+                    'label' => 'Cancel',
+                    'onClickFunction' => 'Fisma.Remediation.closeSourcePanel',
+                    'imageSrc' => '/images/no_entry.png'
+                )
+            )
+        );
     }
 }
