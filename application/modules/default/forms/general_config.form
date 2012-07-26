@@ -58,8 +58,6 @@ elements.user_editable_profiles.options.label = "User May Edit Profile"
 elements.user_editable_profiles.options.tooltip = "Gives users the ability to edit their profile/contact information. If disabled they will only be able to view their profile but not make any edits to phone numbers, email addresses, etc."
 displayGroups.general.elements.user_editable_profiles = "user_editable_profiles"
 
-
-
 elements.auth_type.type = "select"
 elements.auth_type.options.label = "Authentication Method"
 elements.auth_type.options.multiOptions.database = "database"
