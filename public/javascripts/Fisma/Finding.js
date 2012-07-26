@@ -387,6 +387,7 @@ Fisma.Finding = {
         ;
 
         //layout switch
+        $('#toolbarRight').prepend($('#changeLayout'));
         var layoutButton = new YAHOO.widget.Button("menuLayout", {type: "menu", menu: "menuLayoutSelect"});
         $("#layoutLeft").click(function() {
             $(".column33").removeClass('right').addClass('left');

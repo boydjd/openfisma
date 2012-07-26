@@ -1,5 +1,5 @@
 <div class="searchBox">
-    <div class="left">
+    <div class="left" id='toolbarLeft'>
         <?php
         foreach ($this->toolbarButtons as $button):
             echo $this->escape($button, 'none');
@@ -7,24 +7,22 @@
         ?>
     </div>
 
-    <?php if(isset($this->searchButtons)): ?>
-        <div class="right">
-            <?php
-                foreach ($this->searchButtons as $button):
-                    echo $this->escape($button, 'none');
-                endforeach;
-            ?>
-        </div>
-    <?php endif; ?>
+    <div class="right" id='toolbarRight'>
+        <?php if(isset($this->searchButtons)):
+            foreach ($this->searchButtons as $button):
+                echo $this->escape($button, 'none');
+            endforeach;
+        endif; ?>
+    </div>
 
     <?php if(isset($this->searchForm)): ?>
-        <div class="<?php echo $this->escape(($this->searchFormLeft) ? 'left' : 'right'); ?>" style='margin-left:5px;'>
-            <?php
-            echo $this->escape($this->searchForm, 'none');
-            ?>
+        <div
+            id='toolbarForm'
+            class="<?php echo $this->escape(($this->searchFormLeft) ? 'left' : 'right'); ?>" style='margin-left:5px;'
+        >
+            <?php echo $this->escape($this->searchForm, 'none'); ?>
         </div>
     <?php endif; ?>
 
     <div class="clear"></div>
 </div>
-
