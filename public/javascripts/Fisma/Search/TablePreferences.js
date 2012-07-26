@@ -145,7 +145,7 @@
             // force a "set" to ensure sync will know it's been modified
             this.getColumnOrder(d);
             s.set(m, d);
-            if (callback == null) {
+            if (callback === null) {
                 callback = {
                     success : function (response, object) {
                         if (object.status !== "ok") {
@@ -171,7 +171,7 @@
                 s = this._storage,
                 d = null;
             s.set(m, d);
-            if (callback == null) {
+            if (callback === null) {
                 callback = {
                     success : function (response, object) {
                         if (object.status !== "ok") {

@@ -630,7 +630,9 @@ Fisma.Util = {
     submitFirstForm : function(event, config) {
         var form = $('form').eq(0);
         var buttons = $('.yui-menu-button', form).get();
-        for (var i = 0; i < buttons.length; i++) {
+        var i, button;
+
+        for (i = 0; i < buttons.length; i++) {
             button = YAHOO.widget.Button.getButton(buttons[i].id);
             if (button.getMenu()) {
                 button.createHiddenFields();

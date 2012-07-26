@@ -551,8 +551,8 @@ Fisma.Search = (function() {
                     fn : Fisma.Search.clearColumnPreferences
                 }
             });
-            clearButton._button.style.background = 'url("/images/reload.png") 1em 50% no-repeat';;
-            clearButton._button.style.paddingLeft = '3em';;
+            clearButton._button.style.background = 'url("/images/reload.png") 1em 50% no-repeat';
+            clearButton._button.style.paddingLeft = '3em';
 
             if (!Fisma.Search.columnPreferencesSpinner) {
                 Fisma.Search.columnPreferencesSpinner = new Fisma.Spinner(clearDiv);
