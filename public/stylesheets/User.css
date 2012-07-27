@@ -34,3 +34,20 @@ img.userInfoAlert {
     top: 10px;
     margin-right: 5px;
 }
+
+dt#filter-label, dt#sort-label, dd#filter-element, dd#sort-element {
+    display: inline-block;
+}
+
+ul.treelist li.flat {
+    padding-left: 0px !important;
+}
+
+div#userForm fieldset {
+    text-align: center;
+}
+
+div#userForm div#organizations {
+    margin-top:10px;
+    text-align: left;
+}

@@ -18,7 +18,7 @@ if (!empty($this->requirements)) {
 }
 ?>
 
-<div class="form_box">
+<div class="form_box" id="userForm">
     <form method="post" action="<?php $this->escape($this->form->getAction(), 'none'); ?>">
         <?php
         echo $this->escape($this->form, 'none');

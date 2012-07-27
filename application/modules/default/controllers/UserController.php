@@ -633,25 +633,60 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $subForm->removeDecorator('DtDdWrapper');
         $subForm->removeDecorator('HtmlTag');
 
+        $filterSelect = new Zend_Form_Element_Select("filter");
+        $filterArrays = array('all' => '(show all)');
+        $organizationTypes = Doctrine_Query::create()
+            ->from('OrganizationType ot')
+            ->where('ot.nickname <> ?', 'system')
+            ->execute();
+        $systemTypes = Doctrine_Query::create()
+            ->from('SystemType st')
+            ->execute();
+        foreach ($organizationTypes as $ot) {
+            $filterArrays[$ot->nickname] = $ot->name;
+        }
+        foreach ($systemTypes as $st) {
+            $filterArrays[$st->nickname] = $st->name;
+        }
+        $filterSelect->setMultiOptions($filterArrays);
+        $filterSelect->setLabel('Filter');
+        $filterSelect->setOptions(array('onChange' => 'Fisma.User.treeFilter(this)'));
+        $subForm->addElement($filterSelect);
+
+        $sortSelect = new Zend_Form_Element_Select("sort");
+        $sortSelect->setMultiOptions(array(
+            'treePos' => 'Organization Hierarchy',
+            'nickname' => 'Nick name (ABC order)',
+            'fullname' => 'Full name (ABC order)'
+        ));
+        $sortSelect->setLabel('Sort by');
+        $sortSelect->setOptions(array('onChange' => 'Fisma.User.treeSort(this)'));
+        $subForm->addElement($sortSelect);
+
         $organizations = new Fisma_Zend_Form_Element_CheckboxTree("organizations");
         $organizations->clearDecorators();
         $organizations->setLabel('Organizations & Information Systems');
 
         $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
         $q = Doctrine_Query::create()
-                ->select('o.id, o.name, o.level')
-                ->from('Organization o');
+                ->select('o.id, o.name, o.nickname, o.level, ot.nickname as otype, st.nickname as stype')
+                ->from('Organization o')
+                ->leftJoin('o.OrganizationType ot')
+                ->leftJoin('o.System s')
+                ->leftJoin('s.SystemType st');
         $organizationTreeObject->setBaseQuery($q);
         $organizationTree = $organizationTreeObject->fetchTree();
 
         if (!empty($organizationTree)) {
             foreach ($organizationTree as $organization) {
-                $organizations->addCheckbox(
-                    $organization['id'],
-                    $organization['nickname'] . ' - ' . $organization['name'],
-                    $organization['level'],
-                    $roleId
-                );
+                $organizations->addCheckbox(array(
+                    'name' => $organization['id'],
+                    'nickname' => $organization['nickname'],
+                    'fullname' => $organization['name'],
+                    'level' => $organization['level'],
+                    'group' => $roleId,
+                    'type' => ($organization['otype'] !== 'system') ? $organization['otype'] : $organization['stype']
+                ));
             }
         }
 
@@ -1149,7 +1184,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         // Populate <select> for responsible organization
         $organizations = Doctrine::getTable('Organization')->getOrganizationSelectQuery(true)->execute();
-        $selectArray = array('' => '') + $this->view->systemSelect($organizations);
+        $selectArray = $this->view->systemSelect($organizations);
         $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
 
         return $form;

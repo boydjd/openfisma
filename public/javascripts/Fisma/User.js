@@ -365,5 +365,21 @@ Fisma.User = {
             input.focus();
             input.select();
         }
+    },
+
+    treeSort: function(selectElement) {
+        $('#organizations ul.treelist li').tsort('label',{attr:selectElement.value});
+        if (selectElement.value !== 'treePos') {
+            $('#organizations ul.treelist li').addClass('flat');
+        } else {
+            $('#organizations ul.treelist li').removeClass('flat');
+        }
+    },
+
+    treeFilter: function(selectElement) {
+        $('#organizations ul.treelist li').show();
+        if (selectElement.value !== 'all') {
+            $('#organizations ul.treelist li label').filter('[type!="' + selectElement.value + '"]').parents('li').hide();
+        }
     }
 };
