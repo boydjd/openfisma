@@ -75,6 +75,14 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $form->removeElement($field);
         }
 
+        // make read-only if they don't have privieges to modify the profile
+        if (!Fisma::configuration()->getConfig('user_editable_profiles')) {
+            $form->removeElement('save');
+            foreach ($form->getElements() as $elem) {
+                $elem->setAttrib('readonly', true);
+            }
+        }
+
         return $form;
     }
 

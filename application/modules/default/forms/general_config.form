@@ -53,6 +53,11 @@ elements.session_inactivity_notice.options.required = true
 elements.session_inactivity_notice.options.tooltip = "<p><b>Session Timeout Notification</b></p><p>Enter the number of minutes to wait before notifying the user that their session is near expiration.</p>"
 displayGroups.general.elements.session_inactivity_notice = "session_inactivity_notice"
 
+elements.user_editable_profiles.type = "checkbox"
+elements.user_editable_profiles.options.label = "User May Edit Profile"
+elements.user_editable_profiles.options.tooltip = "Gives users the ability to edit their profile/contact information. If disabled they will only be able to view their profile but not make any edits to phone numbers, email addresses, etc."
+displayGroups.general.elements.user_editable_profiles = "user_editable_profiles"
+
 elements.auth_type.type = "select"
 elements.auth_type.options.label = "Authentication Method"
 elements.auth_type.options.multiOptions.database = "database"
