@@ -45,10 +45,6 @@ class Fisma_BreadCrumbs
             
         $path = Fisma::getPath('config');
         $this->_breadcrumbInfo = Doctrine_Parser_YamlSf::load($path . '/breadcrumbs.yml');
-        
-        // Testing
-//        $pageUrl = "http://localhost/finding/remediation/view/id/2/fromSearch/1";
-//        $b = self::getBreadcrumbs($pageUrl);
     }
     
     /**
@@ -110,7 +106,8 @@ class Fisma_BreadCrumbs
         $linkItems  = self::tok2Array($links);
                 
         // Construct the breadcrumbs
-        $breadcrumbs = "<div id=\"breadcrumbs\" style=\"padding: 10px 10px 0 30px; font-weight: bold; font-size: 1.0em;\">";
+        $breadcrumbs = 
+            "<div id=\"breadcrumbs\" style=\"padding: 10px 10px 0 30px; font-weight: bold; font-size: 1.0em;\">";
         for ($i=0; $i < count($labelItems); $i++){
             if ($linkItems[$i] === "no-link") {
                 $breadcrumbs .= $labelItems[$i];
