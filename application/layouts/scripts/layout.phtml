@@ -61,6 +61,10 @@
             Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.
         </div>
 
+        <?php
+            echo $this->escape(Zend_Registry::get('breadcrumbs')->getBreadcrumbs($_SERVER["REQUEST_URI"]), 'none');
+        ?>
+        
         <a name="contentStart"></a>
         <div id='content'>
                 <?php echo $this->escape($this->layout()->content, 'none'); ?>
