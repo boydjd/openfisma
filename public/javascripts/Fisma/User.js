@@ -368,18 +368,20 @@ Fisma.User = {
     },
 
     treeSort: function(selectElement) {
-        $('#organizations ul.treelist li').tsort('label',{attr:selectElement.value});
+        var selector = $(selectElement).parents('div').eq(0).find('#organizations ul.treelist li');
+        selector.tsort('label',{attr:selectElement.value});
         if (selectElement.value !== 'treePos') {
-            $('#organizations ul.treelist li').addClass('flat');
+            selector.addClass('flat');
         } else {
-            $('#organizations ul.treelist li').removeClass('flat');
+            selector.removeClass('flat');
         }
     },
 
     treeFilter: function(selectElement) {
-        $('#organizations ul.treelist li').show();
+        var selector = $(selectElement).parents('div').eq(0).find('#organizations ul.treelist li');
+        selector.show();
         if (selectElement.value !== 'all') {
-            $('#organizations ul.treelist li label').filter('[type!="' + selectElement.value + '"]').parents('li').hide();
+            selector.find('label').filter('[type!="' + selectElement.value + '"]').parents('li').hide();
         }
     }
 };
