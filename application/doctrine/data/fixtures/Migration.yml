@@ -115,7 +115,7 @@ Migration:
         tagNumber: 1
         name: SearchComments
     021801_UserEditableProfiles:
-        majorversion: 2
-        minorversion: 18
+        majorVersion: 2
+        minorVersion: 18
         tagNumber: 1
         name: UserEditableProfiles
