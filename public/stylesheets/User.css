@@ -36,7 +36,12 @@ img.userInfoAlert {
 }
 
 dt#filter-label, dt#sort-label, dd#filter-element, dd#sort-element {
-    display: inline-block;
+    display: inline;
+}
+
+dd#filter-element, dd#sort-element {
+    margin-left: 4px;
+    margin-right: 4px;
 }
 
 ul.treelist li.flat {
