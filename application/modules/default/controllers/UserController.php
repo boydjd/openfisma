@@ -1156,6 +1156,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $userId = $this->_request->getParam('id');
         $user = Doctrine::getTable('User')->find($userId);
 
+        // Restrict reportingOrganization to single-selection mode
+        $form->getElement('reportingOrganizationId')->setOptions(array('multiple' => null));
+
         if ('database' == Fisma::configuration()->getConfig('auth_type')) {
             $form->removeElement('lookup');
             $form->removeElement('separator');
