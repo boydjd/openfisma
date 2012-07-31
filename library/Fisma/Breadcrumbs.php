@@ -25,8 +25,6 @@
  * @package    Fisma
  * @subpackage 
  */
-require_once 'KLogger.php';
-
 class Fisma_Breadcrumbs
 {
     // Breadcrumb info from the configuratin file breadcrumbs.yml.
