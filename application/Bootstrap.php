@@ -245,6 +245,6 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
      */
     protected function _initBreadcrumbs()
     {
-        Zend_Registry::set('breadcrumbs', new Fisma_BreadCrumbs());
+        Zend_Registry::set('breadcrumbs', new Fisma_Breadcrumbs());
     }
 }

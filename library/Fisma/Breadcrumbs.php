@@ -27,7 +27,7 @@
  */
 require_once 'KLogger.php';
 
-class Fisma_BreadCrumbs
+class Fisma_Breadcrumbs
 {
     // Breadcrumb info from the configuratin file breadcrumbs.yml.
     private $_breadcrumbInfo = null;
