@@ -78,6 +78,7 @@ Configuration:
             unsigned: true
             comment: Automated account unlock duration (in minutes)
             default: 0
+        backgroundTasks: array
         contact_name:
             type: string(255)
             notblank: true
@@ -217,4 +218,3 @@ Configuration:
             type: boolean
             notnull: true
             default: true
-

@@ -146,7 +146,7 @@ abstract class Fisma_Cli_Abstract
      *
      * @return int The exit code for this process.
      */
-    final public function run()
+    final public function run($argv = null)
     {
         $start = time();
 
@@ -156,6 +156,9 @@ abstract class Fisma_Cli_Abstract
 
         try {
             $this->_cliArguments = new Zend_Console_Getopt($argumentsDefinitions);
+            if (!is_null($argv)) {
+                $this->_cliArguments->setArguments($argv);
+            }
             $this->_cliArguments->parse();
 
             $this->getLog()->debug("Script arguments: " . $this->_cliArguments);

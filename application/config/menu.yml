@@ -332,6 +332,9 @@ Administration:
         SysConfig:
             label: System Configuration
             submenu:
+                BackgroundTasks:
+                    label: Background Tasks
+                    link: /config/background-tasks
                 Email:
                     label: E-mail
                     link: /config/email

@@ -645,3 +645,16 @@ Fisma.Util = {
         history.go(-1);
     }
 };
+
+/*
+ * Add method to YUI's Event class.  This is referenced by DataTable, but seems to be missing
+ */
+YAHOO.util.Event.detachListener = function ( el, type ) {
+    var i;
+    if (!YAHOO.lang.isArray(el)) {
+        el = [el];
+    }
+    for (i in el) {
+        YAHOO.util.Event.purgeElement(el[i], false, type);
+    }
+};
