@@ -30,6 +30,10 @@
 #
 # Findings
 #
+FindingReportOverdueFinding:
+    url: /finding/remediation/list?
+    breadcrumb-labels: Finding List,Report,Overdue,Overdue Finding
+    breadcrumb-links: /finding/remediation/list,no-link,/finding/report/overdue,no-link
 FindingList:
     url: /finding/remediation/list
     breadcrumb-labels: Finding List
@@ -66,6 +70,10 @@ FindingReportOverdue:
     url: /finding/report/overdue
     breadcrumb-labels: Finding List,Report,Overdue
     breadcrumb-links: /finding/remediation/list,no-link,no-link
+FindingReportPluginReport:
+    url: /finding/report/plugin-report
+    breadcrumb-labels: Finding List,Report,Plugin,Plugin-Report
+    breadcrumb-links: /finding/remediation/list,no-link,/finding/report/plugin,no-link            
 FindingReportPlugin:
     url: /finding/report/plugin
     breadcrumb-labels: Finding List,Report,Plugin
