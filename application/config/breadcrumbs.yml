@@ -33,7 +33,7 @@
 FindingReportOverdueFinding:
     url: /finding/remediation/list?
     breadcrumb-labels: Finding List,Report,Overdue,Overdue Finding
-    breadcrumb-links: /finding/remediation/list,no-link,/finding/report/overdue,no-link
+    breadcrumb-links: /finding/remediation/list,no-link,/finding/report/overdue/format/html,no-link
 FindingList:
     url: /finding/remediation/list
     breadcrumb-labels: Finding List
