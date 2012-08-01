@@ -236,15 +236,4 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
 
         Zend_Registry::set('mail_handler', $mailHandler);
     }
-    
-    /**
-     * Initialize the breadcrumbs
-     *
-     * @access protected
-     * @return void
-     */
-    protected function _initBreadcrumbs()
-    {
-        Zend_Registry::set('breadcrumbs', new Fisma_Breadcrumbs());
-    }
 }
