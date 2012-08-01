@@ -62,7 +62,8 @@
         </div>
 
         <?php
-            echo $this->escape(Zend_Registry::get('breadcrumbs')->getBreadcrumbs($_SERVER["REQUEST_URI"]), 'none');
+ //           echo $this->escape(Zend_Registry::get('breadcrumbs')->getBreadcrumbs($_SERVER["REQUEST_URI"]), 'none');
+            echo $this->escape($this->breadcrumbs($_SERVER["REQUEST_URI"]), 'none');
         ?>
         
         <a name="contentStart"></a>
