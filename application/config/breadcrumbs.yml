@@ -130,6 +130,10 @@ IncidentReport:
     url: /incident/report
     breadcrumb-labels: Incident List,Report Incident
     breadcrumb-links: /incident/list,no-link
+IncidentAdminCategoriesCategory:
+    url: /ir-category/view/id/
+    breadcrumb-labels: Incident List,Administration,Category List,Category
+    breadcrumb-links: /incident/list,no-link,/ir-category/list,no-link    
 IncidentAdminCategories:
     url: /ir-category/list
     breadcrumb-labels: Incident List,Administration,Categories
