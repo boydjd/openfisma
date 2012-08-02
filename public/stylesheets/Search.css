@@ -96,3 +96,6 @@ div#searchColumnsButtons div {
     float: right;
 }
 
+div.yui-dt.yui-dt-scrollable {
+    max-width: 100%;
+}
