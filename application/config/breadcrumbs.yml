@@ -66,6 +66,10 @@ FindingAdminSourceView:
     url: /finding/source/view/id
     breadcrumb-labels: Findings,Administration,Sources,View
     breadcrumb-links: no-link,no-link,/finding/source/list,no-link
+FindingAdminSourceCreate:
+    url: /finding/source/create
+    breadcrumb-labels: Findings,Administration,Sources,Create
+    breadcrumb-links: no-link,no-link,/finding/source/list,no-link
 FindingAdminSource:
     url: /finding/source/list
     breadcrumb-labels: Findings,Administration,Sources
