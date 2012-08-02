@@ -62,6 +62,10 @@ FindingAdminGeneral:
     url: /finding/config/general
     breadcrumb-labels: Findings,Administration,General
     breadcrumb-links: no-link,no-link,no-link
+FindingAdminSourceView:
+    url: /finding/source/view/id
+    breadcrumb-labels: Findings,Administration,Sources,View
+    breadcrumb-links: no-link,no-link,/finding/source/list,no-link
 FindingAdminSource:
     url: /finding/source/list
     breadcrumb-labels: Findings,Administration,Sources
@@ -102,6 +106,10 @@ VulnerabilityAdminProductsView:
     url: /vm/product/view/id
     breadcrumb-labels: Vulnerabilities,Administration,Products,View
     breadcrumb-links: no-link,no-link,/vm/product/list,no-link
+VulnerabilityAdminProductsCreate:
+    url: /vm/product/create
+    breadcrumb-labels: Vulnerabilities,Administration,Products,Create
+    breadcrumb-links: no-link,no-link,/vm/product/list,no-link
 VulnerabilityAdminProducts:
     url: /vm/product/list
     breadcrumb-labels: Vulnerabilities,Administration,Products
@@ -110,6 +118,10 @@ VulnerabilityAdminResolutionsView:
     url: /vm/vulnerability-resolution/view/id
     breadcrumb-labels: Vulnerabilities,Administration,Resolutions,View
     breadcrumb-links: no-link,no-link,/vm/vulnerability-resolution/list,no-link
+VulnerabilityAdminResolutionsCreate:
+    url: /vm/vulnerability-resolution/create
+    breadcrumb-labels: Vulnerabilities,Administration,Resolutions,Create
+    breadcrumb-links: no-link,no-link,/vm/vulnerability-resolution/list,no-link    
 VulnerabilityAdminResolutions:
     url: /vm/vulnerability-resolution/list
     breadcrumb-labels: Vulnerabilities,Administration,Resolutions
@@ -146,9 +158,13 @@ IncidentDashboard:
     url: /incident-dashboard
     breadcrumb-labels: Incidents,Dashboard
     breadcrumb-links: no-link,no-link
-IncidentAdminCategoriesCategory:
+IncidentAdminCategoriesView:
     url: /ir-category/view/id/
     breadcrumb-labels: Incidents,Administration,Categories,View
+    breadcrumb-links: no-link,,no-link,/ir-category/list,no-link    
+IncidentAdminCategoriesCreate:
+    url: /ir-category/create
+    breadcrumb-labels: Incidents,Administration,Categories,Create
     breadcrumb-links: no-link,,no-link,/ir-category/list,no-link    
 IncidentAdminCategories:
     url: /ir-category/list
@@ -157,6 +173,10 @@ IncidentAdminCategories:
 IncidentAdminWorkflowsView:
     url: /ir-workflow/view/id
     breadcrumb-labels: Incidents,Administration,Workflows,View
+    breadcrumb-links: no-link,,no-link,/ir-workflow/list,no-link
+IncidentAdminWorkflowsCreate:
+    url: /ir-workflow/create
+    breadcrumb-labels: Incidents,Administration,Workflows,Create
     breadcrumb-links: no-link,,no-link,/ir-workflow/list,no-link
 IncidentAdminWorkflows:
     url: /ir-workflow/list
@@ -186,6 +206,14 @@ SystemAssetView:
     url: /asset/view/
     breadcrumb-labels: System Inventory,Assets,View
     breadcrumb-links: no-link,/asset/list,no-link
+SystemAssetCreate:
+    url: /asset/create
+    breadcrumb-labels: System Inventory,Assets,Create
+    breadcrumb-links: no-link,/asset/list,no-link
+SystemAssetImport:
+    url: /asset/import
+    breadcrumb-labels: System Inventory,Assets,Import
+    breadcrumb-links: no-link,/asset/list,no-link
 SystemControl:
     url: /security-control/list
     breadcrumb-labels: System Inventory,Controls
@@ -201,23 +229,31 @@ SystemDocument:
 SystemDocumentView:
     url: /system-document/view/
     breadcrumb-labels: System Inventory,Documentation,View
-    breadcrumb-links: no-link,/system-document/list,no-link    
-SystemOrganization:
-    url: /organization/list
-    breadcrumb-labels: System Inventory,Organizations
-    breadcrumb-links: no-link,no-link
+    breadcrumb-links: no-link,/system-document/list,no-link   
 SystemOrganizationView:
     url: /organization/view/
     breadcrumb-labels: System Inventory,Organizations,View
     breadcrumb-links: no-link,/organization/list,no-link    
-SystemInventory:
-    url: /system/list
-    breadcrumb-labels: System Inventory,Systems
+SystemOrganizationCreate:
+    url: /organization/create
+    breadcrumb-labels: System Inventory,Organizations,Create
+    breadcrumb-links: no-link,/organization/list,no-link     
+SystemOrganization:
+    url: /organization/list
+    breadcrumb-labels: System Inventory,Organizations
     breadcrumb-links: no-link,no-link
 SystemInventoryView:
     url: /system/view/
     breadcrumb-labels: System Inventory,Systems,View
     breadcrumb-links: no-link,/system/list,no-link  
+SystemInventoryCreate:
+    url: /system/create
+    breadcrumb-labels: System Inventory,Systems,Create
+    breadcrumb-links: no-link,/system/list,no-link  
+SystemInventory:
+    url: /system/list
+    breadcrumb-labels: System Inventory,Systems
+    breadcrumb-links: no-link,no-link
 SystemInventoryDashboard:
     url: /organization-dashboard
     breadcrumb-labels: System Inventory,Dashboard
@@ -229,43 +265,59 @@ SystemAdminControlCatalog:
 SystemAdminControlCatalogView:
     url: /security-control-catalog/view/
     breadcrumb-labels: System Inventory,Administration,Control Catalogs,View
-    breadcrumb-links: no-link,no-link,/security-control-catalog/list,no-link        
-SystemAdminDocumentType:
-    url: /document-type/list
-    breadcrumb-labels: System Inventory,Administration,Document Types
-    breadcrumb-links: no-link,no-link,no-link 
+    breadcrumb-links: no-link,no-link,/security-control-catalog/list,no-link    
 SystemAdminDocumentTypeView:
     url: /document-type/view/
     breadcrumb-labels: System Inventory,Administration,Document Types,View
     breadcrumb-links: no-link,no-link,/document-type/list,no-link        
+SystemAdminDocumentTypeCreate:
+    url: /document-type/create
+    breadcrumb-labels: System Inventory,Administration,Document Types,Create
+    breadcrumb-links: no-link,no-link,/document-type/list,no-link            
+SystemAdminDocumentType:
+    url: /document-type/list
+    breadcrumb-labels: System Inventory,Administration,Document Types
+    breadcrumb-links: no-link,no-link,no-link 
 SystemAdminIconManagement:
     url: /icon/manage
     breadcrumb-labels: System Inventory,Administration,Icon Management
-    breadcrumb-links: no-link,no-link,no-link    
-SystemAdminNetwork:
-    url: /network/list
-    breadcrumb-labels: System Inventory,Administration,Networks
-    breadcrumb-links: no-link,no-link,no-link    
+    breadcrumb-links: no-link,no-link,no-link 
 SystemAdminNetworkView:
     url: /network/view/
     breadcrumb-labels: System Inventory,Administration,Networks,View
     breadcrumb-links: no-link,no-link,/network/list,no-link        
-SystemAdminOrganizationType:
-    url: /organization-type/list
-    breadcrumb-labels: System Inventory,Administration,Organization Types
-    breadcrumb-links: no-link,no-link,no-link    
+SystemAdminNetworkCreate:
+    url: /network/create
+    breadcrumb-labels: System Inventory,Administration,Networks,Create
+    breadcrumb-links: no-link,no-link,/network/list,no-link           
+SystemAdminNetwork:
+    url: /network/list
+    breadcrumb-labels: System Inventory,Administration,Networks
+    breadcrumb-links: no-link,no-link,no-link  
 SystemAdminOrganizationTypeView:
     url: /organization-type/view/
     breadcrumb-labels: System Inventory,Administration,Organization Types,View
     breadcrumb-links: no-link,no-link,/organization-type/list,no-link    
-SystemAdminSystemType:
-    url: /system-type/list
-    breadcrumb-labels: System Inventory,Administration,System Types
+SystemAdminOrganizationTypeCreate:
+    url: /organization-type/create
+    breadcrumb-labels: System Inventory,Administration,Organization Types,Create
+    breadcrumb-links: no-link,no-link,/organization-type/list,no-link      
+SystemAdminOrganizationType:
+    url: /organization-type/list
+    breadcrumb-labels: System Inventory,Administration,Organization Types
     breadcrumb-links: no-link,no-link,no-link    
 SystemAdminSystemTypeView:
     url: /system-type/view/
     breadcrumb-labels: System Inventory,Administration,System Types,View
     breadcrumb-links: no-link,no-link,/system-type/list,no-link    
+SystemAdminSystemTypeCreate:
+    url: /system-type/create
+    breadcrumb-labels: System Inventory,Administration,System Types,Create
+    breadcrumb-links: no-link,no-link,/system-type/list,no-link    
+SystemAdminSystemType:
+    url: /system-type/list
+    breadcrumb-labels: System Inventory,Administration,System Types
+    breadcrumb-links: no-link,no-link,no-link    
 SystemReportDocumentCompliance:
     url: /organization-report/documentation-compliance/
     breadcrumb-labels: System Inventory,Reports,Document Compliance
@@ -314,22 +366,30 @@ AdminSysConfigContact:
     url: /config/contact
     breadcrumb-labels: Administration,System Configuration,Technical Contact
     breadcrumb-links: no-link,no-link,no-link
-AdminUserManagementRole:
-    url: /role/list
-    breadcrumb-labels: Administration,User Management,Roles
-    breadcrumb-links: no-link,no-link,no-link    
 AdminUserManagementRoleView:
     url: /role/view/
     breadcrumb-labels: Administration,User Management,Roles,View
-    breadcrumb-links: no-link,no-link,/role/list,no-link    
-AdminUserManagementUser:
-    url: /user/list
-    breadcrumb-labels: Administration,User Management,Users
-    breadcrumb-links: no-link,no-link,no-link    
+    breadcrumb-links: no-link,no-link,/role/list,no-link 
+AdminUserManagementRoleCreate:
+    url: /role/create
+    breadcrumb-labels: Administration,User Management,Roles,Create
+    breadcrumb-links: no-link,no-link,/role/list,no-link 
+AdminUserManagementRole:
+    url: /role/list
+    breadcrumb-labels: Administration,User Management,Roles
+    breadcrumb-links: no-link,no-link,no-link      
 AdminUserManagementUserView:
     url: /user/view/
     breadcrumb-labels: Administration,User Management,Users,View
     breadcrumb-links: no-link,no-link,/user/list,no-link    
+AdminUserManagementUserCreate:
+    url: /user/create
+    breadcrumb-labels: Administration,User Management,Users,Create
+    breadcrumb-links: no-link,no-link,/user/list,no-link     
+AdminUserManagementUser:
+    url: /user/list
+    breadcrumb-labels: Administration,User Management,Users
+    breadcrumb-links: no-link,no-link,no-link    
 AdminDiagnosticsSystemCache:
     url: /debug/apc-cache/type/system
     breadcrumb-labels: Administration,Diagnostics,APC System Cache
