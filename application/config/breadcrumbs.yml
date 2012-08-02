@@ -246,6 +246,10 @@ SystemOrganization:
     url: /organization/list
     breadcrumb-labels: System Inventory,Organizations
     breadcrumb-links: no-link,no-link
+SystemOrganizationTree:
+    url: /organization/tree
+    breadcrumb-labels: System Inventory,Organizations
+    breadcrumb-links: no-link,no-link
 SystemInventoryView:
     url: /system/view/
     breadcrumb-labels: System Inventory,Systems,View
@@ -256,6 +260,10 @@ SystemInventoryCreate:
     breadcrumb-links: no-link,/system/list,no-link  
 SystemInventory:
     url: /system/list
+    breadcrumb-labels: System Inventory,Systems
+    breadcrumb-links: no-link,no-link
+SystemInventoryList:
+    url: /system/aggregation
     breadcrumb-labels: System Inventory,Systems
     breadcrumb-links: no-link,no-link
 SystemInventoryDashboard:
@@ -378,6 +386,10 @@ AdminUserManagementRoleCreate:
     url: /role/create
     breadcrumb-labels: Administration,User Management,Roles,Create
     breadcrumb-links: no-link,no-link,/role/list,no-link 
+AdminUserManagementRolePrivilegeMatrix:
+    url: /role/view-matrix
+    breadcrumb-labels: Administration,User Management,Roles,Privilege Matrix
+    breadcrumb-links: no-link,no-link,/role/list,no-link
 AdminUserManagementRole:
     url: /role/list
     breadcrumb-labels: Administration,User Management,Roles
@@ -393,7 +405,11 @@ AdminUserManagementUserCreate:
 AdminUserManagementUser:
     url: /user/list
     breadcrumb-labels: Administration,User Management,Users
-    breadcrumb-links: no-link,no-link,no-link    
+    breadcrumb-links: no-link,no-link,no-link  
+AdminUserManagementUserTree:
+    url: /user/tree
+    breadcrumb-labels: Administration,User Management,Users
+    breadcrumb-links: no-link,no-link,no-link      
 AdminDiagnosticsSystemCache:
     url: /debug/apc-cache/type/system
     breadcrumb-labels: Administration,Diagnostics,APC System Cache
