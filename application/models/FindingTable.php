@@ -241,8 +241,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'Next Due Date',
                 'sortable' => true,
                 'type' => 'date',
-                'formatter' => 'date',
-                'hidden' => true
+                'formatter' => 'date'
             ),
             'countermeasuresEffectiveness' => array(
                 'enumValues' => $this->getEnumValues('countermeasuresEffectiveness'),
