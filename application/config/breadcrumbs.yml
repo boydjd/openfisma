@@ -30,234 +30,258 @@
 #
 # Findings
 #
+FindingDashboard:
+    url: /finding/dashboard
+    breadcrumb-labels: Findings,Dashboard
+    breadcrumb-links: no-link,no-link
 FindingReportOverdueFinding:
     url: /finding/remediation/list?
-    breadcrumb-labels: Finding List,Report,Overdue,Overdue Finding
-    breadcrumb-links: /finding/remediation/list,no-link,/finding/report/overdue/format/html,no-link
+    breadcrumb-labels: Findings,Reports,Overdue Findings,View
+    breadcrumb-links: no-link,no-link,/finding/report/overdue/format/html,no-link
 FindingList:
     url: /finding/remediation/list
-    breadcrumb-labels: Finding List
-    breadcrumb-links: no-link
+    breadcrumb-labels: Findings,Search
+    breadcrumb-links: no-link,no-link
 FindingView:
     url: /finding/remediation/view
-    breadcrumb-labels: Finding List,Finding
-    breadcrumb-links: /finding/remediation/list,no-link
+    breadcrumb-labels: Findings,Search,View
+    breadcrumb-links: no-link,/finding/remediation/list,no-link
 FindingCreate:
     url: /finding/remediation/create
-    breadcrumb-labels: Finding List,Create Finding
-    breadcrumb-links: /finding/remediation/list,no-link
+    breadcrumb-labels: Findings,Create New Finding
+    breadcrumb-links: no-link,no-link
 FindingUpload:
     url: /finding/index/injection
-    breadcrumb-labels: Finding List,Upload Finding
-    breadcrumb-links: /finding/remediation/list,no-link
+    breadcrumb-labels: Findings,Upload Spreadsheet
+    breadcrumb-links: no-link,no-link
 FindingAdminWorkflow:
     url: /finding/workflow/view
-    breadcrumb-labels: Finding List,Administration,Workflow
-    breadcrumb-links: /finding/remediation/list,no-link,no-link   
+    breadcrumb-labels: Findings,Administration,Workflow
+    breadcrumb-links: no-link,no-link,no-link   
 FindingAdminGeneral:
     url: /finding/config/general
-    breadcrumb-labels: Finding List,Administration,General
-    breadcrumb-links: /finding/remediation/list,no-link,no-link
+    breadcrumb-labels: Findings,Administration,General
+    breadcrumb-links: no-link,no-link,no-link
 FindingAdminSource:
     url: /finding/source/list
-    breadcrumb-labels: Finding List,Administration,Source
-    breadcrumb-links: /finding/remediation/list,no-link,no-link
+    breadcrumb-labels: Findings,Administration,Sources
+    breadcrumb-links: no-link,no-link,no-link
 FindingReportFISMA:
     url: /finding/report/fisma
-    breadcrumb-labels: Finding List,Report,OMB FISMA
-    breadcrumb-links: /finding/remediation/list,no-link,no-link
+    breadcrumb-labels: Findings,Reports,OMB FISMA
+    breadcrumb-links: no-link,no-link,no-link
 FindingReportOverdue:
     url: /finding/report/overdue
-    breadcrumb-labels: Finding List,Report,Overdue
-    breadcrumb-links: /finding/remediation/list,no-link,no-link
+    breadcrumb-labels: Findings,Reports,Overdue Findings
+    breadcrumb-links: no-link,no-link,no-link
 FindingReportPluginReport:
     url: /finding/report/plugin-report
-    breadcrumb-labels: Finding List,Report,Plugin,Plugin-Report
-    breadcrumb-links: /finding/remediation/list,no-link,/finding/report/plugin,no-link            
+    breadcrumb-labels: Findings,Reports,Plugin Reports,View
+    breadcrumb-links: no-link,no-link,/finding/report/plugin,no-link            
 FindingReportPlugin:
     url: /finding/report/plugin
-    breadcrumb-labels: Finding List,Report,Plugin
-    breadcrumb-links: /finding/remediation/list,no-link,no-link    
+    breadcrumb-labels: Findings,Reports,Plugin Reports
+    breadcrumb-links: no-link,no-link,no-link    
 
 #
 # Vulnerabilities
 #
 VulnerabilityList:
     url: /vm/vulnerability/list
-    breadcrumb-labels: Vulnerability List
-    breadcrumb-links: no-link
+    breadcrumb-labels: Vulnerabilities,Search
+    breadcrumb-links: no-link,no-link
 VulnerabilityView:
     url: /vm/vulnerability/view/
-    breadcrumb-labels: Vulnerability List,Vulnerability
-    breadcrumb-links: /vm/vulnerability/list,no-link
+    breadcrumb-labels: Vulnerabilities,Search,View
+    breadcrumb-links: no-link,/vm/vulnerability/list,no-link
 VulnerabilityUpload:
     url: /vm/vulnerability/plugin
-    breadcrumb-labels: Vulnerability List,Upload Vulnerability
-    breadcrumb-links: /vm/vulnerability/list,no-link
+    breadcrumb-labels: Vulnerabilities,Upload Scan Results
+    breadcrumb-links: no-link,no-link
+VulnerabilityAdminProductsView:
+    url: /vm/product/view/id
+    breadcrumb-labels: Vulnerabilities,Administration,Products,View
+    breadcrumb-links: no-link,no-link,/vm/product/list,no-link
 VulnerabilityAdminProducts:
     url: /vm/product/list
-    breadcrumb-labels: Vulnerability List,Administration,Products
-    breadcrumb-links: /vm/vulnerability/list,no-link,no-link
+    breadcrumb-labels: Vulnerabilities,Administration,Products
+    breadcrumb-links: no-link,no-link,no-link
+VulnerabilityAdminResolutionsView:
+    url: /vm/vulnerability-resolution/view/id
+    breadcrumb-labels: Vulnerabilities,Administration,Resolutions,View
+    breadcrumb-links: no-link,no-link,/vm/vulnerability-resolution/list,no-link
 VulnerabilityAdminResolutions:
     url: /vm/vulnerability-resolution/list
-    breadcrumb-labels: Vulnerability List,Administration,Resolutions
-    breadcrumb-links: /vm/vulnerability/list,no-link,no-link
+    breadcrumb-labels: Vulnerabilities,Administration,Resolutions
+    breadcrumb-links: no-link,no-link,no-link
 VulnerabilityReportAggregated:
     url: /vm/vulnerability-report/risk/
-    breadcrumb-labels: Vulnerability List,Report,Aggregated Risk
-    breadcrumb-links: /vm/vulnerability/list,no-link,no-link    
+    breadcrumb-labels: Vulnerabilities,Reports,Aggregated Risk
+    breadcrumb-links: no-link,no-link,no-link    
 VulnerabilityReportReopened:
     url: /vm/vulnerability-report/reopened/
-    breadcrumb-labels: Vulnerability List,Report,Reopened Vulnerabilities
-    breadcrumb-links: /vm/vulnerability/list,no-link,no-link    
+    breadcrumb-labels: Vulnerabilities,Reports,Reopened Vulnerabilities
+    breadcrumb-links: no-link,no-link,no-link    
 VulnerabilityReportServices:
     url: /vm/vulnerability-report/vulnerable-service/
-    breadcrumb-labels: Vulnerability List,Report,Vulnerable Services
-    breadcrumb-links: /vm/vulnerability/list,no-link,no-link    
+    breadcrumb-labels: Vulnerabilities,Reports,Vulnerable Services
+    breadcrumb-links: no-link,no-link,no-link    
         
 #
 # Incidents
 #
 IncidentList:
     url: /incident/list
-    breadcrumb-labels: Incident List
-    breadcrumb-links: no-link
+    breadcrumb-labels: Incidents,Search
+    breadcrumb-links: no-link,no-link
 IncidentView:
     url: /incident/view/
-    breadcrumb-labels: Incident List,Incident
-    breadcrumb-links: /incident/list,no-link
+    breadcrumb-labels: Incidents,Search,View
+    breadcrumb-links: no-link,/incident/list,no-link
 IncidentReport:
     url: /incident/report
-    breadcrumb-labels: Incident List,Report Incident
-    breadcrumb-links: /incident/list,no-link
+    breadcrumb-labels: Incidents,Report An Incident
+    breadcrumb-links: no-link,no-link
+IncidentDashboard:
+    url: /incident-dashboard
+    breadcrumb-labels: Incidents,Dashboard
+    breadcrumb-links: no-link,no-link
 IncidentAdminCategoriesCategory:
     url: /ir-category/view/id/
-    breadcrumb-labels: Incident List,Administration,Category List,Category
-    breadcrumb-links: /incident/list,no-link,/ir-category/list,no-link    
+    breadcrumb-labels: Incidents,Administration,Categories,View
+    breadcrumb-links: no-link,,no-link,/ir-category/list,no-link    
 IncidentAdminCategories:
     url: /ir-category/list
-    breadcrumb-labels: Incident List,Administration,Categories
-    breadcrumb-links: /incident/list,no-link,no-link
+    breadcrumb-labels: Incidents,Administration,Categories
+    breadcrumb-links: no-link,,no-link,no-link
+IncidentAdminWorkflowsView:
+    url: /ir-workflow/view/id
+    breadcrumb-labels: Incidents,Administration,Workflows,View
+    breadcrumb-links: no-link,,no-link,/ir-workflow/list,no-link
 IncidentAdminWorkflows:
     url: /ir-workflow/list
-    breadcrumb-labels: Incident List,Administration,Workflows
-    breadcrumb-links: /incident/list,no-link,no-link
+    breadcrumb-labels: Incidents,Administration,Workflows
+    breadcrumb-links: no-link,,no-link,no-link
 IncidentReportOrganizations:
     url: /incident-report/organization/
-    breadcrumb-labels: Incident List,Report,Organizations
-    breadcrumb-links: /incident/list,no-link,no-link       
+    breadcrumb-labels: Incidents,Reports,Incident Organizations
+    breadcrumb-links: no-link,,no-link,no-link       
 IncidentReportCategories:
     url: /incident-report/category/
-    breadcrumb-labels: Incident List,Report,Categories
-    breadcrumb-links: /incident/list,no-link,no-link     
+    breadcrumb-labels: Incidents,Reports,Incident Categories
+    breadcrumb-links: no-link,,no-link,no-link     
 IncidentReportHistory:
     url: /incident-report/history/
-    breadcrumb-labels: Incident List,Report,History
-    breadcrumb-links: /incident/list,no-link,no-link       
+    breadcrumb-labels: Incidents,Reports,Incident History
+    breadcrumb-links: no-link,,no-link,no-link       
             
 #
 # System Inventory
 #
 SystemAsset:
     url: /asset/list
-    breadcrumb-labels: System Asset List
-    breadcrumb-links: no-link
+    breadcrumb-labels: System Inventory,Assets
+    breadcrumb-links: no-link,no-link
 SystemAssetView:
     url: /asset/view/
-    breadcrumb-labels: System Asset List,System Asset
-    breadcrumb-links: /asset/list,no-link
+    breadcrumb-labels: System Inventory,Assets,View
+    breadcrumb-links: no-link,/asset/list,no-link
 SystemControl:
     url: /security-control/list
-    breadcrumb-labels: Security Control List
-    breadcrumb-links: no-link
+    breadcrumb-labels: System Inventory,Controls
+    breadcrumb-links: no-link,no-link
 SystemControlView:
-    url: /security-control/view/
-    breadcrumb-labels: Security Control List,Security Control
-    breadcrumb-links: /security-control/list,no-link
+    url: /security-control/view/id
+    breadcrumb-labels: System Inventory,Controls,View
+    breadcrumb-links: no-link,/security-control/list,no-link
 SystemDocument:
     url: /system-document/list
-    breadcrumb-labels: System Document List
-    breadcrumb-links: no-link
+    breadcrumb-labels: System Inventory,Documentation
+    breadcrumb-links: no-link,no-link
 SystemDocumentView:
     url: /system-document/view/
-    breadcrumb-labels: System Documenyt List,System Document
-    breadcrumb-links: /system-document/list,no-link    
+    breadcrumb-labels: System Inventory,Documentation,View
+    breadcrumb-links: no-link,/system-document/list,no-link    
 SystemOrganization:
     url: /organization/list
-    breadcrumb-labels: Organization List
-    breadcrumb-links: no-link
+    breadcrumb-labels: System Inventory,Organizations
+    breadcrumb-links: no-link,no-link
 SystemOrganizationView:
     url: /organization/view/
-    breadcrumb-labels: Organization List,Organization
-    breadcrumb-links: /organization/list,no-link    
+    breadcrumb-labels: System Inventory,Organizations,View
+    breadcrumb-links: no-link,/organization/list,no-link    
 SystemInventory:
     url: /system/list
-    breadcrumb-labels: System Inventory
-    breadcrumb-links: no-link
+    breadcrumb-labels: System Inventory,Systems
+    breadcrumb-links: no-link,no-link
 SystemInventoryView:
     url: /system/view/
-    breadcrumb-labels: System Inventory,System
-    breadcrumb-links: /system/list,no-link    
+    breadcrumb-labels: System Inventory,Systems,View
+    breadcrumb-links: no-link,/system/list,no-link  
+SystemInventoryDashboard:
+    url: /organization-dashboard
+    breadcrumb-labels: System Inventory,Dashboard
+    breadcrumb-links: no-link,no-link  
 SystemAdminControlCatalog:
     url: /security-control-catalog/list
-    breadcrumb-labels: System Administration,Security Control Catalog List
-    breadcrumb-links: no-link,no-link    
+    breadcrumb-labels: System Inventory,Administration,Control Catalogs
+    breadcrumb-links: no-link,no-link,no-link 
 SystemAdminControlCatalogView:
     url: /security-control-catalog/view/
-    breadcrumb-labels: System Administration,Security Control Catalog List,Catalog
-    breadcrumb-links: no-link,/security-control-catalog/list,no-link        
+    breadcrumb-labels: System Inventory,Administration,Control Catalogs,View
+    breadcrumb-links: no-link,no-link,/security-control-catalog/list,no-link        
 SystemAdminDocumentType:
     url: /document-type/list
-    breadcrumb-labels: System Administration,System Document Type List
-    breadcrumb-links: no-link,no-link    
+    breadcrumb-labels: System Inventory,Administration,Document Types
+    breadcrumb-links: no-link,no-link,no-link 
 SystemAdminDocumentTypeView:
     url: /document-type/view/
-    breadcrumb-labels: System Administration,System Document Type List,Document Type
-    breadcrumb-links: no-link,/document-type/list,no-link        
+    breadcrumb-labels: System Inventory,Administration,Document Types,View
+    breadcrumb-links: no-link,no-link,/document-type/list,no-link        
 SystemAdminIconManagement:
     url: /icon/manage
-    breadcrumb-labels: System Administration,Icon Management
-    breadcrumb-links: no-link,no-link    
+    breadcrumb-labels: System Inventory,Administration,Icon Management
+    breadcrumb-links: no-link,no-link,no-link    
 SystemAdminNetwork:
     url: /network/list
-    breadcrumb-labels: System Administration,Network List
-    breadcrumb-links: no-link,no-link    
+    breadcrumb-labels: System Inventory,Administration,Networks
+    breadcrumb-links: no-link,no-link,no-link    
 SystemAdminNetworkView:
     url: /network/view/
-    breadcrumb-labels: System Administration,Network List,Network
-    breadcrumb-links: no-link,/network/list,no-link        
+    breadcrumb-labels: System Inventory,Administration,Networks,View
+    breadcrumb-links: no-link,no-link,/network/list,no-link        
 SystemAdminOrganizationType:
     url: /organization-type/list
-    breadcrumb-labels: System Administration,Organization Type List
-    breadcrumb-links: no-link,no-link    
+    breadcrumb-labels: System Inventory,Administration,Organization Types
+    breadcrumb-links: no-link,no-link,no-link    
 SystemAdminOrganizationTypeView:
     url: /organization-type/view/
-    breadcrumb-labels: System Administration,Organization Type List,Organization Type
-    breadcrumb-links: no-link,/organization-type/list,no-link    
+    breadcrumb-labels: System Inventory,Administration,Organization Types,View
+    breadcrumb-links: no-link,no-link,/organization-type/list,no-link    
 SystemAdminSystemType:
     url: /system-type/list
-    breadcrumb-labels: System Administration,System Type List
-    breadcrumb-links: no-link,no-link    
+    breadcrumb-labels: System Inventory,Administration,System Types
+    breadcrumb-links: no-link,no-link,no-link    
 SystemAdminSystemTypeView:
     url: /system-type/view/
-    breadcrumb-labels: System Administration,System Type List,System Type
-    breadcrumb-links: no-link,/system-type/list,no-link    
+    breadcrumb-labels: System Inventory,Administration,System Types,View
+    breadcrumb-links: no-link,no-link,/system-type/list,no-link    
 SystemReportDocumentCompliance:
     url: /organization-report/documentation-compliance/
-    breadcrumb-labels: System Report,Document Compliance
-    breadcrumb-links: no-link,no-link
+    breadcrumb-labels: System Inventory,Reports,Document Compliance
+    breadcrumb-links: no-link,no-link,no-link
 SystemReportPersonnel:
     url: /organization-report/personnel/
-    breadcrumb-labels: System Report,Personnel
-    breadcrumb-links: no-link,no-link
+    breadcrumb-labels: System Inventory,Reports,Personnel
+    breadcrumb-links: no-link,no-link,no-link
 SystemReportPrivacy:
     url: /organization-report/privacy/
-    breadcrumb-labels: System Report,Privacy
-    breadcrumb-links: no-link,no-link
+    breadcrumb-labels: System Inventory,Reports,Privacy
+    breadcrumb-links: no-link,no-link,no-link
 SystemReportSecurityAuthorizations:
     url: /organization-report/security-authorization/
-    breadcrumb-labels: System Report,Security Authorizations
-    breadcrumb-links: no-link,no-link
+    breadcrumb-labels: System Inventory,Reports,Security Authorizations
+    breadcrumb-links: no-link,no-link,no-link
 
 #
 # Administration
@@ -276,7 +300,7 @@ AdminSysConfigLDAP:
     breadcrumb-links: no-link,no-link,no-link
 AdminSysConfigLDAPEdit:
     url: /config/update-ldap/
-    breadcrumb-labels: Administration,System Configuration,LDAP,LDAP Edit
+    breadcrumb-labels: Administration,System Configuration,LDAP,Edit
     breadcrumb-links: no-link,no-link,/config/list-ldap,no-link
 AdminSysConfigPasswordPolicy:
     url: /config/password
@@ -292,19 +316,19 @@ AdminSysConfigContact:
     breadcrumb-links: no-link,no-link,no-link
 AdminUserManagementRole:
     url: /role/list
-    breadcrumb-labels: Administration,User Management,Role List
+    breadcrumb-labels: Administration,User Management,Roles
     breadcrumb-links: no-link,no-link,no-link    
 AdminUserManagementRoleView:
     url: /role/view/
-    breadcrumb-labels: Administration,User Management,Role List,Role
+    breadcrumb-labels: Administration,User Management,Roles,View
     breadcrumb-links: no-link,no-link,/role/list,no-link    
 AdminUserManagementUser:
     url: /user/list
-    breadcrumb-labels: Administration,User Management,User List
+    breadcrumb-labels: Administration,User Management,Users
     breadcrumb-links: no-link,no-link,no-link    
 AdminUserManagementUserView:
     url: /user/view/
-    breadcrumb-labels: Administration,User Management,User List,User
+    breadcrumb-labels: Administration,User Management,Users,View
     breadcrumb-links: no-link,no-link,/user/list,no-link    
 AdminDiagnosticsSystemCache:
     url: /debug/apc-cache/type/system
@@ -348,5 +372,5 @@ UserPreferencesProfile:
     breadcrumb-links: no-link,no-link 
 UserPreferencesHomeURL:
     url: /user/preferences
-    breadcrumb-labels: User Preferences,Home URL
+    breadcrumb-labels: User Preferences,Preferences
     breadcrumb-links: no-link,no-link 
