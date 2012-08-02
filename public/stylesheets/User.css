@@ -44,6 +44,11 @@ dd#filter-element, dd#sort-element {
     margin-right: 4px;
 }
 
+div#organizations {
+    height: 600px;
+    overflow: auto;
+}
+
 ul.treelist li.flat {
     padding-left: 0px !important;
 }
