@@ -1,76 +1,97 @@
-<div class="hd">
-    <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'));?>
-</div>
-
-<div class="bd">
-    <?php echo $this->escape(Fisma::configuration()->getConfig('use_notification'), 'none');?>
-        
-    <p class="message">
-        <?php 
-            if (isset($this->error)) {
-                $dateString = Zend_Date::now()->toString(Fisma_Date::FORMAT_TIME);
-                echo $this->escape($dateString);
-                echo $this->escape(' ', 'none');
-                echo $this->escape($this->error); 
-            }
-        ?>
-    </p>
-
-    <form id='loginForm' method="post" action="/auth/login">
-        <table>
-            <tr>
-                <td><label for="username">Username:</label></td>
-                <td>
-                    <input type="text" 
-                           name="username" 
-                           id="username"
-                           autocomplete="off"
-                           value="<?php echo $this->escape(isset($this->username) ? $this->username : '')?>">
-                </td>
-            </tr>
-            <tr>
-                <td><label for="userpass">Password:</label></td>
-                <td>
-                    <input type="password" 
-                           name="userpass" 
-                           id="userpass"
-                           autocomplete="off"
-                           value="<?php echo $this->escape(isset($this->password)?$this->password:'')?>">
-                </td>
-            </tr>
-            <tr>
-                <td>&nbsp;</td>
-                <td>
-                    <?php 
-                    $loginButton = new Fisma_Yui_Form_Button_Submit('loginButton', array('label' => 'Log In')); 
-                    echo $this->escape($loginButton, 'none');
-                    ?>
-                </td>
-            </tr>
-        </table>
-        <?php
-        if ($this->showReportIncidentButton):
-        ?>
-            <hr>
-            <table>
-                <tr>
-                    <td colspan="2">
-                        <?php 
-                        $reportIncidentButton = new Fisma_Yui_Form_Button_Link(
-                            'reportIncident', 
-                            array(
-                                'value' => 'Report A Security Incident',
-                                'href' => '/incident/report',
-                                'imageSrc' => '/images/report_incident.png'
-                            )
-                        ); 
-                        echo $this->escape($reportIncidentButton, 'none');
-                        ?>
-                    </td>
-                </tr>
-            </table>
-        <?php
-        endif;
-        ?>
+<div id='loginForm'>
+    <form id="login" _lpchecked="1" method="post" action="/auth/login" onsubmit="return login(this);">
+        <div id='banner'>
+            <h1>Warning</h1>
+            <div id='bannerContent'>
+                <?php echo $this->escape(Fisma::configuration()->getConfig('use_notification'), 'none');?>
+            </div>
+            <fieldset class="actions">
+                <input type="submit" class="submit" name="submit" value="Accept"/>
+                <a href="" onclick="return decline();">Decline</a>
+            </fieldset>
+        </div>
+        <div id='form'>
+            <h1>Log In</h1>
+            <fieldset id="inputs">
+                <input
+                    id="username"
+                    type="text"
+                    name="username"
+                    placeholder="Username"
+                    autofocus=""
+                    required=""
+                    autocomplete="off"
+                    onkeypress="capLock(event)"
+                    value="<?php echo $this->escape(isset($this->username) ? $this->username : '')?>"
+                >
+                <input
+                    id="password"
+                    type="password"
+                    name="userpass"
+                    placeholder="Password"
+                    required=""
+                    autocomplete="off"
+                    onkeypress="capLock(event)"
+                    value="<?php echo $this->escape(isset($this->password)?$this->password:'')?>"
+                >
+                <?php if (isset($this->error)): ?><div class="message"><?php
+                    $dateString = Zend_Date::now()->toString(Fisma_Date::FORMAT_TIME);
+                    echo $this->escape('[' . $dateString . ']');
+                    echo $this->escape(' ', 'none');
+                    echo $this->escape($this->error);
+                ?></div><?php endif; ?>
+                <div id="divCapsLock" class="divCapsLockOFF divCapsLock">
+                    <img style="vertical-align: middle; margin-top:-3px; width:16px; height:16px"
+                         src="/images/alert.png" title="Caps Lock On" />
+                    <strong>Caps Lock is On</strong>
+                </div>
+            </fieldset>
+            <fieldset class="actions">
+                <input type="submit" class="submit" name="submit" value="Log in"/>
+                <a href="">Forgot your password?</a>
+            <?php if ($this->showReportIncidentButton): ?>
+                <a href="/incident/report">Report a Security Incident</a>
+            <?php endif; ?>
+            </fieldset>
+        </div>
     </form>
 </div>
+<script type="text/javascript">
+function login(formElement) {
+    if ($('#banner').css('display') === 'none') {
+        var validation = true;
+        var focusCallback = function(){$(this).focus();}
+        $('input[required]').each(function(index, element){
+            if (!element.value) {
+                $(element).fadeOut().fadeIn(focusCallback);
+                focusCallback = null;
+                validation = false;
+            }
+        });
+        if (validation) {
+            $('#form').slideToggle();
+            $('#banner').slideToggle();
+        }
+        return false;
+    }
+}
+function decline() {
+    $('#form').slideToggle();
+    $('#banner').slideToggle();
+    return false;
+}
+function capLock(e) {
+    kc = e.keyCode ? e.keyCode : e.which;
+    sk = e.shiftKey ? e.shiftKey : ((kc == 16) ? true : false);
+
+    if(((kc >= 65 && kc <= 90) && !sk)||((kc >= 97 && kc <= 122) && sk)) {
+        $('#divCapsLock').removeClass('divCapsLockOFF');
+    }
+    else {
+        $('#divCapsLock').addClass('divCapsLockOFF');
+    }
+}
+$(function(){
+    $('input[autofocus]').focus();
+})
+</script>

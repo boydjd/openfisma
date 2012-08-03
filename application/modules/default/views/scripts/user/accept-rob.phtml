@@ -1,34 +1,43 @@
-<div>
-    <i>
-        System policy states that you must review and accept the Rules of Behavior
-        for <?php echo $this->escape(Fisma::configuration()->getConfig('system_name'))?> every
-        <?php echo $this->escape(Fisma::configuration()->getConfig('rob_duration'))?> days. If you do not accept these
-        rules then you will be logged off.
-    </i>
-</div>
-
-<?php Fisma_Format_Section::startSection($this->escape(Fisma::configuration()->getConfig('system_name')) 
-    . ' Rules of Behavior'); ?>
-<div>
-    <?php echo $this->escape($this->behaviorRule, 'none'); ?>
-</div>
-
-<div>
-    <form method="post" action="/user/accept-rob">
-    <?php
-    $cancelButton = new Fisma_Yui_Form_Button_Link('cancel', 
-                                  array('value' => 'Cancel', 
-                                        'href' => '/auth/logout'));
-    echo $this->escape($cancelButton, 'none'); 
-    ?>
-    <?php
-    $acceptButton = new Fisma_Yui_Form_Button_Submit('accept', 
-                                  'Accept',
-                                  array('label' => 'Accept'));
-   
-    echo $this->escape($acceptButton, 'none');
-    ?>
+<div id='loginForm'>
+    <form id="login" _lpchecked="1" method="post" action="/user/accept-rob">
+            <h1>ROB</h1>
+            <div id='bannerContent'>
+                <div>
+                    <i>
+                        System policy states that you must review and accept the Rules of Behavior every
+                        <?php echo $this->escape(Fisma::configuration()->getConfig('rob_duration'))?> days.
+                    </i>
+                </div>
+                <?php echo $this->escape(Fisma::configuration()->getConfig('behavior_rule'), 'none'); ?>
+            </div>
+            <fieldset class="actions">
+                <input type="submit" class="submit" name="accept" value="Accept" />
+                <a href="/auth/logout">Decline</a>
+            </fieldset>
     </form>
 </div>
-<?php Fisma_Format_Section::stopSection(); ?>
-
+<script type="text/javascript">
+function a(formElement){
+    if ($('#banner').css('display') === 'none') {
+        var validation = true;
+        var focusCallback = function(){$(this).focus();}
+        $('input[required]').each(function(index, element){
+            if (!element.value) {
+                $(element).fadeOut('fast').fadeIn('fast', focusCallback);
+                focusCallback = null;
+                validation = false;
+            }
+        });
+        if (validation) {
+            $('#form').slideToggle();
+            $('#banner').slideToggle();
+        }
+        return false;
+    }
+}
+function b(){
+    $('#form').slideToggle();
+    $('#banner').slideToggle();
+    return false;
+}
+</script>
