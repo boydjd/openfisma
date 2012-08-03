@@ -375,13 +375,23 @@ Fisma.User = {
         } else {
             selector.removeClass('flat');
         }
+        var storage = new Fisma.PersistentStorage("Fisma.UserAccess");
+        storage.set('sortBy', selectElement.value);
+        storage.sync();
     },
 
     treeFilter: function(selectElement) {
         var selector = $(selectElement).parents('div').eq(0).find('#organizations ul.treelist li');
         selector.show();
-        if (selectElement.value !== 'all') {
-            selector.find('label').filter('[type!="' + selectElement.value + '"]').parents('li').hide();
+        if (selectElement.value.indexOf('all') < 0) {
+            selector.find('label').not('[type$="' + selectElement.value + '"]').parents('li').hide();
+        } else if (selectElement.value === 'allOrg') {
+            selector.find('label').not('[type^="org"]').parents('li').hide();
+        } else if (selectElement.value === 'allSys') {
+            selector.find('label').not('[type^="sys"]').parents('li').hide();
         }
+        var storage = new Fisma.PersistentStorage("Fisma.UserAccess");
+        storage.set('filterBy', selectElement.value);
+        storage.sync();
     }
 };

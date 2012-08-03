@@ -633,8 +633,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $subForm->removeDecorator('DtDdWrapper');
         $subForm->removeDecorator('HtmlTag');
 
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Fisma.UserAccess';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        $storedData = (!empty($storage) && !empty($storage->data)) ? $storage->data : array();
+
         $filterSelect = new Zend_Form_Element_Select("filter");
-        $filterArrays = array('all' => '(show all)');
+        $filterArrays = array(
+            'all' => '(show all)',
+            'allOrg' => '(show organizations only)',
+            'allSys' => '(show systems only)'
+        );
         $organizationTypes = Doctrine_Query::create()
             ->from('OrganizationType ot')
             ->where('ot.nickname <> ?', 'system')
@@ -651,6 +660,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $filterSelect->setMultiOptions($filterArrays);
         $filterSelect->setLabel('Filter');
         $filterSelect->setOptions(array('onChange' => 'Fisma.User.treeFilter(this)'));
+        $selectedFilter = (!empty($storedData['filterBy'])) ? $storedData['filterBy'] : null;
+        $filterSelect->setValue($selectedFilter);
+
         $subForm->addElement($filterSelect);
 
         $sortSelect = new Zend_Form_Element_Select("sort");
@@ -661,6 +673,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         ));
         $sortSelect->setLabel('Sort by');
         $sortSelect->setOptions(array('onChange' => 'Fisma.User.treeSort(this)'));
+        $selectedSort = (!empty($storedData['sortBy'])) ? $storedData['sortBy'] : null;
+        $sortSelect->setValue($selectedSort);
         $subForm->addElement($sortSelect);
 
         $organizations = new Fisma_Zend_Form_Element_CheckboxTree("organizations");
@@ -685,7 +699,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     'fullname' => $organization['name'],
                     'level' => $organization['level'],
                     'group' => $roleId,
-                    'type' => ($organization['otype'] !== 'system') ? $organization['otype'] : $organization['stype']
+                    'type' => ($organization['otype'] !== 'system') ?
+                              ("org." . $organization['otype']) :
+                              ("sys." . $organization['stype'])
                 ));
             }
         }
