@@ -56,6 +56,10 @@ body
     margin-bottom: 10px;
 }
 
+#openfisma img {
+    height: 100%;
+}
+
 #loginForm
 {
     position: absolute;
@@ -63,7 +67,6 @@ body
     left: 50%;
     z-index: 0;
     margin: -170px 0 0 -500px;
-    background: url('/images/shark_logo_hi-res_text-cropped.png') no-repeat;
     height: 320px;
     padding-top: 20px;
     width: 1000px;
