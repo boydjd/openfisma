@@ -1,7 +1,7 @@
 <div id='loginForm'>
-    <a href='http://openfisma.org' target='_blank' id='openfisma'>
-        <img src='/images/shark_logo_hi-res_text-cropped.png' />
-    </a>
+    <a href='http://openfisma.org' target='_blank' id='openfisma'><img
+        src='/images/shark_logo_hi-res_text-cropped.png'
+    /></a><br /><br /><br />
     <form id="login" _lpchecked="1" method="post" action="/auth/login" onsubmit="return login(this);">
         <div id='banner'>
             <h1>Warning</h1>
@@ -51,7 +51,11 @@
             </fieldset>
             <fieldset class="actions">
                 <input type="submit" class="submit" name="submit" value="Log in"/>
-                <a href="">Forgot your password?</a>
+                <a href="<?php
+                    $mailurl = 'mailto:' . Fisma::configuration()->getConfig('contact_email')
+                             . '?Subject='. $this->escape("I forgot my password", 'url');
+                    echo $this->escape($mailurl);
+                ?>" target="_blank">Forgot your password?</a>
             <?php if ($this->showReportIncidentButton): ?>
                 <a href="/incident/report">Report a Security Incident</a>
             <?php endif; ?>
