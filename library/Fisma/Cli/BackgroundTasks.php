@@ -76,7 +76,7 @@ class Fisma_Cli_BackgroundTasks extends Fisma_Cli_Abstract
             // if we get here, the task is scheduled to run, so lets attempt to get the lock
             $lockdir = realpath(APPLICATION_PATH . '/../scripts/bin/locks');
             $lockfile = $lockdir . '/' . $key . '.lock';
-            $lock = fopen($lockfile, 'r+');
+            $lock = fopen($lockfile, 'w+');
             if (!$lock || !flock($lock, LOCK_EX | LOCK_NB)) {
                 // another process is running this task, so skip it
                 fclose($lock);
