@@ -633,9 +633,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $subForm->removeDecorator('DtDdWrapper');
         $subForm->removeDecorator('HtmlTag');
 
-        $userId = CurrentUser::getInstance()->id;
-        $namespace = 'Fisma.UserAccess';
-        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery(
+            CurrentUser::getAttribute('id'),
+            'Fisma.UserAccess'
+        )->fetchOne();
         $storedData = (!empty($storage) && !empty($storage->data)) ? $storage->data : array();
 
         $filterSelect = new Zend_Form_Element_Select("filter");
