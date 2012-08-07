@@ -59,6 +59,7 @@ body
 #openfisma img {
     height: 100px;
     padding-left: 100px;
+    border: 0px;
 }
 
 #loginForm
