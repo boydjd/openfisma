@@ -8,7 +8,7 @@
 
         $this->headScript()->appendFile('/javascripts/jquery-min.js');
         $this->injectAsset('/stylesheets/login.css', 'css', false, 'screen,print');
-        $this->headLink()->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
+        $this->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
 
         echo $this->escape($this->headScript(), 'none');
         echo $this->escape($this->headLink(), 'none');
@@ -17,7 +17,12 @@
 
     <body>
         <div id="content">
-            <?php echo $this->escape($this->layout()->content, 'none'); ?>
+            <div id='loginForm'>
+                <a href='http://openfisma.org' target='_blank' id='openfisma'><img
+                    src='/images/shark_logo_hi-res_text-cropped.png'
+                /></a><br /><br /><br />
+                <?php echo $this->escape($this->layout()->content, 'none'); ?>
+            </div>
         </div>
     </body>
     <?php echo $this->partial('partial/priorityMessage.phtml', array('messages' => $this->priorityMessenger())); ?>

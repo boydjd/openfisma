@@ -75,7 +75,7 @@ body
     background-size: contain;
 }
 
-#login
+#login, #acceptRob
 {
     float:right;
     background-color: #fefefe;

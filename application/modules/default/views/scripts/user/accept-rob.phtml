@@ -1,21 +1,16 @@
-<div id='loginForm'>
-    <a href='http://openfisma.org' target='_blank' id='openfisma'><img
-        src='/images/shark_logo_hi-res_text-cropped.png'
-    /></a><br /><br /><br />
-    <form id="login" _lpchecked="1" method="post" action="/user/accept-rob">
-            <h1>Rules</h1>
-            <div id='bannerContent'>
-                <div>
-                    <i>
-                        System policy states that you must review and accept the Rules of Behavior every
-                        <?php echo $this->escape(Fisma::configuration()->getConfig('rob_duration'))?> days.
-                    </i>
-                </div>
-                <?php echo $this->escape(Fisma::configuration()->getConfig('behavior_rule'), 'none'); ?>
+<form id="acceptRob" _lpchecked="1" method="post" action="/user/accept-rob">
+        <h1>Rules</h1>
+        <div id='bannerContent'>
+            <div>
+                <i>
+                    System policy states that you must review and accept the Rules of Behavior every
+                    <?php echo $this->escape(Fisma::configuration()->getConfig('rob_duration'))?> days.
+                </i>
             </div>
-            <fieldset class="actions">
-                <input type="submit" class="submit" name="accept" value="Accept" />
-                <a href="/auth/logout">Decline</a>
-            </fieldset>
-    </form>
-</div>
+            <?php echo $this->escape(Fisma::configuration()->getConfig('behavior_rule'), 'none'); ?>
+        </div>
+        <fieldset class="actions">
+            <input type="submit" class="submit" name="accept" value="Accept" />
+            <a href="/auth/logout">Decline</a>
+        </fieldset>
+</form>
