@@ -29,14 +29,28 @@
 class Fisma_Cli_BackgroundTasks extends Fisma_Cli_Abstract
 {
     /**
+     * Set up logging
+     */
+    public function __construct()
+    {
+        // Log all migration messages to a dedicated log
+        $fileWriter = new Zend_Log_Writer_Stream(Fisma::getPath('log') . '/backgroundTasks.log');
+        $fileWriter->setFormatter(new Zend_Log_Formatter_Simple("[%timestamp%] %message%\n"));
+
+        parent::getLog()->addWriter($fileWriter);
+    }
+
+    /**
      * Run the check on lock/unlock
      */
     protected function _run()
     {
+        $this->getLog()->info("Background Tasks started.");
         $configObj = Doctrine::getTable('Configuration')->createQuery()->select('backgroundTasks')->fetchOne();
         $tasks = $configObj->backgroundTasks;
         if (empty($tasks)) {
-            throw new Fisma_Zend_Exception('No tasks configured.');
+            $this->getLog()->err('No tasks configured.');
+            return;
         }
         foreach ($tasks as $key => $taskInfo) {
             // first see if it needs to be run
@@ -73,12 +87,14 @@ class Fisma_Cli_BackgroundTasks extends Fisma_Cli_Abstract
                 );
             }
 
+            $this->getLog()->info("Attempting to run task $key.");
             // if we get here, the task is scheduled to run, so lets attempt to get the lock
             $lockdir = realpath(APPLICATION_PATH . '/../scripts/bin/locks');
             $lockfile = $lockdir . '/' . $key . '.lock';
             $lock = fopen($lockfile, 'w+');
             if (!$lock || !flock($lock, LOCK_EX | LOCK_NB)) {
                 // another process is running this task, so skip it
+                $this->getLog()->notice("Task locked, aborting.");
                 fclose($lock);
                 continue;
             }
@@ -91,6 +107,9 @@ class Fisma_Cli_BackgroundTasks extends Fisma_Cli_Abstract
             $exit = $taskObj->run($args);
             if ($exit == 0) { // success
                 $this->_updateTaskTs($key, 'lastCompletedTs');
+                $this->getLog()->info("Task $key finished successfully.");
+            } else {
+                $this->getLog()->err("Task $key failed, will try again later.");
             }
             // release the lock
             flock($lock, LOCK_UN);
