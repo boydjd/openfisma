@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -29,37 +29,37 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
 {
     /**
      * A array container which keeps all available checkboxes in tree
-     * 
+     *
      * @var array
      */
     protected $_checkboxes = array();
-    
+
     /**
      * A array container which holds values of all checked chechboxes in tree
-     * 
+     *
      * @var array
      */
     protected $_defaults = array();
-    
+
     /**
      * Add a checkbox to this checkbox tree.
-     * 
+     *
      * @param string $name The name of the checkbox (this will be returned in the form)
      * @param string $label The label that is placed next to the checkbox
      * @return void
      */
-    function addCheckbox($name, $label, $level, $group = NULL) 
+    function addCheckbox($options)
     {
-        $this->_checkboxes[] = array('name' => $name, 'label' => $label, 'level'=>$level, 'group' => $group);
+        $this->_checkboxes[] = $options;
     }
-    
+
     /**
      * Sets the default value for the checkbox tree.
      *
-     * @param array $value The specifed value of checkbox to be checked by default in tree 
+     * @param array $value The specifed value of checkbox to be checked by default in tree
      * @return void
      */
-    function setValue($value) 
+    function setValue($value)
     {
         $this->_defaults = (array)$value;
     }
@@ -67,10 +67,10 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
     /**
      * Gets the current value for the checkbox matrix. This is only
      * populated after isValid is called(). I believe that is the ZF convention.
-     * 
+     *
      * @return array The checked checkboxes
      */
-    function getValue() 
+    function getValue()
     {
         return $this->_defaults;
     }
@@ -78,35 +78,35 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
     /**
      * A stub function which always returns true. The main reason
      * for overriding here is to capture the data which is being validated.
-     * 
+     *
      * @return boolean Always returns true
      */
-    function isValid($value, $context=null) 
+    function isValid($value, $context=null)
     {
         $this->setValue($value);
         return true;
     }
-    
+
     /**
      * Renders the checkbox tree into a table.
-     * 
+     *
      * @param Zend_View_Interface $view Provided for compatibility
      * @return string The rendered checkbox tree in HTML
      */
-    function render(Zend_View_Interface $view = null) 
+    function render(Zend_View_Interface $view = null)
     {
         $render = '';
-        $render .= "<span id=\"{$this->getName()}\">";
+        $render .= "<div id=\"{$this->getName()}\">";
 
         // Setup the tooltip
         $tooltipHtml = '<p>Checking a system or organization will automatically select all of the nested'
                      . ' systems and organizations within it. Clicking the same box again will deselect'
                      . ' all of the nested items.</p><p><i>Hold down the Option or Alt key while clicking'
                      . ' in order to select a single checkbox.</i></p>';
-        $tooltip = new Fisma_Yui_Tooltip("{$this->getName()}checkboxMatrix", 
-                                         ucfirst($this->getLabel()), 
+        $tooltip = new Fisma_Yui_Tooltip("{$this->getName()}checkboxTree",
+                                         ucfirst($this->getLabel()),
                                          $tooltipHtml);
-        
+
         // Setup HTML attributes
         $disabled = '';
         if ($this->readOnly) {
@@ -122,13 +122,14 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
                  . $tooltip
                  . "</td></tr>";
         $render .= "<tr><td><ul class='treelist'>";
-        foreach ($this->_checkboxes as $checkbox) {
-            $render .= "<li style=\"padding-left:" 
-                     . (2*$checkbox['level']) 
+        foreach ($this->_checkboxes as $count => $checkbox) {
+            $render .= "<li style=\"padding-left:"
+                     . (2*$checkbox['level'])
                      . "em\">";
             $checked = in_array($checkbox['name'], $this->_defaults) ? ' checked=\'checked\'' : '';
             $group = $this->getView()->escape($checkbox['group']);
             $name = $this->getView()->escape($checkbox['name']);
+            $label = $checkbox['nickname'] . ' - ' . $checkbox['fullname'];
             $render .= "<input type='checkbox'"
                      . ' id="' . $groupName . '[' . $group . '][' . $name . ']"'
                      . ' name="' . $groupName . '[' . $group . '][]"'
@@ -136,13 +137,16 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
                      . ' onclick="Fisma.CheckboxTree.handleClick(this, event);"'
                      . ' nestedLevel="' . $checkbox['level'] . '"'
                      . $class . $checked . $disabled . '>&nbsp;'
-                     . '<label for="' . $groupName . '[' . $group . '][' . $name . ']">'
-                     . $this->getView()->escape($checkbox['label'])
+                     . '<label treePos="' . $count . '" for="' . $groupName . '[' . $group . '][' . $name . ']" '
+                     . 'nickname="' . $this->getView()->escape($checkbox['nickname']) . '" '
+                     . 'fullname="' . $this->getView()->escape($checkbox['fullname']) . '" '
+                     . 'type="' . $this->getView()->escape($checkbox['type']) . '">'
+                     . $this->getView()->escape($label)
                      . '</label>&nbsp;</li>';
         }
         $render .= "</ul></td></tr>\n";
 
-        $render .= "</span>";
+        $render .= "</div>";
 
         return $render;
     }
