@@ -552,7 +552,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     public function acceptRobAction()
     {
-        $this->_helper->layout->setLayout('notice');
+        $this->_helper->layout->setLayout('login');
 
         $post   = $this->_request->getPost();
         if (isset($post['accept'])) {
