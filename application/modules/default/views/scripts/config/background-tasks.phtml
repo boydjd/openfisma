@@ -1,0 +1,109 @@
+<?php echo $this->escape($this->searchBox($this->toolbarButtons), 'none'); ?>
+<?php Fisma_Format_Section::startSection("Background Task Configuration "); ?>
+<div class="block">
+<?php echo $this->escape($this->form('backgroundTasks', array('method' => 'POST')), 'none'); ?>
+<div id="tasksTable_container">
+<table id="tasksTable">
+    <thead>
+        <tr>
+            <th>Enabled</th>
+            <th>Script</th>
+            <th>Description</th>
+            <th>Interval</th>
+            <th>Time</th>
+            <th>Command Line Arguments</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($this->taskDefs as $key => $task): ?>
+        <tr>
+            <td>
+                <?php
+                    echo $this->escape(
+                        $this->formCheckbox(
+                            'enabled[]',
+                            $key,
+                            array('checked' => $this->taskConfigs[$key]['enabled'] ? 1 : 0)
+                        ),
+                        'none'
+                    );
+                ?>
+            </td>
+            <td><?php echo $this->escape($task['name']); ?></td>
+            <td> <?php echo $this->escape($task['description']); ?></td>
+            <td>
+                <?php
+                    echo $this->escape(
+                        $this->formText($key . '[number]', $this->taskConfigs[$key]['number'], array('size' => 3)),
+                        'none'
+                    );
+                ?>
+                <?php
+                    echo $this->escape(
+                        $this->formSelect(
+                            $key . '[unit]',
+                            $this->taskConfigs[$key]['unit'],
+                            null,
+                            array('minute' => 'Minute(s)', 'day' => 'Day(s)')
+                        ),
+                        'none'
+                    );
+                ?>
+            </td>
+            <td>
+                <?php
+                    echo $this->escape(
+                        $this->formText(
+                            $key . '[time]',
+                            isset($this->taskConfigs[$key]['time']) ? $this->taskConfigs[$key]['time']: '',
+                            array('size' => 8)
+                        ),
+                        'none'
+                    );
+                ?>
+            </td>
+            <td>
+                <?php
+                    echo $this->escape(
+                        $this->formText(
+                            $key . '[arguments]',
+                            isset($this->taskConfigs[$key]['arguments']) ? $this->taskConfigs[$key]['arguments'] : ''
+                        ),
+                        'none'
+                    );
+                ?>
+            </td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+</div>
+<script type="text/javascript">
+    YAHOO.util.Event.onContentReady("tasksTable", function() {
+        var columnDefs = [
+            {"key":"Enabled", "label":"Enabled"},
+            {"key":"Script", "label":"Script"},
+            {"key":"Description", "label":"Description"},
+            {"key":"Interval", "label":"Interval"},
+            {"key":"Time", "label":"Time"},
+            {"key":"Command Line Arguments", "label":"Command Line Arguments"}
+        ];
+        var dataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("tasksTable"));
+        dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+        dataSource.responseSchema = {
+            "fields":[
+                {"key":"Enabled", "parser":"string"},
+                {"key":"Script", "parser":"string"},
+                {"key":"Description", "parser":"string"},
+                {"key":"Interval", "parser":"string"},
+                {"key":"Time", "parser":"string"},
+                {"key":"Command Line Arguments", "parser":"string"}
+            ]
+        };
+
+        var dataTable = new YAHOO.widget.GroupedDataTable("tasksTable_container", columnDefs, dataSource, {});
+    });
+</script>
+</form>
+</div>
+<?php Fisma_Format_Section::stopSection(); ?>
