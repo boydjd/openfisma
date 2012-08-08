@@ -77,8 +77,7 @@ class View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
         }
         
         // The given URL is not found in the breadcrumbs configuration
-        if (!isset($item) ||
-             strpos($url, "phpinfo") !== false)
+        if (!isset($item))
         {
             $breadcrumbs = "<div id=\"breadcrumbs\"></div>";
             return $breadcrumbs;
@@ -100,7 +99,7 @@ class View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
             }
         
             if ($i < count($labelItems) - 1) {
-                $breadcrumbs .= "<img src=\"/images/bullet_raquo.gif\" style=\"padding: 0 10px 0 10px;\">";
+                $breadcrumbs .= "<img src=\"/images/bullet_raquo.gif\" style=\"padding: 0 10px 0 10px; float: none;\">";
             }
         }
         
