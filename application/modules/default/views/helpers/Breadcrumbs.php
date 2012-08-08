@@ -48,12 +48,13 @@ class View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
     /**
      * Return the breadcrumbs for the given URL
      *
-     * @param $url the page URL 
      *
      * @return string the breadcrumb <div> tag
      */
-     public function breadcrumbs($url)
-    {
+     public function breadcrumbs()
+     {
+     	$url = $this->view->url();;
+     	
         $this->breadcrumbInfo = array();
         
         // Load the breadcrumbs configuration file
@@ -84,11 +85,8 @@ class View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
         }
         
         // Process item found from the breadcrumbs configuration
-        $labels = $item["breadcrumb-labels"];
-        $links = $item["breadcrumb-links"];
-        
-        $labelItems = self::tok2Array($labels);
-        $linkItems  = self::tok2Array($links);
+        $labelItems = $item["labels"];
+        $linkItems = $item["links"];
         
         // Construct the breadcrumbs
         $breadcrumbs =
