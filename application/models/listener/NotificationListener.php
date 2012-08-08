@@ -47,6 +47,12 @@ class NotificationListener extends Fisma_Doctrine_Record_Listener
 
         $record = $event->getInvoker();
         $eventName = $this->_classNameToEventName(get_class($record)) . '_CREATED';
+        
+        if ($eventName == "FINDING_CREATED" &&
+        	!is_null($record->uploadId)) {
+        	return;
+        }
+        
         Notification::notify($eventName, $record, CurrentUser::getInstance());
     }
 
