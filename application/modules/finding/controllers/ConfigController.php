@@ -104,5 +104,28 @@ class Finding_ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->form = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+    }
+
+    public function getToolbarButtons($record = null, $fromSearchParams = null)
+    {
+        $buttons = array();
+        $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+            'saveChanges',
+            array(
+                'label' => 'Save',
+                'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                'imageSrc' => '/images/ok.png'
+            )
+        );
+        $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+            'discardChanges',
+            array(
+                'value' => 'Discard',
+                'imageSrc' => '/images/no_entry.png',
+                'href' => '/finding/config/' . $this->getRequest()->getActionName()
+            )
+        );
+        return $buttons;
     }
 }

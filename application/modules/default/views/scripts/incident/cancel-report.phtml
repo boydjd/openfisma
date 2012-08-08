@@ -1,4 +1,5 @@
-<?php 
+<?php
+echo $this->escape($this->searchBox(array()), 'none');
 Fisma_Format_Section::startSection("Incident Report Canceled");
 ?>
 
@@ -7,8 +8,8 @@ Fisma_Format_Section::startSection("Incident Report Canceled");
 <p>
     <?php
     $continueButton = new Fisma_Yui_Form_Button_Link('returnToHome',
-                              array('value' => 'Continue', 
-                                    'href' => "/", 
+                              array('value' => 'Continue',
+                                    'href' => "/index/home",
                                     'imageSrc' => '/images/right_arrow.png'));
     echo $this->escape($continueButton, 'none');
     ?>

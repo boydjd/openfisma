@@ -1,16 +1,12 @@
 <?php if ($this->message): ?>
 <div class='message'><?php echo $this->escape($this->message); ?></div>
 <?php else: ?>
-<div class='searchBox'>
-    <div class='left'></div>
-    <div class='right'>
-        <input type="submit" id="menuLayout" name="menuLayout_button" value="Change Layout">
-        <div id="menuLayoutSelect" name="menuLayoutSelect" class="yui-overlay">
-            <div id='layoutLeft'><img src='/images/left_sidebar.png'/> Left Sidebar</div>
-            <div id='layoutRight'><img src='/images/right_sidebar.png'/> Right Sidebar</div>
-        </div>
+<div id='changeLayout'>
+    <input type="submit" id="menuLayout" name="menuLayout_button" value="Change Layout">
+    <div id="menuLayoutSelect" name="menuLayoutSelect" class="yui-overlay">
+        <div id='layoutLeft'><img src='/images/left_sidebar.png'/> Left Sidebar</div>
+        <div id='layoutRight'><img src='/images/right_sidebar.png'/> Right Sidebar</div>
     </div>
-    <div class='clear'></div>
 </div>
 
 <div class='column66 left' id='findingAnalystLeft'>

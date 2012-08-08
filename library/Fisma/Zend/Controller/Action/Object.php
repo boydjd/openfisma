@@ -122,48 +122,89 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $buttons = array();
         $isList = $this->getRequest()->getActionName() === 'list';
         $isView = $this->getRequest()->getActionName() === 'view';
+        $isCreate = $this->getRequest()->getActionName() === 'create';
         $view = Zend_Layout::getMvcInstance()->getView();
 
-        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName())) {
-            $buttons['create'] = new Fisma_Yui_Form_Button_Link(
-                'toolbarCreateButton',
-                array(
-                    'value' => 'Create New ' . $this->getSingularModelName(),
-                    'href' => $this->getBaseUrl() . '/create',
-                    'imageSrc' => '/images/create.png'
-                )
-            );
+        if ((!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('create', $this->getAclResourceName()))) {
+            if ($isCreate) {
+                $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+                    'saveChanges',
+                    array(
+                        'label' => 'Submit',
+                        'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                        'imageSrc' => '/images/ok.png'
+                    )
+                );
+
+                $buttons['discardButton'] = new Fisma_Yui_Form_Button(
+                    'discardChanges',
+                    array(
+                        'label' => 'Cancel',
+                        'onClickFunction' => 'Fisma.Util.goBack',
+                        'imageSrc' => '/images/no_entry.png'
+                    )
+                );
+            } else {
+                $buttons['create'] = new Fisma_Yui_Form_Button_Link(
+                    'toolbarCreateButton',
+                    array(
+                        'value' => 'New',// . $this->getSingularModelName(),
+                        'href' => $this->getBaseUrl() . '/create',
+                        'imageSrc' => '/images/create.png'
+                    )
+                );
+            }
         }
 
         if (
             (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('update', $this->getAclResourceName())) &&
-            !empty($this->_associatedModel) &&
-            $isView
+            $isView && $id = $this->getRequest()->getParam('id')
         ) {
             $fromSearchUrl = '';
+            $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
             if (!empty($fromSearchParams)) {
                 $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
             }
 
-            $buttons['reassociate'] = new Fisma_Yui_Form_Button(
-                'toolbarReassociateButton',
+            $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+                'saveChanges',
                 array(
-                    'label' => 'Migrate Associated ' . $this->_associatedPlural,
-                    'onClickFunction' => 'Fisma.Util.showReassociatePanel',
-                    'onClickArgument' => array(
-                        'title' => 'Migrate Associated ' . $this->_associatedPlural,
-                        'url'   => $this->getBaseUrl() . '/reassociate/id/' . $this->getRequest()->getParam('id')
-                                   . $fromSearchUrl
-                    )
+                    'label' => 'Save',
+                    'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                    'imageSrc' => '/images/ok.png'
                 )
             );
+
+            $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+                'discardChanges',
+                array(
+                    'value' => 'Discard',
+                    'imageSrc' => '/images/no_entry.png',
+                    'href' => $this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl
+                )
+            );
+
+            if (!empty($this->_associatedModel)) {
+                $buttons['reassociate'] = new Fisma_Yui_Form_Button(
+                    'toolbarReassociateButton',
+                    array(
+                        'label' => 'Migrate',// Associated ' . $this->_associatedPlural,
+                        'onClickFunction' => 'Fisma.Util.showReassociatePanel',
+                        'onClickArgument' => array(
+                            'title' => 'Migrate Associated ' . $this->_associatedPlural,
+                            'url'   => $this->getBaseUrl() . '/reassociate/id/' . $id . $fromSearchUrl
+                        ),
+                        'imageSrc' => '/images/move.png'
+                    )
+                );
+            }
         }
 
         if ($isList) {
             $buttons['exportXls'] = new Fisma_Yui_Form_Button(
                 'toolbarExportXlsButton',
                 array(
-                    'label' => 'Export To Excel',
+                    'label' => 'XLS',
                     'onClickFunction' => 'Fisma.Search.exportToFile',
                     'imageSrc' => $view->serverUrl('/images/xls.gif'),
                     'onClickArgument' => 'xls'
@@ -173,7 +214,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $buttons['exportPdf'] = new Fisma_Yui_Form_Button(
                 'toolbarExportPdfButton',
                 array(
-                    'label' => 'Export To PDF',
+                    'label' => 'PDF',
                     'imageSrc' => $view->serverUrl('/images/pdf.gif'),
                     'onClickFunction' => 'Fisma.Search.exportToFile',
                     'onClickArgument' => 'pdf'
@@ -183,7 +224,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $buttons['configureColumn'] = new Fisma_Yui_Form_Button(
                 'toolbarConfigureColumnButton',
                 array(
-                    'label' => 'Configure Columns',
+                    'label' => 'Columns',
                     'imageSrc' => $view->serverUrl('/images/application_view_columns.png'),
                     'onClickFunction' => 'Fisma.Search.toggleSearchColumnsPanel'
                 )
@@ -224,7 +265,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $buttons['list'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarListButton',
                 array(
-                    'value' => 'Return to Search Results',
+                    'value' => 'Return',
                     'href' => $this->getBaseUrl() . '/list',
                     'imageSrc' => '/images/arrow_return_down_left.png'
                 )
@@ -723,17 +764,23 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $searchResultsTable->setResultVariable('records') // Matches searchAction()
                            ->setDataUrl($this->getBaseUrl() . '/search')
-                           ->setSortAscending(true)
                            ->setRenderEventFunction('Fisma.Search.highlightSearchResultsTable')
                            ->setRequestConstructor('Fisma.Search.generateRequest')
                            ->setRowCount($rowsPerPage)
                            ->setClickEventBaseUrl($this->getBaseUrl() . '/view/id/')
                            ->setClickEventVariableName('id');
 
-        // The initial sort column is the first column (by convention)
-        $firstColumn = each($searchableFields);
-        $searchResultsTable->setInitialSortColumn($firstColumn['key']);
-        reset($searchableFields);
+        $sortPreference = $this->_getSortPreference();
+        if (isset($sortPreference['column']) && isset($sortPreference['dir'])) {
+            $searchResultsTable->setInitialSortColumn($sortPreference['column'])
+                               ->setSortAscending(($sortPreference['dir'] === 'yui-dt-asc'));
+        } else {
+            // The initial sort column is the first column (by convention)
+            $firstColumn = each($searchableFields);
+            $searchResultsTable->setInitialSortColumn($firstColumn['key'])
+                               ->setSortAscending(true);
+            reset($searchableFields);
+        }
 
         // If user can delete objects, then add a checkbox column
         if ($this->_isDeletable() && $this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
@@ -752,8 +799,29 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         // Look up searchable columns and add them to the table
         $searchEngine = Zend_Registry::get('search_engine');
 
-        foreach ($searchableFields as $fieldName => $searchParams) {
+        $columnOrder = $this->_getColumnOrder();
 
+        if (count($columnOrder) > 0) {
+            $missingFields = array_diff(array_keys($searchableFields), array_keys($columnOrder));
+            foreach ($missingFields as $fieldName) {
+                $searchParams = $searchableFields[$fieldName];
+                if (isset($searchParams['hidden']) && $searchParams['hidden'] === true) {
+                    continue;
+                }
+                $pos = array_search($fieldName, array_keys($searchableFields));
+                $columnOrder = array_slice($columnOrder, 0, $pos, true)
+                             + array($fieldName => null)
+                             + array_slice($columnOrder, $pos, null, true);
+            }
+        } else {
+            $columnOrder = $searchableFields;
+        }
+
+        foreach ($columnOrder as $fieldName => $columnWidth) {
+            if (!isset($searchableFields[$fieldName])) {
+                continue;
+            }
+            $searchParams = $searchableFields[$fieldName];
             if (isset($searchParams['hidden']) && $searchParams['hidden'] === true) {
                 continue;
             }
@@ -772,20 +840,25 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $formatter = 'Fisma.TableFormat.formatBoolean';
             }
 
-            if (isset($searchParams['formatter']) && $searchParams['formatter'] === 'date') {
-                $formatter = 'Fisma.TableFormat.formatDate';
+            if (isset($searchParams['formatter'])) {
+                if ($searchParams['formatter'] === 'date') {
+                    $formatter = 'Fisma.TableFormat.formatDate';
+                } elseif ($searchParams['formatter'] === 'datetime') {
+                    $formatter = 'Fisma.TableFormat.formatDateTime';
+                } else {
+                    $formatter = $searchParams['formatter'];
+                }
             }
-
-            if (isset($searchParams['formatter']) && $searchParams['formatter'] === 'datetime') {
-                $formatter = 'Fisma.TableFormat.formatDateTime';
-            }
-
             $column = new Fisma_Yui_DataTable_Column($label,
                                                      $sortable,
                                                      $formatter,
                                                      null,
                                                      $fieldName,
-                                                     !$visible);
+                                                     !$visible,
+                                                     'string',
+                                                     null,
+                                                     true,
+                                                     $columnWidth);
 
             $searchResultsTable->addColumn($column);
         }
@@ -856,6 +929,33 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
         }
         return $result;
+    }
+
+    /**
+     * Get the sort preference
+     *
+     * @return array ['column' => <column_name>, 'dir' => 'yui-dt-asc'|'yui-dt-desc']
+     */
+    protected function _getSortPreference()
+    {
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Fisma.Search.TablePreferences';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        $sortPreference = (!empty($storage) && !empty($storage->data)) ? $storage->data : array();
+        $sortPreference = (!empty($sortPreference[$this->_modelName])) ? $sortPreference[$this->_modelName] : array();
+        $sortPreference = (!empty($sortPreference['sort'])) ? $sortPreference['sort'] : array();
+        return $sortPreference;
+    }
+
+    protected function _getColumnOrder()
+    {
+        $userId = CurrentUser::getInstance()->id;
+        $namespace = 'Fisma.Search.TablePreferences';
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
+        $columnOrder = (!empty($storage) && !empty($storage->data)) ? $storage->data : array();
+        $columnOrder = (!empty($columnOrder[$this->_modelName])) ? $columnOrder[$this->_modelName] : array();
+        $columnOrder = (!empty($columnOrder['columnOrder'])) ? $columnOrder['columnOrder'] : array();
+        return $columnOrder;
     }
 
     /**

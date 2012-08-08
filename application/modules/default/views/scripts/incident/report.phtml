@@ -20,6 +20,7 @@
 </script>
 
 <?php
+echo $this->escape($this->searchBox(array()), 'none');
 Fisma_Format_Section::startSection("Report A Security Incident");
 ?>
 <h1><?php echo $this->escape($this->stepTitle)?></h1>

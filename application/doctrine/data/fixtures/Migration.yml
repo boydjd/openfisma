@@ -108,3 +108,19 @@ Migration:
         minorVersion: 18
         tagNumber: 0
         name: MigrateEvents
+
+    021801_search_comments:
+        majorVersion: 2
+        minorVersion: 18
+        tagNumber: 1
+        name: SearchComments
+    021801_UserEditableProfiles:
+        majorVersion: 2
+        minorVersion: 18
+        tagNumber: 1
+        name: UserEditableProfiles
+    021801_BackgroundTasks:
+        majorVersion: 2
+        minorVersion: 18
+        tagNumber: 1
+        name: BackgroundTasks

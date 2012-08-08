@@ -72,12 +72,14 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $organizationId = $this->getRequest()->getParam('oid');
 
         $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
 
         if ($id) {
             $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
         } elseif ($organizationId) {
             $organization = Doctrine::getTable('Organization')->find($organizationId);
             $id = $organization->System->id;
+            $this->getRequest()->setParam('id', $id);
         } else {
             throw new Fisma_Zend_Exception("Required parameter 'id' or 'oid' is missing.");
         }
@@ -101,90 +103,40 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         $view = Zend_Layout::getMvcInstance()->getView();
 
-        $this->view->showFindingsButton = new Fisma_Yui_Form_Button_Link(
-            'showFindings',
-            array(
-                'value' => 'Show Findings',
-                'href' => $findingSearchUrl
-            )
-        );
-        $this->view->listButton = new Fisma_Yui_Form_Button_Link(
-                'toolbarListButton',
-                array(
-                    'value' => 'Return to Search Results',
-                    'href' => $this->getBaseUrl() . '/list',
-                    'imageSrc' => '/images/arrow_return_down_left.png',
-                    'longText' => 1
-                )
-            );
+        $buttons = $this->getToolbarButtons($organization);
 
         if ($this->_acl->hasPrivilegeForClass('create', 'Organization')) {
-
-            $this->view->convertToOrgButton = new Fisma_Yui_Form_Button(
+            $buttons['convertToOrgButton'] = new Fisma_Yui_Form_Button(
                 'convertToOrg',
                 array(
-                      'label' => 'Convert To Organization',
-                      'onClickFunction' => 'Fisma.System.convertToOrgOrSystem',
-                      'onClickArgument' => array(
-                          'id' => $id,
-                          'text' => "WARNING: You are about to convert this system to an organization. "
-                                    . "After this conversion all system information (FIPS-199 and FISMA Data) will be "
-                                    . "permanently lost.\n\n"
-                                    . "Do you want to continue?",
-                          'func' => 'Fisma.System.askForSysToOrgInput'
-                    )
+                    'label' => 'Convert To Organization',
+                    'onClickFunction' => 'Fisma.System.convertToOrgOrSystem',
+                    'onClickArgument' => array(
+                        'id' => $id,
+                        'text' => "WARNING: You are about to convert this system to an organization. "
+                                . "After this conversion all system information (FIPS-199 and FISMA Data) will be "
+                                . "permanently lost.\n\n"
+                                . "Do you want to continue?",
+                        'func' => 'Fisma.System.askForSysToOrgInput'
+                    ),
+                    'imageSrc' => '/images/convert.png'
                 )
             );
-
         }
 
-        if (!empty($fromSearchParams)) {
-            $previousButton = new Fisma_Yui_Form_Button(
-                'PreviousButton',
-                 array(
-                       'label' => 'Previous',
-                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
-                       'imageSrc' => $view->serverUrl('/images/control_stop_left.png'),
-                       'onClickArgument' => array(
-                           'url' => $this->getBaseUrl() . '/view/id/',
-                           'id' => $id,
-                           'action' => 'previous',
-                           'modelName' => $this->_modelName
-                    )
-                )
-
-            );
-
-            if (isset($fromSearchParams['first']) && $fromSearchParams['first'] == 1) {
-                $previousButton->readOnly = true;
-            }
-
-            $this->view->previousButton = $previousButton;
-
-            $nextButton = new Fisma_Yui_Form_Button(
-                'NextButton',
-                 array(
-                       'label' => 'Next',
-                       'onClickFunction' => 'Fisma.Util.getNextPrevious',
-                       'imageSrc' => $view->serverUrl('/images/control_stop_right.png'),
-                       'onClickArgument' => array(
-                           'url' => $this->getBaseUrl() . '/view/id/',
-                           'id' => $id,
-                           'action' => 'next',
-                           'modelName' => $this->_modelName
-                    )
+        if ($this->_acl->hasPrivilegeForClass('read', 'Finding')) {
+            $buttons['showFindings'] = new Fisma_Yui_Form_Button_Link(
+                'showFindings',
+                array(
+                    'value' => 'Show Findings',
+                    'href' => $findingSearchUrl,
+                    'imageSrc' => '/images/application_view_columns.png'
                 )
             );
-
-            if (isset($fromSearchParams['last']) && $fromSearchParams['last'] == 1) {
-                $nextButton->readOnly = true;
-            }
-
-            $this->view->nextButton = $nextButton;
-
-            $this->view->fromSearchParams = $this->_helper->makeUrlParams($fromSearchParams);
         }
 
+        $this->view->toolbarButtons = $buttons;
+        $this->view->searchButtons = $this->getSearchButtons($organization, $fromSearchParams);
         $this->view->tabView = $tabView;
     }
 
@@ -1082,8 +1034,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $resourceName = $this->getAclResourceName();
         $hasReadPrivilege = $this->_acl->hasPrivilegeForClass('read', $resourceName);
 
-        if ($hasReadPrivilege && $this->getRequest()->getActionName() !== 'aggregation') {
-            $buttons['aggregation'] = new Fisma_Yui_Form_Button_Link(
+        if ($isList && $hasReadPrivilege) {
+            $treeViewButton = new Fisma_Yui_Form_Button_Link(
                 'toolbarAggregationButton',
                 array(
                     'value' => 'Tree View',
@@ -1091,6 +1043,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                     'href' => $this->getBaseUrl() . '/aggregation'
                 )
             );
+            array_unshift($buttons, $treeViewButton);
         }
 
         return $buttons;

@@ -17,7 +17,7 @@
  * @fileoverview Handle a click on the checkbox tree. Clicking a nested node will select all nodes inside of it,
  *               unless all of the subnodes are already selected, in which case it will deselect all subnodes.
  *               Holding down the option key while clicking disables this behavior.
- *               
+ *
  *               The checkbox tree DOM looks like this:
  *               <li><input type="checkbox" nestedLevel="0"><label></li>
  *                 <li><input type="checkbox" nestedLevel="1"><label></li>
@@ -37,8 +37,8 @@ Fisma.CheckboxTree = {
      * @param event Provided by YUI
      */
     handleClick : function(clickedBox, event) {
-        // If the option key is held down, then skip all of this logic.
-        if (event.altKey) {
+        // If the option key is held down or the list is flat, then skip all of this logic.
+        if (event.altKey || $(clickedBox).parents('li').hasClass('flat')) {
             return;
         }
 

@@ -22,8 +22,3 @@ elements.description.options.label = "Description"
 elements.description.options.attribs.class = "plaintext"
 elements.description.options.attribs.style = "height: 100px;"
 displayGroups.securitycontrolcatalog.elements.description = "description"
-
-elements.save.type = "Form_Button_Submit"
-elements.save.options.label = "Save Changes"
-elements.save.options.imageSrc = "/images/ok.png"
-displayGroups.securitycontrolcatalog.elements.save = "save"

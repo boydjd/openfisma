@@ -64,23 +64,16 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => true,
                 'type' => 'integer'
             ),
-            'reportTs' => array(
+            'incidentDate' => array(
                 'initiallyVisible' => true,
-                'label' => 'Created',
+                'label' => 'Discovered',
                 'sortable' => true,
-                'type' => 'datetime',
-                'formatter' => 'datetime'
+                'type' => 'date',
+                'formatter' => 'date'
             ),
-            'modifiedTs' => array(
+            'reportTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Updated',
-                'sortable' => true,
-                'type' => 'datetime',
-                'formatter' => 'datetime'
-            ),
-            'closedTs' => array(
-                'initiallyVisible' => false,
-                'label' => 'Resolved',
+                'label' => 'Reported',
                 'sortable' => true,
                 'type' => 'datetime',
                 'formatter' => 'datetime'
@@ -91,6 +84,34 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'label' => 'Status',
                 'sortable' => true,
                 'type' => 'enum'
+            ),
+            'pocUser' => array(
+                'initiallyVisible' => false,
+                'label' => 'Point Of Contact',
+                'join' => array(
+                    'model' => 'User',
+                    'relation' => 'PointOfContact',
+                    'field' => 'displayName'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'organization' => array(
+                'initiallyVisible' => true,
+                'label' => 'Organization/System',
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'Organization',
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'additionalInfo' => array(
+                'initiallyVisible' => true,
+                'label' => 'Description',
+                'sortable' => true,
+                'type' => 'text'
             ),
             'resolution' => array(
                 'enumValues' => $this->getEnumValues('resolution'),
@@ -121,18 +142,12 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => true,
                 'type' => 'text'
                 ),
-            'incidentDate' => array(
+            'modifiedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Discovered',
+                'label' => 'Updated',
                 'sortable' => true,
-                'type' => 'date',
-                'formatter' => 'date'
-            ),
-            'additionalInfo' => array(
-                'initiallyVisible' => true,
-                'label' => 'Description',
-                'sortable' => true,
-                'type' => 'text'
+                'type' => 'datetime',
+                'formatter' => 'datetime'
             ),
             'piiInvolved' => array(
                 'enumValues' => $this->getEnumValues('piiInvolved'),
@@ -140,28 +155,6 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'label' => 'PII Involved',
                 'sortable' => true,
                 'type' => 'enum'
-            ),
-            'organization' => array(
-                'initiallyVisible' => true,
-                'label' => 'Organization/System',
-                'join' => array(
-                    'model' => 'Organization',
-                    'relation' => 'Organization',
-                    'field' => 'nickname'
-                ),
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'pocUser' => array(
-                'initiallyVisible' => false,
-                'label' => 'Point Of Contact',
-                'join' => array(
-                    'model' => 'User',
-                    'relation' => 'PointOfContact',
-                    'field' => 'displayName'
-                ),
-                'sortable' => true,
-                'type' => 'text'
             ),
             'hostIp' => array(
                 'initiallyVisible' => false,
@@ -187,6 +180,13 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'label' => 'Source IP',
                 'sortable' => true,
                 'type' => 'text'
+            ),
+            'closedTs' => array(
+                'initiallyVisible' => false,
+                'label' => 'Resolved',
+                'sortable' => true,
+                'type' => 'datetime',
+                'formatter' => 'datetime'
             )
         );
     }

@@ -33,13 +33,6 @@ class Fisma_Search_Engine
     private $_highlightingEnabled = true;
 
     /**
-     * Search results are limited to this number of characters per field
-     *
-     * @var int
-     */
-    private $_maxRowLength = 100;
-
-    /**
      * Client object is used for communicating with Solr server
      *
      * @var SolrClient
@@ -279,6 +272,7 @@ class Fisma_Search_Engine
         if ($this->getHighlightingEnabled()) {
 
             $query->setHighlight(true)
+                  ->setHighlightFragsize(0)
                   ->setHighlightSimplePre('***')
                   ->setHighlightSimplePost('***')
                   ->setHighlightRequireFieldMatch(true);
@@ -778,24 +772,7 @@ class Fisma_Search_Engine
 
                 foreach ($document as $columnName => $columnValue) {
                     $newColumnName = $this->_removeSuffixFromColumnName($columnName);
-
-                    $maxRowLength = $this->getMaxRowLength();
-
-                    if ($maxRowLength && strlen($columnValue[0]) > $maxRowLength) {
-                        $shortValue = substr($columnValue[0], 0, $maxRowLength);
-
-                        // Trim after the last white space (so as not to break in the middle of a word)
-                        $spacePosition = strrpos($shortValue, ' ');
-
-                        if ($spacePosition) {
-                            $shortValue = substr($shortValue, 0, $spacePosition);
-                        }
-
-                        $row[$newColumnName] = $shortValue . '...';
-                    } else {
-                        // Solr has a weird format. Each field is an array with length 1, so we take index 0
-                        $row[$newColumnName] = $columnValue[0];
-                    }
+                    $row[$newColumnName] = $columnValue[0];
                 }
 
                 // Convert any dates or datetimes from Solr's UTC format back to native format
@@ -951,28 +928,6 @@ class Fisma_Search_Engine
         $specialChars = '+-!(){}[]^"~*?:\&|';
 
         return addcslashes($parameter, $specialChars);
-    }
-
-    /**
-     * Get Max Row Length
-     *
-     * @return int
-     */
-    public function getMaxRowLength()
-    {
-        return $this->_maxRowLength;
-    }
-
-    /**
-     * Set Max Row Length
-     *
-     * Set to null to turn off row length limit
-     *
-     * @param int $length
-     */
-    public function setMaxRowLength($length)
-    {
-        $this->_maxRowLength = $length;
     }
 
     /**

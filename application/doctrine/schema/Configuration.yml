@@ -78,6 +78,7 @@ Configuration:
             unsigned: true
             comment: Automated account unlock duration (in minutes)
             default: 0
+        backgroundTasks: array
         contact_name:
             type: string(255)
             notblank: true
@@ -213,3 +214,7 @@ Configuration:
             notblank: true
             comment: The maximum size of files that users can upload to the application, this setting applies to all modules.
             default: 20M
+        user_editable_profiles:
+            type: boolean
+            notnull: true
+            default: true

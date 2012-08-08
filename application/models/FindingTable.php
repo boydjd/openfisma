@@ -48,6 +48,98 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => true,
                 'type' => 'integer'
             ),
+            'legacyFindingKey' => array(
+                'initiallyVisible' => false,
+                'label' => 'Legacy Finding Key',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'discoveredDate' => array(
+                'initiallyVisible' => true,
+                'label' => 'Discovered',
+                'sortable' => true,
+                'type' => 'date',
+                'formatter' => 'date'
+            ),
+            'createdTs' => array(
+                'initiallyVisible' => false,
+                'label' => 'Created',
+                'sortable' => true,
+                'type' => 'datetime',
+                'formatter' => 'date'
+            ),
+            'createdByUser' => array(
+                'initiallyVisible' => false,
+                'label' => 'Creator',
+                'join' => array(
+                    'model' => 'User',
+                    'relation' => 'CreatedBy',
+                    'field' => 'displayName'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'denormalizedStatus' => array(
+                'enumValues' => Finding::getAllStatuses(),
+                'initiallyVisible' => true,
+                'label' => 'Status',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'residualRisk' => array(
+                'enumValues' => $this->getEnumValues('residualRisk'),
+                'initiallyVisible' =>
+                    Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? true : false,
+                'label' => 'Risk',
+                'sortable' => true,
+                'type' => 'enum',
+                'hidden' => Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? false : true
+            ),
+            'threatLevel' => array(
+                'enumValues' => $this->getEnumValues('threatLevel'),
+                'initiallyVisible' =>
+                    Fisma::configuration()->getConfig('threat_type') == 'threat_level' ? true : false,
+                'label' => 'Threat',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
+            'threat' => array(
+                'initiallyVisible' => false,
+                'label' => 'Threat Description',
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'pocUser' => array(
+                'initiallyVisible' => true,
+                'label' => 'Point Of Contact',
+                'join' => array(
+                    'model' => 'User',
+                    'relation' => 'PointOfContact',
+                    'field' => 'displayName'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'pocOrg' => array(
+                'initiallyVisible' => false,
+                'extraCriteria' => array(
+                    'organizationSubtree' => array(
+                        'idField' => 'pocOrgId',
+                        'idProvider' => 'OrganizationTable::getOrganizationSubtreeIds',
+                        'label' => 'Organizational Unit',
+                        'renderer' => 'text',
+                        'query' => 'oneInput',
+                    )
+                ),
+                'label' => 'POC Organization',
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'PointOfContact.ReportingOrganization',
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
             'organization' => array(
                 'initiallyVisible' => true,
                 'extraCriteria' => array(
@@ -87,53 +179,16 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => true,
                 'type' => 'text'
             ),
-            'createdTs' => array(
+            'securityControl' => array(
                 'initiallyVisible' => false,
-                'label' => 'Created',
-                'sortable' => true,
-                'type' => 'datetime',
-                'formatter' => 'date'
-            ),
-            'discoveredDate' => array(
-                'initiallyVisible' => true,
-                'label' => 'Discovered',
-                'sortable' => true,
-                'type' => 'date',
-                'formatter' => 'date'
-            ),
-            'nextDueDate' => array(
-                'initiallyVisible' => true,
-                'label' => 'Next Due Date',
-                'sortable' => true,
-                'type' => 'date',
-                'formatter' => 'date'
-            ),
-            'closedTs' => array(
-                'initiallyVisible' => false,
-                'label' => 'Resolved',
-                'sortable' => true,
-                'type' => 'datetime',
-                'formatter' => 'date'
-            ),
-            'legacyFindingKey' => array(
-                'initiallyVisible' => false,
-                'label' => 'Legacy Finding Key',
+                'label' => 'Security Control',
+                'join' => array(
+                    'model' => 'SecurityControl',
+                    'relation' => 'SecurityControl',
+                    'field' => 'code'
+                ),
                 'sortable' => true,
                 'type' => 'text'
-            ),
-            'type' => array(
-                'enumValues' => $this->getEnumValues('type'),
-                'initiallyVisible' => true,
-                'label' => 'Type',
-                'sortable' => true,
-                'type' => 'enum'
-            ),
-            'denormalizedStatus' => array(
-                'enumValues' => Finding::getAllStatuses(),
-                'initiallyVisible' => true,
-                'label' => 'Status',
-                'sortable' => true,
-                'type' => 'enum'
             ),
             'description' => array(
                 'initiallyVisible' => true,
@@ -147,8 +202,22 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => false,
                 'type' => 'text'
             ),
+            'jsonComments' => array(
+                'initiallyVisible' => true,
+                'label' => 'Comments',
+                'sortable' => false,
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.formatComments'
+            ),
+            'type' => array(
+                'enumValues' => $this->getEnumValues('type'),
+                'initiallyVisible' => true,
+                'label' => 'Type',
+                'sortable' => true,
+                'type' => 'enum'
+            ),
             'mitigationStrategy' => array(
-                'initiallyVisible' => false,
+                'initiallyVisible' => true,
                 'label' => 'Mitigation Strategy',
                 'sortable' => false,
                 'type' => 'text'
@@ -167,93 +236,34 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'date',
                 'formatter' => 'date'
             ),
-            'threatLevel' => array(
-                'enumValues' => $this->getEnumValues('threatLevel'),
-                'initiallyVisible' =>
-                    Fisma::configuration()->getConfig('threat_type') == 'threat_level' ? true : false,
-                'label' => 'Threat Level',
+            'nextDueDate' => array(
+                'initiallyVisible' => true,
+                'label' => 'Next Due Date',
                 'sortable' => true,
-                'type' => 'enum'
-            ),
-            'threat' => array(
-                'initiallyVisible' => false,
-                'label' => 'Threat Description',
-                'sortable' => true,
-                'type' => 'text'
+                'type' => 'date',
+                'formatter' => 'date'
             ),
             'countermeasuresEffectiveness' => array(
                 'enumValues' => $this->getEnumValues('countermeasuresEffectiveness'),
                 'initiallyVisible' => false,
                 'label' => 'Countermeasures Effectiveness',
                 'sortable' => true,
-                'type' => 'enum'
+                'type' => 'enum',
+                'hidden' => Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? false : true
             ),
             'countermeasures' => array(
                 'initiallyVisible' => false,
                 'label' => 'Countermeasures Description',
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'text',
+                'hidden' => Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? false : true
             ),
-            'residualRisk' => array(
-                'enumValues' => $this->getEnumValues('residualRisk'),
-                'initiallyVisible' =>
-                    Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? true : false,
-                'label' => 'Residual Risk',
-                'sortable' => true,
-                'type' => 'enum'
-            ),
-            'securityControl' => array(
-                'initiallyVisible' => true,
-                'label' => 'Security Control',
-                'join' => array(
-                    'model' => 'SecurityControl',
-                    'relation' => 'SecurityControl',
-                    'field' => 'code'
-                ),
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'createdByUser' => array(
+            'closedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Reporter',
-                'join' => array(
-                    'model' => 'User',
-                    'relation' => 'CreatedBy',
-                    'field' => 'displayName'
-                ),
+                'label' => 'Resolved',
                 'sortable' => true,
-                'type' => 'text'
-            ),
-            'pocUser' => array(
-                'initiallyVisible' => false,
-                'label' => 'Point Of Contact',
-                'join' => array(
-                    'model' => 'User',
-                    'relation' => 'PointOfContact',
-                    'field' => 'displayName'
-                ),
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'pocOrg' => array(
-                'initiallyVisible' => false,
-                'extraCriteria' => array(
-                    'organizationSubtree' => array(
-                        'idField' => 'pocOrgId',
-                        'idProvider' => 'OrganizationTable::getOrganizationSubtreeIds',
-                        'label' => 'Organizational Unit',
-                        'renderer' => 'text',
-                        'query' => 'oneInput',
-                    )
-                ),
-                'label' => 'POC Organization',
-                'join' => array(
-                    'model' => 'Organization',
-                    'relation' => 'PointOfContact.ReportingOrganization',
-                    'field' => 'nickname'
-                ),
-                'sortable' => true,
-                'type' => 'text'
+                'type' => 'datetime',
+                'formatter' => 'date'
             ),
             'deleted_at' => array(
                 'hidden' => true,

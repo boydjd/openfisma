@@ -540,23 +540,25 @@ Fisma.Search = (function() {
                 columnToggleButton.set("title", checked ? checkedTitle : uncheckedTitle);
             }
 
-            var saveDiv = document.createElement('div');
+            var clearDiv = document.createElement('div');
 
             // Create the Save button
-            var saveButton = new YAHOO.widget.Button({
+            var clearButton = new YAHOO.widget.Button({
                 type : "button",
-                label : "Save Column Preferences",
-                container : saveDiv,
+                label : "Reset Preferences",
+                container : clearDiv,
                 onclick : {
-                    fn : Fisma.Search.persistColumnPreferences
+                    fn : Fisma.Search.clearColumnPreferences
                 }
             });
+            clearButton._button.style.background = 'url("/images/reload.png") 1em 50% no-repeat';
+            clearButton._button.style.paddingLeft = '3em';
 
             if (!Fisma.Search.columnPreferencesSpinner) {
-                Fisma.Search.columnPreferencesSpinner = new Fisma.Spinner(saveDiv);
+                Fisma.Search.columnPreferencesSpinner = new Fisma.Spinner(clearDiv);
             }
 
-            container.appendChild(saveDiv);
+            container.appendChild(clearDiv);
         },
 
         /**
@@ -573,20 +575,20 @@ Fisma.Search = (function() {
         },
 
         /**
-         * Persist the column cookie into the user's profile
+         * Reset the column preferences to default
          */
-        persistColumnPreferences : function () {
+        clearColumnPreferences : function () {
 
             var modelName = document.getElementById('modelName').value,
                 prefs = new Fisma.Search.TablePreferences(modelName);
             Fisma.Search.columnPreferencesSpinner.show();
 
-            prefs.persist({
+            prefs.clear({
                 success : function (response, object) {
                     Fisma.Search.columnPreferencesSpinner.hide();
 
                     if (object.status === "ok") {
-                        Fisma.Util.message("Your column preferences have been saved", "notice", true);
+                        history.go(0);
                     } else {
                         Fisma.Util.message(object.status, "warning", true);
                     }

@@ -75,6 +75,14 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $form->removeElement($field);
         }
 
+        // make read-only if they don't have privieges to modify the profile
+        if (!Fisma::configuration()->getConfig('user_editable_profiles')) {
+            $form->removeElement('save');
+            foreach ($form->getElements() as $elem) {
+                $elem->setAttrib('readonly', true);
+            }
+        }
+
         return $form;
     }
 
@@ -455,6 +463,25 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $this->_redirect('/user/password');
         }
         $this->view->form    =  $form;
+
+        $buttons = array();
+        $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+            'saveChanges',
+            array(
+                'label' => 'Save',
+                'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                'imageSrc' => '/images/ok.png'
+            )
+        );
+        $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+            'discardChanges',
+            array(
+                'value' => 'Discard',
+                'imageSrc' => '/images/no_entry.png',
+                'href' => '/user/password'
+            )
+        );
+        $this->view->toolbarButtons = $buttons;
     }
 
     /**
@@ -525,7 +552,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     public function acceptRobAction()
     {
-        $this->_helper->layout->setLayout('notice');
+        $this->_helper->layout->setLayout('login');
 
         $post   = $this->_request->getPost();
         if (isset($post['accept'])) {
@@ -614,25 +641,77 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $subForm->removeDecorator('DtDdWrapper');
         $subForm->removeDecorator('HtmlTag');
 
+        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery(
+            CurrentUser::getAttribute('id'),
+            'Fisma.UserAccess'
+        )->fetchOne();
+        $storedData = (!empty($storage) && !empty($storage->data)) ? $storage->data : array();
+
+        $filterSelect = new Zend_Form_Element_Select("filter");
+        $filterArrays = array(
+            'all' => '(show all)',
+            'allOrg' => '(show organizations only)',
+            'allSys' => '(show systems only)'
+        );
+        $organizationTypes = Doctrine_Query::create()
+            ->from('OrganizationType ot')
+            ->where('ot.nickname <> ?', 'system')
+            ->execute();
+        $systemTypes = Doctrine_Query::create()
+            ->from('SystemType st')
+            ->execute();
+        foreach ($organizationTypes as $ot) {
+            $filterArrays[$ot->nickname] = $ot->name;
+        }
+        foreach ($systemTypes as $st) {
+            $filterArrays[$st->nickname] = $st->name;
+        }
+        $filterSelect->setMultiOptions($filterArrays);
+        $filterSelect->setLabel('Filter');
+        $filterSelect->setOptions(array('onChange' => 'Fisma.User.treeFilter(this)'));
+        $selectedFilter = (!empty($storedData['filterBy'])) ? $storedData['filterBy'] : null;
+        $filterSelect->setValue($selectedFilter);
+
+        $subForm->addElement($filterSelect);
+
+        $sortSelect = new Zend_Form_Element_Select("sort");
+        $sortSelect->setMultiOptions(array(
+            'treePos' => 'Organization Hierarchy',
+            'nickname' => 'Nick name (ABC order)',
+            'fullname' => 'Full name (ABC order)'
+        ));
+        $sortSelect->setLabel('Sort by');
+        $sortSelect->setOptions(array('onChange' => 'Fisma.User.treeSort(this)'));
+        $selectedSort = (!empty($storedData['sortBy'])) ? $storedData['sortBy'] : null;
+        $sortSelect->setValue($selectedSort);
+        $subForm->addElement($sortSelect);
+
         $organizations = new Fisma_Zend_Form_Element_CheckboxTree("organizations");
         $organizations->clearDecorators();
         $organizations->setLabel('Organizations & Information Systems');
 
         $organizationTreeObject = Doctrine::getTable('Organization')->getTree();
         $q = Doctrine_Query::create()
-                ->select('o.id, o.name, o.level')
-                ->from('Organization o');
+                ->select('o.id, o.name, o.nickname, o.level, ot.nickname as otype, st.nickname as stype')
+                ->from('Organization o')
+                ->leftJoin('o.OrganizationType ot')
+                ->leftJoin('o.System s')
+                ->leftJoin('s.SystemType st');
         $organizationTreeObject->setBaseQuery($q);
         $organizationTree = $organizationTreeObject->fetchTree();
 
         if (!empty($organizationTree)) {
             foreach ($organizationTree as $organization) {
-                $organizations->addCheckbox(
-                    $organization['id'],
-                    $organization['nickname'] . ' - ' . $organization['name'],
-                    $organization['level'],
-                    $roleId
-                );
+                $organizations->addCheckbox(array(
+                    'name' => $organization['id'],
+                    'nickname' => $organization['nickname'],
+                    'fullname' => $organization['name'],
+                    'level' => $organization['level'],
+                    'group' => $roleId,
+                    'type' => ($organization['otype'] !== 'system') ?
+                              ("org." . $organization['otype']) :
+                              ("sys." . $organization['stype'])
+                ));
             }
         }
 
@@ -1102,6 +1181,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $userId = $this->_request->getParam('id');
         $user = Doctrine::getTable('User')->find($userId);
 
+        // Restrict reportingOrganization to single-selection mode
+        $form->getElement('reportingOrganizationId')->setOptions(array('multiple' => null));
+
         if ('database' == Fisma::configuration()->getConfig('auth_type')) {
             $form->removeElement('lookup');
             $form->removeElement('separator');
@@ -1130,7 +1212,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         // Populate <select> for responsible organization
         $organizations = Doctrine::getTable('Organization')->getOrganizationSelectQuery(true)->execute();
-        $selectArray = array('' => '') + $this->view->systemSelect($organizations);
+        $selectArray = $this->view->systemSelect($organizations);
         $form->getElement('reportingOrganizationId')->addMultiOptions($selectArray);
 
         return $form;
@@ -1210,14 +1292,14 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
                 'saveChanges',
                 array(
-                    'label' => 'Save Changes',
+                    'label' => 'Save',
                     'imageSrc' => '/images/ok.png'
                 )
             );
             $buttons['discard'] =  new Fisma_Yui_Form_Button_Link(
                 'discardChanges',
                 array(
-                    'value' => 'Discard Changes',
+                    'value' => 'Discard',
                     'imageSrc' => '/images/no_entry.png',
                     'href' => "/user/notification"
                 )
@@ -1248,6 +1330,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
         }
 
+        $buttons = array_merge($buttons, parent::getToolbarButtons($record));
+
         if (!empty($record) && $this->_acl->hasPrivilegeForObject('delete', $record)) {
             if ($this->getRequest()->getActionName() === 'view') {
                 $fromSearchParams = $this->_getFromSearchParams($this->_request);
@@ -1255,7 +1339,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $buttons['delete'] = new Fisma_Yui_Form_Button(
                     'deleteButton',
                     array(
-                        'label' => 'Delete User',
+                        'label' => 'Delete',
                         'onClickFunction' => 'Fisma.User.deleteUser',
                         'onClickArgument' => array(
                             'link'  => "/user/delete$fromSearchUrl",
@@ -1266,8 +1350,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 );
             }
         }
-
-        $buttons = array_merge($buttons, parent::getToolbarButtons($record));
 
         return $buttons;
     }
@@ -1693,5 +1775,24 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->setDefault('homeUrl', $currentHomeUrl);
 
         $this->view->form = $form;
+
+        $buttons = array();
+        $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+            'saveChanges',
+            array(
+                'label' => 'Save',
+                'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                'imageSrc' => '/images/ok.png'
+            )
+        );
+        $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+            'discardChanges',
+            array(
+                'value' => 'Discard',
+                'imageSrc' => '/images/no_entry.png',
+                'href' => '/user/password'
+            )
+        );
+        $this->view->toolbarButtons = $buttons;
     }
 }

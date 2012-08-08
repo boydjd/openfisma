@@ -13,11 +13,8 @@ $disabled = ($editMode) ? "" : "readonly";
 <input type='hidden' name='forceSubmit' value='false' />
 
 <?php if ($editMode): ?>
-<div class='buttonBar'>
-    <?php echo $this->escape($this->saveButton, 'none'); ?>
-    <?php echo $this->escape($this->cancelButton, 'none'); ?>
-    <img style='display:none' src='/images/loading_bar.gif' />
-</div>
+<?php echo $this->escape($this->searchBox(array($this->saveButton, $this->cancelButton)), 'none'); ?>
+<img style='display:none' src='/images/loading_bar.gif' />
 <?php endif; ?>
 
 <?php Fisma_Format_Section::startSection('Finding Workflow'); ?>

@@ -15,7 +15,7 @@ if (!empty($this->requirements)) {
 }
 ?>
 
-<div class="form_box">
+<div class="form_box" id="userForm">
     <form method="post" action="/User/user/id/<?php echo $this->escape($this->id . $this->fromSearchUrl); ?>">
     <?php
         echo $this->escape($this->form, 'none');
@@ -26,6 +26,6 @@ if (!empty($this->requirements)) {
 <?php
 Fisma_Format_Section::stopSection();
 $opts = array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0);
-echo $this->escape($this->partial('yui/roles.phtml', $opts), 'none');
+echo $this->partial('yui/roles.phtml', $opts);
 unset($opts);
 ?>

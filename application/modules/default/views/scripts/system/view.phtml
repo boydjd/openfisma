@@ -1,47 +1,6 @@
-<script type="text/javascript">
-function discardChanges(event) {
-    window.location.reload();
-}
-</script>
-
+<?php echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none'); ?>
 <form enctype="multipart/form-data"
       action="/system/edit/id/<?php echo $this->escape($this->organization->id . $this->fromSearchParams, 'none') ?>"
       method="post">
-    <div class="searchBox">
-        <div class="left">
-            <?php
-                if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
-                    $discardButton = new Fisma_Yui_Form_Button('discardChanges',
-                                                array('label' => 'Discard Changes',
-                                                      'imageSrc' => '/images/no_entry.png',
-                                                      'onClickFunction' => 'discardChanges'));
-                    echo $this->escape($discardButton, 'none');
-
-                    $submitButton = new Fisma_Yui_Form_Button_Submit('saveChanges',
-                                                array('label' => 'Save Changes', 'imageSrc' => '/images/ok.png'));
-                    echo $this->escape($submitButton, 'none');
-
-                    echo $this->escape($this->showFindingsButton, 'none');
-
-                    echo $this->escape($this->convertToOrgButton, 'none');
-                }
-            ?>
-        </div>
-
-        <div class="right">
-            <?php
-                if ($this->acl()->hasPrivilegeForClass('read', 'Organization')) {
-                    echo $this->escape($this->listButton, 'none');
-
-                    echo $this->escape($this->previousButton, 'none');
-
-                    echo $this->escape($this->nextButton, 'none');
-                }
-            ?>
-        </div>
-
-        <div class="clear"></div>
-    </div>
-
     <?php echo $this->escape($this->tabView, 'none'); ?>
 </form>

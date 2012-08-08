@@ -107,6 +107,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->generalConfig = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -211,6 +212,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->form = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -374,6 +376,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->csrfToken = $this->_helper->csrf->getToken();
         $this->view->modules = $modules;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -496,6 +499,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->form = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -624,6 +628,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->form = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -656,6 +661,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->form = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -671,7 +677,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             'testConfiguration',
             array(
                 'label' => 'Test Search Configuration',
-                'onClickFunction' => 'Fisma.Search.testConfiguration'
+                'onClickFunction' => 'Fisma.Search.testConfiguration',
+                'imageSrc' => '/images/reload.png'
             )
         );
 
@@ -707,5 +714,158 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         return $transport;
+    }
+
+    public function getToolbarButtons($record = null, $fromSearchParams = null)
+    {
+        $buttons = array();
+        $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+            'saveChanges',
+            array(
+                'label' => 'Save',
+                'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                'imageSrc' => '/images/ok.png'
+            )
+        );
+        $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+            'discardChanges',
+            array(
+                'value' => 'Discard',
+                'imageSrc' => '/images/no_entry.png',
+                'href' => '/config/' . $this->getRequest()->getActionName()
+            )
+        );
+
+        if ($this->getRequest()->getActionName() == 'email') {
+            $buttons['testEmail'] = new Fisma_Yui_Form_Button(
+                'testConfiguration',
+                array(
+                    'label' => 'Test Configuration',
+                    'onClickFunction' => 'Fisma.Email.showRecipientDialog',
+                    'imageSrc' => '/images/reload.png'
+                )
+            );
+        }
+        return $buttons;
+    }
+
+    /**
+     * Defaults for available background tasks.
+     */
+    protected $_tasks = array(
+        'backup' => array(
+            'name' => 'backup.php',
+            'description' => 'Backup the database and uploaded documents',
+            'defaultEnabled' => true,
+            'defaultNumber' => 1,
+            'defaultUnit' => 'day',
+            'defaultTime' => '23:00:00',
+            'defaultArguments' => '-d /path/to/backup/dir'
+        ),
+        'lockUser' => array(
+            'name' => 'lock-user.php',
+            'description' => 'Check users\' locking/unlocking conditions',
+            'defaultEnabled' => true,
+            'defaultNumber' => 1,
+            'defaultUnit' => 'minute',
+        ),
+        'notify' => array(
+            'name' => 'notify.php',
+            'description' => 'Create notification emails',
+            'defaultEnabled' => true,
+            'defaultNumber' => 1,
+            'defaultUnit' => 'minute'
+        ),
+        'sendMail' => array(
+            'name' => 'send-mail.php',
+            'description' => 'Flush the mail queue',
+            'defaultEnabled' => true,
+            'defaultNumber' => 1,
+            'defaultUnit' => 'minute'
+        ),
+        //'refreshUser' => array(
+        //    'name' => 'refresh-user.php',
+        //    'description' => 'Refresh user information from LDAP',
+        //    'defaultEnabled' => true,
+        //    'defaultNumber' => 30,
+        //    'defaultUnit' => 'day',
+        //    'defaultTime' => '03:00:00'
+        //),
+        'rebuildIndex' => array(
+            'name' => 'rebuild-index.php',
+            'description' => 'Refresh the indexing cache from database',
+            'defaultEnabled' => false,
+            'defaultNumber' => 30,
+            'defaultUnit' => 'day',
+            'defaultTime' => '00:00:00',
+            'defaultArguments' => '--all'
+        ),
+        'optimizeIndex' => array(
+            'name' => 'optimize-index.php',
+            'description' => 'Optimize search indices to increase performance',
+            'defaultEnabled' => true,
+            'defaultNumber' => 7,
+            'defaultUnit' => 'day',
+            'defaultTime' => '01:00:00'
+        )
+    );
+
+    /**
+     * Background Task Configuration
+     *
+     * @return void
+     * @GETAllowed
+     */
+    public function backgroundTasksAction()
+    {
+        /*
+         * Get current settings.  We don't use the Fisma_Configuration API because we don't want the value cached,
+         * the web application and the CLI both have to read/write the value.
+         */
+        $configObj = Doctrine::getTable('Configuration')
+            ->createQuery()
+            ->select('backgroundTasks')
+            ->fetchOne();
+        $config = $configObj->backgroundTasks;
+        if (is_null($config)) {
+            $config = array();
+        }
+        // remove obsolete values if they exist (perhaps from a previous version of the application)
+        $config = array_intersect_key($config, $this->_tasks);
+        // add in missing defaults
+        foreach ($this->_tasks as $key => $task) {
+            if (!isset($config[$key])) {
+                $config[$key]['enabled'] = $task['defaultEnabled'];
+                $config[$key]['number'] = $task['defaultNumber'];
+                $config[$key]['unit'] = $task['defaultUnit'];
+                if (isset($task['defaultTime'])) {
+                    $config[$key]['time'] = $task['defaultTime'];
+                }
+                if (isset($task['defaultArguments'])) {
+                    $config[$key]['arguments'] = $task['defaultArguments'];
+                }
+            }
+        }
+
+        if ($this->getRequest()->isPost()) {
+            $post = $this->getRequest()->getPost();
+            // checkboxes are lumped together
+            $enabled = $post['enabled'];
+            unset($post['enabled']);
+            foreach ($post as $key => &$task) {
+                $task['enabled'] = in_array($key, $enabled);
+            }
+            // TODO: Validate
+            $config = array_replace_recursive($config, $post);
+            // strip out non-task form fields
+            $config = array_intersect_key($config, $this->_tasks);
+            $configObj->backgroundTasks = $config;
+            $configObj->save();
+            $this->view->priorityMessenger("Background task settings saved successfully.", 'success');
+        }
+
+        $this->view->taskDefs = $this->_tasks;
+        $this->view->taskConfigs = $config;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 }

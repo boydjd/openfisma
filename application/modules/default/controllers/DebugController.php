@@ -118,7 +118,8 @@ class DebugController extends Zend_Controller_Action
             'invalidateCache',
             array(
                 'value' => "Invalidate {$this->view->cacheType} Cache",
-                'href' => "/debug/invalidate-apc-cache/type/$cacheType"
+                'href' => "/debug/invalidate-apc-cache/type/$cacheType",
+                'imageSrc' => '/images/reload.png'
             )
         );
         $this->view->invalidateCacheButton = $invalidateCacheButton;

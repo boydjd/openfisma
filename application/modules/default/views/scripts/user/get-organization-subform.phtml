@@ -1,2 +1,9 @@
 <?php
 echo $this->escape($this->subForm, 'none');
+?>
+<script>
+$(function(){
+    $('fieldset #filter').change();
+    $('fieldset #sort').change();
+});
+</script>

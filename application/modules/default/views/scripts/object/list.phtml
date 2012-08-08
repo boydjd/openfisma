@@ -163,11 +163,13 @@
                                    + "{RowsPerPageInputBox}"
                     }
                 ),
-                generateRequest : requestConstructor
+                generateRequest : requestConstructor,
+                draggableColumns : true,
+                height : ($(window).height() - 350) + 'px'
             };
 
             // The actual DataTable instance
-            var dataTable = new YAHOO.widget.DataTable(
+            var dataTable = new YAHOO.widget.ScrollingDataTable(
                 "<?php echo $this->escape($this->containerId, 'javascript'); ?>",
                 columnDefs,
                 dataSource,
@@ -323,6 +325,19 @@
             dataTable.subscribe("columnSortEvent", function(event, prefs) {
                 prefs.setSort(event.column.key, event.dir);
             }, tablePrefs);
+
+            dataTable.subscribe("columnResizeEvent", function(event, prefs) {
+                prefs.persist();
+            }, tablePrefs);
+
+            dataTable.subscribe("columnReorderEvent", function(event, prefs) {
+                prefs.persist();
+            }, tablePrefs);
+
+            $(window).resize(function(event){
+                dataTable.set('height', ($(window).height() - 350) + 'px');
+                dataTable.render();
+            });
 
             Fisma.Search.initializeSearchColumnsPanel(Dom.get("searchColumnsButtons"));
         });

@@ -3,26 +3,8 @@
       method="post"
       id="finding_detail"
       name="finding_detail">
-
-    <div class="searchBox">
-        <div class="left">
-            <?php
-                foreach ($this->toolbarButtons as $button) {
-                    echo $this->escape($button, 'none');
-                }
-            ?>
-        </div>
-
-        <div class="right">
-            <?php
-                foreach ($this->searchButtons as $button) {
-                    echo $this->escape($button, 'none');
-                }
-            ?>
-        </div>
-
-        <div class="clear"> </div>
-    </div>
-
+    <?php
+        echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
+    ?>
     <?php echo $this->escape($this->tabView, 'none'); ?>
 </form>
