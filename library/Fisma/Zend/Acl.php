@@ -164,6 +164,7 @@ class Fisma_Zend_Acl extends Zend_Acl
      */
     public function hasPrivilegeForClass($privilege, $className, $useClassNameAsResourceName = false)
     {
+        $hasPrivilege = false;
         if ($useClassNameAsResourceName) {
             $resourceName = $className;
         } else {

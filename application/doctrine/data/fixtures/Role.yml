@@ -101,6 +101,26 @@ Role:
             - vulnerability_read
             - vulnerability_report_area
 
+    manager_role:
+        name: Manager
+        nickname: MANAGER
+        description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Manager Group gives users the same privileges a Reviewer would have for all items assigned to the systems and/or people directly under the managed organizations.</p>
+        Privileges:
+            - areas_dashboard
+            - asset_read
+            - finding_area
+            - finding_report_area
+            - findings_read
+            - notification_asset
+            - notification_finding
+            - notification_vulnerability
+            - organization_read
+            - system_inventory_area
+            - vulnerability_area
+            - vulnerability_read
+            - vulnerability_report_area
+            - organization_oversee
+
     ivv_role:
         name: Independent Verification and Validation
         nickname: IV&V

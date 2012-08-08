@@ -1,0 +1,12 @@
+<?php
+    echo $this->escape($this->searchBox(array(
+        new Fisma_Yui_Form_Button_Link(
+            'manager',
+            array(
+                'value' => 'Personal View',
+                'href' => '/finding/dashboard'
+            )
+        )
+    )), 'none');
+    echo $this->escape($this->tabView, 'none');
+?>

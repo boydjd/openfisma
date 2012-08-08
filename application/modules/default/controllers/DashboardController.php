@@ -205,18 +205,13 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
     {
         $findingType = urldecode($this->getRequest()->getParam('findingType'));
         $threatType = $this->getRequest()->getParam('workflowThreatType');
+        $_highModLowColors = array(Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_MODERATE, Fisma_Chart::COLOR_LOW);
 
         $thisChart = new Fisma_Chart();
         $thisChart->setChartType('stackedbar')
             ->setThreatLegendVisibility(true)
             ->setThreatLegendTitle($threatType)
-            ->setColors(
-                array(
-                    "#FF0000",
-                    "#FF6600",
-                    "#FFC000"
-                )
-            )
+            ->setColors($_highModLowColors)
             ->setLayerLabels(
                 array(
                     'Null',
@@ -348,7 +343,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
-                $thisChart->setColors(array('#FF0000'));
+                $thisChart->setColors(array(Fisma_Chart::COLOR_HIGH));
                 break;
             case "moderate":
                 // Remove null-count layer/stack in this stacked bar chart
@@ -356,7 +351,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
-                $thisChart->setColors(array('#FF6600'));
+                $thisChart->setColors(array(Fisma_Chart::COLOR_MODERATE));
                 break;
             case "low":
                 // Remove null-count layer/stack in this stacked bar chart
@@ -364,7 +359,7 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
-                $thisChart->setColors(array('#FFC000'));
+                $thisChart->setColors(array(Fisma_Chart::COLOR_LOW));
                 break;
         }
 

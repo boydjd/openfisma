@@ -418,6 +418,10 @@ UserPreferences:
         Logout:
             label: <span class=logout>Log Out</span>
             link: /auth/logout
+        ViewAs:
+            label: <span class=viewas>View As...</span>
+            onclick:
+                fn: Fisma.ViewAs.selectUserForm
         Separator1:
             label: Separator
         ChangePassword:

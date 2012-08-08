@@ -367,7 +367,7 @@ Fisma.Finding = {
         ;
 
         //collapsible
-        $(".column33 .sectionHeader,.column66 .sectionHeader").filter(function(index){
+        $(".sectionHeader").filter(function(index){
             return ($('span.ui-icon', this).length < 1);
         })
             .prepend("<span class='ui-icon ui-icon-minusthick'></span>")
@@ -392,20 +392,25 @@ Fisma.Finding = {
         ;
 
         //layout switch
-        $('#toolbarRight').prepend($('#changeLayout'));
-        var layoutButton = new YAHOO.widget.Button("menuLayout", {type: "menu", menu: "menuLayoutSelect"});
-        $("#layoutLeft").click(function() {
-            $(".column33").removeClass('right').addClass('left');
-            $(".column66").removeClass('left').addClass('right');
-            layoutButton.getMenu().hide();
-            storage.set('analystLayout', 'layoutLeft');
-        });
-        $("#layoutRight").click(function() {
-            $(".column33").removeClass('left').addClass('right');
-            $(".column66").removeClass('right').addClass('left');
-            layoutButton.getMenu().hide();
-            storage.set('analystLayout', 'layoutRight');
-        });
+
+        if ($('#toolbarRight #changeLayout').length > 0) {
+            $('#TabView_FindingManager_TabViewContainer #changeLayout').remove();
+        } else {
+            $('#toolbarRight').prepend($('#changeLayout'));
+            var layoutButton = new YAHOO.widget.Button("menuLayout", {type: "menu", menu: "menuLayoutSelect"});
+            $("#layoutLeft").click(function() {
+                $(".column33").removeClass('right').addClass('left');
+                $(".column66").removeClass('left').addClass('right');
+                layoutButton.getMenu().hide();
+                storage.set('analystLayout', 'layoutLeft');
+            });
+            $("#layoutRight").click(function() {
+                $(".column33").removeClass('left').addClass('right');
+                $(".column66").removeClass('right').addClass('left');
+                layoutButton.getMenu().hide();
+                storage.set('analystLayout', 'layoutRight');
+            });
+        }
         var layout = storage.get('analystLayout');
         if (layout) {
             $('#' + layout).click();

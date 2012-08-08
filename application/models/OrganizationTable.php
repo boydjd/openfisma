@@ -173,6 +173,34 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
     }
 
     /**
+     * A callback for lucene searches that involve searching an organization's immediate children
+     *
+     * Known implementers: FindingTable
+     *
+     * @param string $parentOrganization The nickname of the root node of the children to return
+     * @return array An array of children organization IDs
+     */
+    static function getOrganizationChildrenIds($parentOrganization)
+    {
+        // Since it addes the slashes at searchByCriteria(), so, it needs to remove slashes here.
+        $parentOrganization = stripslashes($parentOrganization);
+
+        $organization = Doctrine::getTable('Organization')->findOneByNickname($parentOrganization);
+
+        // If the parent node isn't found, then return an impossible condition to prevent matching any objects
+        if (!$organization) {
+            return array(0);
+        }
+
+        $orgSystems = $organization->getNode()->getChildren();
+        $myOrgSystemIds = array($organization->id);
+        foreach ($orgSystems as $orgSystem) {
+            $myOrgSystemIds[] = $orgSystem['id'];
+        }
+        return $myOrgSystemIds;
+    }
+
+    /**
      * A callback for solr searches that involve searching system aggregation subtree
      *
      * Known implementers: FindingTable

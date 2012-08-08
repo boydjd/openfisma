@@ -249,6 +249,7 @@ class AuthController extends Zend_Controller_Action
 
         if ($currentUser) {
             $currentUser->getAuditLog()->write('Logged out');
+            $currentUser->clearViewAs();
         }
 
         $auth = Zend_Auth::getInstance();

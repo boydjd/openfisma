@@ -291,6 +291,7 @@ class User extends BaseUser
      * cartesian join between the roles and systems table. In the future, roles will be assigned
      * to individual systems.
      *
+     * @param boolean $isViewAs Default to false. If set to true, only read privileges are allowed
      * @return Zend_Acl The Fisma ACL
      * @todo Create separate roles for separate systems. This requires the user interface to be
      * upgraded to make it possible to configure this.
@@ -315,8 +316,12 @@ class User extends BaseUser
      *         delete
      * </pre>
      */
-    public function acl()
+    public function acl($isViewAs = false)
     {
+        if ($viewAs = $this->viewAs()) {
+            return $viewAs->acl(true);
+        }
+
         $cache = $this->_getCache();
 
         if (!$acl = $cache->load(md5($this->username) . '_acl')) {
@@ -334,6 +339,7 @@ class User extends BaseUser
             $classLoader->suppressNotFoundWarnings(true);
 
             $acl = new Fisma_Zend_Acl('user_' . $this->username);
+            $isAdmin = in_array('ADMIN', CurrentUser::getAttribute('Roles')->toKeyValueArray('id', 'nickname'));
 
             // For each role, add its privileges to the ACL
             $roleArray = array();
@@ -344,6 +350,11 @@ class User extends BaseUser
                 $roleArray[] = 'role_' . $role->nickname;
 
                 foreach ($role->Privileges as $privilege) {
+                    // Bypass if this is a viewAs user AND real user is not an ADMIN AND action is not read.
+                    if ($isViewAs && $privilege->resource !== 'area' && $privilege->action !== 'read' && !$isAdmin) {
+                        continue;
+                    }
+
                     /**
                      * Check whether this privilege corresponds to a class, and if it does, then check whether that
                      * class has an organization dependency
@@ -405,6 +416,27 @@ class User extends BaseUser
         return $acl;
     }
 
+    public function viewAs($user = null)
+    {
+        $cache = $this->_getCache();
+
+        if ($user !== null) {
+            $user->invalidateAcl();
+            $cache->save($user, md5($this->username) . '_viewas');
+            return $user;
+        }
+        return $cache->load(md5($this->username) . '_viewas');
+    }
+
+    public function clearViewAs()
+    {
+        $cache = $this->_getCache();
+        if ($user = $cache->load(md5($this->username) . '_viewas')) {
+            $user->invalidateAcl();
+        }
+        $cache->remove(md5($this->username) . '_viewas');
+    }
+
     /**
      * Mark's the user's current ACL object as "dirty", indicating that it needs to be re-generated.
      *
@@ -434,6 +466,7 @@ class User extends BaseUser
         $this->failureCount = 0;
 
         $this->save();
+        $this->invalidateAcl();
     }
 
     /**
@@ -510,6 +543,10 @@ class User extends BaseUser
      */
     public function getOrganizationsByRole($roleId)
     {
+        if ($viewAs = $this->viewAs()) {
+            return $viewAs->getOrganizationsByRole($roleId);
+        }
+
         $query = $this->getOrganizationsQuery();
 
         if ($this->username != 'root') {
@@ -569,6 +606,10 @@ class User extends BaseUser
      */
     public function getRolesByPrivilege($resource, $action)
     {
+        if ($viewAs = $this->viewAs()) {
+            return $viewAs->getRolesByPrivilege($resource, $action);
+        }
+
         $roles = new Doctrine_Collection('UserRole');
 
         foreach ($this->UserRole as $userRole) {
@@ -594,6 +635,10 @@ class User extends BaseUser
      */
     public function getOrganizationsQuery()
     {
+        if ($viewAs = $this->viewAs()) {
+            return $viewAs->getOrganizationsQuery();
+        }
+
         // The base query grabs all organizations and sorts by 'lft', which will put the records into
         // tree order.
         if ($this->username == 'root') {
@@ -622,6 +667,10 @@ class User extends BaseUser
      */
     public function getOrganizationsByPrivilegeQuery($resource, $action, $includeDisposal = false)
     {
+        if ($viewAs = $this->viewAs()) {
+            return $viewAs->getOrganizationsByPrivilegeQuery($resource, $action, $includeDisposal);
+        }
+
         $query = $this->getOrganizationsQuery();
 
         if ($this->username != 'root') {
@@ -785,6 +834,10 @@ class User extends BaseUser
      */
     public function getRoles($hydrationMode = Doctrine::HYDRATE_SCALAR, $userRolesQuery = null)
     {
+        if ($viewAs = $this->viewAs()) {
+            return $viewAs->getRoles($hydrationMode, $userRolesQuery);
+        }
+
         $userRolesQuery = (isset($userRolesQuery))
                         ? $userRolesQuery
                         : Doctrine::getTable('User')->getRolesQuery($this->id, $hydrationMode);

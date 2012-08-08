@@ -642,9 +642,9 @@ Fisma.TableFormat = {
             parseInt(oData.LOW, 10) + parseInt(oData.MODERATE, 10) + parseInt(oData.HIGH, 10)
         ) / oData.total;
         if (percentage > 0 && percentage < 1) {
-            html += 'less than 1%';
+            html += '&nbsp;less than 1%';
         } else {
-            html += Math.round(percentage) + '%';
+            html += '&nbsp;' + Math.round(percentage) + '%';
         }
         elCell.innerHTML = html;
         elCell.width = '200px';

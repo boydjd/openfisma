@@ -1,17 +1,18 @@
 <div class="chartContainer">
 
-<div class="sectionHeader">
+<?php if (!$this->hideHeader): ?>
+    <div class="sectionHeader">
     <table width="100%">
         <tr>
             <td align="left">
                 <?php echo $this->escape($this->chartParamArr['title'], 'html'); ?>
             </td>
             <td align=right>
-                <img 
-                    src="/images/gear.png" 
+                <img
+                    src="/images/gear.png"
                     alt="Click to edit chart options"
-                    onClick="Fisma.Chart.setChartSettingsVisibility('<?php 
-                        echo $this->escape($this->chartId, 'none'); 
+                    onClick="Fisma.Chart.setChartSettingsVisibility('<?php
+                        echo $this->escape($this->chartId, 'none');
                         ?>', 'toggle');"
                     class="chartGear"
                 />
@@ -20,36 +21,37 @@
     </table>
 </div>
 <div class="section chartSection">
+<?php endif; ?>
 <div class="yui-navset">
-    
+
     <div id="<?php echo $this->escape($this->chartId); ?>title" class="jqplot-title"></div>
-    
+
     <div id="<?php echo $this->escape($this->chartId); ?>loader" class="loading">
         <div>
         </div>
     </div>
-    
+
     <div id="<?php echo $this->escape($this->chartId, 'none'); ?>holder" <?php
                     echo $this->escape($this->divContainerArgs, 'none'); ?> >
-    
+
             <div id="<?php echo $this->escape($this->chartId); ?>toplegend">
             </div>
-            
+
             <div id="<?php echo $this->escape($this->chartId); ?>pieTooltip"
                 class="jqplot-highlighter-tooltip pieToolTip">
             </div>
-            
+
             <div id="<?php echo $this->escape($this->chartId); ?>" >
                 Loading chart data...
             </div>
     </div>
-    
+
     <div class="screenReaderTabel" id="<?php echo $this->escape($this->chartId, 'none'); ?>table">
-    </div>   
-    
+    </div>
+
     <br/>
-    <div 
-        id="<?php 
+    <div
+        id="<?php
             echo $this->escape($this->chartId, 'none');
         ?>WidgetSpaceHolder" class="widgetSpaceHolder yui-navset" style="display: none;">
         <ul class="yui-nav">
@@ -69,22 +71,22 @@
                 <div id="<?php echo $this->escape($this->chartId, 'none');?>WidgetSpace">
                     <!-- chart params and widgets placed here by JavaScript -->
                 </div>
-                
+
                 <div style="width: 100%; text-align: right;">
-                    <input 
-                        type="button" value="Hide Settings" 
-                        onClick="setChartSettingsVisibility('<?php 
+                    <input
+                        type="button" value="Hide Settings"
+                        onClick="setChartSettingsVisibility('<?php
                             echo $this->escape($this->chartId, 'none');
                             ?>', false);"
                         id="<?php echo $this->escape($this->chartId, 'none'); ?>BtnMainSet"
                     />
                 </div>
-                
+
             </div>
             <div id="tab2">
-                
-                <div 
-                    id="<?php echo $this->escape($this->chartId, 'none');?>GlobSettings" 
+
+                <div
+                    id="<?php echo $this->escape($this->chartId, 'none');?>GlobSettings"
                     style="text-align: left; ">
                 <input type="checkbox" id="pointLabels" />
                     <label for="pointLabels">
@@ -92,60 +94,59 @@
                     </label><br/>
                 <input type="checkbox" id="pointLabelsOutline" class="hideFromIE" />
                     <label for="pointLabelsOutline" class="hideFromIE">
-                        Outline data labels 
+                        Outline data labels
                     </label class="hideFromIE"><br class="hideFromIE" />
                 <input type="checkbox" id="barShadows" />
                     <label for="barShadows">
-                        Draw shadows behind bars 
+                        Draw shadows behind bars
                     </label><br/>
                 <input type="textbox" id="barShadowDepth" value="3" style="width:10px" />
                     <label for="barShadowDepth">
-                        Depth of shadows behind bars (in pixels) 
+                        Depth of shadows behind bars (in pixels)
                     </label><br/>
                 <input type="checkbox" id="dropShadows" />
                     <label for="dropShadows">
-                        Draw shadows behind charts 
+                        Draw shadows behind charts
                     </label><br/>
                 <input type="checkbox" id="gridLines"/>
                     <label for="gridLines">
-                        Draw grid-lines 
+                        Draw grid-lines
                     </label><br/>
                 <input type="checkbox" id="fadingEnabled" class="hideFromIE"/>
                     <label for="fadingEnabled" class="hideFromIE">
-                        Enable fading effects 
+                        Enable fading effects
                     </label><br class="hideFromIE" />
                 <input type="checkbox" id="showDataTable"/>
                     <label for="showDataTable">
-                        Show data table 
+                        Show data table
                     </label><br/>
                 </div>
 
                 <div>
                     <div style="float: right; text-align: right;">
                         <input type="button" value="Hide Settings"
-                            onClick="Fisma.Chart.setChartSettingsVisibility('<?php 
-                                echo $this->escape($this->chartId, 'none'); 
+                            onClick="Fisma.Chart.setChartSettingsVisibility('<?php
+                                echo $this->escape($this->chartId, 'none');
                                 ?>', false);"
                             id="<?php echo $this->escape($this->chartId, 'none'); ?>BtnGlobSet"
                         />
                     </div>
                     <div style="float: right; text-align: right;">
                         <input type="button" value="Apply Settings"
-                            onClick="Fisma.Chart.globalSettingUpdate('<?php 
-                                echo $this->escape($this->chartId, 'none'); 
+                            onClick="Fisma.Chart.globalSettingUpdate('<?php
+                                echo $this->escape($this->chartId, 'none');
                                 ?>');"
                             id="<?php echo $this->escape($this->chartId, 'none'); ?>BtnApplySet"
                         />
                     </div>
                 </div>
-                
+
             </div>
         </div>
-        
-    </div>    
-    
+    </div>
+<?php if (!$this->hideHeader): ?>
 </div>
-
+<?php endif; ?>
 <script>
     var thisChartObjData = <?php echo $this->escape($this->chartParamArr, 'json'); ?>;
     Fisma.Chart.createJQChart(thisChartObjData);
@@ -172,7 +173,7 @@
         /* YUI button - add references from DOM to YUI object */
         document.getElementById(thisChartId + 'BtnApplySet').yuiObjRef = thisBtnApplySettings;
     });
-    
+
 </script>
 
 </div>
