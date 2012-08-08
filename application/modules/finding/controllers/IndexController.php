@@ -73,10 +73,11 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
      * Add a notification for the finding injection event.
      *
      * @param integer $uploadId  The upload ID
+     * @param integer $rowsProcessed Number of findings uploaded
      * @return void
      * @throws Fisma_Zend_Exception if the specified event name is not found
      */
-    private function notify($uploadId)
+    private function notify($uploadId, $rowsProcessed)
     {    	
     	$eventName = "FINDING_IMPORTED";
     	$user = CurrentUser::getInstance();
@@ -91,7 +92,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
     		throw new Fisma_Zend_Exception("No event named '$eventName' was found");
     	}
     
-    	$eventText = $event->description; 
+    	$eventText = $rowsProcessed . " " . $event->description; 
   
     	if (!is_null($user)) {
     		$eventText .= " by $user->nameFirst $user->nameLast";
@@ -164,7 +165,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 $type  = 'notice';
                                 
                 // Create finding injection notification
-                self::notify($upload->id);
+                self::notify($upload->id, $rowsProcessed);
                 
             } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
                 Doctrine_Manager::connection()->rollback();
