@@ -151,6 +151,14 @@ Event:
         category: finding
         urlPath: /finding/remediation/view/id/
 
+    FINDING_IMPORTED:
+        defaultActive: true
+        name: FINDING_IMPORTED
+        description: findings are imported
+        Privilege: notification_finding
+        category: finding
+        urlPath: /finding/remediation/list
+
     FINDING_CLOSED:
         name: FINDING_CLOSED
         description: a finding is resolved
