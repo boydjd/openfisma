@@ -45,6 +45,14 @@ class Application_Migration_021801_BackgroundTasks extends Fisma_Migration_Abstr
             'createdts'
         );
 
+        $this->getHelper()->modifyColumn(
+            'event',
+            'category',
+            "enum('admin','user','finding','vulnerability','inventory','incident','evaluation','script') " .
+            "NOT NULL DEFAULT 'user'",
+            'urlpath'
+        );
+
         $privileges = $this->getHelper()->query(
             "SELECT `id` from `privilege` WHERE `resource` = 'notification' AND `action` = 'admin';"
         );

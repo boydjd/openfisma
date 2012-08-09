@@ -59,7 +59,7 @@ class Fisma_Cli_RefreshUser extends Fisma_Cli_Abstract
                 $user->save();
             } catch (Exception $e) {
                 $log .= "\n" . $user->username . ' - ' . $e->getMessage();
-                $this->getLog()->err($user->username . ' - ' . $e->getMessage());
+                $this->getLog()->err($user->username . ' - ' . $e->getMessage(), $e);
             }
         }
         $log .= "\nSynchronization completed.";
