@@ -91,12 +91,11 @@ table.fisma_crud div.readonly {
 
 /* Create some space around the body content */
 body {
-	padding: 10px;
+	padding: 1px;
 	text-align: left;
     margin: 0;
 }
 
-/* The logo is floated to the left */
 div#mainmenu ul li a span {
     padding-left: 20px;
     line-height: 16px;
