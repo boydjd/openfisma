@@ -14,7 +14,7 @@ Event:
             comment: The url path used for constructing url in the notification email.
         category:
             type: enum
-            values: [admin, user, finding, vulnerability, inventory, incident, evaluation]
+            values: [admin, user, finding, vulnerability, inventory, incident, evaluation, script]
             comment: The group that the event belongs to
             default: 'user'
             notnull: true

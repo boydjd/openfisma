@@ -37,6 +37,35 @@ class Application_Migration_021801_BackgroundTasks extends Fisma_Migration_Abstr
             'text',
             'unlock_duration'
         );
+
+        $this->getHelper()->modifyColumn(
+            'notification',
+            'eventtext',
+            'text',
+            'createdts'
+        );
+
+        $this->getHelper()->modifyColumn(
+            'event',
+            'category',
+            "enum('admin','user','finding','vulnerability','inventory','incident','evaluation','script') " .
+            "NOT NULL DEFAULT 'user'",
+            'urlpath'
+        );
+
+        $privileges = $this->getHelper()->query(
+            "SELECT `id` from `privilege` WHERE `resource` = 'notification' AND `action` = 'admin';"
+        );
+        $this->getHelper()->insert(
+            'event',
+            array(
+                'name' => 'LDAP_SYNC',
+                'description' => 'system finishes refreshing user information from LDAP',
+                'privilegeid' => $privileges[0]->id,
+                'urlpath' => '/config/list-ldap',
+                'category' => 'script'
+            )
+        );
     }
 }
 

@@ -2,7 +2,7 @@ Notification:
     columns:
         createdTs: timestamp
         eventText:
-            type: string(255)
+            type: string
             comment: The event text which is sent to the user
         eventId:
             type: integer
@@ -12,7 +12,7 @@ Notification:
             comment: Foreign key to the user who caused this notification
         url:
             type: string(255)
-            comment: the url which is sent to the user 
+            comment: the url which is sent to the user
     relations:
         Event:
             local: eventId
