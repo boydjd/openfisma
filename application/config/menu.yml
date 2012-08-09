@@ -45,8 +45,11 @@ Finding:
                 param2: Finding
         Goto:
             label: Go To...
-            model: Finding
-            click: /finding/remediation
+            onclick:
+                fn: Fisma.Menu.goTo
+                obj:
+                    model: Finding
+                    controller: /finding/remediation
             privilege:
                 func: hasPrivilegeForClass
                 param1: read
@@ -121,8 +124,11 @@ Vulnerability:
             link: /vm/vulnerability/list
         Goto:
             label: Go To...
-            model: Vulnerability
-            click: /vm/vulnerability
+            onclick:
+                fn: Fisma.Menu.goTo
+                obj:
+                    model: Vulnerability
+                    controller: /vm/vulnerability
         Separator1:
             label: Separator
         Upload:
@@ -182,8 +188,11 @@ Incident:
             link: /incident/list
         Goto:
             label: Go To...
-            model: Incident
-            click: /incident
+            onclick:
+                fn: Fisma.Menu.goTo
+                obj:
+                    model: Incident
+                    controller: /incident
         Separator1:
             label: Separator
         ReportIncident:
