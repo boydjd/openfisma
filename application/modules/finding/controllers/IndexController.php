@@ -68,68 +68,6 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->uploadForm = $uploadForm;
     }
-
-    /**
-     * Add a notification for the finding injection event.
-     *
-     * @param integer $uploadId  The upload ID
-     * @param integer $rowsProcessed Number of findings uploaded
-     * @return void
-     * @throws Fisma_Zend_Exception if the specified event name is not found
-     */
-    private function notify($uploadId, $rowsProcessed)
-    {    	
-    	$eventName = "FINDING_IMPORTED";
-    	$user = CurrentUser::getInstance();
-    	
-    	if (!Fisma::getNotificationEnabled()) {
-    		return;
-    	}
-    
-    	$event = Doctrine::getTable('Event')->findOneByName($eventName);
-    
-    	if (!$event) {
-    		throw new Fisma_Zend_Exception("No event named '$eventName' was found");
-    	}
-    
-    	$eventText = $rowsProcessed . " " . $event->description; 
-  
-    	if (!is_null($user)) {
-    		$eventText .= " by $user->nameFirst $user->nameLast";
-    	} else {
-    		$eventText .= ' by ' . Fisma::configuration()->getConfig('system_name');
-    	}
-    
-    	// Figure out which users are listening for this event
-    	$eventsQuery = Doctrine_Query::create()
-    	->select('e.id, u.id')
-    	->from('User u')
-    	->innerJoin('u.Events e')
-    	->where('e.id = ?', $event->id)
-    	->setHydrationMode(Doctrine::HYDRATE_SCALAR);
-
-    	$eventsQuery->leftJoin('u.Roles r')
-    	->leftJoin('r.Privileges up')
-    	->leftJoin('e.Privilege ep')
-    	->andWhere('up.id = ep.id');
-    
-    	$userEvents = $eventsQuery->execute();
-    
-    	$baseUrl = rtrim(Fisma_Url::baseUrl(), '/');
-    	$url = $baseUrl . $event->urlPath . "?q=/uploadid/integerEquals/" . $uploadId; 
-    	    	
-    	$notifications = new Doctrine_Collection('Notification');
-    	foreach ($userEvents as $userEvent) {
-    		$notification = new Notification();
-    		$notification->eventId   = $userEvent['e_id'];
-    		$notification->userId    = $userEvent['u_id'];
-    		$notification->eventText = $eventText;
-    		$notification->url = $url;
-    		$notifications[] = $notification;
-    	}
-    
-    	$notifications->save();
-    }
     
     /**
      * Handle upload of a spreadsheet template file
@@ -163,9 +101,15 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 Doctrine_Manager::connection()->commit();
                 $error = "$rowsProcessed findings were created.";
                 $type  = 'notice';
-                                
+                     
                 // Create finding injection notification
-                self::notify($upload->id, $rowsProcessed);
+                $url = "?q=/uploadid/integerEquals/" . $upload->id;
+                Notification::notify("FINDING_IMPORTED"
+                		             ,null
+                		             ,CurrentUser::getInstance()
+                		             ,array('appUrl' => $url
+                		                   ,'rowsProcessed' => $rowsProcessed)
+                		             );
                 
             } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
                 Doctrine_Manager::connection()->rollback();
