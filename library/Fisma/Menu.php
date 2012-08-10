@@ -77,7 +77,7 @@ class Fisma_Menu
     {
         $acl = $user->acl();
         foreach ($menuValue as $key => $value) {
-            if (self::_hideItem($value, $acl)) {
+            if (self::_hideItem($value, $user)) {
                 continue;
             }
 
@@ -128,8 +128,9 @@ class Fisma_Menu
     /**
      * Determine whether a menu item should be hidden.
      */
-    protected static function _hideItem($item, $acl)
+    protected static function _hideItem($item, $user)
     {
+        $acl = $user->acl();
         if (isset($item['module'])) {
             $module = null;
             if (strstr($item['module'], 'Vulnerability')) {
