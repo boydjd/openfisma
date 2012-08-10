@@ -893,4 +893,32 @@ class User extends BaseUser
 
         return $expired;
     }
+
+    /**
+     * Fetch information from LDAP. Must call save() afterwards.
+     *
+     * @return void
+     */
+    public function syncWithLdap()
+    {
+        if (!$ldap = new Fisma_Ldap(LdapConfig::getConfig())) {
+            throw new Fisma_Zend_Exception_User("External authentication provider is not setup properly.");
+        }
+
+        if (!$r = $ldap->match($this->username)) {
+            throw new Fisma_Zend_Exception_User("No user found with username: " . $this->username);
+        }
+
+        $filter = new Fisma_Zend_Filter_Phone();
+
+        $this->nameFirst = empty($r['givenname'][0]) ? $this->nameFirst : $r['givenname'][0];
+        $this->nameLast = empty($r['sn'][0]) ? $this->nameLast : $r['sn'][0];
+        $this->email = empty($r['mail'][0]) ? $this->email : $r['mail'][0];
+        $this->phoneOffice = empty($r['telephonenumber'][0])
+                              ? $this->phoneOffice
+                              : $filter->filter($r['telephonenumber'][0]);
+        $this->phoneMobile = empty($r['mobile'][0])
+                              ? $this->phoneMobile
+                              : $filter->filter($r['mobile'][0]);
+    }
 }

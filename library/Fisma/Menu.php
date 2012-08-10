@@ -42,7 +42,7 @@ class Fisma_Menu
         $path = Fisma::getPath('config');
         $menuConfig = Doctrine_Parser_YamlSf::load($path . '/menu.yml');
 
-        self::buildMenu($user, $menuConfig, self::$_mainMenuBar, $parent = null);
+        self::buildMenu($user, $menuConfig, self::$_mainMenuBar);
 
         return self::$_mainMenuBar;
     }
@@ -53,37 +53,17 @@ class Fisma_Menu
      * @param string $type The menu item type.
      * @param string $label The label shows on the menu.
      * @param string $link The link of the menu item.
-     * @param mixed string|null $model The model shows on the Go to.. menu item,
-     * null if the $type is not Fisma_Yui_MenuItem_GoTo
-     * @param integer $onClick  The the javascript function for onclick event.
-     * @param integer $target  The target of the link.
-     * @param integer $count Add the submenu to its parent menu when $count is 1.
+     * @param string$onClick  The javascript callback for onclick event.
+     * @param string $target  The target of the link.
      * @param Fisma_Yui_Menu $root The menu holds the menu items.
-     * @param Fisma_Yui_Menu $parent The parent menu holds the menu items.
-     * @return Fisma_Yui_MenuBar The assembled Fisma YUI menu bar object
      */
-    private static function addMenuItem($type, $label, $link, $model, $onClick, $target, $count, $root, $parent = null)
+    private static function addMenuItem($type, $label, $link, $onClick, $target, $root)
     {
-        // It is Fisma_Yui_MenuItem if the $model is null.
-        if (is_null($model)) {
-            if (!is_null($onClick)) {
-                $menuItem = new $type($label, null, new Fisma_Yui_MenuItem_OnClick($onClick));
-            } else {
-                if (is_null($target)) {
-                    $menuItem = new $type($label, $link);
-                } else {
-                    $menuItem = new $type($label, $link, null, $target);
-                }
-            }
-        } else { // It is Go to
-            $menuItem = new $type($label, $model, $link);
+        if (!is_null($onClick)) {
+            $onClick = new Fisma_Yui_MenuItem_OnClick($onClick);
         }
+        $menuItem = new $type($label, $link, $onClick, $target);
         $root->add($menuItem);
-
-        // Only need to add the sub menu to its parent menu once
-        if ($count == 1 && !is_null($parent)) {
-            $parent->add($root);
-        }
     }
 
     /**
@@ -92,50 +72,28 @@ class Fisma_Menu
      * @param User $user
      * @param array $menuValue The data from configure file.
      * @param Fisma_Yui_Menu $root The menu holds the menu items.
-     * @param Fisma_Yui_Menu $parent The parent menu holds the menu items.
-     * @return Fisma_Yui_MenuBar The assembled Fisma YUI menu bar object
      */
-    protected static function buildMenu($user, $menuValue, $root, $parent = null)
+    protected static function buildMenu($user, $menuValue, $root)
     {
-        $i = 0;
         $acl = $user->acl();
         foreach ($menuValue as $key => $value) {
-            if (isset($value['module'])) {
-                $module = null;
-                if (strstr($value['module'], 'Vulnerability')) {
-                    $module = Doctrine::getTable('Module')->findOneByName('Vulnerability Management');
-                } else if (strstr($value['module'], 'Incident')) {
-                    $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
-                }
-
-                // Skip the module if the module is not enable
-                if (!$module || !$module->enabled
-                    || !$acl->$value['privilege']['func']($value['privilege']['param'])) {
-                    continue;
-                }
+            if (self::_hideItem($value, $acl)) {
+                continue;
             }
 
-            // Skip the menuItem and its submenu if it does not have the privilege
-            if (isset($value['privilege']) && 'hasArea' == $value['privilege']['func']) {
-                if (!$acl->$value['privilege']['func']($value['privilege']['param'])) {
-                     continue;
-                }
-            }
-
+            $label = isset($value['label']) ? $value['label'] : $key;
             // Handle dynamic values
-            if (isset($value['label'])) {
-                // Replace $systemName with information from Fisma::configuration in label
-                $systemName = Fisma::configuration()->getConfig('system_name');
-                $value['label'] = str_replace('$systemName', $systemName, $value['label']);
+            // Replace $systemName with information from Fisma::configuration in label
+            $systemName = Fisma::configuration()->getConfig('system_name');
+            $label = str_replace('$systemName', $systemName, $label);
 
-                // Replace $currentUser with information from CurrentUser in label
-                $currentUser = CurrentUser::getAttribute('displayName');
-                $value['label'] = str_replace('$currentUser', $currentUser, $value['label']);
+            // Replace $currentUser with information from CurrentUser in label
+            $currentUser = CurrentUser::getAttribute('displayName');
+            $label = str_replace('$currentUser', $currentUser, $label);
 
-                // Replace $notificationCount with information from CurrentUser in label
-                $notificationCount = CurrentUser::getAttribute('Notifications')->count();
-                $value['label'] = str_replace('$notificationCount', $notificationCount, $value['label']);
-            }
+            // Replace $notificationCount with information from CurrentUser in label
+            $notificationCount = CurrentUser::getAttribute('Notifications')->count();
+            $label = str_replace('$notificationCount', $notificationCount, $label);
 
             // Replace $mailToAdmin with information from Fisma::configuration in link
             if (isset($value['link'])) {
@@ -146,125 +104,61 @@ class Fisma_Menu
             }
 
             if (isset($value['submenu'])) {
-
-                // Skip the menu if condition is not true
-                if (isset($value['condition'])) {
-                    if (eval($value['condition'])) {
-                        $menu = new Fisma_Yui_Menu($value['label']);
-                    } else {
-                        continue;
-                    }
-                } else {
-                    $menu = new Fisma_Yui_Menu($value['label']);
+                $menu = new Fisma_Yui_Menu($label);
+                self::buildMenu($user, $value['submenu'], $menu);
+                $menu->removeEmptyGroups();
+                if (!$menu->isEmpty()) {
+                    $root->add($menu);
                 }
-
-                self::buildMenu($user, $value['submenu'], $menu, $root);
+            } elseif ('Separator' == $value['label']) {
+                $root->addSeparator();
             } else {
-                $i++; // Track the loop count, adding the submenu to its parent when it is 1.
-
-                // Handle the different types of menu items
-                if ('Go To...' == $value['label']) {
-                    if (isset($value['privilege'])) {
-                        if ( $acl->$value['privilege']['func']($value['privilege']['param1'],
-                            $value['privilege']['param2'])) {
-                            self::addMenuItem(
-                                'Fisma_Yui_MenuItem_GoTo',
-                                $value['label'],
-                                $value['click'],
-                                $value['model'],
-                                null,
-                                null,
-                                $i,
-                                $root,
-                                $parent
-                            );
-                        } else {
-                            $i--; // It does not count if the menuItem is not added to menu.
-                        }
-                    } else {
-                        self::addMenuItem(
-                            'Fisma_Yui_MenuItem_GoTo',
-                            $value['label'],
-                            $value['click'],
-                            $value['model'],
-                            null,
-                            null,
-                            $i,
-                            $root,
-                            $parent
-                        );
-                    }
-                } else if ('Separator' == $value['label']) {
-                    if (isset($value['condition'])) {
-                        if (eval($value['condition'])) {
-                            $root->addSeparator();
-                        } else {
-                            $i--;
-                        }
-                    } else {
-                        if ($i == 1) {
-                            $i--; // Do not need to add separator if it is the first menuItem.
-                        } else {
-                            $root->addSeparator();
-                        }
-                    }
-                } else {
-                    // Do not need to check hasArea privilege here because it has been checked previously
-                    if (isset($value['privilege']) && 'hasArea' != $value['privilege']['func']) {
-                        if ($acl->$value['privilege']['func'](
-                                $value['privilege']['param1'],
-                                $value['privilege']['param2'])
-                            ) {
-                                self::addMenuItem(
-                                    'Fisma_Yui_MenuItem',
-                                    $value['label'],
-                                    $value['link'],
-                                    null,
-                                    isset($value['onClick']) ? $value['onClick'] : null,
-                                    isset($value['target']) ? $value['target'] : null,
-                                    $i,
-                                    $root,
-                                    $parent
-                                );
-                        } else {
-                            $i--; // It does not count if the menuItem is not added to menu.
-                        }
-                    } else {
-                        if (isset($value['condition'])) {
-
-                            // Add the menu item based on the return of Evaluating the condition
-                            if (eval($value['condition'])) {
-                                self::addMenuItem(
-                                    'Fisma_Yui_MenuItem',
-                                    $value['label'],
-                                    $value['link'],
-                                    null,
-                                    isset($value['onClick']) ? $value['onClick'] : null,
-                                    isset($value['target']) ? $value['target'] : null,
-                                    $i,
-                                    $root,
-                                    $parent
-                                );
-                            } else {
-                                $i--; // It does not count if the menuItem is not added to menu.
-                            }
-                        } else {
-                            self::addMenuItem(
-                                'Fisma_Yui_MenuItem',
-                                $value['label'],
-                                $value['link'],
-                                null,
-                                isset($value['onClick']) ? $value['onClick'] : null,
-                                isset($value['target']) ? $value['target'] : null,
-                                $i,
-                                $root,
-                                $parent
-                            );
-                        }
-                    }
-                }
+                self::addMenuItem(
+                    'Fisma_Yui_MenuItem',
+                    $label,
+                    isset($value['link']) ? $value['link'] : null,
+                    isset($value['onclick']) ? $value['onclick'] : null,
+                    isset($value['target']) ? $value['target'] : null,
+                    $root
+                );
             }
         }
+    }
+
+    /**
+     * Determine whether a menu item should be hidden.
+     */
+    protected static function _hideItem($item, $acl)
+    {
+        if (isset($item['module'])) {
+            $module = null;
+            if (strstr($item['module'], 'Vulnerability')) {
+                $module = Doctrine::getTable('Module')->findOneByName('Vulnerability Management');
+            } else if (strstr($item['module'], 'Incident')) {
+                $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+            }
+
+            // Skip the module if the module is not enable
+            if (!$module || !$module->enabled) {
+                return true;
+            }
+        }
+
+        if (isset($item['privilege']['func'])) {
+            $func = $item['privilege']['func'];
+            $param1 = isset($item['privilege']['param']) ? $item['privilege']['param'] : $item['privilege']['param1'];
+            $param2 = isset($item['privilege']['param2']) ? $item['privilege']['param2'] : null;
+            if (!$acl->$func($param1, $param2)) {
+                return true;
+            }
+        }
+
+        // Skip the menu if condition is not true
+        if (isset($item['condition']) && !eval($item['condition'])) {
+            return true;
+        }
+
+        return false;
     }
 
     /**

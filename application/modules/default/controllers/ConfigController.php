@@ -137,7 +137,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             );
 
             $editUrl = "/config/update-ldap/id/{$ldapConfig['id']}";
-            $deleteUrl = "javascript:Fisma.Util.formPostAction('', '/config/delete-ldap/', " . $ldapConfig['id'] . ')';
+            $deleteUrl = "/config/delete-ldap/id/{$ldapConfig['id']}";
 
             $ldapList[] = array($url, $editUrl, $deleteUrl);
         }
@@ -152,6 +152,68 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         $dataTable->addEventListener("buttonClickEvent", 'Fisma.Ldap.deleteLdap');
         $this->view->dataTable = $dataTable;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+        array_unshift(
+            $this->view->toolbarButtons,
+            new Fisma_Yui_Form_Button_Link(
+                'newLDAP',
+                array(
+                    'value' => 'New LDAP',
+                    'href' => '/config/update-ldap',
+                    'imageSrc' => '/images/create.png'
+                )
+            )
+        );
+
+        $configObj = Doctrine::getTable('Configuration')
+            ->createQuery()
+            ->select('backgroundTasks')
+            ->fetchOne();
+        $config = $configObj->backgroundTasks;
+        if (is_null($config)) {
+            $config = array();
+        }
+        // remove obsolete values if they exist (perhaps from a previous version of the application)
+        $config = array_intersect_key($config, $this->_tasks);
+        // add in missing defaults
+        $key = 'refreshUser';
+        $task = $this->_tasks[$key];
+        if (!isset($config[$key])) {
+            $config[$key]['enabled'] = $task['defaultEnabled'];
+            $config[$key]['number'] = $task['defaultNumber'];
+            $config[$key]['unit'] = $task['defaultUnit'];
+            if (isset($task['defaultTime'])) {
+                $config[$key]['time'] = $task['defaultTime'];
+            }
+            if (isset($task['defaultArguments'])) {
+                $config[$key]['arguments'] = $task['defaultArguments'];
+            }
+        }
+
+        if ($this->getRequest()->isPost()) {
+            $post = $this->getRequest()->getPost();
+            $config[$key]['enabled'] = isset($post['autorun']) && $post['autorun'];
+            $config[$key]['unit'] = 'day';
+            $config[$key]['number'] = $post['day'];
+            $config[$key]['time'] = $post['time'];
+
+            $user = Doctrine::getTable('User')->find(CurrentUser::getAttribute('id'));
+            $event = Doctrine::getTable('Event')->findOneByName('LDAP_SYNC');
+            $notification = isset($post['notification']) && $post['notification'];
+            if (!in_array($user, $event->Users->getData()) && $notification) {
+                $event->Users[] = $user;
+            }
+            if (in_array($user, $event->Users->getData()) && !$notification) {
+                $event->Users->remove($event->Users->search($user));
+            }
+            $event->save();
+
+            $configObj->backgroundTasks = $config;
+            $configObj->save();
+            $this->view->priorityMessenger("Automatic synchronization settings saved successfully.", 'success');
+        }
+
+        $this->view->task = $config[$key];
     }
 
     /**
@@ -275,6 +337,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->form = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
         $this->render();
     }
 
@@ -746,6 +809,17 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 )
             );
         }
+
+        if ($this->getRequest()->getActionName() == 'update-ldap') {
+            $buttons['testLdap'] = new Fisma_Yui_Form_Button(
+                'testConfiguration',
+                array(
+                    'label' => 'Test Configuration',
+                    'onClickFunction' => 'Fisma.Ldap.validateLdapConfiguration',
+                    'imageSrc' => '/images/reload.png'
+                )
+            );
+        }
         return $buttons;
     }
 
@@ -756,7 +830,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         'backup' => array(
             'name' => 'backup.php',
             'description' => 'Backup the database and uploaded documents',
-            'defaultEnabled' => true,
+            'defaultEnabled' => false,
             'defaultNumber' => 1,
             'defaultUnit' => 'day',
             'defaultTime' => '23:00:00',
@@ -765,32 +839,32 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         'lockUser' => array(
             'name' => 'lock-user.php',
             'description' => 'Check users\' locking/unlocking conditions',
-            'defaultEnabled' => true,
+            'defaultEnabled' => false,
             'defaultNumber' => 1,
             'defaultUnit' => 'minute',
         ),
         'notify' => array(
             'name' => 'notify.php',
             'description' => 'Create notification emails',
-            'defaultEnabled' => true,
+            'defaultEnabled' => false,
             'defaultNumber' => 1,
             'defaultUnit' => 'minute'
         ),
         'sendMail' => array(
             'name' => 'send-mail.php',
             'description' => 'Flush the mail queue',
-            'defaultEnabled' => true,
+            'defaultEnabled' => false,
             'defaultNumber' => 1,
             'defaultUnit' => 'minute'
         ),
-        //'refreshUser' => array(
-        //    'name' => 'refresh-user.php',
-        //    'description' => 'Refresh user information from LDAP',
-        //    'defaultEnabled' => true,
-        //    'defaultNumber' => 30,
-        //    'defaultUnit' => 'day',
-        //    'defaultTime' => '03:00:00'
-        //),
+        'refreshUser' => array(
+            'name' => 'refresh-user.php',
+            'description' => 'Refresh user information from LDAP',
+            'defaultEnabled' => false,
+            'defaultNumber' => 30,
+            'defaultUnit' => 'day',
+            'defaultTime' => '03:00:00'
+        ),
         'rebuildIndex' => array(
             'name' => 'rebuild-index.php',
             'description' => 'Refresh the indexing cache from database',
@@ -803,7 +877,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         'optimizeIndex' => array(
             'name' => 'optimize-index.php',
             'description' => 'Optimize search indices to increase performance',
-            'defaultEnabled' => true,
+            'defaultEnabled' => false,
             'defaultNumber' => 7,
             'defaultUnit' => 'day',
             'defaultTime' => '01:00:00'

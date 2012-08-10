@@ -519,6 +519,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         if ($this->_acl->hasPrivilegeForClass('admin', 'Notification')) {
             $this->view->adminEvents = Doctrine::getTable('Event')->findByCategory('admin');
+            $this->view->scriptEvents = Doctrine::getTable('Event')->findByCategory('script');
         }
 
         $this->view->userEvents = Doctrine::getTable('Event')->findByCategory('user');
@@ -1332,10 +1333,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $buttons = array_merge($buttons, parent::getToolbarButtons($record));
 
-        if (!empty($record) && $this->_acl->hasPrivilegeForObject('delete', $record)) {
-            if ($this->getRequest()->getActionName() === 'view') {
-                $fromSearchParams = $this->_getFromSearchParams($this->_request);
-                $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        if (!empty($record) && $this->getRequest()->getActionName() === 'view') {
+            $fromSearchParams = $this->_getFromSearchParams($this->_request);
+            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+            if ($this->_acl->hasPrivilegeForObject('delete', $record)) {
                 $buttons['delete'] = new Fisma_Yui_Form_Button(
                     'deleteButton',
                     array(
@@ -1348,6 +1350,23 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                         'imageSrc' => '/images/trash_recyclebin_empty_closed.png'
                     )
                 );
+            }
+
+            if ($this->_acl->hasPrivilegeForObject('update', $record)) {
+                if (Fisma::configuration()->getConfig('auth_type') == 'ldap') {
+                    $buttons['ldapRefresh'] = new Fisma_Yui_Form_Button(
+                        'ldapRefresh',
+                        array(
+                            'label' => 'Synchronize',
+                            'imageSrc' => '/images/reload.png',
+                            'onClickFunction' => 'Fisma.Util.formPostAction',
+                            'onClickArgument' => array(
+                                'action' => '/user/sync' . $fromSearchUrl,
+                                'id' => $record->id
+                            )
+                        )
+                    );
+                }
             }
         }
 
@@ -1794,5 +1813,33 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             )
         );
         $this->view->toolbarButtons = $buttons;
+    }
+
+    /**
+     * Fetch user info from LDAP
+     */
+    public function syncAction()
+    {
+        if (Fisma::configuration()->getConfig('auth_type') !== 'ldap') {
+            throw new Fisma_Zend_Exception_User(
+                'The application is not configured to use external authentication provider'
+            );
+        }
+
+        if (!$id = $this->getRequest()->getParam('id')) {
+            throw new Fisma_Zend_Exception_User("No id provided.");
+        }
+
+        if (!$subject = Doctrine::getTable('User')->find($id)) {
+            throw new Fisma_Zend_Exception_User("No user found with id: " . $id);
+        }
+
+        $subject->syncWithLdap();
+        $subject->save();
+
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        $this->view->priorityMessenger('User information sucessfully synchronized from LDAP.', 'info');
+        $this->_redirect('/user/view/id/' . $id . $fromSearchUrl);
     }
 }

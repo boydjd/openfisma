@@ -45,8 +45,11 @@ Finding:
                 param2: Finding
         Goto:
             label: Go To...
-            model: Finding
-            click: /finding/remediation
+            onclick:
+                fn: Fisma.Menu.goTo
+                obj:
+                    model: Finding
+                    controller: /finding/remediation
             privilege:
                 func: hasPrivilegeForClass
                 param1: read
@@ -121,8 +124,11 @@ Vulnerability:
             link: /vm/vulnerability/list
         Goto:
             label: Go To...
-            model: Vulnerability
-            click: /vm/vulnerability
+            onclick:
+                fn: Fisma.Menu.goTo
+                obj:
+                    model: Vulnerability
+                    controller: /vm/vulnerability
         Separator1:
             label: Separator
         Upload:
@@ -182,8 +188,11 @@ Incident:
             link: /incident/list
         Goto:
             label: Go To...
-            model: Incident
-            click: /incident
+            onclick:
+                fn: Fisma.Menu.goTo
+                obj:
+                    model: Incident
+                    controller: /incident
         Separator1:
             label: Separator
         ReportIncident:
@@ -332,9 +341,6 @@ Administration:
         SysConfig:
             label: System Configuration
             submenu:
-                BackgroundTasks:
-                    label: Background Tasks
-                    link: /config/background-tasks
                 Email:
                     label: E-mail
                     link: /config/email
@@ -382,6 +388,9 @@ Administration:
                     label: APC User Cache
                     link: /debug/apc-cache/type/user
                     condition: return Fisma_Menu::isApc();
+                BackgroundTasks:
+                    label: Background Tasks
+                    link: /config/background-tasks
                 ErrorLog:
                     label: Error log
                     link: /debug/errorlog
