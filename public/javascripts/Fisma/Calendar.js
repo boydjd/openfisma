@@ -38,15 +38,8 @@
             var popupCalendarDiv = document.createElement('div');
             popupCalendarDiv.style.position = 'absolute';
             popupCalendarDiv.style.zIndex = 1000;
+            textEl.parentNode.style.display = 'inline-block';
             textEl.parentNode.appendChild(popupCalendarDiv);
-
-            var textFieldPosition = YAHOO.util.Dom.getRegion(textEl);
-            var calendarPosition = [
-                textFieldPosition.left,
-                textFieldPosition.bottom + 5
-            ];
-
-            YAHOO.util.Dom.setXY(popupCalendarDiv, calendarPosition);
 
             var calendar = new YAHOO.widget.Calendar(popupCalendarDiv, {close : true, title : 'Pick A Date'});
             calendar.hide();
@@ -54,7 +47,16 @@
             // Fix bug: the calendar needs to be rendered AFTER the current event dispatch returns
             setTimeout(function () {calendar.render();}, 0);
 
-            textEl.onfocus = function () { calendar.show(); };
+            textEl.onfocus = function () {
+                var textFieldPosition = YAHOO.util.Dom.getRegion(textEl);
+                var calendarPosition = [
+                    textFieldPosition.left,
+                    textFieldPosition.bottom + 5
+                ];
+
+                YAHOO.util.Dom.setXY(popupCalendarDiv, calendarPosition);
+                calendar.show();
+            };
 
             var handleSelect = function (type, args, obj) {
                 var dateParts = args[0][0];
