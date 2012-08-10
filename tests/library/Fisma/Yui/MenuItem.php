@@ -21,7 +21,6 @@ require_once(realpath(dirname(__FILE__) . '/../../../Case/Unit.php'));
 /**
  * This test suite includes tests for
  * [..]/Yui/MenuItem.php
- * [..]/Yui/MenuItem/Goto.php
  * [..]/Yui/MenuItem/OnClick.php
  *
  * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
@@ -49,17 +48,11 @@ class Test_Library_Fisma_Yui_MenuItem extends Test_Case_Unit
         $onclick = new Fisma_Yui_MenuItem_OnClick($event, $object);
         $this->assertEquals($event, $onclick->fn);
         $this->assertEquals($object, $onclick->obj);
-        
+
         $menuItem = new Fisma_Yui_MenuItem($title, $url, $onclick);
         $this->assertEquals($title, $menuItem->text);
         $this->assertEquals($url, $menuItem->url);
         $this->assertEquals($onclick, $menuItem->onclick);
-
-        $label = 'Go To...';
-        $menuGoto = new Fisma_Yui_MenuItem_GoTo($label, $title, $url);
-        $this->assertEquals('Fisma.Menu.goTo', $menuGoto->onclick->fn);
-        $this->assertEquals($object, $menuGoto->onclick->obj);
-        $this->assertEquals($label, $menuGoto->text);
     }
 }
 
