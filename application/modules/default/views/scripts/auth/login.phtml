@@ -1,6 +1,6 @@
 <form id="login" _lpchecked="1" method="post" action="/auth/login" onsubmit="return login(this);">
     <div id='banner'>
-        <h1>Warning</h1>
+        <h1 class='banner'>Warning</h1>
         <div id='bannerContent'>
             <?php echo $this->escape(Fisma::configuration()->getConfig('use_notification'), 'none');?>
         </div>
@@ -10,7 +10,7 @@
         </fieldset>
     </div>
     <div id='form'>
-        <h1>Log In</h1>
+        <h1 class='banner'>Log In</h1>
         <fieldset id="inputs">
             <input
                 id="username"
@@ -73,6 +73,7 @@ function login(formElement) {
         if (validation) {
             $('#form').slideToggle();
             $('#banner').slideToggle();
+            $('input.submit[value="Accept"]').focus();
         }
         return false;
     }
@@ -80,6 +81,7 @@ function login(formElement) {
 function decline() {
     $('#form').slideToggle();
     $('#banner').slideToggle();
+    $('input.submit[value="Log in"]').focus();
     return false;
 }
 function capLock(e) {

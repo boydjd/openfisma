@@ -89,7 +89,7 @@ body
 
 /*--------------------*/
 
-h1
+h1.banner
 {
     text-transform: uppercase;
     text-align: center;
@@ -100,7 +100,7 @@ h1
     position: relative;
 }
 
-h1:after, h1:before
+h1.banner:after, h1.banner:before
 {
     background-color: #777;
     content: "";
@@ -110,7 +110,7 @@ h1:after, h1:before
     width: 120px;
 }
 
-h1:after
+h1.banner:after
 {
     background-image: -webkit-gradient(linear, left top, right top, from(#777), to(#fff));
     background-image: -webkit-linear-gradient(left, #777, #fff);
@@ -121,7 +121,7 @@ h1:after
     right: 0;
 }
 
-h1:before
+h1.banner:before
 {
     background-image: -webkit-gradient(linear, right top, left top, from(#777), to(#fff));
     background-image: -webkit-linear-gradient(right, #777, #fff);

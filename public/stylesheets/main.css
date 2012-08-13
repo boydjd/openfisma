@@ -91,7 +91,7 @@ table.fisma_crud div.readonly {
 
 /* Create some space around the body content */
 body {
-	padding: 1px;
+	padding: 0px;
 	text-align: left;
     margin: 0;
 }

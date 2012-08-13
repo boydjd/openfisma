@@ -165,7 +165,7 @@
                 ),
                 generateRequest : requestConstructor,
                 draggableColumns : true,
-                height : ($(window).height() - 350) + 'px'
+                height : ($(window).height() - 290) + 'px'
             };
 
             // The actual DataTable instance
@@ -335,7 +335,7 @@
             }, tablePrefs);
 
             $(window).resize(function(event){
-                dataTable.set('height', ($(window).height() - 350) + 'px');
+                dataTable.set('height', ($(window).height() - 290) + 'px');
                 dataTable.render();
             });
 

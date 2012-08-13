@@ -398,7 +398,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         } else {
             $form->setDefaults($user->toArray());
         }
-        $this->view->form    = Fisma_Zend_Form_Manager::prepareForm($form);
+        $this->view->form = Fisma_Zend_Form_Manager::prepareForm($form);
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -1289,7 +1290,13 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     {
         $buttons = array();
 
-        if ($this->_request->getActionName() === 'notification') {
+        if (
+            $this->_request->getActionName() === 'notification' ||
+            (
+                $this->_request->getActionName() === 'profile' &&
+                Fisma::configuration()->getConfig('user_editable_profiles')
+            )
+        ) {
             $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
                 'saveChanges',
                 array(
@@ -1331,7 +1338,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
         }
 
-        $buttons = array_merge($buttons, parent::getToolbarButtons($record));
+        if ($this->_request->getActionName() !== 'profile') {
+            $buttons = array_merge($buttons, parent::getToolbarButtons($record));
+        }
 
         if (!empty($record) && $this->getRequest()->getActionName() === 'view') {
             $fromSearchParams = $this->_getFromSearchParams($this->_request);
