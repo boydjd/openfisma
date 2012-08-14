@@ -1011,7 +1011,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         // For exports, disable highlighting and result length truncation
         if (!empty($format)) {
             $searchEngine->setHighlightingEnabled(false);
-            $searchEngine->setMaxRowLength(null);
         }
 
         $queryType = $this->getRequest()->getParam('queryType');
