@@ -45,7 +45,7 @@ class Fisma_Yui_MenuItem_OnClick
      */
     public function __construct($fn, $obj = null)
     {
-        if (isset($fn['fn'])) {
+        if (is_array($fn) && isset($fn['fn'])) {
             if (isset($fn['obj'])) {
                 $obj = $fn['obj'];
             }

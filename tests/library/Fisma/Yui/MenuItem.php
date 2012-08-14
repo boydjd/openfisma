@@ -45,6 +45,10 @@ class Test_Library_Fisma_Yui_MenuItem extends Test_Case_Unit
             'model' => $title,
             'controller' => $url
         );
+        $onclickArray = new Fisma_Yui_MenuItem_OnClick(array('fn' => $event, 'obj' => $object));
+        $this->assertEquals($event, $onclickArray->fn);
+        $this->assertEquals($object, $onclickArray->obj);
+
         $onclick = new Fisma_Yui_MenuItem_OnClick($event, $object);
         $this->assertEquals($event, $onclick->fn);
         $this->assertEquals($object, $onclick->obj);
