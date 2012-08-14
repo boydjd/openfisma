@@ -47,11 +47,7 @@
         </fieldset>
         <fieldset class="actions">
             <input type="submit" class="submit" name="submit" value="Log in"/>
-            <a href="<?php
-                $mailurl = 'mailto:' . Fisma::configuration()->getConfig('contact_email')
-                         . '?Subject='. $this->escape("I forgot my password", 'url');
-                echo $this->escape($mailurl);
-            ?>" target="_blank">Forgot your password?</a>
+            <a href="/auth/recover">Cannot login?</a>
         <?php if ($this->showReportIncidentButton): ?>
             <a href="/incident/report">Report a Security Incident</a>
         <?php endif; ?>

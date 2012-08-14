@@ -1,0 +1,3 @@
+<?php echo $this->escape($this->user->username);?> (currently locked for <?php echo $this->escape($this->user->lockType); ?>) has requested to be unlocked.
+
+<?php echo $this->escape(Fisma_Url::customUrl('/user/view/id/' . $this->user->id)); ?>

@@ -1,0 +1,74 @@
+<form id="login" _lpchecked="1" method="post" action="/auth/recover" onsubmit="return login(this);">
+    <div id='form'>
+        <h1 class='banner'>Recovery</h1>
+        <fieldset id="inputs">
+            <p style='margin-top:-20px'>
+                <input type='radio' name='recover' id='recoverUl' value='unlock' />
+                <label for='recoverUl'>I need to unlock my account.</label><br/>
+                <input type='radio' name='recover' id='recoverPw' value='password' />
+                <label for='recoverPw'>I need to reset my password.</label><br/>
+                <input type='radio' name='recover' id='recoverUn' value='username' />
+                <label for='recoverUn'>I need to recover my username.</label><br/>
+                <input type='radio' name='recover' id='recoverRq' value='request' />
+                <label for='recoverRq'>I need to request access.</label>
+            </P>
+            <input
+                id="username"
+                type="text"
+                name="username"
+                placeholder="Username"
+                autofocus=""
+                autocomplete="off"
+            >
+            <input
+                id="email"
+                type="text"
+                name="email"
+                placeholder="Email"
+                autofocus=""
+                autocomplete="off"
+            >
+            <?php if (isset($this->error)): ?><div class="message"><?php
+                echo $this->escape($this->error);
+            ?></div><?php endif; ?>
+        </fieldset>
+        <fieldset class="actions">
+            <input type="submit" class="submit" name="submit" value="Recover"/>
+            <a href="/auth/login">Return to login page</a>
+        </fieldset>
+    </div>
+</form>
+<script type="text/javascript">
+function login(formElement) {
+    var validation = true;
+    var focusCallback = function(){$(this).focus();}
+    $('input[required]').each(function(index, element){
+        if (!element.value) {
+            $(element).fadeOut().fadeIn(focusCallback);
+            focusCallback = null;
+            validation = false;
+        }
+    });
+    return validation;
+}
+$(function(){
+    $('input[type=text]').hide().attr('required', null);
+    $('input.submit').hide();
+    $('input[type=radio]').change(function(){
+        $('input[type=text]').hide();
+        $('.message').hide();
+        switch($(this).attr('id')) {
+            case 'recoverUl':
+            case 'recoverPw':
+                $('#username').show().focus().attr('required', '');
+            break;
+
+            case 'recoverUn':
+            case 'recoverRq':
+                $('#email').show().focus().attr('required', '');
+            break;
+        }
+        $('input.submit').show();
+    })
+})
+</script>
