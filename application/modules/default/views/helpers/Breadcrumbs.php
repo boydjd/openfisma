@@ -53,8 +53,8 @@ class View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
      */
      public function breadcrumbs()
      {
-     	$url = $this->view->url();;
-     	
+        $url = $this->view->url();;
+
         $this->breadcrumbInfo = array();
         
         // Load the breadcrumbs configuration file
@@ -77,8 +77,7 @@ class View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
         }
         
         // The given URL is not found in the breadcrumbs configuration
-        if (!isset($item))
-        {
+        if (!isset($item)) {
             $breadcrumbs = "<div id=\"breadcrumbs\"></div>";
             return $breadcrumbs;
         }
@@ -90,11 +89,10 @@ class View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
         // Construct the breadcrumbs
         $breadcrumbs =
         "<div id=\"breadcrumbs\" style=\"padding: 10px 10px 0 30px; font-weight: bold; font-size: 1.0em;\">";
-        for ($i=0; $i < count($labelItems); $i++){
+        for ($i=0; $i < count($labelItems); $i++) {
             if ($linkItems[$i] === "no-link") {
                 $breadcrumbs .= $labelItems[$i];
-            }
-            else {
+            } else {
                 $breadcrumbs .= "<a href=\"$linkItems[$i]\">$labelItems[$i]</a>";
             }
         
@@ -106,5 +104,5 @@ class View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
         $breadcrumbs .= "</div>";
 
         return $breadcrumbs;
-    }
+     }
 }
