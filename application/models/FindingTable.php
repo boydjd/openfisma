@@ -284,7 +284,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'uploadid' => array(
        				'initiallyVisible' => false,
-       				'label' => 'UploadID',
+       				'label' => 'Upload ID',
        				'sortable' => true,
        				'type' => 'integer'
        		)
