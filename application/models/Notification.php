@@ -50,9 +50,8 @@ class Notification extends BaseNotification
 
         if (!empty($extra['rowsProcessed'])) {
             $eventText = $extra['rowsProcessed'] . " " . $event->description;
-        }
-        else {
-        	$eventText = $event->description;
+        } else {
+            $eventText = $event->description;
         }
 
         // If the model has a "nickname" field, then identify the record by the nickname. Otherwise, identify the record
@@ -110,9 +109,8 @@ class Notification extends BaseNotification
         $url = '';
 
         if (!empty($extra['appUrl'])) {
-        	$url = $baseUrl .  $event->urlPath . $extra['appUrl'];
-        }
-        else if (isset($record) && $urlPath) {
+            $url = $baseUrl .  $event->urlPath . $extra['appUrl'];
+        } else if (isset($record) && $urlPath) {
             if (strstr($urlPath, 'view')) {
                 $url = $baseUrl . $urlPath . $record->id;
             } else {

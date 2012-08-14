@@ -104,12 +104,12 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                      
                 // Create finding injection notification
                 $url = "?q=/uploadid/integerEquals/" . $upload->id;
-                Notification::notify("FINDING_IMPORTED"
-                		             ,null
-                		             ,CurrentUser::getInstance()
-                		             ,array('appUrl' => $url
-                		                   ,'rowsProcessed' => $rowsProcessed)
-                		             );
+                Notification::notify("FINDING_IMPORTED",
+                                     null,
+                                     CurrentUser::getInstance(),
+                                     array('appUrl' => $url,
+                                           'rowsProcessed' => $rowsProcessed)
+                                    );
                 
             } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
                 Doctrine_Manager::connection()->rollback();
