@@ -354,11 +354,12 @@ Fisma.Finding = {
                 placeholder : 'ui-sortable-proxy',
                 update: function(event, ui) {
                     storage.set(event.target.id, $(event.target).sortable("toArray").join());
-                }
+                },
+                cancel: 'div.section'
             })
-            .disableSelection()
             .find('.sectionHeader')
                 .css('cursor', 'move')
+                .disableSelection()
         ;
 
         //collapsible
@@ -405,5 +406,35 @@ Fisma.Finding = {
         if (layout) {
             $('#' + layout).click();
         }
+    },
+
+    /**
+     * Handle the onclick event of the "Show all" / "Show only" links
+     */
+    restrictTableLengthClickHandler: function (linkElement, num, registryName) {
+        $(linkElement).parents('.section').find('tr.yui-dt-rec').show();
+        if (num > 0) {
+            $(linkElement).parents('.section').find('tr.yui-dt-rec:gt(' + --num + ')').hide();
+        }
+
+        $(linkElement).siblings('a').show();
+        $(linkElement).hide();
+
+        new Fisma.Storage('finding.dashboard')
+            .set(registryName, (linkElement.innerHTML.indexOf('only') > 0) ? 'only' : 'all');
+        return false;
+    },
+
+    /**
+     * Handle the renderEvent of the datatable
+     */
+    restrictTableLength: function () {
+        var section = $(this.getContainerEl()).parents('.section');
+        var registryName = $(this.getContainerEl()).attr('registryName');
+        var defaultView = 'only';
+        if (new Fisma.Storage('finding.dashboard').get(registryName)) {
+            defaultView = new Fisma.Storage('finding.dashboard').get(registryName);
+        }
+        section.find('a:contains(' + defaultView + ')').click();
     }
 };

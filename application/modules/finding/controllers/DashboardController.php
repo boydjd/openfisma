@@ -312,6 +312,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             );
         }
         $this->view->byPocTable = new Fisma_Yui_DataTable_Local();
+        $this->view->byPocTable->setRegistryName('Finding.Dashboard.Analyst.byPocTable');
+        $this->view->byPocTable->addEventListener('renderEvent', 'Fisma.Finding.restrictTableLength');
         $this->view->byPocTable->addColumn(
             new Fisma_Yui_DataTable_Column(
                 'Point of Contact',
@@ -489,6 +491,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             );
         }
         $this->view->bySystemTable = new Fisma_Yui_DataTable_Local();
+        $this->view->bySystemTable->setRegistryName('Finding.Dashboard.Analyst.bySystemTable');
+        $this->view->bySystemTable->addEventListener('renderEvent', 'Fisma.Finding.restrictTableLength');
         $this->view->bySystemTable->addColumn(
             new Fisma_Yui_DataTable_Column(
                 'System',

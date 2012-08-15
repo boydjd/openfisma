@@ -124,4 +124,14 @@ class Fisma_Yui_DataTable_Local extends Fisma_Yui_DataTable_Abstract
     {
         $this->_eventListeners[$yuiEventName] = $javaScriptFunctionName;
     }
+
+    /**
+     * Return the number of records
+     *
+     * @return long
+     */
+    public function countData()
+    {
+        return count($this->_data);
+    }
 }
