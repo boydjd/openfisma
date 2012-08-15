@@ -265,7 +265,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $buttons['list'] = new Fisma_Yui_Form_Button_Link(
                 'toolbarListButton',
                 array(
-                    'value' => 'Return',
+                    'value' => 'Search Results',
                     'href' => $this->getBaseUrl() . '/list',
                     'imageSrc' => '/images/arrow_return_down_left.png'
                 )
