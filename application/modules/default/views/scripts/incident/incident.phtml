@@ -402,16 +402,10 @@
                     <?php echo $this->escape($this->createDateTime)?>
                 </td>
             </tr>
-            <?php if (!empty($this->incident['closedTs'])): ?>
-            <tr>
-                <td>
-                    Resolved:
-                </td>
-                <td>
-                    <?php echo $this->escape($this->closedTs); ?>
-                </td>
-            </tr>
-            <?php endif; ?>
+            <?php if (!empty($this->incident['closedTs'])): ?><tr>
+                <td>Resolved:</td>
+                <td><?php echo $this->escape($this->closedTs); ?></td>
+            </tr><?php endif; ?>
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 

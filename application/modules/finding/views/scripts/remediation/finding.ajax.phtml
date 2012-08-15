@@ -136,18 +136,10 @@
                 <td>Created:</td>
                 <td><?php echo $this->escape($this->createdTs)?></td>
             </tr>
-            <tr>
+            <?php if (!is_null($finding->closedTs)): ?><tr>
                 <td>Resolved:</td>
-                <td>
-                    <?php
-                    if (!is_null($finding->closedTs)) {
-                        echo $this->escape($this->closedTs);
-                    } else {
-                        echo $this->escape("<i>Not closed</i>", 'none');
-                    }
-                    ?>
-                </td>
-            </tr>
+                <td><?php echo $this->escape($this->closedTs); ?></td>
+            </tr><?php endif; ?>
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 
