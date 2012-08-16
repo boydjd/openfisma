@@ -95,9 +95,6 @@ form#finding_workflow td input[readonly], form#finding_workflow td textarea[read
 }
 
 /* New Dashboard Analyst View */
-div#bySystem .yui-dt table {
-    width: 100%;
-}
 div#findingAnalystLeft .yui-dt-col-displayOrganization, .yui-dt-col-displayPoc {
     width: 20%;
 }
@@ -110,4 +107,8 @@ div#findingAnalystLeft .yui-dt-col-threatLevel {
 div#findingAnalystLeft .yui-dt-col-displayTotal {
     width: 5%;
     text-align: center !important;
+}
+div#findingAnalystLeft div.section > a {
+    margin-top: 8px;
+    display: block;
 }
