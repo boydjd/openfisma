@@ -17,6 +17,9 @@
 
     <body>
         <div id="content">
+            <h1 style=''><?php
+                echo $this->escape(Fisma::configuration()->getConfig('system_name'));
+            ?></h1>
             <div id='loginForm'>
                 <?php echo $this->escape($this->layout()->content, 'none'); ?>
             </div>
