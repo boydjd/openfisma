@@ -68,7 +68,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->uploadForm = $uploadForm;
     }
-
+    
     /**
      * Handle upload of a spreadsheet template file
      */
@@ -94,7 +94,6 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 $injectExcel = new Fisma_Inject_Excel();
 
                 $rowsProcessed = $injectExcel->inject($file['tmp_name'], $upload->id);
-
                 // upload file after the file parsed
                 $upload->instantiate($file);
                 $upload->save();
@@ -102,6 +101,16 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                 Doctrine_Manager::connection()->commit();
                 $error = "$rowsProcessed findings were created.";
                 $type  = 'notice';
+                     
+                // Create finding injection notification
+                $url = "?q=/uploadid/integerEquals/" . $upload->id;
+                Notification::notify("FINDING_IMPORTED",
+                                     null,
+                                     CurrentUser::getInstance(),
+                                     array('appUrl' => $url,
+                                           'rowsProcessed' => $rowsProcessed)
+                                    );
+                
             } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
                 Doctrine_Manager::connection()->rollback();
                 $error = "The file cannot be processed due to an error: {$e->getMessage()}";

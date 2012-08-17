@@ -48,7 +48,11 @@ class Notification extends BaseNotification
             throw new Fisma_Zend_Exception("No event named '$eventName' was found");
         }
 
-        $eventText = $event->description;
+        if (!empty($extra['rowsProcessed'])) {
+            $eventText = $extra['rowsProcessed'] . " " . $event->description;
+        } else {
+            $eventText = $event->description;
+        }
 
         // If the model has a "nickname" field, then identify the record by the nickname. Otherwise, identify the record
         // by it's ID, which is a field that all models are expected to have (except for join tables). Some
@@ -59,7 +63,7 @@ class Notification extends BaseNotification
         }
         if (isset($record->nickname) && !is_null($record->nickname)) {
             $eventText .= " ($recordClass $record->nickname)";
-        } elseif (isset($record)) {
+        } elseif (isset($record) && isset($record->id)) {
             $eventText .= " ($recordClass #$record->id)";
         }
 
@@ -104,7 +108,9 @@ class Notification extends BaseNotification
         $urlPath = (isset($extra['url'])) ? $extra['url'] : $event->urlPath;
         $url = '';
 
-        if (isset($record) && $urlPath) {
+        if (!empty($extra['appUrl'])) {
+            $url = $baseUrl .  $event->urlPath . $extra['appUrl'];
+        } else if (isset($record) && $urlPath) {
             if (strstr($urlPath, 'view')) {
                 $url = $baseUrl . $urlPath . $record->id;
             } else {
