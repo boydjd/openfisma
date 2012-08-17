@@ -303,12 +303,12 @@ class AuthController extends Zend_Controller_Action
                     } else {
                         $this->view->error = "User $username not found.";
                     }
-                break;
+                    break;
                 case 'unlock':
                     if ($user = Doctrine::getTable('User')->findOneByUsername($username)) {
                         if ($user->lockType == 'manual') {
                             $this->view->error = "Account $user->username has been disabled.";
-                        } else if (!$user->locked){
+                        } else if (!$user->locked) {
                             $this->view->error = "Account $user->username is not locked.";
                         } else {
                             $options = array('user' => $user);
@@ -324,7 +324,7 @@ class AuthController extends Zend_Controller_Action
                     } else {
                         $this->view->error = "User $username not found.";
                     }
-                break;
+                    break;
                 case 'username':
                     if ($user = Doctrine::getTable('User')->findOneByEmail($email)) {
                         if ($user->lockType == 'manual') {
@@ -343,7 +343,7 @@ class AuthController extends Zend_Controller_Action
                     } else {
                         $this->view->error = "$email is not associated with a registered user.";
                     }
-                break;
+                    break;
                 case 'request':
                     $options = array('email' => $email);
                     $mail = new Mail();
