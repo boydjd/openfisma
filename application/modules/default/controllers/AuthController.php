@@ -259,6 +259,116 @@ class AuthController extends Zend_Controller_Action
     }
 
     /**
+     * Forget username, password, or request unlock
+     *
+     * @GETAllowed
+     * @return void
+     */
+    public function recoverAction()
+    {
+        $this->_helper->layout->setLayout('login');
+        if ($this->getRequest()->isPost()) {
+            $username = $this->getRequest()->getPost('username');
+            $email = $this->getRequest()->getPost('email');
+            $recover = $this->getRequest()->getPost('recover');
+
+            $sender = Fisma::configuration()->getConfig('sender');
+            $method = Fisma::configuration()->getConfig('auth_type');
+            $systemName = Fisma::configuration()->getConfig('system_name');
+            $contactName = Fisma::configuration()->getConfig('contact_name');
+            $contactEmail = Fisma::configuration()->getConfig('contact_email');
+            $contactSubject =Fisma::configuration()->getConfig('contact_subject');
+
+            switch ($recover) {
+                case 'password':
+                    if ($user = Doctrine::getTable('User')->findOneByUsername($username)) {
+                        if ($user->lockType == 'manual') {
+                            $this->view->error = "Account $user->username has been disabled.";
+                        } else {
+                            // @TODO: Reset password if not using ldap
+                            // if ($method === 'ldap') {
+                                $options = array('user' => $user);
+                                $mail = new Mail();
+
+                                $mail->sender        = $sender;
+                                $mail->senderName    = $systemName;
+                                $mail->recipient     = $contactEmail;
+                                $mail->recipientName = $contactName;
+                                $mail->subject       = "$contactSubject ($recover)";
+                                $this->view->error   = "Administrator has been contacted.";
+                            /*} else {
+                                $this->view->error = "Password has been reset for $username";
+                            }*/
+                        }
+                    } else {
+                        $this->view->error = "User $username not found.";
+                    }
+                break;
+                case 'unlock':
+                    if ($user = Doctrine::getTable('User')->findOneByUsername($username)) {
+                        if ($user->lockType == 'manual') {
+                            $this->view->error = "Account $user->username has been disabled.";
+                        } else if (!$user->locked){
+                            $this->view->error = "Account $user->username is not locked.";
+                        } else {
+                            $options = array('user' => $user);
+                            $mail = new Mail();
+
+                            $mail->sender        = $sender;
+                            $mail->senderName    = $systemName;
+                            $mail->recipient     = $contactEmail;
+                            $mail->recipientName = $contactName;
+                            $mail->subject       = "$contactSubject ($recover)";
+                            $this->view->error   = "Administrator has been contacted.";
+                        }
+                    } else {
+                        $this->view->error = "User $username not found.";
+                    }
+                break;
+                case 'username':
+                    if ($user = Doctrine::getTable('User')->findOneByEmail($email)) {
+                        if ($user->lockType == 'manual') {
+                            $this->view->error = "This account has been disabled.";
+                        } else {
+                            $options = array('user' => $user, 'systemName' => $systemName);
+                            $mail = new Mail();
+
+                            $mail->sender        = $sender;
+                            $mail->senderName    = $systemName;
+                            $mail->recipient     = $email;
+                            $mail->recipientName = $user->displayName;
+                            $mail->subject       = "[{$systemName}] Your account information";
+                            $this->view->error   = "Account info will be sent to <{$email}>.";
+                        }
+                    } else {
+                        $this->view->error = "$email is not associated with a registered user.";
+                    }
+                break;
+                case 'request':
+                    $options = array('email' => $email);
+                    $mail = new Mail();
+
+                    $mail->sender        = $sender;
+                    $mail->senderName    = $systemName;
+                    $mail->recipient     = $contactEmail;
+                    $mail->recipientName = $contactName;
+                    $mail->subject       = "$contactSubject ($recover)";
+                    $this->view->error   = "Administrator has been contacted.";
+                break;
+            }
+            if (isset($mail)) {
+                try {
+                    $mail->mailTemplate($recover, $options);
+                    $handler = (isset($mailHandler)) ? $mailHandler : new Fisma_MailHandler_Immediate();
+                    $handler->setMail($mail)->send();
+                } catch (Zend_Mail_Exception $e) {
+                    throw new Fisma_Zend_Exception($e);
+                }
+            }
+        }
+    }
+
+    /**
      * Display the system's privacy policy.
      *
      * @GETAllowed

@@ -147,7 +147,7 @@ fieldset
     padding-top: 20px;
     margin-bottom: -10px;
 }
-#inputs input
+#inputs input[type=text], #inputs input[type=password]
 {
     background: #ffffff url('/images/login-sprite.png') no-repeat;
     padding: 15px 15px 15px 30px;
@@ -171,7 +171,11 @@ fieldset
 {
     background-position: 5px -52px !important;
 }
-
+#email
+{
+    background: #ffffff url('/images/mail.png') no-repeat !important;
+    background-position: 3px 10px !important;
+}
 #inputs input:focus
 {
     background-color: #fff;
