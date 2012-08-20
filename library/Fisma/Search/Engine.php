@@ -692,7 +692,6 @@ class Fisma_Search_Engine
             $documentFieldName = $doctrineFieldName . '_' . $searchFieldDefinition['type'];
 
             $rawValue = $this->_getRawValueForField($table, $object, $doctrineFieldName, $searchFieldDefinition);
-
             if (is_null($rawValue)) {
                 continue;
             }
@@ -772,7 +771,7 @@ class Fisma_Search_Engine
 
                 foreach ($document as $columnName => $columnValue) {
                     $newColumnName = $this->_removeSuffixFromColumnName($columnName);
-                    $row[$newColumnName] = $columnValue[0];
+                    $row[$newColumnName] = $columnValue;
                 }
 
                 // Convert any dates or datetimes from Solr's UTC format back to native format

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8" ?>
 <!--
 Default Solr schema file for OpenFISMA.
 
@@ -6,7 +6,7 @@ Symlink your Solr installation's schema.xml to this file.
 
 See http://manual.openfisma.org/display/ADMIN/Administrator+Manual
 -->
-<schema name="openfisma" version="1.0">
+<schema name="openfisma" version="1.5">
     <types>
         <!--
         Built in types for Solr
@@ -93,6 +93,7 @@ See http://manual.openfisma.org/display/ADMIN/Administrator+Manual
         Each document also requires the primary key to be stored in the id field.
         -->
         <field name="id" type="string" indexed="true" stored="true" required="true"/>
+        <field name="text" type="text" indexed="true" stored="true" />
 
         <!--
         Dynamic types are formed by naming a field with a suffix. Each suffix corresponds to one of the types defined
