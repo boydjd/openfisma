@@ -61,8 +61,31 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
         $form->getElement('productId')->setValue($subject->productId);
         $form->getElement('product')->setValue($subject->Product->name);
+        //$form->getElement('serviceTag')->setValue($subject->serviceTag);
 
         return parent::setForm($subject, $form);
+    }
+
+    /**
+     * Populating the service tag select menu
+     *
+     * @param String $formName Optional. Name of a specific form.
+     * @return Zend_Form The specified form of the subject model
+     */
+    public function getForm($formName = null)
+    {
+        $form = parent::getForm($formName);
+
+        if (!isset($formName)) {
+            $options = array();
+            $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
+            foreach($tags as $tag) {
+                $options[$tag] = $tag;
+            }
+            $form->getElement('serviceTag')->setMultiOptions($options);
+        }
+
+        return $form;
     }
 
     /**
@@ -82,7 +105,6 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         }
 
         $values = $form->getValues();
-
         $subject->merge($values);
         $subject->save();
 
@@ -97,6 +119,17 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
      */
     public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
+        if ($this->getRequest()->getActionName() == 'service-tags') {
+            $buttons = array(new Fisma_Yui_Form_Button_Link(
+                'importAssetsButton',
+                array(
+                    'value' => 'Import',
+                    'href' => $this->getBaseUrl() . '/import',
+                    'imageSrc' => '/images/up.png'
+                )
+            ));
+            return $buttons;
+        }
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
         if ($this->_acl->hasPrivilegeForClass('create', 'Asset')) {
@@ -195,5 +228,16 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     protected function _isDeletable()
     {
         return false;
+    }
+
+    /**
+     * Manage service tags
+     *
+     * @GETAllowed
+     * @return void
+     */
+    public function serviceTagsAction()
+    {
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 }

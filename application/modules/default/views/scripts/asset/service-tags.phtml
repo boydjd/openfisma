@@ -1,0 +1,6 @@
+<?php
+    echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
+    Fisma_Format_Section::startSection("Manage Asset Service Tags");
+        echo $this->escape($this->tags, 'none');
+    Fisma_Format_Section::stopSection();
+?>

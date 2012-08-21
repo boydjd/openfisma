@@ -217,4 +217,6 @@ Configuration:
             type: boolean
             notnull: true
             default: true
-
+        asset_service_tags:
+            type: string
+            default: "development,testing,pre-production,staging,production"

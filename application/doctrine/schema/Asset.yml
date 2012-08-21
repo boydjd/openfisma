@@ -1,10 +1,10 @@
 Asset:
     listeners: [IndexListener, NotificationListener]
-        
+
     columns:
-        createdTs: 
+        createdTs:
             type: timestamp
-        modifiedTs: 
+        modifiedTs:
             type: timestamp
 
         name:
@@ -37,7 +37,10 @@ Asset:
                 logicalName: IP Port Number
                 notify: true
             comment: The IP port for this asset
-        
+        serviceTag:
+            type: string(255)
+            comment: The service tag of this asset
+
         productId:
             type: integer
             comment: Foreign key to product table

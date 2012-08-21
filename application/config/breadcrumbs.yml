@@ -266,6 +266,10 @@ SystemInventoryDashboard:
     url: /organization-dashboard
     labels: [System Inventory, Dashboard]
     links: [no-link, no-link]
+SystemAdminAssetServiceTags:
+    url: /asset/service-tags
+    labels: [System Inventory, Administration, Asset Service Tags]
+    links: [no-link, no-link, no-link]
 SystemAdminControlCatalog:
     url: /security-control-catalog/list
     labels: [System Inventory, Administration, Control Catalogs]

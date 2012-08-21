@@ -275,6 +275,9 @@ System:
                 func: hasArea
                 param: system_inventory_admin
             submenu:
+                AssetServiceTags:
+                    label: Asset Service Tags
+                    link: /asset/service-tags
                 ControlCatalogs:
                     label: Control Catalogs
                     link: /security-control-catalog/list

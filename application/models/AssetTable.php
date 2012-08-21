@@ -80,6 +80,12 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'serviceTag' => array(
+                'initiallyVisible' => true,
+                'label' => 'Service Tag',
+                'sortable' => true,
+                'type' => 'text'
+            ),
             'system' => array(
                 'initiallyVisible' => true,
                 'label' => 'System',

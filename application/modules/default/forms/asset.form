@@ -48,3 +48,8 @@ elements.networkId.type = "select"
 elements.networkId.options.label = "Network"
 elements.networkId.options.required = true
 displayGroups.assetInfo.elements.networkId = "networkId"
+
+elements.serviceTag.type = "select"
+elements.serviceTag.options.label = "Service Tag"
+elements.serviceTag.options.required = true
+displayGroups.assetInfo.elements.serviceTag = "serviceTag"
