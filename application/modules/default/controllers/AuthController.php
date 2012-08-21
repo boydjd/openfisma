@@ -354,7 +354,7 @@ class AuthController extends Zend_Controller_Action
                     $mail->recipientName = $contactName;
                     $mail->subject       = "$contactSubject ($recover)";
                     $this->view->error   = "Administrator has been contacted.";
-                break;
+                    break;
             }
             if (isset($mail)) {
                 try {
