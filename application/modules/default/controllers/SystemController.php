@@ -691,10 +691,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         // Add roles and their users to the checkbox tree
         foreach ($rolesAndUsers as $role) {
-            $tree->addCheckbox(NULL, $role->nickname, 0);
-
+            $tree->addCheckbox(array('label' => $role->nickname, 'level' => 0));
             foreach ($role->UserRole as $userRole) {
-                $tree->addCheckbox($userRole->userRoleId, $userRole->User->username, 1);
+                $tree->addCheckbox(
+                    array('name' => $userRole->userRoleId, 'label' => $userRole->User->username, 'level' => 1)
+                );
             }
         }
 
@@ -887,10 +888,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
             // Add roles and their users to the checkbox tree
             foreach ($rolesAndUsers as $role) {
-                $tree->addCheckbox(NULL, $role->nickname, 0);
-
+                $tree->addCheckbox(array('label' => $role->nickname, 'level' => 0));
                 foreach ($role->UserRole as $userRole) {
-                    $tree->addCheckbox($userRole->userRoleId, $userRole->User->username, 1);
+                    $tree->addCheckbox(
+                        array('name' => $userRole->userRoleId, 'label' => $userRole->User->username, 'level' => 1)
+                    );
                 }
             }
         } else {

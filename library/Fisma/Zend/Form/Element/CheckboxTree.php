@@ -95,6 +95,7 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
      */
     function render(Zend_View_Interface $view = null)
     {
+        $view = (isset($view)) ? $view : $this->getView();
         $render = '';
         $render .= "<div id=\"{$this->getName()}\">";
 
@@ -123,13 +124,19 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
                  . "</td></tr>";
         $render .= "<tr><td><ul class='treelist'>";
         foreach ($this->_checkboxes as $count => $checkbox) {
+            try {
             $render .= "<li style=\"padding-left:"
                      . (2*$checkbox['level'])
                      . "em\">";
-            $checked = in_array($checkbox['name'], $this->_defaults) ? ' checked=\'checked\'' : '';
-            $group = $this->getView()->escape($checkbox['group']);
-            $name = $this->getView()->escape($checkbox['name']);
-            $label = $checkbox['nickname'] . ' - ' . $checkbox['fullname'];
+            $checked = (isset($checkbox['name']) && in_array($checkbox['name'], $this->_defaults))
+                     ? ' checked=\'checked\''
+                     : '';
+            $group = (isset($checkbox['group'])) ? $view->escape($checkbox['group']) : '';
+            $name = (isset($checkbox['name'])) ? $view->escape($checkbox['name']) : '';
+            $label = (isset($checkbox['label']))
+                   ? ($checkbox['label'])
+                   : ($checkbox['nickname'] . ' - ' . $checkbox['fullname']);
+
             $render .= "<input type='checkbox'"
                      . ' id="' . $groupName . '[' . $group . '][' . $name . ']"'
                      . ' name="' . $groupName . '[' . $group . '][]"'
@@ -137,12 +144,24 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
                      . ' onclick="Fisma.CheckboxTree.handleClick(this, event);"'
                      . ' nestedLevel="' . $checkbox['level'] . '"'
                      . $class . $checked . $disabled . '>&nbsp;'
-                     . '<label treePos="' . $count . '" for="' . $groupName . '[' . $group . '][' . $name . ']" '
-                     . 'nickname="' . $this->getView()->escape($checkbox['nickname']) . '" '
-                     . 'fullname="' . $this->getView()->escape($checkbox['fullname']) . '" '
-                     . 'type="' . $this->getView()->escape($checkbox['type']) . '">'
-                     . $this->getView()->escape($label)
+                     . '<label for="' . $groupName . '[' . $group . '][' . $name . ']" '
+                     . 'treePos="' . $count . '" '
+                     . ((isset($checkbox['nickname']))
+                        ? ('nickname="' . $view->escape($checkbox['nickname']) . '" ')
+                        : '')
+                     . ((isset($checkbox['fullname']))
+                        ? ('fullname="' . $view->escape($checkbox['fullname']) . '" ')
+                        : '')
+                     . ((isset($checkbox['type']))
+                        ? ('type="' . $view->escape($checkbox['type']) . '"')
+                        : '')
+                     . '>'
+                     . $view->escape($label)
                      . '</label>&nbsp;</li>';
+            } catch(Exception $e) {
+                print($e);
+            }
+
         }
         $render .= "</ul></td></tr>\n";
 
