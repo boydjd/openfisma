@@ -238,6 +238,29 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
      */
     public function serviceTagsAction()
     {
+        $data = array();
+        $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
+        foreach ($tags as $tag) {
+            $count =
+            $data[] = array(
+                'tag' => $tag,
+                'assets' => json_encode(array(
+                    'displayText' =>
+                        Doctrine_Query::create()->from('Asset')->where('serviceTag = ?', $tag)->count() . '', //toString
+                    'url' => '/asset/list?q=/serviceTag/textExactMatch/' . $this->view->escape($tag, 'url')
+                )),
+                'edit' => 'javascript:Fisma.Asset.renameTag("' . $this->view->escape($tag, 'javascript') . '")',
+                'delete' => ''
+            );
+        }
+        $table = new Fisma_Yui_DataTable_Local();
+        $table->addColumn(new Fisma_Yui_DataTable_Column('Tag', false, 'YAHOO.widget.DataTable.formatText'))
+              ->addColumn(new Fisma_Yui_DataTable_Column('Assets', false, 'Fisma.TableFormat.formatLink'))
+              ->addColumn(new Fisma_Yui_DataTable_Column('Edit', false, 'Fisma.TableFormat.editControl'))
+              ->addColumn(new Fisma_Yui_DataTable_Column('Delete', false, 'Fisma.TableFormat.deleteControl'))
+              ->setData($data)
+              ->setRegistryName('assetServiceTagTable');
         $this->view->toolbarButtons = $this->getToolbarButtons();
+        $this->view->tags = $table;
     }
 }

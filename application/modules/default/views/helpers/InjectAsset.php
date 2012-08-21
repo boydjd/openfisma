@@ -43,6 +43,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma.js',
                                       '/javascripts/Fisma/Editable.js',
                                       '/javascripts/Fisma/AttachArtifacts.js',
+                                      '/javascripts/Fisma/Asset.js',
                                       '/javascripts/Fisma/AutoComplete.js',
                                       '/javascripts/Fisma/Blinker.js',
                                       '/javascripts/Fisma/Calendar.js',
