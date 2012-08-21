@@ -413,8 +413,10 @@ Fisma.Finding = {
      */
     restrictTableLengthClickHandler: function (linkElement, num, registryName) {
         $(linkElement).parents('.section').find('tr.yui-dt-rec').show();
+        $(linkElement).parents('.section').find('tr.yui-dt-rec span.bar').show(); //IE7 quirk mode
         if (num > 0) {
             $(linkElement).parents('.section').find('tr.yui-dt-rec:gt(' + --num + ')').hide();
+            $(linkElement).parents('.section').find('tr.yui-dt-rec:gt(' + num + ') span.bar').hide(); //IE7 quirk mode
         }
 
         $(linkElement).siblings('a').show();

@@ -119,46 +119,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
 
         $totalFindingsQuery = Doctrine_Query::create()
-            ->select('COUNT(id) as count')
             ->from('Finding f')
             ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
             ->andWhereIn('f.responsibleOrganizationId', $myOrgSystemIds)
             ->orWhere('f.status <> ?', 'CLOSED')
             ->andWhere('f.pocId = ?', $this->_me->id);
-        $result = $totalFindingsQuery->fetchOne();
-        $this->view->total = $result['count'];
+        $this->view->total = $totalFindingsQuery->count();
         if ($this->view->total < 1) {
             $this->view->message = "There are no unresolved findings under your responsibility.";
             return;
-        }
-
-        $findingsByTime = Doctrine_Query::create()
-            ->select('f.id, f.nextDueDate')
-            ->from('Finding f')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
-            ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
-            ->orWhere('f.status <> ?', 'CLOSED')
-            ->andWhere('f.pocId = ?', $this->_me->id)
-            ->execute();
-        $this->view->byTime = array(
-            array(
-                'criteria' => 'On-Time',
-                'count' => 0
-            ),
-            array(
-                'criteria' => 'Overdue',
-                'count' => 0
-            )
-        );
-        foreach ($findingsByTime as $finding) {
-            $nextDueDate = new Zend_Date($finding->nextDueDate, Fisma_Date::FORMAT_DATE);
-            if (!is_null($finding->nextDueDate)) {
-                if ($nextDueDate->compareDate(new Zend_Date()) >= 0) {
-                    $this->view->byTime[0]['count']++;
-                } else {
-                    $this->view->byTime[1]['count']++;
-                }
-            }
         }
 
         $this->view->byThreat = Doctrine_Query::create()
