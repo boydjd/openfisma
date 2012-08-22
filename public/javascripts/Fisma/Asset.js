@@ -20,12 +20,7 @@
  */
 
 Fisma.Asset = {
-    renameTag: function(tag) {
-        var jcell = $('td:contains("' + tag + '")');
-        var row = jcell.parents('tr').get(0);
-        var datatable = Fisma.Registry.get('assetServiceTagTable');
-        datatable.selectRow(row);
-
+    showInputDialog: function(title, query, callbacks) {
         var Dom = YAHOO.util.Dom,
             Event = YAHOO.util.Event,
             Panel = YAHOO.widget.Panel,
@@ -34,7 +29,7 @@ Fisma.Asset = {
             form = document.createElement('form'),
             textField = $('<input type="text"/>').get(0),
             button = $('<input type="submit" value="OK"/>').get(0),
-            table = $('<table class="fisma_crud"><tbody><tr><td>New name: </td><td></td><td></td></tr></tbody></table>');
+            table = $('<table class="fisma_crud"><tbody><tr><td>' + query + ': </td><td></td><td></td></tr></tbody></table>');
         table.appendTo(form);
         $("td", table).get(1).appendChild(textField);
         $("td", table).get(2).appendChild(button);
@@ -44,30 +39,80 @@ Fisma.Asset = {
         // Make Go button YUI widget
         button = new YAHOO.widget.Button(button);
 
-        // Add event listener
-        var fn = function(ev, obj) {
-            Event.stopEvent(ev);
-            var input = Number(textField.value.trim());
-            if (true) {
-                errorDiv.innerHTML = "Renaming '" + tag + "'...";
-                jcell.children('div').text(textField.value);
-                panel.hide();
-                panel.destroy();
-            } else {
-                errorDiv.innerHTML = "Error.";
-            }
-        };
-        var param = {};
-        Event.addListener(form, "submit", fn, param);
-
-        // show the panel
+        // Prepare the panel
         var panel = new Panel(Dom.generateId(), {modal: true});
-        panel.setHeader("Rename '" + tag + "' ...");
+        panel.setHeader(title);
         panel.setBody(contentDiv);
         panel.render(document.body);
         panel.center();
+
+        // Add event listener
+        Event.addListener(form, "submit", callbacks.continue, {panel: panel, errorDiv: errorDiv, textField: textField});
+        panel.subscribe("hide", callbacks.cancel);
+
+        // Show the panel
         panel.show();
-        panel.subscribe("hide", function() { datatable.unselectRow(row); });
         textField.focus();
+    },
+
+    renameTag: function(tag) {
+        var jcell = $('td:contains("' + tag + '")');
+        var row = jcell.parents('tr').get(0);
+        var datatable = Fisma.Registry.get('assetServiceTagTable');
+        datatable.selectRow(row);
+
+        Fisma.Asset.showInputDialog(
+            "Rename '" + tag + "' ...",
+            "New name",
+            {
+                continue: function(ev, obj) {
+                    YAHOO.util.Event.stopEvent(ev);
+                    var input = obj.textField.value;
+                    if (input != "") {
+                        obj.errorDiv.innerHTML = "Renaming '" + tag + "'...";
+                        jcell.children('div').text(input);
+                        jcell.siblings().eq(1).find('div a')
+                            .attr('href', 'javascript:Fisma.Asset.renameTag("' + input + '")');
+                        obj.panel.hide();
+                        obj.panel.destroy();
+                    } else {
+                        obj.errorDiv.innerHTML = "Tag name cannot be blank.";
+                    }
+                },
+                cancel: function(ev, obj) {
+                    datatable.unselectRow(row);
+                }
+            }
+        );
+    },
+
+    addTag: function() {
+        var datatable = Fisma.Registry.get('assetServiceTagTable');
+
+        Fisma.Asset.showInputDialog(
+            "Add a tag ...",
+            "Tag name",
+            {
+                continue: function(ev, obj) {
+                    YAHOO.util.Event.stopEvent(ev);
+                    var input = obj.textField.value;
+                    if (input != "") {
+                        obj.errorDiv.innerHTML = "Adding tag '" + input + "'...";
+                        datatable.addRow({
+                            'Tag': input,
+                            'Assets': {displayText: '0', url: '/asset/list?q=/serviceTag/textExactMatch/' + input},
+                            'Edit': "javascript:Fisma.Asset.renameTag('" + input + "')",
+                            'Delete': ''
+                        });
+                        obj.panel.hide();
+                        obj.panel.destroy();
+                    } else {
+                        obj.errorDiv.innerHTML = "Tag name cannot be blank.";
+                    }
+                },
+                cancel: function(ev, obj) {
+                }
+            }
+        );
     }
 };

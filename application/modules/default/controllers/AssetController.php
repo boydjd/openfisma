@@ -120,12 +120,12 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
     {
         if ($this->getRequest()->getActionName() == 'service-tags') {
-            $buttons = array(new Fisma_Yui_Form_Button_Link(
-                'importAssetsButton',
+            $buttons = array(new Fisma_Yui_Form_Button(
+                'addTag',
                 array(
-                    'value' => 'Import',
-                    'href' => $this->getBaseUrl() . '/import',
-                    'imageSrc' => '/images/up.png'
+                    'label' => 'Add',
+                    'onClickFunction' => 'Fisma.Asset.addTag',
+                    'imageSrc' => '/images/create.png'
                 )
             ));
             return $buttons;

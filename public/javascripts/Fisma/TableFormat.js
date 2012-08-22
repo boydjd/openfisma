@@ -578,7 +578,7 @@ Fisma.TableFormat = {
      *     }
      */
     formatLink : function (elCell, oRecord, oColumn, oData) {
-        oData = YAHOO.lang.JSON.parse(oData);
+        oData = (YAHOO.lang.isObject(oData)) ? oData : YAHOO.lang.JSON.parse(oData);
         if (oData) {
             if (oData.displayText) {
                 elCell.innerHTML = oData.displayText;
