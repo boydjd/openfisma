@@ -36,13 +36,13 @@ class Application_Migration_021801_AddEvent extends Fisma_Migration_Abstract
             "INSERT INTO event (
                  name
                 ,description
-                ,privilegeid 
+                ,privilegeid
                 ,urlpath
                 ,category
                 ,defaultactive
                 ,deleted_at
              )
-             SELECT 
+             SELECT
                 'FINDING_IMPORTED'
                 ,'findings are imported'
                 ,id
@@ -50,9 +50,33 @@ class Application_Migration_021801_AddEvent extends Fisma_Migration_Abstract
                 ,'finding'
                 ,1
                 ,null
-            FROM privilege 
-           WHERE resource = 'notification' 
+            FROM privilege
+           WHERE resource = 'notification'
              AND action   = 'finding'"
+        );
+
+        $this->message("Adding VULNERABILITY_IMPORT event...");
+        $this->getHelper()->exec(
+                "INSERT INTO event (
+                 name
+                ,description
+                ,privilegeid
+                ,urlpath
+                ,category
+                ,defaultactive
+                ,deleted_at
+             )
+             SELECT
+                'VULNERABILITY_IMPORTED'
+                ,'vulnerabilities are imported'
+                ,id
+                ,'/vm/vulnerability/list'
+                ,'vulnerability'
+                ,1
+                ,null
+            FROM privilege
+           WHERE resource = 'notification'
+             AND action   = 'vulnerability'"
         );
     }
 }
