@@ -136,6 +136,14 @@ Event:
         category: vulnerability
         urlPath: /vm/vulnerability/view/id
 
+    VULNERABILITY_IMPORTED:
+        defaultActive: true
+        name: VULNERABILITY_IMPORTED
+        description: vulnerabilities are imported
+        Privilege: notification_vulnerability
+        category: vulnerability
+        urlPath: /vm/vulnerability/list
+
     VULNERABILITY_CLOSED:
         name: VULNERABILITY_CLOSED
         description: a vulnerability is resolved
