@@ -77,6 +77,10 @@ class Notification extends BaseNotification
             $eventText .= ' by ' . Fisma::configuration()->getConfig('system_name');
         }
 
+        if (!empty($extra['suppDetail'])) {
+            $eventText .= ", " . $extra['suppDetail'];
+        }
+
         // Figure out which users are listening for this event
         $eventsQuery = Doctrine_Query::create()
             ->select('e.id, u.id')
@@ -122,11 +126,25 @@ class Notification extends BaseNotification
             $eventText .= "\n" . $extra['log'];
         }
 
+        $isIn = false;
         $notifications = new Doctrine_Collection('Notification');
         foreach ($userEvents as $userEvent) {
             $notification = new Notification();
             $notification->eventId   = $userEvent['e_id'];
             $notification->userId    = $userEvent['u_id'];
+            $notification->eventText = $eventText;
+            $notification->url = $url;
+            $notifications[] = $notification;
+
+            if ($userEvent['u_id'] == $user->id) {
+                $isIn = true;
+            }
+        }
+
+        if (! $isIn && $eventName === 'VULNERABILITY_IMPORTED') {
+            $notification = new Notification();
+            $notification->eventId   = $event->id;
+            $notification->userId    = $user->id;
             $notification->eventText = $eventText;
             $notification->url = $url;
             $notifications[] = $notification;
