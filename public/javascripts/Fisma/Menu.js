@@ -43,48 +43,24 @@
         },
 
         goTo: function(eType, eObject, param) {
-            // create dialog
-            var Dom = YAHOO.util.Dom,
-                Event = YAHOO.util.Event,
-                Panel = YAHOO.widget.Panel,
-                contentDiv = document.createElement("div"),
-                errorDiv = document.createElement("div"),
-                form = document.createElement('form'),
-                textField = $('<input type="text"/>').get(0),
-                button = $('<input type="submit" value="Go"/>').get(0),
-                table = $('<table class="fisma_crud"><tbody><tr><td>ID: </td><td></td><td></td></tr></tbody></table>');
-            table.appendTo(form);
-            $("td", table).get(1).appendChild(textField);
-            $("td", table).get(2).appendChild(button);
-            contentDiv.appendChild(errorDiv);
-            contentDiv.appendChild(form);
-
-            // Make Go button YUI widget
-            button = new YAHOO.widget.Button(button);
-
-            // Add event listener
-            var fn = function(ev, obj) {
-                Event.stopEvent(ev);
-                var input = Number(obj.textField.value.trim());
-                if (isFinite(input)) {
-                    obj.errorDiv.innerHTML = "Navigating to ID " + input + "...";
-                    window.location = obj.controller + "/view/id/" + input;
-                } else { // input NaN
-                    obj.errorDiv.innerHTML = "Please enter a single ID number.";
+            Fisma.Util.showInputDialog(
+                "Go To " + param.model + "...",
+                "ID",
+                {
+                    continue: function(ev, obj) {
+                        YAHOO.util.Event.stopEvent(ev);
+                        var input = Number(obj.textField.value.trim());
+                        if (isFinite(input)) {
+                            obj.errorDiv.innerHTML = "Navigating to ID " + input + "...";
+                            window.location = param.controller + "/view/id/" + input;
+                        } else { // input NaN
+                            obj.errorDiv.innerHTML = "Please enter a single ID number.";
+                        }
+                    },
+                    cancel: function(ev, obj) {
+                    }
                 }
-            };
-            param.textField = textField;
-            param.errorDiv = errorDiv;
-            Event.addListener(form, "submit", fn, param);
-
-            // show the panel
-            var panel = new Panel(Dom.generateId(), {modal: true});
-            panel.setHeader("Go To " + param.model + "...");
-            panel.setBody(contentDiv);
-            panel.render(document.body);
-            panel.center();
-            panel.show();
-            textField.focus();
+            );
         }
     };
 }());

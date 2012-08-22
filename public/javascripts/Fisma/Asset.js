@@ -20,48 +20,15 @@
  */
 
 Fisma.Asset = {
-    showInputDialog: function(title, query, callbacks) {
-        var Dom = YAHOO.util.Dom,
-            Event = YAHOO.util.Event,
-            Panel = YAHOO.widget.Panel,
-            contentDiv = document.createElement("div"),
-            errorDiv = document.createElement("div"),
-            form = document.createElement('form'),
-            textField = $('<input type="text"/>').get(0),
-            button = $('<input type="submit" value="OK"/>').get(0),
-            table = $('<table class="fisma_crud"><tbody><tr><td>' + query + ': </td><td></td><td></td></tr></tbody></table>');
-        table.appendTo(form);
-        $("td", table).get(1).appendChild(textField);
-        $("td", table).get(2).appendChild(button);
-        contentDiv.appendChild(errorDiv);
-        contentDiv.appendChild(form);
-
-        // Make Go button YUI widget
-        button = new YAHOO.widget.Button(button);
-
-        // Prepare the panel
-        var panel = new Panel(Dom.generateId(), {modal: true});
-        panel.setHeader(title);
-        panel.setBody(contentDiv);
-        panel.render(document.body);
-        panel.center();
-
-        // Add event listener
-        Event.addListener(form, "submit", callbacks.continue, {panel: panel, errorDiv: errorDiv, textField: textField});
-        panel.subscribe("hide", callbacks.cancel);
-
-        // Show the panel
-        panel.show();
-        textField.focus();
-    },
-
     renameTag: function(tag) {
-        var jcell = $('td:contains("' + tag + '")');
+        var jcell = $('td').filter(function(index){
+            return ($(this).text() === tag);
+        });
         var row = jcell.parents('tr').get(0);
         var datatable = Fisma.Registry.get('assetServiceTagTable');
         datatable.selectRow(row);
 
-        Fisma.Asset.showInputDialog(
+        Fisma.Util.showInputDialog(
             "Rename '" + tag + "' ...",
             "New name",
             {
@@ -89,7 +56,7 @@ Fisma.Asset = {
     addTag: function() {
         var datatable = Fisma.Registry.get('assetServiceTagTable');
 
-        Fisma.Asset.showInputDialog(
+        Fisma.Util.showInputDialog(
             "Add a tag ...",
             "Tag name",
             {
