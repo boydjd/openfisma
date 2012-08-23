@@ -28,8 +28,14 @@
                          <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
                             class="editable"
                          <?php endif; ?>>
-
-                        <?php echo $this->escape($this->incident['Category']['name']); ?>&nbsp;
+                        <?php if (!empty($this->incident['Category'])): ?>
+                            <?php echo $this->escape($this->incident['Category']['Category']['category']); ?>:
+                            <?php echo $this->escape($this->incident['Category']['Category']['name']); ?>
+                            &#9658;
+                            <?php echo $this->escape($this->incident['Category']['name']); ?>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
                     </span>
                 </td>
             </tr>

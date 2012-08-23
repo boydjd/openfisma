@@ -124,6 +124,28 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'initiallyVisible' => false,
                 'label' => 'Category',
                 'join' => array(
+                    'model' => 'IrCategory',
+                    'relation' => 'Category.Category',
+                    'field' => 'category'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'categoryName' => array(
+                'initiallyVisible' => false,
+                'label' => 'Category Name',
+                'join' => array(
+                    'model' => 'IrCategory',
+                    'relation' => 'Category.Category',
+                    'field' => 'name'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
+            'subcategory' => array(
+                'initiallyVisible' => false,
+                'label' => 'Subcategory',
+                'join' => array(
                     'model' => 'IrSubCategory',
                     'relation' => 'Category',
                     'field' => 'name'

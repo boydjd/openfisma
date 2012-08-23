@@ -663,16 +663,15 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $id = $this->_request->getParam('id');
 
-        $incidentQuery = Doctrine_Query::create()
+        $incident = Doctrine_Query::create()
                          ->from('Incident i')
                          ->leftJoin('i.Organization o')
                          ->leftJoin('i.Category category')
                          ->leftJoin('i.ReportingUser reporter')
                          ->leftJoin('i.PointOfContact poc')
+                         ->leftJoin('category.Category mainCategory')
                          ->where('i.id = ?', $id)
-                         ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-        $results = $incidentQuery->execute();
-        $incident = $results[0];
+                         ->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
 
         $this->view->incident = $incident;
         $createdDateTime = new Zend_Date($incident['reportTs'], Fisma_Date::FORMAT_DATETIME);

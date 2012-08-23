@@ -124,9 +124,14 @@
                                 YAHOO.util.Event.onContentReady(name + "-button", function () {
                                     // Fetch currently selected item
                                     var selectElement = document.getElementById(name + '-select');
+                                    var selectedOption = null;
                                     var selectedLabel = '';
                                     if (selectElement.options.length > 0) {
-                                        selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
+                                        selectedOption = selectElement.options[selectElement.selectedIndex];
+                                        selectedLabel = selectedOption.innerHTML;
+                                        if (selectedOption.parentElement.nodeName === "OPTGROUP") {
+                                            selectedLabel = $("<div />").text($(selectedOption).parent().attr("label")).html() + " &#9658; " + selectedLabel;
+                                        }
                                     }
 
                                     // Create a Button using an existing <input> and <select> element
@@ -139,20 +144,23 @@
                                     // Register "click" event listener for the Button's Menu instance
                                     oMenuButton.getMenu().subscribe('click', function (p_sType, p_aArgs) {
                                         if (p_aArgs[1]) {
+                                            var parentName, childName;
                                             var children = p_aArgs[1].cfg.getProperty('submenu');
                                             if (!children) {
-                                                oMenuButton.set(
-                                                    'label',
-                                                    p_aArgs[1].cfg.getProperty('text').replace(/&amp;/g, "&")
-                                                );
+                                                // this is the child
+                                                childName = p_aArgs[1].cfg.getProperty('text');
+                                                parentName = p_aArgs[1].parent.parent.cfg.getProperty('text');
                                             } else {
+                                                // otherwise, this is the parent
+                                                parentName = p_aArgs[1].cfg.getProperty('text');
                                                 var firstChild = children.getItem(0);
+                                                childName = firstChild.cfg.getProperty('text');
+                                                // also set the configuration to reflect the first child
                                                 oMenuButton.set('selectedMenuItem', firstChild);
-                                                oMenuButton.set(
-                                                    'label',
-                                                    firstChild.cfg.getProperty('text').replace(/&amp;/g, "&")
-                                                );
                                             }
+                                            var buttonLabel = $("<div/>").text(parentName).html() + " &#9658; " + $("<div/>").text(childName).html();
+                                            oMenuButton.set('label', buttonLabel);
+
                                             var f = selectElement.onchange;
                                             if (f) {
                                                 selectElement.value = p_aArgs[1].srcElement.value;

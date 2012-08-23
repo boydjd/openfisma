@@ -314,7 +314,6 @@ Incident:
             class: User
             local: reportingUserId
             foreign: id
-            foreignType: one
             foreignAlias: ReportedIncidents
         Category:
             class: IrSubCategory
