@@ -52,33 +52,33 @@ class Fisma_Cli_VmScanBulkUpload extends Fisma_Cli_Abstract
             'fileManager',
             new Fisma_FileManager(Fisma::getPath('fileStorage'), new finfo(FILEINFO_MIME))
         );
-        
+
         // config vars
         $this->_appRoot = realpath(APPLICATION_PATH . '/../');
         $this->getLog()->info("Application directory is " . $this->_appRoot);
 
         if (is_null($this->getOption('networkId'))) {
             throw new Fisma_Zend_Exception_User ("Network ID (-n) is required.");
-        } 
+        }
         if (is_null($this->getOption('OrgSystemId'))) {
-        	throw new Fisma_Zend_Exception_User ("Organization System ID (-o) is required.");
+            throw new Fisma_Zend_Exception_User ("Organization System ID (-o) is required.");
         }
         if (is_null($this->getOption('filepath'))) {
-        	throw new Fisma_Zend_Exception_User ("File path (-f) is required.");
+            throw new Fisma_Zend_Exception_User ("File path (-f) is required.");
         }
         if (is_null($this->getOption('userId'))) {
-        	throw new Fisma_Zend_Exception_User ("User ID (-u) is required.");
+            throw new Fisma_Zend_Exception_User ("User ID (-u) is required.");
         }
-        
+
         $nid = $this->getOption('networkId');
         $oid = $this->getOption('OrgSystemId');
         $filepath = $this->getOption('filepath');
         $userid = $this->getOption('userId');
-        
+
         $filebase = pathinfo($filepath, PATHINFO_BASENAME);
         $filename = pathinfo(basename($filepath), PATHINFO_FILENAME);
         $fileext = pathinfo($filepath, PATHINFO_EXTENSION);
-        
+
         $file = array('networkId' => $nid,
                       'orgSystemId' => $oid,
                       'selectFile' => $filebase,
@@ -86,12 +86,12 @@ class Fisma_Cli_VmScanBulkUpload extends Fisma_Cli_Abstract
                       'filename' => $filename,
                       'fileext' => $fileext
                      );
-        
+
         $this->getLog()->info("File: " . print_r($file, true)) ;
-        
+
         $bulk = new Fisma_Vulnerability_BulkUpload();
         $bulk->process($file, $userid);
-        
+
         $this->getLog()->info("Bulk upload completed successfully!");
         return true;
     }
