@@ -212,7 +212,7 @@ Configuration:
             notnull: true
             notblank: true
             comment: The maximum size of files that users can upload to the application, this setting applies to all modules.
-            default: 200M
+            default: 20M
         user_editable_profiles:
             type: boolean
             notnull: true
