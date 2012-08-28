@@ -38,28 +38,37 @@ class Fisma_Zend_Form_Element_Upload extends Zend_Form_Element_File
      * @param Zend_View_Interface $view Not used but required because of parent's render() signature
      * @return string The rendered element
      */
-    public function render(Zend_View_Interface $view = null) 
+    public function render(Zend_View_Interface $view = null)
     {
-       
-        $maxUploadSize = Fisma::configuration()->getConfig('max_file_upload_size'); 
+
+        if ($this->getAttrib('inline')) {
+            $label = $this->getLabel();
+            if ($tooltip = $this->getAttrib('tooltip')) {
+                $label = new Fisma_Yui_Tooltip($this->getName() . '_label_tooltip', $label, $tooltip);
+            }
+            return '<tr><td>' . $label . '</td>' .
+                   '<td><input type="file" name="' . $this->getName() . '[]" multiple/></td></tr>';
+        }
+
+        $maxUploadSize = Fisma::configuration()->getConfig('max_file_upload_size');
         $maxFileSize = Fisma_String::convertFilesizeToInteger($maxUploadSize);
 
         $render = '';
         $render .= '<fieldset id="' . $this->getName() . '_upload_file_list" class="uploadFileList">';
         $render .= '<legend>Select File(s):</legend>';
         $render .= "<input type=\"hidden\" name=\"MAX_FILE_SIZE\" value=\"$maxFileSize\"/>";
- 
+
         $render .= '<input type="file" name="' . $this->getName() . '[]" multiple/>';
         $render .= '</fieldset>';
 
         $render .= '<p> <button class="ie7-only ie8-only ie9-only" id="add-another-file-button">';
         $render .= 'Add another file</button>';
         $render .= '<input type="submit" name="upload_' . $this->getName() .'" value="Upload"/></p>';
-        $render .= '<ul> <li>Each file must be <b>under ' 
+        $render .= '<ul> <li>Each file must be <b>under '
                    . substr($maxUploadSize, 0, -1) . ' megabytes</b> in size</li>';
         $render .= '<li>Please ensure no <b>Personally Identifiable Information</b> is included (eg, SSN, DOB)</li>';
         $render .= '</ul>';
- 
+
         return $render;
 
     }

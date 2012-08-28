@@ -63,9 +63,6 @@ class Fisma_Cli_VmScanBulkUpload extends Fisma_Cli_Abstract
         if (is_null($this->getOption('OrgSystemId'))) {
             throw new Fisma_Zend_Exception_User ("Organization System ID (-o) is required.");
         }
-        if (is_null($this->getOption('filepath'))) {
-            throw new Fisma_Zend_Exception_User ("File path (-f) is required.");
-        }
         if (is_null($this->getOption('userId'))) {
             throw new Fisma_Zend_Exception_User ("User ID (-u) is required.");
         }
