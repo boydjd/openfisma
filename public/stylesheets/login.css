@@ -264,12 +264,10 @@ fieldset
     display: none;
 }
 
-@import url(http://fonts.googleapis.com/css?family=Source+Sans+Pro);
 #content > h1 {
     color: #326988;
     text-align:center;
     font-size:56px;
-    font-family: "Source Sans Pro", cursive;
     position:absolute;
     top:50%;
     height: 40px;
