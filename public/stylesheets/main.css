@@ -1061,3 +1061,6 @@ table.custom-widget.no-border td {
     padding: 4px;
     cursor: default;
 }
+.yui-content .yui-button {
+    vertical-align: middle;
+}

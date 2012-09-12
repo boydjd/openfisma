@@ -27,7 +27,7 @@
     /*background-color: red;*/
 }
 
-div.yui-ac img.spinner {
+.yui-ac img.spinner {
 	display: inline;
 	visibility: hidden;
     position: relative;

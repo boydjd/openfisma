@@ -47,7 +47,7 @@ class Fisma_Format_Section
         $render = "<div class='sectionContainer'"
                 . ((!empty($id)) ? " id='$id'" : "")
                 . "><div class='sectionHeader'>"
-                . "<span $editableText>{$anchorStartTag}{$title}{$anchorEndTag}</span></div>"
+                . "<span $editableText>{$anchorStartTag}{$title} {$anchorEndTag}</span></div>"
                 . "<div class='section'>";
 
         print $render;

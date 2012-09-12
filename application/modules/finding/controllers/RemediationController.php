@@ -316,26 +316,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         // Only display controls if the finding has not been deleted
         if (!$finding->isDeleted()) {
-            // The "save" and "discard" buttons are only displayed if the user can update any of the findings fields
-            if ($this->view->acl()->hasPrivilegeForObject('update_*', $finding)) {
-                $buttons['submitButton'] = new Fisma_Yui_Form_Button_Submit(
-                    'saveChanges',
-                    array(
-                        'label' => 'Save',
-                        'imageSrc' => '/images/ok.png',
-                    )
-                );
-
-                $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
-                    'discardChanges',
-                    array(
-                        'value' => 'Discard',
-                        'imageSrc' => '/images/no_entry.png',
-                        'href' => '/finding/remediation/view/id/' . $finding->id . $fromSearchUrl
-                    )
-                );
-            }
-
             // Display the delete finding button if the user has the delete finding privilege
             if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
                 $args = array(null, '/finding/remediation/delete/', $id);
@@ -354,6 +334,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                     )
                 );
             }
+        } else {
+            unset($buttons['editButton']);
+            unset($buttons['submitButton']);
+            unset($buttons['discardButton']);
         }
 
         // printer friendly version
@@ -1373,5 +1357,20 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         return $editable;
+    }
+
+    protected function _updateField($request)
+    {/*
+        $results = array('value' => '', 'html' => '');
+
+        $field = $request->getParam('field');
+        switch ($field) {
+            case 'legacyFindingKey':
+                $results['value'] = 1;
+                $results['html'] = '1';
+            break;
+        }
+
+        return $results;*/
     }
 }

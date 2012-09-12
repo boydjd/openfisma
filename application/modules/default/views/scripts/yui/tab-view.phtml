@@ -35,12 +35,20 @@
                         scriptNodes[i].setAttribute('executeFlag', 'true');
                     }
                 }
+
+                if (Fisma.Editable.editMode) {
+                    $(function(){Fisma.Editable.turnAllOn();});
+                }
             }
 
             // When the active tab changes, store the active tab in a cookie so that it can be restored
             // in between page refreshes.
             var handleTabChange = function(args) {
                 tabViewStorage.set(selectedTabCookie, args.newValue);
+
+                if (Fisma.Editable.editMode) {
+                    $(function(){Fisma.Editable.turnAllOn();});
+                }
             }
 
             // Render tabs
@@ -89,7 +97,7 @@
             if (YAHOO.lang.isNull(tab)) {
                 tabViewStorage.set(objectIdCookie, objectId);
                 tabViewStorage.set(selectedTabCookie, 0);
-                tab = 0;    
+                tab = 0;
             }
 
             tabView.selectTab(tab);

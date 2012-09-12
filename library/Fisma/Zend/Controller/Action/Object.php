@@ -157,7 +157,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         if (
-            (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('update', $this->getAclResourceName())) &&
+            (
+                !$this->_enforceAcl ||
+                $this->_acl->hasPrivilegeForClass('update', $this->getAclResourceName()) ||
+                $this->_acl->hasPrivilegeForClass('update_*', $this->getAclResourceName())
+            ) &&
             $isView && $id = $this->getRequest()->getParam('id')
         ) {
             $fromSearchUrl = '';
@@ -166,21 +170,32 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
             }
 
+            $buttons['editButton'] = new Fisma_Yui_Form_Button(
+                'editMode',
+                array(
+                    'label' => 'Edit',
+                    'onClickFunction' => 'Fisma.Editable.turnAllOn',
+                    'imageSrc' => '/images/edit.png'
+                )
+            );
+
             $buttons['submitButton'] = new Fisma_Yui_Form_Button(
                 'saveChanges',
                 array(
                     'label' => 'Save',
                     'onClickFunction' => 'Fisma.Util.submitFirstForm',
-                    'imageSrc' => '/images/ok.png'
+                    'imageSrc' => '/images/ok.png',
+                    'hidden' => true
                 )
             );
 
             $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
                 'discardChanges',
                 array(
-                    'value' => 'Discard',
+                    'value' => 'Cancel',
                     'imageSrc' => '/images/no_entry.png',
-                    'href' => $this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl
+                    'href' => $this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl,
+                    'hidden' => true
                 )
             );
 
@@ -360,6 +375,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->_helper->fismaContextSwitch()
                       ->addActionContext('create', 'json')
+                      ->addActionContext('update-field', 'json')
+                      ->addActionContext('fetch-field', 'json')
                       ->initContext();
     }
 
