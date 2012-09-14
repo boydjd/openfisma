@@ -375,8 +375,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         $this->_helper->fismaContextSwitch()
                       ->addActionContext('create', 'json')
-                      ->addActionContext('update-field', 'json')
-                      ->addActionContext('fetch-field', 'json')
                       ->initContext();
     }
 

@@ -53,6 +53,9 @@
 
     var FE = {};
 
+    /**
+     * Handle the onclick event of the pencil icon
+     */
     FE.handleClickEvent = function(o) {
         // ignore clicks on anchor tags
         var targetElement = o.target || o.srcElement;
@@ -254,6 +257,9 @@
         );
     };
 
+    /**
+     * Handle the onclick event of the discard icon
+     */
     FE.discard = function (element, parent) {
         var parent = (parent) ? parent : $(element).parents('[target]'),
             target = parent.attr('target');
@@ -268,6 +274,9 @@
         }
     }
 
+    /**
+     * Handle the onclick event of the commit icon
+     */
     FE.commit = function (element) {
         var parent      = $(element).parents('[target]'),
             t_name      = parent.attr('target'),
@@ -349,6 +358,9 @@
         }
     }
 
+    /**
+     * Turn all editable fields into edit mode
+     */
     FE.turnAllOn = function() {
         Fisma.Editable.editMode = true;
         $('.yui-content > div:not(.yui-hidden) .editable').click();
