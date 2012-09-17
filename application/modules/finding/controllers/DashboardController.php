@@ -275,7 +275,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 'total' => $statistic['count'],
                 'displayTotal' => json_encode(array(
                     'url' => '/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/'
-                           . 'pocUser/textContains/' . $statistic['PointOfContact']['displayName'],
+                           . 'pocUser/textContains/'
+                           . $this->view->escape($statistic['PointOfContact']['displayName'], 'url'),
                     'displayText' => $statistic['count']
                 ))
             );
@@ -454,7 +455,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 'total' => $statistic['count'],
                 'displayTotal' => json_encode(array(
                     'url' => '/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/'
-                           . 'organization/textContains/' . $statistic['criteria'],
+                           . 'organization/textContains/'
+                           . $this->view->escape($statistic['criteria'], 'url'),
                     'displayText' => $statistic['count']
                 ))
             );
