@@ -65,9 +65,30 @@ class AuthController extends Zend_Controller_Action
      */
     public function loginAction()
     {
+        // initialize reverse proxy options
+        $reverseProxyOptions = $this->getInvokeArg('bootstrap')->getOption('reverse_proxy_auth');
+        $reverseProxyEnabled = isset($reverseProxyOptions['enable']) && $reverseProxyOptions['enable'];
+        $reverseProxyHttpHeader = isset($reverseProxyOptions['http_header'])
+            ? $reverseProxyOptions['http_header']
+            : 'username';
+        $reverseProxyAllowStandardLogin = isset($reverseProxyOptions['allow_standard_login'])
+            ? $reverseProxyOptions['allow_standard_login']
+            : false;
+
         $this->_helper->layout->setLayout('login');
         $username = $this->getRequest()->getPost('username');
         $password = $this->getRequest()->getPost('userpass');
+
+        if ($reverseProxyEnabled) {
+            $serverKey = 'HTTP_' . strtoupper(strtr($reverseProxyHttpHeader, '-', '_'));
+            if (isset($_SERVER[$serverKey])) {
+                $username = $_SERVER[$serverKey];
+            } else if (!$reverseProxyAllowStandardLogin) {
+                throw new Fisma_Zend_Exception_User('Use of standard login form disabled.');
+            } else { // using standard login
+                $reverseProxyEnabled = false;
+            }
+        }
 
         // Display anonymous reporting button if IR module is enabled
         $incidentModule = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
@@ -98,15 +119,19 @@ class AuthController extends Zend_Controller_Action
             // Perform authentication
             $auth = Zend_Auth::getInstance();
             $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
-            $authAdapter = $this->getAuthAdapter($user, $password);
-            $authResult = $auth->authenticate($authAdapter);
+            if ($reverseProxyEnabled) {
+                $auth->getStorage()->write($user);
+            } else {
+                $authAdapter = $this->getAuthAdapter($user, $password);
+                $authResult = $auth->authenticate($authAdapter);
 
-            // Generate log entries and notifications
-            if (!$authResult->isValid()) {
-                $user->getAuditLog()->write("Failed login ({$_SERVER['REMOTE_ADDR']})");
-                Notification::notify('ACCOUNT_LOGIN_FAILURE', $user, $user);
-                Notification::notify('USER_LOGIN_FAILURE', $user, $user, array('userId' => $user->id));
-                throw new Zend_Auth_Exception(self::CREDENTIAL_ERROR_MESSAGE);
+                // Generate log entries and notifications
+                if (!$authResult->isValid()) {
+                    $user->getAuditLog()->write("Failed login ({$_SERVER['REMOTE_ADDR']})");
+                    Notification::notify('ACCOUNT_LOGIN_FAILURE', $user, $user);
+                    Notification::notify('USER_LOGIN_FAILURE', $user, $user, array('userId' => $user->id));
+                    throw new Zend_Auth_Exception(self::CREDENTIAL_ERROR_MESSAGE);
+                }
             }
 
             $msgs = $this->_getFailedLoginMessage($user);
@@ -127,7 +152,9 @@ class AuthController extends Zend_Controller_Action
             }
 
             // Check whether the user's password is about to expire (for database authentication only)
-            if ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username) {
+            if (!$reverseProxyEnabled
+                && ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username)
+            ) {
 
                 // Check if the user's mustResetPassword flag is set
                 if ($user->mustResetPassword) {
