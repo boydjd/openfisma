@@ -323,13 +323,7 @@
                 success: function(data, textStatus, request) {
                     Fisma.Editable.result = data;
                     parent.addClass('editable');
-                    var errorMsg = $(data)
-                            .filter('script')
-                            .filter(function(){
-                                if ($(this).html().match(/Fisma\.Util\.message\(.*, "warning"\)/)) {
-                                    return true;
-                                }
-                            });
+                    var errorMsg = $(data).filter('script.priority-messenger-warning');
                     if (errorMsg.length > 0) {
                         errorMsg.appendTo($(this));
                         Fisma.Editable.discard(element, parent);
