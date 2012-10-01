@@ -194,7 +194,7 @@
                 ' <img src="/images/no_entry.png" style="vertical-align:text-top" onclick="Fisma.Editable.discard(this);"/>' +
             '</span>');
         }
-    }
+    };
 
     /**
      * Replace editable fields with appropriate form elements
@@ -261,8 +261,8 @@
      * Handle the onclick event of the discard icon
      */
     FE.discard = function (element, parent) {
-        var parent = (parent) ? parent : $(element).parents('[target]'),
-            target = parent.attr('target');
+        parent = parent || $(element).parents('[target]');
+        var target = parent.attr('target');
         parent.addClass('editable2').find('.editresponse').remove();
         setTimeout("$('.editable2').removeClass('editable2').addClass('editable');", 0);
         if ($('#' + target).attr('type') === 'textarea') {
@@ -272,7 +272,7 @@
         if (parent.attr('id') === target) {
             YAHOO.util.Event.on(YAHOO.util.Selector.query('#' + target), 'click', Fisma.Editable.handleClickEvent);
         }
-    }
+    };
 
     /**
      * Handle the onclick event of the commit icon
@@ -290,7 +290,8 @@
             refreshUrl  = Fisma.tabView.get('activeTab').get('dataSrc');
         switch (type) {
             case 'select':
-                if (item = YAHOO.widget.Button.getButton(t_name + '-button').get('selectedMenuItem')) {
+                var item = YAHOO.widget.Button.getButton(t_name + '-button').get('selectedMenuItem');
+                if (item) {
                     value = item.value;
                 }
                 break;
@@ -307,7 +308,7 @@
                 break;
 
         }
-        if (value != null) {
+        if (value !== null) {
             parent.find('.editresponse').remove();
             target.html('Saving, please wait... <img src="/images/spinners/small.gif" style="vertical-align:text-top"/>');
             var data = {
@@ -325,7 +326,7 @@
                     var errorMsg = $(data)
                             .filter('script')
                             .filter(function(){
-                                if ($(this).html().match(/Fisma.Util.message\(.*, "warning"\)/)) {
+                                if ($(this).html().match(/Fisma\.Util\.message\(.*, "warning"\)/)) {
                                     return true;
                                 }
                             });
@@ -356,7 +357,7 @@
         } else {
             Fisma.Editable.discard(element);
         }
-    }
+    };
 
     /**
      * Turn all editable fields into edit mode
@@ -366,7 +367,7 @@
         $('.yui-content > div:not(.yui-hidden) .editable').click();
         $('#editMode').hide();
         $('#saveChanges, #discardChanges').show();
-    }
+    };
 
     Fisma.Editable = FE;
     Fisma.Editable.editMode = false;
