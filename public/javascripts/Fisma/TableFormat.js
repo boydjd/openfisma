@@ -185,6 +185,9 @@ Fisma.TableFormat = {
         link.href = oData;
         link.appendChild(icon);
 
+        while (elCell.hasChildNodes()) {
+            elCell.removeChild(elCell.firstChild);
+        }
         elCell.appendChild(link);
     },
 
@@ -201,6 +204,9 @@ Fisma.TableFormat = {
         var icon = document.createElement('img');
         icon.src = '/images/del.png';
 
+        while (elCell.hasChildNodes()) {
+            elCell.removeChild(elCell.firstChild);
+        }
         elCell.appendChild(icon);
         elCell.parentNode.style.textAlign = 'center';
 

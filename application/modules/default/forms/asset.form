@@ -50,6 +50,5 @@ elements.networkId.options.required = true
 displayGroups.assetInfo.elements.networkId = "networkId"
 
 elements.serviceTag.type = "select"
-elements.serviceTag.options.label = "Service Tag"
-elements.serviceTag.options.required = true
+elements.serviceTag.options.label = "Environment"
 displayGroups.assetInfo.elements.serviceTag = "serviceTag"

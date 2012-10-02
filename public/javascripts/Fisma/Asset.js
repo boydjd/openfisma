@@ -37,11 +37,37 @@ Fisma.Asset = {
                     var input = obj.textField.value;
                     if (input != "") {
                         obj.errorDiv.innerHTML = "Renaming '" + tag + "'...";
-                        jcell.children('div').text(input);
-                        jcell.siblings().eq(1).find('div a')
-                            .attr('href', 'javascript:Fisma.Asset.renameTag("' + input + '")');
-                        obj.panel.hide();
-                        obj.panel.destroy();
+
+                        $.post(
+                            '/asset/rename-service-tag',
+                            {
+                                format: 'json',
+                                oldTag: tag,
+                                newTag: input,
+                                csrf: $('[name=csrf]').val()
+                            },
+                            function(data) {
+                                $('[name=csrf]').val(data.csrfToken);
+
+                                if (data.result.success) {
+                                    if (data.result.message) {
+                                        Fisma.Util.showAlertDialog(data.result.message);
+                                    } else {
+                                        datatable.updateRow(row, {
+                                            'Tag': input,
+                                            'Assets': {displayText: jcell.siblings().eq(0).find('div a').text(), url: '/asset/list?q=/serviceTag/textExactMatch/' + input},
+                                            'Edit': "javascript:Fisma.Asset.renameTag('" + input + "')",
+                                            'Delete': '/asset/remove-service-tag/tag/' + input
+                                        });
+                                    }
+                                } else {
+                                    Fisma.Util.showAlertDialog(data.result.message);
+                                }
+                                obj.panel.hide();
+                                obj.panel.destroy();
+                            }
+                        );
+
                     } else {
                         obj.errorDiv.innerHTML = "Tag name cannot be blank.";
                     }
@@ -65,14 +91,35 @@ Fisma.Asset = {
                     var input = obj.textField.value;
                     if (input != "") {
                         obj.errorDiv.innerHTML = "Adding tag '" + input + "'...";
-                        datatable.addRow({
-                            'Tag': input,
-                            'Assets': {displayText: '0', url: '/asset/list?q=/serviceTag/textExactMatch/' + input},
-                            'Edit': "javascript:Fisma.Asset.renameTag('" + input + "')",
-                            'Delete': ''
-                        });
-                        obj.panel.hide();
-                        obj.panel.destroy();
+
+                        $.post(
+                            '/asset/add-service-tag/',
+                            {
+                                format: 'json',
+                                tag: input,
+                                csrf: $('[name=csrf]').val()
+                            },
+                            function(data) {
+                                $('[name=csrf]').val(data.csrfToken);
+
+                                if (data.result.success) {
+                                    if (data.result.message) {
+                                        Fisma.Util.showAlertDialog(data.result.message);
+                                    } else {
+                                        datatable.addRow({
+                                            'Tag': input,
+                                            'Assets': {displayText: '0', url: '/asset/list?q=/serviceTag/textExactMatch/' + input},
+                                            'Edit': "javascript:Fisma.Asset.renameTag('" + input + "')",
+                                            'Delete': '/asset/remove-service-tag/tag/' + input
+                                        });
+                                    }
+                                } else {
+                                    Fisma.Util.showAlertDialog(data.result.message);
+                                }
+                                obj.panel.hide();
+                                obj.panel.destroy();
+                            }
+                        );
                     } else {
                         obj.errorDiv.innerHTML = "Tag name cannot be blank.";
                     }
