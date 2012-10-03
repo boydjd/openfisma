@@ -164,8 +164,7 @@
                     }
                 ),
                 generateRequest : requestConstructor,
-                draggableColumns : true,
-                height : ($(window).height() - 290) + 'px'
+                draggableColumns : true
             };
 
             // The actual DataTable instance
@@ -263,7 +262,16 @@
                 var renderEventFunctionName = "<?php echo $this->escape($this->renderEventFunction); ?>";
                 var renderEventFunction = Fisma.Util.getObjectFromName(renderEventFunctionName);
 
-                dataTable.subscribe("renderEvent", function () {renderEventFunction(dataTable)});
+                dataTable.subscribe("renderEvent", function () {
+                    renderEventFunction(dataTable);
+                    $('.yui-dt-scrollable .yui-dt-bd').each(function() {
+                        $(this).css('maxHeight', (
+                            $(window).height()
+                            - 320
+                            - (($('#advancedSearch').css('display') === 'none') ? 0 : $('#advancedSearch').height())
+                        ) + 'px');
+                    });
+                });
             <?php endif; ?>
 
             // Set up thead click events for columns which contain checkboxes
@@ -340,6 +348,8 @@
             });
 
             Fisma.Search.initializeSearchColumnsPanel(Dom.get("searchColumnsButtons"));
+
+
         });
     });
 })();

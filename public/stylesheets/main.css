@@ -91,8 +91,8 @@ table.fisma_crud div.readonly {
 
 /* Create some space around the body content */
 body {
-	padding: 0px;
-	text-align: left;
+    padding: 0;
+    text-align: left;
     margin: 0;
 }
 
@@ -209,12 +209,12 @@ div.externalMediaMarking {
 
 /* The content area is the middle of the page in between the header and the footer */
 div#content {
-	margin: 10px 0px;
+    margin: 8px;
 }
 
 /* Sections are used to divide long pages up into separate and distinct content blocks. */
 div.sectionHeader {
-	margin-top: 10px;
+    margin-top: 10px;
     padding: 3px 8px;
     background-color: #416ed7;
     color: #fff;
@@ -269,7 +269,7 @@ div.column, div.column66, div.column33 {
 }
 
 div.column {
-	width: 49%;
+    width: 49%;
 }
 
 div.column66 {
@@ -451,9 +451,10 @@ This class indicates that the item should have a tooltip associated with it.
 The tooltip itself is added with YUI.
 */
 span.tooltip {
-	padding: 0px 2px 2px 22px;
-	background: url(/images/tooltip.png) no-repeat;
-	cursor: help;
+    padding: 0px 2px 2px 22px;
+    background: url(/images/tooltip.png) no-repeat;
+    cursor: help;
+    display: inline-block;
 }
 
 /* This is the style for the tooltip itself. The style must be marked !important
@@ -470,10 +471,10 @@ body.masked .yui-tt {
 }
 
 .yui-tt-shadow-visible {
-	top: -5px ! important;
-	left: -5px ! important;
-	bottom: -5px ! important;
-	right: -5px ! important;
+    top: -5px ! important;
+    left: -5px ! important;
+    bottom: -5px ! important;
+    right: -5px ! important;
     background-color: orange ! important;
     opacity: 0.5 ! important;
 }
@@ -573,8 +574,8 @@ table.systemDocuments td a {
 }
 
 table.systemDocuments td img {
-	float: left;
-	margin-right: 10px;
+    float: left;
+    margin-right: 10px;
 }
 
 #testEmailRecipient {
@@ -1063,4 +1064,9 @@ table.custom-widget.no-border td {
 }
 .yui-content .yui-button {
     vertical-align: middle;
+}
+
+#breadcrumbs a {
+    color: inherit;
+    text-decoration: none;
 }

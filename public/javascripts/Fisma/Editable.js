@@ -358,7 +358,7 @@
      */
     FE.turnAllOn = function() {
         Fisma.Editable.editMode = true;
-        $('.yui-content > div:not(.yui-hidden) .editable').click();
+        $('.yui-content > div').not('.yui-hidden').find('.editable').click();
         $('#editMode').hide();
         $('#saveChanges, #discardChanges').show();
     };

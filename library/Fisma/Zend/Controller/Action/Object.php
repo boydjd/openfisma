@@ -216,6 +216,19 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         }
 
         if ($isList) {
+            if (
+                $this->_isDeletable() &&
+                (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName()))
+            ) {
+                $buttons['deleteSelected'] = new Fisma_Yui_Form_Button(
+                    'deleteSelectedButton',
+                    array(
+                        'label' => 'Delete',
+                        'onClickFunction' => 'Fisma.Search.deleteSelectedRecords',
+                        'imageSrc' => $view->serverUrl('/images/trash_recyclebin_empty_closed.png')
+                    )
+                );
+            }
             $buttons['exportXls'] = new Fisma_Yui_Form_Button(
                 'toolbarExportXlsButton',
                 array(
@@ -1365,11 +1378,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     public function getSearchMoreOptionsForm()
     {
         $searchForm = Fisma_Zend_Form_Manager::loadForm('search_more_options');
-
-        // Remove the delete button if the user doesn't have the right to click it
-        if (!$this->_isDeletable() || !$this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
-            $searchForm->removeElement('deleteSelected');
-        }
 
         // Remove the "Show Deleted" button if this model doesn't support soft-delete
         if (!Doctrine::getTable($this->_modelName)->hasColumn('deleted_at')) {
