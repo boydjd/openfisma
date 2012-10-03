@@ -10,3 +10,11 @@ Fisma_Format_Section::startSection('View: ' . $this->modelName) ;
 <?php
 Fisma_Format_Section::stopSection();
 ?>
+
+<script>
+$(function() {
+    if ($('.editable').length <= 0) {
+        Fisma.Editable.turnAllOn();
+    }
+});
+</script>

@@ -2,3 +2,10 @@
     echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
     echo $this->escape($this->tabView, 'none');
 ?>
+<script>
+$(function() {
+    if ($('.editable').length <= 0) {
+        Fisma.Editable.turnAllOn();
+    }
+});
+</script>
