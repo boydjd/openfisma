@@ -347,7 +347,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 null,
                 null,
                 'total',
-                true
+                true,
+                'number'
             )
         );
         $this->view->byPocTable->addColumn(
@@ -527,7 +528,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 null,
                 null,
                 'total',
-                true
+                true,
+                'number'
             )
         );
         $this->view->bySystemTable->addColumn(
