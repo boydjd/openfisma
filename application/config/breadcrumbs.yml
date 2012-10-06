@@ -81,11 +81,11 @@ FindingReportOverdue:
 FindingReportPluginReport:
     url: /finding/report/plugin-report
     labels: [Findings, Reports, Plugin Reports, View]
-    links: [no-link, no-link, /finding/report/plugin, no-link]            
+    links: [no-link, no-link, /finding/report/plugin, no-link]
 FindingReportPlugin:
     url: /finding/report/plugin
     labels: [Findings, Reports, Plugin Reports]
-    links: [no-link, no-link, no-link]    
+    links: [no-link, no-link, no-link]
 
 #
 # Vulnerabilities
@@ -129,7 +129,7 @@ VulnerabilityAdminResolutions:
 VulnerabilityReportAggregated:
     url: /vm/vulnerability-report/risk
     labels: [Vulnerabilities, Reports, Aggregated Risk]
-    links: [no-link, no-link, no-link]  
+    links: [no-link, no-link, no-link]
 VulnerabilityReportReopened:
     url: /vm/vulnerability-report/reopened
     labels: [Vulnerabilities, Reports, Reopened Vulnerabilities]
@@ -137,8 +137,8 @@ VulnerabilityReportReopened:
 VulnerabilityReportServices:
     url: /vm/vulnerability-report/vulnerable-service
     labels: [Vulnerabilities, Reports, Vulnerable Services]
-    links: [no-link, no-link, no-link]    
-        
+    links: [no-link, no-link, no-link]
+
 #
 # Incidents
 #
@@ -161,11 +161,11 @@ IncidentDashboard:
 IncidentAdminCategoriesView:
     url: /ir-category/view
     labels: [Incidents, Administration, Categories, View]
-    links: [no-link, no-link, /ir-category/list, no-link] 
+    links: [no-link, no-link, /ir-category/list, no-link]
 IncidentAdminCategoriesCreate:
     url: /ir-category/create
     labels: [Incidents, Administration, Categories, Create]
-    links: [no-link, no-link, /ir-category/list, no-link]  
+    links: [no-link, no-link, /ir-category/list, no-link]
 IncidentAdminCategories:
     url: /ir-category/list
     labels: [Incidents, Administration, Categories]
@@ -185,16 +185,16 @@ IncidentAdminWorkflows:
 IncidentReportOrganizations:
     url: /incident-report/organization
     labels: [Incidents, Reports, Incident Organizations]
-    links: [no-link, no-link, no-link]       
+    links: [no-link, no-link, no-link]
 IncidentReportCategories:
     url: /incident-report/category
     labels: [Incidents, Reports, Incident Categories]
-    links: [no-link, no-link, no-link]     
+    links: [no-link, no-link, no-link]
 IncidentReportHistory:
     url: /incident-report/history
     labels: [Incidents, Reports, Incident History]
     links: [no-link, no-link, no-link]
-            
+
 #
 # System Inventory
 #
@@ -229,11 +229,11 @@ SystemDocument:
 SystemDocumentView:
     url: /system-document/view
     labels: [System Inventory, Documentation, View]
-    links: [no-link, /system-document/list, no-link]   
+    links: [no-link, /system-document/list, no-link]
 SystemOrganizationView:
     url: /organization/view
     labels: [System Inventory, Organizations, View]
-    links: [no-link, /organization/list, no-link] 
+    links: [no-link, /organization/list, no-link]
 SystemOrganizationCreate:
     url: /organization/create
     labels: [System Inventory, Organizations, Create]
@@ -249,11 +249,11 @@ SystemOrganizationTree:
 SystemInventoryView:
     url: /system/view
     labels: [System Inventory, Systems, View]
-    links: [no-link, /system/list, no-link]  
+    links: [no-link, /system/list, no-link]
 SystemInventoryCreate:
     url: /system/create
     labels: [System Inventory, Systems, Create]
-    links: [no-link, /system/list, no-link]  
+    links: [no-link, /system/list, no-link]
 SystemInventory:
     url: /system/list
     labels: [System Inventory, Systems]
@@ -269,19 +269,19 @@ SystemInventoryDashboard:
 SystemAdminControlCatalog:
     url: /security-control-catalog/list
     labels: [System Inventory, Administration, Control Catalogs]
-    links: [no-link, no-link, no-link] 
+    links: [no-link, no-link, no-link]
 SystemAdminControlCatalogView:
     url: /security-control-catalog/view
     labels: [System Inventory, Administration, Control Catalogs, View]
-    links: [no-link, no-link, /security-control-catalog/list, no-link]   
+    links: [no-link, no-link, /security-control-catalog/list, no-link]
 SystemAdminDocumentTypeView:
     url: /document-type/view
     labels: [System Inventory, Administration, Document Types, View]
-    links: [no-link, no-link, /document-type/list, no-link]     
+    links: [no-link, no-link, /document-type/list, no-link]
 SystemAdminDocumentTypeCreate:
     url: /document-type/create
     labels: [System Inventory, Administration, Document Types, Create]
-    links: [no-link, no-link, /document-type/list, no-link]      
+    links: [no-link, no-link, /document-type/list, no-link]
 SystemAdminDocumentType:
     url: /document-type/list
     labels: [System Inventory, Administration, Document Types]
@@ -293,11 +293,11 @@ SystemAdminIconManagement:
 SystemAdminNetworkView:
     url: /network/view
     labels: [System Inventory, Administration, Networks, View]
-    links: [no-link, no-link, /network/list, no-link]        
+    links: [no-link, no-link, /network/list, no-link]
 SystemAdminNetworkCreate:
     url: /network/create
     labels: [System Inventory, Administration, Networks, Create]
-    links: [no-link, no-link, /network/list, no-link]     
+    links: [no-link, no-link, /network/list, no-link]
 SystemAdminNetwork:
     url: /network/list
     labels: [System Inventory, Administration, Networks]
@@ -309,7 +309,7 @@ SystemAdminOrganizationTypeView:
 SystemAdminOrganizationTypeCreate:
     url: /organization-type/create
     labels: [System Inventory, Administration, Organization Types, Create]
-    links: [no-link, no-link, /organization-type/list, no-link] 
+    links: [no-link, no-link, /organization-type/list, no-link]
 SystemAdminOrganizationType:
     url: /organization-type/list
     labels: [System Inventory, Administration, Organization Types]
@@ -317,11 +317,11 @@ SystemAdminOrganizationType:
 SystemAdminSystemTypeView:
     url: /system-type/view
     labels: [System Inventory, Administration, System Types, View]
-    links: [no-link, no-link, /system-type/list, no-link]    
+    links: [no-link, no-link, /system-type/list, no-link]
 SystemAdminSystemTypeCreate:
     url: /system-type/create
     labels: [System Inventory, Administration, System Types, Create]
-    links: [no-link, no-link, /system-type/list, no-link]    
+    links: [no-link, no-link, /system-type/list, no-link]
 SystemAdminSystemType:
     url: /system-type/list
     labels: [System Inventory, Administration, System Types]
@@ -345,7 +345,7 @@ SystemReportSecurityAuthorizations:
 
 #
 # Administration
-#       
+#
 AdminSysConfigEmail:
     url: /config/email
     labels: [Administration, System Configuration,Email]
@@ -377,7 +377,7 @@ AdminSysConfigContact:
 AdminUserManagementRoleView:
     url: /role/view
     labels: [Administration, User Management, Roles, View]
-    links: [no-link, no-link, /role/list, no-link] 
+    links: [no-link, no-link, /role/list, no-link]
 AdminUserManagementRoleCreate:
     url: /role/create
     labels: [Administration, User Management, Roles, Create]
@@ -389,7 +389,7 @@ AdminUserManagementRolePrivilegeMatrix:
 AdminUserManagementRole:
     url: /role/list
     labels: [Administration, User Management, Roles]
-    links: [no-link, no-link, no-link]      
+    links: [no-link, no-link, no-link]
 AdminUserManagementUserView:
     url: /user/view
     labels: [Administration, User Management, Users, View]
@@ -405,23 +405,27 @@ AdminUserManagementUser:
 AdminUserManagementUserTree:
     url: /user/tree
     labels: [Administration, User Management, Users]
-    links: [no-link, no-link, no-link]      
+    links: [no-link, no-link, no-link]
 AdminDiagnosticsSystemCache:
     url: /debug/apc-cache/type/system
     labels: [Administration, Diagnostics, APC System Cache]
-    links: [no-link, no-link, no-link]    
+    links: [no-link, no-link, no-link]
 AdminDiagnosticsUserCache:
     url: /debug/apc-cache/type/user
     labels: [Administration, Diagnostics, APC User Cache]
-    links: [no-link, no-link, no-link]    
+    links: [no-link, no-link, no-link]
+AdminDiagnosticsBackgroundTasks:
+    url: /config/background-tasks
+    labels: [Administration, Diagnostics, Background Tasks]
+    links: [no-link, no-link, no-link]
 AdminDiagnosticsErrorLog:
     url: /debug/errorlog
     labels: [Administration, Diagnostics, Error Log]
-    links: [no-link, no-link, no-link]    
+    links: [no-link, no-link, no-link]
 AdminDiagnosticsPHPInfo:
     url: /debug/phpinfo
     labels: [Administration, Diagnostics, PHP Info]
-    links: [no-link, no-link, no-link]    
+    links: [no-link, no-link, no-link]
 AdminDiagnosticsPHPLog:
     url: /debug/phplog
     labels: [Administration, Diagnostics, PHP Log]
@@ -430,10 +434,10 @@ AdminDiagnosticsSearchTest:
     url: /config/search
     labels: [Administration, Diagnostics, Search Test]
     links: [no-link, no-link, no-link]
-    
+
 #
 # UserPreferences
-#     
+#
 UserPreferencesChangePassword:
     url: /user/password
     labels: [User Preferences, Change Password]
@@ -441,7 +445,7 @@ UserPreferencesChangePassword:
 UserPreferencesNotification:
     url: /user/notification
     labels: [User Preferences, E-mail Notifications]
-    links: [no-link, no-link] 
+    links: [no-link, no-link]
 UserPreferencesProfile:
     url: /user/profile
     labels: [User Preferences, My Profile]
