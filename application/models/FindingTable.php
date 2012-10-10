@@ -61,6 +61,12 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'date',
                 'formatter' => 'date'
             ),
+            'auditYear' => array(
+                'initiallyVisible' => false,
+                'label' => 'Audit Year',
+                'sortable' => true,
+                'type' => 'integer'
+            ),
             'createdTs' => array(
                 'initiallyVisible' => false,
                 'label' => 'Created',

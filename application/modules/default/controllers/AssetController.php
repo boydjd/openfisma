@@ -253,11 +253,11 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
      */
     public function serviceTagsAction()
     {
+        $this->_acl->requirePrivilegeForClass('manage_service_tags', 'Asset');
         $data = array();
         $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
 
         foreach ($tags as $tag) {
-            $count =
             $data[] = array(
                 'tag' => $tag,
                 'assets' => json_encode(array(
@@ -291,6 +291,10 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->view->result = new Fisma_AsyncResponse;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
 
+        if (!$this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
+            $this->view->result->fail('Invalid permission');
+        }
+
         $tag = $this->getRequest()->getParam('tag');
         if (!$tag) {
             $this->view->result->fail('Empty tag');
@@ -315,6 +319,10 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     {
         $this->view->result = new Fisma_AsyncResponse;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
+
+        if (!$this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
+            $this->view->result->fail('Invalid permission');
+        }
 
         $oldTag = $this->getRequest()->getParam('oldTag');
         $newTag = $this->getRequest()->getParam('newTag');
@@ -356,6 +364,8 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
      */
     public function removeServiceTagAction()
     {
+        $this->_acl->requirePrivilegeForClass('manage_service_tags', 'Asset');
+
         $tag = $this->getRequest()->getParam('tag');
         if (!$tag) {
             throw new Fisma_Zend_Exception_User('Empty tag');

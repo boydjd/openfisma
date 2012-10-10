@@ -1,0 +1,22 @@
+<?php $tags = explode(',', Fisma::configuration()->getConfig('finding_link_types')); ?>
+<form method='POST' id='addRelationship' action='/finding/relationship/add'>
+    <input type='hidden' name='thisFindingId' />
+    <p>Please select an option:</p>
+    <p>
+        <input type='radio' name='direction' value='active' checked='checked' />
+        This finding
+        <select name='startRelationship' autofocus>
+        <?php foreach ($tags as $tag): ?>
+            <?php $components = explode('/', $tag); foreach ($components as $component) { ?>
+                <option><?php echo $this->escape(trim($component)); ?></option>
+            <?php } ?>
+        <?php endforeach; ?>
+        </select>
+        finding #<input type='text' size='2' name='endFindingId' title='Finding ID' value='(id)' />.
+        [<a href='/finding/remediation/list' target='_blank'>Search</a>]
+    </p>
+    <div class='buttonBar'>
+        <input type='submit' id='dialog_confirm' value='Confirm' />
+        <button id='dialog_close'>Close</button>
+    </div>
+</form>

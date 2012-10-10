@@ -674,7 +674,7 @@ Fisma.Util = {
         return rv;
     },
 
-    showInputDialog: function(title, query, callbacks) {
+    showInputDialog: function(title, query, callbacks, defaultValue) {
         var Dom = YAHOO.util.Dom,
             Event = YAHOO.util.Event,
             Panel = YAHOO.widget.Panel,
@@ -704,6 +704,10 @@ Fisma.Util = {
         Event.addListener(form, "submit", callbacks['continue'], {panel: panel, errorDiv: errorDiv, textField: textField});
         panel.subscribe("hide", callbacks.cancel);
 
+        // Fill in default value if set
+        if (defaultValue !== undefined) {
+            textField.value = defaultValue;
+        }
         // Show the panel
         panel.show();
         textField.focus();

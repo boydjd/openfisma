@@ -1,0 +1,12 @@
+<?php
+    echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
+    Fisma_Format_Section::startSection("Manage Finding Link Types");
+?>
+<p>Link Types can be defined for both directions as in "fixes/is fixed by" or "duplicates/is duplicated by".<br/>If
+both directions share the same action phrase, they only need to be defined once, such as "is a repeat of" or "is
+related to".</p>
+<?php
+        echo $this->escape($this->tags, 'none');
+    Fisma_Format_Section::stopSection();
+?>
+<input type='hidden' name='csrf' id='csrf' value='<?php echo $this->escape($this->csrfToken); ?>'/>

@@ -1,9 +1,14 @@
-<?php $finding = $this->finding; $orgId = $finding->Organization->nickname; $status  = $finding->getStatus(); ?>
+<?php
+    $finding = $this->finding; $orgId = $finding->Organization->nickname; $status  = $finding->getStatus();
+    if (!$optionalFields = Fisma::configuration()->getConfig('optionalFields')) {
+        $optionalFields = array();
+    }
+?>
 
 <div class="column66 left">
     <?php Fisma_Format_Section::startSection("Details"); ?>
         <table class="keyValues">
-        <?php if (Fisma::configuration()->getConfig('use_legacy_finding_key')): ?>
+        <?php if (in_array('legacyFindingKey', $optionalFields)): ?>
             <tr>
                 <td>Legacy Finding Key:</td>
                 <td>
@@ -16,6 +21,23 @@
                             type="text"
                         <?php endif; ?>>
                         <?php echo $this->escape($finding->legacyFindingKey); ?>&nbsp;
+                    </span>
+                </td>
+            </tr>
+        <?php endif; ?>
+        <?php if (in_array('findingAuditYear', $optionalFields)): ?>
+            <tr>
+                <td>Audit Year:</td>
+                <td>
+                    <span
+                        <?php if ($this->isAuditYearEditable): ?>
+                            id="auditYear"
+                            class="editable"
+                            target="auditYear"
+                            name="finding[auditYear]"
+                            type="text"
+                        <?php endif; ?>>
+                        <?php echo $this->escape($finding->auditYear); ?>&nbsp;
                     </span>
                 </td>
             </tr>
@@ -169,7 +191,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Point Of Contact:</td>
+                <td>Assignee:</td>
                 <td class="autocomplete-width"><span
                     id="pointOfContact"
                     type="autocomplete"
@@ -196,7 +218,73 @@
                 <span class="editable" target="pointOfContact">&nbsp;</span>
             <?php endif; ?>
             </tr>
-        </table>
+        <?php if ($finding->responsibleOrganizationId): ?>
+        <?php
+            $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+            $pocs = $this->finding->Organization->getPocs();
+
+            foreach ($tags as $idx => $type) {
+                $poc = $pocs->fetchOneByType($type);
+                if ($poc):
+        ?>
+            <tr>
+                <td><?php echo $this->escape($type); ?>:</td>
+                <td><?php echo $this->escape($this->userInfo($poc->User->displayName, $poc->User->id), 'none'); ?></td>
+            <tr/>
+        <?php endif; } ?>
+    <?php endif; ?></table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Finding Links'); ?>
+    <?php if ($this->relationshipEditable): ?>
+        <a href='#' onclick='Fisma.Remediation.addRelationship(<?php
+            echo $this->escape($finding->id);
+        ?>)'><img src='/images/add.png' style='vertical-align:top'/> Add a new link</a>
+    <?php endif; ?>
+        <ul>
+        <?php foreach($finding->StartRelationships as $relationship): $endFinding = $relationship->EndFinding; ?>
+            <li class='noQuestionMark'>
+                This finding
+                <?php echo $this->escape($relationship->getDirectAction()); ?>
+                <?php echo $this->escape(new Fisma_Yui_Tooltip(
+                    'finding' . $endFinding->id,
+                    (($endFinding->status === 'CLOSED') ? '<strike>' : '') .
+                    "<a href='/finding/remediation/view/id/{$endFinding->id}'>Finding #{$endFinding->id}</a>" .
+                    (($endFinding->status === 'CLOSED') ? '</strike>' : ''),
+                    "<b>Status</b>: {$endFinding->getLongStatus()}" .
+                    "<p>" . $this->escape($endFinding->description, 'javascript') . "</p>"
+                ), 'none'); ?>.
+            <?php if ($this->relationshipEditable): ?>
+                <img onclick='Fisma.Remediation.removeRelationship(<?php
+                        echo $this->escape($relationship->id);
+                    ?>, <?php
+                        echo $this->escape($finding->id);
+                    ?>)' src='/images/trash_recyclebin_empty_closed.png' style='vertical-align:top;cursor:pointer'/>
+            <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+        <?php foreach($finding->EndRelationships as $relationship): $startFinding = $relationship->StartFinding; ?>
+            <li class='noQuestionMark'>
+                This finding
+                <?php echo $this->escape($relationship->getReverseAction()); ?>
+                <?php echo $this->escape(new Fisma_Yui_Tooltip(
+                    'finding' . $startFinding->id,
+                    (($startFinding->status === 'CLOSED') ? '<strike>' : '') .
+                    "<a href='/finding/remediation/view/id/{$startFinding->id}'>Finding #{$startFinding->id}</a>" .
+                    (($startFinding->status === 'CLOSED') ? '</strike>' : ''),
+                    "<b>Status</b>: {$startFinding->getLongStatus()}" .
+                    "<p>" . $this->escape($startFinding->description, 'javascript') . "</p>"
+                ), 'none'); ?>.
+            <?php if ($this->relationshipEditable): ?>
+                <img onclick='Fisma.Remediation.removeRelationship(<?php
+                        echo $this->escape($relationship->id);
+                    ?>, <?php
+                        echo $this->escape($finding->id);
+                    ?>)' src='/images/trash_recyclebin_empty_closed.png' style='vertical-align:top;cursor:pointer'/>
+            <?php endif; ?>
+            </li>
+        <?php endforeach; ?>
+        </ul>
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>
 

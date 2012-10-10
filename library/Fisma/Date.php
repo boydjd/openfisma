@@ -83,4 +83,9 @@ class Fisma_Date
      * set format like '2:45 AM'
      */
     const FORMAT_AM_PM_TIME = 'h:mm a';
+
+    /**
+     * set format like '2012'
+     */
+    const FORMAT_YEAR = 'yyyy';
 }

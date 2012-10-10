@@ -167,6 +167,18 @@ Privilege:
         resource: finding
         action: update_poc
         description: Update Finding Point Of Contact
+    findings_update_audit_year:
+        resource: finding
+        action: update_audit_year
+        description: Update Finding Audit Year
+    findings_update_relationship:
+        resource: finding
+        action: update_relationship
+        description: Update Finding Links
+    findings_manage_relationships:
+        resource: finding
+        action: manage_relationships
+        description: Manage Finding Link Types
 
     # Default Finding Approval Privileges
     finding_mitigation_isso:
@@ -233,6 +245,10 @@ Privilege:
         resource: asset
         action: unaffiliated
         description: Unaffiliated Assets
+    asset_manage_service_tags:
+        resource: asset
+        action: manage_service_tags
+        description: Manage Asset Environments
 
     # Users CRUD
     user_create:
@@ -273,6 +289,10 @@ Privilege:
         resource: organization
         action: oversee
         description: Oversee Organizations/Systems
+    organiztaion_manage_poc_list:
+        resource: organization
+        action: manage_poc_list
+        description: Manage POC Positions
 
     # Pocs CRUD
     poc_create:

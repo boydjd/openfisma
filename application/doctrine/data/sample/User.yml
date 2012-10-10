@@ -677,33 +677,6 @@ User:
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
-    jason_chimera:
-        username: jason.chimera
-        password: Sample1
-        email: jason.chimera@department.gov
-        nameFirst: Jason
-        nameLast: Chimera
-        phoneOffice: (571) 555-8407
-        ReportingOrganization: NRL_ORG
-        Events:
-            - CONFIGURATION_UPDATED
-            - USER_CREATED
-            - USER_UPDATED
-            - ACCOUNT_LOCKED
-            - ACCOUNT_DISABLED
-            - USER_DELETED
-            - ORGANIZATION_CREATED
-            - ORGANIZATION_UPDATED
-            - ASSET_CREATED
-            - ASSET_UPDATED
-            - USER_LOCKED
-            - USER_DISABLED
-            - USER_LOGIN_FAILURE
-            - USER_POC
-            - VULNERABILITY_IMPORTED
-            - VULNERABILITY_DELETED
-            - FINDING_CREATED
-            - FINDING_DELETED
     dennis_wideman:
         username: dennis.wideman
         password: Sample1

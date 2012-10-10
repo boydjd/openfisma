@@ -36,7 +36,7 @@ elements.pocAutocomplete.options.attribs.containerId = "pointOfContactAutocomple
 ; The callback enables a privileged user to create a Contact without leaving the finding form. This is disabled for
 ; non-privileged users.
 elements.pocAutocomplete.options.attribs.setupCallback = "Fisma.Finding.setupPocAutocomplete"
-elements.pocAutocomplete.options.tooltip = "<b>Contact</b><p>A contact is a user who is assigned responsibility for this finding.</p>"
+elements.pocAutocomplete.options.tooltip = "<b>Assignee</b><p>The person ultimately responsible for the finding. Allows findings to be assigned to individual users as well as an information system. </p>"
 displayGroups.finding.elements.pocAutocomplete = "pocAutocomplete"
 
 elements.pocId.type = "hidden"

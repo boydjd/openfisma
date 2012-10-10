@@ -937,6 +937,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->view->isOrganizationEditable = $this->_isEditable('responsibleOrganizationId', $table, $finding);
         $this->view->isDescriptionEditable = $this->_isEditable('description', $table, $finding);
         $this->view->isRecommendationEditable = $this->_isEditable('description', $table, $finding);
+        $this->view->isAuditYearEditable = $this->_isEditable('auditYear', $table, $finding);
 
         $this->view->organizationViewUrl = "/$controller/view/$idParameter/$organization->id";
 
@@ -989,6 +990,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $closedDate = new Zend_Date($finding->closedTs, Fisma_Date::FORMAT_DATE);
             $this->view->closedTs = $closedDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
         }
+
+        $this->view->relationshipEditable = $this->_acl->hasPrivilegeForObject('update_relationship', $finding);
     }
 
     /**
@@ -1426,20 +1429,5 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         return $editable;
-    }
-
-    protected function _updateField($request)
-    {/*
-        $results = array('value' => '', 'html' => '');
-
-        $field = $request->getParam('field');
-        switch ($field) {
-            case 'legacyFindingKey':
-                $results['value'] = 1;
-                $results['html'] = '1';
-            break;
-        }
-
-        return $results;*/
     }
 }

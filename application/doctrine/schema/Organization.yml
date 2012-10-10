@@ -1,10 +1,10 @@
-Organization:    
+Organization:
     listeners: [IndexListener]
 
     columns:
         createdTs: timestamp
         modifiedTs: timestamp
-        name: 
+        name:
             type: string(255)
             notblank: true
             notnull: true
@@ -20,7 +20,7 @@ Organization:
             type: integer
         pocId:
             type: integer
-        description: 
+        description:
             type: string
             extra:
                 purify: html
@@ -44,6 +44,7 @@ Organization:
             foreignAlias: Organization
 
     actAs:
+        Fisma_Doctrine_Behavior_HasPocs: true
         NestedSet:
         SoftDelete:
         Timestampable:

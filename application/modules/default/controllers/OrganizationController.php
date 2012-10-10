@@ -61,6 +61,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->ajaxContext()
                       ->addActionContext('convert-to-system-form', 'html')
                       ->addActionContext('info', 'html')
+                      ->addActionContext('add-poc-list', 'json')
+                      ->addActionContext('rename-poc-list', 'json')
                       ->initContext();
     }
 
@@ -141,6 +143,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      */
     protected function saveValue($form, $subject=null)
     {
+        throw new Fisma_Zend_Exception_User('asd');
         $form = $this->getForm();
 
         $objectId = null;
@@ -357,6 +360,14 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                     }
 
                     $organization->merge($post);
+
+                    if (isset($post['poc'])) {
+                        $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+                        foreach ($post['poc'] as $key => $value) {
+                            $organization->getPocs()->addPoc($value, $tags[$key]);
+                        }
+                    }
+
                     if ($organization->isValid(true)) {
                         $organization->save();
                         $msg  = 'The organization updated successfully';
@@ -626,6 +637,18 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $buttons = array();
         $isList = $this->getRequest()->getActionName() === 'list';
 
+        if ($this->getRequest()->getActionName() == 'poc-list') {
+            $buttons[] = new Fisma_Yui_Form_Button(
+                'addTag',
+                array(
+                    'label' => 'Add',
+                    'onClickFunction' => 'Fisma.Organization.addTag',
+                    'imageSrc' => '/images/create.png'
+                )
+            );
+            return $buttons;
+        }
+
         if ($isList && $this->_acl->hasPrivilegeForClass('read', $this->getAclResourceName())) {
             $buttons['tree'] = new Fisma_Yui_Form_Button_Link(
                 'organizationTreeButton',
@@ -758,6 +781,160 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $this->view->system = $organization->System;
             } else {
                 $this->view->organization = $organization;
+            }
+        }
+    }
+
+    /**
+     * Manage poc list
+     *
+     * @GETAllowed
+     * @return void
+     */
+    public function pocListAction()
+    {
+        $this->_acl->requirePrivilegeForClass('manage_poc_list', 'Organization');
+        $data = array();
+        $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+
+        foreach ($tags as $tag) {
+            $pdo = Doctrine_Manager::getInstance()->getCurrentConnection()->getDbh();
+            $query = "SELECT `id` FROM `organization_poc` WHERE `type` = ?";
+            $stmt = $pdo->prepare($query);
+            $params = array($tag);
+            $stmt->execute($params);
+            $results = $stmt->fetchAll();
+
+            $data[] = array(
+                'position' => $tag,
+                'assignee' => count($results) . '',
+                'edit' => 'javascript:Fisma.Organization.renameTag("' . $this->view->escape($tag, 'javascript') . '")',
+                'delete' => '/organization/remove-poc-list/tag/' . $tag
+            );
+        }
+        $table = new Fisma_Yui_DataTable_Local();
+        $table->addColumn(new Fisma_Yui_DataTable_Column('Position', false, 'YAHOO.widget.DataTable.formatText'))
+              ->addColumn(new Fisma_Yui_DataTable_Column('Assignees', false, 'YAHOO.widget.DataTable.formatText'))
+              ->addColumn(new Fisma_Yui_DataTable_Column('Edit', false, 'Fisma.TableFormat.editControl'))
+              ->addColumn(new Fisma_Yui_DataTable_Column('Delete', false, 'Fisma.TableFormat.deleteControl'))
+              ->setData($data)
+              ->setRegistryName('assetPocListTable');
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
+        $this->view->tags = $table;
+    }
+
+    /**
+     * Add poc list via AJAX / JSON
+     *
+     * @return void
+     */
+    public function addPocListAction()
+    {
+        $this->view->result = new Fisma_AsyncResponse;
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
+
+        if (!$this->_acl->hasPrivilegeForClass('manage_poc_list', 'Organization')) {
+            $this->view->result->fail('Invalid permission');
+        }
+
+        $tag = $this->getRequest()->getParam('tag');
+        if (!$tag) {
+            $this->view->result->fail('Empty position');
+        } else {
+            $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+            if (in_array($tag, $tags)) {
+                $this->view->result->succeed('Position already defined.');
+            } else {
+                $tags[] = $tag;
+                Fisma::configuration()->setConfig('organization_poc_list', implode(',', $tags));
+                $this->view->result->succeed();
+            }
+        }
+    }
+
+    /**
+     * Rename poc list via AJAX / JSON
+     *
+     * @return void
+     */
+    public function renamePocListAction()
+    {
+        $this->view->result = new Fisma_AsyncResponse;
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
+
+        if (!$this->_acl->hasPrivilegeForClass('manage_poc_list', 'Organization')) {
+            $this->view->result->fail('Invalid permission');
+        }
+
+        $oldTag = $this->getRequest()->getParam('oldTag');
+        $newTag = $this->getRequest()->getParam('newTag');
+        if (!$oldTag || !$newTag) {
+            $this->view->result->fail('Empty position(s)');
+        } else {
+            $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+            $key = array_search($oldTag, $tags);
+            if ($key >= 0) {
+                $tags[$key] = $newTag;
+
+                try {
+                    Doctrine_Manager::connection()->beginTransaction();
+
+                    $pdo = Doctrine_Manager::getInstance()->getCurrentConnection()->getDbh();
+                    $query = "UPDATE `organization_poc` SET `type` = :param1 WHERE `type` = :param2";
+                    $stmt = $pdo->prepare($query);
+                    $params = array('param1' => $newTag, 'param2' => $oldTag);
+                    $stmt->execute($params);
+
+                    Fisma::configuration()->setConfig('organization_poc_list', implode(',', $tags));
+
+                    Doctrine_Manager::connection()->commit();
+                    $this->view->result->succeed();
+                } catch (Doctrine_Exception $e) {
+                    Doctrine_Manager::connection()->rollback();
+                    $this->view->result->fail($e->getMessage(), $e);
+                }
+            } else {
+                $this->view->result->fail('Position not found.');
+            }
+        }
+    }
+
+    /**
+     * Delete poc list via HTML POST
+     *
+     * @return void
+     */
+    public function removePocListAction()
+    {
+        $this->_acl->requirePrivilegeForClass('manage_poc_list', 'Organization');
+        $tag = $this->getRequest()->getParam('tag');
+        if (!$tag) {
+            throw new Fisma_Zend_Exception_User('Empty position');
+        } else {
+            $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+            $key = array_search($tag, $tags);
+            if ($key >= 0) {
+                unset($tags[$key]);
+
+                try {
+                    Doctrine_Manager::connection()->beginTransaction();
+
+                    $pdo = Doctrine_Manager::getInstance()->getCurrentConnection()->getDbh();
+                    $query = "DELETE from `organization_poc` WHERE `type` = ?";
+                    $stmt = $pdo->prepare($query);
+                    $params = array($tag);
+                    $stmt->execute($params);
+
+                    Fisma::configuration()->setConfig('organization_poc_list', implode(',', $tags));
+
+                    Doctrine_Manager::connection()->commit();
+                    $this->_redirect('/organization/poc-list');
+                } catch (Doctrine_Exception $e) {
+                    throw $e;
+                }
+            } else {
+                throw new Fisma_Zend_Exception_User('Position not found.');
             }
         }
     }

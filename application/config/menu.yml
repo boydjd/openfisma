@@ -96,6 +96,9 @@ Finding:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: Source
+                Finding_Link:
+                    label: Link Types
+                    link: /finding/relationship/manage
         Reports:
             label: Reports
             privilege:
@@ -278,6 +281,10 @@ System:
                 AssetServiceTags:
                     label: Asset Environments
                     link: /asset/service-tags
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage_service_tags
+                        param2: Asset
                 ControlCatalogs:
                     label: Control Catalogs
                     link: /security-control-catalog/list
@@ -302,6 +309,13 @@ System:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: Network
+                OrganizationPOCList:
+                    label: Organization People
+                    link: /organization/poc-list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage_poc_list
+                        param2: Organization
                 OrganizationType:
                     label: Organization Types
                     link: /organization-type/list
@@ -354,6 +368,12 @@ Administration:
                     label: LDAP
                     link: /config/list-ldap
                     condition: return (true || 'ldap' == Fisma::configuration()->getConfig('auth_type'));
+                OptionalFields:
+                    label: Optional Fields
+                    link: /config/optional-fields
+                OptionalModules:
+                    label: Optional Modules
+                    link: /config/modules
                 PasswordPolicy:
                     label: Password Policy
                     link: /config/password
@@ -380,6 +400,13 @@ Administration:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: User
+                Privileges:
+                    label: Privileges
+                    link: /role/view-matrix
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: assignPrivileges
+                        param2: Role
         Debug:
             label: Diagnostics
             submenu:

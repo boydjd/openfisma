@@ -49,6 +49,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                       ->addActionContext('test-search', 'json')
                       ->addActionContext('validate-ldap', 'json')
                       ->addActionContext('delete-ldap', 'json')
+                      ->addActionContext('set-field', 'json')
                       ->initContext();
     }
 
@@ -941,5 +942,72 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         $this->view->taskDefs = $this->_tasks;
         $this->view->taskConfigs = $config;
         $this->view->toolbarButtons = $this->getToolbarButtons();
+    }
+
+    /**
+     * Defaults for available background tasks.
+     */
+    protected $_optionalFields = array(
+        'legacyFindingKey' => array(
+            'model' => 'Finding',
+            'field' => 'Legacy Finding Key',
+            'description' => 'This field can be used by end clients to track findings under a legacy tracking system'
+        ),
+        'findingAuditYear' => array(
+            'model' => 'Finding',
+            'field' => 'Audit Year',
+            'description' => 'The latest audit year of the finding'
+        ),
+        'systemFismaReportable' => array(
+            'model' => 'System',
+            'field' => 'FISMA Reportable',
+            'description' => 'Is the system reportable in FISMA standards?'
+        ),
+        'systemNextSA' => array(
+            'model' => 'System',
+            'field' => 'Security Authorization Expiration',
+            'description' => 'The due date for the next required Security Authorization.'
+        )
+    );
+
+    /**
+     * Optional Fields Configuration
+     *
+     * @return void
+     * @GETAllowed
+     */
+    public function optionalFieldsAction()
+    {
+        if (!$config = Fisma::configuration()->getConfig('optionalFields')) {
+            $config = array();
+        }
+
+        $this->view->fieldDefs = $this->_optionalFields;
+        $this->view->fieldConfigs = $config;
+        $this->view->csrfToken = $this->_helper->csrf->getToken();
+        $this->view->toolbarButtons = array();
+    }
+
+    /**
+     * Set Optional Field
+     *
+     * @GETAllowed
+     */
+    public function setFieldAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $enabled = $this->getRequest()->getParam('enabled');
+
+        if (!$config = Fisma::configuration()->getConfig('optionalFields')) {
+            $config = array();
+        }
+        $index = array_search($id, $config);
+        if ($enabled == 'true' && $index === false) {
+            $config[] = $id;
+        }
+        if ($enabled == 'false' && $index >= 0) {
+            unset($config[$index]);
+        }
+        Fisma::configuration()->setConfig('optionalFields', array_values($config));
     }
 }

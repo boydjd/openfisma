@@ -32,7 +32,7 @@ elements.parentOrganizationId.options.required = true
 displayGroups.system.elements.parentOrganizationId = "parentOrganizationId"
 
 elements.systemTypeId.type = "select"
-elements.systemTypeId.options.label = "Type"
+elements.systemTypeId.options.label = "System Type"
 elements.systemTypeId.options.required = true
 displayGroups.system.elements.systemTypeId = "systemTypeId"
 

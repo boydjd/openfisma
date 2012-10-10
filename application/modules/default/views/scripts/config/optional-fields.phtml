@@ -1,0 +1,51 @@
+<?php echo $this->escape($this->searchBox($this->toolbarButtons), 'none'); ?>
+<?php Fisma_Format_Section::startSection('Optional Fields Configuration'); ?>
+<input type='hidden' name='csrf' value='<?php echo $this->escape($this->csrfToken); ?>' />
+<div id="fieldsTable_container">
+    <table id='fieldsTable'>
+        <thead>
+            <tr>
+                <th>Model</th>
+                <th>Field</th>
+                <th>Description</th>
+                <th>Enabled</th>
+            </tr>
+        </thead>
+        <tbody>
+        <?php foreach($this->fieldDefs as $field => $def): ?>
+            <tr>
+                <td><?php echo $this->escape($def['model']); ?></td>
+                <td><?php echo $this->escape($def['field']); ?></td>
+                <td><?php echo $this->escape($def['description']); ?></td>
+                <td><?php echo $this->escape(json_encode(array(
+                    'id' => $field,
+                    'enabled' => in_array($field, $this->fieldConfigs),
+                    'callback' => 'Fisma.Module.switchOptionalField'
+                ))); ?></td>
+            </tr>
+        <?php endforeach; ?>
+        </tbody>
+    </table>
+</div>
+<?php Fisma_Format_Section::stopSection(); ?>
+<script type="text/javascript">
+YAHOO.util.Event.onContentReady("fieldsTable", function() {
+    var columnDefs = [
+        {"key":"Model", "label":"Model"},
+        {"key":"Field", "label":"Field"},
+        {"key":"Description", "label":"Description"},
+        {"key":"Enabled", "label":"Enabled", "formatter":Fisma.TableFormat.formatSwitchButton}
+    ];
+    var dataSource = new YAHOO.util.DataSource(YAHOO.util.Dom.get("fieldsTable"));
+    dataSource.responseType = YAHOO.util.DataSource.TYPE_HTMLTABLE;
+    dataSource.responseSchema = {
+        "fields":[
+            {"key":"Model", "parser":"string"},
+            {"key":"Field", "parser":"string"},
+            {"key":"Description", "parser":"string"},
+            {"key":"Enabled", "parser":"string"}
+        ]
+    };
+    var dataTable = new YAHOO.widget.GroupedDataTable("fieldsTable_container", columnDefs, dataSource, {});
+});
+</script>

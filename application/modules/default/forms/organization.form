@@ -33,7 +33,7 @@ elements.nickname.options.required = true
 displayGroups.organization.elements.nickname = "nickname"
 
 elements.orgTypeId.type = "select"
-elements.orgTypeId.options.label = "Type"
+elements.orgTypeId.options.label = "Organization Type"
 elements.orgTypeId.options.validators.alnum.validator = "NotEmpty"
 elements.orgTypeId.options.validators.strlen.validator = "StringLength"
 displayGroups.organization.elements.orgTypeId = "orgTypeId"

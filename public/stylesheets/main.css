@@ -461,6 +461,11 @@ span.tooltip {
     display: inline-block;
 }
 
+.noQuestionMark span.tooltip {
+    padding: 0px 2px 2px 2px;
+    background: none;
+}
+
 /* This is the style for the tooltip itself. The style must be marked !important
    so that YUI won't override it.
 */
@@ -614,6 +619,11 @@ div.yui-ac-bd {
 
 .yui-ac-content ul {
     margin-right: 20px !important;
+}
+
+span.yui-ac {
+    width:140px;
+    display: inline-block;
 }
 
 ul.treelist li {
