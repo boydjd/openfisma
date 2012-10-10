@@ -692,7 +692,7 @@ Fisma.Util = {
         panel.center();
 
         // Add event listener
-        Event.addListener(form, "submit", callbacks.continue, {panel: panel, errorDiv: errorDiv, textField: textField});
+        Event.addListener(form, "submit", callbacks['continue'], {panel: panel, errorDiv: errorDiv, textField: textField});
         panel.subscribe("hide", callbacks.cancel);
 
         // Show the panel

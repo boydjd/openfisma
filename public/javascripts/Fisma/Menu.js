@@ -47,7 +47,7 @@
                 "Go To " + param.model + "...",
                 "ID",
                 {
-                    continue: function(ev, obj) {
+                    'continue': function(ev, obj) {
                         YAHOO.util.Event.stopEvent(ev);
                         var input = Number(obj.textField.value.trim());
                         if (isFinite(input)) {
@@ -57,7 +57,7 @@
                             obj.errorDiv.innerHTML = "Please enter a single ID number.";
                         }
                     },
-                    cancel: function(ev, obj) {
+                    'cancel': function(ev, obj) {
                     }
                 }
             );

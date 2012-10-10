@@ -32,10 +32,10 @@ Fisma.Asset = {
             "Rename '" + tag + "' ...",
             "New name",
             {
-                continue: function(ev, obj) {
+                'continue': function(ev, obj) {
                     YAHOO.util.Event.stopEvent(ev);
                     var input = obj.textField.value;
-                    if (input != "") {
+                    if (input !== "") {
                         obj.errorDiv.innerHTML = "Renaming '" + tag + "'...";
 
                         $.post(
@@ -72,7 +72,7 @@ Fisma.Asset = {
                         obj.errorDiv.innerHTML = "Tag name cannot be blank.";
                     }
                 },
-                cancel: function(ev, obj) {
+                'cancel': function(ev, obj) {
                     datatable.unselectRow(row);
                 }
             }
@@ -86,10 +86,10 @@ Fisma.Asset = {
             "Add a tag ...",
             "Tag name",
             {
-                continue: function(ev, obj) {
+                'continue': function(ev, obj) {
                     YAHOO.util.Event.stopEvent(ev);
                     var input = obj.textField.value;
-                    if (input != "") {
+                    if (input !== "") {
                         obj.errorDiv.innerHTML = "Adding tag '" + input + "'...";
 
                         $.post(
@@ -124,7 +124,7 @@ Fisma.Asset = {
                         obj.errorDiv.innerHTML = "Tag name cannot be blank.";
                     }
                 },
-                cancel: function(ev, obj) {
+                'cancel': function(ev, obj) {
                 }
             }
         );
