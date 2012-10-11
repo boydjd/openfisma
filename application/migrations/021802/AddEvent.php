@@ -17,42 +17,27 @@
  */
 
 /**
- * Add FINDING_IMPORT event to the event table.
+ * Add VULNERABILITY_IMPORT event to the event table.
  *
  * @author     Xue-Wei Tang <xue-wei.tang@endeavorsystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_021801_AddEvent extends Fisma_Migration_Abstract
+class Application_Migration_021802_AddEvent extends Fisma_Migration_Abstract
 {
     /**
      * Migrate.
      */
     public function migrate()
     {
-        $this->message("Adding FINDING_IMPORT event...");
+        $this->message("Replacing VULNERABILITY_CREATE with VULNERABILITY_IMPORT event...");
         $this->getHelper()->exec(
-            "INSERT INTO event (
-                 name
-                ,description
-                ,privilegeid
-                ,urlpath
-                ,category
-                ,defaultactive
-                ,deleted_at
-             )
-             SELECT
-                'FINDING_IMPORTED'
-                ,'findings are imported'
-                ,id
-                ,'/finding/remediation/list'
-                ,'finding'
-                ,1
-                ,null
-            FROM privilege
-           WHERE resource = 'notification'
-             AND action   = 'finding'"
+                "UPDATE event
+                    SET name = 'VULNERABILITY_IMPORTED'
+                       ,description = 'vulnerabilities are imported'
+                       ,urlpath = '/vm/vulnerability/list'
+                  WHERE name = 'VULNERABILITY_CREATED' "
         );
     }
 }

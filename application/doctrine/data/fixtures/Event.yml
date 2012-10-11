@@ -128,13 +128,13 @@ Event:
         description: I'm assigned as a Point of Contact
         category: user
 
-    VULNERABILITY_CREATED:
+    VULNERABILITY_IMPORTED:
         defaultActive: true
-        name: VULNERABILITY_CREATED
-        description: a vulnerability is created
+        name: VULNERABILITY_IMPORTED
+        description: vulnerabilities are imported
         Privilege: notification_vulnerability
         category: vulnerability
-        urlPath: /vm/vulnerability/view/id
+        urlPath: /vm/vulnerability/list
 
     VULNERABILITY_CLOSED:
         name: VULNERABILITY_CLOSED

@@ -40,7 +40,7 @@ class Fisma_Inject_Factory
     {
         try {
             // If $type isn't defined, then attempt to detect it.
-            $type = (empty($type)) ? self::_detectType($data['filepath']) : $type;
+            $type = (empty($type)) ? self::detectType($data['filepath']) : $type;
 
             self::_validateType($type);
 
@@ -84,7 +84,7 @@ class Fisma_Inject_Factory
      * @param string $filename
      * @return string|boolean
      */
-    private static function _detectType($filename)
+    public static function detectType($filename)
     {
         $handle = fopen($filename, "rb");
         $contents = fread($handle, 128);

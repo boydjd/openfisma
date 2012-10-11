@@ -23,7 +23,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -51,7 +51,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -79,7 +79,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -106,7 +106,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -133,7 +133,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -160,7 +160,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -187,7 +187,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -214,7 +214,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -241,7 +241,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -268,7 +268,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -295,7 +295,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -322,7 +322,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -349,7 +349,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -376,7 +376,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -403,7 +403,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -430,7 +430,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -457,7 +457,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -484,7 +484,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -511,7 +511,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -538,7 +538,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -565,7 +565,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -592,7 +592,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -619,7 +619,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -646,7 +646,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -673,7 +673,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -700,7 +700,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -727,7 +727,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -754,7 +754,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED
@@ -781,7 +781,7 @@ User:
             - USER_DISABLED
             - USER_LOGIN_FAILURE
             - USER_POC
-            - VULNERABILITY_CREATED
+            - VULNERABILITY_IMPORTED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
             - FINDING_DELETED

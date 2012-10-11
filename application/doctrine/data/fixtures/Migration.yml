@@ -129,3 +129,14 @@ Migration:
         minorVersion: 18
         tagNumber: 1
         name: AddEvent
+
+    021802_AddEvent:
+        majorVersion: 2
+        minorVersion: 18
+        tagNumber: 2
+        name: AddEvent
+    021802_VulnerabilityBulkUploadChanges:
+        majorVersion: 2
+        minorVersion: 18
+        tagNumber: 2
+        name: VulnerabilityBulkUploadChanges
