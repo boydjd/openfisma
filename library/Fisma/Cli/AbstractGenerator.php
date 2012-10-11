@@ -163,4 +163,16 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
         // convert back into our normal space and convert to integer
         return floor(log($t) - 1);
     }
+
+    /**
+     * Pick a logarithmically distributed random array element
+     *
+     * @param array
+     * @return mixed
+     */
+    protected function _randomLogElement(array &$arr)
+    {
+        $values = array_values($arr);
+        return $values[$this->_randomLog(0, count($values) - 1)];
+    }
 }
