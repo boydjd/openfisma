@@ -276,7 +276,7 @@ System:
                 param: system_inventory_admin
             submenu:
                 AssetServiceTags:
-                    label: Asset Service Tags
+                    label: Asset Environments
                     link: /asset/service-tags
                 ControlCatalogs:
                     label: Control Catalogs
