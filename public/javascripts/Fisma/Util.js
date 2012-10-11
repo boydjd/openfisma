@@ -645,7 +645,6 @@ Fisma.Util = {
         history.go(-1);
     },
 
-<<<<<<< HEAD
     /**
      * Get IE Version number
      *
@@ -664,7 +663,8 @@ Fisma.Util = {
             }
         }
         return rv;
-=======
+    },
+
     showInputDialog: function(title, query, callbacks) {
         var Dom = YAHOO.util.Dom,
             Event = YAHOO.util.Event,
@@ -698,7 +698,6 @@ Fisma.Util = {
         // Show the panel
         panel.show();
         textField.focus();
->>>>>>> OFJ-1960 Asset Service Tag
     }
 };
 

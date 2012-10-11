@@ -55,9 +55,12 @@ Fisma.Asset = {
                                     } else {
                                         datatable.updateRow(row, {
                                             'Tag': input,
-                                            'Assets': {displayText: jcell.siblings().eq(0).find('div a').text(), url: '/asset/list?q=/serviceTag/textExactMatch/' + input},
-                                            'Edit': "javascript:Fisma.Asset.renameTag('" + input + "')",
-                                            'Delete': '/asset/remove-service-tag/tag/' + input
+                                            'Assets': {
+                                                displayText: jcell.siblings().eq(0).find('div a').text(),
+                                                url: '/asset/list?q=/serviceTag/textExactMatch/' + urlencode(input)
+                                            },
+                                            'Edit': "javascript:Fisma.Asset.renameTag('" + urlencode(input) + "')",
+                                            'Delete': '/asset/remove-service-tag/tag/' + urlencode(input)
                                         });
                                     }
                                 } else {
@@ -108,9 +111,11 @@ Fisma.Asset = {
                                     } else {
                                         datatable.addRow({
                                             'Tag': input,
-                                            'Assets': {displayText: '0', url: '/asset/list?q=/serviceTag/textExactMatch/' + input},
-                                            'Edit': "javascript:Fisma.Asset.renameTag('" + input + "')",
-                                            'Delete': '/asset/remove-service-tag/tag/' + input
+                                            'Assets': {
+                                                displayText: '0',
+                                                url: '/asset/list?q=/serviceTag/textExactMatch/' + urlencode(input)},
+                                            'Edit': "javascript:Fisma.Asset.renameTag('" + urlencode(input) + "')",
+                                            'Delete': '/asset/remove-service-tag/tag/' + urlencode(input)
                                         });
                                     }
                                 } else {
