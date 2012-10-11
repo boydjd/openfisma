@@ -801,10 +801,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
-
         $this->view->fromSearchUrl = $fromSearchUrl;
-        $this->view->auditLogLink = "/user/log/id/$id$fromSearchUrl";
-        $this->view->commentLink = "/user/comments/id/$id$fromSearchUrl";
         $this->view->tabView = $tabView;
         $this->view->roles = Zend_Json::encode($roles);
 
