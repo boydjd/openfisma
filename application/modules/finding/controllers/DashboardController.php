@@ -399,7 +399,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->leftJoin('o.OrganizationType ot')
                 ->leftJoin('ot.Icon i')
                 ->where('o.lft < ?', $statistic['lft'])
-                ->andWhere('o.lft < ?', $statistic['rgt'])
+                ->andWhere('o.rgt > ?', $statistic['rgt'])
                 ->andWhere('o.level = ?', $statistic['level'] - 1)
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                 ->fetchOne();
