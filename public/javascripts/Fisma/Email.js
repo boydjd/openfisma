@@ -27,7 +27,7 @@ Fisma.Email = (function() {
     return {
         /**
          * Hold the opened YUI panel object.
-         * 
+         *
          * @type YAHOO.widget.Panel
          */
         panelElement : null,
@@ -115,7 +115,7 @@ Fisma.Email = (function() {
             sendTypeEle.value = sendType;
             form.appendChild(sendTypeEle);
 
-            var element = document.getElementById('sendTestEmail');
+            var element = document.getElementById('testConfiguration');
 
             var spinner = new Fisma.Spinner(element.parentNode);
             spinner.show();

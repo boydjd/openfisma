@@ -3,19 +3,19 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
- * 
+ *
  * @fileoverview Provides client-side behavior for the Incident Reporting module
- * 
+ *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
@@ -57,7 +57,7 @@ Fisma.Ldap = {
 
         // End hack. @todo Modify controller so that it passes the id of the configuration to validate.
 
-        var validateButton = document.getElementById('validateLdap');
+        var validateButton = document.getElementById('testConfiguration');
         validateButton.className = "yui-button yui-push-button yui-button-disabled";
 
         var spinner = new Fisma.Spinner(validateButton.parentNode);
@@ -66,8 +66,8 @@ Fisma.Ldap = {
         var form = document.getElementById('ldapUpdate');
         YAHOO.util.Connect.setForm(form);
         YAHOO.util.Connect.asyncRequest(
-            'POST', 
-            '/config/validate-ldap/format/json/id/' + ldapConfigId, 
+            'POST',
+            '/config/validate-ldap/format/json/id/' + ldapConfigId,
             {
                 success : function (o) {
                     var response = YAHOO.lang.JSON.parse(o.responseText);
@@ -88,9 +88,9 @@ Fisma.Ldap = {
         );
     },
 
-    /** 
-    * This takes a YUI datatable as parameters, delete a row, then refresh the table  
-    *    
+    /**
+    * This takes a YUI datatable as parameters, delete a row, then refresh the table
+    *
     * @param YUI datatable
     */
     deleteLdap: function (oArgs) {
