@@ -25,7 +25,7 @@
  * @package    Fisma
  * @subpackage Fisma_Cli
  */
-class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_Abstract
+class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
 {
     /**
      * Configure the arguments accepted for this CLI program
@@ -78,8 +78,8 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_Abstract
             if ($randomstatus != 'OPEN') {
                 $entry['status'] = $randomstatus;
             }
-            $entry['threatLevel'] = $threat[rand(0, $threatCount)];
-            $entry['assetId'] = $assetIds[rand(0, $assetIdsCount)][0];
+            $entry['threatLevel'] = $threat[$this->_randomLog(0, $threatCount)];
+            $entry['assetId'] = $assetIds[$this->_randomLog(0, $assetIdsCount)][0];
             $entry['description'] = Fisma_String::loremIpsum(rand(90, 100));
             $entry['recommendation'] = Fisma_String::loremIpsum(rand(90, 100));
             $entry['threat'] = Fisma_String::loremIpsum(rand(90, 100));

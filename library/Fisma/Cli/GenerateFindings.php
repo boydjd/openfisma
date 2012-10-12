@@ -134,9 +134,9 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
             $finding['status'] = $status[rand(0, $statusCount)];
             $finding['threatLevel'] = $threat[rand(0, $threatCount)];
             $finding['countermeasuresEffectiveness'] = $effectiveness[rand(0, $effectivenessCount)];
-            $finding['responsibleOrganizationId'] = $organizationIds[rand(0, $organizationIdsCount)][0];
-            $finding['sourceId'] = $sourceIds[rand(0, $sourceIdsCount)][0];
-            $finding['securityControlId'] = $securityControlIds[rand(0, $securityControlIdsCount)][0];
+            $finding['responsibleOrganizationId'] = $organizationIds[$this->_randomLog(0, $organizationIdsCount)][0];
+            $finding['sourceId'] = $sourceIds[$this->_randomLog(0, $sourceIdsCount)][0];
+            $finding['securityControlId'] = $securityControlIds[$this->_randomLog(0, $securityControlIdsCount)][0];
             $finding['description'] = Fisma_String::loremIpsum(rand(90, 100));
             $finding['recommendation'] = Fisma_String::loremIpsum(rand(90, 100));
             $finding['mitigationStrategy'] = Fisma_String::loremIpsum(rand(90, 100));

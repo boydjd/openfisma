@@ -25,7 +25,7 @@
  * @package    Fisma
  * @subpackage Fisma_Cli
  */
-class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
+class Fisma_Cli_GenerateUsers extends Fisma_Cli_AbstractGenerator
 {
     /**
      * Configure the arguments accepted for this CLI program
@@ -69,6 +69,15 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
                             ->leftJoin('o.System s')
                             ->where("s.sdlcphase <> 'disposal' OR s.sdlcphase IS NULL")
                             ->execute();
+        $reportingOrganizations = Doctrine_Query::create()
+            ->select('o.id')
+            ->from('Organization o')
+            ->where('o.systemId IS NULL')
+            ->execute();
+        $reportingOrganizationIds = array();
+        foreach ($reportingOrganizations as $k => $v) {
+            $reportingOrganizationIds[] = $v->id;
+        }
         $roleIds = Doctrine_Query::create()
             ->select('r.id')
             ->from('Role r')
@@ -90,16 +99,10 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
 
         for ($i = 1; $i <= $numUsers; $i++) {
             $user = array();
-            $reportingOrganizationId = -1;
-            do {
-                $randIndex = rand(0, $organizationsCount);
-                $reportingOrganizationId = $organizations[$randIndex]->id;
-                $reportingOrganizationId = (empty($organizations[$randIndex]->systemId))
-                                         ? $reportingOrganizationId
-                                         : -1;
-            } while ($reportingOrganizationId < 0);
-            $user['reportingOrganizationId'] = $reportingOrganizationId;
-            $user['roleId'] = $roleIds[rand(0, $roleIdsCount)][0];
+            $user['reportingOrganizationId'] = $reportingOrganizationIds[
+                $this->_randomLog(0, count($reportingOrganizationIds) - 1)
+            ];
+            $user['roleId'] = $roleIds[$this->_randomLog(0, $roleIdsCount)][0];
             $user['username'] = 'generated' . $timestamp . '.' . $i;
             $user['email'] = $user['username'] . '@department.gov';
             $user['nameFirst'] = $timestamp . '.' . $i;
@@ -133,13 +136,19 @@ class Fisma_Cli_GenerateUsers extends Fisma_Cli_Abstract
                 $ur = new UserRole();
                 $ur->userId = $uId;
                 $ur->roleId = $user['roleId'];
-                foreach ($organizations as $o) {
-                    $ur->Organizations[] = $o;
-                }
-
                 $ur->save();
+                $urId = $ur->userRoleId;
                 $ur->free();
                 unset($ur);
+
+                foreach ($organizations as $o) {
+                    $uro = new UserRoleOrganization();
+                    $uro->userRoleId = $urId;
+                    $uro->organizationId = $o->id;
+                    $uro->save();
+                    $uro->free();
+                    unset($uro);
+                }
 
                 $currentUser++;
                 $saveProgressBar->update($currentUser);

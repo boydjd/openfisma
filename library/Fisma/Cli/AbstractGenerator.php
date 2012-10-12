@@ -96,7 +96,7 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
                 );
             }
         }
-        return $this->_sampleUsers[rand(0, count($this->_sampleUsers)-1)];
+        return $this->_sampleUsers[$this->_randomLog(0, count($this->_sampleUsers)-1)];
     }
 
     /**
@@ -119,7 +119,7 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
                 throw new Fisma_Exception("Cannot generate sample data because the application has no organizations.");
             }
         }
-        return $this->_sampleOrganizations[rand(0, count($this->_sampleOrganizations))];
+        return $this->_sampleOrganizations[$this->_randomLog(0, count($this->_sampleOrganizations))];
     }
 
     /**
@@ -140,5 +140,39 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
     protected function _getRandomIpAddress()
     {
         return rand(1, 255) . '.' . rand(1, 255) . '.' . rand(1, 255) . '.' . rand(1, 255);
+    }
+
+    /**
+     * Generate a random integer with a logarithmic distribution.
+     *
+     * @param $min Lower bound, inclusive.
+     * @param $max Upper bound, inclusive
+     * @return integer
+     */
+    protected function _randomLog($min, $max)
+    {
+        // get a uniformly distributed random number between 0 (inclusive) and 1 (exclusive)
+        $rand = (double)rand(0, getrandmax() - 1) / getrandmax();
+
+        // $adjMax is shifted so min is zero and max is exclusive
+        $adjMax = $max - $min + 1;
+
+        // scale the random number into a transformed space from 1 to e^($adjMax+1)
+        $t = ((1 - $rand) * exp(1)) + ($rand * exp($adjMax + 1));
+
+        // convert back into our normal space and convert to integer
+        return floor(log($t) - 1);
+    }
+
+    /**
+     * Pick a logarithmically distributed random array element
+     *
+     * @param array
+     * @return mixed
+     */
+    protected function _randomLogElement(array &$arr)
+    {
+        $values = array_values($arr);
+        return $values[$this->_randomLog(0, count($values) - 1)];
     }
 }

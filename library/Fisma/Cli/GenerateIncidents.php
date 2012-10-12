@@ -225,6 +225,6 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
             }
         }
 
-        return $this->_sampleSubCategories[rand(0, count($this->_sampleSubCategories) - 1)]['id'];
+        return $this->_sampleSubCategories[$this->_randomLog(0, count($this->_sampleSubCategories) - 1)]['id'];
     }
 }
