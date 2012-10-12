@@ -360,7 +360,8 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             throw new Fisma_Zend_Exception_User('Empty tag');
         } else {
             $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
-            if ($key = array_search($tag, $tags)) {
+            $key = array_search($tag, $tags);
+            if ($key >= 0) {
                 unset($tags[$key]);
 
                 try {
@@ -368,7 +369,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
                     $assets = Doctrine::getTable('Asset')->findByServiceTag($tag);
                     foreach ($assets as $asset) {
-                        unset($asset->serviceTag);
+                        $asset->serviceTag = '';
                     }
                     $assets->save();
 

@@ -57,10 +57,10 @@ Fisma.Asset = {
                                             'Tag': input,
                                             'Assets': {
                                                 displayText: jcell.siblings().eq(0).find('div a').text(),
-                                                url: '/asset/list?q=/serviceTag/textExactMatch/' + urlencode(input)
+                                                url: '/asset/list?q=/serviceTag/textExactMatch/' + encodeURIComponent(input)
                                             },
-                                            'Edit': "javascript:Fisma.Asset.renameTag('" + urlencode(input) + "')",
-                                            'Delete': '/asset/remove-service-tag/tag/' + urlencode(input)
+                                            'Edit': "javascript:Fisma.Asset.renameTag('" + encodeURIComponent(input) + "')",
+                                            'Delete': '/asset/remove-service-tag/tag/' + encodeURIComponent(input)
                                         });
                                     }
                                 } else {
@@ -113,9 +113,9 @@ Fisma.Asset = {
                                             'Tag': input,
                                             'Assets': {
                                                 displayText: '0',
-                                                url: '/asset/list?q=/serviceTag/textExactMatch/' + urlencode(input)},
-                                            'Edit': "javascript:Fisma.Asset.renameTag('" + urlencode(input) + "')",
-                                            'Delete': '/asset/remove-service-tag/tag/' + urlencode(input)
+                                                url: '/asset/list?q=/serviceTag/textExactMatch/' + encodeURIComponent(input)},
+                                            'Edit': "javascript:Fisma.Asset.renameTag('" + encodeURIComponent(input) + "')",
+                                            'Delete': '/asset/remove-service-tag/tag/' + encodeURIComponent(input)
                                         });
                                     }
                                 } else {
