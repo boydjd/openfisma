@@ -322,7 +322,8 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $this->view->result->fail('Empty tag(s)');
         } else {
             $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
-            if ($key = array_search($oldTag, $tags)) {
+            $key = array_search($tag, $tags);
+            if ($key >= 0) {
                 $tags[$key] = $newTag;
 
                 try {
