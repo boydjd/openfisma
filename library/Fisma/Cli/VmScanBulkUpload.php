@@ -84,7 +84,7 @@ class Fisma_Cli_VmScanBulkUpload extends Fisma_Cli_Abstract
                       'fileext' => $fileext
                      );
 
-        $this->getLog()->info("File: " . print_r($file, true)) ;
+        $this->getLog()->info("File: " . json_encode($file));
 
         $bulk = new Fisma_Vulnerability_BulkUpload();
         $bulk->process($file, $userid);
