@@ -195,8 +195,8 @@ class User extends BaseUser
                 $this->lockAccount(User::LOCK_TYPE_INACTIVE);
             }
 
-            // If password has expired, then the user cannot be authenticated
-            if ($this->passwordIsExpired()) {
+            // If password has expired and system is using database authentication, then the user cannot be authenticated
+            if (Fisma::configuration()->getConfig('auth_type') === 'database' && $this->passwordIsExpired()) {
                 $this->lockAccount(User::LOCK_TYPE_EXPIRED);
             }
         }
