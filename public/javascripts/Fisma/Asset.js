@@ -24,7 +24,7 @@ Fisma.Asset = {
         var jcell = $('td').filter(function(index){
             return ($(this).text() === tag);
         });
-        var row = jcell.parents('tr').get(0);
+        var row = jcell.parent().get(0);
         var datatable = Fisma.Registry.get('assetServiceTagTable');
         datatable.selectRow(row);
 
