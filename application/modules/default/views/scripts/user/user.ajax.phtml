@@ -16,12 +16,10 @@ if (!empty($this->requirements)) {
 ?>
 
 <div class="form_box" id="userForm">
-    <form method="post" action="/User/user/id/<?php echo $this->escape($this->id . $this->fromSearchUrl); ?>">
     <?php
         echo $this->escape($this->form, 'none');
         echo $this->escape($this->tabView, 'none');
     ?>
-    </form>
 </div>
 <?php
 Fisma_Format_Section::stopSection();

@@ -1,7 +1,7 @@
-<?php
-    echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
-    echo $this->escape($this->tabView, 'none');
-?>
+<?php echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none'); ?>
+<form method="post" action="/user/view/id/<?php echo $this->escape($this->id . $this->fromSearchUrl); ?>">
+    <?php echo $this->escape($this->tabView, 'none'); ?>
+</form>
 <script>
 $(function() {
     if ($('.editable').length <= 0) {

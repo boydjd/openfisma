@@ -611,8 +611,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
                     // Refresh the form, in case the changes to the model affect the form
                     $form = $this->getForm();
-                    $this->view->priorityMessenger($msg, $type);
-                    $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id$fromSearchUrl");
                 } catch (Doctrine_Exception $e) {
                     //Doctrine_Manager::connection()->rollback();
                     $msg  = "Error while trying to save: ";
@@ -629,6 +627,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $error = "$message:<br>$errorString";
                 $this->view->priorityMessenger($error, 'warning');
             }
+            $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id$fromSearchUrl");
         }
 
         $viewButtons = $this->getViewButtons($subject);

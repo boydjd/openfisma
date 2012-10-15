@@ -733,9 +733,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     public function viewAction()
     {
+        parent::_viewObject();
+
         $id = $this->_request->getParam('id');
         $subject = $this->_getSubject($id);
         $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
         $tabView = new Fisma_Yui_TabView('FindingView', $id);
 
         $commentCount = '<span id=\'commentsCount\'>' . $this->_getSubject($id)->getComments()->count() . '</span>';
@@ -752,7 +755,10 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $this->view->modelName = $this->getSingularModelName();
         $this->view->toolbarButtons = $toolbarButtons;
         $this->view->searchButtons = $searchButtons;
+        $this->view->id = $id;
+        $this->view->fromSearchUrl = $fromSearchUrl;
     }
+
     /**
      * Show user details
      *
@@ -801,15 +807,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
-
         $this->view->fromSearchUrl = $fromSearchUrl;
-        $this->view->auditLogLink = "/user/log/id/$id$fromSearchUrl";
-        $this->view->commentLink = "/user/comments/id/$id$fromSearchUrl";
         $this->view->tabView = $tabView;
         $this->view->roles = Zend_Json::encode($roles);
 
         parent::_viewObject();
-
         $this->view->form->removeDecorator('Fisma_Zend_Form_Decorator');
     }
 
