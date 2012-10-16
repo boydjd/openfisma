@@ -52,9 +52,13 @@ Fisma.User = {
         var that = this;
 
         var commentRow = {
-            timestamp : comment.createdTs,
-            username : comment.username,
-            comment : comment.comment
+            'timestamp' : comment.createdTs,
+            'username' : comment.username,
+            'comment' : comment.comment,
+            'delete' :
+                '/comment/remove/format/json/type/User/' +
+                'commentId/' + comment.id +
+                '/id/' + Fisma.Commentable.config.id
         };
 
         this.commentTable = Fisma.Registry.get('comments');
