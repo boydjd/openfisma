@@ -94,7 +94,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         if (!isset($formName)) {
             $options = array('' => '');
             $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
-            foreach($tags as $tag) {
+            foreach ($tags as $tag) {
                 $options[$tag] = $tag;
             }
             $form->getElement('serviceTag')->setMultiOptions($options);
