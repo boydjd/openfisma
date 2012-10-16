@@ -1344,7 +1344,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'fileSize' => $artifact->getFileSize(),
                 'user'     => $this->view->userInfo($artifact->User->displayName, $artifact->User->id),
                 'date'     => $artifact->createdTs,
-                'comment'  => $this->view->textToHtml($this->view->escape($artifact->description))
+                'comment'  => $this->view->textToHtml($this->view->escape($artifact->description)),
+                'delete' => (($artifact->User->id === CurrentUser::getAttribute('id'))
+                    ? '/incident/delete-artifact/id/' . $id . '/artifactId/' . $artifact->id
+                    : ''
+                )
             );
         }
 
@@ -1423,6 +1427,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'Fisma.TableFormat.formatHtml',
                 null,
                 'comment'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Action',
+                false,
+                'Fisma.TableFormat.deleteControl',
+                null,
+                'delete'
             )
         );
 
@@ -1967,5 +1981,39 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $mail->mailTemplate('ir_assign', $options);
 
         Zend_Registry::get('mail_handler')->setMail($mail)->send();
+    }
+
+    /**
+     * Delete artifact
+     */
+    public function deleteArtifactAction()
+    {
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender(true);
+
+        $id = $this->_request->getParam('id');
+        $artifactId = $this->_request->getParam('artifactId');
+
+        $incident = Doctrine::getTable('Incident')->getAttachmentQuery($id, $artifactId)->execute()->getLast();
+
+        if (empty($incident)) {
+            throw new Fisma_Zend_Exception_User('Invalid incident ID');
+        }
+
+        if ($incident->Attachments->count() <= 0) {
+            throw new Fisma_Zend_Exception_User('Invalid artifact ID');
+        }
+
+        // There is no ACL defined for artifact objects, access is only based on the associated incident:
+        $this->_acl->requirePrivilegeForObject('update', $incident);
+
+        $message = "Artifact deleted: {$incident->Attachments[0]->fileName} (#{$incident->Attachments[0]->id})";
+        $incident->Attachments->remove(0);
+        $incident->save();
+
+        $incident->getAuditLog()->write($message);
+        if ($returnUrl = $this->getRequest()->getParam('returnUrl')) {
+            $this->_redirect($returnUrl);
+        }
     }
 }
