@@ -918,13 +918,44 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->view->keywords = $this->_request->getParam('keywords');
 
         $nextDueDate = new Zend_Date($finding->nextDueDate, Fisma_Date::FORMAT_DATE);
-        if (is_null($finding->nextDueDate)) {
-            $onTimeState = 'N/A';
+        if (is_null($finding->nextDueDate) || $finding->getDaysUntilDue() == 0) {
+            $workflowOnTimeState = 'N/A';
         } else {
-            $onTimeState = ($nextDueDate->compareDate(new Zend_Date()) >= 0) ? 'On Time' : 'Overdue';
+            $workflowCompare = $nextDueDate->compareDate(new Zend_Date());
+            $workflowOnTimeState = (($workflowCompare >= 0)
+                ? (($workflowCompare > 0)
+                    ? ('On Time' . ', ' .
+                        ceil(abs(($nextDueDate->getTimestamp() - time("now"))/(60*60*24))) .
+                        ' day(s) remaining out of ')
+                    : 'Due Today'
+                )
+                : (
+                    'Overdue' . ', ' .
+                    floor(abs(($nextDueDate->getTimestamp() - time("now"))/(60*60*24))) .
+                    ' day(s) exceeding '
+                )
+            ) . $finding->getDaysUntilDue() . ' day(s) allocated';
         }
+        $this->view->workflowOnTimeState = $workflowOnTimeState;
 
+        $currentEcd = new Zend_Date($finding->currentEcd, Fisma_Date::FORMAT_DATE);
+        if (is_null($finding->currentEcd)) {
+            $onTimeState = 'Missing ECD';
+        } else {
+            $ecdCompare = $currentEcd->compareDate(new Zend_Date());
+            $onTimeState = ($ecdCompare >= 0)
+                ? (($ecdCompare > 0)
+                    ? ('On Time, ' .
+                        ceil(abs(($currentEcd->getTimestamp() - time("now"))/(60*60*24))) . ' day(s) until due')
+                    : ('Due Today')
+                )
+                : ('Overdue, ' .
+                    floor(abs(($currentEcd->getTimestamp() - time("now"))/(60*60*24))) . ' day(s) late')
+            ;
+        }
         $this->view->onTimeState = $onTimeState;
+
+
         $discoveredDate = new Zend_Date($finding->discoveredDate, Fisma_Date::FORMAT_DATE);
         $this->view->discoveredDate = $discoveredDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
         $createdTs = new Zend_Date($finding->createdTs, Fisma_Date::FORMAT_DATE);

@@ -82,7 +82,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             'denormalizedStatus' => array(
                 'enumValues' => Finding::getAllStatuses(),
                 'initiallyVisible' => true,
-                'label' => 'Status',
+                'label' => 'Workflow Step',
                 'sortable' => true,
                 'type' => 'enum'
             ),
@@ -234,14 +234,14 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'Current ECD',
                 'sortable' => true,
                 'type' => 'date',
-                'formatter' => 'date'
+                'formatter' => 'Fisma.TableFormat.formatDuedate'
             ),
             'nextDueDate' => array(
                 'initiallyVisible' => true,
-                'label' => 'Next Due Date',
+                'label' => 'Workflow Due Date',
                 'sortable' => true,
                 'type' => 'date',
-                'formatter' => 'date'
+                'formatter' => 'Fisma.TableFormat.formatDuedate'
             ),
             'countermeasuresEffectiveness' => array(
                 'enumValues' => $this->getEnumValues('countermeasuresEffectiveness'),
