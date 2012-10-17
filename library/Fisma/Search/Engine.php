@@ -728,7 +728,11 @@ class Fisma_Search_Engine
             }
         }
 
-        if ($table->hasColumn('deleted_at') && !empty($object['deleted_at'])) {
+        if (
+            $table->hasColumn('deleted_at')
+            && !empty($object['deleted_at'])
+            && !$document->fieldExists('deleted_at_datetime')
+        ) {
             $deletedAt = $this->_convertToSolrDate($object['deleted_at']);
 
             $document->addField('deleted_at_datetime', $deletedAt);
