@@ -974,25 +974,29 @@ span.bar.normal {
     background: #C8E1FA; /* for non-css3 browsers */
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8E1FA', endColorstr='#3264C8'); /* for IE */
     background: -webkit-gradient(linear, left top, left bottom, from(#C8E1FA), to(#3264C8)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #C8E1FA,  #3264C8); /* for firefox 3.6+ */
+    background: -moz-linear-gradient(top,  #C8E1FA, #3264C8); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #C8E1FA, #3264C8); /* for IE 10 */
 }
 span.bar.LOW, span.bar.On-Time {
     background: #E1FAC8; /* for non-css3 browsers */
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E1FAC8', endColorstr='#64C832'); /* for IE */
     background: -webkit-gradient(linear, left top, left bottom, from(#E1FAC8), to(#64C832)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #E1FAC8,  #64C832); /* for firefox 3.6+ */
+    background: -moz-linear-gradient(top,  #E1FAC8, #64C832); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #E1FAC8, #64C832); /* for IE 10 */
 }
 span.bar.MODERATE {
     background: #FAE164; /* for non-css3 browsers */
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FAE164', endColorstr='#969632'); /* for IE */
     background: -webkit-gradient(linear, left top, left bottom, from(#FAE164), to(#969632)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #FAE164,  #969632); /* for firefox 3.6+ */
+    background: -moz-linear-gradient(top,  #FAE164, #969632); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #FAE164, #969632); /* for IE 10 */
 }
 span.bar.HIGH, span.bar.Overdue {
     background: #FAC8E1; /* for non-css3 browsers */
     filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FAC8E1', endColorstr='#C83264'); /* for IE */
     background: -webkit-gradient(linear, left top, left bottom, from(#FAC8E1), to(#C83264)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #FAC8E1,  #C83264); /* for firefox 3.6+ */
+    background: -moz-linear-gradient(top,  #FAC8E1, #C83264); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #FAC8E1, #C83264); /* for IE 10 */
 }
 
 table.custom-widget {
