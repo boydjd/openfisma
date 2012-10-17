@@ -210,7 +210,7 @@ class Fisma_Doctrine_Behavior_Commentable_Generator extends Doctrine_Record_Gene
     public function fetchOneById($instance, $id)
     {
         $query = $this->query($instance);
-        $query->andWhere('id = ?' + $id);
+        $query->andWhere('id = ?', $id);
 
         return $query->fetchOne();
     }
