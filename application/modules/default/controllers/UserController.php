@@ -1002,7 +1002,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $commentRows[] = array(
                 'timestamp' => $comment['createdTs'],
                 'username' => $this->view->userInfo($comment['User']['displayName'], $comment['User']['id']),
-                'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment']))
+                'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment'])),
+                'delete' => (($comment['User']['id'] === CurrentUser::getAttribute('id'))
+                    ? '/comment/remove/format/json/id/' . $id . '/type/User/commentId/' . $comment['id']
+                    : ''
+                )
             );
         }
 
@@ -1035,6 +1039,16 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 'Fisma.TableFormat.formatHtml',
                 null,
                 'comment'
+            )
+        );;
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Action',
+                false,
+                'Fisma.TableFormat.deleteControl',
+                null,
+                'delete'
             )
         );
 

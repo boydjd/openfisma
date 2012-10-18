@@ -35,6 +35,7 @@ class CommentController extends Fisma_Zend_Controller_Action_Security
 
         $this->_helper->contextSwitch
                       ->setActionContext('add', 'json')
+                      ->setActionContext('remove', 'json')
                       ->initContext();
     }
 
@@ -87,17 +88,65 @@ class CommentController extends Fisma_Zend_Controller_Action_Security
             $response->comment = $commentArray;
 
         } catch (Fisma_Zend_Exception_User $e) {
-            $response->fail($e->getMessage());
+            $response->fail($e->getMessage(), $e);
         } catch (Exception $e) {
             if (Fisma::debug()) {
-                $response->fail("Failure (debug mode): " . $e->getMessage());
+                $response->fail("Failure (debug mode): " . $e->getMessage(), $e);
             } else {
-                $response->fail("Internal system error. File not uploaded.");
+                $response->fail("Internal system error.");
             }
 
             $this->getInvokeArg('bootstrap')->getResource('Log')->err($e->getMessage() . "\n" . $e->getTraceAsString());
         }
 
         $this->view->response = $response;
+    }
+
+    /**
+     * Remove a comment from a particular object who has an audit log
+     */
+    public function removeAction()
+    {
+        $response = new Fisma_AsyncResponse();
+
+        $objectId = $this->getRequest()->getParam('id');
+        $objectClass = $this->getRequest()->getParam('type');
+        $commentId = trim($this->getRequest()->getParam('commentId'));
+
+        try {
+            $object = Doctrine::getTable($objectClass)->find($objectId);
+
+            if (!Doctrine::getTable($objectClass)->hasTemplate('Fisma_Doctrine_Behavior_AuditLoggable')) {
+                throw new Fisma_Zend_Exception("Comment can only be deleted from AuditLoggable objects");
+            }
+
+            if (!$object) {
+                throw new Fisma_Zend_Exception("No object exist in class $objectClass with id $id");
+            }
+
+            if (empty($commentId)) {
+                throw new Fisma_Zend_Exception_User("Comment cannot be blank");
+            }
+
+            // Add comment and include comment details (including username) in response object
+            $object->getAuditLog()->write("Comment deleted:\n\n" . $object->getComments()->fetchOneById($commentId)->comment);
+            $object->getComments()->removeComment($commentId);
+
+        } catch (Fisma_Zend_Exception_User $e) {
+            $response->fail($e->getMessage(), $e);
+        } catch (Exception $e) {
+            if (Fisma::debug()) {
+                $response->fail("Failure (debug mode): " . $e->getMessage(), $e);
+            } else {
+                $response->fail("Internal system error.");
+            }
+
+            $this->getInvokeArg('bootstrap')->getResource('Log')->err($e->getMessage() . "\n" . $e->getTraceAsString());
+        }
+
+        $this->view->response = $response;
+        if ($returnUrl = $this->getRequest()->getParam('returnUrl')) {
+            $this->_redirect($returnUrl);
+        }
     }
 }
