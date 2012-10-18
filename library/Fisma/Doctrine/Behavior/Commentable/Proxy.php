@@ -70,6 +70,17 @@ class Fisma_Doctrine_Behavior_Commentable_Proxy
     }
 
     /**
+     * Proxy method for removing a comment
+     *
+     * @param id $commentId
+     * @return void
+     */
+    public function removeComment($commentId)
+    {
+        $this->_generator->removeComment($this->_instance, $commentId);
+    }
+
+    /**
      * Proxy method for listing comments related to an object
      *
      * @param int $hydrationMode A valid Doctrine hydration mode, e.g. Doctrine::HYDRATE_ARRAY
@@ -80,6 +91,17 @@ class Fisma_Doctrine_Behavior_Commentable_Proxy
     public function fetch($hydrationMode = Doctrine::HYDRATE_RECORD, $limit = null, $offset = null)
     {
         return $this->_generator->fetch($this->_instance, $hydrationMode, $limit, $offset);
+    }
+
+    /**
+     * Proxy method for fetching a comment
+     *
+     * @param int $id The id of the comment
+     * @return Doctrine_Record The comment
+     */
+    public function fetchOneById($id)
+    {
+        return $this->_generator->fetchOneById($this->_instance, $id);
     }
 
     /**

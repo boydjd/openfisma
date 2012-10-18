@@ -200,19 +200,20 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     deleteControl : function (elCell, oRecord, oColumn, oData) {
+        if (oData) {
+            var icon = document.createElement('img');
+            icon.src = '/images/del.png';
 
-        var icon = document.createElement('img');
-        icon.src = '/images/del.png';
+            while (elCell.hasChildNodes()) {
+                elCell.removeChild(elCell.firstChild);
+            }
+            elCell.appendChild(icon);
+            elCell.parentNode.style.textAlign = 'center';
 
-        while (elCell.hasChildNodes()) {
-            elCell.removeChild(elCell.firstChild);
+            YAHOO.util.Event.on(icon, "click", function() {
+                Fisma.Util.formPostAction(null, oData, null);
+            });
         }
-        elCell.appendChild(icon);
-        elCell.parentNode.style.textAlign = 'center';
-
-        YAHOO.util.Event.on(icon, "click", function() {
-            Fisma.Util.formPostAction(null, oData, null);
-        });
     },
 
     /**

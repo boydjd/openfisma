@@ -156,6 +156,22 @@ class Fisma_Doctrine_Behavior_Commentable_Generator extends Doctrine_Record_Gene
     }
 
     /**
+     * Remove a comment
+     *
+     * @param Doctrine_Record $instance The instance to be logged
+     * @param int $commentId The id of the comment to be removed
+     * @return void
+     */
+    public function removeComment(Doctrine_Record $instance, $commentId)
+    {
+        // Create a new comment
+        $commentClass = $this->_options['className'];
+        $instanceClass = $this->getOption('table')->getComponentName();
+
+        $this->fetchOneById($instance, $commentId)->delete();
+    }
+
+    /**
      * List comments for this object, optionally providing a SQL-style limit and offset to get a limited subset of all
      * the comments
      *
@@ -182,6 +198,21 @@ class Fisma_Doctrine_Behavior_Commentable_Generator extends Doctrine_Record_Gene
         $results = $query->execute();
 
         return $results;
+    }
+
+    /**
+     * Fetching a comment by its id
+     *
+     * @param mixed $instance The object to get logs for
+     * @param int $id The id of the comment
+     * @return Doctrine_Record The comment
+     */
+    public function fetchOneById($instance, $id)
+    {
+        $query = $this->query($instance);
+        $query->andWhere('id = ?', $id);
+
+        return $query->fetchOne();
     }
 
     /**

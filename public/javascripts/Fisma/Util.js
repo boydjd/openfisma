@@ -324,6 +324,12 @@ Fisma.Util = {
         subcsrf.value = $('[name="csrf"]').val();
         submitForm.appendChild(subcsrf);
 
+        var returnUrl = document.createElement('input');
+        returnUrl.type = 'hidden';
+        returnUrl.name = 'returnUrl';
+        returnUrl.value = window.location;
+        submitForm.appendChild(returnUrl);
+
         submitForm.submit();
      },
 
