@@ -59,7 +59,7 @@ Fisma.Finding = {
             'username' : comment.username,
             'comment' : comment.comment,
             'delete' :
-                '/comment/remove/format/json/type/Incident/' +
+                '/comment/remove/format/json/type/Finding/' +
                 'commentId/' + comment.id +
                 '/id/' + Fisma.Commentable.config.id
         };

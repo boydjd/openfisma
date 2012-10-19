@@ -131,6 +131,7 @@ class CommentController extends Fisma_Zend_Controller_Action_Security
             // Add comment and include comment details (including username) in response object
             $object->getAuditLog()->write("Comment deleted:\n\n" . $object->getComments()->fetchOneById($commentId)->comment);
             $object->getComments()->removeComment($commentId);
+            $object->updateJsonComments();
 
         } catch (Fisma_Zend_Exception_User $e) {
             $response->fail($e->getMessage(), $e);
