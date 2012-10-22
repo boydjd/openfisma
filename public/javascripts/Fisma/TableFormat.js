@@ -178,12 +178,20 @@ Fisma.TableFormat = {
      */
      editControl : function (elCell, oRecord, oColumn, oData) {
 
-        var icon = document.createElement('img');
+        var icon = document.createElement('img'),
+            link;
         icon.src = '/images/edit.png';
 
-        var link = document.createElement('a');
-        link.href = oData;
-        link.appendChild(icon);
+        if (typeof oData === "object") {
+            $(icon).click(function() {
+                oData.func.call({}, oData.param);
+            });
+            link = icon;
+        } else {
+            link = document.createElement('a');
+            link.href = oData;
+            link.appendChild(icon);
+        }
 
         while (elCell.hasChildNodes()) {
             elCell.removeChild(elCell.firstChild);

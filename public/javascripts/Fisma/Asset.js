@@ -59,7 +59,7 @@ Fisma.Asset = {
                                                 displayText: jcell.siblings().eq(0).find('div a').text(),
                                                 url: '/asset/list?q=/serviceTag/textExactMatch/' + encodeURIComponent(input)
                                             },
-                                            'Edit': "javascript:Fisma.Asset.renameTag('" + encodeURIComponent(input) + "')",
+                                            'Edit': {func: Fisma.Asset.renameTag, param: input},
                                             'Delete': '/asset/remove-service-tag/tag/' + encodeURIComponent(input)
                                         });
                                     }
@@ -114,7 +114,7 @@ Fisma.Asset = {
                                             'Assets': {
                                                 displayText: '0',
                                                 url: '/asset/list?q=/serviceTag/textExactMatch/' + encodeURIComponent(input)},
-                                            'Edit': "javascript:Fisma.Asset.renameTag('" + encodeURIComponent(input) + "')",
+                                            'Edit': {func: Fisma.Asset.renameTag, param: input},
                                             'Delete': '/asset/remove-service-tag/tag/' + encodeURIComponent(input)
                                         });
                                     }
