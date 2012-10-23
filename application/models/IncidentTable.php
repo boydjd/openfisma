@@ -461,4 +461,21 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                                ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         return $incidentAccessQuery;
     }
+
+    /**
+     * Return the query to fetch one attachment (if any) from a finding
+     *
+     * @param int $incidentId THe id of the Finding to get
+     * @param int $attachmentId The id of the Attachment to get
+     *
+     * @return Doctrine_Query
+     */
+    public static function getAttachmentQuery($incidentId, $attachmentId)
+    {
+        return Doctrine_Query::create()
+               ->from('Incident i')
+               ->leftJoin('i.Attachments a')
+               ->where('i.id = ?', $incidentId)
+               ->andWhere('a.id = ?', $attachmentId);
+    }
 }
