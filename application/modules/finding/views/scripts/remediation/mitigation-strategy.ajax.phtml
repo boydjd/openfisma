@@ -5,7 +5,7 @@
     $fromSearchUrl = $this->fromSearchUrl;
 ?>
 <p>
-    <b>Type:</b>
+    <b>Action Type:</b>
 
     <span type="select" name="finding[type]" href="/metainfo/list/o/type/format/html/" id="type"
         <?php
@@ -24,7 +24,7 @@
                echo $this->escape('class="editable"', 'none');
             }
         ?>>
-        Description:
+        Action Plan:
     </b>
 </p>
 <div name="finding[mitigationStrategy]" id="mitigation_strategy" type="textarea">
@@ -117,25 +117,6 @@
 <?php
 Fisma_Format_Section::startSection("Mitigation Strategy Approval");
 
-$array = array('type'                   => $finding->type,
-               'description'            => $finding->description,
-               'recommendation'         => $finding->recommendation,
-               'resources'              => $finding->resourcesRequired,
-               'ECD'                    => $finding->currentEcd,
-               'blscr'                  => $finding->securityControlId,
-               'threat_level'           => $finding->threatLevel,
-               'threat_source'          => $finding->threat,
-               'cmeasure_effectiveness' => $finding->countermeasuresEffectiveness,
-               'cmeasure'               => $finding->countermeasures);
-$complete = true;
-foreach ($array as $row) {
-    $row = strip_tags($row);
-    if ($row == '' || $row == 'NONE' || $row == '0000-00-00') {
-        $complete = false;
-        continue;
-    }
-}
-
 $warning = "WARNING: You are about to submit mitigation strategy. This action cannot be undone. "
            . 'Please click "YES" to confirm your action or click "No" to stop.';
 $args = array(null, '/finding/remediation/msa/do/submitmitigation' . $fromSearchUrl, $finding->id);
@@ -145,18 +126,18 @@ if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
         'submitMitigation',
         array(
               'label' => 'Submit Mitigation Strategy',
-              'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+              'onClickFunction' => 'Fisma.Remediation.submitMitigation',
               'onClickArgument' => array(
                   'args' => $args,
                   'func' => 'Fisma.Util.formPostAction',
-                  'text' => $warning
+                  'text' => $warning,
+                  'id'   => $this->finding->id
               )
         )
     );
 
     if (
         $this->finding->isDeleted() ||
-        false == $complete ||
         !$this->acl()->hasPrivilegeForObject('mitigation_strategy_submit', $finding)
     ) {
         $submitMitigationButton->readOnly = true;

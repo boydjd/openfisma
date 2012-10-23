@@ -111,6 +111,35 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     }
 
     /**
+     * Check if the Mitigation Strategy can be submitted
+     *
+     * @return array
+     */
+    public function getMissingMSFields()
+    {
+        $array = array(
+            'Action Type' => array('value' => $this->type, 'tab' => 'Mitigation Strategy'),
+            'Action Plan' => array('value' => $this->mitigationStrategy, 'tab' => 'Mitigation Strategy'),
+            'Resources Required' => array('value' => $this->resourcesRequired, 'tab' => 'Mitigation Strategy'),
+            'Expected Completion Date' => array('value' => $this->currentEcd, 'tab' => 'Mitigation Strategy'),
+            'Security Control' => array('value' => $this->securityControlId, 'tab' => 'Security Control'),
+            'Threat Level' => array('value' => $this->threatLevel, 'tab' => 'Risk Analysis'),
+            'Threat Description' => array('value' => $this->threat, 'tab' => 'Risk Analysis'),
+            'Countermeasures Effectiveness'
+                => array('value' => $this->countermeasuresEffectiveness, 'tab' => 'Risk Analysis'),
+            'Description of Countermeasures' => array('value' => $this->countermeasures, 'tab' => 'Risk Analysis')
+        );
+        $results = array();
+        foreach ($array as $name => $row) {
+            $value = strip_tags($row['value']);
+            if ($value == '' || $value == 'NONE' || $value == '0000-00-00') {
+                $results[$name] = $row['tab'];
+            }
+        }
+        return $results;
+    }
+
+    /**
      * Submit Mitigation Strategy
      * Set the status as "MSA" and the currentEvaluationId as the first mitigation evaluation id
      *

@@ -389,5 +389,34 @@ Fisma.Remediation = {
      */
     closeSourcePanel : function () {
         Fisma.Remediation.createSourcePanel.hide();
+    },
+
+    submitMitigation : function (ev, args) {
+        $.get(
+            '/finding/remediation/can-submit-mitigation-strategy/format/json/id/' + args.id,
+            null,
+            function(data) {
+                if (data.result.success) {
+                    Fisma.Util.showConfirmDialog(ev, args);
+                } else {
+                    Fisma.Util.showAlertDialog(data.result.message, {
+                        callback: function() {
+                            $('div.section b, a em').filter(function() {
+                                var text = $(this).text().trim();
+                                for (var i in data.result.object) {
+                                    if ((text.indexOf(data.result.object[i]) == 0) || (text.indexOf(i) == 0)) {
+                                        return true;
+                                    }
+                                }
+                            })
+                                .fadeOut().fadeIn()
+                                .fadeOut().fadeIn()
+                                .fadeOut().fadeIn()
+                            ;
+                        }
+                    });
+                }
+            }
+        );
     }
 };

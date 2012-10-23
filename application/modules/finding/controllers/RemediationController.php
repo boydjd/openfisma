@@ -90,6 +90,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
              ->addActionContext('comments', 'html')
              ->addActionContext('artifacts', 'html')
              ->addActionContext('audit-log', 'html')
+             ->addActionContext('can-submit-mitigation-strategy', 'json')
              ->initContext();
 
         parent::init();
@@ -555,6 +556,26 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
+     * Check if the mitigation strategy can be submitted via AJAX / JSON
+     *
+     * @GETAllowed
+     */
+    public function canSubmitMitigationStrategyAction()
+    {
+        $this->view->result = new Fisma_AsyncResponse;
+
+        $id = $this->_request->getParam('id');
+        $finding  = $this->_getSubject($id);
+
+        $fields = $finding->getMissingMSFields();
+        if (count($fields) > 0) {
+            $this->view->result->fail('Some required information is empty.', $fields);
+        } else {
+            $this->view->result->succeed('MS can be submited.');
+        }
+    }
+
+    /**
      * Mitigation Strategy Approval Process
      *
      * @return void
@@ -578,6 +599,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
             if ('submitmitigation' == $do) {
                 $this->_acl->requirePrivilegeForObject('mitigation_strategy_submit', $finding);
+                $fields = $finding->getMissingMSFields();
+                if (count($fields) > 0) {
+                    throw new Fisma_Zend_Exception_User('Some required information is empty.');
+                }
                 $finding->submitMitigation(CurrentUser::getInstance());
             }
             if ('revisemitigation' == $do) {

@@ -242,6 +242,9 @@ Fisma.Util = {
 
         var handleOk =  function() {
             this.destroy();
+            if (!YAHOO.lang.isUndefined(config) && config.callback) {
+                config.callback();
+            }
         };
         var button = [ { text: "Ok", handler: handleOk } ];
 
