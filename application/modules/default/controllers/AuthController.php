@@ -114,7 +114,7 @@ class AuthController extends Zend_Controller_Action
                 // This is a security feature to prevent bruteforcing usernames.
                 throw new Zend_Auth_Exception(self::CREDENTIAL_ERROR_MESSAGE);
             }
-            $user->checkAccountLock();
+            $user->checkAccountLock(false, $reverseProxyEnabled);
 
             // Perform authentication
             $auth = Zend_Auth::getInstance();
