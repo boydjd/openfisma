@@ -455,6 +455,13 @@ table.fisma_crud tr td, table.fisma_crud tr td input, table.fisma_crud tr td tex
     padding: 3px 5px;
 }
 
+table.fisma_crud td input[type=checkbox] {
+    vertical-align: text-bottom;
+}
+table.fisma_crud td .longdesc {
+    font-weight: normal;
+    margin-left: 8px;
+}
 /*
 This class indicates that the item should have a tooltip associated with it.
 The tooltip itself is added with YUI.
@@ -1111,4 +1118,8 @@ a.ui-button {
 }
 select.ui-button {
     padding: 4px;
+}
+
+span.longdesc {
+    margin-left: 4px;
 }

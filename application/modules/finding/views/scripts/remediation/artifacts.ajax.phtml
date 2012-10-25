@@ -110,13 +110,25 @@ foreach ($this->approvalHistory as $findingEvaluation):
     $comment = (!empty($findingEvaluation->comment)) ?
                $this->textToHtml($this->escape($findingEvaluation->comment)) :
                "";
+    $createdTs = new Zend_Date($findingEvaluation->createdTs, Fisma_Date::FORMAT_DATETIME);
+    $createdTs->setTimezone('UTC');
+    $createdDateTime = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                          . ' at '
+                          . $createdTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+    $createdTs->setTimezone(CurrentUser::getAttribute('timezone'));
+    $createdDateTimeLocal = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                          . ' at '
+                          . $createdTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
 ?>
     <div class='approvalStep<?php echo $this->escape($highlighted); ?>'>
         <b><?php echo $this->escape($findingEvaluation->Evaluation->name); ?></b>
-        <span class='<?php echo $this->escape($spanClass); ?>'>
+        <span
+            class='<?php echo $this->escape($spanClass); ?>'
+            title='UTC: <?php echo $this->escape($createdDateTime); ?>'
+        >
             <b><?php echo $this->escape($decision); ?></b>
             by <?php echo $this->escape($userHtml, 'none'); ?>
-            at <?php echo $this->escape($findingEvaluation->createdTs); ?>
+            at <?php echo $this->escape($createdDateTimeLocal); ?>
         </span>
         <?php echo $this->escape($comment, 'none'); ?>
     </div>

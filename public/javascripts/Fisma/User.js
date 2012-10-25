@@ -397,5 +397,13 @@ Fisma.User = {
         var storage = new Fisma.PersistentStorage("Fisma.UserAccess");
         storage.set('filterBy', selectElement.value);
         storage.sync();
+    },
+
+    preferredTimezoneToggle: function(checkboxElement) {
+        if (checkboxElement.checked) {
+            $('#timezone-button').parents('tr').first().hide();
+        } else {
+            $('#timezone-button').parents('tr').first().show();
+        }
     }
 };

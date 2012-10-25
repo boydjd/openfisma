@@ -83,4 +83,88 @@ class Fisma_Date
      * set format like '2:45 AM'
      */
     const FORMAT_AM_PM_TIME = 'h:mm a';
+
+    /**
+     * Timezones
+     *
+     * @todo this doesn't belong here
+     */
+    public static function getTimezones() {
+        return array(
+            'Pacific/Kwajalein' => '(GMT-12:00) Enewetak, Kwajalein',
+            'Pacific/Midway' => '(GMT-11:00) Midway Island, Samoa',
+            'Pacific/Honolulu' => '(GMT-10:00) Hawaii',
+            'America/Anchorage' => '(GMT-09:00) Alaska',
+            'America/Los_Angeles' => '(GMT-08:00) Pacific Time (US & Canada)',
+            'America/Dawson_Creek' => '(GMT-07:00) Arizona',
+            'America/Denver' => '(GMT-07:00) Mountain Time (US & Canada)',
+            'America/Chicago' => '(GMT-06:00) Central Time (US & Canada)',
+            'America/Cancun' => '(GMT-06:00) Guadalajara, Mexico City, Monterrey',
+            'America/Belize' => '(GMT-06:00) Saskatchewan, Central America',
+            'America/Bogota' => '(GMT-05:00) Bogota, Lima, Quito, Rio Branco',
+            'America/New_York' => '(GMT-05:00) Eastern Time (US & Canada)',
+            'America/Indianapolis' => '(GMT-05:00) Indiana (East)',
+            'America/Glace_Bay' => '(GMT-04:00) Atlantic Time (Canada)',
+            'America/Caracas' => '(GMT-04:00) Caracas, La Paz',
+            'America/St_Johns' => '(GMT-03:30) Newfoundland',
+            'America/Argentina/Buenos_Aires' => '(GMT-03:00) Buenos Aires',
+            'America/Sao_Paulo' => '(GMT-03:00) Rio de Janeiro',
+            'America/Noronha' => '(GMT-02:00) Mid-Atlantic',
+            'Atlantic/Cape_Verde' => '(GMT-01:00) Cape Verde Is., Azores',
+            'Europe/London' => '(GMT) Greenwich Mean Time; Dublin, Edinburgh, London',
+            'Africa/Abidjan' => '(GMT) Monrovia, Reykjavik',
+            'Europe/Amsterdam' => '(GMT+01:00) Berlin, Stockholm, Rome, Bern, Brussels, Vienna',
+            'Europe/Belgrade' => '(GMT+01:00) Lisbon, Warsaw',
+            'Europe/Brussels' => '(GMT+01:00) Paris, Madrid',
+            'Africa/Algiers' => '(GMT+01:00) Prague',
+            'Asia/Beirut' => '(GMT+02:00) Athens, Helsinki, Istanbul',
+            'Africa/Cairo' => '(GMT+02:00) Cairo',
+            'Europe/Minsk' => '(GMT+02:00) Eastern Europe',
+            'Africa/Blantyre' => '(GMT+02:00) Harare, Pretoria',
+            'Asia/Jerusalem' => '(GMT+02:00) Israel',
+            'Africa/Addis_Ababa' => '(GMT+03:00) Baghdad, Kuwait, Nairobi, Riyadh',
+            'Europe/Moscow' => '(GMT+03:00) Moscow, St. Petersburg, Volgograd',
+            'Asia/Tehran' => '(GMT+03:30) Tehran',
+            'Asia/Dubai' => '(GMT+04:00) Abu Dhabi, Muscat, Tbilisi, Kazan, Volgograd',
+            'Asia/Kabul' => '(GMT+04:30) Kabul',
+            'Asia/Tashkent' => '(GMT+05:00) Islamabad, Karachi, Sverdlovsk, Tashkent',
+            'Asia/Dhaka' => '(GMT+06:00) Alma Ata, Dhaka',
+            'Asia/Bangkok' => '(GMT+07:00) Bangkok, Hanoi, Jakarta',
+            'Asia/Hong_Kong' => '(GMT+08:00) Beijing, Chongqing, Urumqi',
+            'Australia/Perth' => '(GMT+08:00) Hong Kong, Perth, Singapore, Taipei',
+            'Asia/Tokyo' => '(GMT+09:00) Tokyo, Osaka, Sapporo, Seoul, Yakutsk',
+            'Australia/Adelaide' => '(GMT+09:30) Adelaide',
+            'Australia/Brisbane' => '(GMT+10:00) Brisbane, Melbourne, Sydney',
+            'Asia/Vladivostok' => '(GMT+10:00) Guam, Port Moresby, Vladivostok',
+            'Australia/Hobart' => '(GMT+10:00) Hobart',
+            'Asia/Magadan' => '(GMT+11:00) Magadan, Soloman Is., New Caledonia',
+            'Pacific/Fiji' => '(GMT+12:00) Fiji, Kamchatka, Marshall Is.',
+            'Pacific/Auckland' => '(GMT+12:00) Wellington'
+        );
+    }
+
+    public static function getOldTimezones() {
+        return
+            array('ADT', 'AST', 'EDT', 'EST', 'CDT', 'CST', 'MDT', 'MST', 'PDT', 'PST', 'AKDT', 'AKST', 'HADT', 'HAST');
+    }
+
+    public static function getFormattedTimezone($timezone) {
+        $aTimeZones = array(
+            'ADT'   =>  'America/Glace_Bay',
+            'AST'   =>  'America/Glace_Bay',
+            'EDT'   =>  'America/New_York',
+            'EST'   =>  'America/New_York',
+            'CDT'   =>  'America/Chicago',
+            'CST'   =>  'America/Chicago',
+            'MDT'   =>  'America/Denver',
+            'MST'   =>  'America/Denver',
+            'PDT'   =>  'America/Los_Angeles',
+            'PST'   =>  'America/Los_Angeles',
+            'AKDT'  =>  'America/Anchorage',
+            'AKST'  =>  'America/Anchorage',
+            'HADT'  =>  'Pacific/Honolulu',
+            'HAST'  =>  'Pacific/Honolulu'
+        );
+        return $aTimeZones[$timezone];
+    }
 }

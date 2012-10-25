@@ -143,6 +143,10 @@ class AuthController extends Zend_Controller_Action
             Notification::notify('ACCOUNT_LOGIN_SUCCESS', $user, $user);
             Notification::notify('USER_LOGIN_SUCCESS', $user, $user, array('userId' => $user->id));
             $user->getAuditLog()->write("Logged in ({$_SERVER['REMOTE_ADDR']})");
+            if ($user->timezoneAuto) {
+                $user->timezone = $this->getRequest()->getParam('timezoneOffset');
+                $user->save();
+            }
 
             // Register rulesOfBehavior forced action so that user can't view other pages
             // until Rob is accepted

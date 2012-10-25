@@ -43,7 +43,7 @@ class Incident extends BaseIncident
             $this->status = 'new';
 
             $this->reportTs = Fisma::now();
-            $this->reportTz = Zend_Date::now()->toString(Zend_Date::TIMEZONE);
+            $this->reportTz = Zend_Date::now()->getTimezone();
         }
     }
 

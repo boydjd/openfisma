@@ -134,13 +134,10 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
     {
         $render = '';
         $element  = $this->getElement();
-        $value  = $element->getAttrib('description');
+        $value  = $element->getAttrib('longdesc');
 
         if ($value) {
-            $render .= "<script type=\"text/javascript\">"
-                     . "YAHOO.util.Event.onDOMReady(function() {"
-                     . "Fisma.Util.showDescription('{$element->getName()}', \"{$value}\");"
-                     . "});</script>";
+            $render .= "<span class='longdesc'>" . $value . "</span>";
         }
 
         return $render;
@@ -177,7 +174,7 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
         if ($element instanceof Zend_Form_Element_Hidden) {
             $render = $this->buildInput();
         } else if ($element instanceof Zend_Form_Element) {
-            $render = '<tr><td>'
+            $render = '<tr' . (($element->getAttrib('hidden')) ? ' style="display:none"' : '') . '><td>'
                     . $this->buildLabel()
                     . '</td><td>'
                     . $this->buildInput()

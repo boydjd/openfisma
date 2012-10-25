@@ -129,6 +129,16 @@ User:
             notnull: true
             notblank: true
             default: /
+        timezone:
+            type: string(255)
+            extra:
+                logicalName: Preferred Timezone
+            comment: The preferred timezone in which local time will be calculated
+        timezoneAuto:
+            type: boolean
+            default: true
+            comment: The preferred timezone should be determined automatically
+
 
     relations:
         ReportingOrganization:
