@@ -33,6 +33,8 @@ class Fisma_Cli_LockUser extends Fisma_Cli_Abstract
      */
     protected function _run()
     {
+        global $application;
+
         $enabledUsers = Doctrine_Query::create()
             ->from('User u')
             ->where('u.lockType <> ?', 'manual')
@@ -46,7 +48,9 @@ class Fisma_Cli_LockUser extends Fisma_Cli_Abstract
         foreach ($enabledUsers as $user) {
             $locked = $user->locked;
 
-            $user->checkAccountLock(true);
+            $reverseProxyOptions = $application->getOption('reverse_proxy_auth');
+            $reverseProxyEnabled = isset($reverseProxyOptions['enable']) && $reverseProxyOptions['enable'];
+            $user->checkAccountLock(true, $reverseProxyEnabled);
 
             if ($locked && !$user->locked) {
                 $unlockedUsers[] = $user->username;
