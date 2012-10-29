@@ -403,8 +403,9 @@ Fisma.Remediation = {
                         callback: function() {
                             $('div.section b, a em').filter(function() {
                                 var text = $(this).text().trim();
-                                for (var i in data.result.object) {
-                                    if ((text.indexOf(data.result.object[i]) == 0) || (text.indexOf(i) == 0)) {
+                                var i;
+                                for (i in data.result.object) {
+                                    if ((text.indexOf(data.result.object[i]) === 0) || (text.indexOf(i) === 0)) {
                                         return true;
                                     }
                                 }
