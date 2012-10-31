@@ -73,7 +73,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
         }
         $reportDate->setDay(1);
 
-        switch ((int)$reportDate->getMonth()->toString('m')) {
+        switch ((int)$reportDate->toString('MM')) {
             case 12:
                 $reportDate->addYear(1);
             case 1:
@@ -99,7 +99,6 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
 
         // OFJ-463 Continued from above
         Zend_Date::setOptions(array('format_type' => $currentDateFormat));
-
         return $reportDate;
     }
 
@@ -128,9 +127,21 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
      */
     public function fismaAction()
     {
-        $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()
-                                                    ->toString(Fisma_Date::FORMAT_DATE);
+        $this->view->nextQuarterlyReportDate = $this->getNextQuarterlyFismaReportDate()->toString(Fisma_Date::FORMAT_DATE);
+        $quarterlyCompare = $this->getNextQuarterlyFismaReportDate()->compareDate(new Zend_Date());
+        $this->view->daysUntilQuarterlyDue = (
+            ($quarterlyCompare > 0)
+            ? (ceil(abs(($this->getNextQuarterlyFismaReportDate()->getTimestamp() - time("now"))/(60*60*24))) . ' day(s) from now')
+            : ('Due Today')
+        );
+
         $this->view->nextAnnualReportDate = $this->getNextAnnualFismaReportDate()->toString(Fisma_Date::FORMAT_DATE);
+        $annualCompare = $this->getNextAnnualFismaReportDate()->compareDate(new Zend_Date());
+        $this->view->daysUntilAnnualDue = (
+            ($annualCompare > 0)
+            ? (ceil(abs(($this->getNextAnnualFismaReportDate()->getTimestamp() - time("now"))/(60*60*24))) . ' day(s) from now')
+            : ('Due Today')
+        );
     }
 
     /**

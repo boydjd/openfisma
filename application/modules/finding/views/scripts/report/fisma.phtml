@@ -1,25 +1,30 @@
-<div class="searchBox">
-    <p>
-        <span class="searchField">
-            <b>The next quarterly FISMA report is due on: <?php echo $this->escape($this->nextQuarterlyReportDate)?></b>
-        </span>
-        <?php
-            $quarterlyButton = new Fisma_Yui_Form_Button_Link('quarterly',
-                                                array('value' => 'Generate Quarterly Report',
-                                                      'href' => "/finding/report/fisma-quarterly/format/xls"));
-            echo $this->escape($quarterlyButton, 'none');
-        ?>
-    </p>
-    
-    <p>
-        <span class="searchField">
-            <b>The next annual FISMA report is due on: <?php echo $this->escape($this->nextAnnualReportDate) ?></b>
-        </span>
-        <?php
-            $annualButton = new Fisma_Yui_Form_Button_Link('annual',
-                                                array('value' => 'Generate Annual Report',
-                                                      'href' => "/finding/report/fisma-annual/format/xls"));
-            echo $this->escape($annualButton, 'none');
-        ?>
-    </p>
-</div>
+<?php
+echo $this->escape($this->searchBox(array(
+    'quarterlyButton' => new Fisma_Yui_Form_Button_Link('quarterly',
+        array(
+            'value' => 'Quarterly Report',
+            'imageSrc' => '/images/xls.gif',
+            'href' => "/finding/report/fisma-quarterly/format/xls"
+        )
+    ),
+    'annualButton' => new Fisma_Yui_Form_Button_Link('annual',
+        array(
+            'value' => 'Annual Report',
+            'imageSrc' => '/images/xls.gif',
+            'href' => "/finding/report/fisma-annual/format/xls"
+        )
+    )
+)), 'none');
+Fisma_Format_Section::startSection('OMB FISMA Reports') ;
+?>
+
+<p>
+    The next quarterly FISMA report is due on: <b><?php echo $this->escape($this->nextQuarterlyReportDate); ?></b>
+    (<?php echo $this->escape($this->daysUntilQuarterlyDue); ?>).
+</p>
+
+<p>
+    The next annual FISMA report is due on: <b><?php echo $this->escape($this->nextAnnualReportDate); ?></b>
+    (<?php echo $this->escape($this->daysUntilAnnualDue); ?>).
+</p>
+<?php Fisma_Format_Section::stopSection(); ?>
