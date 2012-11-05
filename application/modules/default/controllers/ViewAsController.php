@@ -91,11 +91,13 @@ class ViewAsController extends Fisma_Zend_Controller_Action_Security
                     ->select("u.id, u.nameFirst, u.nameLast, u.username, u.email")
                     ->where($expr, $params)
                     ->andWhere('(u.lockType IS NULL OR u.lockType <> ?)', 'manual')
-                    ->andWhere('u.published')
-                    ->andWhereIn('u.reportingOrganizationId', $oids)
                     ->andWhere('u.id <> ?', CurrentUser::getAttribute('id'))
                     ->orderBy("u.nameFirst, u.nameLast, u.username, u.email")
                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $isAdmin = in_array('ADMIN', CurrentUser::getAttribute('Roles')->toKeyValueArray('id', 'nickname'));
+        if (!$isAdmin) {
+            $query->andWhere('u.published')->andWhereIn('u.reportingOrganizationId', $oids);
+        }
 
         $users = $query->execute();
         foreach ($users as &$user) {
@@ -109,7 +111,6 @@ class ViewAsController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->results = $users;
-
     }
 
     /**
