@@ -34,27 +34,25 @@ class Application_Migration_030000_ManagerView extends Fisma_Migration_Abstract
         $this->message("Adding Manager role and privilege...");
 
         // Insert new role
-        $this->getHelper()->exec(
-            "INSERT into `role` " .
-            "(`name`, `nickname`, `description`) " .
-            "VALUE (" .
-                "'Manager', " .
-                "'MANAGER', " .
-                "'<p><strong>[OpenFISMA Definition]</strong></p><p>The Manager Group gives users the same privileges " .
-                "a Reviewer would have for all items assigned to the systems and/or people directly under the managed" .
-                " organizations.</p>'" .
-            ");"
+        $roleId = $this->getHelper()->insert(
+            'role',
+            array(
+                'name' => 'Manager',
+                'nickname' => 'MANAGER',
+                'description' => "'<p><strong>[OpenFISMA Definition]</strong></p><p>The Manager Group gives users the" .
+                " same privileges a Reviewer would have for all items assigned to the systems and/or people directly " .
+                "under the managed organizations.</p>'"
+            )
         );
 
-        // Fetch the new role
-        $role = $this->getHelper()->query("SELECT `id` from `role` WHERE `nickname` = 'MANAGER';");
-        $roleId = $role[0]->id;
-
         // Insert new privilege
-        $this->getHelper()->exec(
-            "INSERT into `privilege` " .
-            "(`resource`, `action`, `description`) " .
-            "VALUE ('organzation', 'oversee', 'Oversee Organizations/Systems');"
+        $this->getHelper()->insert(
+            'privilege',
+            array(
+                'resource' => 'organzation',
+                'action' => 'oversee',
+                'description' => 'Oversee Organizations/Systems'
+            )
         );
 
         // Fetch all privileges for the new role
