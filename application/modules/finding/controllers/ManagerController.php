@@ -392,11 +392,13 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
             return;
         }
 
-        $chartByPoc = new Fisma_Chart(300, 250, 'chartByPoc', '/finding/manager/chart-by-poc/format/json/orgId/' . $orgId);
+        $chartByPoc =
+            new Fisma_Chart(300, 250, 'chartByPoc', '/finding/manager/chart-by-poc/format/json/orgId/' . $orgId);
         $chartByPoc->setTitle('Unresolved: By Point of Contact');
         $this->view->chartByPoc = $chartByPoc->export('html', true);
 
-        $chartBySystem = new Fisma_Chart(300, 250, 'chartBySystem', '/finding/manager/chart-by-system/format/json/orgId/' . $orgId);
+        $chartBySystem =
+            new Fisma_Chart(300, 250, 'chartBySystem', '/finding/manager/chart-by-system/format/json/orgId/' . $orgId);
         $chartBySystem->setTitle('Unresolved: By Point of Contact');
         $this->view->chartBySystem = $chartBySystem->export('html', true);
     }
@@ -452,11 +454,11 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
             ->andWhere('o.id = ?', $orgId)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
-        foreach($results as $result) {
+        foreach ($results as $result) {
             $data[$result['criteria']] = $result['count'];
         }
 
-        foreach($data as $key => $value) {
+        foreach ($data as $key => $value) {
             $rtnChart->addColumn($key, $value, $basicLink . $key);
         }
 
@@ -521,11 +523,11 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
             ->andWhereIn('o.id', $myOrgSystemIds)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
-        foreach($results as $result) {
+        foreach ($results as $result) {
             $data[$result['criteria']] = $result['count'];
         }
 
-        foreach($data as $key => $value) {
+        foreach ($data as $key => $value) {
             $rtnChart->addColumn($key, $value, $basicLink . $key);
         }
 
