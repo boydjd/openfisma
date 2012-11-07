@@ -28,7 +28,7 @@ Fisma.ViewAs = {
                 var scriptNodes = panel.body.getElementsByTagName('script'),
                     i;
                 for (i = 0; i < scriptNodes.length; i++) {
-                    if (scriptNodes[i].getAttribute('executeFlag') != 'true') {
+                    if (scriptNodes[i].getAttribute('executeFlag') !== 'true') {
                         try {
                             eval(scriptNodes[i].text);
                         } catch (e) {
