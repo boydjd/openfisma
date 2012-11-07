@@ -422,19 +422,26 @@ class User extends BaseUser
 
         if ($user !== null) {
             $user->invalidateAcl();
-            $cache->save($user, md5($this->username) . '_viewas');
+            if ($cache) {
+                $cache->save($user, md5($this->username) . '_viewas');
+            }
             return $user;
         }
-        return $cache->load(md5($this->username) . '_viewas');
+        if ($cache) {
+            return $cache->load(md5($this->username) . '_viewas');
+        }
+        return null;
     }
 
     public function clearViewAs()
     {
         $cache = $this->_getCache();
-        if ($user = $cache->load(md5($this->username) . '_viewas')) {
-            $user->invalidateAcl();
+        if ($cache) {
+            if ($user = $cache->load(md5($this->username) . '_viewas')) {
+                $user->invalidateAcl();
+            }
+            $cache->remove(md5($this->username) . '_viewas');
         }
-        $cache->remove(md5($this->username) . '_viewas');
     }
 
     /**
