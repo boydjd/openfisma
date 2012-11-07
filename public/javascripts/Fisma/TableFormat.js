@@ -503,6 +503,41 @@ Fisma.TableFormat = {
     },
 
     /**
+     * A formatter which displays due date as Jun 12, 2012 (5 days late) or Jun 12, 2012 (2 days until due)
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatDuedate : function (elCell, oRecord, oColumn, oData) {
+        if (oData) {
+            var date = new Date(oData.substr(0,4), parseInt(oData.substr(5, 2), 10) - 1, oData.substr(8, 2));
+            date.setHours(23, 59, 59, 999);
+
+            var now = new Date();
+            now.setHours(23, 59, 59, 999);
+            var isLate = (date < now);
+            var isToday = (date - now == 0);
+
+            elCell.innerHTML = "<font color='" + ((isLate) ? 'red' : ((isToday) ? 'orange' : 'green')) + "'>"
+                             + Fisma.TableFormat.month[date.getMonth()]
+                             + ' '
+                             + date.getDate()
+                             + ', '
+                             + date.getFullYear()
+                             + "</font>"
+                             + ((isLate)
+                                   ? (' (' + parseInt((now - date)/(1000*60*60*24)) + ' day(s) late)')
+                                   : ((isToday)
+                                       ? '(due today)'
+                                       : (' (' + parseInt((date - now)/(1000*60*60*24)) + ' day(s) until due)')
+                                   )
+                               );
+        }
+    },
+
+    /**
      * A formatter which displays date and time as Jun 12, 2012 at 2:24 AM
      *
      * @param elCell Reference to a container inside the <td> element

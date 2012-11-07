@@ -57,23 +57,37 @@
                 </td>
             </tr>
             <tr>
-                <td>Status:</td>
+                <td>Workflow Step:</td>
                 <td title="<?php echo $this->escape($status); ?>">
                     <?php echo $this->escape($finding->getLongStatus()); ?>
+                    <?php
+                    if (strpos($this->workflowOnTimeState, 'On Time') === 0) {
+                        ?>(<font color='green'><?php echo $this->escape($this->workflowOnTimeState); ?></font>)<?php
+                    } else if (strpos($this->workflowOnTimeState, 'Due Today') === 0) {
+                        ?>(<font color='orange'>Due Today</font>)<?php
+                    } else if (strpos($this->workflowOnTimeState, 'Overdue') === 0) {
+                        ?>(<font color='red'><?php echo $this->escape($this->workflowOnTimeState); ?></font>)<?php
+                    }
+                    ?>
                 </td>
             </tr>
-            <?php
-            if ($status != 'CLOSED') {
-            ?>
+        <?php if ($status !== 'NEW' && $status !== 'DRAFT' && $status !== 'CLOSED'): ?>
             <tr>
-                <td>On Time:</td>
-                <td>
-                <?php echo $this->escape($this->onTimeState); ?>
-                </td>
+                <td>ECD:</td>
+                <td><?php
+                        $originalEcd = new Zend_Date($finding->originalEcd, Fisma_Date::FORMAT_DATE);
+                        echo $this->escape($originalEcd->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR));
+                    ?> (<?php
+                    if (strpos($this->onTimeState, 'On Time') === 0) {
+                        ?><font color='green'><?php echo $this->escape($this->onTimeState); ?></font><?php
+                    } else if (strpos($this->onTimeState, 'Due Today') === 0) {
+                        ?><font color='orange'>Due Today</font><?php
+                    } else if (strpos($this->onTimeState, 'Overdue') === 0) {
+                        ?><font color='red'><?php echo $this->escape($this->onTimeState); ?></font><?php
+                    }
+                ?>)</td>
             </tr>
-            <?php
-            }
-            ?>
+        <?php endif; ?>
             <tr>
                 <td>
                     <div>
