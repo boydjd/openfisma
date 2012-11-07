@@ -30,6 +30,11 @@
  */
 class Fisma_Chart
 {
+    const COLOR_HIGH = "#F8696B";
+    const COLOR_MODERATE = "#FFEB84";
+    const COLOR_LOW = "#63BE7B";
+    const COLOR_BLUE = "#C8E1FA";
+
     /**
      * An array that holds information defining how the chart will be constructed and what it will plot
      * The array fields are as follows:
@@ -742,7 +747,7 @@ class Fisma_Chart
      *
      * @return string
      */
-    public function export($expMode = 'html')
+    public function export($expMode = 'html', $hideHeader = false)
     {
         switch ($expMode)
         {
@@ -780,6 +785,7 @@ class Fisma_Chart
             // send the chart data to the view script as well
             $dataToView['chartParamArr'] = $this->chartParamArr;
             $dataToView['chartId'] = $this->chartParamArr['uniqueid'];
+            $dataToView['hideHeader'] = $hideHeader;
 
             return $view->partial('chart/chart.phtml', 'default', $dataToView);
 

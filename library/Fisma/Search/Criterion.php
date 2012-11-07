@@ -57,6 +57,7 @@ class Fisma_Search_Criterion
         'integerGreaterThan',
         'integerLessThan',
         'organizationSubtree',
+        'organizationChildren',
         'systemAggregationSubtree',
         'textContains',
         'textDoesNotContain',

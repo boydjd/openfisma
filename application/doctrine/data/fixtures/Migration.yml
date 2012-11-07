@@ -140,8 +140,14 @@ Migration:
         minorVersion: 18
         tagNumber: 2
         name: VulnerabilityBulkUploadChanges
+
     030000_AssetServiceTags:
         majorVersion: 3
         minorVersion: 0
         tagNumber: 0
         name: AssetServiceTags
+    030000_ManagerView:
+        majorVersion: 3
+        minorVersion: 0
+        tagNumber: 0
+        name: ManagerView

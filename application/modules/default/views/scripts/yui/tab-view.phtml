@@ -9,6 +9,8 @@
         Fisma.Storage.onReady(function() {
 
             var tabView = new YAHOO.widget.TabView();
+            tabView.set('orientation', "<?php echo $this->escape($this->tabViewOrientation, 'javascript') ?>");
+
             var tabViewContainerId = "<?php echo $this->escape($this->tabViewContainer, 'javascript') ?>";
             var selectedTabCookie = "<?php echo $this->escape($this->selectedTabCookie, 'javascript') ?>";
             var objectIdCookie = "<?php echo $this->escape($this->objectIdCookie, 'javascript') ?>";
@@ -39,6 +41,8 @@
                 if (Fisma.Editable.editMode) {
                     $(function(){Fisma.Editable.turnAllOn();});
                 }
+
+                Fisma.ViewAs.provideVisualCues();
             };
 
             // When the active tab changes, store the active tab in a cookie so that it can be restored
@@ -49,6 +53,8 @@
                 if (Fisma.Editable.editMode) {
                     $(function(){Fisma.Editable.turnAllOn();});
                 }
+
+                Fisma.ViewAs.provideVisualCues();
             };
 
             // Render tabs

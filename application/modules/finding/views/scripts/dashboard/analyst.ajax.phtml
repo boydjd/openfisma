@@ -9,7 +9,7 @@
     </div>
 </div>
 
-<div class='column66 left' id='findingAnalystLeft'>
+<div class='column66 left findingAnalystLeft'>
     <?php Fisma_Format_Section::startSection('Unresolved: By Point of Contact', null, null, 'byPoc'); ?>
     <?php echo $this->escape($this->byPocTable, 'none'); ?>
     <?php if ($this->byPocTable->countData() > 8): ?>
@@ -36,7 +36,7 @@
     <?php endif; ?>
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>
-<div class='column33 right'  id='findingAnalystRight'>
+<div class='column33 right findingAnalystRight'>
     <?php Fisma_Format_Section::startSection('Unresolved: By Threat', null, null, 'byThreat'); ?>
     <table class='custom-widget no-border'>
     <?php foreach($this->byThreat as $statistic): ?>

@@ -96,6 +96,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/UrlPanel.js',
                                       '/javascripts/Fisma/User.js',
                                       '/javascripts/Fisma/Util.js',
+                                      '/javascripts/Fisma/ViewAs.js',
                                       '/javascripts/Fisma/Vulnerability.js',
                                       '/javascripts/jquery-min.js',
                                       '/javascripts/jquery-ui-min.js',

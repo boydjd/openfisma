@@ -1,0 +1,32 @@
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[viewas]
+elementPrefixPath.prefix = Fisma_Zend_Form
+elementPrefixPath.path = Fisma/Zend/Form
+elementPrefixPath.type = Validate
+
+elements.user.type = "Form_AutoComplete"
+elements.user.options.label = "User"
+elements.user.options.attribs.hiddenField = "userId"
+elements.user.options.attribs.xhr = "/view-as/autocomplete/format/json"
+elements.user.options.attribs.resultsList = "results"
+elements.user.options.attribs.fields = "name"
+elements.user.options.attribs.queryPrepend = "/keyword/"
+elements.user.options.attribs.containerId = "userContainer"
+elements.user.options.attribs.setupCallback = "Fisma.ViewAs.setupAutocomplete"
+displayGroups.viewAs.elements.user = "user"
+
+elements.userId.type = "hidden"
+displayGroups.viewAs.elements.userId = "userId"
+
+elements.url.type = "hidden"
+displayGroups.viewAs.elements.url = "url"
+
+elements.submit.type = "submit"
+elements.submit.options.attribs.value = "Submit"
+displayGroups.viewAs.elements.submit = "submit"

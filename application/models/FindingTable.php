@@ -129,6 +129,13 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                         'label' => 'Organizational Unit',
                         'renderer' => 'text',
                         'query' => 'oneInput',
+                    ),
+                    'organizationChildren' => array(
+                        'idField' => 'responsibleOrganizationId',
+                        'idProvider' => 'OrganizationTable::getOrganizationChildrenIds',
+                        'label' => 'Managed Under',
+                        'renderer' => 'text',
+                        'query' => 'oneInput',
                     )
                 ),
                 'label' => 'POC Organization',
@@ -148,6 +155,13 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                         'idField' => 'responsibleOrganizationId',
                         'idProvider' => 'OrganizationTable::getOrganizationSubtreeIds',
                         'label' => 'Organizational Unit',
+                        'renderer' => 'text',
+                        'query' => 'oneInput',
+                    ),
+                    'organizationChildren' => array(
+                        'idField' => 'responsibleOrganizationId',
+                        'idProvider' => 'OrganizationTable::getOrganizationChildrenIds',
+                        'label' => 'Managed Under',
                         'renderer' => 'text',
                         'query' => 'oneInput',
                     ),

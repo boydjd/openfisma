@@ -137,6 +137,10 @@ div#mainmenu span.logout {
     background-image: url('/images/logout-small.png');
 }
 
+div#mainmenu span.viewas {
+    background-image: url('/images/viewas-small.png');
+}
+
 div#mainmenu span.emailPreferences {
     background-image: url('/images/email-small.png');
 }

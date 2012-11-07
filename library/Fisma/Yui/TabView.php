@@ -45,6 +45,13 @@ class Fisma_Yui_TabView
     private $_objectId;
 
     /**
+     * The position of the tab bar (top / bototm / left / right)
+     *
+     * @var int
+     */
+    private $_orientation;
+
+    /**
      * An array of tabs displayed in this tab view interface
      *
      * Each tab is defined as an associative array with indices 'name' and 'url'
@@ -53,6 +60,10 @@ class Fisma_Yui_TabView
      */
     private $_tabs;
 
+    /**
+     * An array of tabs displayed in this tab view interface
+     * @var array
+     */
     public $jsonArray = array();
 
     /**
@@ -78,8 +89,9 @@ class Fisma_Yui_TabView
      *
      * @param string $tabViewId This ID must be unique application-wide, otherwise session cookies will conflict
      * @param int $objectId This is the ID of the object which is being displayed, or NULL.
+     * @param string $orientation Use "top" (default) or "bottom" for horizontal tabbar, "left" or "right" for vertical
      */
-    public function __construct($tabViewId, $objectId = null)
+    public function __construct($tabViewId, $objectId = null, $orientation = 'top')
     {
         if (empty($tabViewId)) {
             throw new Fisma_Zend_Exception('TabView ID must be set to non-empty value');
@@ -97,6 +109,7 @@ class Fisma_Yui_TabView
             $this->_objectId = $objectId;
         }
 
+        $this->_orientation = $orientation;
         $this->_tabs = array();
 
         $this->jsonArray['id'] = $this->_id;
@@ -112,6 +125,11 @@ class Fisma_Yui_TabView
     public function getObjectId()
     {
         return $this->_objectId;
+    }
+
+    public function getOrientation()
+    {
+        return $this->_orientation;
     }
 
     /**
@@ -154,7 +172,8 @@ class Fisma_Yui_TabView
             'objectId' => $this->_objectId,
             'objectIdCookie' => 'TabView_' . $this->_id . '_ObjectId',
             'tabs' => $this->_tabs,
-            'tabViewContainer' => 'TabView_' . $this->_id . '_TabViewContainer'
+            'tabViewContainer' => 'TabView_' . $this->_id . '_TabViewContainer',
+            'tabViewOrientation' => $this->_orientation
         );
 
         return $view->partial('yui/tab-view.phtml', 'default', $tabs);

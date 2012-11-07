@@ -203,7 +203,6 @@ Privilege:
         resource: vulnerability
         action: delete
         description: Delete Vulnerabilities
-
     vulnerability_comment:
         resource: vulnerability
         action: comment
@@ -270,6 +269,10 @@ Privilege:
         resource: organization
         action: delete
         description: Delete Organizations/Systems
+    organization_oversee:
+        resource: organization
+        action: oversee
+        description: Oversee Organizations/Systems
 
     # Pocs CRUD
     poc_create:

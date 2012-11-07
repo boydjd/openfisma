@@ -26,11 +26,6 @@
  */
 class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 {
-    const COLOR_HIGH = "#FF0000";
-    const COLOR_MODERATE = "#FF6600";
-    const COLOR_LOW = "#FFC000";
-    const COLOR_BLUE = " #3366FF";
-
     /**
      * Mapping from enum strings used in the DB to User-Friendly strings used in the UI
      *
@@ -50,7 +45,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      *
      * @var array
      */
-    protected $_highModLowColors = array(self::COLOR_HIGH, self::COLOR_MODERATE, self::COLOR_LOW);
+    protected $_highModLowColors = array(Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_MODERATE, Fisma_Chart::COLOR_LOW);
 
     /**
      * Set ajaxContect on analystAction and chartsAction
@@ -103,6 +98,19 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $tabView->addTab("Summary View", "/finding/summary/index/format/html");
 
         $this->view->tabView = $tabView;
+
+        $buttons = array();
+        if ($this->_acl->hasPrivilegeForClass('oversee', 'organization')) {
+            $buttons[] = new Fisma_Yui_Form_Button_Link(
+                'manager',
+                array(
+                    'value' => 'Manager View',
+                    'href' => '/finding/manager'
+                )
+            );
+        }
+
+        $this->view->toolbarButtons = $buttons;
     }
 
     /**
@@ -865,7 +873,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             case 'totals':
                 $rtnChart
                     ->convertFromStackedToRegular()
-                    ->setColors(array(self::COLOR_BLUE))
+                    ->setColors(array(Fisma_Chart::COLOR_BLUE))
                     ->setThreatLegendVisibility(false)
                     ->setLinks(
                             '/finding/remediation/list?q=' .
@@ -881,7 +889,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $rtnChart
                     ->deleteLayer(2)
                     ->deleteLayer(1)
-                    ->setColors(array(self::COLOR_HIGH));
+                    ->setColors(array(Fisma_Chart::COLOR_HIGH));
                 break;
             case 'moderate':
                 // Remove null-count layer/stack in this stacked bar chart
@@ -890,7 +898,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $rtnChart
                     ->deleteLayer(2)
                     ->deleteLayer(0)
-                    ->setColors(array(self::COLOR_MODERATE));
+                    ->setColors(array(Fisma_Chart::COLOR_MODERATE));
                 break;
                 case 'low';
                 // Remove null-count layer/stack in this stacked bar chart
@@ -899,7 +907,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $rtnChart
                     ->deleteLayer(1)
                     ->deleteLayer(0)
-                    ->setColors(array(self::COLOR_LOW));
+                    ->setColors(array(Fisma_Chart::COLOR_LOW));
                     break;
         }
 
@@ -1178,7 +1186,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $thisChart
                     ->convertFromStackedToRegular()
                     ->setThreatLegendVisibility(false)
-                    ->setColors(array(self::COLOR_BLUE))
+                    ->setColors(array(Fisma_Chart::COLOR_BLUE))
                     ->setLinks($nonStackedLinks);
                 break;
             case "high, moderate, and low":
@@ -1191,7 +1199,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
-                $thisChart->setColors(array(self::COLOR_HIGH));
+                $thisChart->setColors(array(Fisma_Chart::COLOR_HIGH));
                 break;
             case "moderate":
                 // Remove null-count layer
@@ -1199,7 +1207,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
-                $thisChart->setColors(array(self::COLOR_MODERATE));
+                $thisChart->setColors(array(Fisma_Chart::COLOR_MODERATE));
                 break;
             case "low":
                 // Remove null-count layer
@@ -1207,7 +1215,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
-                $thisChart->setColors(array(self::COLOR_LOW));
+                $thisChart->setColors(array(Fisma_Chart::COLOR_LOW));
                 break;
         }
 
@@ -1240,9 +1248,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->setColumnLabelAngle(0)
             ->setColors(
                     array(
-                        self::COLOR_HIGH,
-                        self::COLOR_MODERATE,
-                        self::COLOR_LOW
+                        Fisma_Chart::COLOR_HIGH,
+                        Fisma_Chart::COLOR_MODERATE,
+                        Fisma_Chart::COLOR_LOW
                         )
                     )
             ->setConcatColumnLabels(false)
@@ -1370,7 +1378,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $noMitChart
                     ->convertFromStackedToRegular()
                     ->setThreatLegendVisibility(false)
-                    ->setColors(array(self::COLOR_BLUE))
+                    ->setColors(array(Fisma_Chart::COLOR_BLUE))
                     ->setLinks($nonStackedLinks);
                 break;
             case "high, moderate, and low":
@@ -1384,7 +1392,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and Moderate columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(1);
-                $noMitChart->setColors(array(self::COLOR_HIGH));
+                $noMitChart->setColors(array(Fisma_Chart::COLOR_HIGH));
                 break;
             case "moderate":
                 // Remove null-counts (findings without threatLevels)
@@ -1392,7 +1400,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and High columns/layers
                 $noMitChart->deleteLayer(2);
                 $noMitChart->deleteLayer(0);
-                $noMitChart->setColors(array(self::COLOR_MODERATE));
+                $noMitChart->setColors(array(Fisma_Chart::COLOR_MODERATE));
                 break;
             case "low":
                 // Remove null-counts (findings without threatLevels)
@@ -1400,7 +1408,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Moderate and High columns/layers
                 $noMitChart->deleteLayer(1);
                 $noMitChart->deleteLayer(0);
-                $noMitChart->setColors(array(self::COLOR_LOW));
+                $noMitChart->setColors(array(Fisma_Chart::COLOR_LOW));
                 break;
         }
 
@@ -1566,7 +1574,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ->convertFromStackedToRegular()
                     ->setLinks($totalChartLinks)
                     ->setThreatLegendVisibility(false)
-                    ->setColors(array(self::COLOR_BLUE));
+                    ->setColors(array(Fisma_Chart::COLOR_BLUE));
                 break;
             case "high, moderate, and low":
                 // Remove the nullCount layer
@@ -1578,7 +1586,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and Moderate columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(1);
-                $thisChart->setColors(array(self::COLOR_HIGH));
+                $thisChart->setColors(array(Fisma_Chart::COLOR_HIGH));
                 break;
             case "moderate":
                 // Remove the nullCount layer
@@ -1586,7 +1594,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Low and High columns/layers
                 $thisChart->deleteLayer(2);
                 $thisChart->deleteLayer(0);
-                $thisChart->setColors(array(self::COLOR_MODERATE));
+                $thisChart->setColors(array(Fisma_Chart::COLOR_MODERATE));
                 break;
             case "low":
                 // Remove the nullCount layer
@@ -1594,7 +1602,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 // Remove the Moderate and High columns/layers
                 $thisChart->deleteLayer(1);
                 $thisChart->deleteLayer(0);
-                $thisChart->setColors(array(self::COLOR_LOW));
+                $thisChart->setColors(array(Fisma_Chart::COLOR_LOW));
                 break;
         }
 

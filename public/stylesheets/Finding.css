@@ -95,16 +95,20 @@ form#finding_workflow td input[readonly], form#finding_workflow td textarea[read
 }
 
 /* New Dashboard Analyst View */
-div#findingAnalystLeft .yui-dt-col-displayOrganization, .yui-dt-col-displayPoc {
+div.findingAnalystLeft .yui-dt-col-displayOrganization,
+div.findingAnalystLeft .yui-dt-col-displayPoc,
+div.findingAnalystLeft .yui-dt-col-displayParentOrganization,
+div.managerAnalystLeft .yui-dt-col-displayOrganization,
+div.managerAnalystLeft .yui-dt-col-displayPoc {
     width: 20%;
 }
-div#findingAnalystLeft .yui-dt-col-displayParentOrganization {
-    width: 20%;
-}
-div#findingAnalystLeft .yui-dt-col-threatLevel {
+div.findingAnalystLeft .yui-dt-col-threatLevel {
     width: 55%;
 }
-div#findingAnalystLeft .yui-dt-col-displayTotal {
+div.managerAnalystLeft .yui-dt-col-threatLevel {
+    width: 75%;
+}
+div.findingAnalystLeft .yui-dt-col-displayTotal {
     width: 5%;
     text-align: center !important;
 }

@@ -113,6 +113,10 @@ div#mainmenu span.logout {
     background-image: url('/images/logout.png');
 }
 
+div#mainmenu span.viewas {
+    background-image: url('/images/viewas.png');
+}
+
 div#mainmenu span.emailPreferences {
     background-image: url('/images/email.png');
 }
@@ -978,25 +982,25 @@ span.bar.normal {
     background: linear-gradient(to bottom, #C8E1FA, #3264C8); /* for IE 10 */
 }
 span.bar.LOW, span.bar.On-Time {
-    background: #E1FAC8; /* for non-css3 browsers */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#E1FAC8', endColorstr='#64C832'); /* for IE */
-    background: -webkit-gradient(linear, left top, left bottom, from(#E1FAC8), to(#64C832)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #E1FAC8, #64C832); /* for firefox 3.6+ */
-    background: linear-gradient(to bottom, #E1FAC8, #64C832); /* for IE 10 */
+    background: #C6EFCE; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C6EFCE', endColorstr='#63BE7B'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#C6EFCE), to(#63BE7B)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #C6EFCE, #63BE7B); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #C6EFCE, #63BE7B); /* for IE 10 */
 }
 span.bar.MODERATE {
-    background: #FAE164; /* for non-css3 browsers */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FAE164', endColorstr='#969632'); /* for IE */
-    background: -webkit-gradient(linear, left top, left bottom, from(#FAE164), to(#969632)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #FAE164, #969632); /* for firefox 3.6+ */
-    background: linear-gradient(to bottom, #FAE164, #969632); /* for IE 10 */
+    background: #FFEB9C; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFEB9C', endColorstr='#FFBE34'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#FFEB9C), to(#FFBE34)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #FFEB9C, #FFBE34); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #FFEB9C, #FFBE34); /* for IE 10 */
 }
 span.bar.HIGH, span.bar.Overdue {
-    background: #FAC8E1; /* for non-css3 browsers */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FAC8E1', endColorstr='#C83264'); /* for IE */
-    background: -webkit-gradient(linear, left top, left bottom, from(#FAC8E1), to(#C83264)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #FAC8E1, #C83264); /* for firefox 3.6+ */
-    background: linear-gradient(to bottom, #FAC8E1, #C83264); /* for IE 10 */
+    background: #FFC7CE; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC7CE', endColorstr='#F8696B'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#FFC7CE), to(#F8696B)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #FFC7CE, #F8696B); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #FFC7CE, #F8696B); /* for IE 10 */
 }
 
 table.custom-widget {
@@ -1048,7 +1052,7 @@ table.custom-widget.no-border td {
 .ui-icon-plusthick { background-image: url('/images/arrow-down.gif'); }
 .ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 50px !important; }
 .ui-sortable-placeholder * { visibility: hidden; }
-.ui-sortable-proxy { margin-top:10px; height: 1.5em; line-height: 1.2em; background: #FAE164; }
+.ui-sortable-proxy { margin-top:10px; height: 1.5em; line-height: 1.2em; background: #FFEB9C; }
 
 .searchBox img {
     vertical-align: middle;
@@ -1073,4 +1077,36 @@ table.custom-widget.no-border td {
 #breadcrumbs a {
     color: inherit;
     text-decoration: none;
+}
+
+/* A few "View As" related styles */
+div#view-as {
+    padding: 3px;
+    float: right;
+    color: #d76e41 !important;
+}
+div#view-as a {
+    text-decoration: none;
+    font-size: 1.5em;
+    padding-left: 3px;
+    padding-right: 3px;
+    cursor: pointer;
+    text-align: middle;
+    color: #d76e41 !important;
+}
+div.sectionHeader.viewAsMode {
+    background-color: #d76e41 !important;
+    border-color: #d76e41 !important;
+}
+ul.yui-nav.viewAsMode {
+    border-color: #d76e41 !important;
+}
+ul.yui-nav.viewAsMode li.selected a {
+    background: #d76e41 !important;
+}
+div.searchBox.viewAsMode {
+    background-color: #d76e41 !important;
+}
+div#mainmenu.viewAsMode li.currentModule {
+    background: #d76e41 !important;
 }

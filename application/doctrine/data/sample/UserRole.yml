@@ -41,6 +41,11 @@ UserRole:
             - WEST_COAST_ORG
             - WILDLIFE_ORG
             - WIND_ORG
+    sample_user_manager_role:
+        User: sample
+        Role: manager_role
+        Organizations:
+            - BGA_ORG
     sample_1_user_role:
         User: sample_1
         Role: isso_role

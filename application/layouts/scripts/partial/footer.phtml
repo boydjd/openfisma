@@ -12,11 +12,12 @@
         <?php echo $this->escape($versions['application']); ?>
     </a></i>
 </div>
-<?php if ($version = CurrentUser::getInstance()->showWhatsNew()): ?>
 <script>
     YAHOO.util.Event.onDOMReady(function() {
+<?php if ($version = CurrentUser::getInstance()->showWhatsNew()): ?>
         Fisma.Util.showWhatsNewDialog(<?php echo $this->escape("'" . $version . "'", 'none'); ?>);
+<?php endif; ?>
+        Fisma.ViewAs.provideVisualCues();
     });
 </script>
-<?php endif; ?>
 <div class="clear"></div>
