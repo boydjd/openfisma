@@ -518,7 +518,7 @@ Fisma.TableFormat = {
             var now = new Date();
             now.setHours(23, 59, 59, 999);
             var isLate = (date < now);
-            var isToday = (date - now == 0);
+            var isToday = ((date - now) === 0);
 
             elCell.innerHTML = "<font color='" + ((isLate) ? 'red' : ((isToday) ? 'orange' : 'green')) + "'>"
                              + Fisma.TableFormat.month[date.getMonth()]
@@ -528,10 +528,10 @@ Fisma.TableFormat = {
                              + date.getFullYear()
                              + "</font>"
                              + ((isLate)
-                                   ? (' (' + parseInt((now - date)/(1000*60*60*24)) + ' day(s) late)')
+                                   ? (' (' + parseInt((now - date)/(1000*60*60*24), 10) + ' day(s) late)')
                                    : ((isToday)
                                        ? '(due today)'
-                                       : (' (' + parseInt((date - now)/(1000*60*60*24)) + ' day(s) until due)')
+                                       : (' (' + parseInt((date - now)/(1000*60*60*24), 10) + ' day(s) until due)')
                                    )
                                );
         }

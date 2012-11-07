@@ -441,7 +441,8 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
      *
      * @return integer
      */
-    public function getDaysUntilDue() {
+    public function getDaysUntilDue()
+    {
         if (array_key_exists($this->status, $this->_overdue)) {
             // This is a New, Draft, or EN status
             if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode() && Fisma::RUN_MODE_TEST != Fisma::mode()) {
