@@ -24,7 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_030000_AddServiceTags extends Fisma_Migration_Abstract
+class Application_Migration_030000_AssetServiceTags extends Fisma_Migration_Abstract
 {
     /**
      * Migrate.
@@ -35,8 +35,11 @@ class Application_Migration_030000_AddServiceTags extends Fisma_Migration_Abstra
         $this->getHelper()->addColumn(
             'configuration',
             'asset_service_tags',
-            "text DEFAULT('development,testing,pre-production,staging,production')",
+            "text",
             'user_editable_profiles'
+        );
+        $this->getHelper()->exec(
+            "UPDATE configuration SET `asset_service_tags` = 'development,testing,pre-production,staging,production';"
         );
         $this->getHelper()->addColumn(
             'asset',

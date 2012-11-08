@@ -39,9 +39,11 @@ class Application_Migration_030000_ManagerView extends Fisma_Migration_Abstract
             array(
                 'name' => 'Manager',
                 'nickname' => 'MANAGER',
-                'description' => "'<p><strong>[OpenFISMA Definition]</strong></p><p>The Manager Group gives users the" .
+                'createdts' => date('Ymd'),
+                'modifiedts' => date('Ymd'),
+                'description' => "<p><strong>[OpenFISMA Definition]</strong></p><p>The Manager Group gives users the" .
                 " same privileges a Reviewer would have for all items assigned to the systems and/or people directly " .
-                "under the managed organizations.</p>'"
+                "under the managed organizations.</p>"
             )
         );
 
@@ -83,7 +85,7 @@ class Application_Migration_030000_ManagerView extends Fisma_Migration_Abstract
             $this->getHelper()->exec(
                 "INSERT into `role_privilege` " .
                 "(`roleid`, `privilegeid`) " .
-                "VALUE ($roldId, {$privilege->id});"
+                "VALUE ($roleId, {$privilege->id});"
             );
         }
     }
