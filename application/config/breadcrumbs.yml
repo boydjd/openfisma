@@ -156,8 +156,20 @@ IncidentView:
     links: [no-link, /incident/list, no-link]
 IncidentReport:
     url: /incident/report
-    labels: [Incidents, Report An Incident]
+    labels: [Incidents, Report an Incident]
     links: [no-link, no-link]
+IncidentCancelReport:
+    url: /incident/cancel-report
+    labels: [Incidents, Report an Incident, Canceled]
+    links: [no-link, /incident/report, no-link]
+IncidentReviewReport:
+    url: /incident/review-report
+    labels: [Incidents, Report an Incident, Review]
+    links: [no-link, /incident/report, no-link]
+IncidentSaveReport:
+    url: /incident/save-report
+    labels: [Incidents, Report an Incident, Reported]
+    links: [no-link, /incident/report, no-link]
 IncidentDashboard:
     url: /incident-dashboard
     labels: [Incidents, Dashboard]

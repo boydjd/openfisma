@@ -159,7 +159,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         if (is_null($step)) {
             $step = 0;
         } elseif ($this->getRequest()->getParam('irReportCancel')) {
-            $this->_redirect('/Incident/cancel-report');
+            $this->_redirect('/incident/cancel-report');
             return;
         } elseif (!$incident->isValid()) {
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
@@ -215,7 +215,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         if ($step < count($this->_formParts)) {
             $formPart = $this->getFormPart($step);
         } else {
-            $this->_redirect('/Incident/review-report');
+            $this->_redirect('/incident/review-report');
             return;
         }
 
@@ -1204,7 +1204,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'username' => $this->view->userInfo($comment['User']['displayName'], $comment['User']['id']),
                 'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment'])),
                 'delete' => (($comment['User']['id'] === CurrentUser::getAttribute('id'))
-                    ? '/comment/remove/format/json/id/' . $id . '/type/Incident/commentId/' . $comment['id']
+                    ? '/comment/remove/format/json/id/' . $id . '/type/incident/commentId/' . $comment['id']
                     : ''
                 )
             );
