@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -21,21 +21,23 @@
  * access to site resources.
  *
  * @uses Zend_Controller_Action_Helper_Abstract
- * @package Fisma_Zend_Controller_Plugin 
+ * @package Fisma_Zend_Controller_Plugin
  * @copyright (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
- * @author Andrew Reeves <andrew.reeves@endeavorsystems.com> 
+ * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Fisma_Zend_Controller_Plugin_Security extends Zend_Controller_Plugin_Abstract
 {
     /**
-     * Do security checks as early in the request process that we can 
-     * 
+     * Do security checks as early in the request process that we can
+     *
      * @return void
      */
     public function dispatchLoopStartup(Zend_Controller_Request_Abstract $request)
     {
+        global $application;
+
         // reset session timestamp cookie
         Fisma_Cookie::set('session_timestamp', Zend_Date::now()->getTimestamp());
 
@@ -43,7 +45,31 @@ class Fisma_Zend_Controller_Plugin_Security extends Zend_Controller_Plugin_Abstr
             return;
         }
 
+        // initialize reverse proxy options
+        $reverseProxyOptions = $application->getOption('reverse_proxy_auth');
+        $reverseProxyEnabled = isset($reverseProxyOptions['enable']) && $reverseProxyOptions['enable'];
+        $reverseProxyHttpHeader = isset($reverseProxyOptions['http_header'])
+            ? $reverseProxyOptions['http_header']
+            : 'username';
+
         $currentUser = CurrentUser::getInstance();
+
+        // ensure current user is the currently logged in user from reverse proxy
+        if ($currentUser && $reverseProxyEnabled) {
+            $serverKey = 'HTTP_' . strtoupper(strtr($reverseProxyHttpHeader, '-', '_'));
+            if (
+                isset($_SERVER[$serverKey])
+                && strtolower($currentUser->username) !== strtolower($_SERVER[$serverKey])
+            ) {
+                // log out the user
+                $currentUser->getAuditLog()->write('Logged out');
+                $auth = Zend_Auth::getInstance();
+                $auth->setStorage(new Fisma_Zend_Auth_Storage_Session());
+                $auth->clearIdentity();
+                CurrentUser::setInstance(null);
+                $currentUser = null;
+            }
+        }
 
         if (is_null($currentUser)) {
             // store original requested URL in session for the login script to redirect to
@@ -60,7 +86,7 @@ class Fisma_Zend_Controller_Plugin_Security extends Zend_Controller_Plugin_Abstr
             }
 
             $view = $viewRenderer->view;
-                
+
             $view->getHelper('acl')->setAcl($currentUser->acl());
         }
     }
