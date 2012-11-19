@@ -34,13 +34,14 @@ class Application_Migration_030000_ManagerView extends Fisma_Migration_Abstract
         $this->message("Adding Manager role and privilege...");
 
         // Insert new role
+        $date = new Zend_Date();
         $roleId = $this->getHelper()->insert(
             'role',
             array(
                 'name' => 'Manager',
                 'nickname' => 'MANAGER',
-                'createdts' => date('Ymd'),
-                'modifiedts' => date('Ymd'),
+                'createdts' => $date->toString('Ymd'),
+                'modifiedts' => $date->toString('Ymd'),
                 'description' => "<p><strong>[OpenFISMA Definition]</strong></p><p>The Manager Group gives users the" .
                 " same privileges a Reviewer would have for all items assigned to the systems and/or people directly " .
                 "under the managed organizations.</p>"
