@@ -40,8 +40,8 @@ class Application_Migration_030000_ManagerView extends Fisma_Migration_Abstract
             array(
                 'name' => 'Manager',
                 'nickname' => 'MANAGER',
-                'createdts' => $date->toString('Ymd'),
-                'modifiedts' => $date->toString('Ymd'),
+                'createdts' => $date->toString(Fisma_Date::FORMAT_DATETIME),
+                'modifiedts' => $date->toString(Fisma_Date::FORMAT_DATETIME),
                 'description' => "<p><strong>[OpenFISMA Definition]</strong></p><p>The Manager Group gives users the" .
                 " same privileges a Reviewer would have for all items assigned to the systems and/or people directly " .
                 "under the managed organizations.</p>"
