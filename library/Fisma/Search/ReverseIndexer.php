@@ -4,24 +4,24 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
- * The reverse indexer is used when a field on one model is stored in the denormalized schema of another model. 
- * 
+ * The reverse indexer is used when a field on one model is stored in the denormalized schema of another model.
+ *
  * When such a field is updated, the search engine must also update the stale documents corresponding to the related
  * model.
- * 
+ *
  * @author     Mark E. Haase <mhaase@endeavorsystems.com>
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
@@ -30,14 +30,14 @@
 class Fisma_Search_ReverseIndexer
 {
     /**
-     * 
+     *
      *
      * @param int $id Primary key of the object which triggered the reindex
      * @param Doctrine_Table $table The doctrine table that contains the object
      * @param array List of modified fields on the object
      */
     public function reindexAffectedDocuments($id, Doctrine_Table $table, $modified)
-    {        
+    {
         $relationsThatNeedUpdating = $this->_getRelationsNeedingUpdate($table, $modified);
 
         if (count($relationsThatNeedUpdating)) {
@@ -50,7 +50,7 @@ class Fisma_Search_ReverseIndexer
              * Until then, we need to turn off the script time limit.
              */
             set_time_limit(0);
-            
+
             foreach ($relationsThatNeedUpdating as $relation) {
                 $this->_reindexRelatedRecords($id, $relation);
             }
@@ -58,9 +58,9 @@ class Fisma_Search_ReverseIndexer
     }
 
     /**
-     * Given a table, the id of a record from that table, and the name of a foreign relation on that table, 
-     * re-index all of the foreign records related to the local record. 
-     * 
+     * Given a table, the id of a record from that table, and the name of a foreign relation on that table,
+     * re-index all of the foreign records related to the local record.
+     *
      * @param int $id The identifier of the local record
      * @param string $relation The name of the relation (in dotted form, e.g. Finding.Source is Finding's Source)
      */
@@ -68,17 +68,17 @@ class Fisma_Search_ReverseIndexer
     {
         $searchEngine = Zend_Registry::get('search_engine');
         $indexer = new Fisma_Search_Indexer($searchEngine);
-        
-        // $relation looks like: "SystemDocument.System.Organization". SystemDocument is the base class and 
+
+        // $relation looks like: "SystemDocument.System.Organization". SystemDocument is the base class and
         // System.Organization is the relation name
         $relationParts = explode('.', $relation);
         $baseClass = array_shift($relationParts);
         $relationName = implode('.', $relationParts);
-        
+
         // Relation aliases will be passed by referenced and filled in by the called method
         $relationAliases = null;
         $fetchQuery = $indexer->getRecordFetchQuery($baseClass, $relationAliases);
-        
+
         // Now filter query to only fetch records related to the modified record.
         // (Relation alias is safe to interpolate because it is generated from doctrine metadata without user input.)
         $relationAlias = $relationAliases[$relationName];
@@ -91,11 +91,11 @@ class Fisma_Search_ReverseIndexer
         if ($table instanceof Fisma_Search_CustomChunkSize_Interface) {
             $chunkSize = $table->getIndexChunkSize();
         }
-        
+
         // Do the actual indexing
         $indexer->indexRecordsFromQuery($fetchQuery, $baseClass, $chunkSize);
-        
-        $searchEngine->commit();        
+
+        $searchEngine->commit();
     }
 
     /**
@@ -117,7 +117,7 @@ class Fisma_Search_ReverseIndexer
 
         if (isset($reverseIndex[$modelName])) {
             $tableRelatedFields = $reverseIndex[$modelName];
-            
+
             foreach ($tableRelatedFields as $tableRelatedField => $tableRelations) {
                 if (in_array($tableRelatedField, $modified)) {
                     foreach ($tableRelations as $tableRelation) {
@@ -127,9 +127,9 @@ class Fisma_Search_ReverseIndexer
                         }
                     }
                 }
-            }            
+            }
         }
-        
+
         return array_keys($relationsNeedUpdating);
     }
 
@@ -143,7 +143,7 @@ class Fisma_Search_ReverseIndexer
      *
      * The return value is a nested array. The outer array contains names of the base models. In the example above, this
      * would be "Source". The middle array is a list of fields on that model which affect the search indexes of other
-     * models. In the example above, that would be "nickname". The innermost array contains the name of the actual 
+     * models. In the example above, that would be "nickname". The innermost array contains the name of the actual
      * models which are affected by the first two items. In the example above, that would be Finding.
      *
      * E.g. array('Source' => array('nickname' => array('Finding'))) means that when we modify the Source.nickname field
@@ -163,50 +163,70 @@ class Fisma_Search_ReverseIndexer
         $reverseIndex = $cache ? $cache->load('searchEngineReverseIndex') : false;
 
         if (!$reverseIndex) {
-        
+
             $indexEnumerator = new Fisma_Search_IndexEnumerator;
-            
+
             $searchableModels = $indexEnumerator->getSearchableClasses(Fisma::getPath('model'));
-            
+
             $reverseIndex = array();
-            
+
             foreach ($searchableModels as $searchableModel) {
-    
+
                 $table = Doctrine::getTable($searchableModel);
-    
+
                 $searchableFields = $table->getSearchableFields();
-                
+
                 foreach ($searchableFields as $searchableField) {
-                    if (isset($searchableField['join'])) {
-                        $relatedModel = $searchableField['join']['model'];
-                        $relationName = $searchableField['join']['relation'];
-                        $relatedField = $searchableField['join']['field'];
-                        
-                        if (empty($relatedModel) ||
-                            empty($relationName) ||
-                            empty($relatedField)) {
-                        
-                            throw new Fisma_Search_Exception("Search relation is not configured correctly.");
+                    if (!isset($searchableField['join'])) {
+                        continue;
+                    }
+
+                    $relatedModel = $searchableField['join']['model'];
+                    $relationName = $searchableField['join']['relation'];
+                    $relatedField = $searchableField['join']['field'];
+
+                    if (empty($relatedModel) ||
+                        empty($relationName) ||
+                        empty($relatedField)) {
+
+                        throw new Fisma_Search_Exception("Search relation is not configured correctly.");
+                    }
+
+                    if (!isset($reverseIndex[$relatedModel])) {
+                        $reverseIndex[$relatedModel] = array();
+                    }
+
+                    if (!isset($reverseIndex[$relatedModel][$relatedField])) {
+                        $reverseIndex[$relatedModel][$relatedField] = array();
+                    }
+
+                    $reverseIndex[$relatedModel][$relatedField][] = "$searchableModel.$relationName";
+
+                    // detect and include intermediate dependencies
+                    $relationNameParts = explode('.', $relationName);
+                    while (count($relationNameParts) > 1) {
+                        $relation = array_pop($relationNameParts);
+                        // get the table which has this relation
+                        $relationTable = $table;
+                        foreach ($relationNameParts as $namePart) {
+                            $relationTable = $relationTable->getRelation($namePart)->getTable();
                         }
-                        
-                        if (!isset($reverseIndex[$relatedModel])) {
-                            $reverseIndex[$relatedModel] = array();
-                        }
-                        
-                        if (!isset($reverseIndex[$relatedModel][$relatedField])) {
-                            $reverseIndex[$relatedModel][$relatedField] = array();
-                        }
-                        
-                        $reverseIndex[$relatedModel][$relatedField][] = "$searchableModel.$relationName";
+
+                        // determine the foreign key for the relation
+                        $fieldName = $relationTable->getRelation($relation)->getLocalFieldName();
+
+                        $relationName = implode('.', $relationNameParts);
+                        $reverseIndex[$relationTable->getComponentName()][$fieldName][] =
+                            "$searchableModel.$relationName";
                     }
                 }
             }
-            
+
             if ($cache) {
                 $cache->save($reverseIndex, 'searchEngineReverseIndex');
             }
         }
-        
+
         return $reverseIndex;
 
     }
