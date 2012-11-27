@@ -304,6 +304,7 @@ Incident:
                 logicalName: Point Of Contact
                 requiredPrivilege: update_poc
             comment: Foreign key to the point of contact for this incident
+        severityLevel: string
 
     relations:
         CurrentWorkflowStep:

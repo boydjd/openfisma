@@ -216,6 +216,9 @@ Incident:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: IrSubCategory
+                SeverityLevels:
+                    label: Severity Levels
+                    link: /incident-severity-level/list
                 IrWorkflowDef:
                     label: Workflows
                     link: /ir-workflow/list

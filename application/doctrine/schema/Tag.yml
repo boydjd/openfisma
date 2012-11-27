@@ -1,0 +1,4 @@
+Tag:
+    columns:
+        tagId: string
+        labels: array 

@@ -1,0 +1,8 @@
+Tag:
+    incidentSeverityLevel:
+        tagId: incident-severity-level
+        labels:
+            - Low
+            - Moderate
+            - High
+            - Critical
