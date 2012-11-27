@@ -6,3 +6,10 @@ Tag:
             - Moderate
             - High
             - Critical
+    incidentSource:
+        tagId: incident-source
+        labels:
+            - IDS
+            - Antivirus
+            - Human
+            - Keylogger

@@ -85,6 +85,25 @@
                     </span>
                 </td>
             </tr>
+            <tr>
+                <td>Source:</td>
+                <td>
+                    <span id="source"
+                        <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
+                          name="incident[source]"
+                          type="select"
+                          href="/incident-source/options/format/html/"
+                          target="source"
+                          class="editable"
+                         <?php endif; ?>>
+                        <?php if (!empty($this->incident['source'])): ?>
+                            <?php echo $this->escape($this->incident['source']); ?>:
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
+                    </span>
+                </td>
+            </tr>
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 

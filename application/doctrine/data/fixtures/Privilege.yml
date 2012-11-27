@@ -437,6 +437,10 @@ Privilege:
         resource: incident
         action: manage_severity_levels
         description: Manage Severity Levels
+    incident_manage_sources:
+        resource: incident
+        action: manage_sources
+        description: Manage Incident Sources 
 
     # IRWorkflow CRUD
     ir_workflow_def_create:
