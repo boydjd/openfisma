@@ -219,6 +219,10 @@ Incident:
                 SeverityLevels:
                     label: Severity Levels
                     link: /incident-severity-level/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage_severity_levels
+                        param2: Incident
                 IrWorkflowDef:
                     label: Workflows
                     link: /ir-workflow/list

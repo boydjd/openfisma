@@ -52,6 +52,20 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
     protected $_relatedModels = array();
 
     /**
+     * _aclResource
+     *
+     * @var string
+     */
+    protected $_aclResource = null;
+
+    /**
+     * _aclAction
+     *
+     * @var string
+     */
+    protected $_aclAction = null;
+
+    /**
      * Create contexts managing service tags via AJAX / JSON request
      *
      * @return void
@@ -74,6 +88,8 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
      */
     public function createAction()
     {
+        $this->_acl->requirePrivilegeForClass($this->_aclAction, $this->_aclResource);
+
         $this->view->result = new Fisma_AsyncResponse;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
 
@@ -102,6 +118,8 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
      */
     public function updateAction()
     {
+        $this->_acl->requirePrivilegeForClass($this->_aclAction, $this->_aclResource);
+
         $this->view->result = new Fisma_AsyncResponse;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
 
@@ -152,6 +170,8 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
      */
     public function deleteAction()
     {
+        $this->_acl->requirePrivilegeForClass($this->_aclAction, $this->_aclResource);
+
         $tag = $this->getRequest()->getParam('tag');
         if (!$tag) {
             throw new Fisma_Zend_Exception_User('Empty tag');
@@ -190,15 +210,6 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
     }
 
     /**
-     * migrateAction
-     *
-     * @return void
-     */
-    public function migrateAction()
-    {
-    }
-
-    /**
      * listAction
      *
      * @GETAllowed
@@ -206,6 +217,8 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
      */
     public function listAction()
     {
+        $this->_acl->requirePrivilegeForClass($this->_aclAction, $this->_aclResource);
+
         $data = array();
         $tags = Doctrine::getTable('Tag')->findOneByTagId($this->_tagId)->labels;
         $counts = $this->_getCounts();
@@ -249,15 +262,6 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
         $this->view->csrfToken = $this->_helper->csrf->getToken();
         $this->view->tags = $table;
         $this->renderScript('tag/list.phtml');
-    }
-
-    /**
-     * searchAction
-     *
-     * @return void
-     */
-    public function searchAction()
-    {
     }
 
     /**

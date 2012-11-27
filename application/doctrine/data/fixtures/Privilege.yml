@@ -433,6 +433,10 @@ Privilege:
         resource: incident
         action: lock
         description: Lock Incident
+    incident_manage_severity_levels:
+        resource: incident
+        action: manage_severity_levels
+        description: Manage Severity Levels
 
     # IRWorkflow CRUD
     ir_workflow_def_create:

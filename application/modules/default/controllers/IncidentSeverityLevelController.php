@@ -48,4 +48,18 @@ class IncidentSeverityLevelController extends Fisma_Zend_Controller_Action_Abstr
                 'modelControllerPrefix' => '/incident'
             )
         );
+
+    /**
+     * _aclResource
+     *
+     * @var string
+     */
+    protected $_aclResource = 'Incident';
+
+    /**
+     * _aclAction
+     *
+     * @var string
+     */
+    protected $_aclAction = 'manage_severity_levels';
 }
