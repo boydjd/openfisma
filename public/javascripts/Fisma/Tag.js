@@ -26,8 +26,8 @@ Fisma.Tag = {
             datatable = Fisma.Registry.get("tagTable");
 
         Fisma.Util.showInputDialog(
-            "Add a tag ...",
-            "Tag name",
+            "Add a " + obj.displayName + "...",
+            "Name",
             {
                 'continue': function(ev, obj) {
                     YAHOO.util.Event.stopEvent(ev);
@@ -120,7 +120,8 @@ Fisma.Tag = {
                 'cancel': function(ev, obj) {
                     datatable.unselectRow(row);
                 }
-            }
+            },
+            tag
         );
 
     }
