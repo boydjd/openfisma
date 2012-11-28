@@ -433,6 +433,10 @@ Privilege:
         resource: incident
         action: lock
         description: Lock Incident
+    incident_manage_resolutions:
+        resource: incident
+        action: manage_resolutions
+        description: Manage Incident Resolutions
     incident_manage_severity_levels:
         resource: incident
         action: manage_severity_levels

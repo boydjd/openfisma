@@ -13,3 +13,10 @@ Tag:
             - Antivirus
             - Human
             - Keylogger
+    incidentResolution:
+        tagId: incident-resolution
+        labels:
+            - False Positive
+            - Compromised
+            - Inconclusive
+            - Protection In Place
