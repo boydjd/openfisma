@@ -58,6 +58,7 @@
      */
     FE.setupEditFields = function() {
         var editable = YAHOO.util.Selector.query('.editable');
+        $('.editable').attr('title', '(click to edit)');
         YAHOO.util.Event.on(editable, 'click', function (o){
             // ignore clicks on anchor tags
             var targetElement = o.target || o.srcElement;
@@ -204,6 +205,7 @@
         spinner.src = "/images/spinners/small.gif";
         spinner.className = "spinner";
         spinner.id = autocompleteResultsDiv.id + "Spinner"; // required by AC API
+        spinner.alt = "working";
         container.appendChild(spinner);
 
         element.parentNode.replaceChild(container, element);

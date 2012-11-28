@@ -1,5 +1,8 @@
 <?php if (!empty($this->userId)): ?>
-    <span class='<?php echo $this->escape($this->classNames); ?>'>
+    <span
+        class='userInfo<?php echo $this->escape($this->status); ?>'
+        title='User<?php echo $this->escape($this->status); ?>'
+    >
         <span
             onclick="Fisma.User.displayUserInfo(this, '<?php echo $this->escape($this->userId, 'javascript'); ?>');"
             title="Click to show user information">

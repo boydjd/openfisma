@@ -560,6 +560,7 @@ Fisma.TableFormat = {
             if (oData.iconId) {
                 elCell.innerHTML = "<img "
                                  + "style='vertical-align:text-bottom;' "
+                                 + "alt='" + oData.iconAlt + "' "
                                  + "src='/icon/get/id/" + oData.iconId + "/size/small'/> " + elCell.innerHTML;
             }
         }
@@ -609,17 +610,17 @@ Fisma.TableFormat = {
         var linkData = YAHOO.lang.JSON.parse(oRecord.getData('displayTotal'));
         var html = "";
         if (oData.LOW) {
-            html += "<a href='" + linkData.url + oData.criteriaQuery + "LOW' title='" + oData.LOW + "'>";
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "LOW' title='" + oData.LOW + " low threat findings'>";
             html += "<span class='bar LOW' style='width:" + oData.LOW / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
         if (oData.MODERATE) {
-            html += "<a href='" + linkData.url + oData.criteriaQuery + "MODERATE' title='" + oData.MODERATE + "'>";
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "MODERATE' title='" + oData.MODERATE + " moderate threat findings'>";
             html += "<span class='bar MODERATE' style='width:" + oData.MODERATE / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
         if (oData.HIGH) {
-            html += "<a href='" + linkData.url + oData.criteriaQuery + "HIGH' title='" + oData.HIGH + "'>";
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "HIGH' title='" + oData.HIGH + " high threat findings'>";
             html += "<span class='bar HIGH' style='width:" + oData.HIGH / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
