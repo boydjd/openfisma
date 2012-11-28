@@ -62,4 +62,11 @@ class IncidentSourceController extends Fisma_Zend_Controller_Action_AbstractTagC
      * @var string
      */
     protected $_aclAction = 'manage_sources';
+
+    /**
+     * _displayName
+     *
+     * @var string
+     */
+    protected $_displayName = "Source";
 }
