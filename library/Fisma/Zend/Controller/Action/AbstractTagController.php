@@ -66,6 +66,13 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
     protected $_aclAction = null;
 
     /**
+     * Mame of tag to show to user.
+     *
+     * @var mixed
+     */
+    protected $_displayName = null;
+
+    /**
      * Create contexts managing service tags via AJAX / JSON request
      *
      * @return void
@@ -80,6 +87,7 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
 
         parent::init();
     }
+
     /**
      * Create a new tag
      *
@@ -254,7 +262,8 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
                     'onClickFunction' => 'Fisma.Tag.add',
                     'onClickArgument' => array(
                         'tagId' => $this->_tagId,
-                        'addUrl' => $this->getHelper('url')->simple('create', null, null, array('format' => 'json'))
+                        'addUrl' => $this->getHelper('url')->simple('create', null, null, array('format' => 'json')),
+                        'displayName' => $this->_displayName
                     ),
                     'imageSrc' => '/images/create.png'
                 )

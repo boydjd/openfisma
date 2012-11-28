@@ -62,4 +62,11 @@ class IncidentSeverityLevelController extends Fisma_Zend_Controller_Action_Abstr
      * @var string
      */
     protected $_aclAction = 'manage_severity_levels';
+
+    /**
+     * _displayName
+     *
+     * @var string
+     */
+    protected $_displayName = "Severity Level";
 }
