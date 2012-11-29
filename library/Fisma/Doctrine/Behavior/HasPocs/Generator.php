@@ -74,7 +74,7 @@ class Fisma_Doctrine_Behavior_HasPocs_Generator extends Doctrine_Record_Generato
         $this->hasColumn(
             'type',
             'string',
-            null,
+            255,
             array('comment' => 'The position of the user')
         );
 
