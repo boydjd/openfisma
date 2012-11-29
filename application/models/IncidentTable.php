@@ -215,11 +215,10 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'type' => 'text'
             ),
             'resolution' => array(
-                'enumValues' => $this->getEnumValues('resolution'),
                 'initiallyVisible' => true,
                 'label' => 'Resolution',
                 'sortable' => true,
-                'type' => 'enum'
+                'type' => 'text'
             ),
             'category' => array(
                 'initiallyVisible' => false,
