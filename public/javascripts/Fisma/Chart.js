@@ -66,7 +66,7 @@ Fisma.Chart = {
      * When an external source is needed, this function should handel the returned JSON request
      * The chartParamsObj object that went into Fisma.Chart.createJQChart(obj) would be the chartParamsObj here, and
      * the "value" parameter should be the returned JSON request.
-     * the chartParamsObj and value objects are merged togeather based in inheritance mode and 
+     * the chartParamsObj and value objects are merged togeather based in inheritance mode and
      * returns the return value of Fisma.Chart.createJQChart(), or false on external source failure.
      *
      * @return integer
@@ -147,14 +147,14 @@ Fisma.Chart = {
              * If it is being loaded from an external source
              *   setup a json request
              *   have the json request return to createJQChart_asynchReturn
-             *   exit this function as createJQChart_asynchReturn will call this function again 
+             *   exit this function as createJQChart_asynchReturn will call this function again
              *   with the same chartParamsObj object with chartParamsObj.externalSource taken out
             */
 
             document.getElementById(chartParamsObj.uniqueid).innerHTML = 'Loading chart data...';
 
-            // note externalSource, and remove/relocate it from its place in chartParamsObj[] so 
-            // it dosnt retain and cause us to loop 
+            // note externalSource, and remove/relocate it from its place in chartParamsObj[] so
+            // it dosnt retain and cause us to loop
             var externalSource = chartParamsObj.externalSource;
             if (!chartParamsObj.oldExternalSource) {
                 chartParamsObj.oldExternalSource = chartParamsObj.externalSource;
@@ -305,19 +305,19 @@ Fisma.Chart = {
     },
 
     /**
-     * Takes a chartParamsObj and merges content of 
+     * Takes a chartParamsObj and merges content of
      * externResponse-object into it based in the inheritance mode
      * set in externResponse.
      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
      *
      * @param object
      * @return void
-     * 
+     *
     */
     mergeExtrnIntoParamObjectByInheritance : function (chartParamsObj, externResponse) {
         var joinedParam = {};
 
-        // Is there an inheritance mode? 
+        // Is there an inheritance mode?
         if (externResponse.results[0].inheritCtl) {
             if (externResponse.results[0].inheritCtl === 'minimal') {
                 // Inheritance mode set to minimal, retain certain attribs and merge
@@ -400,7 +400,7 @@ Fisma.Chart = {
                 location: 's',
                 show: true,
                 rendererOptions: {
-                    numberRows: 2 
+                    numberRows: 2
                 }
             },
             highlighter: {
@@ -432,7 +432,7 @@ Fisma.Chart = {
             );
 
         // hook highlight event for tooltips
-        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight',
             function (ev, seriesIndex, pointIndex, data) {
                 Fisma.Chart.chartHighlightEvent(jPlotParamObj, ev, seriesIndex, pointIndex, data);
             }
@@ -459,7 +459,7 @@ Fisma.Chart = {
         canvases[0].onmousemove = function (e) {
             Fisma.Chart.chartMouseMovePieEvent(chartParamsObj, e, canvases[0]);
         };
-        
+
         // Hook onMouseOut of this canvas (to ensure tooltips are gone when so)
         canvases[0].onmouseout = function (e) {
             Fisma.Chart.hideAllChartTooltips();
@@ -602,7 +602,7 @@ Fisma.Chart = {
             legend: {
                 show: chartParamsObj.showlegend,
                 rendererOptions: {
-                    numberRows: 2 
+                    numberRows: 2
                 },
                 location: 'nw'
             }
@@ -643,7 +643,7 @@ Fisma.Chart = {
         $('#' + chartParamsObj.uniqueid).bind('jqplotDataClick', EvntHandler);
 
         // hook highlight event for tooltips
-        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight', 
+        $('#' + chartParamsObj.uniqueid).bind('jqplotDataHighlight',
             function (ev, seriesIndex, pointIndex, data) {
                 Fisma.Chart.chartHighlightEvent(jPlotParamObj, ev, seriesIndex, pointIndex, data);
             }
@@ -705,7 +705,7 @@ Fisma.Chart = {
     },
 
     /**
-     * Gets the tooltip div created for the chart 
+     * Gets the tooltip div created for the chart
      *
      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
      *
@@ -961,7 +961,7 @@ Fisma.Chart = {
     },
 
     /**
-     * Creates a single color (i.e. red/orange/yellow) tabels to be added 
+     * Creates a single color (i.e. red/orange/yellow) tabels to be added
      * into the threat-legend that shows above charts
      *
      * @return table
@@ -998,7 +998,7 @@ Fisma.Chart = {
 
         colorBody.appendChild(colorRow);
         colorBlockTbl.appendChild(colorBody);
-        return colorBlockTbl;    
+        return colorBlockTbl;
     },
 
     /**
@@ -1009,7 +1009,7 @@ Fisma.Chart = {
      */
     chartHighlightEvent : function (chartParamsObj, ev, seriesIndex, pointIndex, data, forceTooltipStyle)
     {
-        // Ensure all other tooltips are hidden 
+        // Ensure all other tooltips are hidden
         Fisma.Chart.hideAllChartTooltips();
 
         var toolTipObj = Fisma.Chart.getTooltipObjOfChart(chartParamsObj);
@@ -1166,7 +1166,7 @@ Fisma.Chart = {
     },
 
     /**
-     * The event handler for a mouse movement on pie charts. This function should move the tooltip along 
+     * The event handler for a mouse movement on pie charts. This function should move the tooltip along
      * with the mouse
      *
      * @return void
@@ -1262,7 +1262,7 @@ Fisma.Chart = {
      * Converts an array from strings to integers, for example;
      * ["1", 2, "3", 4] would become [1, 2, 3, 4]
      * This is a bug killer for external source plotting data as
-     * the jqPlot lib expects integers, and JSON may not always 
+     * the jqPlot lib expects integers, and JSON may not always
      * be encoded that way
      *
      * @return array
@@ -1282,7 +1282,7 @@ Fisma.Chart = {
 
     /**
      * Manually draws borders onto the shadow canvas
-     * This function is nessesary as jqPlot's API does not allow 
+     * This function is nessesary as jqPlot's API does not allow
      * you to choose which borders are drawn and which are not.
      * If "L" exists within chartParamsObj.borders, the left border is
      * drawn, if "R" does (too), then the right is drawn and so on.
@@ -1348,7 +1348,7 @@ Fisma.Chart = {
                     }
 
                     // Draw top border?
-                    if (chartParamsObj.borders.indexOf('T') !== -1) { 
+                    if (chartParamsObj.borders.indexOf('T') !== -1) {
                         context.moveTo(0, 0);
                         context.lineTo(w, 0);
                         context.stroke();
@@ -1399,7 +1399,7 @@ Fisma.Chart = {
         if (chartParamsObj.chartType === 'pie') {
             cpy = targDiv.childNodes[3];
             insertBeforeChild = targDiv.childNodes[4];
-        } else {    
+        } else {
             cpy = targDiv.childNodes[6];
             insertBeforeChild = targDiv.childNodes[5];
         }
@@ -1502,7 +1502,7 @@ Fisma.Chart = {
                             Fisma.Chart.widgetEvent,
                             chartParamsObj
                         );
- 
+
                         break;
                     case 'text':
                         var input = document.createElement('input');
@@ -1624,7 +1624,7 @@ Fisma.Chart = {
     },
 
      /**
-      * Event handeler for when a user changes combo-boxes or textboxes 
+      * Event handeler for when a user changes combo-boxes or textboxes
       * of chart settings.
       *
       * Expects: A (chart-)object generated from Fisma_Chart->export('array')
@@ -1903,33 +1903,31 @@ Fisma.Chart = {
         var dataTableObj = document.getElementById(chartParamsObj.uniqueid + 'table');
         dataTableObj.innerHTML = '';
 
+        if (chartParamsObj.chartType === 'pie') {
+            Fisma.Chart.getTableFromChartPieChart(chartParamsObj, dataTableObj);
+        } else {
+            Fisma.Chart.getTableFromBarChart(chartParamsObj, dataTableObj);
+        }
+
         if (Fisma.Chart.getGlobalSetting('showDataTable') === 'true') {
-
-            if (chartParamsObj.chartType === 'pie') {
-                Fisma.Chart.getTableFromChartPieChart(chartParamsObj, dataTableObj);
-            } else {
-                Fisma.Chart.getTableFromBarChart(chartParamsObj, dataTableObj);
-            }
-
-            // Show the table generated based on chart data
-            dataTableObj.style.display = '';
             // Hide, erase, and collapse the container of the chart divs
             document.getElementById(chartParamsObj.uniqueid).innerHTML = '';
             document.getElementById(chartParamsObj.uniqueid).style.width = 0;
             document.getElementById(chartParamsObj.uniqueid).style.height = 0;
             // Ensure the threat-level-legend is hidden
             document.getElementById(chartParamsObj.uniqueid + 'toplegend').style.display = 'none';
-
+            // Show the table generated based on chart data
+            dataTableObj.style.display = '';
         } else {
             dataTableObj.style.display = 'none';
         }
     },
 
     /**
-     * Creates a HTML table showing the data represented by the pie chart given. 
+     * Creates a HTML table showing the data represented by the pie chart given.
      *
      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
-     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the
      * HTML data-table should be appended to.
      *
      * @param object chartParamsObj
@@ -1975,10 +1973,10 @@ Fisma.Chart = {
     },
 
     /**
-     * Creates a HTML table showing the data represented by the bar chart given. 
+     * Creates a HTML table showing the data represented by the bar chart given.
      *
      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
-     * Expects: An object that is either on, or about to be placed on the DOM, to which the 
+     * Expects: An object that is either on, or about to be placed on the DOM, to which the
      * HTML data-table should be appended to.
      *
      * @param object chartParamsObj
@@ -2140,7 +2138,7 @@ Fisma.Chart = {
 
     /**
      * Removes data-labels that are within a certain range of eachother. If two labels are close,
-     * the data-label showing the lesser value is hidden. 
+     * the data-label showing the lesser value is hidden.
      *
      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
      * @param object
@@ -2194,9 +2192,9 @@ Fisma.Chart = {
                     pointLabelValue = thisChld.value;
 
                     var thispLabelInfo = {
-                        left: pointLabelLeft, 
-                        top: pointLabelTop, 
-                        value: pointLabelValue, 
+                        left: pointLabelLeft,
+                        top: pointLabelTop,
+                        value: pointLabelValue,
                         obj: thisChld
                     };
 
@@ -2311,7 +2309,7 @@ Fisma.Chart = {
 
     /**
      * Will update checkboxes/textboxes within the Global Settings tab of
-     * the chart to be equal to the current cookie state for each setting 
+     * the chart to be equal to the current cookie state for each setting
      * or the default stored in globalSettingsDefaults.
      *
      * Expects: A (chart-)object generated from Fisma_Chart->export('array')
@@ -2321,14 +2319,14 @@ Fisma.Chart = {
      */
     globalSettingRefreshUi : function (chartParamsObj) {
         /*
-            Every input-element (setting UI) has an id equal to the cookie name 
+            Every input-element (setting UI) has an id equal to the cookie name
             to which its value is stored. So wee we have to do is look for a
             cookie based on the id for each input element
         */
 
         // get this chart's GlobSettings menue
         var settingsMenue = document.getElementById(chartParamsObj.uniqueid + 'GlobSettings');
-        
+
         // get all elements of this chart's GlobSettings menue
         var settingOpts = settingsMenue.childNodes;
 
@@ -2375,7 +2373,7 @@ Fisma.Chart = {
      * Gets a setting previously saved by Fisma.Chart.setGlobalSetting()
      * If the setting being looked for has never been set, a value from Fisma.Chart.globalSettingsDefaults
      * will be returned.
-     * If the setting being looked for has never beem set, and there is no default value, an 
+     * If the setting being looked for has never beem set, and there is no default value, an
      * exception is thown.
      *
      * @param string settingName
@@ -2412,7 +2410,7 @@ Fisma.Chart = {
     },
 
     /**
-     * Will alter the input chart object based on 
+     * Will alter the input chart object based on
      * settings(cookies) or defaults stored in globalSettingsDefaults.
      *
      * Expects: A (chart) object generated from Fisma_Chart->export('array')
@@ -2465,7 +2463,7 @@ Fisma.Chart = {
      * again with doRedrawNow=true based on a timer
      *
      * The reason for the use of the timer is to ensure the browser repaints
-     * its content area, and the loading message is actully shown 
+     * its content area, and the loading message is actully shown
      * (and yes, this is nessesary).
      */
     redrawAllCharts : function (doRedrawNow) {
@@ -2480,7 +2478,7 @@ Fisma.Chart = {
 
         // If we are running in IE, continue to redraw charts after a brief pause to ensure IE has repainted the screen
         if (Fisma.Chart.isIE === true) {
-            if (doRedrawNow !== true || doRedrawNow === null) { 
+            if (doRedrawNow !== true || doRedrawNow === null) {
                 setTimeout(Fisma.Chart.redrawAllCharts(true), 300);
                 return;
             }
@@ -2542,7 +2540,7 @@ Fisma.Chart = {
     },
 
     /**
-     * Will insert a "No data to plot" message when there is no 
+     * Will insert a "No data to plot" message when there is no
      * data to plot, or all plot data are 0s
      *
      * Expects: A (chart) object generated from Fisma_Chart->export('array')
@@ -2611,7 +2609,7 @@ Fisma.Chart = {
     },
 
     /**
-     * Place canvases in divs with the appropriate style declairations. 
+     * Place canvases in divs with the appropriate style declairations.
      * This is nessesary to force styles when printing.
      *
      * Expects: A (chart) object generated from Fisma_Chart->export('array')
