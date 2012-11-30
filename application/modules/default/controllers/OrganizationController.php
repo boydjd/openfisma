@@ -95,11 +95,18 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                         $form->getElement('parent')->addMultiOptions(array($value => $text));
                     }
                     $form->getElement('copyOrganizationId')->addMultiOptions(array($value => $text));
+
+                    // Populate the field with the first not-null value
+                    if (!$form->getElement('copyOrganizationId')->getValue()) {
+                        $form->getElement('copyOrganizationId')->setValue($value);
+                    }
                 }
+                $form->getElement('parent')->setOptions(array('onChange' => 'Fisma.Organization.parentChanged(this)'));
             } else {
                 // If there are no other organizations, the parent only shows the option "None"
                 // (Notice that '0' is a special value which no primary key can actually take)
                 $form->getElement('parent')->addMultiOptions(array(0 => 'None'));
+                $form->getElement('copyOrganizationId')->addMultiOptions(array(null => null));
             }
 
             // The type menu should display all types of organization EXCEPT system

@@ -50,7 +50,14 @@ class Fisma_Zend_Form_Manager_System extends Fisma_Zend_Form_Manager_Abstract
                 $text = str_repeat('--', $organization['level']) . $organization['name'];
                 $form->getElement('parentOrganizationId')->addMultiOptions(array($value => $text));
                 $form->getElement('cloneOrganizationId')->addMultiOptions(array($value => $text));
+
+                // Populate the field with the first not-null value
+                if (!$form->getElement('cloneOrganizationId')->getValue()) {
+                    $form->getElement('cloneOrganizationId')->setValue($value);
+                }
             }
+            $form->getElement('parentOrganizationId')
+                 ->setOptions(array('onChange' => 'Fisma.Organization.parentChanged(this)'));
         }
 
         $systemTable = Doctrine::getTable('System');
