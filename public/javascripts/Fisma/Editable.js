@@ -170,6 +170,16 @@
                 }
             }
         });
+        YAHOO.util.Event.on(
+            editable,
+            "keypress",
+            function(e) {
+                if (YAHOO.util.Event.getCharCode(e) == YAHOO.util.KeyListener.KEY.ENTER) {
+                    Fisma.Editable.handleClickEvent.call( YAHOO.util.Event.getTarget(e), e);
+                }
+            }
+        );
+        YAHOO.util.Dom.setAttribute(editable, "tabindex", "0");
     };
 
     /**
