@@ -741,12 +741,14 @@ Fisma.TableFormat = {
     },
 
     formatSwitchButton: function(elCell, oRecord, oColumn, oData) {
-        console.log(oData);
-        oData = YAHOO.lang.JSON.parse(oData);
-        console.log(oData);
-        elCell.innerHTML = "<div id='" + oData.id + "'></div>";
-        YAHOO.util.Event.onContentReady(oData.id, function () {
-            new Fisma.SwitchButton(oData.id, oData.enabled, oData.callback, {'id':oData.id});
-        });
+        try {
+            oData = YAHOO.lang.JSON.parse(oData);
+            elCell.innerHTML = "<div id='" + oData.id + "'></div>";
+            YAHOO.util.Event.onContentReady(oData.id, function () {
+                new Fisma.SwitchButton(oData.id, oData.enabled, oData.callback, {'id':oData.id});
+            });
+        } catch (e) {
+            Fisma.TableFormat.formatHtml(elCell, oRecord, oColumn, oData);
+        }
     }
 };

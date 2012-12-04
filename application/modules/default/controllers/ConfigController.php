@@ -950,22 +950,22 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
     protected $_optionalFields = array(
         'legacyFindingKey' => array(
             'model' => 'Finding',
-            'field' => 'Legacy Finding Key',
+            'label' => 'Legacy Finding Key',
             'description' => 'This field can be used by end clients to track findings under a legacy tracking system'
         ),
         'findingAuditYear' => array(
             'model' => 'Finding',
-            'field' => 'Audit Year',
+            'label' => 'Audit Year',
             'description' => 'The latest audit year of the finding'
         ),
         'systemFismaReportable' => array(
             'model' => 'System',
-            'field' => 'FISMA Reportable',
+            'label' => 'FISMA Reportable',
             'description' => 'Is the system reportable in FISMA standards?'
         ),
         'systemNextSA' => array(
             'model' => 'System',
-            'field' => 'Security Authorization Expiration',
+            'label' => 'Security Authorization Expiration',
             'description' => 'The due date for the next required Security Authorization.'
         )
     );
@@ -990,8 +990,6 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
     /**
      * Set Optional Field
-     *
-     * @GETAllowed
      */
     public function setFieldAction()
     {

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -23,8 +23,8 @@
  * object which uses the behavior. The functionality is provided in the generator class itself, but this
  * class provides the glue for connecting a particular object *instance* to its corresponding generator.
  *
- * @author     Mark E. Haase
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Behavior_HasPocs
@@ -68,6 +68,17 @@ class Fisma_Doctrine_Behavior_HasPocs_Proxy
     public function addPoc($pocId, $type)
     {
         return $this->_generator->addPoc($this->_instance, $pocId, $type);
+    }
+
+    /**
+     * Proxy method for removing a poc
+     *
+     * @param string $type
+     * @return void
+     */
+    public function removePoc($type)
+    {
+        return $this->_generator->removePoc($this->_instance, $type);
     }
 
     /**

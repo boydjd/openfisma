@@ -291,21 +291,21 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->view->result = new Fisma_AsyncResponse;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
 
-        if (!$this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
+        if ($this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
             $this->view->result->fail('Invalid permission');
-        }
-
-        $tag = $this->getRequest()->getParam('tag');
-        if (!$tag) {
-            $this->view->result->fail('Empty tag');
         } else {
-            $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
-            if (in_array($tag, $tags)) {
-                $this->view->result->succeed('Tag already defined.');
+            $tag = $this->getRequest()->getParam('tag');
+            if (!$tag) {
+                $this->view->result->fail('Empty tag');
             } else {
-                $tags[] = $tag;
-                Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
-                $this->view->result->succeed();
+                $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
+                if (in_array($tag, $tags)) {
+                    $this->view->result->succeed('Tag already defined.');
+                } else {
+                    $tags[] = $tag;
+                    Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
+                    $this->view->result->succeed();
+                }
             }
         }
     }
@@ -322,37 +322,37 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
         if (!$this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
             $this->view->result->fail('Invalid permission');
-        }
-
-        $oldTag = $this->getRequest()->getParam('oldTag');
-        $newTag = $this->getRequest()->getParam('newTag');
-        if (!$oldTag || !$newTag) {
-            $this->view->result->fail('Empty tag(s)');
         } else {
-            $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
-            $key = array_search($oldTag, $tags);
-            if ($key >= 0) {
-                $tags[$key] = $newTag;
-
-                try {
-                    Doctrine_Manager::connection()->beginTransaction();
-
-                    $assets = Doctrine::getTable('Asset')->findByServiceTag($oldTag);
-                    foreach ($assets as $asset) {
-                        $asset->serviceTag = $newTag;
-                    }
-                    $assets->save();
-
-                    Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
-
-                    Doctrine_Manager::connection()->commit();
-                    $this->view->result->succeed();
-                } catch (Doctrine_Exception $e) {
-                    Doctrine_Manager::connection()->rollback();
-                    $this->view->result->fail($e->getMessage(), $e);
-                }
+            $oldTag = $this->getRequest()->getParam('oldTag');
+            $newTag = $this->getRequest()->getParam('newTag');
+            if (!$oldTag || !$newTag) {
+                $this->view->result->fail('Empty tag(s)');
             } else {
-                $this->view->result->fail('Tag not found.');
+                $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
+                $key = array_search($oldTag, $tags);
+                if ($key >= 0) {
+                    $tags[$key] = $newTag;
+
+                    try {
+                        Doctrine_Manager::connection()->beginTransaction();
+
+                        $assets = Doctrine::getTable('Asset')->findByServiceTag($oldTag);
+                        foreach ($assets as $asset) {
+                            $asset->serviceTag = $newTag;
+                        }
+                        $assets->save();
+
+                        Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
+
+                        Doctrine_Manager::connection()->commit();
+                        $this->view->result->succeed();
+                    } catch (Doctrine_Exception $e) {
+                        Doctrine_Manager::connection()->rollback();
+                        $this->view->result->fail($e->getMessage(), $e);
+                    }
+                } else {
+                    $this->view->result->fail('Tag not found.');
+                }
             }
         }
     }

@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,14 +17,14 @@
  */
 
 /**
- * The remediation controller handles CRUD for findings in remediation.
+ * The controller handles finding relationship actions
  *
- * @author     Jim Chen <xhorse@users.sourceforge.net>
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Controller
  */
-class Finding_RelationshipController extends Fisma_Zend_Controller_Action_Object
+class Finding_RelationshipController extends Fisma_Zend_Controller_Action_Security
 {
     /**
      * The main name of the model.
@@ -159,19 +159,19 @@ class Finding_RelationshipController extends Fisma_Zend_Controller_Action_Object
 
         if (!$this->_acl->hasPrivilegeForClass('manage_relationships', 'Finding')) {
             $this->view->result->fail('Invalid permission');
-        }
-
-        $tag = $this->getRequest()->getParam('tag');
-        if (!$tag) {
-            $this->view->result->fail('Empty tag');
         } else {
-            $tags = explode(',', Fisma::configuration()->getConfig('finding_link_types'));
-            if (in_array($tag, $tags)) {
-                $this->view->result->succeed('Tag already defined.');
+            $tag = $this->getRequest()->getParam('tag');
+            if (!$tag) {
+                $this->view->result->fail('Empty tag');
             } else {
-                $tags[] = $tag;
-                Fisma::configuration()->setConfig('finding_link_types', implode(',', $tags));
-                $this->view->result->succeed();
+                $tags = explode(',', Fisma::configuration()->getConfig('finding_link_types'));
+                if (in_array($tag, $tags)) {
+                    $this->view->result->succeed('Tag already defined.');
+                } else {
+                    $tags[] = $tag;
+                    Fisma::configuration()->setConfig('finding_link_types', implode(',', $tags));
+                    $this->view->result->succeed();
+                }
             }
         }
     }
@@ -188,37 +188,37 @@ class Finding_RelationshipController extends Fisma_Zend_Controller_Action_Object
 
         if (!$this->_acl->hasPrivilegeForClass('manage_relationships', 'Finding')) {
             $this->view->result->fail('Invalid permission');
-        }
-
-        $oldTag = $this->getRequest()->getParam('oldTag');
-        $newTag = $this->getRequest()->getParam('newTag');
-        if (!$oldTag || !$newTag) {
-            $this->view->result->fail('Empty tag(s)');
         } else {
-            $tags = explode(',', Fisma::configuration()->getConfig('finding_link_types'));
-            $key = array_search($oldTag, $tags);
-            if ($key >= 0) {
-                $tags[$key] = $newTag;
-
-                try {
-                    Doctrine_Manager::connection()->beginTransaction();
-
-                    $relationships = Doctrine::getTable('FindingRelationship')->findByRelationship($oldTag);
-                    foreach ($relationships as $relationship) {
-                        $relationship->relationship = $newTag;
-                    }
-                    $relationships->save();
-
-                    Fisma::configuration()->setConfig('finding_link_types', implode(',', $tags));
-
-                    Doctrine_Manager::connection()->commit();
-                    $this->view->result->succeed();
-                } catch (Doctrine_Exception $e) {
-                    Doctrine_Manager::connection()->rollback();
-                    $this->view->result->fail($e->getMessage(), $e);
-                }
+            $oldTag = $this->getRequest()->getParam('oldTag');
+            $newTag = $this->getRequest()->getParam('newTag');
+            if (!$oldTag || !$newTag) {
+                $this->view->result->fail('Empty tag(s)');
             } else {
-                $this->view->result->fail('Tag not found.');
+                $tags = explode(',', Fisma::configuration()->getConfig('finding_link_types'));
+                $key = array_search($oldTag, $tags);
+                if ($key >= 0) {
+                    $tags[$key] = $newTag;
+
+                    try {
+                        Doctrine_Manager::connection()->beginTransaction();
+
+                        $relationships = Doctrine::getTable('FindingRelationship')->findByRelationship($oldTag);
+                        foreach ($relationships as $relationship) {
+                            $relationship->relationship = $newTag;
+                        }
+                        $relationships->save();
+
+                        Fisma::configuration()->setConfig('finding_link_types', implode(',', $tags));
+
+                        Doctrine_Manager::connection()->commit();
+                        $this->view->result->succeed();
+                    } catch (Doctrine_Exception $e) {
+                        Doctrine_Manager::connection()->rollback();
+                        $this->view->result->fail($e->getMessage(), $e);
+                    }
+                } else {
+                    $this->view->result->fail('Tag not found.');
+                }
             }
         }
     }

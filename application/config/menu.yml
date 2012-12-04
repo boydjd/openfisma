@@ -99,6 +99,10 @@ Finding:
                 Finding_Link:
                     label: Link Types
                     link: /finding/relationship/manage
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage_relationships
+                        param2: Finding
         Reports:
             label: Reports
             privilege:

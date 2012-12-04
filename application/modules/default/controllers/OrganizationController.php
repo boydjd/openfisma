@@ -143,7 +143,6 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
      */
     protected function saveValue($form, $subject=null)
     {
-        throw new Fisma_Zend_Exception_User('asd');
         $form = $this->getForm();
 
         $objectId = null;
@@ -364,7 +363,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                     if (isset($post['poc'])) {
                         $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
                         foreach ($post['poc'] as $key => $value) {
-                            $organization->getPocs()->addPoc($value, $tags[$key]);
+                            if ($value) {
+                                $organization->getPocs()->addPoc($value, $tags[$key]);
+                            } else {
+                                $organization->getPocs()->removePoc($tags[$key]);
+                            }
                         }
                     }
 
@@ -637,7 +640,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $buttons = array();
         $isList = $this->getRequest()->getActionName() === 'list';
 
-        if ($this->getRequest()->getActionName() == 'poc-list') {
+        if ($this->getRequest()->getActionName() === 'poc-list') {
             $buttons[] = new Fisma_Yui_Form_Button(
                 'addTag',
                 array(

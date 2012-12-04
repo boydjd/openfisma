@@ -1,5 +1,7 @@
 <?php
-    $finding = $this->finding; $orgId = $finding->Organization->nickname; $status  = $finding->getStatus();
+    $finding = $this->finding;
+    $orgId = $finding->Organization->nickname;
+    $status  = $finding->getStatus();
     if (!$optionalFields = Fisma::configuration()->getConfig('optionalFields')) {
         $optionalFields = array();
     }

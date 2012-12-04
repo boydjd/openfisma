@@ -15,7 +15,7 @@
         <?php foreach($this->fieldDefs as $field => $def): ?>
             <tr>
                 <td><?php echo $this->escape($def['model']); ?></td>
-                <td><?php echo $this->escape($def['field']); ?></td>
+                <td><?php echo $this->escape($def['label']); ?></td>
                 <td><?php echo $this->escape($def['description']); ?></td>
                 <td><?php echo $this->escape(json_encode(array(
                     'id' => $field,

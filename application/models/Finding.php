@@ -881,7 +881,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $this->_set('discoveredDate', $value);
         if (!$this->auditYear) {
             $discoveredDate = new Zend_Date($this->discoveredDate, Fisma_Date::FORMAT_DATE);
-            $this->_set('auditYear', $discoveredDate->toString(Fisma_Date::FORMAT_YEAR));
+            $this->_set('auditYear', $discoveredDate->toString(Zend_Date::YEAR));
         }
     }
 }

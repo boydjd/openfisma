@@ -14,50 +14,26 @@ class FindingRelationship extends BaseFindingRelationship
 {
     public function getReverseAction()
     {
-        $tags = explode(',', Fisma::configuration()->getConfig('finding_link_types'));
-        foreach ($tags as $tag) {
-            if (strpos($tag, $this->relationship) !== false) {
-                $components = explode('/', $tag);
-                if (count($components) > 1) { // if there are 2 parts
-                    return $components[1]; // returns the second
-                } else {
-                    return $tag; // otherwise returns itself
-                }
-            }
-        }
-        return $this->relationship; // $relationship outdated, returns itself
+        $tags = explode('/', $this->relationship, 2);
+        return (empty($tags[1]) ? $tags[0] : $tags[1]);
     }
 
     public function getDirectAction()
     {
-        $tags = explode(',', Fisma::configuration()->getConfig('finding_link_types'));
-        foreach ($tags as $tag) {
-            if (strpos($tag, $this->relationship) !== false) {
-                $components = explode('/', $tag);
-                if (count($components) > 1) { // if there are 2 parts
-                    return $components[0]; // returns the first
-                } else {
-                    return $tag; // otherwise returns itself
-                }
-            }
-        }
-        return $this->relationship; // $relationship outdated, returns itself
+        $tags = explode('/', $this->relationship, 2);
+        return $tags[0];
     }
 
     public static function isDirectAction($relationship)
     {
         $tags = explode(',', Fisma::configuration()->getConfig('finding_link_types'));
         foreach ($tags as $tag) {
-            if (strpos($tag, $relationship) !== false) {
-                $components = explode('/', $tag);
-                if (count($components) > 1) { // if there are 2 parts
-                    return (strpos($tag, $relationship) === 0); // returns whether it's the first
-                } else {
-                    return $tag; // otherwise returns true
-                }
+            $tagComponents = explode('/', $tag, 2);
+            if (count($tagComponents) > 1 && $relationship === $tagComponents[1]) {
+                return false;
             }
         }
-        return true; // $relationship outdated, returns true
+        return true;
     }
 
     public static function getFullTag($relationship)

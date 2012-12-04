@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2008 Endeavor Systems, Inc.
+ * Copyright (c) 2012 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -19,8 +19,8 @@
 /**
  * Generator for the HasPocs behavior
  *
- * @author     Mark E. Haase
- * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Fisma
  * @subpackage Fisma_Doctrine_Behavior_HasPocs
@@ -121,7 +121,8 @@ class Fisma_Doctrine_Behavior_HasPocs_Generator extends Doctrine_Record_Generato
      * Add a poc
      *
      * @param Doctrine_Record $instance The instance to be logged
-     * @param string $message The poc to be written
+     * @param int $pocId
+     * @param string $type
      * @return Doctrine_Record Return the added poc
      */
     public function addPoc(Doctrine_Record $instance, $pocId, $type)
@@ -141,6 +142,25 @@ class Fisma_Doctrine_Behavior_HasPocs_Generator extends Doctrine_Record_Generato
         $pocEntry->save();
 
         return $pocEntry;
+    }
+
+    /**
+     * Add a poc
+     *
+     * @param Doctrine_Record $instance The instance to be logged
+     * @param string $type
+     * @return void
+     */
+    public function removePoc(Doctrine_Record $instance, $type)
+    {
+        // Create a new poc
+        $pocClass = $this->_options['className'];
+        $instanceClass = $this->getOption('table')->getComponentName();
+
+        $pocEntry = $this->fetchOneByType($instance, $type);
+        if ($pocEntry) {
+            $pocEntry->delete();
+        }        
     }
 
     /**

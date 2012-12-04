@@ -1258,7 +1258,7 @@ abstract class Doctrine_Query_Abstract
         $this->_rootAlias = $copy->getRootAlias();
         
         if ($componentsBefore !== $componentsAfter) {
-            return array_diff($componentsAfter, $componentsBefore);
+            return array_diff_assoc($componentsAfter, $componentsBefore);
         } else {
             return $componentsAfter;
         }
