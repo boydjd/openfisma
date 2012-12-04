@@ -688,5 +688,13 @@ Fisma.TableFormat = {
             div.append(highlightAndEscape(v[2]));
             div.appendTo(cell);
         });
+    },
+    recordLink: function (elCell, oRecord, oColumn, oData) {
+        var params = oColumn.formatterParameters,
+            prefix = params.prefix;;
+            jqAnchor = $("<a>");
+        jqAnchor.text(oData);
+        jqAnchor.attr("href", prefix + oData);
+        $(elCell).html(jqAnchor);
     }
 };

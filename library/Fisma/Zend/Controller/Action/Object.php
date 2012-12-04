@@ -836,6 +836,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
 
             $formatter = 'YAHOO.widget.DataTable.formatText';
+            $formatterParameters = null;
             if ($searchParams['type'] === 'boolean') {
                 $formatter = 'Fisma.TableFormat.formatBoolean';
             }
@@ -847,12 +848,15 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     $formatter = 'Fisma.TableFormat.formatDateTime';
                 } else {
                     $formatter = $searchParams['formatter'];
+                    if (isset($searchParams['formatterParameters'])) {
+                        $formatterParameters = $searchParams['formatterParameters'];
+                    }
                 }
             }
             $column = new Fisma_Yui_DataTable_Column($label,
                                                      $sortable,
                                                      $formatter,
-                                                     null,
+                                                     $formatterParameters,
                                                      $fieldName,
                                                      !$visible,
                                                      'string',

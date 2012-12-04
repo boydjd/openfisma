@@ -46,7 +46,11 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => true,
                 'label' => 'ID',
                 'sortable' => true,
-                'type' => 'integer'
+                'type' => 'integer',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/finding/remediation/view/id/'
+                )
             ),
             'legacyFindingKey' => array(
                 'initiallyVisible' => false,
