@@ -37,7 +37,11 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'initiallyVisible' => true,
                 'label' => 'Name',
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/asset/view/id/'
+                )
             ),
             'source' => array(
                 'initiallyVisible' => true,

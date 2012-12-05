@@ -43,7 +43,11 @@ class ProductTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => true,
                 'label' => 'Name',
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/vm/product/view/id/'
+                )
             ),
             'version' => array(
                 'initiallyVisible' => true,

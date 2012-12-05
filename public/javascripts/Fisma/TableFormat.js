@@ -694,7 +694,7 @@ Fisma.TableFormat = {
             prefix = params.prefix;;
             jqAnchor = $("<a>");
         jqAnchor.text(oData);
-        jqAnchor.attr("href", prefix + oData);
+        jqAnchor.attr("href", prefix + oRecord.getData('id'));
         $(elCell).html(jqAnchor);
     }
 };
