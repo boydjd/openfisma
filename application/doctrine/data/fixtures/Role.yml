@@ -5,8 +5,7 @@ Role:
         description: <p><strong>[NIST 800-37 Definition]</strong></p><p>The information system security officer is the individual responsible to the authorizing official, information system owner, or the senior agency information security officer for ensuring the appropriate operational security posture is maintained for an information system or program. The information system security officer also serves as the principal advisor to the authorizing official, information system owner, or senior agency information security officer on all matters (technical and otherwise) involving the security of the information system. The information system security officer typically has the detailed knowledge and expertise required to manage the security aspects of the information system and, in many agencies, is assigned responsibility for the day-to-day security operations of the system. This responsibility may also include, but is not limited to, physical security, personnel security, incident handling, and security training and awareness. The information system security officer may be called upon to assist in the development of the system security policy and to ensure compliance with that policy on a routine basis. In close coordination with the information system owner, the information system security officer often plays an active role in developing and updating the system security plan as well as in managing and controlling changes to the system and assessing the security impact of those changes.</p><p><strong>[OpenFISMA definition]</strong></p><p>The Information Systems Security Officer Group is designed to allow Information System Security Officers the ability to identify, assess, prioritize, and monitor the progress of corrective efforts for security weaknesses found in their system.</p>
         Privileges:
             - areas_dashboard
-            - asset_read
-            - asset_manage_service_tags
+            - asset_read            
             - asset_update
             - finding_area
             - finding_evidence_isso
@@ -35,7 +34,7 @@ Role:
             - notification_vulnerability
             - organization_read
             - organization_update
-            - organiztaion_manage_poc_list
+            - organization_manage_poc_list
             - system_inventory_area
             - vulnerability_area
             - vulnerability_comment
@@ -50,8 +49,7 @@ Role:
         description: <p>The Alternate ISSO has similar privileges to the ISSO and acts as a stand-in when the ISSO is unavailable.</p>
         Privileges:
             - areas_dashboard
-            - asset_read
-            - asset_manage_service_tags
+            - asset_read            
             - asset_update
             - finding_area
             - finding_evidence_isso
@@ -80,7 +78,7 @@ Role:
             - notification_vulnerability
             - organization_read
             - organization_update
-            - organiztaion_manage_poc_list
+            - organization_manage_poc_list
             - system_inventory_area
             - vulnerability_area
             - vulnerability_comment
@@ -96,8 +94,7 @@ Role:
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>The Reviewer Group gives users the ability to view all information on the Plan of Actions and Milestones report for the information system. They do not have the ability to create, edit, or delete any information.</p>
         Privileges:
             - areas_dashboard
-            - asset_read
-            - asset_manage_service_tags
+            - asset_read            
             - finding_area
             - finding_report_area
             - findings_read
@@ -137,9 +134,9 @@ Role:
         Privileges:
             - areas_dashboard
             - asset_create
-            - asset_read
-            - asset_manage_service_tags
+            - asset_read            
             - asset_unaffiliated
+            - asset_manage_service_tags
             - asset_update
             - finding_area
             - finding_evidence_ivv
@@ -189,9 +186,9 @@ Role:
         Privileges:
             - areas_dashboard
             - asset_create
-            - asset_read
-            - asset_manage_service_tags
+            - asset_read            
             - asset_unaffiliated
+            - asset_manage_service_tags
             - asset_update
             - finding_area
             - finding_report_area
@@ -242,9 +239,9 @@ Role:
             - areas_dashboard
             - asset_create
             - asset_delete
-            - asset_read
-            - asset_manage_service_tags
+            - asset_read            
             - asset_unaffiliated
+            - asset_manage_service_tags
             - asset_update
             - document_type_create
             - document_type_delete
@@ -315,7 +312,7 @@ Role:
             - organization_delete
             - organization_read
             - organization_update
-            - organiztaion_manage_poc_list
+            - organization_manage_poc_list
             - poc_create
             - poc_read
             - poc_update
@@ -341,7 +338,7 @@ Role:
             - system_type_delete
             - system_type_read
             - system_type_update
-            - findings_manage_relationships
+            - finding_manage_relationships
             - source_create
             - source_delete
             - source_read
@@ -457,8 +454,7 @@ Role:
         description: <p><strong>[OpenFISMA Definition]</strong></p><p>Operational Support StaffOperational support staff has the ability to view POA&M information and participates in the POA&M process in any or all of the following ways: </p><p><ul><li>Submitting course of action, mitigation strategy and/or expected completion date for the approval of the SSO. <li>Submitting threats and countermeasures information for the approval of the SSO. <li>Submitting evidence packages for the approval of the SSO.</ul></p>
         Privileges:
             - areas_dashboard
-            - asset_read
-            - asset_manage_service_tags
+            - asset_read            
             - finding_area
             - findings_comment
             - findings_mitigation_strategy_revise

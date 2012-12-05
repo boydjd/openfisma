@@ -152,8 +152,8 @@ Migration:
         tagNumber: 0
         name: ManagerView
 
-    030001_MSSO:
+    030100_MSSO:
         majorVersion: 3
-        minorVersion: 0
-        tagNumber: 1
+        minorVersion: 1
+        tagNumber: 0
         name: Msso

@@ -175,7 +175,7 @@ Privilege:
         resource: finding
         action: update_relationship
         description: Update Finding Links
-    findings_manage_relationships:
+    finding_manage_relationships:
         resource: finding
         action: manage_relationships
         description: Manage Finding Link Types
@@ -289,7 +289,7 @@ Privilege:
         resource: organization
         action: oversee
         description: Oversee Organizations/Systems
-    organiztaion_manage_poc_list:
+    organization_manage_poc_list:
         resource: organization
         action: manage_poc_list
         description: Manage POC Positions

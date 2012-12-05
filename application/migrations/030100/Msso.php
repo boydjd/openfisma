@@ -24,7 +24,7 @@
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_030001_Msso extends Fisma_Migration_Abstract
+class Application_Migration_030100_Msso extends Fisma_Migration_Abstract
 {
     /**
      * Migrate.
@@ -58,7 +58,7 @@ class Application_Migration_030001_Msso extends Fisma_Migration_Abstract
             'organization_poc',
             array(
                 'id' => 'bigint(20) not null auto_increment',
-                'pocid' => 'biggint(20)',
+                'pocid' => 'bigint(20)',
                 'type' => 'varchar(255)',
                 'objectid' => 'bigint(20)'
             ),
@@ -85,7 +85,7 @@ class Application_Migration_030001_Msso extends Fisma_Migration_Abstract
                 'startfindingid' => 'bigint(20)',
                 'endfindingid' => 'bigint(20)',
                 'relationship' => 'varchar(255)',
-                'createdbyuserid' => 'biggint(20)'
+                'createdbyuserid' => 'bigint(20)'
             ),
             'id'
         );
@@ -114,9 +114,100 @@ class Application_Migration_030001_Msso extends Fisma_Migration_Abstract
             'fismareportable'
         );
 
-        //@TODO: add foreign key constraints
+        $this->message("Adding Privileges...");
+        $orgPocPrivilege = $this->getHelper()->insert(
+            'privilege',
+            array(
+                'resource' => 'organization',
+                'action' => 'manage_poc_list',
+                'description' => 'Manage POC Positions'
+            )
+        );
+        $assetSrvPrivilege = $this->getHelper()->insert(
+            'privilege',
+            array(
+                'resource' => 'asset',
+                'action' => 'manage_service_tags',
+                'description' => 'Manage Asset Environments'
+            )
+        );
+        $findingAdyPrivilege = $this->getHelper()->insert(
+            'privilege',
+            array(
+                'resource' => 'finding',
+                'action' => 'update_audit_year',
+                'description' => 'Update Finding Audit Year'
+            )
+        );
+        $findingLinkPrivilege = $this->getHelper()->insert(
+            'privilege',
+            array(
+                'resource' => 'finding',
+                'action' => 'update_relationship',
+                'description' => 'Update Finding Links'
+            )
+        );
+        $findingLinkTypePrivilege = $this->getHelper()->insert(
+            'privilege',
+            array(
+                'resource' => 'finding',
+                'action' => 'manage_relationships',
+                'description' => 'Manage Finding Link Types'
+            )
+        );
 
-        //@TODO: add privileges and assign to roles
+        $this->message("Assigning Privileges...");
+        $roleQuery = "SELECT rp.roleid as rid from role_privilege rp INNER JOIN privilege p on rp.privilegeid = p.id "
+                   . "WHERE p.action = ? and p.resource = ?";
+        $orgPocRoles = $this->getHelper()->query($roleQuery, array('update', 'organization'));
+        foreach ($orgPocRoles as $role) {
+            $this->getHelper()->insert(
+                'role_privilege',
+                array(
+                    'roleid' => $role->rid,
+                    'privilegeid' => $orgPocPrivilege
+                )
+            );
+        }
+        $assetSrvRoles = $this->getHelper()->query($roleQuery, array('unaffiliated', 'asset'));
+        foreach ($assetSrvRoles as $role) {
+            $this->getHelper()->insert(
+                'role_privilege',
+                array(
+                    'roleid' => $role->rid,
+                    'privilegeid' => $assetSrvPrivilege
+                )
+            );
+        }
+        $findingUserRoles = $this->getHelper()->query($roleQuery, array('update_legacy_finding_key', 'finding'));
+        foreach ($findingUserRoles as $role) {
+            $this->getHelper()->insert(
+                'role_privilege',
+                array(
+                    'roleid' => $role->rid,
+                    'privilegeid' => $findingAdyPrivilege
+                )
+            );
+            $this->getHelper()->insert(
+                'role_privilege',
+                array(
+                    'roleid' => $role->rid,
+                    'privilegeid' => $findingLinkPrivilege
+                )
+            );
+        }
+        $findingAdminRoles = $this->getHelper()->query($roleQuery, array('create', 'source'));
+        foreach ($findingAdminRoles as $role) {
+            $this->getHelper()->insert(
+                'role_privilege',
+                array(
+                    'roleid' => $role->rid,
+                    'privilegeid' => $findingLinkTypePrivilege
+                )
+            );
+        }
+
+        //@TODO: add foreign key constraints
     }
 }
 
