@@ -505,6 +505,18 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                                 $this,
                                 CurrentUser::getInstance()
                             );
+                        } elseif ('MSA' == $value && 'DRAFT' == $newValue) {
+                            Notification::notify(
+                                'MITIGATION_REJECTED',
+                                $this,
+                                CurrentUser::getInstance()
+                            );
+                        } elseif ('EV' == $value && 'EN' == $newValue) {
+                            Notification::notify(
+                                'EVIDENCE_REJECTED',
+                                $this,
+                                CurrentUser::getInstance()
+                            );
                         } elseif ('CLOSED' == $newValue) {
                             Notification::notify(
                                 'FINDING_CLOSED',
