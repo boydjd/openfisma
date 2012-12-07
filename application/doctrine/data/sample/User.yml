@@ -35,7 +35,7 @@ User:
         nameLast: ISSO 1
         phoneOffice: (202) 555-7261
         hashType: sha1
-        ReportingOrganization: RNI_ORG
+        ReportingOrganization: BGA_ORG
         Events:
             - CONFIGURATION_UPDATED
             - USER_CREATED
@@ -63,7 +63,7 @@ User:
         nameLast: ISSO 5
         phoneOffice: (202) 555-7261
         hashType: sha1
-        ReportingOrganization: RNI_ORG
+        ReportingOrganization: BGA_ORG
         Events:
             - CONFIGURATION_UPDATED
             - USER_CREATED
