@@ -26,7 +26,7 @@ elements.responsibleOrganizationId.options.tooltip = "<b>Organization/System</b>
 displayGroups.finding.elements.responsibleOrganizationId = "responsibleOrganizationId"
 
 elements.pocAutocomplete.type = "Form_AutoComplete"
-elements.pocAutocomplete.options.label = "Point of Contact"
+elements.pocAutocomplete.options.label = "Finding_Point_of_Contact"
 elements.pocAutocomplete.options.attribs.resultsList = "pointsOfContact"
 elements.pocAutocomplete.options.attribs.fields = "name"
 elements.pocAutocomplete.options.attribs.xhr = "/user/autocomplete/format/json"

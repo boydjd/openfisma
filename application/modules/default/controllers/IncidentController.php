@@ -555,7 +555,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $incident->pocId = $issos[0]['id'];
                 $incident->save();
 
-                $mailSubject = "You have been assigned as the Point Of Contact for an incident.";
+                $mailSubject = "You have been assigned as the "
+                             . $this->view->translate('Incident_Point_of_Contact') 
+                             . " for an incident.";
                 $this->_sendMailToAssignedUser($issos[0]['id'], $incident->id, $mailSubject);
 
                 $message = "The ISSO ({$issos[0]['username']}) has been notified of this incident.";
@@ -1558,10 +1560,14 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
              // If the POC changed, then send the POC an e-mail.
             if (isset($newValues['pocId']) && !empty($newValues['pocId'])) {
-                $mailSubject = "You have been assigned as the Point Of Contact for an incident.";
+                $mailSubject = "You have been assigned as the "
+                             . $this->view->translate('Incident_Point_of_Contact') 
+                             . " for an incident.";
                 $this->_sendMailToAssignedUser($newValues['pocId'], $incident->id, $mailSubject);
 
-                $this->view->priorityMessenger('A notification has been sent to the new Point Of Contact.', 'notice');
+                $this->view->priorityMessenger('A notification has been sent to the new '
+                             . $this->view->translate('Incident_Point_of_Contact') 
+                             . '.', 'notice');
             }
         } catch (Doctrine_Validator_Exception $e) {
             $this->view->priorityMessenger($e->getMessage(), 'warning');
