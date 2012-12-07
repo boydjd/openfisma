@@ -57,7 +57,7 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
             ),
             'pocUser' => array(
                 'initiallyVisible' => false,
-                'label' => 'Point Of Contact',
+                'label' => 'Organization_Point_of_Contact',
                 'join' => array(
                     'model' => 'User',
                     'relation' => 'Organization.Poc',
