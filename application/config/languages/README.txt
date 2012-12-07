@@ -29,7 +29,7 @@
 
 Please DO NOT edit default.ini.
 Instead, please clone it into client.ini and make the changes there. It will override default.ini.
-Removing lines you do not intend to override can 
+Removing lines you do not intend to override can help avoids conflicts with later versions.
 
 Example:
 ;;; default.ini ;;;

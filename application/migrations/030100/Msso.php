@@ -64,6 +64,10 @@ class Application_Migration_030100_Msso extends Fisma_Migration_Abstract
             ),
             'id'
         );
+        $this->getHelper()->addIndex('organization_poc', 'objectid');
+        $this->getHelper()->addForeignKey('organization_poc', 'objectid', 'organization', 'id');
+        $this->getHelper()->addIndex('organization_poc', 'pocid');
+        $this->getHelper()->addForeignKey('organization_poc', 'pocid', 'user', 'id');
 
         $this->message("Adding Finding Link Types...");
         $this->getHelper()->addColumn(
@@ -89,7 +93,14 @@ class Application_Migration_030100_Msso extends Fisma_Migration_Abstract
             ),
             'id'
         );
-
+        $this->getHelper()->addIndex('finding_relationship', 'startfindingid');
+        $this->getHelper()->addForeignKey('finding_relationship', 'startfindingid', 'finding', 'id');
+        $this->getHelper()->addIndex('finding_relationship', 'endfindingid');
+        $this->getHelper()->addForeignKey('finding_relationship', 'endfindingid', 'finding', 'id');
+        $this->getHelper()->addIndex('finding_relationship', 'createdbyuserid');
+        $this->getHelper()->addForeignKey('finding_relationship', 'createdbyuserid', 'user', 'id');        
+        
+        
         $this->message("Adding Finding Audit Year...");
         $this->getHelper()->addColumn(
             'finding',
@@ -102,7 +113,7 @@ class Application_Migration_030100_Msso extends Fisma_Migration_Abstract
         $this->getHelper()->addColumn(
             'system',
             'fismareportable',
-            'tinyint(1)',
+            'tinyint(1) NULL DEFAULT 1',
             'fipscategory'
         );
 
@@ -208,6 +219,7 @@ class Application_Migration_030100_Msso extends Fisma_Migration_Abstract
         }
 
         //@TODO: add foreign key constraints
+
     }
 }
 
