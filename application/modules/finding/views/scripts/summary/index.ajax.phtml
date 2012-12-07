@@ -16,6 +16,7 @@ YAHOO.util.Event.onDOMReady(function () {
 
     Fisma.Storage.onReady(function () {
         var summaryTable = new Fisma.FindingSummary(url, columnCount, msApprovals, evApprovals);
+        Fisma.FindingSummary.SUMMARY_TYPES.pointOfContact = <?php echo $this->escape($this->translate('Finding_Point_of_Contact'), 'json'); ?>;
 
         // Set tooltips
         summaryTable.setTooltip("viewBy", "<?php echo $this->escape($this->tooltips['viewBy'], "none"); ?>");

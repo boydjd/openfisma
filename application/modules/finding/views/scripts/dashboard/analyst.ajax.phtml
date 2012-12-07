@@ -10,7 +10,12 @@
 </div>
 
 <div class='column66 left findingAnalystLeft'>
-    <?php Fisma_Format_Section::startSection('Unresolved: By Point of Contact', null, null, 'byPoc'); ?>
+    <?php Fisma_Format_Section::startSection(
+        'Unresolved: By ' . $this->escape($this->translate('Finding_Point_of_Contact')),
+        null,
+        null,
+        'byPoc'
+    ); ?>
     <?php echo $this->escape($this->byPocTable, 'none'); ?>
     <?php if ($this->byPocTable->countData() > 8): ?>
         <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 0, "<?php

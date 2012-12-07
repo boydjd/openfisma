@@ -172,7 +172,13 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
     <?php Fisma_Format_Section::startSection('People'); ?>
         <table class="keyValues">
             <tr>
-                <td>Default Assignee:</td>
+                <td><?php echo $this->escape(new Fisma_Yui_Tooltip(
+                    'defaultPOC',
+                    $this->escape($this->translate('Organization_Point_of_Contact')),
+                    '<b>' . $this->escape($this->translate('Organization_Point_of_Contact')) . '</b><p>The default ' .
+                    'person assigned responsibility for findings associated with this system. The assignee may be ' .
+                    'changed when editing individual findings.</p>'
+                ), 'none'); ?>:</td>
                 <td class="autocomplete-width"><span id="pointOfContact"
                     type="autocomplete"
                     xhr="/user/autocomplete/format/json"
