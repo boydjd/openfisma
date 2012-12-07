@@ -43,7 +43,11 @@ class RoleTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'initiallyVisible' => true,
                 'label' => 'Nickname',
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/role/view/id/'
+                )
             ),
             'createdTs' => array(
                 'initiallyVisible' => false,
