@@ -147,7 +147,8 @@
                                 var oMenuButton = new YAHOO.widget.Button(t_name + "-button", {
                                     label: selectedLabel.replace(/&amp;/g, "&"),
                                     type: "menu",
-                                    menu: t_name + "-select"
+                                    menu: t_name + "-select",
+                                    lazyloadmenu: false
                                 });
 
                                 // Register "click" event listener for the Button's Menu instance
