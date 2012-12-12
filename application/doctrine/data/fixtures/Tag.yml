@@ -13,8 +13,8 @@ Tag:
             - Antivirus
             - Human
             - Keylogger
-    incidentResolution:
-        tagId: incident-resolution
+    incidentImpact:
+        tagId: incident-impact
         labels:
             - False Positive
             - Compromised

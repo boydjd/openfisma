@@ -276,7 +276,8 @@ Incident:
                 auditLog: true
                 logicalName: Status
         resolution:
-            type: string
+            type: enum
+            values: [rejected, resolved]
             extra:
                 auditLog: true
                 logicalName: Resolution
@@ -303,8 +304,21 @@ Incident:
                 logicalName: Point Of Contact
                 requiredPrivilege: update_poc
             comment: Foreign key to the point of contact for this incident
-        severityLevel: string
-        source: string
+        severityLevel:
+            type: string
+            extra:
+                auditLog: true
+                logicalName: Severity Level
+        source:
+            type: string
+            extra:
+                auditLog: true
+                logicalName: Source
+        impact:
+            type: string
+            extra:
+                auditLog: true
+                logicalName: Impact
 
     relations:
         CurrentWorkflowStep:

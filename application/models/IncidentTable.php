@@ -214,9 +214,9 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => true,
                 'type' => 'text'
             ),
-            'resolution' => array(
+            'impact' => array(
                 'initiallyVisible' => true,
-                'label' => 'Resolution',
+                'label' => 'Impact',
                 'sortable' => true,
                 'type' => 'text'
             ),

@@ -17,7 +17,7 @@
  */
 
 /**
- * IncidentResolutionController
+ * IncidentImpactController
  *
  * @uses Fisma
  * @uses _Zend_controller_Action_AbstractTagController
@@ -26,14 +26,14 @@
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class IncidentResolutionController extends Fisma_Zend_Controller_Action_AbstractTagController
+class IncidentImpactController extends Fisma_Zend_Controller_Action_AbstractTagController
 {
     /**
      * _tagId
      *
      * @var string
      */
-    protected $_tagId = 'incident-resolution';
+    protected $_tagId = 'incident-impact';
 
     /**
      * _relatedModels
@@ -43,7 +43,7 @@ class IncidentResolutionController extends Fisma_Zend_Controller_Action_Abstract
     protected $_relatedModels = array(
             array(
                 'model' => 'Incident',
-                'column' => 'resolution',
+                'column' => 'impact',
                 'label' => 'Incident(s)',
                 'modelControllerPrefix' => '/incident'
             )
@@ -61,12 +61,12 @@ class IncidentResolutionController extends Fisma_Zend_Controller_Action_Abstract
      *
      * @var string
      */
-    protected $_aclAction = 'manage_resolutions';
+    protected $_aclAction = 'manage_impacts';
 
     /**
      * _displayName
      *
      * @var string
      */
-    protected $_displayName = "Resolution";
+    protected $_displayName = "Impact";
 }
