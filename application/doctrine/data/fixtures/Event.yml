@@ -187,6 +187,20 @@ Event:
         category: finding
         urlPath: /finding/remediation/view/id/
 
+    MITIGATION_REJECTED:
+        name: MITIGATION_REJECTED
+        description: a finding Mitigation Strategy is rejected
+        Privilege: notification_finding
+        category: finding
+        urlPath: /finding/remediation/view/id/
+
+    EVIDENCE_REJECTED:
+        name: EVIDENCE_REJECTED
+        description: a finding Evidence Package is rejected
+        Privilege: notification_finding
+        category: finding
+        urlPath: /finding/remediation/view/id/
+
     MITIGATION_ISSO:
         name: MITIGATION_ISSO
         description: a finding is awaiting ISSO Approval of Mitigation Strategy
