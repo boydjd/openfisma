@@ -165,7 +165,7 @@ class User extends BaseUser
      * @return boolean True if the user is locked (only when $cli is true)
      * @throws Fisma_Zend_Exception_AccountLocked if the account is locked
      */
-    public function checkAccountLock($cli = false)
+    public function checkAccountLock($cli = false, $reverseProxyEnabled = false)
     {
         // Check if this account is marked as "deleted"
         if ($this->{'deleted_at'}) {
@@ -195,8 +195,11 @@ class User extends BaseUser
                 $this->lockAccount(User::LOCK_TYPE_INACTIVE);
             }
 
-            // If password has expired and system is using database authentication, user cannot be authenticated
-            if (Fisma::configuration()->getConfig('auth_type') === 'database' && $this->passwordIsExpired()) {
+            if (
+                !$reverseProxyEnabled
+                && Fisma::configuration()->getConfig('auth_type') === 'database'
+                && $this->passwordIsExpired()
+            ) {
                 $this->lockAccount(User::LOCK_TYPE_EXPIRED);
             }
         }
