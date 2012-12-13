@@ -63,6 +63,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $this->hasMutator('currentEcd', 'setCurrentEcd');
         $this->hasMutator('ecdChangeDescription', 'setEcdChangeDescription');
         $this->hasMutator('nextDueDate', 'setNextDueDate');
+        $this->hasMutator('discoveredDate', 'setDiscoveredDate');
         $this->hasMutator('originalEcd', 'setOriginalEcd');
         $this->hasMutator('pocId', 'setPocId');
         $this->hasMutator('status', 'setStatus');
@@ -879,6 +880,20 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 CurrentUser::getInstance(),
                 array('userId' => $newValue, 'url' => '/finding/remediation/view/id/')
             );
+        }
+    }
+
+    /**
+     * Mutator for discoveredDate to automatically set default Audit Year
+     *
+     * @param Date $value
+     * @return void
+     */
+    public function setDiscoveredDate($value) {
+        $this->_set('discoveredDate', $value);
+        if (!$this->auditYear) {
+            $discoveredDate = new Zend_Date($this->discoveredDate, Fisma_Date::FORMAT_DATE);
+            $this->_set('auditYear', $discoveredDate->toString(Zend_Date::YEAR));
         }
     }
 }

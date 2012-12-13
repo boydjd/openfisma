@@ -66,7 +66,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
 
         // Get Organizations
         $organizationIds = Doctrine_Query::create()
-                            ->select('o.id')
+                            ->select('o.id, o.pocId')
                             ->from('Organization o')
                             ->leftJoin('o.System s')
                             ->where("s.sdlcphase <> 'disposal' OR s.sdlcphase IS NULL")
@@ -134,7 +134,11 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
             $finding['status'] = $status[rand(0, $statusCount)];
             $finding['threatLevel'] = $threat[rand(0, $threatCount)];
             $finding['countermeasuresEffectiveness'] = $effectiveness[rand(0, $effectivenessCount)];
-            $finding['responsibleOrganizationId'] = $organizationIds[$this->_randomLog(0, $organizationIdsCount)][0];
+
+            $orgRandomIndex = $this->_randomLog(0, $organizationIdsCount);
+            $finding['responsibleOrganizationId'] = $organizationIds[$orgRandomIndex][0];
+            $finding['pocId'] = $organizationIds[$orgRandomIndex][1];
+
             $finding['sourceId'] = $sourceIds[$this->_randomLog(0, $sourceIdsCount)][0];
             $finding['securityControlId'] = $securityControlIds[$this->_randomLog(0, $securityControlIdsCount)][0];
             $finding['description'] = Fisma_String::loremIpsum(rand(90, 100));
@@ -175,7 +179,9 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
 
                 $f->merge($finding);
                 $f->CreatedBy = $this->_getRandomUser();
-                $f->pocId = $this->_getRandomUser()->id;
+                if (empty($f->pocId)) {
+                    $f->pocId = $this->_getRandomUser()->id;
+                }
 
                 if ($f->status == 'MSA') {
                     $f->updateDenormalizedStatus();

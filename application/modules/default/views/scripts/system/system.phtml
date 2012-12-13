@@ -172,7 +172,13 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
     <?php Fisma_Format_Section::startSection('People'); ?>
         <table class="keyValues">
             <tr>
-                <td>Point of Contact:</td>
+                <td><?php echo $this->escape(new Fisma_Yui_Tooltip(
+                    'defaultPOC',
+                    $this->escape($this->translate('Organization_Point_of_Contact')),
+                    '<b>' . $this->escape($this->translate('Organization_Point_of_Contact')) . '</b><p>The default ' .
+                    'person assigned responsibility for findings associated with this system. The assignee may be ' .
+                    'changed when editing individual findings.</p>'
+                ), 'none'); ?>:</td>
                 <td class="autocomplete-width"><span id="pointOfContact"
                     type="autocomplete"
                     xhr="/user/autocomplete/format/json"
@@ -200,6 +206,43 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
                 <?php endif; ?>
                 </td>
             </tr>
+        <?php
+            $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+            $pocs = $this->organization->getPocs();
+
+            foreach ($tags as $idx => $type) {
+                $poc = $pocs->fetchOneByType($type);
+        ?>
+            <tr>
+                <td><?php echo $this->escape($type); ?>:</td>
+                <td class="autocomplete-width"><span id="pointOfContact_<?php echo $this->escape($idx); ?>"
+                    type="autocomplete"
+                    xhr="/user/autocomplete/format/json"
+                    queryPrepend="/keyword/"
+                    schemaObject="pointsOfContact"
+                    schemaField="name"
+                    name="poc[<?php echo $this->escape($idx); ?>]"
+                <?php if ($this->acl()->hasPrivilegeForClass('create', 'User')): ?>
+                    setupCallback="Fisma.Finding.setupPocAutocomplete"
+                <?php endif; ?>
+                    value="<?php if ($poc): echo $this->escape($poc->User->id); endif; ?>"
+                    defaultValue="<?php if ($poc): echo $this->escape($poc->User->username); endif; ?>"><?php
+                        if ($poc):
+                            echo $this->escape(
+                                $this->userInfo(
+                                    $poc->User->displayName,
+                                    $poc->User->id
+                                ),
+                                'none'
+                            );
+                        endif;
+                    ?></span>
+                <?php if ($this->editable): ?>
+                    <span class="editable" target="pointOfContact_<?php echo $this->escape($idx); ?>">&nbsp;</span>
+                <?php endif; ?>
+                </td>
+            <tr/>
+        <?php } ?>
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>

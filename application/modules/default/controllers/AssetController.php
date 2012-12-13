@@ -253,11 +253,11 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
      */
     public function serviceTagsAction()
     {
+        $this->_acl->requirePrivilegeForClass('manage_service_tags', 'Asset');
         $data = array();
         $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
 
         foreach ($tags as $tag) {
-            $count =
             $data[] = array(
                 'tag' => $tag,
                 'assets' => json_encode(array(
@@ -291,17 +291,21 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->view->result = new Fisma_AsyncResponse;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
 
-        $tag = $this->getRequest()->getParam('tag');
-        if (!$tag) {
-            $this->view->result->fail('Empty tag');
+        if ($this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
+            $this->view->result->fail('Invalid permission');
         } else {
-            $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
-            if (in_array($tag, $tags)) {
-                $this->view->result->succeed('Tag already defined.');
+            $tag = $this->getRequest()->getParam('tag');
+            if (!$tag) {
+                $this->view->result->fail('Empty tag');
             } else {
-                $tags[] = $tag;
-                Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
-                $this->view->result->succeed();
+                $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
+                if (in_array($tag, $tags)) {
+                    $this->view->result->succeed('Tag already defined.');
+                } else {
+                    $tags[] = $tag;
+                    Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
+                    $this->view->result->succeed();
+                }
             }
         }
     }
@@ -316,35 +320,39 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->view->result = new Fisma_AsyncResponse;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
 
-        $oldTag = $this->getRequest()->getParam('oldTag');
-        $newTag = $this->getRequest()->getParam('newTag');
-        if (!$oldTag || !$newTag) {
-            $this->view->result->fail('Empty tag(s)');
+        if (!$this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
+            $this->view->result->fail('Invalid permission');
         } else {
-            $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
-            $key = array_search($oldTag, $tags);
-            if ($key >= 0) {
-                $tags[$key] = $newTag;
-
-                try {
-                    Doctrine_Manager::connection()->beginTransaction();
-
-                    $assets = Doctrine::getTable('Asset')->findByServiceTag($oldTag);
-                    foreach ($assets as $asset) {
-                        $asset->serviceTag = $newTag;
-                    }
-                    $assets->save();
-
-                    Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
-
-                    Doctrine_Manager::connection()->commit();
-                    $this->view->result->succeed();
-                } catch (Doctrine_Exception $e) {
-                    Doctrine_Manager::connection()->rollback();
-                    $this->view->result->fail($e->getMessage(), $e);
-                }
+            $oldTag = $this->getRequest()->getParam('oldTag');
+            $newTag = $this->getRequest()->getParam('newTag');
+            if (!$oldTag || !$newTag) {
+                $this->view->result->fail('Empty tag(s)');
             } else {
-                $this->view->result->fail('Tag not found.');
+                $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
+                $key = array_search($oldTag, $tags);
+                if ($key >= 0) {
+                    $tags[$key] = $newTag;
+
+                    try {
+                        Doctrine_Manager::connection()->beginTransaction();
+
+                        $assets = Doctrine::getTable('Asset')->findByServiceTag($oldTag);
+                        foreach ($assets as $asset) {
+                            $asset->serviceTag = $newTag;
+                        }
+                        $assets->save();
+
+                        Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
+
+                        Doctrine_Manager::connection()->commit();
+                        $this->view->result->succeed();
+                    } catch (Doctrine_Exception $e) {
+                        Doctrine_Manager::connection()->rollback();
+                        $this->view->result->fail($e->getMessage(), $e);
+                    }
+                } else {
+                    $this->view->result->fail('Tag not found.');
+                }
             }
         }
     }
@@ -356,6 +364,8 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
      */
     public function removeServiceTagAction()
     {
+        $this->_acl->requirePrivilegeForClass('manage_service_tags', 'Asset');
+
         $tag = $this->getRequest()->getParam('tag');
         if (!$tag) {
             throw new Fisma_Zend_Exception_User('Empty tag');

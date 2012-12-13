@@ -419,5 +419,47 @@ Fisma.Remediation = {
                 }
             }
         );
+    },
+
+    addRelationship : function(findingId) {
+        var panel = Fisma.UrlPanel.showPanel(
+            'Link a finding',
+            '/finding/relationship/get-form/format/html',
+            function(){
+                $('input[name=thisFindingId]').val(findingId);
+
+                var closeButton = new YAHOO.widget.Button('dialog_close');
+                YAHOO.util.Event.addListener("dialog_close", "click", function(){
+                    panel.destroy();
+                    return false;
+                });
+
+                var confirmButton = new YAHOO.widget.Button('dialog_confirm');
+
+                $('form#addRelationship').submit(function(event){
+                    if (
+                        $('form#addRelationship input[name=endFindingId]').val() === '' ||
+                        $('form#addRelationship input[name=endFindingId]').val() === '' + findingId
+                    ) {
+                        Fisma.Util.showAlertDialog(
+                            'Linked Finding ID cannot be blank or the same as current finding.',
+                            {callback:function(){$('form#addRelationship input[name=endFindingId]').focus();}}
+                        );
+
+                        return false;
+                    }
+                });
+            }
+        );
+
+        return false;
+    },
+
+    removeRelationship : function(relationshipId, findingId) {
+        Fisma.Util.formPostAction(
+            null,
+            '/finding/relationship/remove/findingId/' + findingId,
+            relationshipId
+        );
     }
 };

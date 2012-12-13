@@ -79,6 +79,7 @@ Configuration:
             comment: Automated account unlock duration (in minutes)
             default: 0
         backgroundTasks: array
+        optionalFields: array
         contact_name:
             type: string(255)
             notblank: true
@@ -127,6 +128,9 @@ Configuration:
             notblank: true
             comment: System name
             default: ""
+        organization_poc_list:
+            type: string(65535)
+            default: "Business Owner,Information Security Officer,Authorizing Official"
         rob_duration:
             type: integer(2)
             notblank: true
@@ -186,11 +190,6 @@ Configuration:
             values: [threat_level, residual_risk]
             comment: The default threat metrics to use for finding risk analysis.
             default: threat_level
-        use_legacy_finding_key:
-            type: boolean
-            notnull: true
-            default: true
-            comment: Whether to use and show the Legacy Finding Key field in finding detail view.
         default_bureau_id:
             type: integer(20)
             notblank: true
@@ -208,6 +207,9 @@ Configuration:
             notblank: true
             comment: Number of days before a DRAFT finding becomes overdue
             default: 30
+        finding_link_types:
+            type: string(65535)
+            default: "is a repeat of,duplicates/is duplicated by,fixes/is fixed by"
         max_file_upload_size:
             type: string(6)
             notnull: true

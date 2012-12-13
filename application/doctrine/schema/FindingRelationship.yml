@@ -1,0 +1,42 @@
+FindingRelationship:
+    columns:
+        createdTs: timestamp
+        modifiedTs: timestamp
+
+        startFindingId:
+            type: integer
+            comment: Foreign key to the start finding
+        endFindingId:
+            type: integer
+            comment: Foreign key to the end finding
+        relationship:
+            type: string(255)
+            comment: The relationship between the 2 findings
+        createdByUserId:
+            type: integer
+            comment: Foreign key to the user who created the relationship
+
+    relations:
+        StartFinding:
+            class: Finding
+            local: startFindingId
+            foreign: id
+            foreignAlias: StartRelationships
+        EndFinding:
+            class: Finding
+            local: endFindingId
+            foreign: id
+            foreignAlias: EndRelationships
+        CreatedBy:
+            class: User
+            local: createdByUserId
+            foreign: id
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

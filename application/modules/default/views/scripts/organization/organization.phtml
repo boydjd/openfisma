@@ -44,27 +44,27 @@ Fisma_Format_Section::startSection('Details');
         </td>
     </tr>
     <tr>
-       <td>Organization Type: </td>
+        <td>Organization Type: </td>
         <td>
             <span id="organizationType"
-                          type="select"
-                          name="orgTypeId"
-                          href="/metainfo/list/o/organizationType/format/html/">
-        <?php
-            echo $this->escape($this->organization->OrganizationType->nickname);
-        ?>
-        <?php if ($this->editable) : ?>
-            <span class="editable" target="organizationType">&nbsp;</span>
-        <?php endif ?>
+                  type="select"
+                  name="orgTypeId"
+                  href="/metainfo/list/o/organizationType/format/html/"
+                  <?php if ($this->editable) : ?>class="editable" target="organizationType"<?php endif ?>
+            >
+                <?php echo $this->escape($this->organization->OrganizationType->nickname); ?>
+            </span>
         </td>
     </tr>
     <tr>
        <td>Parent Organization/System: </td>
         <td>
             <span id="organization"
-                          type="select"
-                          name="parent"
-                          href="/metainfo/list/o/organization/format/html/">
+                  type="select"
+                  name="parent"
+                  href="/metainfo/list/o/organization/format/html/"
+                  <?php if ($this->editable) : ?>class="editable" target="organization"<?php endif ?>
+            >
         <?php
             $parentOrganization = $this->organization->getNode()->getParent();
             if (!empty($parentOrganization)) {
@@ -86,9 +86,7 @@ Fisma_Format_Section::startSection('Details');
                 echo $this->escape('<i>None</i>', 'none');
             }
         ?>
-        <?php if ($this->editable) : ?>
-            <span class="editable" target="organization">&nbsp;</span>
-        <?php endif ?>
+            </span>
         </td>
     </tr>
 </table>
@@ -128,7 +126,13 @@ if ($this->editable) {
     <?php Fisma_Format_Section::startSection('People'); ?>
         <table class="keyValues">
             <tr>
-                <td>Point of Contact:</td>
+                <td><?php echo $this->escape(new Fisma_Yui_Tooltip(
+                    'defaultPOC',
+                    $this->escape($this->translate('Organization_Point_of_Contact')),
+                    '<b>' . $this->escape($this->translate('Organization_Point_of_Contact')) . '</b><p>The default ' .
+                    'person assigned responsibility for findings associated with this system. The assignee may be ' .
+                    'changed when editing individual findings.</p>'
+                ), 'none'); ?>:</td>
                 <td  class="autocomplete-width"><span id="pointOfContact"
                     type="autocomplete"
                     xhr="/user/autocomplete/format/json"
@@ -156,6 +160,43 @@ if ($this->editable) {
                 <?php endif; ?>
                 </td>
             </tr>
+        <?php
+            $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+            $pocs = $this->organization->getPocs();
+
+            foreach ($tags as $idx => $type) {
+                $poc = $pocs->fetchOneByType($type);
+        ?>
+            <tr>
+                <td><?php echo $this->escape($type); ?>:</td>
+                <td class="autocomplete-width"><span id="pointOfContact_<?php echo $this->escape($idx); ?>"
+                    type="autocomplete"
+                    xhr="/user/autocomplete/format/json"
+                    queryPrepend="/keyword/"
+                    schemaObject="pointsOfContact"
+                    schemaField="name"
+                    name="poc[<?php echo $this->escape($idx); ?>]"
+                <?php if ($this->acl()->hasPrivilegeForClass('create', 'User')): ?>
+                    setupCallback="Fisma.Finding.setupPocAutocomplete"
+                <?php endif; ?>
+                    value="<?php if ($poc): echo $this->escape($poc->User->id); endif; ?>"
+                    defaultValue="<?php if ($poc): echo $this->escape($poc->User->username); endif; ?>"><?php
+                        if ($poc):
+                            echo $this->escape(
+                                $this->userInfo(
+                                    $poc->User->displayName,
+                                    $poc->User->id
+                                ),
+                                'none'
+                            );
+                        endif;
+                    ?></span>
+                <?php if ($this->editable): ?>
+                    <span class="editable" target="pointOfContact_<?php echo $this->escape($idx); ?>">&nbsp;</span>
+                <?php endif; ?>
+                </td>
+            <tr/>
+        <?php } ?>
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>

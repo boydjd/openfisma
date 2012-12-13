@@ -113,82 +113,134 @@
             } else if (type === 'autocomplete') {
                 //this.parentNode.removeChild(this);
                 Fisma.Editable.makeAutocomplete(target);
-            } else {
+            } else if (type === 'select') {
                 var val = target.getAttribute('value');
                 if (val) {
                     cur_val = val;
                 }
                 YAHOO.util.Connect.asyncRequest('GET', url + 'value/' + cur_val.trim(), {
                     success: function(o) {
-                        if (type === 'select') {
-                            var innerHTML = o.responseText.replace(/&lt;/g, "&amp;lt;");
-                            var targetHTML = '<input type="button" id="' + t_name + '-button"/>'
-                                           + '<select id="' + t_name + '-select" name="' + name + '">'
-                                           + innerHTML + '</select>';
-                            if ($(editable).attr('id') === $(target).attr('id')) {
-                                targetHTML += $(target).find('.editresponse').html();
-                            }
-                            jQuery(target).html(targetHTML);
+                        var innerHTML = o.responseText.replace(/&lt;/g, "&amp;lt;");
+                        var targetHTML = '<input type="button" id="' + t_name + '-button"/>'
+                                       + '<select id="' + t_name + '-select" name="' + name + '">'
+                                       + innerHTML + '</select>';
+                        if ($(editable).attr('id') === $(target).attr('id')) {
+                            targetHTML += $(target).find('.editresponse').html();
+                        }
+                        jQuery(target).html(targetHTML);
 
-                            YAHOO.util.Event.onContentReady(t_name + "-button", function () {
-                                // Fetch currently selected item
-                                var selectElement = document.getElementById(t_name + '-select');
-                                var selectedOption = null;
-                                var selectedLabel = '';
-                                if (selectElement.options.length > 0) {
-                                    selectedOption = selectElement.options[selectElement.selectedIndex];
-                                    selectedLabel = selectedOption.innerHTML;
-                                    if (selectedOption.parentElement.nodeName === "OPTGROUP") {
-                                        selectedLabel = $("<div />").text($(selectedOption).parent().attr("label")).html() + " &#9658; " + selectedLabel;
+                        YAHOO.util.Event.onContentReady(t_name + "-button", function () {
+                            // Fetch currently selected item
+                            var selectElement = document.getElementById(t_name + '-select');
+                            var selectedOption = null;
+                            var selectedLabel = '';
+                            if (selectElement.options.length > 0) {
+                                selectedOption = selectElement.options[selectElement.selectedIndex];
+                                selectedLabel = selectedOption.innerHTML;
+                                if (selectedOption.parentElement.nodeName === "OPTGROUP") {
+                                    selectedLabel = $("<div />").text($(selectedOption).parent().attr("label")).html() + " &#9658; " + selectedLabel;
+                                }
+                            }
+
+                            // Create a Button using an existing <input> and <select> element
+                            var oMenuButton = new YAHOO.widget.Button(t_name + "-button", {
+                                label: selectedLabel.replace(/&amp;/g, "&"),
+                                type: "menu",
+                                menu: t_name + "-select"
+                            });
+
+                            // Register "click" event listener for the Button's Menu instance
+                            oMenuButton.getMenu().subscribe('click', function (p_sType, p_aArgs) {
+                                if (p_aArgs[1]) {
+                                    var parentName, childName;
+                                    var children = p_aArgs[1].cfg.getProperty('submenu');
+                                    if (!children) {
+                                        // this is the child
+                                        childName = p_aArgs[1].cfg.getProperty('text');
+                                        if (p_aArgs[1].parent.parent) {
+                                            parentName = p_aArgs[1].parent.parent.cfg.getProperty('text');
+                                        }
+                                    } else {
+                                        // otherwise, this is the parent
+                                        parentName = p_aArgs[1].cfg.getProperty('text');
+                                        var firstChild = children.getItem(0);
+                                        childName = firstChild.cfg.getProperty('text');
+                                        // also set the configuration to reflect the first child
+                                        oMenuButton.set('selectedMenuItem', firstChild);
+                                    }
+                                    var buttonLabel =
+                                        ((parentName) ? ($("<div/>").text(parentName).html() + " &#9658; ") : '') +
+                                        $("<div/>").text(childName).html();
+                                    oMenuButton.set('label', buttonLabel);
+
+                                    var f = selectElement.onchange;
+                                    if (f) {
+                                        selectElement.value = p_aArgs[1].srcElement.value;
+                                        jQuery(selectElement).trigger('change');
                                     }
                                 }
-
-                                // Create a Button using an existing <input> and <select> element
-                                var oMenuButton = new YAHOO.widget.Button(t_name + "-button", {
-                                    label: selectedLabel.replace(/&amp;/g, "&"),
-                                    type: "menu",
-                                    menu: t_name + "-select"
-                                });
-
-                                // Register "click" event listener for the Button's Menu instance
-                                oMenuButton.getMenu().subscribe('click', function (p_sType, p_aArgs) {
-                                    if (p_aArgs[1]) {
-                                        var parentName, childName;
-                                        var children = p_aArgs[1].cfg.getProperty('submenu');
-                                        if (!children) {
-                                            // this is the child
-                                            childName = p_aArgs[1].cfg.getProperty('text');
-                                            if (p_aArgs[1].parent.parent) {
-                                                parentName = p_aArgs[1].parent.parent.cfg.getProperty('text');
-                                            }
-                                        } else {
-                                            // otherwise, this is the parent
-                                            parentName = p_aArgs[1].cfg.getProperty('text');
-                                            var firstChild = children.getItem(0);
-                                            childName = firstChild.cfg.getProperty('text');
-                                            // also set the configuration to reflect the first child
-                                            oMenuButton.set('selectedMenuItem', firstChild);
-                                        }
-                                        var buttonLabel =
-                                            ((parentName) ? ($("<div/>").text(parentName).html() + " &#9658; ") : '') +
-                                            $("<div/>").text(childName).html();
-                                        oMenuButton.set('label', buttonLabel);
-
-                                        var f = selectElement.onchange;
-                                        if (f) {
-                                            selectElement.value = p_aArgs[1].srcElement.value;
-                                            jQuery(selectElement).trigger('change');
-                                        }
-                                    }
-                                });
                             });
-                        }
+                        });
                     },
                     failure: function(o) {
                         Fisma.Util.showAlertDialog('Failed to load the specified panel.');
                     }
                 }, null);
+            } else if (type === 'checked') {
+                // Get current value
+                var val = ($(target).text().trim() === 'YES');
+
+                // Insert raw SELECT element
+                var select = $('<select/>').attr('name', name).attr('id', t_name + '-select').get(0);
+                select.appendChild($('<option/>').attr('value', true).text('YES').attr('selected', val).get(0));
+                select.appendChild($('<option/>').attr('value', false).text('NO').attr('selected', !val).get(0));
+                $(target).html(
+                    '<input type="button" id="' + t_name + '-button"/>' +
+                    '<select name="' + name + '" id="' + t_name + '-select">' +
+                        '<option value=1>YES</option>' +
+                        '<option value=0>NO</option>' +
+                    '</select>');
+
+                // Render YUI menu button
+                var oMenuButton = new YAHOO.widget.Button(t_name + "-button", {
+                    label: (val) ? 'YES' : 'NO',
+                    type: "menu",
+                    menu: t_name + '-select'
+                });
+
+                // Register "click" event listener for the Button's Menu instance
+                oMenuButton.getMenu().subscribe('click', function (p_sType, p_aArgs) {
+                    if (p_aArgs[1]) {
+                        var parentName, childName;
+                        var children = p_aArgs[1].cfg.getProperty('submenu');
+                        if (!children) {
+                            // this is the child
+                            childName = p_aArgs[1].cfg.getProperty('text');
+                            if (p_aArgs[1].parent.parent) {
+                                parentName = p_aArgs[1].parent.parent.cfg.getProperty('text');
+                            }
+                        } else {
+                            // otherwise, this is the parent
+                            parentName = p_aArgs[1].cfg.getProperty('text');
+                            var firstChild = children.getItem(0);
+                            childName = firstChild.cfg.getProperty('text');
+                            // also set the configuration to reflect the first child
+                            oMenuButton.set('selectedMenuItem', firstChild);
+                        }
+                        var buttonLabel =
+                            ((parentName) ? ($("<div/>").text(parentName).html() + " &#9658; ") : '') +
+                            $("<div/>").text(childName).html();
+                        oMenuButton.set('label', buttonLabel);
+
+                        var f = selectElement.onchange;
+                        if (f) {
+                            selectElement.value = p_aArgs[1].srcElement.value;
+                            jQuery(selectElement).trigger('change');
+                        }
+                    }
+                });
             }
+
             $(this).append('<span class="editresponse">' +
                 ' <img src="/images/ok.png" style="vertical-align:text-top" onclick="Fisma.Editable.commit(this);"/>' +
                 ' <img src="/images/no_entry.png" style="vertical-align:text-top" onclick="Fisma.Editable.discard(this);"/>' +
@@ -290,6 +342,7 @@
             refreshUrl  = Fisma.tabView.get('activeTab').get('dataSrc');
         switch (type) {
             case 'select':
+            case 'checked':
                 var item = YAHOO.widget.Button.getButton(t_name + '-button').get('selectedMenuItem');
                 if (item) {
                     value = item.value;

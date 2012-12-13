@@ -853,7 +853,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 continue;
             }
 
-            $label = $searchParams['label'];
+            $label = $this->view->translate($searchParams['label']);
             $sortable = $searchEngine->isColumnSortable($this->_modelName, $fieldName);
 
             if (isset($visibleColumns[$fieldName])) {
@@ -906,6 +906,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $advancedSearchOptions = array();
 
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
+            if (isset($fieldDefinition['label'])) {
+                $fieldDefinition['label'] = $this->view->translate($fieldDefinition['label']);
+            }
             $advancedSearchOptions[] = array_merge(array('name' => $fieldName), $fieldDefinition);
         }
 

@@ -57,7 +57,7 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
             ),
             'pocUser' => array(
                 'initiallyVisible' => false,
-                'label' => 'Point Of Contact',
+                'label' => 'Organization_Point_of_Contact',
                 'join' => array(
                     'model' => 'User',
                     'relation' => 'Organization.Poc',
@@ -141,6 +141,12 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
                 'sortable' => true,
                 'type' => 'enum'
             ),
+            'fismaReportable' => array(
+                'initiallyVisible' => false,
+                'label' => 'FISMA Reportable',
+                'sortable' => true,
+                'type' => 'boolean'
+            ),
             'controlledBy' => array(
                 'enumValues' => $this->getEnumValues('controlledBy'),
                 'initiallyVisible' => false,
@@ -151,6 +157,12 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
             'securityAuthorizationDt' => array(
                 'initiallyVisible' => false,
                 'label' => 'Security Authorization Date',
+                'sortable' => true,
+                'type' => 'date'
+            ),
+            'nextSecurityAuthorizationDt' => array(
+                'initiallyVisible' => false,
+                'label' => 'Next Security Authorization Date',
                 'sortable' => true,
                 'type' => 'date'
             ),

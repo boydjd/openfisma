@@ -454,6 +454,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
                 $organization->merge($post);
 
+                if (isset($post['poc'])) {
+                    $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+                    foreach ($post['poc'] as $key => $value) {
+                        if ($value) {
+                            $organization->getPocs()->addPoc($value, $tags[$key]);
+                        } else {
+                            $organization->getPocs()->removePoc($tags[$key]);
+                        }
+                    }
+                }
+
                 if ($organization->isValid(true)) {
                     $organization->save();
                 } else {

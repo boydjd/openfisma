@@ -20,7 +20,12 @@
     </div>
 </div>
 
-    <?php Fisma_Format_Section::startSection('Unresolved: By Point of Contact', null, null, 'byPoc'); ?>
+    <?php Fisma_Format_Section::startSection(
+        'Unresolved: By ' . $this->escape($this->translate('Finding_Point_of_Contact')),
+        null,
+        null,
+        'byPoc'
+    ); ?>
     <div class='column66 left managerAnalystLeft'>
         <?php echo $this->escape($this->byPocTable, 'none'); ?>
     </div>

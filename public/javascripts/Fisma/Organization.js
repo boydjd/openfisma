@@ -147,6 +147,116 @@
             ;
             copyUserAccessButton.set('label', parentButton.get('label'));
             copyUserAccessButton.set('selectedMenuItem', parentButton.get('selectedMenuItem'));
+        },
+
+        renameTag: function(tag) {
+            var jcell = $('td').filter(function(index){
+                return ($(this).text() === tag);
+            });
+            var row = jcell.parent().get(0);
+            var datatable = Fisma.Registry.get('assetPocListTable');
+            datatable.selectRow(row);
+
+            Fisma.Util.showInputDialog(
+                "Rename '" + tag + "' ...",
+                "New name",
+                {
+                    'continue': function(ev, obj) {
+                        YAHOO.util.Event.stopEvent(ev);
+                        var input = obj.textField.value;
+                        if (input !== "") {
+                            obj.errorDiv.innerHTML = "Renaming '" + tag + "'...";
+
+                            $.post(
+                                '/organization/rename-poc-list',
+                                {
+                                    format: 'json',
+                                    oldTag: tag,
+                                    newTag: input,
+                                    csrf: $('[name=csrf]').val()
+                                },
+                                function(data) {
+                                    $('[name=csrf]').val(data.csrfToken);
+
+                                    if (data.result.success) {
+                                        if (data.result.message) {
+                                            Fisma.Util.showAlertDialog(data.result.message);
+                                        } else {
+                                            datatable.updateRow(row, {
+                                                'Position': input,
+                                                'Assignees': jcell.siblings().eq(0).text(),
+                                                'Edit': "javascript:Fisma.Organization.renameTag('" + encodeURIComponent(input) + "')",
+                                                'Delete': '/organization/remove-poc-list/tag/' + encodeURIComponent(input)
+                                            });
+                                        }
+                                    } else {
+                                        Fisma.Util.showAlertDialog(data.result.message);
+                                    }
+                                    obj.panel.hide();
+                                    obj.panel.destroy();
+                                }
+                            );
+
+                        } else {
+                            obj.errorDiv.innerHTML = "Tag name cannot be blank.";
+                        }
+                    },
+                    'cancel': function(ev, obj) {
+                        datatable.unselectRow(row);
+                    }
+                }
+            );
+        },
+
+        addTag: function() {
+            var datatable = Fisma.Registry.get('assetPocListTable');
+
+            Fisma.Util.showInputDialog(
+                "Add a tag ...",
+                "Tag name",
+                {
+                    'continue': function(ev, obj) {
+                        YAHOO.util.Event.stopEvent(ev);
+                        var input = obj.textField.value;
+                        if (input !== "") {
+                            obj.errorDiv.innerHTML = "Adding position '" + input + "'...";
+
+                            $.post(
+                                '/organization/add-poc-list/',
+                                {
+                                    format: 'json',
+                                    tag: input,
+                                    csrf: $('[name=csrf]').val()
+                                },
+                                function(data) {
+                                    $('[name=csrf]').val(data.csrfToken);
+
+                                    if (data.result.success) {
+                                        if (data.result.message) {
+                                            Fisma.Util.showAlertDialog(data.result.message);
+                                        } else {
+                                            datatable.addRow({
+                                                'Position': input,
+                                                'Assignees': '0',
+                                                'Edit': "javascript:Fisma.Organization.renameTag('" + encodeURIComponent(input) + "')",
+                                                'Delete': '/organization/remove-poc-list/tag/' + encodeURIComponent(input)
+                                            });
+                                        }
+                                    } else {
+                                        Fisma.Util.showAlertDialog(data.result.message);
+                                    }
+                                    obj.panel.hide();
+                                    obj.panel.destroy();
+                                }
+                            );
+                        } else {
+                            obj.errorDiv.innerHTML = "Position name cannot be blank.";
+                        }
+                    },
+                    'cancel': function(ev, obj) {
+                    }
+                }
+            );
         }
     };
 

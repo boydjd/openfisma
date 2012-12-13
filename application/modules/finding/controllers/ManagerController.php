@@ -206,7 +206,7 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
         $this->view->byPocTable = new Fisma_Yui_DataTable_Local();
         $this->view->byPocTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Point of Contact',
+                $this->view->translate('Finding_Point_of_Contact'),
                 false,
                 null,
                 null,
@@ -216,7 +216,7 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->byPocTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Point of Contact',
+                $this->view->translate('Finding_Point_of_Contact'),
                 true,
                 'Fisma.TableFormat.formatHtml',
                 null,
@@ -394,12 +394,12 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
 
         $chartByPoc =
             new Fisma_Chart(300, 250, 'chartByPoc', '/finding/manager/chart-by-poc/format/json/orgId/' . $orgId);
-        $chartByPoc->setTitle('Unresolved: By Point of Contact');
+        $chartByPoc->setTitle('Unresolved: By ' . $this->view->translate('Finding_Point_of_Contact'));
         $this->view->chartByPoc = $chartByPoc->export('html', true);
 
         $chartBySystem =
             new Fisma_Chart(300, 250, 'chartBySystem', '/finding/manager/chart-by-system/format/json/orgId/' . $orgId);
-        $chartBySystem->setTitle('Unresolved: By Point of Contact');
+        $chartBySystem->setTitle('Unresolved: By System');
         $this->view->chartBySystem = $chartBySystem->export('html', true);
     }
 

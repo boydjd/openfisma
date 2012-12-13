@@ -40,6 +40,13 @@ System:
             comment: The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above
 
         # FISMA Report Criteria:
+        fismaReportable:
+            type: boolean
+            default: true
+            comment: Is the system reportable in FISMA standards?
+        nextSecurityAuthorizationDt:
+            type: date
+            comment: The due date for the next required Security Authorization.
         controlledBy:
             type: enum
             values: [AGENCY, CONTRACTOR]

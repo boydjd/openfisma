@@ -156,3 +156,9 @@ Migration:
         minorVersion: 0
         tagNumber: 0
         name: AddEvent
+
+    030100_MSSO:
+        majorVersion: 3
+        minorVersion: 1
+        tagNumber: 0
+        name: Msso

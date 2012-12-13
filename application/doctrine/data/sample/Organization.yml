@@ -1,188 +1,226 @@
-Organization: 
+Organization:
     BGA_ORG:
         name: Big Government Agency
         nickname: BGA
         OrganizationType: agency
+        Poc: root
         children:
             ARP_ORG:
                 nickname: ARP
                 name: Bureau of Advanced Research Projects
                 OrganizationType: bureau
+                Poc: george_mcphee
                 children:
                     NRL_ORG:
                         nickname: NRL
                         name: Nuclear Energy Lab
                         OrganizationType: office
+                        Poc: sample_1
                         children:
                             HAZMAT_ORG:
                                 nickname: HAZMAT
                                 name: Hazardous Materials Tracking System
                                 OrganizationType: system
+                                Poc: sample_1
                                 System: HAZMAT_SYS
                             RCD_ORG:
                                 nickname: RCD
                                 name: Regulatory Compliance Database
                                 OrganizationType: system
+                                Poc: sample_1
                                 System: RCD_SYS
                     RNI_ORG:
                         nickname: RNI
                         name: Renewable Energy Initiative
                         OrganizationType: office
+                        Poc: sample_5
                         children:
                             GREEN_NRG_ORG:
                                 nickname: GREEN-NRG
                                 name: Green Energy Research Grants Database
                                 OrganizationType: system
+                                Poc: sample_5
                                 System: GREEN_NRG_SYS
                             WIND_ORG:
                                 nickname: WIND
                                 name: Wind Farm Tax Rebate Program
                                 OrganizationType: system
+                                Poc: sample_5
                                 System: WIND_SYS
 
             PRINT_ORG:
                 name: Bureau of Printing
                 nickname: PRINT
                 OrganizationType: bureau
+                Poc: semyon_varlamov
                 children:
                     MIDWEST_ORG:
                         nickname: MIDWEST
                         name: Mid-west Office
                         OrganizationType: office
+                        Poc: mike_green
                     NORTHEAST_ORG:
                         nickname: NORTHEAST
                         name: North-east Office
                         OrganizationType: office
+                        Poc: alexander_ovechkin
                     SOUTHEAST_ORG:
                         nickname: SOUTHEAST
                         name: South-east Office
                         OrganizationType: office
+                        Poc: alexander_semin
                     WEST_COAST_ORG:
                         nickname: WEST-COAST
                         name: West Coast Office
                         OrganizationType: office
+                        Poc: mike_knuble
 
             OS_ORG:
                 nickname: OS
                 name: Office of the Secretary
                 OrganizationType: bureau
+                Poc: matt_bradley
                 children:
                     OCIO_ORG:
                         nickname: OCIO
                         name: Office of the Chief Information Officer
                         OrganizationType: office
+                        Poc: john_carlson
                         children:
                             OF_ORG:
                                 nickname: OF
                                 name: OpenFISMA
                                 OrganizationType: system
+                                Poc: jeff_schultz
                                 System: OF_SYS
                             OSC_ORG:
                                 nickname: OSC
                                 name: Online Security Center
                                 OrganizationType: system
+                                Poc: bruce_boudreau
                                 System: OSC_SYS
                             TPP_ORG:
                                 nickname: TPP
                                 name: Technology Procurement Program
                                 OrganizationType: system
+                                Poc: bruce_boudreau
                                 System: TPP_SYS
                     OCOO_ORG:
                         nickname: OCOO
                         name: Office of the Chief Operating Officer
                         OrganizationType: office
+                        Poc: karl_alzner
                         children:
                             CRMS_ORG:
                                 nickname: CRMS
                                 name: Customer Relationship Management System
                                 OrganizationType: system
+                                Poc: jason_chimera
                                 System: CRMS_SYS
                             SCMS_ORG:
                                 nickname: SCMS
                                 name: Supply Chain Management System
                                 OrganizationType: system
+                                Poc: michael_neuvirth
                                 System: SCMS_SYS
                     OIG_ORG:
                         nickname: OIG
                         name: Office of the Inspector General
                         OrganizationType: office
+                        Poc: nicklas_backstrom
                         children:
                             CIT_ORG:
                                 nickname: CIT
                                 name: Cybersecurity Investigation Tracking
                                 OrganizationType: system
+                                Poc: nicklas_backstrom
                                 System: CIT_SYS
                             IAD_ORG:
                                 nickname: IAD
                                 name: Internal Artifacts Database
                                 OrganizationType: system
+                                Poc: nicklas_backstrom
                                 System: IAD_SYS
 
             RESMAN_ORG:
                 nickname: RESMAN
                 name: Bureau of Resource Management
                 OrganizationType: bureau
+                Poc: boyd_gordon
                 children:
                     HIWAY_ORG:
                         nickname: HIWAY
                         name: Highway Management
                         OrganizationType: office
+                        Poc: tom_poti
                         children:
                             HERNDON_ORG:
                                 nickname: HERNDON
                                 name: Herndon Data Center
                                 OrganizationType: system
+                                Poc: boyd_gordon
                                 System: HERNDON_SYS
                             RESTON_ORG:
                                 nickname: RESTON
                                 name: Reston Data Center
                                 OrganizationType: system
+                                Poc: boyd_gordon
                                 System: RESTON_SYS
                                 children:
                                     LINUX_ORG:
                                         nickname: LINUX
                                         name: Linux Technology Stack
                                         OrganizationType: system
+                                        Poc: boyd_gordon
                                         System: LINUX_SYS
                                     MAINFRAME_ORG:
                                         nickname: MAINFRAME
                                         name: Mainframe Technology Stack
                                         OrganizationType: system
+                                        Poc: boyd_gordon
                                         System: MAINFRAME_SYS
                                     ORACLE_ORG:
                                         nickname: ORACLE
                                         name: Oracle Technology Stack
                                         OrganizationType: system
+                                        Poc: boyd_gordon
                                         System: ORACLE_SYS
                     RAIL_ORG:
                         nickname: RAIL
                         name: Railway Management
                         OrganizationType: office
+                        Poc: john_erskine
                         children:
                             RMTRP_ORG:
                                 nickname: RMTRP
-                                name: Rail Modernization Tax Rebate Program 
+                                name: Rail Modernization Tax Rebate Program
                                 OrganizationType: system
+                                Poc: boyd_gordon
                                 System: RMTRP_SYS
                             ROCP_ORG:
                                 nickname: ROCP
                                 name: Railway Operator Certification Program
                                 OrganizationType: system
+                                Poc: boyd_gordon
                                 System: ROCP_SYS
                     MARITIME_ORG:
                         nickname: MARITIME
                         name: Maritime and Freshwater Management
                         OrganizationType: office
+                        Poc: boyd_gordon
+                        Poc: sean_collins
                         children:
                             H20_RIGHTS_ORG:
                                 nickname: H2O-RIGHTS
                                 name: Water Rights Adjudication Tracking System
                                 OrganizationType: system
+                                Poc: boyd_gordon
                                 System: H20_RIGHTS_SYS
                             WILDLIFE_ORG:
                                 nickname: WILDLIFE
                                 name: Fish and Wildlife
                                 OrganizationType: system
+                                Poc: boyd_gordon
                                 System: WILDLIFE_SYS
 
             # This system is by default not assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
@@ -190,10 +228,12 @@ Organization:
                 nickname: HIDDEN
                 name: Hidden System
                 OrganizationType: system
+                Poc: boyd_gordon
                 System: HIDDEN_SYS
 
             DISPOSAL_ORG:
-                nickname: DISPOSAL 
+                nickname: DISPOSAL
                 name: Disposal System
                 OrganizationType: system
+                Poc: boyd_gordon
                 System: DISPOSAL_SYS

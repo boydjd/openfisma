@@ -456,5 +456,116 @@ Fisma.Finding = {
             defaultView = new Fisma.Storage('finding.dashboard').get(registryName);
         }
         section.find('a:contains(' + defaultView + ')').click();
+    },
+
+    renameTag: function(tag) {
+        var jcell = $('td').filter(function(index){
+            return ($(this).text() === tag);
+        });
+        var row = jcell.parent().get(0);
+        var datatable = Fisma.Registry.get('findingLinkTypeTable');
+        datatable.selectRow(row);
+
+        Fisma.Util.showInputDialog(
+            "Rename '" + tag + "' ...",
+            "New name",
+            {
+                'continue': function(ev, obj) {
+                    YAHOO.util.Event.stopEvent(ev);
+                    var input = obj.textField.value;
+                    if (input !== "") {
+                        obj.errorDiv.innerHTML = "Renaming '" + tag + "'...";
+
+                        $.post(
+                            '/finding/relationship/rename',
+                            {
+                                format: 'json',
+                                oldTag: tag,
+                                newTag: input,
+                                csrf: $('[name=csrf]').val()
+                            },
+                            function(data) {
+                                $('[name=csrf]').val(data.csrfToken);
+
+                                if (data.result.success) {
+                                    if (data.result.message) {
+                                        Fisma.Util.showAlertDialog(data.result.message);
+                                    } else {
+                                        datatable.updateRow(row, {
+                                            'Type': input,
+                                            'Used': jcell.siblings().eq(0).find('div').text(),
+                                            'Edit': {func: Fisma.Finding.renameTag, param: input},
+                                            'Delete': '/finding/relationship/delete/tag/' + encodeURIComponent(input)
+                                        });
+                                    }
+                                } else {
+                                    Fisma.Util.showAlertDialog(data.result.message);
+                                }
+                                obj.panel.hide();
+                                obj.panel.destroy();
+                            }
+                        );
+
+                    } else {
+                        obj.errorDiv.innerHTML = "Tag name cannot be blank.";
+                    }
+                },
+                'cancel': function(ev, obj) {
+                    datatable.unselectRow(row);
+                }
+            },
+            tag
+        );
+    },
+
+    addTag: function() {
+        var datatable = Fisma.Registry.get('findingLinkTypeTable');
+
+        Fisma.Util.showInputDialog(
+            "Add a tag ...",
+            "Tag name",
+            {
+                'continue': function(ev, obj) {
+                    YAHOO.util.Event.stopEvent(ev);
+                    var input = obj.textField.value;
+                    if (input !== "") {
+                        obj.errorDiv.innerHTML = "Adding tag '" + input + "'...";
+
+                        $.post(
+                            '/finding/relationship/new',
+                            {
+                                format: 'json',
+                                tag: input,
+                                csrf: $('[name=csrf]').val()
+                            },
+                            function(data) {
+                                $('[name=csrf]').val(data.csrfToken);
+
+                                if (data.result.success) {
+                                    if (data.result.message) {
+                                        Fisma.Util.showAlertDialog(data.result.message);
+                                    } else {
+                                        datatable.addRow({
+                                            'Type': input,
+                                            'Used': '0',
+                                            'Edit': {func: Fisma.Finding.renameTag, param: input},
+                                            'Delete': '/finding/relationship/delete/tag/' + encodeURIComponent(input)
+                                        });
+                                    }
+                                } else {
+                                    Fisma.Util.showAlertDialog(data.result.message);
+                                }
+                                obj.panel.hide();
+                                obj.panel.destroy();
+                            }
+                        );
+                    } else {
+                        obj.errorDiv.innerHTML = "Tag name cannot be blank.";
+                    }
+                },
+                'cancel': function(ev, obj) {
+                }
+            }
+        );
     }
 };

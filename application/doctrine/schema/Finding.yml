@@ -10,6 +10,12 @@ Finding:
             extra:
                 auditLog: true
                 logicalName: Date Discovered
+        auditYear:
+            type: string(4)
+            comment: The latest audit year of the finding
+            extra:
+                requiredPrivilege: update_audit_year
+
         closedTs:
             type: timestamp
             comment: The timestamp when this finding was closed

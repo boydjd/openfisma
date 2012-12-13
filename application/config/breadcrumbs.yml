@@ -58,6 +58,10 @@ FindingAdminWorkflow:
     url: /finding/workflow/view
     labels: [Findings, Administration, Workflow]
     links: [no-link, no-link, no-link]
+FindingAdminLinkType:
+    url: /finding/relationship/manage
+    labels: [Findings, Administration, Link Types]
+    links: [no-link, no-link, no-link]
 FindingAdminGeneral:
     url: /finding/config/general
     labels: [Findings, Administration, General]
@@ -322,6 +326,10 @@ SystemAdminNetwork:
     url: /network/list
     labels: [System Inventory, Administration, Networks]
     links: [no-link, no-link, no-link]
+SystemAdminOrganizationPOCList:
+    url: /organization/poc-list
+    labels: [System Inventory, Administration, Organization People]
+    links: [no-link, no-link, no-link]
 SystemAdminOrganizationTypeView:
     url: /organization-type/view
     labels: [System Inventory, Administration, Organization Types, View]
@@ -374,6 +382,14 @@ AdminSysConfigPolicies:
     url: /config/general
     labels: [Administration, System Configuration, General Policies]
     links: [no-link, no-link, no-link]
+AdminSysConfigOptionalModules:
+    url: /config/modules
+    labels: [Administration, System Configuration, Optional Modules]
+    links: [no-link, no-link, no-link]
+AdminSysConfigOptionalFields:
+    url: /config/optional-fields
+    labels: [Administration, System Configuration, Optional Fields]
+    links: [no-link, no-link, no-link]
 AdminSysConfigLDAP:
     url: /config/list-ldap
     labels: [Administration, System Configuration, LDAP]
@@ -394,6 +410,10 @@ AdminSysConfigContact:
     url: /config/contact
     labels: [Administration, System Configuration, Technical Contact]
     links: [no-link, no-link, no-link]
+AdminUserManagementRolePrivilegeMatrix:
+    url: /role/view-matrix
+    labels: [Administration, User Management, Privileges]
+    links: [no-link, no-link, no-link]
 AdminUserManagementRoleView:
     url: /role/view
     labels: [Administration, User Management, Roles, View]
@@ -401,10 +421,6 @@ AdminUserManagementRoleView:
 AdminUserManagementRoleCreate:
     url: /role/create
     labels: [Administration, User Management, Roles, Create]
-    links: [no-link, no-link, /role/list, no-link]
-AdminUserManagementRolePrivilegeMatrix:
-    url: /role/view-matrix
-    labels: [Administration, User Management, Roles, Privilege Matrix]
     links: [no-link, no-link, /role/list, no-link]
 AdminUserManagementRole:
     url: /role/list

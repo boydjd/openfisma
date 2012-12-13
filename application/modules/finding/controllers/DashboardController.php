@@ -294,7 +294,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->byPocTable->addEventListener('renderEvent', 'Fisma.Finding.restrictTableLength');
         $this->view->byPocTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Point of Contact',
+                $this->view->translate('Finding_Point_of_Contact'),
                 false,
                 null,
                 null,
@@ -304,7 +304,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->byPocTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Point of Contact',
+                $this->view->translate('Finding_Point_of_Contact'),
                 true,
                 'Fisma.TableFormat.formatHtml',
                 null,

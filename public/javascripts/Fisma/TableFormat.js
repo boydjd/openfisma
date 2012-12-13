@@ -470,7 +470,7 @@ Fisma.TableFormat = {
         var cell = $(elCell);
         if (oData === true) {
             cell.text("Yes");
-        } else if (oData === false) {
+        } else if (oData === false || oData === undefined) {
             cell.text("No");
         } else {
             cell.html($("<span/>").addClass("highlight").text(oData.substr(oData.length - 1) === "T" ? "Yes" : "No"));
@@ -738,5 +738,17 @@ Fisma.TableFormat = {
             div.append(highlightAndEscape(v[2]));
             div.appendTo(cell);
         });
+    },
+
+    formatSwitchButton: function(elCell, oRecord, oColumn, oData) {
+        try {
+            oData = YAHOO.lang.JSON.parse(oData);
+            elCell.innerHTML = "<div id='" + oData.id + "'></div>";
+            YAHOO.util.Event.onContentReady(oData.id, function () {
+                new Fisma.SwitchButton(oData.id, oData.enabled, oData.callback, {'id':oData.id});
+            });
+        } catch (e) {
+            Fisma.TableFormat.formatHtml(elCell, oRecord, oColumn, oData);
+        }
     }
 };
