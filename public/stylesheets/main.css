@@ -40,6 +40,11 @@
     height: auto;
 }
 
+div.offscreen {
+    position: absolute;
+    left: -9999em;
+}
+
 /* Generic styles -- this section contains style information for generic elements. Generally speaking, we should be
  * careful about modifying elements directly. However, these are based on the YUI reset that has already been loaded
  * when this style sheet is loaded.

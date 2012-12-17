@@ -1917,9 +1917,9 @@ Fisma.Chart = {
             // Ensure the threat-level-legend is hidden
             document.getElementById(chartParamsObj.uniqueid + 'toplegend').style.display = 'none';
             // Show the table generated based on chart data
-            dataTableObj.style.display = '';
+            $(dataTableObj).removeClass("offscreen");
         } else {
-            dataTableObj.style.display = 'none';
+            $(dataTableObj).addClass("offscreen");
         }
     },
 
