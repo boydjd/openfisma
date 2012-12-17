@@ -20,6 +20,9 @@
             id='toolbarForm'
             class="<?php echo $this->escape(($this->searchFormLeft) ? 'left' : 'right'); ?>" style='margin-left:5px;'
         >
+            <?php if ($this->searchForm->getElement('keywords')): ?>
+            <label for='keywords' style='display:none'>Keywords</label>
+            <?php endif; ?>
             <?php echo $this->escape($this->searchForm, 'none'); ?>
         </div>
     <?php endif; ?>
