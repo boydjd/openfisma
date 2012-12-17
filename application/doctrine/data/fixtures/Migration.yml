@@ -151,3 +151,9 @@ Migration:
         minorVersion: 0
         tagNumber: 0
         name: ManagerView
+
+    030100_IncidentTags:
+        majorVersion: 3
+        minorVersion: 1
+        tagNumber: 0
+        name: IncidentTags
