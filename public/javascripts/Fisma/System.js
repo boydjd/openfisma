@@ -350,7 +350,7 @@ Fisma.System = {
             }
         );
         waitPanel.setHeader('Converting...');
-        waitPanel.setBody('<img src="/images/loading_bar.gif">');
+        waitPanel.setBody('<img src="/images/loading_bar.gif" alt="loading">');
         waitPanel.render(document.body);
         waitPanel.show();
     },

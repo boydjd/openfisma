@@ -14,7 +14,7 @@ $disabled = ($editMode) ? "" : "readonly";
 
 <?php if ($editMode): ?>
 <?php echo $this->escape($this->searchBox(array($this->saveButton, $this->cancelButton)), 'none'); ?>
-<img style='display:none' src='/images/loading_bar.gif' />
+<img style='display:none' src='/images/loading_bar.gif' alt='loading'/>
 <?php endif; ?>
 
 <?php Fisma_Format_Section::startSection('Finding Workflow'); ?>
