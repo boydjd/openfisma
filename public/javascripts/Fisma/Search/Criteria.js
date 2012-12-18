@@ -153,76 +153,67 @@ Fisma.Search.Criteria.prototype = {
      * @param fieldName The name of the default field
      */
     renderQueryField : function (container, fieldName) {
-
         var that = this;
+        var menu = $('<select/>')
+            .appendTo(
+                $(container)
+                    .addClass('ui-button-text-only')
+                    .css('display', 'inline-block')
+            )
+            .addClass('ui-button-text')
+            .button()
+            .change(function() {
+                var index, field;
 
-        var menuItems = [];
-        var menuButton;
+                for (index in that.fields) {
+                    field = that.fields[index];
 
-        // This event handler makes the menu button behave like a popup menu
-        var handleQueryFieldSelectionEvent = function (type, args, item) {
+                    if (menu.val() === field.name) {
 
-            var newLabel = item.cfg.getProperty("text");
-            var index, field;
+                        // If a widget is already displayed that still applies to this new field, then leave it alone
+                        // (Re-rendering it will set it back to its initial state, which is an annoying behavior.)
+                        var refreshQueryType = true;
+                        var refreshQueryInput = true;
 
-            for (index in that.fields) {
-                field = that.fields[index];
+                        if (that.getCriteriaDefinition(field) === that.getCriteriaDefinition(that.currentField)) {
+                            refreshQueryType = false;
+                        }
 
-                if (item.value === field.name) {
+                        if ('enum' === field.type) {
+                            refreshQueryInput = true;
+                        }
 
-                    // If a widget is already displayed that still applies to this new field, then leave it alone
-                    // (Re-rendering it will set it back to its initial state, which is an annoying behavior.)
-                    var refreshQueryType = true;
-                    var refreshQueryInput = true;
+                        that.currentField = field;
 
-                    if (that.getCriteriaDefinition(field) === that.getCriteriaDefinition(that.currentField)) {
-                        refreshQueryType = false;
+                        that.enumValues = field.enumValues;
+
+                        if (refreshQueryType) {
+                            that.renderQueryType(that.queryTypeContainer);
+                        }
+
+                        if (refreshQueryInput) {
+                            that.renderQueryInput(that.queryInputContainer);
+                        }
+
+                        break;
                     }
-
-                    if ('enum' === field.type) {
-                        refreshQueryInput = true;
-                    }
-
-                    that.currentField = field;
-
-                    that.enumValues = field.enumValues;
-
-                    if (refreshQueryType) {
-                        that.renderQueryType(that.queryTypeContainer);
-                    }
-
-                    if (refreshQueryInput) {
-                        that.renderQueryInput(that.queryInputContainer);
-                    }
-
-                    break;
                 }
-            }
-
-            menuButton.set("label", field.label);
-        };
+            });
 
         // Convert field list to menu items
         var index;
         for (index in this.fields) {
             var field = this.fields[index];
 
-            menuItems.push({
-                text : field.label,
-                value : field.name,
-                onclick : {fn : handleQueryFieldSelectionEvent}
-            });
+            $('<option/>')
+                .text(field.label)
+                .val(field.name)
+                .attr('selected', (fieldName == field.name))
+                .appendTo(menu);
         }
 
         // Render menu button
         this.currentField = this.getField(fieldName);
-
-        menuButton = new YAHOO.widget.Button({
-            type : "menu",
-            label : this.currentField.label,
-            menu : menuItems,
-            container : container
-        });
     },
 
     /**
@@ -232,7 +223,6 @@ Fisma.Search.Criteria.prototype = {
      * @param operator The default operator (optional)
      */
     renderQueryType : function (container, operator) {
-
         // Remove any existing content in this container
         if (container.firstChild) {
             while (container.hasChildNodes()) {
@@ -241,42 +231,38 @@ Fisma.Search.Criteria.prototype = {
         }
 
         var that = this;
-        var menuButton;
 
-        // This event handler makes the menu button behave like a popup menu
-        var handleQueryTypeSelectionEvent = function (type, args, item) {
-            var newLabel = item.cfg.getProperty("text");
+        var menu = $('<select/>')
+            .appendTo(
+                $(container)
+                    .addClass('ui-button-text-only')
+                    .css('display', 'inline-block')
+            )
+            .addClass('ui-button-text')
+            .button()
+            .change(function() {
+                var criteria = that.getCriteriaDefinition(that.currentField);
+                var oldRenderer = criteria[that.currentQueryType].renderer;
+                var newRenderer = criteria[menu.val()].renderer;
 
-            var criteria = that.getCriteriaDefinition(that.currentField);
-            var oldRenderer = criteria[that.currentQueryType].renderer;
-            var newRenderer = criteria[item.value].renderer;
+                that.currentQueryType = menu.val();
 
-            that.currentQueryType = item.value;
-
-            if (oldRenderer !== newRenderer || 'enum' === that.currentField.type) {
-                that.renderQueryInput(that.queryInputContainer);
-            }
-
-            menuButton.set("label", newLabel);
-        };
+                if (oldRenderer !== newRenderer || 'enum' === that.currentField.type) {
+                    that.renderQueryInput(that.queryInputContainer);
+                }    
+            });
 
         // Load the criteria definition
-        var criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
-
-        // Create the select menu
-        var menuItems = [];
-        var criteriaType;
-
+        var criteriaType,
+            criteriaDefinitions = this.getCriteriaDefinition(this.currentField);
         for (criteriaType in criteriaDefinitions) {
             var criteriaDefinition = criteriaDefinitions[criteriaType];
 
-            var menuItem = {
-                text : criteriaDefinition.label,
-                value : criteriaType,
-                onclick : {fn : handleQueryTypeSelectionEvent}
-            };
-
-            menuItems.push(menuItem);
+            $('<option/>')
+                .text(criteriaDefinition.label)
+                .val(criteriaType)
+                .attr('selected', (operator) ? (criteriaType == operator) : criteriaDefinition.isDefault)
+                .appendTo(menu);
 
             if (criteriaDefinition.isDefault) {
                 this.currentQueryType = criteriaType;
@@ -287,14 +273,6 @@ Fisma.Search.Criteria.prototype = {
         if (operator) {
             this.currentQueryType = operator;
         }
-
-        // Render menu button
-        menuButton = new YAHOO.widget.Button({
-            type : "menu",
-            label : criteriaDefinitions[this.currentQueryType].label,
-            menu : menuItems,
-            container : container
-        });
     },
 
     /**
@@ -335,29 +313,23 @@ Fisma.Search.Criteria.prototype = {
 
         var that = this;
 
-        var addButton = new YAHOO.widget.Button({container : container});
-
-        addButton._button.className = "searchAddCriteriaButton";
-        addButton._button.title = "Click to add another search criteria";
-
-        addButton.on(
-            "click",
-            function () {
-                that.searchPanel.addCriteria(that.container);
-            }
-        );
-
-        var removeButton = new YAHOO.widget.Button({container : container});
-
-        removeButton._button.className = "searchRemoveCriteriaButton";
-        removeButton._button.title = "Click to remove this search criteria";
-
-        removeButton.on(
-            "click",
-            function () {
-                that.searchPanel.removeCriteria(that.container);
-            }
-        );
+        var addButton = $('<button/>')
+                            .button()
+                            .attr('title', 'Click to add another search criteria')
+                            .click(function() {
+                                that.searchPanel.addCriteria(that.container);
+                            })
+                            .appendTo(container);
+        addButton.find('span').append($('<img/>').attr('src', '/images/add.png'));
+        
+        var removeButton = $('<button/>')
+                            .button()
+                            .attr('title', 'Click to remove this search criteria')
+                            .click(function() {
+                                that.searchPanel.removeCriteria(that.container);
+                            })
+                            .appendTo(container);
+        removeButton.find('span').append($('<img/>').attr('src', '/images/remove.png'));
 
         this.removeButton = removeButton;
     },
@@ -419,7 +391,8 @@ Fisma.Search.Criteria.prototype = {
      * @param bool enabled
      */
     setRemoveButtonEnabled : function (enabled) {
-        this.removeButton.set("disabled", !enabled);
+        console.log(this.removeButton);
+        this.removeButton.attr("disabled", !enabled);
     },
 
     /**

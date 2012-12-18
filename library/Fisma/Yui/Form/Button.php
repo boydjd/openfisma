@@ -53,30 +53,14 @@ class Fisma_Yui_Form_Button extends Zend_Form_Element_Submit
      */
     function renderSelf()
     {
-        $disabled = $this->readOnly ? 'disabled' : '';
-        $checked = $this->getAttrib('checked') ? ('checked: true,') : '';
-
-        $value = $this->getValue() ? $this->getValue() : $this->getLabel();
-        $obj = json_encode($this->getAttrib('onClickArgument'));
-
-        $render = "<input type=\"{$this->_yuiButtonType}\" id=\"{$this->getName()}\" value=\"{$value}\" $disabled>
-                   <script type='text/javascript'>
-                       YAHOO.util.Event.onDOMReady(function() {
-                           var button = new YAHOO.widget.Button('{$this->getName()}',
-                               {
-                                   $checked
-                                   onclick: {fn: {$this->getAttrib('onClickFunction')}, obj: {$obj}}
-                               }
-                           );";
-        $image = $this->getAttrib('imageSrc');
-        if (isset($image)) {
-            $render .= "button._button.style.background = 'url($image) 1em 50% no-repeat';\n";
-            $render .= "button._button.style.paddingLeft = '3em';\n";
-        }
-        if ($this->getAttrib('hidden')) {
-            $render .= "$('#{$this->getName()}').hide();\n";
-        }
-        $render .= "})</script>";
-        return $render;
+        $view = Zend_Layout::getMvcInstance()->getView();
+        return $view->partial('yui/button.phtml', array(
+            'id'        => $this->getName(),
+            'label'     => $this->getValue() ? $this->getValue() : $this->getLabel(),
+            'imageUrl'  => $this->getAttrib('imageSrc'),
+            'function'  => $this->getAttrib('onClickFunction'),
+            'arguments' => $this->getAttrib('onClickArgument'),
+            'disabled'  => $this->readOnly
+        ));
     }
 }

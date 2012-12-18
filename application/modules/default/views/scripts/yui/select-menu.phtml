@@ -1,51 +1,9 @@
-<?php
-    $name = $this->element->getName();
-    $callback = $this->element->getAttrib('setDefaultPocCallback');
-    $chunks = explode('<select', $this->content);
-
-    // YUI 2.9 fails to generate the submenus when the optgroups have 'id' attribute
-    $chunks[1] = preg_replace('/<optgroup id=".*?"/', '<optgroup ', $chunks[1]);
-
-    // manual escaping
-    $chunks[1] = preg_replace('/&lt;/', '&amp;lt;', $chunks[1]);
-
-    echo $this->escape($chunks[0], 'none');
-?>
-<input type='button' id='<?php echo $this->escape($name); ?>-button'/>
-<select<?php echo $this->escape($chunks[1], 'none'); ?>
-<script>
-    YAHOO.util.Event.onContentReady('<?php echo $this->escape($name); ?>-button', function () {
-        var selectElement = document.getElementById('<?php echo $this->escape($name); ?>');
-        var selectedLabel = '';
-        if (selectElement.options.length > 0) {
-            selectedLabel = selectElement.options[selectElement.selectedIndex].innerHTML;
-        }
-        var oMenuButton = new YAHOO.widget.Button('<?php echo $this->escape($name); ?>-button', {
-            label: selectedLabel.replace(/&amp;/g, "&"),
-            type: 'menu',
-            menu: '<?php echo $this->escape($name); ?>'
-        });
-        oMenuButton.getMenu().subscribe('click', function (p_sType, p_aArgs) {
-            if (p_aArgs[1]) {
-                var children = p_aArgs[1].cfg.getProperty('submenu');
-                if (!children) {
-                    oMenuButton.set('label', p_aArgs[1].cfg.getProperty('text').replace(/&amp;/g, "&"));
-                } else {
-                    var firstChild = children.getItem(0);
-                    oMenuButton.set('selectedMenuItem', firstChild);
-                    oMenuButton.set('label', firstChild.cfg.getProperty('text').replace(/&amp;/g, "&"));
-                }
-                var f = selectElement.onchange;
-                if (f) {
-                    selectElement.value = p_aArgs[1].srcElement.value;
-                    jQuery(selectElement).trigger('change');
-                }
-               
-                <?php if (!empty($callback)): ?> 
-                    // Populate the autocomplete poc field with default poc when organization is changed. 
-                    <?php echo $this->escape($callback, 'none')?>(p_aArgs[1].srcElement.value);
-                <?php endif;?>
-            }
-        });
-    });
+<?php echo $this->escape($this->content, 'none'); ?>
+<script type='text/javascript'>
+$(function() {
+	var select = $('select#<?php echo $this->element->getId(); ?>'),
+		html 	= select.html();
+	select.button().addClass('ui-button-text').html('').button().html(html);
+	select.parents('td').first().addClass('ui-button-text-only');
+});
 </script>

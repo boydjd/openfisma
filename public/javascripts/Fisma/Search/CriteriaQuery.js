@@ -72,14 +72,14 @@ Fisma.Search.CriteriaQuery = (function () {
         },
 
         /**
-         * Generate a query based on a YUI menu button
+         * Generate a query based on a select button
          *
          * @param container the HTML element that contains the input fields
          */
         enumSelect : function (container) {
-            var inputs = container.getElementsByTagName('button');
+            var inputs = container.getElementsByTagName('select');
 
-            var values = [inputs[0].firstChild.nodeValue];
+            var values = [inputs[0].value];
 
             return values;
         }

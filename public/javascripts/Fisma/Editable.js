@@ -26,31 +26,6 @@
  */
 
 (function() {
-    // Extending HTML Element
-    if (window.HTMLElement) {
-        Object.defineProperty(window.HTMLElement.prototype, "canHaveChildren", {
-            get: function() {
-                switch(this.tagName.toLowerCase()){
-                    case "area":
-                    case "base":
-                    case "basefont":
-                    case "col":
-                    case "frame":
-                    case "hr":
-                    case "img":
-                    case "br":
-                    case "input":
-                    case "isindex":
-                    case "link":
-                    case "meta":
-                    case "param":
-                    return false;
-                }
-                return true;
-            }
-        });
-    }
-
     var FE = {};
 
     /**
@@ -99,6 +74,7 @@
                 if (eclass === 'date') {
                     Fisma.Calendar.addCalendarPopupToTextField(textEl);
                 }
+                $(textEl).focus();
             } else if (type === 'textarea') {
                 var row = target.getAttribute('rows');
                 var col = target.getAttribute('cols');
@@ -110,79 +86,29 @@
                 textareaEl.style.width = oldWidth + "px";
                 textareaEl.style.height = oldHeight + "px";
                 tinyMCE.execCommand("mceAddControl", true, 'txt_' + t_name);
+                setTimeout(function() {
+                    tinymce.execCommand('mceFocus', false, 'txt_' + t_name);
+                }, '500');
             } else if (type === 'autocomplete') {
-                //this.parentNode.removeChild(this);
                 Fisma.Editable.makeAutocomplete(target);
             } else {
                 var val = target.getAttribute('value');
                 if (val) {
                     cur_val = val;
                 }
+                $(target).html('');
                 YAHOO.util.Connect.asyncRequest('GET', url + 'value/' + cur_val.trim(), {
                     success: function(o) {
                         if (type === 'select') {
-                            var innerHTML = o.responseText.replace(/&lt;/g, "&amp;lt;");
-                            var targetHTML = '<input type="button" id="' + t_name + '-button"/>'
-                                           + '<select id="' + t_name + '-select" name="' + name + '">'
-                                           + innerHTML + '</select>';
-                            if ($(editable).attr('id') === $(target).attr('id')) {
-                                targetHTML += $(target).find('.editresponse').html();
-                            }
-                            jQuery(target).html(targetHTML);
-
-                            YAHOO.util.Event.onContentReady(t_name + "-button", function () {
-                                // Fetch currently selected item
-                                var selectElement = document.getElementById(t_name + '-select');
-                                var selectedOption = null;
-                                var selectedLabel = '';
-                                if (selectElement.options.length > 0) {
-                                    selectedOption = selectElement.options[selectElement.selectedIndex];
-                                    selectedLabel = selectedOption.innerHTML;
-                                    if (selectedOption.parentElement.nodeName === "OPTGROUP") {
-                                        selectedLabel = $("<div />").text($(selectedOption).parent().attr("label")).html() + " &#9658; " + selectedLabel;
-                                    }
-                                }
-
-                                // Create a Button using an existing <input> and <select> element
-                                var oMenuButton = new YAHOO.widget.Button(t_name + "-button", {
-                                    label: selectedLabel.replace(/&amp;/g, "&"),
-                                    type: "menu",
-                                    menu: t_name + "-select"
-                                });
-
-                                // Register "click" event listener for the Button's Menu instance
-                                oMenuButton.getMenu().subscribe('click', function (p_sType, p_aArgs) {
-                                    if (p_aArgs[1]) {
-                                        var parentName, childName;
-                                        var children = p_aArgs[1].cfg.getProperty('submenu');
-                                        if (!children) {
-                                            // this is the child
-                                            childName = p_aArgs[1].cfg.getProperty('text');
-                                            if (p_aArgs[1].parent.parent) {
-                                                parentName = p_aArgs[1].parent.parent.cfg.getProperty('text');
-                                            }
-                                        } else {
-                                            // otherwise, this is the parent
-                                            parentName = p_aArgs[1].cfg.getProperty('text');
-                                            var firstChild = children.getItem(0);
-                                            childName = firstChild.cfg.getProperty('text');
-                                            // also set the configuration to reflect the first child
-                                            oMenuButton.set('selectedMenuItem', firstChild);
-                                        }
-                                        var buttonLabel =
-                                            ((parentName) ? ($("<div/>").text(parentName).html() + " &#9658; ") : '') +
-                                            $("<div/>").text(childName).html();
-                                        oMenuButton.set('label', buttonLabel);
-
-                                        var f = selectElement.onchange;
-                                        if (f) {
-                                            selectElement.value = p_aArgs[1].srcElement.value;
-                                            jQuery(selectElement).trigger('change');
-                                        }
-                                    }
-                                });
-                            });
+                            $('<select/>')
+                                .button()
+                                .addClass('ui-button-text')
+                                .attr('name', name)
+                                .html(o.responseText)
+                                .prependTo(target)
+                                .focus();
                         }
+                        //$(target).addClass('ui-button-text-only');
                     },
                     failure: function(o) {
                         Fisma.Util.showAlertDialog('Failed to load the specified panel.');
@@ -241,6 +167,7 @@
         container.appendChild(spinner);
 
         element.parentNode.replaceChild(container, element);
+        $(autocompleteTextField).focus();
 
         // Set up the autocomplete hooks on the new form control
         YAHOO.util.Event.onDOMReady(
@@ -290,10 +217,7 @@
             refreshUrl  = Fisma.tabView.get('activeTab').get('dataSrc');
         switch (type) {
             case 'select':
-                var item = YAHOO.widget.Button.getButton(t_name + '-button').get('selectedMenuItem');
-                if (item) {
-                    value = item.value;
-                }
+                value = target.find('select').val();
                 break;
             case 'text':
                 value = target.find('input').val();
@@ -360,7 +284,7 @@
         Fisma.Editable.editMode = true;
         $('.yui-content > div').not('.yui-hidden').find('.editable').click();
         $('#editMode').hide();
-        $('#saveChanges, #discardChanges').show();
+        $('#saveChanges, #discardChanges').css('display', 'inline-block');
     };
 
     Fisma.Editable = FE;
