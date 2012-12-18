@@ -120,18 +120,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function analystAction()
     {
-        $orgSystems = $this->_me->getOrganizationsByPrivilege('finding', 'read')->toArray();
-        $myOrgSystemIds = array(0);
-        foreach ($orgSystems as $orgSystem) {
-            $myOrgSystemIds[] = $orgSystem['id'];
-        }
+        $myOrgSystemIds = $this->_visibleOrgs;
+        $viewUser = ($this->_me->viewAs()) ? $this->_me->viewAs() : $this->_me;
 
         $totalFindingsQuery = Doctrine_Query::create()
             ->from('Finding f')
             ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
             ->andWhereIn('f.responsibleOrganizationId', $myOrgSystemIds)
             ->orWhere('f.status <> ?', 'CLOSED')
-            ->andWhere('f.pocId = ?', $this->_me->id);
+            ->andWhere('f.pocId = ?', $viewUser->id);
         $this->view->total = $totalFindingsQuery->count();
         if ($this->view->total < 1) {
             $this->view->message = "There are no unresolved findings under your responsibility.";
@@ -145,7 +142,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
             ->orWhere('f.status <> ?', 'CLOSED')
-            ->andWhere('f.pocId = ?', $this->_me->id)
+            ->andWhere('f.pocId = ?', $viewUser->id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
 
@@ -156,7 +153,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
             ->orWhere('f.status <> ?', 'CLOSED')
-            ->andWhere('f.pocId = ?', $this->_me->id)
+            ->andWhere('f.pocId = ?', $viewUser->id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
         $emptyFinding = new Finding();
@@ -176,7 +173,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
             ->orWhere('f.status <> ?', 'CLOSED')
-            ->andWhere('f.pocId = ?', $this->_me->id)
+            ->andWhere('f.pocId = ?', $viewUser->id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
         foreach ($this->view->byType as &$type) {
@@ -214,7 +211,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
             ->orWhere('f.status <> ?', 'CLOSED')
-            ->andWhere('f.pocId = ?', $this->_me->id)
+            ->andWhere('f.pocId = ?', $viewUser->id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
 
@@ -231,7 +228,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
             ->orWhere('f.status <> ?', 'CLOSED')
-            ->andWhere('f.pocId = ?', $this->_me->id)
+            ->andWhere('f.pocId = ?', $viewUser->id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
         $criteria = array();
@@ -385,7 +382,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
             ->andWhereIn('o.id', $myOrgSystemIds)
             ->orWhere('f.status <> ?', 'CLOSED')
-            ->andWhere('f.pocId = ?', $this->_me->id)
+            ->andWhere('f.pocId = ?', $viewUser->id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
         $bySystem = array();
