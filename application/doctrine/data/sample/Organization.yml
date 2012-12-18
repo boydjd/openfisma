@@ -3,19 +3,19 @@ Organization:
         name: Big Government Agency
         nickname: BGA
         OrganizationType: agency
-        Poc: root
+        Poc: sample
         children:
             ARP_ORG:
                 nickname: ARP
                 name: Bureau of Advanced Research Projects
                 OrganizationType: bureau
-                Poc: george_mcphee
+                Poc: root
                 children:
                     NRL_ORG:
                         nickname: NRL
                         name: Nuclear Energy Lab
                         OrganizationType: office
-                        Poc: sample_1
+                        Poc: george_mcphee
                         children:
                             HAZMAT_ORG:
                                 nickname: HAZMAT
@@ -33,7 +33,7 @@ Organization:
                         nickname: RNI
                         name: Renewable Energy Initiative
                         OrganizationType: office
-                        Poc: sample_5
+                        Poc: sean_collins
                         children:
                             GREEN_NRG_ORG:
                                 nickname: GREEN-NRG
@@ -52,40 +52,40 @@ Organization:
                 name: Bureau of Printing
                 nickname: PRINT
                 OrganizationType: bureau
-                Poc: semyon_varlamov
+                Poc: alexander_semin
                 children:
                     MIDWEST_ORG:
                         nickname: MIDWEST
                         name: Mid-west Office
                         OrganizationType: office
-                        Poc: mike_green
+                        Poc: semyon_varlamov
                     NORTHEAST_ORG:
                         nickname: NORTHEAST
                         name: North-east Office
                         OrganizationType: office
-                        Poc: alexander_ovechkin
+                        Poc: mike_green
                     SOUTHEAST_ORG:
                         nickname: SOUTHEAST
                         name: South-east Office
                         OrganizationType: office
-                        Poc: alexander_semin
+                        Poc: root
                     WEST_COAST_ORG:
                         nickname: WEST-COAST
                         name: West Coast Office
                         OrganizationType: office
-                        Poc: mike_knuble
+                        Poc: alexander_ovechkin
 
             OS_ORG:
                 nickname: OS
                 name: Office of the Secretary
                 OrganizationType: bureau
-                Poc: matt_bradley
+                Poc: john_carlson
                 children:
                     OCIO_ORG:
                         nickname: OCIO
                         name: Office of the Chief Information Officer
                         OrganizationType: office
-                        Poc: john_carlson
+                        Poc: jason_chimera
                         children:
                             OF_ORG:
                                 nickname: OF
@@ -109,13 +109,13 @@ Organization:
                         nickname: OCOO
                         name: Office of the Chief Operating Officer
                         OrganizationType: office
-                        Poc: karl_alzner
+                        Poc: mike_knuble
                         children:
                             CRMS_ORG:
                                 nickname: CRMS
                                 name: Customer Relationship Management System
                                 OrganizationType: system
-                                Poc: jason_chimera
+                                Poc: karl_alzner
                                 System: CRMS_SYS
                             SCMS_ORG:
                                 nickname: SCMS
@@ -146,13 +146,13 @@ Organization:
                 nickname: RESMAN
                 name: Bureau of Resource Management
                 OrganizationType: bureau
-                Poc: boyd_gordon
+                Poc: tom_poti
                 children:
                     HIWAY_ORG:
                         nickname: HIWAY
                         name: Highway Management
                         OrganizationType: office
-                        Poc: tom_poti
+                        Poc: boyd_gordon
                         children:
                             HERNDON_ORG:
                                 nickname: HERNDON
@@ -189,7 +189,7 @@ Organization:
                         nickname: RAIL
                         name: Railway Management
                         OrganizationType: office
-                        Poc: john_erskine
+                        Poc: matt_bradley
                         children:
                             RMTRP_ORG:
                                 nickname: RMTRP
@@ -207,8 +207,7 @@ Organization:
                         nickname: MARITIME
                         name: Maritime and Freshwater Management
                         OrganizationType: office
-                        Poc: boyd_gordon
-                        Poc: sean_collins
+                        Poc: john_erskine
                         children:
                             H20_RIGHTS_ORG:
                                 nickname: H2O-RIGHTS
