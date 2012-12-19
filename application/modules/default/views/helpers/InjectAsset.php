@@ -122,6 +122,7 @@ class View_Helper_InjectAsset
                                       '/stylesheets/ImagePicker.css',
                                       '/stylesheets/Incident.css',
                                       '/stylesheets/InteractiveOrderedListItem.css',
+                                      '/stylesheets/jquery-ui.css',
                                       '/stylesheets/jquery_jqplot.css',
                                       '/stylesheets/jquery-ui.css',
                                       '/stylesheets/MessageBox.css',
