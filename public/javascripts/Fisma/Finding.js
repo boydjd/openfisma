@@ -142,7 +142,7 @@ Fisma.Finding = {
     handleSecurityControlSelection : function () {
         var controlContainer = document.getElementById('securityControlContainer');
 
-        controlContainer.innerHTML = '<img src="/images/loading_bar.gif">';
+        controlContainer.innerHTML = '<img src="/images/loading_bar.gif" alt="loading">';
 
         var securityControlElement = document.getElementById('securityControlId');
 

@@ -317,8 +317,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         foreach ($documents as $document) {
             $documentRows[] = array(
-                'iconUrl'      => "<a href=\"/system-document/download/id/{$document->id}\">"
-                                 . "<img src=\"{$this->view->escape($document->getIconUrl())}\"></a>",
+                'iconUrl'      => "<a href='/system-document/download/id/{$document->id}'>"
+                                 . "<img alt='{$this->view->escape($document->getFileType())}' "
+                                 . "src='{$this->view->escape($document->getIconUrl())}'></a>",
                 'fileName' => $this->view->escape($document->DocumentType->name),
                 'fileNameLink' => "<a href=\"/system-document/download/id/{$document->id}\">"
                                 . $this->view->escape($document->DocumentType->name) . "</a>",

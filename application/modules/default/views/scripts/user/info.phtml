@@ -43,11 +43,11 @@
     </table>
 
     <?php if ($this->user->locked): ?>
-        <img src="/images/alert.png" class="userInfoAlert">
+        <img src="/images/alert.png" class="userInfoAlert" alt='Alert'>
         <p><em>This user account is locked and may be inactive.</em></p>
     <?php endif; ?>
     <?php if ($this->user->deleted_at): ?>
-        <img src="/images/alert.png" class="userInfoAlert">
+        <img src="/images/alert.png" class="userInfoAlert" alt='Alert'>
         <p><em>This user account has been removed from the system.</em></p>
     <?php endif; ?>
 <?php else: ?>

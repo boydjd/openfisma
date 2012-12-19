@@ -201,6 +201,7 @@
      */
     FE.setupEditFields = function() {
         var editable = YAHOO.util.Selector.query('.editable');
+        $('.editable').attr('title', '(click to edit)');
         YAHOO.util.Event.on(editable, 'click', Fisma.Editable.handleClickEvent);
     };
 
@@ -238,6 +239,7 @@
         spinner.src = "/images/spinners/small.gif";
         spinner.className = "spinner";
         spinner.id = autocompleteResultsDiv.id + "Spinner"; // required by AC API
+        spinner.alt = "working";
         container.appendChild(spinner);
 
         element.parentNode.replaceChild(container, element);

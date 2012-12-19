@@ -286,7 +286,7 @@
             for (i in nodeList) {
                 var node = nodeList[i];
                 var imageUrl = "/icon/get/id/" + node.iconId + "/size/small";
-                var nodeText = "<img src='" + imageUrl + "'>&nbsp;<b>"
+                var nodeText = "<img src='" + imageUrl + "' alt='icon'>&nbsp;<b>"
                              + PHP_JS().htmlspecialchars(node.label)
                              + "</b> - <i>"
                              + PHP_JS().htmlspecialchars(node.orgTypeLabel)
@@ -374,7 +374,7 @@
                 this._savePanel.render(document.body);
             }
 
-            this._savePanel.setBody('<img src="/images/loading_bar.gif">');
+            this._savePanel.setBody('<img src="/images/loading_bar.gif" alt="loading">');
             this._savePanel.show();
 
             YAHOO.util.Connect.asyncRequest(

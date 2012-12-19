@@ -1336,11 +1336,13 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         foreach ($artifactCollection as $artifact) {
             $downloadUrl = '/incident/download-artifact/id/' . $id . '/artifactId/' . $artifact->id;
             $artifactRows[] = array(
-                'iconUrl'  => "<a href=\"$downloadUrl\"><img src=\""
+                'iconUrl'  => "<a href='$downloadUrl'><img alt='"
+                            . $this->view->escape($artifact->getFileType())
+                            . "'' src='"
                             . $this->view->escape($artifact->getIconUrl())
-                            . "\"></a>",
+                            . "'></a>",
                 'fileName' => $this->view->escape($artifact->fileName),
-                'fileNameLink' => "<a href=\"$downloadUrl\">" . $this->view->escape($artifact->fileName) . "</a>",
+                'fileNameLink' => "<a href='$downloadUrl'>" . $this->view->escape($artifact->fileName) . "</a>",
                 'fileSize' => $artifact->getFileSize(),
                 'user'     => $this->view->userInfo($artifact->User->displayName, $artifact->User->id),
                 'date'     => $artifact->createdTs,

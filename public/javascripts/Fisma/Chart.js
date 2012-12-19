@@ -1384,7 +1384,7 @@ Fisma.Chart = {
             }
         }
         var injectHTML = '<img height="100%" src="' + backURL
-                       + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" />';
+                       + '" style="opacity:0.15;filter:alpha(opacity=15);opacity:0.15" alt="background"/>';
 
         // But wait, is there an override issued for the HTML of the background to inject?
         if (chartParamsObj.background) {

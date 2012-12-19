@@ -61,7 +61,7 @@ Fisma.FindingWorkflow = {
         }
 
         var alertMessage = "Processing changes... This may take up to several minutes. Please be patient."
-                         + "<p style='text-align:center'><img src='/images/loading_bar.gif' /></p>";
+                         + "<p style='text-align:center'><img src='/images/loading_bar.gif' alt='loading'/></p>";
         var alertDialog = Fisma.Util.getDialog(false);
 
         alertDialog.setHeader("WARNING");
