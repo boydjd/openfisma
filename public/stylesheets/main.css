@@ -1115,3 +1115,8 @@ div.searchBox.viewAsMode {
 div#mainmenu.viewAsMode li.currentModule {
     background: #d76e41 !important;
 }
+
+/* Links, for accessibility, in YUI data tables should not appear underlined */
+div.yui-dt-liner a {
+    text-decoration: none;
+}

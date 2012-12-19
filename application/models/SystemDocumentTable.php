@@ -59,7 +59,11 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
                 'initiallyVisible' => true,
                 'label' => 'Current Version',
                 'sortable' => true,
-                'type' => 'integer'
+                'type' => 'integer',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/system-document/view/id/'
+                )
             ),
             'description' => array(
                 'initiallyVisible' => true,

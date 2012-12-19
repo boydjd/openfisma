@@ -37,7 +37,11 @@ class SourceTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
                 'initiallyVisible' => true,
                 'label' => 'Name',
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/finding/source/view/id/'
+                )
             ),
             'nickname' => array(
                 'initiallyVisible' => true,
@@ -76,7 +80,7 @@ class SourceTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
         $sourceQuery = (isset($sourceQuery)) ? $sourceQuery : $this->getSourcesQuery();
         return $sourceQuery->execute();
     }
-    
+
     /**
      * Build query for getSources()
      *

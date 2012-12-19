@@ -37,7 +37,11 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
                 'initiallyVisible' => true,
                 'label' => 'Code',
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/security-control/view/id/'
+                )
             ),
             'name' => array(
                 'initiallyVisible' => true,
