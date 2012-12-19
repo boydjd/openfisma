@@ -230,6 +230,13 @@ Incident:
                         func: hasPrivilegeForClass
                         param1: manage_impacts
                         param2: Incident
+                ResponseStrategies:
+                    label: Response Strategies
+                    link: /incident-response-strategy/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage_response_strategies
+                        param2: Incident
                 SeverityLevels:
                     label: Severity Levels
                     link: /incident-severity-level/list

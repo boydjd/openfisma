@@ -293,6 +293,7 @@ Role:
             - incident_resolve
             - incident_update
             - incident_manage_impacts
+            - incident_manage_response_strategies
             - incident_manage_severity_levels
             - incident_manage_sources
             - ir_sub_category_create

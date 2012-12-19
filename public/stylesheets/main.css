@@ -1047,9 +1047,6 @@ table.custom-widget.no-border td {
 }
 
 .sectionHeader .ui-icon { float: right; }
-.ui-icon { display: block; width: 16px; height: 16px; background-repeat: no-repeat; background-position: center; }
-.ui-icon-minusthick { background-image: url('/images/arrow-up.gif'); }
-.ui-icon-plusthick { background-image: url('/images/arrow-down.gif'); }
 .ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 50px !important; }
 .ui-sortable-placeholder * { visibility: hidden; }
 .ui-sortable-proxy { margin-top:10px; height: 1.5em; line-height: 1.2em; background: #FFEB9C; }

@@ -425,6 +425,12 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Impact
+        responseStrategies: array
+        denormalizedResponseStrategies:
+            type: string
+            extra:
+                auditLog: true
+                logicalName: Response Strategies
 
     relations:
         CurrentWorkflowStep:
