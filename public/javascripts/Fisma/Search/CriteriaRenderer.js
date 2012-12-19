@@ -231,42 +231,30 @@ Fisma.Search.CriteriaRenderer = (function () {
          * @param enumValues An array of enumeration values
          */
         enumSelect : function (container, operands, enumValues) {
-            var menuButton;
+            var menu = $('<select/>')
+                .appendTo(
+                    $(container)
+                        .addClass('ui-button-text-only')
+                        .css('display', 'inline-block')
+                )
+                .addClass('ui-button-text')
+                .button();
 
-            // This event handler makes the menu button behave like a popup menu
-            var handleEnumSelectionEvent = function (type, args, item) {
-                var newLabel = item.cfg.getProperty("text");
-
-                menuButton.set("label", newLabel);
-            };
-
-            // Create the select menu
-            var menuItems = [];
             var index;
+
+            // If an operand is supplied, that is the default value. Otherwise the default is the first enum value.
+            var defaultValue = (operands && operands.length > 0) ? operands[0] : enumValues[0];
 
             for (index in enumValues) {
                 var enumValue = enumValues[index];
 
-                var menuItem = {
-                    text : $P.htmlentities(enumValue, "ENT_NOQUOTES", "UTF-8"),
-                    value : enumValue,
-                    onclick : {fn : handleEnumSelectionEvent}
-                };
-
-                menuItems.push(menuItem);
+                $('<option/>')
+                    .text(enumValue)
+                    .val(enumValue)
+                    .attr('selected', (enumValue == defaultValue))
+                    .appendTo(menu);
+                    //$P.htmlentities(enumValue, "ENT_NOQUOTES", "UTF-8")
             }
-
-            // If an operand is supplied, that is the default value. Otherwise the default is the first enum value.
-            var defaultValue = (operands && operands.length > 0) ? operands[0] : enumValues[0];
-            defaultValue =  jQuery('<div/>').text(defaultValue).html();
-
-            // Render menu button
-            menuButton = new YAHOO.widget.Button({
-                type : "menu",
-                label : defaultValue,
-                menu : menuItems,
-                container : container
-            });
         }
     };
 }());

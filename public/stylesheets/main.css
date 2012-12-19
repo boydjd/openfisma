@@ -466,28 +466,6 @@ span.tooltip {
     display: inline-block;
 }
 
-/* This is the style for the tooltip itself. The style must be marked !important
-   so that YUI won't override it.
-*/
-body.masked .yui-tt {
-    z-index: 10 ! important;
-}
-
-.yui-tt .bd {
-    border: none ! important;
-    background-color: #f0f0f0 ! important;
-    opacity: .9 ! important;
-}
-
-.yui-tt-shadow-visible {
-    top: -5px ! important;
-    left: -5px ! important;
-    bottom: -5px ! important;
-    right: -5px ! important;
-    background-color: orange ! important;
-    opacity: 0.5 ! important;
-}
-
 table.fisma_crud tr td:first-child {
     text-align: right;
     background-repeat: no-repeat;
@@ -1067,14 +1045,6 @@ table.custom-widget.no-border td {
     display: inline-block;
 }
 
-#menuLayoutSelect {
-    background-color: #ebebeb;
-    border: solid thin black;
-}
-#menuLayoutSelect div {
-    padding: 4px;
-    cursor: default;
-}
 .yui-content .yui-button {
     vertical-align: middle;
 }
@@ -1120,3 +1090,5 @@ div#mainmenu.viewAsMode li.currentModule {
 div.yui-dt-liner a {
     text-decoration: none;
 }
+
+#saveChanges, #discardChanges { display:none; }

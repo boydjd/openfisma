@@ -392,25 +392,26 @@ Fisma.Finding = {
         ;
 
         //layout switch
-
-        if ($('#toolbarRight #changeLayout').length > 0) {
-            $('#TabView_FindingManager_TabViewContainer #changeLayout').remove();
-        } else {
-            $('#toolbarRight').prepend($('#changeLayout'));
-            var layoutButton = new YAHOO.widget.Button("menuLayout", {type: "menu", menu: "menuLayoutSelect"});
-            $("#layoutLeft").click(function() {
-                $(".column33").removeClass('right').addClass('left');
-                $(".column66").removeClass('left').addClass('right');
-                layoutButton.getMenu().hide();
-                storage.set('analystLayout', 'layoutLeft');
-            });
-            $("#layoutRight").click(function() {
-                $(".column33").removeClass('left').addClass('right');
-                $(".column66").removeClass('right').addClass('left');
-                layoutButton.getMenu().hide();
-                storage.set('analystLayout', 'layoutRight');
-            });
-        }
+        $('#toolbarRight').prepend($('#changeLayout'));
+        $('#menuLayoutSelect').buttonset();
+        $("#layoutLeft").click(function() {
+            $(".column33").removeClass('right').addClass('left');
+            $(".column66").removeClass('left').addClass('right');
+            storage.set('analystLayout', 'layoutLeft');
+        }).focus(function(e) {
+            $(this).parents('#changeLayout').addClass('active');
+        }).blur(function(e) {
+            $(this).parents('#changeLayout').removeClass('active');
+        });
+        $("#layoutRight").click(function() {
+            $(".column33").removeClass('left').addClass('right');
+            $(".column66").removeClass('right').addClass('left');
+            storage.set('analystLayout', 'layoutRight');
+        }).focus(function(e) {
+            $(this).parents('#changeLayout').addClass('active');
+        }).blur(function(e) {
+            $(this).parents('#changeLayout').removeClass('active');
+        });
         var layout = storage.get('analystLayout');
         if (layout) {
             $('#' + layout).click();

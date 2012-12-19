@@ -18,6 +18,7 @@
         Fisma.Util.showWhatsNewDialog(<?php echo $this->escape("'" . $version . "'", 'none'); ?>);
 <?php endif; ?>
         Fisma.ViewAs.provideVisualCues();
+        $(document).tooltip();
     });
 </script>
 <div class="clear"></div>

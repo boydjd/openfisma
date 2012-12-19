@@ -116,3 +116,12 @@ div#findingAnalystLeft div.section > a {
     margin-top: 8px;
     display: block;
 }
+
+div#changeLayout {
+    line-height: 28px;
+    border: solid thin transparent;
+}
+div#changeLayout.active {
+    line-height: 28px;
+    border-color: orange;
+}

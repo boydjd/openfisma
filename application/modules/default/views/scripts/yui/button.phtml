@@ -1,0 +1,19 @@
+<button
+	id = '<?php echo $this->escape($this->id); ?>'
+>
+	<img src='<?php echo $this->escape($this->imageUrl); ?>' />
+	<?php echo $this->escape($this->label); ?>
+</button>
+<script type='text/javascript'>
+$(function() {
+	$('#<?php echo $this->escape($this->id); ?>')
+		.button()
+	<?php if ($this->function): ?>
+		.click(function(e) {
+			<?php echo $this->escape($this->function, 'javascript'); ?>.apply(this, [e, <?php echo $this->escape($this->arguments, 'json'); ?>]);
+			return false;
+		})
+	<?php endif; ?>
+	;
+});
+</script>

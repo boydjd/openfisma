@@ -36,50 +36,14 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
      */
     function renderSelf()
     {
-        // When readOnly, we need to pass the configuration item "disabled: true" to the YUI button constructor
-        $disabled = $this->readOnly ? 'true' : 'false';
-        $funcPart = '';
-        // merge the part of onclick event
-        $onClickFunction = $this->getAttrib('onClickFunction');
-        $onClickArgument = $this->getAttrib('onClickArgument');
-        $onClickRender = '';
-        if (!empty($onClickFunction)) {
-            $onClickRender .= ", onclick: {fn:$onClickFunction";
-            if (!empty($onClickArgument)) {
-                $onClickRender .= ", obj: \"$onClickArgument\"";
-            }
-            $onClickRender .= "}";
-        }
-
-        $image = $this->getAttrib('imageSrc');
-        $imageRender = '';
-        if (isset($image)) {
-           $view = Zend_Layout::getMvcInstance()->getView();
-
-           $image = $view->serverUrl($image);
-           $imageRender .= "{$this->getName()}._button.style.background = 'url($image) 1em 50% no-repeat';\n";
-           $imageRender .= "{$this->getName()}._button.style.paddingLeft = '3em';\n";
-        }
-
-        $render = "<span id=\"{$this->getName()}Container\"></span>
-                   <script type='text/javascript'>
-                       YAHOO.util.Event.onDOMReady(function() {
-                           var {$this->getName()} = new YAHOO.widget.Button({
-                               type: \"submit\",
-                               label: \"{$this->getLabel()}\",
-                               id: \"{$this->getName()}\",
-                               name: \"{$this->getName()}\",
-                               value: \"{$this->getLabel()}\",
-                               container: \"{$this->getName()}Container\",
-                               disabled: $disabled
-                               $onClickRender
-                           });
-                           $imageRender
-                  ";
-        if ($this->getAttrib('hidden')) {
-            $render .= "$('#{$this->getName()}Container').hide();\n";
-        }
-        $render .= "});</script>";
-        return $render;
+        $view = Zend_Layout::getMvcInstance()->getView();
+        return $view->partial('yui/button.phtml', array(
+            'id'        => $this->getName(),
+            'label'     => $this->getValue() ? $this->getValue() : $this->getLabel(),
+            'imageUrl'  => $this->getAttrib('imageSrc'),
+            'function'  => $this->getAttrib('onClickFunction'),
+            'arguments' => $this->getAttrib('onClickArgument'),
+            'disabled'  => $this->readOnly
+        ));
     }
 }

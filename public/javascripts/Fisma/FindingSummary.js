@@ -175,19 +175,7 @@
 
             if (YAHOO.lang.isValue(this._tooltips.viewBy)) {
                 firstCellSpan.className = "tooltip";
-
-                var viewByTooltip = new YAHOO.widget.Tooltip(
-                    "viewByTooltip",
-                    {
-                        context: firstCellSpan,
-                        showdelay: 150,
-                        hidedelay: 150,
-                        autodismissdelay: 25000,
-                        text: this._tooltips.viewBy,
-                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
-                        width: "50%"
-                    }
-                );
+                firstCellSpan.title = this._tooltips.viewBy;
             }
 
             var select = document.createElement("select");
@@ -222,19 +210,7 @@
 
             if (YAHOO.lang.isValue(this._tooltips.mitigationStrategy)) {
                 mitigationCellSpan.className = "tooltip";
-
-                var msTooltip = new YAHOO.widget.Tooltip(
-                    "msTooltip",
-                    {
-                        context: mitigationCellSpan,
-                        showdelay: 150,
-                        hidedelay: 150,
-                        autodismissdelay: 25000,
-                        text: this._tooltips.mitigationStrategy,
-                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
-                        width: "50%"
-                    }
-                );
+                mitigationCellSpan.title = this._tooltips.mitigationStrategy;
             }
 
             // Create the cell that spans the evidence columns
@@ -249,19 +225,7 @@
 
             if (YAHOO.lang.isValue(this._tooltips.remediation)) {
                 remediationCellSpan.className = "tooltip";
-
-                var remediationTooltip = new YAHOO.widget.Tooltip(
-                    "remediationTooltip",
-                    {
-                        context: remediationCellSpan,
-                        showdelay: 150,
-                        hidedelay: 150,
-                        autodismissdelay: 25000,
-                        text: this._tooltips.remediation,
-                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
-                        width: "50%"
-                    }
-                );
+                remediationCellSpan.title = this._tooltips.remediation;
             }
 
             // Create the cell that spans the aggregate columns

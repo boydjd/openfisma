@@ -123,6 +123,7 @@ class View_Helper_InjectAsset
                                       '/stylesheets/Incident.css',
                                       '/stylesheets/InteractiveOrderedListItem.css',
                                       '/stylesheets/jquery_jqplot.css',
+                                      '/stylesheets/jquery-ui.css',
                                       '/stylesheets/MessageBox.css',
                                       '/stylesheets/Modules.css',
                                       '/stylesheets/Search.css',

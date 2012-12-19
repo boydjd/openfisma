@@ -36,7 +36,7 @@ class Fisma_Yui_Form_Button_Link extends Fisma_Yui_Form_Button
      */
     function renderSelf()
     {
-        // When readOnly, we need to pass the configuration item "disabled: true" to the YUI button constructor
+        /*// When readOnly, we need to pass the configuration item "disabled: true" to the YUI button constructor
         $disabled = $this->readOnly ? 'true' : 'false';
         // merge the part of onclick event
         $onClickFunction = $this->getAttrib('onClickFunction');
@@ -80,6 +80,18 @@ class Fisma_Yui_Form_Button_Link extends Fisma_Yui_Form_Button
             $render .= "$('#{$this->getName()}').hide();\n";
         }
         $render .= "\n});</script>";
-        return $render;
+        return $render;*/
+
+        $view = Zend_Layout::getMvcInstance()->getView();
+        return $view->partial('yui/button-link.phtml', array(
+            'id'        => $this->getName(),
+            'label'     => $this->getValue() ? $this->getValue() : $this->getLabel(),
+            'imageUrl'  => $this->getAttrib('imageSrc'),
+            'function'  => $this->getAttrib('onClickFunction'),
+            'arguments' => $this->getAttrib('onClickArgument'),
+            'disabled'  => $this->readOnly,
+            'href'      => $this->getAttrib('href'),
+            'target'    => $this->getAttrib('target')
+        ));
     }
 }
