@@ -116,29 +116,26 @@
                 }, null);
             }
             $(this).append('<span class="editresponse">' +
-                ' <img src="/images/ok.png" style="vertical-align:text-top" onclick="Fisma.Editable.commit(this);"/>' +
-                ' <img src="/images/no_entry.png" style="vertical-align:text-top" onclick="Fisma.Editable.discard(this);"/>' +
-            '</span>');
+                ' <button onclick="Fisma.Editable.commit(this);" title="Save"><img src="/images/ok.png" style="vertical-align:text-top" /></button>' +
+                ' <button onclick="Fisma.Editable.discard(this);" title="Discard"><img src="/images/no_entry.png" style="vertical-align:text-top" /></button>' +
+            '</span>').attr('tabindex', null);
         }
     };
 
     /**
      * Replace editable fields with appropriate form elements
      */
-    FE.setupEditFields = function() {
-        var editable = YAHOO.util.Selector.query('.editable');
-        $('.editable').attr('title', '(click to edit)');
-        YAHOO.util.Event.on(editable, 'click', Fisma.Editable.handleClickEvent);
-        YAHOO.util.Event.on(
-            editable,
-            "keypress",
-            function(e) {
+    FE.setupEditFields = function(editable) {
+        var editable = (editable) ? $(editable).focus() : '.editable';
+        $(editable)
+            .attr('title', '(click to edit)')
+            .attr('tabindex', 0)
+            .click(Fisma.Editable.handleClickEvent)
+            .keypress(function(e) {
                 if (YAHOO.util.Event.getCharCode(e) == YAHOO.util.KeyListener.KEY.ENTER) {
                     Fisma.Editable.handleClickEvent.call( YAHOO.util.Event.getTarget(e), e);
                 }
-            }
-        );
-        YAHOO.util.Dom.setAttribute(editable, "tabindex", "0");
+            });  
     };
 
     /**
@@ -179,8 +176,7 @@
         container.appendChild(spinner);
 
         element.parentNode.replaceChild(container, element);
-        $(autocompleteTextField).focus();
-
+        
         // Set up the autocomplete hooks on the new form control
         YAHOO.util.Event.onDOMReady(
             Fisma.AutoComplete.init,
@@ -191,7 +187,8 @@
                 containerId: autocompleteResultsDiv.id,
                 hiddenFieldId: hiddenTextField.id,
                 queryPrepend: element.getAttribute("queryPrepend"),
-                setupCallback: element.getAttribute('setupCallback')
+                setupCallback: element.getAttribute('setupCallback'),
+                autofocus: true
             }
         );
     };
@@ -201,15 +198,18 @@
      */
     FE.discard = function (element, parent) {
         parent = parent || $(element).parents('[target]');
+        parent.attr('tabindex', 0).focus();
         var target = parent.attr('target');
         parent.addClass('editable2').find('.editresponse').remove();
-        setTimeout("$('.editable2').removeClass('editable2').addClass('editable');", 0);
+        setTimeout(function() {
+            $('.editable2').removeClass('editable2').addClass('editable');
+        }, 0);
         if ($('#' + target).attr('type') === 'textarea') {
             tinyMCE.execCommand("mceRemoveControl", true, 'txt_' + target);
         }
         $('#' + target).replaceWith(parent.data('old_object'));
         if (parent.attr('id') === target) {
-            YAHOO.util.Event.on(YAHOO.util.Selector.query('#' + target), 'click', Fisma.Editable.handleClickEvent);
+            Fisma.Editable.setupEditFields('#' + target);
         }
     };
 
@@ -258,7 +258,7 @@
                 type: 'POST',
                 success: function(data, textStatus, request) {
                     Fisma.Editable.result = data;
-                    parent.addClass('editable');
+                    parent.addClass('editable').attr('tabindex', 0).focus();
                     var errorMsg = $(data).filter('script.priority-messenger-warning');
                     if (errorMsg.length > 0) {
                         errorMsg.appendTo($(this));
@@ -272,6 +272,9 @@
                                 url: refreshUrl,
                                 success: function(data, textStatus, request) {
                                     target.html($(data).find('#' + t_name).html());
+                                    if (target.hasClass('editable')) {
+                                        target.attr('tabindex', 0).focus();
+                                    }
                                 },
                                 failure: function(data, textStatus, request) {
                                     Fisma.Editable.discard(element);

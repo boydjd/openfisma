@@ -391,7 +391,6 @@ Fisma.Search.Criteria.prototype = {
      * @param bool enabled
      */
     setRemoveButtonEnabled : function (enabled) {
-        console.log(this.removeButton);
         this.removeButton.attr("disabled", !enabled);
     },
 
