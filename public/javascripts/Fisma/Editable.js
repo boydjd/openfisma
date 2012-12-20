@@ -119,6 +119,7 @@
                 ' <button onclick="Fisma.Editable.commit(this);" title="Save"><img src="/images/ok.png" style="vertical-align:text-top" /></button>' +
                 ' <button onclick="Fisma.Editable.discard(this);" title="Discard"><img src="/images/no_entry.png" style="vertical-align:text-top" /></button>' +
             '</span>').attr('tabindex', null);
+            $('.editresponse button').button();
         }
     };
 
