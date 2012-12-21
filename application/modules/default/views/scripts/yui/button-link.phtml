@@ -2,7 +2,7 @@
 	id = '<?php echo $this->escape($this->id); ?>'
 	href = '<?php echo $this->escape($this->href); ?>'
 >
-	<img src='<?php echo $this->escape($this->imageUrl); ?>' />
+	<?php if ($this->imageUrl): ?><img src='<?php echo $this->escape($this->imageUrl); ?>' /><?php endif; ?>
 	<?php echo $this->escape($this->label); ?>
 </a>
 <script type='text/javascript'>
