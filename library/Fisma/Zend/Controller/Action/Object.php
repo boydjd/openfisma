@@ -692,6 +692,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $msg   = $this->getSingularModelName() . ' deleted successfully';
                 $type = 'notice';
             } catch (Fisma_Zend_Exception_User $e) {
+                Doctrine_Manager::connection()->rollback();
                 $msg  = $e->getMessage();
                 $type = 'warning';
             } catch (Doctrine_Exception $e) {
@@ -757,6 +758,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $message = "$numRecords $noun $verb deleted.";
             $status = 'notice';
 
+        } catch (Fisma_Zend_Exception_User $e) {
+            Doctrine_Manager::connection()->rollback();
+            $message  = $e->getMessage();
+            $status = 'warning';
         } catch (Doctrine_Exception $e) {
 
             Doctrine_Manager::connection()->rollback();
