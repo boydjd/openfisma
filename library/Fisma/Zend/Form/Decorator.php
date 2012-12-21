@@ -55,7 +55,12 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
             $render = $element->getView()
                               ->formLabel($element->getName(), $label, $attrib);
             if (isset($element->tooltip)) {
-                $render = "<span tabindex='0' title='{$element->tooltip}' class='tooltip'>$render</span>";
+                $view = Zend_Layout::getMvcInstance()->getView();
+                $render = $view->partial('yui/tooltip.phtml', array(
+                    'tooltip'   => $element->tooltip,
+                    'content'   => $render,
+                    'escape'    => 'none'
+                ));
             }
         } else {
             $render = '&nbsp;';
