@@ -71,7 +71,11 @@ class Mail extends BaseMail
         $mail->setFrom($this->sender, $this->senderName);
         $mail->addTo($this->recipient, $this->recipientName);
         $mail->setSubject($this->subject);
-        $mail->setBodyText($this->body);
+        if ($this->format === 'html') {
+            $mail->setBodyHtml($this->body);
+        } else {
+            $mail->setBodyText($this->body);
+        }
 
         return $mail;
     }

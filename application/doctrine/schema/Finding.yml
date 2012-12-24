@@ -14,6 +14,7 @@ Finding:
             type: string(4)
             comment: The latest audit year of the finding
             extra:
+                notify: true
                 requiredPrivilege: update_audit_year
 
         closedTs:
@@ -44,6 +45,7 @@ Finding:
             notnull: true
             extra:
                 auditLog: true
+                notify: true
                 logicalName: Mitigation Type
                 requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_type
@@ -64,6 +66,7 @@ Finding:
             extra:
                 purify: html
                 auditLog: true
+                notify: true
                 logicalName: Finding Description
                 requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_description
@@ -73,6 +76,7 @@ Finding:
             extra:
                 purify: html
                 auditLog: true
+                notify: true
                 logicalName: Recommendation
                 requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_recommendation
@@ -82,6 +86,7 @@ Finding:
             extra:
                 purify: html
                 auditLog: true
+                notify: true
                 logicalName: Mitigation Strategy
                 requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_course_of_action
@@ -90,6 +95,7 @@ Finding:
             type: string
             extra:
                 purify: html
+                notify: true
                 auditLog: true
                 logicalName: Resources Required
                 requiredUpdateStatus: [NEW, DRAFT]
@@ -105,6 +111,7 @@ Finding:
             type: date
             extra:
                 auditLog: true
+                notify: true
                 logicalName: Current ECD
             comment: If an ECD needs to be changed, but the original ECD is locked, then the updated ECD is stored here
         ecdLocked:
@@ -125,6 +132,7 @@ Finding:
             extra:
                 purify: html
                 auditLog: true
+                notify: true
                 logicalName: Description of Threat Source
                 requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_threat
@@ -134,6 +142,7 @@ Finding:
             values: [LOW, MODERATE, HIGH]
             extra:
                 auditLog: true
+                notify: true
                 logicalName: Threat Level
                 requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_threat
@@ -142,6 +151,7 @@ Finding:
             type: string
             extra:
                 purify: html
+                notify: true
                 auditLog: true
                 logicalName: Description of Countermeasures
                 requiredUpdateStatus: [NEW, DRAFT]
@@ -153,6 +163,7 @@ Finding:
             notnull: true
             extra:
                 auditLog: true
+                notify: true
                 logicalName: Effectiveness of Countermeasures
                 requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_countermeasures
@@ -162,18 +173,21 @@ Finding:
             values: [LOW, MODERATE, HIGH]
             extra:
                 auditLog: true
+                notify: true
                 logicalName: Residual Risk
             comment: The risk that remains after combining the threat level with countermeasures effectiveness
         cvssBaseScore:
            type: float
            comment: The CVSS Base Score of the finding
            extra:
+                notify: true
                 auditLog: true
                 logicalName: CVSS Base Score
         cvssVector:
             type: string(255)
             comment: The CVSS Vector of the finding
             extra:
+                notify: true
                 auditLog: true
                 logicalName: CVSS Vector
         deleted_at:
@@ -190,18 +204,27 @@ Finding:
             type: integer
             comment: Foreign key to the organization which is targeted by this finding
             extra:
+                notify: true
+                class: Organization
+                field: nickname
                 auditLog: true
                 logicalName: Organization
                 requiredPrivilege: update_assignment
         denormalizedParentOrganizationId:
             type: integer
             extra:
+                notify: true
+                class: Organization
+                field: nickname
                 auditLog: true
                 logicalName: Parent Organization
         sourceId:
             type: integer
             comment: Foreign key to the source of this finding. For example, was it certification and accreditation? Continous monitoring?
             extra:
+                notify: true
+                class: Source
+                field: nickname
                 auditLog: true
                 logicalName: Source
                 requiredUpdateStatus: [NEW, DRAFT]
@@ -220,8 +243,11 @@ Finding:
         pocId:
             type: integer
             extra:
+                notify: true
+                class: User
+                field: displayName
                 auditLog: true
-                logicalName: Point Of Contact
+                logicalName: Finding_Point_of_Contact
                 requiredPrivilege: update_poc
             comment: Foreign key to the point of contact for this finding
         uploadId:

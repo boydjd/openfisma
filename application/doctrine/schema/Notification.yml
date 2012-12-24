@@ -1,28 +1,38 @@
 Notification:
     columns:
         createdTs: timestamp
+        eventTitle:
+            type: string
+            comment: The email title
         eventText:
             type: string
-            comment: The event text which is sent to the user
+            comment: The email content
         eventId:
             type: integer
             comment: Foreign key to the event which caused this notification
         userId:
             type: integer
-            comment: Foreign key to the user who caused this notification
+        denormalizedEmail:
+            type: string(255)
+            notnull: true
+            extra:
+                logicalName: E-mail Address
+            comment: The user primary e-mail address
+        denormalizedRecipient:
+            type: string
+            comment: An internally-modified field which combines first/last/email together
         url:
             type: string(255)
             comment: the url which is sent to the user
     relations:
-        Event:
-            local: eventId
-            foreign: id
-            foreignAlias: Notifications
         User:
             local: userId
             foreign: id
             foreignAlias: Notifications
-
+        Event:
+            local: eventId
+            foreign: id
+            foreignAlias: Notifications
     actAs:
         Timestampable:
             created:

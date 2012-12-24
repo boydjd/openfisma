@@ -51,6 +51,7 @@ Event:
         name: USER_DELETED
         description: a user account is deleted
         Privilege: notification_admin
+        urlPath: /user/view/id/
         category: admin
 
     ACCOUNT_LOGIN_SUCCESS:
@@ -143,6 +144,13 @@ Event:
         category: vulnerability
         urlPath: /vm/vulnerability/view/id
 
+    VULNERABILITY_UPDATED:
+        name: VULNERABILITY_UPDATED
+        description: a vulnerability is modified
+        Privilege: notification_vulnerability
+        category: vulnerability
+        urlPath: /vm/vulnerability/view/id
+
     VULNERABILITY_DELETED:
         defaultActive: true
         name: VULNERABILITY_DELETED
@@ -154,6 +162,14 @@ Event:
         defaultActive: true
         name: FINDING_CREATED
         description: a finding is created
+        Privilege: notification_finding
+        category: finding
+        urlPath: /finding/remediation/view/id/
+
+    FINDING_UPDATED:
+        defaultActive: true
+        name: FINDING_UPDATED
+        description: a finding is modified
         Privilege: notification_finding
         category: finding
         urlPath: /finding/remediation/view/id/

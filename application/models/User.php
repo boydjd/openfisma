@@ -95,7 +95,9 @@ class User extends BaseUser
         $this->locked = true;
         $this->lockTs = Fisma::now();
         $this->lockType = $lockType;
+        Fisma::setNotificationEnabled(false); // prevent user_updated
         $this->save();
+        Fisma::setNotificationEnabled(true);
 
         // Invalidating the ACL will make the lock effective on the next page refresh. Otherwise the user
         // would be able to continue using the app for the rest of his session.

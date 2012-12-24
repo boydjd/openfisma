@@ -505,12 +505,11 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 if (Fisma::configuration()->getConfig($item) === $value) {
                     continue;
                 }
+                $modifiedFields[$item] = array(Fisma::configuration()->getConfig($item), $value, $item);
                 Fisma::configuration()->setConfig($item, $value);
-                $modifiedFields[] = $item;
             }
 
-            $this->view->priorityMessenger('Configuration updated successfully', 'notice');
-            if (!empty($modifiedFields)) {
+            if (count($modifiedFields) > 0) {
                 Notification::notify(
                     'CONFIGURATION_UPDATED',
                     null,
@@ -518,6 +517,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                     array('modifiedFields' => $modifiedFields)
                 );
             }
+
+            $this->view->priorityMessenger('Configuration updated successfully', 'notice');
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'warning');
@@ -551,6 +552,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         $configurations = array('sender',
                                 //'subject',
+                                'email_detail',
                                 'send_type',
                                 'smtp_host',
                                 'smtp_port',

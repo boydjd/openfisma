@@ -1,0 +1,132 @@
+<?php
+    $user = $this->user;
+    $event = $this->event;
+    $url = $this->url;
+    $time = $this->time;
+    $systemName = $this->systemName;
+    $paranoid = !($this->detail);
+
+    $record = $this->record;
+
+    switch ($event->name) {
+        case 'USER_CREATED':
+            $eventTitle = "User account created by {$user->displayName}";
+            break;
+        case 'USER_UPDATED':
+            $eventTitle = "User account modified by {$user->displayName}";
+            break;
+        case 'ACCOUNT_LOCKED':
+            $eventTitle = "User account locked by {$systemName}";
+            break;
+        case 'ACCOUNT_DISABLED':
+            $eventTitle = "User account disabled by {$user->displayName}";
+            break;
+        case 'USER_DELETED':
+            $eventTitle = "User account deleted by {$user->displayName}";
+            break;
+        case 'ACCOUNT_LOGIN_SUCCESS':
+            $eventTitle = "{$user->displayName} logged in successfully";
+            break;
+        case 'ACCOUNT_LOGIN_FAILURE':
+            $eventTitle = "Failed login detected with user {$user->displayName}";
+            break;
+        case 'CONFIGURATION_UPDATED':
+            $eventTitle = "Application configuration modified by {$user->displayName}";
+            break;
+        case 'FINDING_CREATED':
+            $eventTitle = "Finding {$record->id} created by {$user->displayName}";
+            break;
+        case 'FINDING_DELETED':
+            $eventTitle = "Finding {$record->id} deleted by {$user->displayName}";
+            break;
+        case 'FINDING_CLOSED':
+            $eventTitle = "Finding {$record->id} resolved by {$user->displayName}";
+            break;
+        case 'FINDING_IMPORTED':
+            break;
+        default:
+            $eventTitle = "{$event->description} by {$user->displayName}";
+    }
+?>
+<div style="
+    margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+">Summary</div>
+<div style="
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    position: relative;
+    height: 100%;
+    margin-bottom: 0px;
+">
+<table cellpadding='4' cellspacing='2'>
+    <tr>
+        <th>Event:</th>
+        <td><?php echo $this->escape($eventTitle); ?></td>
+    </tr>
+    <tr>
+        <th>Time:</th>
+        <td><?php echo $this->escape($time); ?></td>
+    </tr>
+<?php if ($url): ?>
+    <tr>
+        <th>URL:</th>
+        <td><a href='<?php echo $this->escape($url); ?>'><?php echo $this->escape($url); ?></a></td>
+    </tr>
+<?php endif; ?>
+</table>
+</div>
+<?php if (!$paranoid): ?>
+    <?php if (in_array($event->name, array(
+        'CONFIGURATION_UPDATED',
+        'USER_UPDATED',
+        'ORGANIZATION_UPDATED',
+        'SYSTEM_UPDATED',
+        'ASSET_UPDATED',
+        'FINDING_UPDATED',
+        'VULNERABILITY_UPDATED'
+    ))): ?>
+<div style="
+    margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+">Details</div>
+<div style="
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    position: relative;
+    height: 100%;
+    margin-bottom: 0px;
+">
+<table cellpadding='4' cellspacing='2'>
+    <tr>
+        <th>Field</th>
+        <th>Old value</th>
+        <th>New value</th>
+    </tr>
+    <?php foreach ($this->modifiedFields as $name => $values): ?>
+    <tr>
+        <th><?php echo $this->escape($this->translate($values[2])); ?></th>
+        <td><?php echo $this->escape($values[0]); ?></td>
+        <td><?php echo $this->escape($values[1]); ?></td>
+    </tr>
+    <?php endforeach; ?>
+</table>
+</div>
+<?php endif; ?>
+<?php endif; ?>

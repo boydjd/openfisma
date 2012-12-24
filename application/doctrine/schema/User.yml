@@ -67,6 +67,9 @@ User:
             extra:
                 auditLog: true
                 logicalName: Reporting Organization
+                notify: true
+                class: Organization
+                field: nickname
 
         lockType:
             type: enum

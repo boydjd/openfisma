@@ -39,6 +39,9 @@ Asset:
             comment: The IP port for this asset
         serviceTag:
             type: string(255)
+            extra:
+                logicalName: Environment
+                notify: true
             comment: The service tag of this asset
 
         productId:

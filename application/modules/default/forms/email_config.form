@@ -20,6 +20,15 @@ elements.recipient.options.validators.emailAddress.validator = "EmailAddress"
 elements.recipient.options.hideLabel = true
 displayGroups.general.elements.recipient = "recipient"
 
+elements.email_detail.type = "checkbox"
+elements.email_detail.options.label = "Full Disclosure"
+elements.email_detail.options.validators.alnum.validator = "Digits"
+elements.email_detail.options.validators.between.validator = "between"
+elements.email_detail.options.validators.between.options.min = "0"
+elements.email_detail.options.validators.between.options.max = "1"
+elements.email_detail.options.tooltip = "<p><b>Full Disclosure mode</b></p><p>Full Disclosure mode provides detailed user email notifications. If you are worried about sensitive date being shared via email, you can turn off Full Disclosure mode to restrict email notifications to summary data only, which does not contains details from inicdents, vulnerabilities, findings, organizations, or systems.</p>"
+displayGroups.general.elements.email_detail = "email_detail"
+
 elements.sender.type = "text"
 elements.sender.options.label = "From Email Address"
 elements.sender.options.size = 30
