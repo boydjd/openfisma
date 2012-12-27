@@ -192,6 +192,17 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'parentOrganization' => array(
+                'initiallyVisible' => true,
+                'label' => 'Parent Organization',
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'ParentOrganization',
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
             'source' => array(
                 'initiallyVisible' => true,
                 'label' => 'Source',

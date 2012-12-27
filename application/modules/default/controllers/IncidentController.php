@@ -644,6 +644,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incident = Doctrine_Query::create()
                          ->from('Incident i')
                          ->leftJoin('i.Organization o')
+                         ->leftJoin('i.ParentOrganization po')
                          ->leftJoin('i.Category category')
                          ->leftJoin('i.ReportingUser reporter')
                          ->leftJoin('i.PointOfContact poc')
@@ -714,6 +715,17 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $this->view->userCanViewOrganization = false;
         } else {
             $this->view->userCanViewOrganization = $this->_acl->hasPrivilegeForObject('read', $organization);
+        }
+
+        $parentOrgId = $incident['ParentOrganization']['id'];
+        $parentOrganization = Doctrine::getTable('Organization')->find($parentOrgId);
+
+        // $organization will be false if an organization has not been selected yet
+        if ($parentOrganization === false) {
+            $this->view->userCanViewParentOrganization = false;
+        } else {
+            $this->view->userCanViewParentOrganization =
+                $this->_acl->hasPrivilegeForObject('read', $parentOrganization);
         }
     }
 

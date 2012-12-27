@@ -123,12 +123,22 @@
                     <span id="organization"
                           type="select"
                           name="finding[responsibleOrganizationId]"
+                          affected="parentOrganization"
                           href="/metainfo/list/o/system/format/html/"
                           value="<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
-                    <a href="<?php echo $this->escape($this->organizationViewUrl); ?>">
-                         <?php echo $this->escape($finding->Organization->nickname);?>
-                         - <?php echo $this->escape($finding->Organization->name);?>
-                    </a>
+                        <?php if (!empty($this->finding->Organization)): ?>
+                            <?php
+                                echo $this->escape(
+                                    $this->organizationInfo(
+                                        $this->finding->Organization->nickname . " - " . $this->finding->Organization->name,
+                                        $this->finding->Organization->id
+                                    ),
+                                    'none'
+                                );
+                            ?>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
                     </span>
 
                     <?php
@@ -138,6 +148,26 @@
                     <?php
                     endif;
                     ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Parent Organization:</td>
+                <td>
+                    <span id="parentOrganization">
+                        <?php if (!empty($this->finding->ParentOrganization)): ?>
+                            <?php
+                                echo $this->escape(
+                                    $this->organizationInfo(
+                                        $this->finding->ParentOrganization->nickname . " - " . $this->finding->ParentOrganization->name,
+                                        $this->finding->ParentOrganization->id
+                                    ),
+                                    'none'
+                                );
+                            ?>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
+                    </span>
                 </td>
             </tr>
         </table>

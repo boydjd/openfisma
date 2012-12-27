@@ -1362,7 +1362,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     {
         $id = $this->_request->getParam('id');
         $finding = $this->_getSubject($id);
-        $orgNickname = $finding->Organization->nickname;
+        $finding->loadReference('Organization');
+        $finding->loadReference('ParentOrganization');
 
         $fromSearchParams = $this->_getFromSearchParams($this->_request);
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);

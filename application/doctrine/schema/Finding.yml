@@ -193,6 +193,11 @@ Finding:
                 auditLog: true
                 logicalName: Organization
                 requiredPrivilege: update_assignment
+        denormalizedParentOrganizationId:
+            type: integer
+            extra:
+                auditLog: true
+                logicalName: Parent Organization
         sourceId:
             type: integer
             comment: Foreign key to the source of this finding. For example, was it certification and accreditation? Continous monitoring?
@@ -239,6 +244,11 @@ Finding:
             local: responsibleOrganizationId
             foreign: id
             foreignAlias: Findings
+        ParentOrganization:
+            class: Organization
+            local: denormalizedParentOrganizationId
+            foreign: id
+            foreignAlias: ChildFindings
         Source:
             local: sourceId
             foreign: id

@@ -51,6 +51,10 @@ Asset:
             comment: Foreign key to a system object in the organization table
             extra:
                 logicalName: System
+        denormalizedParentOrganizationId:
+            type: integer
+            extra:
+                logicalName: Parent Organization
         networkId:
             type: integer
             comment: Foreign key to network table
@@ -66,6 +70,10 @@ Asset:
             local: orgSystemId
             foreign: id
             foreignAlias: Assets
+        ParentOrganization:
+            class: Organization
+            local: denormalizedParentOrganizationId
+            foreign: id
         Network:
             local: networkId
             foreign: id

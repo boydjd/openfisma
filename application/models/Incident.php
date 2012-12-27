@@ -216,14 +216,32 @@ class Incident extends BaseIncident
      * Set the organization ID.
      *
      * @param int $organizationId
+     * @param boolean $load
      */
-    public function setOrganizationId($organizationId)
+    public function setOrganizationId($organizationId, $load = true)
     {
         if ($organizationId === '0' || empty($organizationId)) {
             $this->_set('organizationId', null);
         } else {
             $this->_set('organizationId', $organizationId);
         }
+
+        // now deal with the parent organization
+        $parentOrganizationId = null;
+        if (!empty($organizationId)) {
+            $this->refreshRelated('Organization');
+            $parent = $this->Organization->getNode()->getParent();
+            while (!empty($parent) && !empty($parent->systemId)) {
+                $parent = $parent->getNode()->getParent();
+            }
+            if (empty($parent)) {
+                $parentOrganizationId = null;
+            } else {
+                $parentOrganizationId = $parent->id;
+            }
+        }
+
+        $this->_set('denormalizedParentOrganizationId', $parentOrganizationId);
     }
 
     /**
