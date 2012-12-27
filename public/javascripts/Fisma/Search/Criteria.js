@@ -155,13 +155,7 @@ Fisma.Search.Criteria.prototype = {
     renderQueryField : function (container, fieldName) {
         var that = this;
         var menu = $('<select/>')
-            .appendTo(
-                $(container)
-                    .addClass('ui-button-text-only')
-                    .css('display', 'inline-block')
-            )
-            .addClass('ui-button-text')
-            .button()
+            .appendTo(container)
             .change(function() {
                 var index, field;
 
@@ -233,13 +227,7 @@ Fisma.Search.Criteria.prototype = {
         var that = this;
 
         var menu = $('<select/>')
-            .appendTo(
-                $(container)
-                    .addClass('ui-button-text-only')
-                    .css('display', 'inline-block')
-            )
-            .addClass('ui-button-text')
-            .button()
+            .appendTo(container)
             .change(function() {
                 var criteria = that.getCriteriaDefinition(that.currentField);
                 var oldRenderer = criteria[that.currentQueryType].renderer;

@@ -231,14 +231,7 @@ Fisma.Search.CriteriaRenderer = (function () {
          * @param enumValues An array of enumeration values
          */
         enumSelect : function (container, operands, enumValues) {
-            var menu = $('<select/>')
-                .appendTo(
-                    $(container)
-                        .addClass('ui-button-text-only')
-                        .css('display', 'inline-block')
-                )
-                .addClass('ui-button-text')
-                .button();
+            var menu = $('<select/>').appendTo(container);
 
             var index;
 
