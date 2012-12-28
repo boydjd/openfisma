@@ -223,6 +223,27 @@ Incident:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: IrSubCategory
+                Impacts:
+                    label: Impacts
+                    link: /incident-impact/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage_impacts
+                        param2: Incident
+                SeverityLevels:
+                    label: Severity Levels
+                    link: /incident-severity-level/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage_severity_levels
+                        param2: Incident
+                Sources:
+                    label: Sources
+                    link: /incident-source/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage_sources
+                        param2: Incident
                 IrWorkflowDef:
                     label: Workflows
                     link: /ir-workflow/list

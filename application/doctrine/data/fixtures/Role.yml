@@ -292,6 +292,9 @@ Role:
             - incident_report_area
             - incident_resolve
             - incident_update
+            - incident_manage_impacts
+            - incident_manage_severity_levels
+            - incident_manage_sources
             - ir_sub_category_create
             - ir_sub_category_delete
             - ir_sub_category_read

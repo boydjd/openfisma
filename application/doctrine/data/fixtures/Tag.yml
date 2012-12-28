@@ -1,0 +1,22 @@
+Tag:
+    incidentSeverityLevel:
+        tagId: incident-severity-level
+        labels:
+            - Low
+            - Moderate
+            - High
+            - Critical
+    incidentSource:
+        tagId: incident-source
+        labels:
+            - IDS
+            - Antivirus
+            - Human
+            - Keylogger
+    incidentImpact:
+        tagId: incident-impact
+        labels:
+            - False Positive
+            - Compromised
+            - Inconclusive
+            - Protection In Place

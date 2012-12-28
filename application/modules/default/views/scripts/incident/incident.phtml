@@ -6,18 +6,6 @@
                 <td><?php echo $this->escape($this->incident['status']); ?></td>
             </tr>
             <tr>
-                <td>Resolution:</td>
-                <td>
-                    <?php
-                    if (!empty($this->incident['resolution'])):
-                        echo $this->escape(ucfirst($this->incident['resolution']), 'none');
-                    else:
-                        echo $this->escape('n/a', 'none');
-                    endif;
-                    ?>
-                </td>
-            </tr>
-            <tr>
                 <td>Category:</td>
                 <td>
                     <span name="incident[categoryId]"
@@ -33,6 +21,25 @@
                             <?php echo $this->escape($this->incident['Category']['Category']['name']); ?>
                             &#9658;
                             <?php echo $this->escape($this->incident['Category']['name']); ?>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td>Severity Level:</td>
+                <td>
+                    <span id="severityLevel"
+                        <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
+                          name="incident[severityLevel]"
+                          type="select"
+                          href="/incident-severity-level/options/format/html/"
+                          target="severityLevel"
+                          class="editable"
+                         <?php endif; ?>>
+                        <?php if (!empty($this->incident['severityLevel'])): ?>
+                            <?php echo $this->escape($this->incident['severityLevel']); ?>
                         <?php else: ?>
                             &nbsp;
                         <?php endif; ?>
@@ -63,6 +70,44 @@
                             <?php endif; ?>
 
                         <?php endif; ?>&nbsp;
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td>Source:</td>
+                <td>
+                    <span id="source"
+                        <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
+                          name="incident[source]"
+                          type="select"
+                          href="/incident-source/options/format/html/"
+                          target="source"
+                          class="editable"
+                         <?php endif; ?>>
+                        <?php if (!empty($this->incident['source'])): ?>
+                            <?php echo $this->escape($this->incident['source']); ?>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
+                    </span>
+                </td>
+            </tr>
+            <tr>
+                <td>Impact:</td>
+                <td>
+                    <span id="impact"
+                        <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
+                          name="incident[impact]"
+                          type="select"
+                          href="/incident-impact/options/format/html/"
+                          target="impact"
+                          class="editable"
+                         <?php endif; ?>>
+                        <?php if (!empty($this->incident['impact'])): ?>
+                            <?php echo $this->escape($this->incident['impact']); ?>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
                     </span>
                 </td>
             </tr>
