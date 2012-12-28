@@ -175,19 +175,7 @@
 
             if (YAHOO.lang.isValue(this._tooltips.viewBy)) {
                 firstCellSpan.className = "tooltip";
-
-                var viewByTooltip = new YAHOO.widget.Tooltip(
-                    "viewByTooltip",
-                    {
-                        context: firstCellSpan,
-                        showdelay: 150,
-                        hidedelay: 150,
-                        autodismissdelay: 25000,
-                        text: this._tooltips.viewBy,
-                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
-                        width: "50%"
-                    }
-                );
+                firstCellSpan.title = this._tooltips.viewBy;
             }
 
             var select = document.createElement("select");
@@ -222,19 +210,7 @@
 
             if (YAHOO.lang.isValue(this._tooltips.mitigationStrategy)) {
                 mitigationCellSpan.className = "tooltip";
-
-                var msTooltip = new YAHOO.widget.Tooltip(
-                    "msTooltip",
-                    {
-                        context: mitigationCellSpan,
-                        showdelay: 150,
-                        hidedelay: 150,
-                        autodismissdelay: 25000,
-                        text: this._tooltips.mitigationStrategy,
-                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
-                        width: "50%"
-                    }
-                );
+                mitigationCellSpan.title = this._tooltips.mitigationStrategy;
             }
 
             // Create the cell that spans the evidence columns
@@ -249,19 +225,7 @@
 
             if (YAHOO.lang.isValue(this._tooltips.remediation)) {
                 remediationCellSpan.className = "tooltip";
-
-                var remediationTooltip = new YAHOO.widget.Tooltip(
-                    "remediationTooltip",
-                    {
-                        context: remediationCellSpan,
-                        showdelay: 150,
-                        hidedelay: 150,
-                        autodismissdelay: 25000,
-                        text: this._tooltips.remediation,
-                        effect: {effect:YAHOO.widget.ContainerEffect.FADE, duration: 0.25},
-                        width: "50%"
-                    }
-                );
+                remediationCellSpan.title = this._tooltips.remediation;
             }
 
             // Create the cell that spans the aggregate columns
@@ -436,10 +400,12 @@
 
                 if (status === "CLOSED") {
                     link.href = ontimeUrl;
+                    link.title = "Resolved findings";
                     container.appendChild(link);
                     link.appendChild(document.createTextNode(nodeData.closed || 0));
                 } else if (status === "TOTAL") {
                     link.href = ontimeUrl;
+                    link.title = "Total findings";
                     container.appendChild(link);
                     link.appendChild(document.createTextNode(nodeData.total || 0));
                 } else {
@@ -455,12 +421,14 @@
                         container.appendChild(link);
 
                         link.href = ontimeUrl;
+                        link.title = "On-time findings";
                         link.appendChild(document.createTextNode(ontime || 0));
                     } else if (ontime === 0 && overdue > 0) {
                         container.className = "overdue";
                         container.appendChild(link);
 
                         link.href = overdueUrl;
+                        link.title = "Overdue findings";
                         link.appendChild(document.createTextNode(overdue || 0));
                     } else {
                         // This is executed when ontime > 0 && overdue > 0
@@ -497,6 +465,7 @@
 
             var ontimeLink = document.createElement("a");
             ontimeCell.appendChild(ontimeLink);
+            ontimeLink.title = "On-time findings";
             ontimeLink.appendChild(document.createTextNode(ontime));
             ontimeLink.href = ontimeUrl;
 
@@ -509,6 +478,7 @@
 
             var overdueLink = document.createElement("a");
             overdueCell.appendChild(overdueLink);
+            overdueLink.title = "Overdue findings";
             overdueLink.appendChild(document.createTextNode(overdue));
             overdueLink.href = overdueUrl;
         },

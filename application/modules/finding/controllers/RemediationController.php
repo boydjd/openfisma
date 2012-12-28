@@ -1074,10 +1074,10 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $baseUrl = '/finding/remediation/';
             $currentUrl = '/id/' . $this->view->finding->id . '/attachmentId/' . $attachment->id;
             $attachmentRows[] = array(
-                'iconUrl'      => "<a href=\"{$baseUrl}download-evidence{$currentUrl}\">"
-                                 . "<img src=\"{$attachment->getIconUrl()}\"></a>",
+                'iconUrl'      => "<a href='{$baseUrl}download-evidence{$currentUrl}'>"
+                                 . "<img src='{$attachment->getIconUrl()}' alt='{$attachment->getFileType()}'></a>",
                 'fileName'     => $this->view->escape($attachment->fileName),
-                'fileNameLink' => "<a href=\"{$baseUrl}download-evidence{$currentUrl}\">"
+                'fileNameLink' => "<a href='{$baseUrl}download-evidence{$currentUrl}'>"
                                 . $this->view->escape($attachment->fileName) . "</a>",
                 'fileSize'     => $attachment->getFileSize(),
                 'user'         => $this->view->userInfo($attachment->User->displayName, $attachment->User->id),

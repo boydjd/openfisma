@@ -58,17 +58,9 @@ Fisma.Icon = {
                 uploadIconTooltipTxt += "system will automatically resize and scale the image down to 32 x 32 ";
                 uploadIconTooltipTxt += "pixels, but you do have to worry about the shape. As rectangular images ";
                 uploadIconTooltipTxt += "will be distorted, please make sure that you are uploading a square image ";
-                uploadIconTooltipTxt += "file. Formats accepted are JPEG, GIF,SVG, BMP, and PNG.";
+                uploadIconTooltipTxt += "file. Formats accepted are JPEG, GIF, SVG, BMP, and PNG.";
+                submitButton.set('title', uploadIconTooltipTxt);
 
-                var uploadIconTooltipObj = new YAHOO.widget.Tooltip("uploadIconTooltipYui", {
-                    context: submitButton.get('id'),
-                    showdelay: 0,
-                    hidedelay: 150,
-                    autodismissdelay: 25000,
-                    text: uploadIconTooltipTxt,
-                    effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.1}, width: "50%"
-                });
-  
                 // Register listener for the panel close event
                 panel.hideEvent.subscribe(function () {
                     setTimeout(function () {

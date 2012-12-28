@@ -2,11 +2,11 @@
 <div class='message'><?php echo $this->escape($this->message); ?></div>
 <?php else: ?>
 <div id='changeLayout'>
-    <input type="submit" id="menuLayout" name="menuLayout_button" value="Change Layout">
-    <div id="menuLayoutSelect" name="menuLayoutSelect" class="yui-overlay">
-        <div id='layoutLeft'><img src='/images/left_sidebar.png'/> Left Sidebar</div>
-        <div id='layoutRight'><img src='/images/right_sidebar.png'/> Right Sidebar</div>
-    </div>
+    Sidebar position:
+    <span id="menuLayoutSelect">
+        <input type="radio" id="layoutLeft" name="layoutSelect" title="Left"/><label for="layoutLeft">Left</label>
+        <input type="radio" id="layoutRight" name="layoutSelect" checked="checked" title="Right" /><label for="layoutRight">Right</label>
+    </span>
 </div>
 
 <div class='column66 left findingAnalystLeft'>

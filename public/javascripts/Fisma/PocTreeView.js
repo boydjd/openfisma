@@ -240,7 +240,7 @@
          */
         _buildOrgNode: function (node, parent) {
             var imageUrl = "/icon/get/id/" + node.iconId + "/size/small";
-            var nodeText = "<img src='"
+            var nodeText = "<img alt='icon' src='"
                          + imageUrl
                          + "'>&nbsp;<b>"
                          + PHP_JS().htmlspecialchars(node.label)
@@ -271,7 +271,7 @@
          */
         _buildPocNode: function (node, parent) {
             var imageUrl = "/images/poc-small.png";
-            var nodeText = "<img src='"
+            var nodeText = "<img alt='user' src='"
                          + imageUrl
                          + "'>&nbsp;<b>"
                          + node.u_nameFirst
@@ -343,7 +343,7 @@
                 this._savePanel.render(document.body);
             }
 
-            this._savePanel.setBody('<img src="/images/loading_bar.gif">');
+            this._savePanel.setBody('<img src="/images/loading_bar.gif" alt="loading">');
             this._savePanel.show();
 
             // Set up the POST data string for this operation

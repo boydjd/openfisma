@@ -33,7 +33,11 @@ class SystemTypeTable extends Fisma_Doctrine_Table implements Fisma_Search_Searc
                 'initiallyVisible' => true,
                 'label' => 'Name',
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/system-type/view/id/'
+                )
             ),
             'nickname' => array(
                 'initiallyVisible' => true,

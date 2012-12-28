@@ -55,15 +55,12 @@ class Fisma_Zend_Form_Decorator extends Zend_Form_Decorator_Abstract
             $render = $element->getView()
                               ->formLabel($element->getName(), $label, $attrib);
             if (isset($element->tooltip)) {
-                $render = "<span id='{$element->getName()}Tooltip' class='tooltip'>$render</span>"
-                        . '<script type="text/javascript">'
-                        . "{$element->getName()}TooltipObj = new YAHOO.widget.Tooltip("
-                        . "\"{$element->getName()}TooltipYui\", { context:\"{$element->getName()}Tooltip\", "
-                        . "showdelay: 150, hidedelay: 150, autodismissdelay: 25000, "
-                        . "text:\"{$element->tooltip}\", "
-                        . 'effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.25}, '
-                        . 'width: "50%"});'
-                        . '</script>';
+                $view = Zend_Layout::getMvcInstance()->getView();
+                $render = $view->partial('yui/tooltip.phtml', array(
+                    'tooltip'   => $element->tooltip,
+                    'content'   => $render,
+                    'escape'    => 'none'
+                ));
             }
         } else {
             $render = '&nbsp;';

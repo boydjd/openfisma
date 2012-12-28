@@ -105,7 +105,8 @@ class Fisma_Yui_Form_AutoComplete extends Zend_Form_Element
                            $disabled>
                     <img class='spinner'
                          id='{$this->getAttrib('containerId')}Spinner'
-                         src='/images/spinners/small.gif'>
+                         src='/images/spinners/small.gif'
+                         alt='loading'>
                     <div id=\"{$this->getAttrib('containerId')}\"></div>
                     </div>
                     <script type='text/javascript'>

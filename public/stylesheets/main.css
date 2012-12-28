@@ -40,6 +40,11 @@
     height: auto;
 }
 
+div.offscreen {
+    position: absolute;
+    left: -9999em;
+}
+
 /* Generic styles -- this section contains style information for generic elements. Generally speaking, we should be
  * careful about modifying elements directly. However, these are based on the YUI reset that has already been loaded
  * when this style sheet is loaded.
@@ -464,28 +469,6 @@ span.tooltip {
 .noQuestionMark span.tooltip {
     padding: 0px 2px 2px 2px;
     background: none;
-}
-
-/* This is the style for the tooltip itself. The style must be marked !important
-   so that YUI won't override it.
-*/
-body.masked .yui-tt {
-    z-index: 10 ! important;
-}
-
-.yui-tt .bd {
-    border: none ! important;
-    background-color: #f0f0f0 ! important;
-    opacity: .9 ! important;
-}
-
-.yui-tt-shadow-visible {
-    top: -5px ! important;
-    left: -5px ! important;
-    bottom: -5px ! important;
-    right: -5px ! important;
-    background-color: orange ! important;
-    opacity: 0.5 ! important;
 }
 
 table.fisma_crud tr td:first-child {
@@ -1072,14 +1055,6 @@ table.custom-widget.no-border td {
     display: inline-block;
 }
 
-#menuLayoutSelect {
-    background-color: #ebebeb;
-    border: solid thin black;
-}
-#menuLayoutSelect div {
-    padding: 4px;
-    cursor: default;
-}
 .yui-content .yui-button {
     vertical-align: middle;
 }
@@ -1119,4 +1094,21 @@ div.searchBox.viewAsMode {
 }
 div#mainmenu.viewAsMode li.currentModule {
     background: #d76e41 !important;
+}
+
+/* Links, for accessibility, in YUI data tables should not appear underlined */
+div.yui-dt-liner a {
+    text-decoration: none;
+}
+
+#saveChanges, #discardChanges { display:none; }
+
+.ui-button-text {
+    line-height: 18px;
+}
+a.ui-button {
+    text-decoration: none;
+}
+select.ui-button {
+    padding: 4px;
 }

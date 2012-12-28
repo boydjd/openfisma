@@ -76,6 +76,18 @@
             };
 
             calendar.selectEvent.subscribe(handleSelect, calendar, true);
+
+            calendar.renderEvent.subscribe(function() {
+                var Event = YAHOO.util.Event,
+                    ua = YAHOO.env.ua,
+                    evName = (ua.ie || ua.webkit) ? "keydown" : "keypress";
+                Event.on(calendar.oDomContainer, evName, function(e) {
+                    if (Event.getCharCode(e) == YAHOO.util.KeyListener.KEY.ESCAPE) {
+                        calendar.hide();
+                    }
+                });
+
+            });
         }
     };
 

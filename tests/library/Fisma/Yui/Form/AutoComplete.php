@@ -59,6 +59,7 @@ class Test_Library_Fisma_Yui_Form_AutoComplete extends Test_Case_Unit
                            value=\"$hiddenValue\"
                            $disabled>
                     <img class='spinner'
+                         alt='loading'
                          id='{$containerId}Spinner'
                          src='/images/spinners/small.gif'>
                     <div id=\"$containerId\"></div>

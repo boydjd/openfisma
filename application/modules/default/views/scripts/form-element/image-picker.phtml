@@ -1,7 +1,8 @@
 <td><?php echo $this->escape(($this->required ? '*' : '') . $this->label); ?>:</td>
 
 <td id="<?php echo $this->escape($this->tableId); ?>">
-    <img src="<?php echo $this->escape($this->defaultImage); ?>">
+    <img alt="<?php echo $this->escape($this->defaultImageId); ?>"
+    src="<?php echo $this->escape($this->defaultImage); ?>">
 </td>
 
 <script type="text/javascript">

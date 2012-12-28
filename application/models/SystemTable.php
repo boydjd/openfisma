@@ -42,7 +42,11 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
                     'field' => 'nickname'
                 ),
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/system/view/id/'
+                )
             ),
             'name' => array(
                 'initiallyVisible' => true,

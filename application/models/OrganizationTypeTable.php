@@ -39,7 +39,11 @@ class OrganizationTypeTable extends Fisma_Doctrine_Table implements Fisma_Search
                 'initiallyVisible' => true,
                 'label' => 'Name',
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/organization-type/view/id/'
+                )
             ),
             'nickname' => array(
                 'initiallyVisible' => true,

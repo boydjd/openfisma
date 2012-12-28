@@ -217,7 +217,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->byPoc = Doctrine_Query::create()
             ->select(
-                'COUNT(f.id) as count, f.threatlevel, i.id as icon, o.id, o.nickname, f.pocid, u.id, u.displayName'
+                'COUNT(f.id) as count, f.threatlevel, i.id as icon, o.id, o.nickname, ot.nickname as type, f.pocid, u.id, u.displayName'
             )
             ->from('Finding f')
             ->leftJoin('f.PointOfContact u')
@@ -268,7 +268,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'iconId' => $statistic['icon'],
                     'iconSize' => 'small',
                     'displayName' => $statistic['PointOfContact']['ReportingOrganization']['nickname'],
-                    'orgId' => $statistic['PointOfContact']['ReportingOrganization']['id']
+                    'orgId' => $statistic['PointOfContact']['ReportingOrganization']['id'],
+                    'iconAlt' => $statistic['type']
                 )),
                 'threatLevel' => json_encode(array(
                     'LOW' => $statistic['LOW'],
@@ -373,7 +374,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->bySystem = Doctrine_Query::create()
             ->select(
                 'COUNT(f.id) as count, o.nickname as criteria, f.threatlevel, o.id, o.lft, o.rgt, o.level, ' .
-                'f.responsibleorganizationid, ot.iconId as icon'
+                'f.responsibleorganizationid, ot.iconId as icon, ot.nickname as type'
             )
             ->from('Organization o')
             ->leftJoin('o.OrganizationType ot')
@@ -399,7 +400,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $statistic['count'] = $count;
 
             $statistic['parent'] = Doctrine_Query::create()
-                ->select('o.id, o.nickname, i.id as icon')
+                ->select('o.id, o.nickname, i.id as icon, ot.nickname as type')
                 ->from('Organization o')
                 ->leftJoin('o.OrganizationType ot')
                 ->leftJoin('ot.Icon i')
@@ -421,19 +422,21 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
             if (empty($statistic['parent']['icon'])) { // the OrganizationType "system" doesn't have an icon
                 $statistic['parent']['icon'] = Doctrine_Query::create()
-                    ->select('o.id, s.id, st.iconId as icon')
+                    ->select('o.id, s.id, st.iconId as icon, st.nickname as type')
                     ->from('Organization o')
                     ->leftJoin('o.System s')
                     ->leftJoin('s.SystemType st')
                     ->where('o.id = ?', $statistic['parent']['id'])
                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                     ->fetchOne();
+                $statistic['parent']['type'] = $statistic['parent']['icon']['type'];
                 $statistic['parent']['icon'] = $statistic['parent']['icon']['icon'];
             }
             if (empty($statistic['parent']['nickname'])) {
                 $statistic['parent']['nickname'] = "(top level)";
                 $statistic['parent']['id'] = null;
                 $statistic['parent']['icon'] = null;
+                $statistic['parent']['type'] = "";
             }
 
             $bySystem[] = array(
@@ -442,14 +445,16 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'iconId' => $statistic['icon'],
                     'iconSize' => 'small',
                     'displayName' => $statistic['criteria'],
-                    'orgId' => $statistic['id']
+                    'orgId' => $statistic['id'],
+                    'iconAlt' => $statistic['type']
                 )),
                 'parentOrganization' => $statistic['parent']['nickname'],
                 'displayParentOrganization' => json_encode(array(
                     'iconId' => $statistic['parent']['icon'],
                     'iconSize' => 'small',
                     'displayName' => $statistic['parent']['nickname'],
-                    'orgId' => $statistic['parent']['id']
+                    'orgId' => $statistic['parent']['id'],
+                    'iconAlt' => $statistic['parent']['type']
                 )),
                 'threatLevel' => json_encode(array(
                     'LOW' => $statistic['LOW'],

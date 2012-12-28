@@ -161,6 +161,9 @@ Fisma.AutoComplete = (function() {
                 var setupCallback = Fisma.Util.getObjectFromName(params.setupCallback);
 
                 setupCallback(ac, params);
+                if (params.autofocus) {
+                    $('#' + params.fieldId).focus();
+                }
             }
         },
 

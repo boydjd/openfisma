@@ -80,6 +80,7 @@ class Fisma_Zend_Form_Element_ImagePicker extends Zend_Form_Element
         $view->defaultImage = '/images/blank.png';
         if (!empty($this->_imageUrls[$this->getValue()])) {
             $view->defaultImage = $this->_imageUrls[$this->getValue()];
+            $view->defaultImageId = $this->getValue();
         }
         $view->properties = array(
             'name' => $this->getName(),

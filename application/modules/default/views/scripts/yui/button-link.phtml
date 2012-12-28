@@ -1,0 +1,20 @@
+<a
+	id = '<?php echo $this->escape($this->id); ?>'
+	href = '<?php echo $this->escape($this->href); ?>'
+>
+	<?php if ($this->imageUrl): ?><img src='<?php echo $this->escape($this->imageUrl); ?>' /><?php endif; ?>
+	<?php echo $this->escape($this->label); ?>
+</a>
+<script type='text/javascript'>
+$(function() {
+	$('#<?php echo $this->escape($this->id); ?>')
+		.button()
+	<?php if ($this->function): ?>
+		.click(function(e) {
+			<?php echo $this->escape($this->function, 'javascript'); ?>.apply(this, [e, <?php echo $this->escape($this->arguments, 'json'); ?>]);
+			return false;
+		})
+	<?php endif; ?>
+	;
+});
+</script>

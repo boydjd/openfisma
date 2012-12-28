@@ -66,7 +66,11 @@ class SecurityControlCatalogTable extends Fisma_Doctrine_Table implements Fisma_
                 'initiallyVisible' => true,
                 'label' => 'Name',
                 'sortable' => true,
-                'type' => 'text'
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.recordLink',
+                'formatterParameters' => array(
+                    'prefix' => '/security-control-catalog/view/id/'
+                )
             ),
             'published' => array(
                 'initiallyVisible' => true,

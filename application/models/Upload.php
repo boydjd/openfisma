@@ -85,15 +85,25 @@ class Upload extends BaseUpload
      */
     public function getIconUrl()
     {
+        return "/images/mimetypes/" . $this->getFileType . ".png";
+    }
+
+    /**
+     * Determine the type of the file
+     *
+     * @return string
+     */
+    public function getFileType()
+    {
         $pi = pathinfo($this->fileName);
         $extension = (!empty($pi['extension'])) ? strtolower($pi['extension']) : '';
         $imagePath = Fisma::getPath('image');
 
         if (file_exists("$imagePath/mimetypes/$extension.png")) {
-            return "/images/mimetypes/$extension.png";
+            return $extension;
         } else {
-            return "/images/mimetypes/unknown.png";
-        }
+            return "unknown";
+        }    
     }
 
     /**

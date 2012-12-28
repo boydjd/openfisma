@@ -382,16 +382,8 @@
                 uploadIconTooltipTxt += " will automatically resize and scale the image down to 32 x 32 pixels, but yo";
                 uploadIconTooltipTxt += "u do have to worry about the shape. As rectangular images will be distorted, ";
                 uploadIconTooltipTxt += "please make sure that you are uploading a square image file. ";
-                uploadIconTooltipTxt += "Formats accepted are JPEG, GIF,SVG, BMP, and PNG.";
-
-                var uploadIconTooltipObj = new YAHOO.widget.Tooltip("uploadIconTooltipYui", {
-                    context:"uploadIconTooltip",
-                    showdelay: 0,
-                    hidedelay: 150,
-                    autodismissdelay: 25000,
-                    text: uploadIconTooltipTxt,
-                    effect:{effect:YAHOO.widget.ContainerEffect.FADE,duration:0.1}, width: "50%"
-                });
+                uploadIconTooltipTxt += "Formats accepted are JPEG, GIF, SVG, BMP, and PNG.";
+                tooltipSpan.title = uploadIconTooltipTxt;
 
                 var csrfElement = document.createElement("input");
                 csrfElement.type = "hidden";
