@@ -85,7 +85,7 @@ class Upload extends BaseUpload
      */
     public function getIconUrl()
     {
-        return "/images/mimetypes/" . $this->getFileType . ".png";
+        return "/images/mimetypes/" . $this->getFileType() . ".png";
     }
 
     /**
@@ -103,7 +103,7 @@ class Upload extends BaseUpload
             return $extension;
         } else {
             return "unknown";
-        }    
+        }
     }
 
     /**
