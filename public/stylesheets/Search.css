@@ -19,8 +19,6 @@
 }
 
 .searchBox input[type=text] {
-    position: relative;
-    top: -.1em;
     border: 1px solid #808080;
     background-color: white;
     height: 1.7em;
@@ -92,4 +90,10 @@ div#searchColumnsButtons div {
 
 div.yui-dt.yui-dt-scrollable {
     max-width: 100%;
+}
+
+.searchBox select {
+    border-color: gray;
+    height: 2.5em;
+    margin: 2px;
 }

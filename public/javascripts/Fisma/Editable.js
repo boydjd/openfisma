@@ -102,13 +102,11 @@
                         if (type === 'select') {
                             $('<select/>')
                                 .button()
-                                .addClass('ui-button-text')
                                 .attr('name', name)
                                 .html(o.responseText)
                                 .prependTo(target)
                                 .focus();
                         }
-                        //$(target).addClass('ui-button-text-only');
                     },
                     failure: function(o) {
                         Fisma.Util.showAlertDialog('Failed to load the specified panel.');
@@ -136,7 +134,7 @@
                 if (YAHOO.util.Event.getCharCode(e) == YAHOO.util.KeyListener.KEY.ENTER) {
                     Fisma.Editable.handleClickEvent.call( YAHOO.util.Event.getTarget(e), e);
                 }
-            });  
+            });
     };
 
     /**
@@ -177,7 +175,7 @@
         container.appendChild(spinner);
 
         element.parentNode.replaceChild(container, element);
-        
+
         // Set up the autocomplete hooks on the new form control
         YAHOO.util.Event.onDOMReady(
             Fisma.AutoComplete.init,

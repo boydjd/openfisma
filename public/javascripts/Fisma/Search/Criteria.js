@@ -156,6 +156,7 @@ Fisma.Search.Criteria.prototype = {
         var that = this;
         var menu = $('<select/>')
             .appendTo(container)
+            .button()
             .change(function() {
                 var index, field;
 
@@ -228,6 +229,7 @@ Fisma.Search.Criteria.prototype = {
 
         var menu = $('<select/>')
             .appendTo(container)
+            .button()
             .change(function() {
                 var criteria = that.getCriteriaDefinition(that.currentField);
                 var oldRenderer = criteria[that.currentQueryType].renderer;
@@ -237,7 +239,7 @@ Fisma.Search.Criteria.prototype = {
 
                 if (oldRenderer !== newRenderer || 'enum' === that.currentField.type) {
                     that.renderQueryInput(that.queryInputContainer);
-                }    
+                }
             });
 
         // Load the criteria definition
@@ -309,7 +311,7 @@ Fisma.Search.Criteria.prototype = {
                             })
                             .appendTo(container);
         addButton.find('span').append($('<img/>').attr('src', '/images/add.png'));
-        
+
         var removeButton = $('<button/>')
                             .button()
                             .attr('title', 'Click to remove this search criteria')

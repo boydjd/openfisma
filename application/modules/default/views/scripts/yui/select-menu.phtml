@@ -1,9 +1,8 @@
 <?php echo $this->escape($this->content, 'none'); ?>
 <script type='text/javascript'>
-/*$(function() {
+$(function() {
 	var select = $('select#<?php echo $this->element->getId(); ?>'),
 		html 	= select.html();
-	select.button().addClass('ui-button-text').html('').button().html(html);
-	select.parents('td').first().addClass('ui-button-text-only');
-});*/
+	select.button().html(html);
+});
 </script>

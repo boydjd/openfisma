@@ -1094,8 +1094,11 @@ div.yui-dt-liner a {
 #saveChanges, #discardChanges { display:none; }
 
 .ui-button-text {
-    line-height:18px;    
+    line-height: 18px;
 }
 a.ui-button {
     text-decoration: none;
+}
+select.ui-button {
+    padding: 4px;
 }
