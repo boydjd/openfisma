@@ -114,8 +114,7 @@
                 }, null);
             } else if (type === 'checked') {
                 // Get current value
-                var val = ($(target).text().trim() === 'YES'),
-                    selectElement =
+                var val = ($(target).text().trim() === 'YES');
                 $(target).html('');
                 $('<select/>')
                     .attr('name', name)
