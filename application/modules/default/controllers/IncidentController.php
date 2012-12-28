@@ -556,7 +556,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $incident->save();
 
                 $mailSubject = "You have been assigned as the "
-                             . $this->view->translate('Incident_Point_of_Contact') 
+                             . $this->view->translate('Incident_Point_of_Contact')
                              . " for an incident.";
                 $this->_sendMailToAssignedUser($issos[0]['id'], $incident->id, $mailSubject);
 
@@ -642,7 +642,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab('Workflow', "/incident/workflow/id/$id");
         $tabView->addTab('Actors & Observers', "/incident/users/id/$id");
         $tabView->addTab("Comments ($commentCount)", "/incident/comments/id/$id");
-        $tabView->addTab("Artifacts ($artifactCount)", "/incident/artifacts/id/$id");
+        $tabView->addTab(
+            $this->view->escape($this->view->translate('Incident_Attachments')) . " ($artifactCount)",
+            "/incident/artifacts/id/$id"
+        );
         $tabView->addTab('Audit Log', "/incident/audit-log/id/$id");
 
         $this->view->tabView = $tabView;
@@ -1306,7 +1309,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $uploadPanelButton = new Fisma_Yui_Form_Button(
             'uploadPanelButton',
             array(
-                'label' => 'Upload New Artifact',
+                'label' => 'Upload New ' . $this->view->escape($this->view->translate('Incident_Attachment')),
                 'onClickFunction' => 'Fisma.AttachArtifacts.showPanel',
                 'onClickArgument' => array(
                     'id' => $id,
@@ -1317,7 +1320,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                     'callback' => array(
                         'object' => 'Incident',
                         'method' => 'attachArtifactCallback'
-                    )
+                    ),
+                    'title' => 'Upload New ' . $this->view->escape($this->view->translate('Incident_Attachment'))
                 )
             )
         );
@@ -1561,12 +1565,12 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
              // If the POC changed, then send the POC an e-mail.
             if (isset($newValues['pocId']) && !empty($newValues['pocId'])) {
                 $mailSubject = "You have been assigned as the "
-                             . $this->view->translate('Incident_Point_of_Contact') 
+                             . $this->view->translate('Incident_Point_of_Contact')
                              . " for an incident.";
                 $this->_sendMailToAssignedUser($newValues['pocId'], $incident->id, $mailSubject);
 
                 $this->view->priorityMessenger('A notification has been sent to the new '
-                             . $this->view->translate('Incident_Point_of_Contact') 
+                             . $this->view->translate('Incident_Point_of_Contact')
                              . '.', 'notice');
             }
         } catch (Doctrine_Validator_Exception $e) {

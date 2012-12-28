@@ -3,7 +3,7 @@
 </div>
 
 <?php
-Fisma_Format_Section::startSection('Artifacts');
+Fisma_Format_Section::startSection('Incident ' . $this->escape($this->translate('Incident_Attachments')));
 
 echo $this->escape($this->dataTable, 'none');
 

@@ -1,7 +1,7 @@
 <?php
 echo $this->escape($this->uploadPanelButton, 'none');
 
-Fisma_Format_Section::startSection('System Documentation');
+Fisma_Format_Section::startSection('System ' . $this->escape($this->translate('System_Attachments')));
 
 echo $this->escape($this->dataTable, 'none');
 

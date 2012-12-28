@@ -29,9 +29,9 @@ Fisma.Remediation = {
      *
      * @return {Boolean} False to interrupt consequent operations
      */
-    uploadEvidence : function() {
+    uploadEvidence : function(event, args) {
         Fisma.UrlPanel.showPanel(
-            'Upload Evidence',
+            args.title,
             '/finding/remediation/upload-form',
             function(panel) {
                 // Initialize form action from finding_detail.action since they are separated forms and the form from
