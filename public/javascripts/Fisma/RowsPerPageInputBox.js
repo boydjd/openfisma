@@ -57,7 +57,8 @@
         /**
          * input node
          */
-        inputBox  : null,
+        inputBox        : null,
+        rowHeightControl: null,
 
         construct : function () {
 
@@ -66,7 +67,7 @@
 
             // When myPaginator.destroy() is called, destroy this instance  UI
             this.paginator.subscribe('beforeDestroy', this.destroy, this, true);
-	},
+	    },
 
         /**
          * Generate the label and input nodes and returns the label node.
@@ -74,23 +75,40 @@
          * @return {HTMLElement}
          */
         render : function (id_base) {
+            this.inputBox = $('<input/>')
+                .attr('type', 'text')
+                .attr('id', id_base + 'rowsPerPageBox')
+                .addClass('rowsPerPageInputBox')
+                .get(0);
 
-            this.inputBox = document.createElement('input');
-            this.inputBox.type = 'text';
-            this.inputBox.id = id_base + 'rowsPerPageBox';
-            this.inputBox.className = 'rowsPerPageInputBox';
-
-            var labelEle = document.createElement('label');
-            labelEle.className = 'rowsPerPageInputBoxLabel';
-            labelEle.setAttribute('for', this.inputBox.id);
-            labelEle.innerHTML = this.paginator.get('inputBoxLabel');
-            labelEle.appendChild(this.inputBox);
+            this.rowHeightControl = $('<input/>')
+                .attr('type', 'checkbox')
+                .attr('name', id_base + 'rowHeight')
+                .attr('id', id_base + 'rowHeightCompact')
+                .addClass('rowHeightCheckBox')
+                .get(0);
 
             this.initEvents();
             this.update();
 
-	    return labelEle;
-
+	        return $('<span/>')
+                .append(
+                    $('<label/>')
+                        .attr('for', id_base + 'rowsPerPageBox')
+                        .addClass('rowsPerPageInputBoxLabel')
+                        .html(this.paginator.get('inputBoxLabel'))
+                )
+                .append(this.inputBox)
+                .append($('<span/>')
+                    .append(this.rowHeightControl)
+                    .append(
+                        $('<label/>')
+                        .attr('for', id_base + 'rowHeightCompact')
+                        .addClass('rowHeightCheckBoxLabel')
+                        .text('Compact Rows')
+                    )
+                )
+                .get(0);
         },
 
         /**
@@ -98,6 +116,7 @@
          */
         initEvents : function() {
             YAHOO.util.Event.on(this.inputBox, 'change', this.onChange, this, true);
+            YAHOO.util.Event.on(this.rowHeightControl, 'change', this.onChange, this, true);
 
             // IE does not handle [ENTER] keydown with onChange event, so, have to add onKeydown event.
             if (YAHOO.env.ua.ie) {
@@ -113,7 +132,14 @@
             if (e && e.prevValue === e.newValue) {
                 return;
             }
+
             this.inputBox.value = this.paginator.get('rowsPerPage');
+
+            var storage = new Fisma.PersistentStorage('Fisma.RowsPerPage'),
+                compact = (storage.get('rowHeight') === 'compact');
+            console.log(storage.get('rowHeight'));
+            $('div.yui-dt').toggleClass('compact', compact);
+            $(this.rowHeightControl).attr('checked', compact);
         },
 
         /**
@@ -140,15 +166,21 @@
          * Sync the changed value to storage.
          */
         syncToStorage : function () {
-            var rows = parseInt(this.inputBox.value,10);
+            var rows = parseInt(this.inputBox.value,10),
+                compact = $(this.rowHeightControl).is('input:checked'),
+                storage = new Fisma.PersistentStorage('Fisma.RowsPerPage');
 
-            if (!isNaN(rows)) {
+            if (!isNaN(rows) && rows !== this.paginator.get('rowsPerPage')) {
                 this.paginator.setRowsPerPage(rows);
-
-                var rowsPerPageStorage = new Fisma.PersistentStorage('Fisma.RowsPerPage');
-                rowsPerPageStorage.set('row', rows);
-                rowsPerPageStorage.sync();
+                storage.set('row', rows);
+            } else {
+                $('input[type=checkbox][id$=rowHeightCompact]').attr('checked', compact);
             }
+
+            $('div.yui-dt').toggleClass('compact', compact);
+            storage.set('rowHeight', (compact) ? 'compact' : 'full');
+
+            storage.sync();
         },
 
         /**
@@ -158,7 +190,7 @@
             YAHOO.util.Event.purgeElement(this.inputBox, true);
             if (this.inputBox && this.inputBox.parentNode) {
                 this.inputBox.parentNode.removeChild(this.inputBox);
-	    }
+	        }
             this.inputBox = null;
         }
     };

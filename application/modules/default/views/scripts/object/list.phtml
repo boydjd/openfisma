@@ -82,6 +82,98 @@
     </ul>
     <?php endforeach; ?>
 <?php endif; ?>
+
+    <?php echo new Fisma_Criterion(array(
+        'type' => 'id',
+        'name' => 'id',
+        'label' => 'ID',
+        'placeholder' => 'e.g. "16", "12, 15, 16, 20"'
+    )); ?>
+    <?php echo new Fisma_Criterion(array(
+        'type' => 'date',
+        'name' => 'createdTs',
+        'label' => 'Discovered',
+        'value' => array(
+            'from' => '',
+            'to' => '2011-01-01'
+        ),
+        'checked' => true
+    )); ?>
+    <?php echo new Fisma_Criterion(array(
+        'type' => 'enum',
+        'name' => 'denormalizedStatus',
+        'label' => 'Workflow Step',
+        'value' => array(
+            'NEW' => true,
+            'DRAFT' => true,
+            'MS ISSO' => false,
+            'MS IV&V' => false,
+            'EN' => false,
+            'EV ISSO' => false,
+            'EV IV&V' => false,
+            'CLOSED' => false
+        ),
+        'checked' => true
+    )); ?>
+    <?php echo new Fisma_Criterion(array(
+        'type' => 'enum',
+        'name' => 'threatLevel',
+        'label' => 'Threat',
+        'value' => array(
+            'LOW' => false,
+            'MODERATE' => false,
+            'HIGH' => false
+        )
+    )); ?>
+    <?php echo new Fisma_Criterion(array(
+        'type' => 'text',
+        'name' => 'pointOfContact',
+        'label' => $this->translate('Finding_Point_of_Contact'),
+        'value' => array(
+            'text' => 'Sample ISSO 1',
+            'exact' => true
+        ),
+        'checked' => true
+    )); ?>
+    <?php echo new Fisma_Criterion(array(
+        'type' => 'organization',
+        'name' => 'organization',
+        'label' => 'Organization / System',
+        'value' => array(
+            'text' => 'NRL',
+            'self' => false,
+            'children' => 'all',
+            'tree' => 'organization'
+        ),
+        'checked' => true
+    )); ?>
+    <?php echo new Fisma_Criterion(array(
+        'type' => 'text',
+        'name' => 'source',
+        'label' => 'Source'
+    )); ?>
+    <?php echo new Fisma_Criterion(array(
+        'type' => 'text',
+        'name' => 'description',
+        'label' => 'Description'
+    )); ?>
+    <?php echo new Fisma_Criterion(array(
+        'type' => 'enum',
+        'name' => 'type',
+        'label' => 'Type',
+        'value' => array(
+            'CAP' => false,
+            'AR' => false,
+            'FP' => false,
+            'NONE' => false
+        )
+    )); ?>
+    <?php echo new Fisma_Criterion(array(
+        'type' => 'date',
+        'name' => 'currentEcd',
+        'label' => 'Current ECD'
+    )); ?>
+
 </div>
 <div class='listDatatableContainer' id="<?php echo $this->escape($this->containerId, 'javascript'); ?>"></div>
 <?php Fisma_Format_Section::stopSection(); ?>

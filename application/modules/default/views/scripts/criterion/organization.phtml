@@ -1,0 +1,73 @@
+Tree <span id='<?php echo $this->escape($this->name); ?>_tree_control'>
+    <input
+        type='radio'
+        id='<?php echo $this->escape($this->name); ?>_tree_org'
+        name='<?php echo $this->escape($this->name); ?>_tree'
+        checked
+    />
+    <label for='<?php echo $this->escape($this->name); ?>_tree_org'>Org'nztion</label>
+    <input
+        type='radio'
+        id='<?php echo $this->escape($this->name); ?>_tree_sys'
+        name='<?php echo $this->escape($this->name); ?>_tree'
+        <?php if ($this->value && $this->value['tree'] === 'system'): ?>checked<?php endif; ?>
+    />
+    <label for='<?php echo $this->escape($this->name); ?>_tree_sys'>System</label>
+</span>
+<script>
+$('#<?php echo $this->escape($this->name); ?>_tree_control').buttonset();
+</script>
+<br/>
+<label for='<?php echo $this->escape($this->name); ?>'>
+    Query
+</label>
+<input
+    type='text'
+    id='<?php echo $this->escape($this->name); ?>'
+    name='<?php echo $this->escape($this->name); ?>'
+    value='<?php echo $this->escape(($this->value) ? $this->value['text'] : ''); ?>'
+    placeholder='<?php echo $this->escape($this->placeholder); ?>'
+/>
+<br/>
+including:
+<br/>
+<input
+    type='checkbox'
+    id='<?php echo $this->escape($this->name); ?>_exact'
+    name='<?php echo $this->escape($this->name); ?>_exact'
+    <?php if ($this->value && $this->value['self']): ?>checked<?php endif; ?>
+/>
+<label for='<?php echo $this->escape($this->name); ?>_exact'>
+    itself, and
+</label>
+<br/>
+<input
+    type='radio'
+    id='<?php echo $this->escape($this->name); ?>_children_none'
+    name='<?php echo $this->escape($this->name); ?>_children'
+    checked
+/>
+<label for='<?php echo $this->escape($this->name); ?>_children_none'>
+    no children
+</label>
+<br/>
+<input
+    type='radio'
+    id='<?php echo $this->escape($this->name); ?>_children_immediate'
+    name='<?php echo $this->escape($this->name); ?>_children'
+    <?php if ($this->value && $this->value['children'] === 'immediate'): ?>checked<?php endif; ?>
+/>
+<label for='<?php echo $this->escape($this->name); ?>_children_immediate'>
+    immediate children only
+</label>
+<br/>
+<input
+    type='radio'
+    id='<?php echo $this->escape($this->name); ?>_children_all'
+    name='<?php echo $this->escape($this->name); ?>_children'
+    <?php if ($this->value && $this->value['children'] === 'all'): ?>checked<?php endif; ?>
+/>
+<label for='<?php echo $this->escape($this->name); ?>_children_all'>
+    all nested children
+</label>
+<br/>
