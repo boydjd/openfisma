@@ -353,22 +353,41 @@ Fisma.User = {
      * Populate homeUrl with built-in values if any
      */
     populateHomeUrl: function(selectElement) {
-        var builtins = {
-            'system'        : '/',
-            'finding'       : '/finding/dashboard',
-            'vulnerability' : '/vm/vulnerability/list',
-            'incident'      : '/incident-dashboard',
-            'inventory'     : '/organization-dashboard'
-        };
+        var input = $('input#homeUrl'),
+            inputRow = input.parents('tr'),
+            builtins = {
+                'system'        : '/',
+                'finding'       : '/finding/dashboard',
+                'vulnerability' : '/vm/vulnerability/list',
+                'incident'      : '/incident-dashboard',
+                'inventory'     : '/organization-dashboard'
+            };
 
-        var builtin = selectElement.value;
-        var input = $('input#homeUrl');
-        if (builtin && input.length === 1 && builtins[builtin]) {
-            input.val(builtins[builtin]);
-        } else {
-            input.focus();
-            input.select();
+        if (selectElement) { //selectElement onChange
+            var builtin = selectElement.value;
+
+            if (builtin && input.length === 1 && builtins[builtin]) {
+                input.val(builtins[builtin]);
+                inputRow.hide();
+            } else {
+                inputRow.show();
+                input.focus();
+                input.select();
+            }
+        } else { //init population
+            var index,
+                selectElement = $('#homeSelect'),
+                currentValue = input.val();
+            for (index in builtins) {
+                if (currentValue === builtins[index]) {
+                    selectElement.val(index);
+                    inputRow.hide();
+                    break;
+                }
+            }
         }
+
+
     },
 
     treeSort: function(selectElement) {
@@ -401,9 +420,9 @@ Fisma.User = {
 
     preferredTimezoneToggle: function(checkboxElement) {
         if (checkboxElement.checked) {
-            $('#timezone-button').parents('tr').first().hide();
+            $('#timezone').parents('tr').first().hide();
         } else {
-            $('#timezone-button').parents('tr').first().show();
+            $('#timezone').parents('tr').first().show();
         }
     }
 };

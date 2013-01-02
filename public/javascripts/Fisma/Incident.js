@@ -342,15 +342,15 @@ Fisma.Incident = {
         });
 
         // Put button in the closure scope
-        var button = this;
-        button.set('disabled', true);
+        var button = $(this);
+        button.attr('disabled', true);
 
         YAHOO.util.Connect.asyncRequest(
             'POST',
             '/incident/add-user/format/json',
             {
                 success: function(o) {
-                    button.set('disabled', false);
+                    button.attr('disabled', false);
 
                     var parsed, response, user;
 
@@ -380,7 +380,7 @@ Fisma.Incident = {
                 },
 
                 failure: function(o) {
-                    button.set('disabled', false);
+                    button.attr('disabled', false);
 
                     var message = 'Cannot add actor or observer: ' + o.statusText;
                     Fisma.Util.message(message, 'warning', true);

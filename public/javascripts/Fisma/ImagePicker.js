@@ -338,18 +338,13 @@
          */
         _renderManagementButton: function () {
             if (this._managementUrl) {
-                var managementButton = new YAHOO.widget.Button({
-                    type: "link",
-                    id: YAHOO.util.Dom.generateId(),
-                    label: "Manage Images",
-                    href: this._managementUrl,
-                    container: this._drawer
-                });
-
-                managementButton.setStyle("position", "relative");
-                managementButton.setStyle("left", "3px");
-                managementButton.setStyle("margin-bottom", "5px");
-                managementButton.setStyle("font-weight", "normal");
+                $('<a/>')
+                    .attr('href', this._managementUrl)
+                    .text('Manage Images')
+                    .button()
+                    .css('font-weight', 'normal')
+                    .css('margin', '4px')
+                    .appendTo(this._drawer);
             }
         },
 
@@ -373,17 +368,12 @@
                 var fileForm = Fisma.Util.createUploadFileForm(config);
                 var fileElement = fileForm.elements[1];
 
-                var tooltipSpan = document.createElement("span");
-                tooltipSpan.id = "uploadIconTooltip";
-                this._drawer.appendChild(tooltipSpan);
-
                 var uploadIconTooltipTxt = "Please upload a square image file larger than 32 x 32 pixels. ";
                 uploadIconTooltipTxt += "You don't have to worry about the dimensional size of the image as the system";
                 uploadIconTooltipTxt += " will automatically resize and scale the image down to 32 x 32 pixels, but yo";
                 uploadIconTooltipTxt += "u do have to worry about the shape. As rectangular images will be distorted, ";
                 uploadIconTooltipTxt += "please make sure that you are uploading a square image file. ";
                 uploadIconTooltipTxt += "Formats accepted are JPEG, GIF, SVG, BMP, and PNG.";
-                tooltipSpan.title = uploadIconTooltipTxt;
 
                 var csrfElement = document.createElement("input");
                 csrfElement.type = "hidden";
@@ -391,16 +381,13 @@
                 csrfElement.value = document.getElementsByName("csrf")[0].value;
                 fileForm.appendChild(csrfElement);
 
-                var uploadButton = new YAHOO.widget.Button({
-                    id: YAHOO.util.Dom.generateId(),
-                    label: "Upload A New Image",
-                    container: tooltipSpan
-                });
-
-                uploadButton.setStyle("position", "relative");
-                uploadButton.setStyle("left", "3px");
-                uploadButton.setStyle("margin-bottom", "5px");
-                uploadButton.setStyle("font-weight", "normal");
+                var uploadButton = $('<button/>')
+                    .text('Upload A New Image')
+                    .attr('title', uploadIconTooltipTxt)
+                    .button()
+                    .appendTo(this._drawer)
+                    .css('margin', '4px 4px 4px 0px')
+                ;
 
                 var ieDialog;
                 if (YAHOO.env.ua.ie) {
@@ -428,22 +415,25 @@
                     ieDialog.render(document.body);
                     ieDialog.hide();
 
-                    uploadButton.on("click", function (event) {
+                    uploadButton.click(function(event) {
                         ieDialog.show();
+                        event.preventDefault();
                     });
                 } else {
                     // In good browsers, the button triggers the click event on a hidden file input.
-                    YAHOO.util.Dom.setStyle(fileElement, "opacity", 0);
-                    document.body.appendChild(fileForm);
+                    $(fileElement).css("opacity", 0);
+                    $(fileForm).appendTo(document.body);
 
-                    uploadButton.on("click", function (event) {
-                        fileElement.click();
+                    uploadButton.click(function(event) {
+                        event.preventDefault();
+                        fileElement.click(event);
+
                     });
                 }
 
                 // When a file is selected, send that image file to the server by submitting the form.
                 YAHOO.util.Event.on(fileElement, "change", function () {
-                    uploadButton.set('disabled', true);
+                    uploadButton.attr('disabled', true);
 
                     if (YAHOO.env.ua.ie) {
                         ieDialog.hide();
@@ -456,7 +446,7 @@
                         this._uploadUrl,
                         {
                             upload: function (o) {
-                                uploadButton.set('disabled', false);
+                                uploadButton.attr('disabled', false);
 
                                 var response;
                                 try {

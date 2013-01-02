@@ -50,11 +50,11 @@
                     'continue': function(ev, obj) {
                         YAHOO.util.Event.stopEvent(ev);
                         var input = Number(obj.textField.value.trim());
-                        if (isFinite(input)) {
+                        if (isFinite(input) && input > 0) {
                             obj.errorDiv.innerHTML = "Navigating to ID " + input + "...";
                             window.location = param.controller + "/view/id/" + input;
                         } else { // input NaN
-                            obj.errorDiv.innerHTML = "Please enter a single ID number.";
+                            obj.errorDiv.innerHTML = "Please enter a single, positive ID number.";
                         }
                     },
                     'cancel': function(ev, obj) {

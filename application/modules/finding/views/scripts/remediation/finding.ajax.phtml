@@ -256,7 +256,8 @@
                     "<a href='/finding/remediation/view/id/{$endFinding->id}'>Finding #{$endFinding->id}</a>" .
                     (($endFinding->status === 'CLOSED') ? '</strike>' : ''),
                     "<b>Status</b>: {$endFinding->getLongStatus()}" .
-                    "<p>" . $this->escape($endFinding->description, 'javascript') . "</p>"
+                    "<p>" . $this->escape($endFinding->description, 'javascript') . "</p>",
+                    'none'
                 ), 'none'); ?>.
             <?php if ($this->relationshipEditable): ?>
                 <img onclick='Fisma.Remediation.removeRelationship(<?php
@@ -277,7 +278,8 @@
                     "<a href='/finding/remediation/view/id/{$startFinding->id}'>Finding #{$startFinding->id}</a>" .
                     (($startFinding->status === 'CLOSED') ? '</strike>' : ''),
                     "<b>Status</b>: {$startFinding->getLongStatus()}" .
-                    "<p>" . $this->escape($startFinding->description, 'javascript') . "</p>"
+                    "<p>" . $this->escape($startFinding->description, 'javascript') . "</p>",
+                    'none'
                 ), 'none'); ?>.
             <?php if ($this->relationshipEditable): ?>
                 <img onclick='Fisma.Remediation.removeRelationship(<?php

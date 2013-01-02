@@ -1950,6 +1950,7 @@ Fisma.Chart = {
             cell = document.createElement("th");
             cellText = document.createTextNode(chartParamsObj.chartDataText[x]);
             cell.setAttribute("style", "font-style: bold;");
+            cell.setAttribute("scope", "col");
             cell.appendChild(cellText);
             row.appendChild(cell);
         }
@@ -2004,6 +2005,7 @@ Fisma.Chart = {
 
         for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
             cell = document.createElement("th");
+            cell.setAttribute("scope", "col");
             cellText = document.createTextNode(chartParamsObj.chartDataText[x]);
             cell.setAttribute("style", "font-style: bold;");
             cell.appendChild(cellText);
@@ -2019,6 +2021,7 @@ Fisma.Chart = {
             // each layer label
             if (typeof chartParamsObj.chartLayerText !== 'undefined') {
                 cell = document.createElement("th");
+                cell.setAttribute("scope", "row");
                 cellText = document.createTextNode(chartParamsObj.chartLayerText[x]);
                 cell.setAttribute("style", "font-style: bold;");
                 cell.appendChild(cellText);

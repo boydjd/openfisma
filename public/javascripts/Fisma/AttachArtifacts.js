@@ -112,18 +112,17 @@ Fisma.AttachArtifacts = {
             uploadFormAction,
             {
                 success: function(o) {
-                    o.argument.setBody(o.responseText);
-                    var button = new YAHOO.widget.Button(
-                        YAHOO.util.Selector.query("input[type=submit]", o.argument.body, true)
-                    );
-                    o.argument.center();
+                    var panel = o.argument;
+                    panel.setBody(o.responseText);
+                    $('button[type=submit]').button();
+                    $('textarea').focus();
+                    panel.center();
                 },
-
                 failure: function(o) {
-                    o.argument.setBody('The content for this panel could not be loaded.');
-                    o.argument.center();
+                    var panel = o.argument;
+                    panel.setBody('The content for this panel could not be loaded.');
+                    panel.center();
                 },
-
                 argument: newPanel
             },
             null);
@@ -148,8 +147,8 @@ Fisma.AttachArtifacts = {
         }
 
         // Disable the upload button
-        var uploadButton = document.getElementById('uploadButton');
-        uploadButton.disabled = true;
+        var uploadButton = $('#uploadButton-element button');
+        uploadButton.attr('disabled', true);
 
         // Bind 'this' to a local variable for closure in setTimeout
         var that = this;
@@ -378,8 +377,8 @@ Fisma.AttachArtifacts = {
             document.getElementById('progressTextContainer').style.display = 'none';
 
             // Re-enable upload button
-            var uploadButton = document.getElementById('uploadButton');
-            uploadButton.disabled = false;
+            var uploadButton = $('#uploadButton-element button');
+            uploadButton.attr('disabled', false);
 
             return;
         }

@@ -18,7 +18,14 @@
         Fisma.Util.showWhatsNewDialog(<?php echo $this->escape("'" . $version . "'", 'none'); ?>);
 <?php endif; ?>
         Fisma.ViewAs.provideVisualCues();
-        $(document).tooltip();
+        $(document).tooltip({
+            'open': function(event, ui) {
+                $(ui.tooltip).attr('aria-live', 'rude');
+            }
+        });
+        if ($('div[id$=TabViewContainer]').length === 0) {
+            Fisma.Editable.turnAllOn();
+        }
     });
 </script>
 <div class="clear"></div>

@@ -31,7 +31,7 @@
  *
  *******************************************************************************
  */
- 
+
 table.treeTable {
     width: 100%;
 }
@@ -59,7 +59,7 @@ table.treeTable td:first-child span {
 }
 
 table.treeTable div.link {
-	padding: 1px;    
+	padding: 1px;
 }
 
 table.treeTable div.link:hover {
@@ -135,13 +135,14 @@ table.treeTable td.overdue {
 
 div.treeTableButton {
     float: left;
+    margin-right: 4px;
+    line-height: 45px;
 }
 
 div.treeTableFilter {
 	padding: 5px;
 	float: right;
 	margin-left: 10px;
-	border: 1px inset #fafafa;
 	background-color: #ebebeb;
 }
 

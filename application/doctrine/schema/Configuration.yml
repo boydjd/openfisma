@@ -209,7 +209,7 @@ Configuration:
             default: 30
         finding_link_types:
             type: string(65535)
-            default: "is a repeat of,duplicates/is duplicated by,fixes/is fixed by"
+            default: "repeats/is repeated by,relates to,duplicates/is duplicated by,fixes/is fixed by,blocks/is blocked by"
         max_file_upload_size:
             type: string(6)
             notnull: true

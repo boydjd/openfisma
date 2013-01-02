@@ -95,15 +95,15 @@ form#finding_workflow td input[readonly], form#finding_workflow td textarea[read
 }
 
 /* New Dashboard Analyst View */
-div.findingAnalystLeft .yui-dt-col-displayOrganization,
-div.findingAnalystLeft .yui-dt-col-displayPoc,
-div.findingAnalystLeft .yui-dt-col-displayParentOrganization,
+div.findingAnalystLeft .yui-dt-col-displayParentOrganization {
+    width: 15%;
+}
 div.managerAnalystLeft .yui-dt-col-displayOrganization,
 div.managerAnalystLeft .yui-dt-col-displayPoc {
-    width: 20%;
+    width: 30%;
 }
 div.findingAnalystLeft .yui-dt-col-threatLevel {
-    width: 55%;
+    width: 50%;
 }
 div.managerAnalystLeft .yui-dt-col-threatLevel {
     width: 75%;

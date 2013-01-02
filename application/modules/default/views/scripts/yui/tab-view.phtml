@@ -38,7 +38,7 @@
                     }
                 }
 
-                if (Fisma.Editable.editMode) {
+                if ($('.editable').length <= 0 || Fisma.Editable.editMode) {
                     $(function(){Fisma.Editable.turnAllOn();});
                 }
 

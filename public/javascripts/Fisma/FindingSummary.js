@@ -181,6 +181,8 @@
             var select = document.createElement("select");
             select.onchange = function (event) {that.changeViewType.call(that, event, select);};
 
+            $(select).button();
+
             var optionKey;
             for (optionKey in FS.SUMMARY_TYPES) {
                 var option = new Option(FS.SUMMARY_TYPES[optionKey], optionKey);
@@ -374,6 +376,7 @@
                 } else {
                     nodeIcon.src = "/images/" + nodeData.icon + ".png";
                 }
+                nodeIcon.alt = "";
                 container.appendChild(nodeIcon);
 
                 // Add text to the cell

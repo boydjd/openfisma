@@ -19,6 +19,6 @@ elements.destinationObjectId.options.required = true
 elements.destinationObjectId.options.tooltip = "<b>Destination</b><p>Please select the destination to reassign associated objects.</p>"
 displayGroups.reassociate_objects.elements.destinationObjectId = "destinationObjectId"
 
-elements.submitButton.type = "submit"
+elements.submitButton.type = "Form_Button_Submit"
 elements.submitButton.options.label = "Confirm"
 displayGroups.reassociate_objects.elements.submitButton = "submitButton"

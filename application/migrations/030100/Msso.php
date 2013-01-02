@@ -77,8 +77,8 @@ class Application_Migration_030100_Msso extends Fisma_Migration_Abstract
             'finding_draft_due'
         );
         $this->getHelper()->exec(
-            "UPDATE configuration SET `finding_link_types` = 'is a repeat of,duplicates/is duplicated by,fixes/is fix" .
-            "ed by';"
+            "UPDATE configuration SET `finding_link_types` = 'repeats/is repeated by,relates to,duplicates/is duplica" .
+            "ted by,fixes/is fixed by,blocks/is blocked by';"
         );
         $this->getHelper()->createTable(
             'finding_relationship',

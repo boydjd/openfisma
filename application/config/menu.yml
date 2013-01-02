@@ -458,12 +458,6 @@ Administration:
                 Search:
                     label: Search
                     link: /config/search
-        Separator1:
-            label: Separator
-        AdminManual:
-            label: Administrator Manual
-            link: http://manual.openfisma.org/display/ADMIN/Administrator+Manual
-            target: _blank
 UserPreferences:
     label: <span class=currentUser>$currentUser</span>
     submenu:

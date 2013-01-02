@@ -34,24 +34,14 @@ Fisma.Icon = {
             function(panel) {
                 jQuery("input[type=file]").attr("accept", "image/*");
 
-                var addAnotherFileButton = new YAHOO.widget.Button("add-another-file-button");
+                $('#add-another-file-button')
+                    .button()
+                    .addClass('ie7-only')
+                    .addClass('ie8-only')
+                    .addClass('ie9-only')
+                    .click(Fisma.Remediation.addUploadEvidence);
 
-                // YUI strips away the classes, replace them
-                YAHOO.util.Dom.addClass("add-another-file-button", "ie7-only");
-                YAHOO.util.Dom.addClass("add-another-file-button", "ie8-only");
-                YAHOO.util.Dom.addClass("add-another-file-button", "ie9-only");
 
-                // Add the appropriate event listener to the button
-                YAHOO.util.Event.addListener("add-another-file-button", "click", Fisma.Icon.addUploadImage);
-
-                // Make the submit button a YUI widget
-                var inputs = panel.body.getElementsByTagName("input");
-                var i, submitButton;
-                for (i in inputs) {
-                    if (inputs[i].type === 'submit') {
-                        submitButton = new YAHOO.widget.Button(inputs[i]);
-                    }
-                }
 
                 var uploadIconTooltipTxt = "Please upload a square image file larger than 32 x 32 pixels. ";
                 uploadIconTooltipTxt += "You don't have to worry about the dimensional size of the image as the ";
@@ -59,7 +49,13 @@ Fisma.Icon = {
                 uploadIconTooltipTxt += "pixels, but you do have to worry about the shape. As rectangular images ";
                 uploadIconTooltipTxt += "will be distorted, please make sure that you are uploading a square image ";
                 uploadIconTooltipTxt += "file. Formats accepted are JPEG, GIF, SVG, BMP, and PNG.";
-                submitButton.set('title', uploadIconTooltipTxt);
+
+                // make the submit button a YUI widget
+                $('input[type=submit]', panel.body).each(function() {
+                   $(this).replaceWith(
+                       $('<button/>').text($(this).val()).button().attr('title', uploadIconTooltipTxt)
+                   );
+                });
 
                 // Register listener for the panel close event
                 panel.hideEvent.subscribe(function () {
