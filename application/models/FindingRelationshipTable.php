@@ -27,7 +27,8 @@
  */
 class FindingRelationshipTable extends Fisma_Doctrine_Table
 {
-    public function countByRelationship($tag) {
+    public function countByRelationship($tag)
+    {
         $components = explode('/', $tag);
         if (count($components) > 1) {
             return  $this->findByRelationship($components[0])->count() +
