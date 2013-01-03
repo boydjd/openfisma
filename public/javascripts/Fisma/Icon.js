@@ -65,7 +65,6 @@ Fisma.Icon = {
                 panel.hideEvent.subscribe(function () {
                     setTimeout(function () {
                         panel.destroy();
-                        uploadIconTooltipObj.destroy();
                     }, 0);
                 });
             }

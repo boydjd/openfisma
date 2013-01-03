@@ -217,7 +217,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->byPoc = Doctrine_Query::create()
             ->select(
-                'COUNT(f.id) as count, f.threatlevel, i.id as icon, o.id, o.nickname, ot.nickname as type, f.pocid, u.id, u.displayName'
+                'COUNT(f.id) as count, f.threatlevel, i.id as icon, o.id, o.nickname, ot.nickname as type, ' .
+                'f.pocid, u.id, u.displayName'
             )
             ->from('Finding f')
             ->leftJoin('f.PointOfContact u')

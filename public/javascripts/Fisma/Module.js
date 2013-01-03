@@ -84,6 +84,6 @@ Fisma.Module = {
             function(response) {
                 switchButton.setBusy(false);
             }
-        )
+        );
     }
 };

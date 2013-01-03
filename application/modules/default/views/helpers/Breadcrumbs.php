@@ -97,7 +97,8 @@ class View_Helper_Breadcrumbs extends Zend_View_Helper_Abstract
             }
 
             if ($i < count($labelItems) - 1) {
-                $breadcrumbs .= "<img src=\"/images/bullet_raquo.gif\" alt=\";\" style=\"padding: 0 10px 0 10px; float: none;\">";
+                $breadcrumbs .= "<img src=\"/images/bullet_raquo.gif\" alt=\";\" style=\"padding:0 10px 0 10px; float:"
+                              . "none;\">";
             }
         }
 

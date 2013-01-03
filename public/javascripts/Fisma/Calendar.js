@@ -82,7 +82,7 @@
                     ua = YAHOO.env.ua,
                     evName = (ua.ie || ua.webkit) ? "keydown" : "keypress";
                 Event.on(calendar.oDomContainer, evName, function(e) {
-                    if (Event.getCharCode(e) == YAHOO.util.KeyListener.KEY.ESCAPE) {
+                    if (Event.getCharCode(e) === YAHOO.util.KeyListener.KEY.ESCAPE) {
                         calendar.hide();
                     }
                 });

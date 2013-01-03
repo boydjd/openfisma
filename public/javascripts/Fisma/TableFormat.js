@@ -731,7 +731,7 @@ Fisma.TableFormat = {
         var cell = $(elCell);
         cell.html("");
         $.each(oData, function(i, v) {
-            var div = $("<div>");
+            var div = $("<div/>");
             div.append('<b>' + highlightAndEscape(v[0]) + '</b>');
             div.append(" on ");
             div.append(highlightAndEscape(v[1]));
@@ -746,7 +746,7 @@ Fisma.TableFormat = {
             oData = YAHOO.lang.JSON.parse(oData);
             elCell.innerHTML = "<div id='" + oData.id + "'></div>";
             YAHOO.util.Event.onContentReady(oData.id, function () {
-                new Fisma.SwitchButton(oData.id, oData.enabled, oData.callback, {'id':oData.id});
+                var switchBtn = new Fisma.SwitchButton(oData.id, oData.enabled, oData.callback, {'id':oData.id});
             });
         } catch (e) {
             Fisma.TableFormat.formatHtml(elCell, oRecord, oColumn, oData);
@@ -755,8 +755,8 @@ Fisma.TableFormat = {
 
     recordLink: function (elCell, oRecord, oColumn, oData) {
         var params = oColumn.formatterParameters,
-            prefix = params.prefix;;
-            jqAnchor = $("<a>");
+            prefix = params.prefix,
+            jqAnchor = $("<a/>");
         jqAnchor.text(oData);
         jqAnchor.attr("href", prefix + oRecord.getData('id'));
         $(elCell).html(jqAnchor);

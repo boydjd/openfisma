@@ -1,7 +1,7 @@
 <?php echo $this->escape($this->content, 'none'); ?>
 <script type='text/javascript'>
 $(function() {
-	var select = $('select#<?php echo $this->element->getId(); ?>'),
+	var select = $('select#<?php echo $this->escape($this->element->getId()); ?>'),
 		html 	= select.html();
 	select.button().html(html);
 });

@@ -210,7 +210,7 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
             $pocs = $this->organization->getPocs();
 
-            foreach ($tags as $idx => $type) {
+            foreach ($tags as $idx => $type):
                 $poc = $pocs->fetchOneByType($type);
         ?>
             <tr>
@@ -242,7 +242,7 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
                 <?php endif; ?>
                 </td>
             <tr/>
-        <?php } ?>
+        <?php endforeach; ?>
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>

@@ -889,7 +889,8 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
      * @param Date $value
      * @return void
      */
-    public function setDiscoveredDate($value) {
+    public function setDiscoveredDate($value)
+    {
         $this->_set('discoveredDate', $value);
         if (!$this->auditYear) {
             $discoveredDate = new Zend_Date($this->discoveredDate, Fisma_Date::FORMAT_DATE);

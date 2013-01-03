@@ -439,7 +439,7 @@ Fisma.Remediation = {
                 $('form#addRelationship').submit(function(event){
                     if (
                         $('form#addRelationship input[name=endFindingId]').val() === '' ||
-                        $('form#addRelationship input[name=endFindingId]').val() === '' + findingId
+                        $('form#addRelationship input[name=endFindingId]').val() === ('' + findingId)
                     ) {
                         Fisma.Util.showAlertDialog(
                             'Linked Finding ID cannot be blank or the same as current finding.',

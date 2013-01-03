@@ -119,7 +119,8 @@ class Fisma_Doctrine_Behavior_HasPocs_Proxy
      *
      * @return User The POC
      */
-    public function fetchOneByType($type) {
+    public function fetchOneByType($type)
+    {
         return $this->_generator->fetchOneByType($this->_instance, $type);
     }
 }

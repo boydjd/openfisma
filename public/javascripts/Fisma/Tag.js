@@ -105,8 +105,6 @@ Fisma.Tag = {
                                 if (data.result.message) {
                                     Fisma.Util.showAlertDialog(data.result.message);
                                 } else {
-                                    console.log('row', row);
-                                    console.log('data.row', data.row);
                                     datatable.updateRow(row, data.row);
                                 }
                             } else {

@@ -10,7 +10,10 @@ $(function() {
 		.button()
 	<?php if ($this->function): ?>
 		.click(function(e) {
-			<?php echo $this->escape($this->function, 'javascript'); ?>.apply(this, [e, <?php echo $this->escape($this->arguments, 'json'); ?>]);
+			<?php echo $this->escape($this->function, 'javascript'); ?>.apply(
+				this,
+				[e, <?php echo $this->escape($this->arguments, 'json'); ?>]
+			);
 			return false;
 		})
 	<?php endif; ?>

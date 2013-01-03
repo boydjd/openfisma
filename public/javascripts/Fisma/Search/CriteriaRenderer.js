@@ -244,9 +244,8 @@ Fisma.Search.CriteriaRenderer = (function () {
                 $('<option/>')
                     .text(enumValue)
                     .val(enumValue)
-                    .attr('selected', (enumValue == defaultValue))
+                    .attr('selected', (enumValue === defaultValue))
                     .appendTo(menu);
-                    //$P.htmlentities(enumValue, "ENT_NOQUOTES", "UTF-8")
             }
         }
     };

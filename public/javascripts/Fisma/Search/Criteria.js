@@ -203,7 +203,7 @@ Fisma.Search.Criteria.prototype = {
             $('<option/>')
                 .text(field.label)
                 .val(field.name)
-                .attr('selected', (fieldName == field.name))
+                .attr('selected', (fieldName === field.name))
                 .appendTo(menu);
         }
 
@@ -251,7 +251,7 @@ Fisma.Search.Criteria.prototype = {
             $('<option/>')
                 .text(criteriaDefinition.label)
                 .val(criteriaType)
-                .attr('selected', (operator) ? (criteriaType == operator) : criteriaDefinition.isDefault)
+                .attr('selected', (operator) ? (criteriaType === operator) : criteriaDefinition.isDefault)
                 .appendTo(menu);
 
             if (criteriaDefinition.isDefault) {

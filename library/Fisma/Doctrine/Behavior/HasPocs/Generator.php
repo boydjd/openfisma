@@ -160,7 +160,7 @@ class Fisma_Doctrine_Behavior_HasPocs_Generator extends Doctrine_Record_Generato
         $pocEntry = $this->fetchOneByType($instance, $type);
         if ($pocEntry) {
             $pocEntry->delete();
-        }        
+        }
     }
 
     /**
@@ -227,7 +227,8 @@ class Fisma_Doctrine_Behavior_HasPocs_Generator extends Doctrine_Record_Generato
      * @param string $type The type to specify the POC
      * @return User The POC
      */
-    public function fetchOneByType($instance, $type) {
+    public function fetchOneByType($instance, $type)
+    {
         $query = $this->query($instance);
         $query->andWhere('o.type = ?', $type);
 

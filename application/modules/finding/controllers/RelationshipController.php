@@ -90,7 +90,8 @@ class Finding_RelationshipController extends Fisma_Zend_Controller_Action_Securi
             $relationship->startFindingId = $this->getRequest()->getParam('endFindingId');
         }
 
-        $relationship->relationship = FindingRelationship::getFullTag($this->getRequest()->getParam('startRelationship'));
+        $relationship->relationship =
+            FindingRelationship::getFullTag($this->getRequest()->getParam('startRelationship'));
         $relationship->createdByUserId = CurrentUser::getAttribute('id');
 
         $relationship->save();

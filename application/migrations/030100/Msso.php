@@ -98,9 +98,8 @@ class Application_Migration_030100_Msso extends Fisma_Migration_Abstract
         $this->getHelper()->addIndex('finding_relationship', 'endfindingid');
         $this->getHelper()->addForeignKey('finding_relationship', 'endfindingid', 'finding', 'id');
         $this->getHelper()->addIndex('finding_relationship', 'createdbyuserid');
-        $this->getHelper()->addForeignKey('finding_relationship', 'createdbyuserid', 'user', 'id');        
-        
-        
+        $this->getHelper()->addForeignKey('finding_relationship', 'createdbyuserid', 'user', 'id');
+
         $this->message("Adding Finding Audit Year...");
         $this->getHelper()->addColumn(
             'finding',
@@ -217,9 +216,6 @@ class Application_Migration_030100_Msso extends Fisma_Migration_Abstract
                 )
             );
         }
-
-        //@TODO: add foreign key constraints
-
     }
 }
 
