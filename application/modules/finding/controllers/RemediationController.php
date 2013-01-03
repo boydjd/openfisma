@@ -306,7 +306,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("Security Control", "/finding/remediation/security-control/id/$id/format/html");
         $tabView->addTab("Comments ($commentCount)", "/finding/remediation/comments/id/$id/format/html");
         $tabView->addTab(
-            "Evidence (" . $finding->Attachments->count() . ")",
+            $this->view->escape($this->view->translate('Finding_Attachments')) .
+            " (" . $finding->Attachments->count() . ")",
             "/finding/remediation/artifacts/id/$id/format/html$fromSearchUrl"
         );
         $tabView->addTab("Audit Log", "/finding/remediation/audit-log/id/$id/format/html");

@@ -1,5 +1,5 @@
 <?php
-Fisma_Format_Section::startSection('Evidence Package');
+Fisma_Format_Section::startSection('Finding ' . $this->escape($this->translate('Finding_Attachments')));
 ?>
 <div class='findingStatus'>
     <b>Status: </b>
@@ -16,8 +16,11 @@ if (!(
     $uploadEvidenceButton = new Fisma_Yui_Form_Button(
         'uploadEvidenceButton',
         array(
-          'label' => 'Upload Evidence',
-          'onClickFunction' => 'Fisma.Remediation.uploadEvidence'
+            'label' => 'Upload New ' . $this->escape($this->translate('Finding_Attachment')),
+            'onClickFunction' => 'Fisma.Remediation.uploadEvidence',
+            'onClickArgument' => array(
+               'title' => 'Upload New ' . $this->escape($this->translate('Finding_Attachment'))
+            )
         )
     );
     echo $this->escape($uploadEvidenceButton, 'none');
@@ -26,7 +29,7 @@ if (!(
         $submitEvidenceButton = new Fisma_Yui_Form_Button(
             'submitEvidenceButton',
             array(
-                'label' => 'Submit Evidence Package',
+                'label' => 'Submit ' . $this->escape($this->translate('Finding_Attachments')),
                 'onClickFunction' => 'Fisma.Util.formPostAction',
                 'onClickArgument' => array(
                        'action' => '/finding/remediation/submit-evidence' . $this->fromSearchUrl,

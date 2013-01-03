@@ -95,7 +95,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab($firstTab, "/system/system/id/$id");
         $tabView->addTab("FIPS-199", "/system/fips/id/$id");
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
-        $tabView->addTab("Documentation", "/system/artifacts/id/$id");
+        $tabView->addTab($this->view->escape($this->view->translate('System_Attachments')), "/system/artifacts/id/$id");
         $tabView->addTab("Users", "/system/user/id/$id");
 
         $findingSearchUrl = '/finding/remediation/list?q=/organization/textExactMatch/'
@@ -283,7 +283,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $uploadPanelButton = new Fisma_Yui_Form_Button(
             'uploadPanelButton',
             array(
-                'label' => 'Upload Document',
+                'label' => 'Upload New ' . $this->view->escape($this->view->translate('System_Attachment')),
                 'onClickFunction' => 'Fisma.AttachArtifacts.showPanel',
                 'onClickArgument' => array(
                     'id' => $id,
@@ -295,7 +295,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                     'callback' => array(
                         'object' => 'System',
                         'method' => 'uploadDocumentCallback'
-                    )
+                    ),
+                    'title' => 'Upload New ' . $this->view->escape($this->view->translate('System_Attachment'))
                 )
             )
         );

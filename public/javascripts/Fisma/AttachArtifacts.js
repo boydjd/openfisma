@@ -3,27 +3,27 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
- * 
+ *
  * @fileoverview Provides client-side behavior for the AttachArtifacts behavior
- * 
+ *
  * @todo This is currently set up to only handle one file upload at time. With some refactoring, however, we could
  * support multiple file uploads in parallel.
- * 
+ *
  * @author    Mark E. Haase <mhaase@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
  */
- 
+
 Fisma.AttachArtifacts = {
 
     /**
@@ -63,7 +63,7 @@ Fisma.AttachArtifacts = {
 
     /**
      * A configuration object specified by the invoker of showPanel
-     * 
+     *
      * See technical specification for Attach Artifacts behavior for the structure of this object
      */
     config : null,
@@ -86,7 +86,7 @@ Fisma.AttachArtifacts = {
 
         // Create a new panel
         var newPanel = new YAHOO.widget.Panel(YAHOO.util.Dom.generateId(), {modal : true, close : true});
-        newPanel.setHeader('Upload Artifact');
+        newPanel.setHeader(config.title);
         newPanel.setBody("Loading...");
         newPanel.render(document.body);
         newPanel.center();
@@ -108,7 +108,7 @@ Fisma.AttachArtifacts = {
 
         // Get panel content from artifact controller
         YAHOO.util.Connect.asyncRequest(
-            'GET', 
+            'GET',
             uploadFormAction,
             {
                 success: function(o) {
@@ -125,13 +125,13 @@ Fisma.AttachArtifacts = {
                 },
 
                 argument: newPanel
-            }, 
+            },
             null);
     },
 
     /**
      * Show the progress bar and kick off the tracking process
-     * 
+     *
      * This is called in the onSubmit event
      */
     trackUploadProgress : function () {
@@ -143,7 +143,7 @@ Fisma.AttachArtifacts = {
             var alertMessage = "Please select a file.";
             var config = {zIndex : 10000};
             Fisma.Util.showAlertDialog(alertMessage, config);
-            
+
             return false;
         }
 
@@ -162,7 +162,7 @@ Fisma.AttachArtifacts = {
 
         if (apcHiddenEl) {
             this.apcId = apcHiddenEl.value;
-            
+
             // Remove the inderminate progress bar
             var progressBarContainer = document.getElementById('progressBarContainer');
 
@@ -178,7 +178,7 @@ Fisma.AttachArtifacts = {
             // Add YUI bar
             var yuiProgressBar = new YAHOO.widget.ProgressBar();
 
-            yuiProgressBar.set('width', progressBarWidth); 
+            yuiProgressBar.set('width', progressBarWidth);
             yuiProgressBar.set('height', progressBarHeight);
 
             yuiProgressBar.set('ariaTextTemplate', 'Upload is {value}% complete');
@@ -224,10 +224,10 @@ Fisma.AttachArtifacts = {
 
     /**
      * Posts the artifact attachment form asynchronously
-     * 
+     *
      * The form needs to be posted asynchronously because otherwise the browser will begin ignoring responses to XHR
      * requests -- which would totally defeat the purpose of upload progress tracking.
-     * 
+     *
      * @param arg The AttachArtifacts object
      */
     postForm : function() {
@@ -244,23 +244,23 @@ Fisma.AttachArtifacts = {
 
         YAHOO.util.Connect.setForm('uploadArtifactForm', true);
         YAHOO.util.Connect.asyncRequest(
-            'POST', 
-            postUrl, 
+            'POST',
+            postUrl,
             {
                 upload : function (asyncResponse) {
                     that.handleUploadComplete.call(that, asyncResponse);
                 },
-                
+
                 failure : function (o) {
                     Fisma.Util.showAlertDialog('Document upload failed.');
                 }
-            }, 
+            },
             null);
     },
 
     /**
      * Poll the server for file upload progress
-     * 
+     *
      * @param arg The AttachArtifacts object
      */
     getProgress : function () {
@@ -269,7 +269,7 @@ Fisma.AttachArtifacts = {
 
         if (this.pollingEnabled) {
             this.lastAsyncRequest = YAHOO.util.Connect.asyncRequest(
-                'GET', 
+                'GET',
                 '/artifact/upload-progress/format/json/id/' + this.apcId,
                 {
                     success : function (asyncResponse) {
@@ -324,10 +324,10 @@ Fisma.AttachArtifacts = {
                         that.pollingTimeoutId = setTimeout(
                             function () {
                                 that.getProgress.call(that);
-                            }, 
+                            },
                             that.sampleInterval);
                     }
-                }, 
+                },
                 null);
         }
     },
@@ -371,9 +371,9 @@ Fisma.AttachArtifacts = {
             var alertMessage = "Upload Failed: " + responseStatus.message;
             var config = {zIndex : 10000};
             Fisma.Util.showAlertDialog(alertMessage, config);
- 
+
             progressTextEl.nodeValue = 'Uploading...';
-            
+
             document.getElementById('progressBarContainer').style.display = 'none';
             document.getElementById('progressTextContainer').style.display = 'none';
 
@@ -385,9 +385,9 @@ Fisma.AttachArtifacts = {
         }
 
         /*
-         * Invoke callback. These are stored in the configuration as strings, so we need to find the real object 
+         * Invoke callback. These are stored in the configuration as strings, so we need to find the real object
          * references using array access notation.
-         * 
+         *
          * @todo Error handling is bad here. We really need a JS debug mode so that we could help out the developer
          * realize if these callbacks are invalid.
          */
