@@ -306,6 +306,12 @@ Fisma.Finding = {
         });
     },
 
+    updateDefaultPoc: function(selectElement) {
+        var $select = $(selectElement),
+            orgId = $select.val();
+        Fisma.Finding.setDefaultPoc(orgId);
+    },
+
     /**
      * Set the default Poc of an organization to Poc autocomplete field.
      *
