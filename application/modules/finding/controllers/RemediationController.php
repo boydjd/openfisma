@@ -316,32 +316,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $buttons = $this->getToolbarButtons($finding);
 
-        // Only display controls if the finding has not been deleted
-        if (!$finding->isDeleted()) {
-            // Display the delete finding button if the user has the delete finding privilege
-            if ($this->view->acl()->hasPrivilegeForObject('delete', $finding)) {
-                $args = array(null, '/finding/remediation/delete/', $id);
-                $buttons['delete'] = new Fisma_Yui_Form_Button(
-                    'deleteFinding',
-                    array(
-                          'label' => 'Delete',
-                          'imageSrc' => '/images/trash_recyclebin_empty_closed.png',
-                          'onClickFunction' => 'Fisma.Util.showConfirmDialog',
-                          'onClickArgument' => array(
-                              'args' => $args,
-                              'text' => "WARNING: You are about to delete the finding record. This action cannot be "
-                                        . "undone. Do you want to continue?",
-                              'func' => 'Fisma.Util.formPostAction'
-                        )
-                    )
-                );
-            }
-        } else {
-            unset($buttons['editButton']);
-            unset($buttons['submitButton']);
-            unset($buttons['discardButton']);
-        }
-
         // printer friendly version
         $buttons['print'] = new Fisma_Yui_Form_Button_Link(
             'toolbarPrintButton',
