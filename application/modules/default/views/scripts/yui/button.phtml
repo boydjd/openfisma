@@ -1,5 +1,6 @@
 <button
 	id = '<?php echo $this->escape($this->id); ?>'
+	<?php if ($this->disabled): ?>disabled<?php endif; ?>
 >
 	<?php if ($this->imageUrl): ?><img src='<?php echo $this->escape($this->imageUrl); ?>' /><?php endif; ?>
 	<?php echo $this->escape($this->label); ?>

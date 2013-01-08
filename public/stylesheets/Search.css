@@ -92,7 +92,7 @@ div.yui-dt.yui-dt-scrollable {
     max-width: 100%;
 }
 
-.searchBox select {
+.searchCriteria select {
     border-color: gray;
     height: 2.5em;
     margin: 2px;

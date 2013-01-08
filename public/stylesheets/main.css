@@ -1110,5 +1110,6 @@ a.ui-button {
     text-decoration: none;
 }
 select.ui-button {
-    padding: 4px;
+    padding: 5px 4px 6px 4px;
+    height: 2.4em;
 }

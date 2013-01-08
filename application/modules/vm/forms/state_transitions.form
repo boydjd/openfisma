@@ -13,12 +13,11 @@ elements.id.type = "hidden"
 
 elements.open.type = "Form_Button_Submit"
 elements.open.options.label = "Open"
+elements.open.options.value = "open"
 
 elements.fixed.type = "Form_Button_Submit"
 elements.fixed.options.label = "Fixed"
-
-elements.wontFixButton.type = "Submit"
-elements.wontFixButton.options.label = "Won't Fix"
+elements.fixed.options.value = "fixed"
 
 elements.wontFix.type = "select"
 elements.wontFix.options.label = "Resolutions"
