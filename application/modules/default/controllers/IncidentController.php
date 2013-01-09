@@ -135,14 +135,14 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         if (is_null($step)) {
             $step = 0;
-        } elseif ($this->getRequest()->getParam('irReportCancel')) {
+        } elseif ($this->_hasParam('irReportCancel')) {
             $this->_redirect('/incident/cancel-report');
             return;
         } elseif (!$incident->isValid()) {
             $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
         } else {
             // The user can move forwards or backwards
-            if ($this->getRequest()->getParam('irReportForwards')) {
+            if ($this->_hasParam('irReportForwards')) {
 
                 // Only validate the form when moving forward
                 if (!$subFormValid) {
@@ -151,7 +151,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 } else {
                     $step++;
                 }
-            } elseif ($this->getRequest()->getParam('irReportBackwards')) {
+            } elseif ($this->_hasParam('irReportBackwards')) {
                 $step--;
             } else {
                 throw new Fisma_Zend_Exception('User must move forwards, backwards, or cancel');
@@ -165,7 +165,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Some business logic to determine if any steps can be skipped based on previous answers:
         // Authenticated users skip step 1 (which is reporter contact information)
         if ($this->_me && 1 == $step) {
-            if ($this->getRequest()->getParam('irReportForwards')) {
+            if ($this->_hasParam('irReportForwards')) {
                 $incident->ReportingUser = $this->_me;
                 $step++;
             } else {
@@ -175,13 +175,13 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         // Skip past PII sections if they are not applicable
         if (($step == 5 || $step == 6) && 'YES' != $incident->piiInvolved) {
-            if ($this->getRequest()->getParam('irReportForwards')) {
+            if ($this->_hasParam('irReportForwards')) {
                 $step = 7;
             } else {
                 $step = 4;
             }
         } elseif ($step == 6 && 'YES' != $incident->piiShipment) {
-            if ($this->getRequest()->getParam('irReportForwards')) {
+            if ($this->_hastParam('irReportForwards')) {
                 $step = 7;
             } else {
                 $step = 5;
@@ -1546,12 +1546,12 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $fromSearchParams = $this->_getFromSearchParams($this->_request);
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
 
-        if ($this->getRequest()->getPost('reject')) {
+        if ($this->_hasParam('reject')) {
             $incident->reject();
             $incident->save();
         }
 
-        if ($this->getRequest()->getPost('completeStep')) {
+        if ($this->_hasParam('completeStep')) {
             $this->_completeWorkflowStep($incident);
         }
 

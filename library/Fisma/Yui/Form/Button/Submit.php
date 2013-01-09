@@ -40,7 +40,7 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
         return $view->partial('yui/button-submit.phtml', array(
             'id'        => $this->getName(),
             'label'     => $this->getLabel(),
-            'value'     => $this->getValue(),
+            'value'     => ($this->getValue()) ? $this->getValue() : $this->getName(),
             'imageUrl'  => $this->getAttrib('imageSrc'),
             'function'  => $this->getAttrib('onClickFunction'),
             'arguments' => $this->getAttrib('onClickArgument'),
