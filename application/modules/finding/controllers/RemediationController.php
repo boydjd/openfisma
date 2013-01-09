@@ -393,8 +393,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $commentRows = array();
 
         foreach ($comments as $comment) {
+            $commentTs = new Zend_Date($comment['createdTs'], Fisma_Date::FORMAT_DATETIME);
+            $commentTs->setTimezone('UTC');
+            $commentDateTime = $commentTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $commentTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+            $commentTs->setTimezone(CurrentUser::getAttribute('timezone'));
+            $commentDateTimeLocal = $commentTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $commentTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
             $commentRows[] = array(
-                'timestamp' => $comment['createdTs'],
+                'timestamp' => Zend_Json::encode(array("local" => $commentDateTimeLocal, "utc" => $commentDateTime)),
                 'username' => $this->view->userInfo($comment['User']['displayName'], $comment['User']['id']),
                 'comment' =>  $this->view->textToHtml($this->view->escape($comment['comment'])),
                 'delete' => (($comment['User']['id'] === CurrentUser::getAttribute('id'))
@@ -410,7 +419,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             new Fisma_Yui_DataTable_Column(
                 'Timestamp',
                 true,
-                null,
+                'Fisma.TableFormat.formatDateTimeLocal',
                 null,
                 'timestamp'
             )
@@ -983,12 +992,15 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $this->view->onTimeState = $onTimeState;
 
         $discoveredDate = new Zend_Date($finding->discoveredDate, Fisma_Date::FORMAT_DATE);
+        $discoveredDate->setTimezone(CurrentUser::getAttribute('timezone'));
         $this->view->discoveredDate = $discoveredDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
         $createdTs = new Zend_Date($finding->createdTs, Fisma_Date::FORMAT_DATE);
+        $createdTs->setTimezone(CurrentUser::getAttribute('timezone'));
         $this->view->createdTs = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
 
         if (!is_null($finding->closedTs)) {
             $closedDate = new Zend_Date($finding->closedTs, Fisma_Date::FORMAT_DATE);
+            $closedDate->setTimezone(CurrentUser::getAttribute('timezone'));
             $this->view->closedTs = $closedDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
         }
 
@@ -1072,6 +1084,16 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $attachmentRows = array();
 
         foreach ($attachmentCollection as $attachment) {
+            $createdTs = new Zend_Date($attachment->createdTs, Fisma_Date::FORMAT_DATETIME);
+            $createdTs->setTimezone('UTC');
+            $createdDateTime = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $createdTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+            $createdTs->setTimezone(CurrentUser::getAttribute('timezone'));
+            $createdDateTimeLocal = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $createdTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+
             $baseUrl = '/finding/remediation/';
             $currentUrl = '/id/' . $this->view->finding->id . '/attachmentId/' . $attachment->id;
             $attachmentRows[] = array(
@@ -1082,7 +1104,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                                 . $this->view->escape($attachment->fileName) . "</a>",
                 'fileSize'     => $attachment->getFileSize(),
                 'user'         => $this->view->userInfo($attachment->User->displayName, $attachment->User->id),
-                'date'         => $attachment->createdTs,
+                'date'         => Zend_Json::encode(array("local" => $createdDateTimeLocal, "utc" => $createdDateTime)),
                 'action'       => 'Delete',
                 'id'           => $this->view->finding->id,
                 'attachmentId' => $attachment->id
@@ -1131,7 +1153,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 true,
                 'Fisma.TableFormat.formatFileSize',
                 null,
-                'size',
+                'fileSize',
                 false,
                 'number'
             )
@@ -1143,7 +1165,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 true,
                 'Fisma.TableFormat.formatHtml',
                 null,
-                'uploadedBy'
+                'user'
             )
         );
 
@@ -1151,9 +1173,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             new Fisma_Yui_DataTable_Column(
                 'Upload Date',
                 true,
+                'Fisma.TableFormat.formatDateTimeLocal',
                 null,
-                null,
-                'uploadDate'
+                'date'
             )
         );
 

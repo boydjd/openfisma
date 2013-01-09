@@ -710,7 +710,11 @@ class Fisma_Search_Engine
             $containsHtml = isset($doctrineDefinition['extra']['purify']['html']) &&
                                   $doctrineDefinition['extra']['purify']['html'];
 
-            $documentFieldValue = $this->_getValueForColumn($rawValue, $searchFieldDefinition['type'], $containsHtml);
+            //Fetch Timezone from timezone abbreviation field
+            if (isset($searchFieldDefinition['timezoneAbbrField'])) {
+                $searchFieldDefinition['timezone'] = $object[$searchFieldDefinition['timezoneAbbrField']];
+            }
+            $documentFieldValue = $this->_getValueForColumn($rawValue, $searchFieldDefinition, $containsHtml);
 
             $document->addField($documentFieldName, $documentFieldValue);
 
@@ -789,6 +793,7 @@ class Fisma_Search_Engine
 
                     if ('date' == $fieldDefinition['type'] || 'datetime' == $fieldDefinition['type']) {
                         $date = new Zend_Date($fieldValue, Fisma_Date::FORMAT_SOLR_DATETIME_TIMEZONE);
+                        $date->setTimeZone(CurrentUser::getAttribute('timezone'));
 
                         if ('date' == $fieldDefinition['type']) {
                             $row[$fieldName] = $date->toString(Fisma_Date::FORMAT_DATE);
@@ -848,12 +853,13 @@ class Fisma_Search_Engine
      * This includes transformations such as correctly formatting dates, times, and stripping HTML content
      *
      * @param mixed $value
-     * @param string $type
+     * @param array $definition The associative array of searchFieldDefinition
      * @param bool $html True if the value contains HTML
      * @return mixed
      */
-    private function _getValueForColumn($rawValue, $type, $html)
+    private function _getValueForColumn($rawValue, $definition, $html)
     {
+        $type = $definition['type'];
         if ('text' == $type && $html) {
             $value = $this->_convertHtmlToIndexString($rawValue);
         } elseif ('integer' == $type) {
@@ -861,7 +867,12 @@ class Fisma_Search_Engine
         } elseif ('float' == $type) {
             $value = (float)$rawValue;
         } elseif ('date' == $type || 'datetime' == $type) {
-            $value = $this->_convertToSolrDate($rawValue);
+            if (isset($definition['timezone'])) {
+                $timezone = $definition['timezone'];
+                $value = $this->_convertToSolrDate($rawValue, $timezone);
+            } else {
+                $value = $this->_convertToSolrDate($rawValue);
+            }
         } else {
             // By default, just index the raw value
             $value = $rawValue;
@@ -874,13 +885,21 @@ class Fisma_Search_Engine
      * Convert a database format date or date time (2010-01-01 12:00:00) to Solr's ISO-8601 UTC format
      *
      * @param string $date
+     * @param string $timezone Optional
      * @return string
      */
-    private function _convertToSolrDate($date)
+    private function _convertToSolrDate($date, $timezone = null)
     {
         // Date fields need to be converted to UTC
-        $tempDate = new Zend_Date($date, Fisma_Date::FORMAT_DATETIME);
+        $currentTz = date_default_timezone_get();
+        if ($timezone && $timezone != $currentTz) {
+            date_default_timezone_set($timezone);
+        }
 
+        $tempDate = new Zend_Date($date, Fisma_Date::FORMAT_DATETIME);
+        $tempDate->setTimezone('UTC');
+
+        date_default_timezone_set($currentTz);
         return $tempDate->toString(Fisma_Date::FORMAT_SOLR_DATETIME) . 'Z';
     }
 

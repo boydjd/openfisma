@@ -13,13 +13,14 @@ Incident:
         reporterFax: (202) 555-4321
         reporterEmail: openfisma-default-install@googlegroups.com
         reporterIp: 8.8.8.8
+        reportTz: America/Denver
 
         locationBuilding: White House
         locationRoom: Press Room
 
         incidentDate: 2010-01-15
         incidentTime: 14:00:00
-        incidentTimezone: EST
+        incidentTimezone: America/New_York
 
         additionalInfo: >
             <p>Integer volutpat metus nibh, nec imperdiet dui. Etiam sagittis sem vitae metus laoreet nec auctor nisi

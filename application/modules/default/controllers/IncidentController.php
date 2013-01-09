@@ -41,29 +41,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     protected $_enforceAcl = false;
 
     /**
-     * Timezones
-     *
-     * @todo this doesn't belong here
-     */
-    private $_timezones = array(
-        ''     =>   '',
-        'AST'  =>   'Atlantic Standard Time',
-        'ADT'  =>   'Atlantic Daylight Time',
-        'EST'  =>   'Eastern Standard Time',
-        'EDT'  =>   'Eastern Daylight Time',
-        'CST'  =>   'Central Standard Time',
-        'CDT'  =>   'Central Daylight Time',
-        'MST'  =>   'Mountain Standard Time',
-        'MDT'  =>   'Mountain Daylight Time',
-        'PST'  =>   'Pacific Standard Time',
-        'PDT'  =>   'Pacific Daylight Time',
-        'AKST' =>   'Alaska Standard Time',
-        'AKDT' =>   'Alaska Daylight Time',
-        'HAST' =>   'Hawaii-Aleutian Standard Time',
-        'HADT' =>   'Hawaii-Aleutian Daylight Time'
-    );
-
-    /**
      * A list of the separate parts of the incident report form, in order
      *
      * @var array
@@ -238,12 +215,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         // Initialize incidentTime with current system time
         if (empty($incident->incidentTime)) {
-
-            // The value of selection option should be multiples of 5
-            $minute = (int) Zend_Date::now()->get(Zend_Date::MINUTE_SHORT);
-            $minute = $minute - $minute % 5;
-            $time = Zend_Date::now()->setMinute($minute)
-                                    ->setSecond(0)
+            $time = Zend_Date::now()->setSecond(0)
                                     ->get(Fisma_Date::FORMAT_TIME);
 
             $incident->incidentTime = $time;
@@ -251,9 +223,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         // Initialize incidentTimezone with current system timezone
         if (empty($incident->incidentTimezone)) {
-            $timezone = Zend_Date::now()->get(Zend_Date::TIMEZONE);
+            $timezone = Zend_Date::now()->getTimezone();
+            $supportedTimezones = Fisma_Date::getTimezones();
 
-            $incident->incidentTimezone = isset($this->_timezones[$timezone]) ? $timezone : null;
+            $incident->incidentTimezone = isset($supportedTimezones[$timezone]) ? $timezone : null;
         }
 
         // Use the validator to load the incident data into the form. Notice that there aren't actually any
@@ -331,7 +304,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $timestamp->addDecorator(new Fisma_Zend_Form_Decorator_Incident_Create);
                 $timestamp->addDecorator(new Fisma_Zend_Form_Decorator_Date);
                 $tz = $formPart->getElement('incidentTimezone');
-                $tz->addMultiOptions($this->_timezones);
+                $tz->addMultiOptions(Fisma_Date::getTimezones());
 
                 if ($this->_me) {
                     // Load data into organization/system field for authenticated users only
@@ -679,22 +652,51 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                          ->fetchOne(array(), Doctrine::HYDRATE_ARRAY);
 
         $this->view->incident = $incident;
+        $timezone = date_default_timezone_get();
+
+        date_default_timezone_set($incident['reportTz']);
         $createdDateTime = new Zend_Date($incident['reportTs'], Fisma_Date::FORMAT_DATETIME);
+        date_default_timezone_set($timezone);
+        $createdDateTime->setTimezone('UTC');
         $this->view->createDateTime = $createdDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
                                       . ' at '
                                       . $createdDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+        $createdDateTime->setTimezone(CurrentUser::getAttribute('timezone'));
+        $this->view->createdDateTimeLocal = $createdDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                           . ' at '
+                                           . $createdDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
 
+        date_default_timezone_set($incident['incidentTimezone']);
         $incidentDateTime = $incident['incidentDate'] . ' ' . $incident['incidentTime'];
         $incidentDate = new Zend_Date($incidentDateTime, Fisma_Date::FORMAT_DATETIME);
-
+        date_default_timezone_set($timezone);
+        $incidentDate->setTimezone('UTC');
         $this->view->incidentDateTime = $incidentDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
                                        . ' at '
-                                       . $incidentDate->toString(Fisma_Date::FORMAT_AM_PM_TIME)
-                                       . ' ' . $incident['incidentTimezone'];
+                                       . $incidentDate->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+        $incidentDate->setTimezone(CurrentUser::getAttribute('timezone'));
+        $this->view->incidentDateTimeLocal = $incidentDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                           . ' at '
+                                           . $incidentDate->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+
+        $updateDateTime = new Zend_Date($incident['modifiedTs'], Fisma_Date::FORMAT_DATETIME);
+        $updateDateTime->setTimezone('UTC');
+        $this->view->updateTs = $updateDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                              . ' at '
+                              . $updateDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+        $updateDateTime->setTimezone(CurrentUser::getAttribute('timezone'));
+        $this->view->updateTsLocal = $updateDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                              . ' at '
+                              . $updateDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
 
         if (!empty($incident['closedTs'])) {
             $closedDateTime = new Zend_Date($incident['closedTs'], Fisma_Date::FORMAT_DATETIME);
+            $closedDateTime->setTimezone('UTC');
             $this->view->closedTs = $closedDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                      . ' at '
+                                      . $closedDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+            $closedDateTime->setTimezone(CurrentUser::getAttribute('timezone'));
+            $this->view->closedTsLocal = $closedDateTime->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
                                       . ' at '
                                       . $closedDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
         }
@@ -1161,28 +1163,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Add a comment to a specified incident
-     *
-     */
-    public function addCommentAction()
-    {
-        $id = $this->getRequest()->getParam('id');
-        $incident = Doctrine::getTable('Incident')->find($id);
-
-        $this->_assertCurrentUserCanUpdateIncident($id);
-
-        $comment = $this->getRequest()->getParam('comment');
-
-        if ('' != trim(strip_tags($comment))) {
-            $incident->getComments()->addComment($comment);
-        } else {
-            $this->view->priorityMessenger('Comment field is blank', 'warning');
-        }
-
-        $this->_redirect("/incident/view/id/$id");
-    }
-
-    /**
      * Displays the incident comment interface
      *
      * @GETAllowed
@@ -1204,8 +1184,17 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $commentRows = array();
 
         foreach ($comments as $comment) {
+            $commentTs = new Zend_Date($comment['createdTs'], Fisma_Date::FORMAT_DATETIME);
+            $commentTs->setTimezone('UTC');
+            $commentDateTime = $commentTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $commentTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+            $commentTs->setTimezone(CurrentUser::getAttribute('timezone'));
+            $commentDateTimeLocal = $commentTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $commentTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
             $commentRows[] = array(
-                'timestamp' => $comment['createdTs'],
+                'timestamp' => Zend_Json::encode(array("local" => $commentDateTimeLocal, "utc" => $commentDateTime)),
                 'username' => $this->view->userInfo($comment['User']['displayName'], $comment['User']['id']),
                 'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment'])),
                 'delete' => (($comment['User']['id'] === CurrentUser::getAttribute('id'))
@@ -1221,7 +1210,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             new Fisma_Yui_DataTable_Column(
                 'Timestamp',
                 true,
-                null,
+                'Fisma.TableFormat.formatDateTimeLocal',
                 null,
                 'timestamp'
             )
@@ -1340,6 +1329,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $artifactRows = array();
 
         foreach ($artifactCollection as $artifact) {
+            $createdTs = new Zend_Date($artifact->createdTs, Fisma_Date::FORMAT_DATETIME);
+            $createdTs->setTimezone('UTC');
+            $createdDateTime = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $createdTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+            $createdTs->setTimezone(CurrentUser::getAttribute('timezone'));
+            $createdDateTimeLocal = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $createdTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+
             $downloadUrl = '/incident/download-artifact/id/' . $id . '/artifactId/' . $artifact->id;
             $artifactRows[] = array(
                 'iconUrl'  => "<a href='$downloadUrl'><img alt='"
@@ -1351,7 +1350,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'fileNameLink' => "<a href='$downloadUrl'>" . $this->view->escape($artifact->fileName) . "</a>",
                 'fileSize' => $artifact->getFileSize(),
                 'user'     => $this->view->userInfo($artifact->User->displayName, $artifact->User->id),
-                'date'     => $artifact->createdTs,
+                'date'     => Zend_Json::encode(array("local" => $createdDateTimeLocal, "utc" => $createdDateTime)),
                 'comment'  => $this->view->textToHtml($this->view->escape($artifact->description)),
                 'delete' => (($artifact->User->id === CurrentUser::getAttribute('id'))
                     ? '/incident/delete-artifact/id/' . $id . '/artifactId/' . $artifact->id
@@ -1414,7 +1413,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 true,
                 'Fisma.TableFormat.formatHtml',
                 null,
-                'uploadedBy'
+                'user'
             )
         );
 
@@ -1422,9 +1421,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             new Fisma_Yui_DataTable_Column(
                 'Upload Date',
                 true,
+                'Fisma.TableFormat.formatDateTimeLocal',
                 null,
-                null,
-                'uploadDate'
+                'date'
             )
         );
 

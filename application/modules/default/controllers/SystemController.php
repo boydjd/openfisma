@@ -167,9 +167,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->aggregateSystem = $aggregateSystem;
 
         $createdDate = new Zend_Date($organization->createdTs, Fisma_Date::FORMAT_DATE);
+        $createdDate->setTimezone(CurrentUser::getAttribute('timezone'));
         $this->view->createdDate = $createdDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
 
         $updatedDate = new Zend_Date($organization->modifiedTs, Fisma_Date::FORMAT_DATE);
+        $updatedDate->setTimezone(CurrentUser::getAttribute('timezone'));
         $this->view->updatedDate = $updatedDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
 
         $editable = false;

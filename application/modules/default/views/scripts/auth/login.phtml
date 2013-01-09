@@ -1,4 +1,5 @@
 <form id="login" _lpchecked="1" method="post" action="/auth/login" onsubmit="return login(this);">
+    <input type='hidden' name='timezoneOffset' value='' />
     <div id='banner'>
         <h1 class='banner'>Warning</h1>
         <div id='bannerContent'>
@@ -91,7 +92,9 @@ function capLock(e) {
         $('#divCapsLock').addClass('divCapsLockOFF');
     }
 }
+
 $(function(){
     $('input[autofocus]').focus();
-})
+    $('input[name=timezoneOffset]').val(jstz.determine().name());
+});
 </script>

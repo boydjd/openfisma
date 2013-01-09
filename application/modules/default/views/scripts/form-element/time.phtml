@@ -1,0 +1,29 @@
+<tr>
+    <td><label for='<?php echo $this->escape($this->name); ?>_picker'>
+        <?php echo $this->escape($this->label); ?>
+    </label></td>
+    <td>
+        <input
+            type    ='text'
+            id      ='<?php echo $this->escape($this->name); ?>_picker'
+            target  ='<?php echo $this->escape($this->name); ?>'
+        />
+        <input
+            type    ='hidden'
+            id      ='<?php echo $this->escape($this->name); ?>'
+            name    ='<?php echo $this->escape($this->name); ?>'
+            value   ='<?php echo $this->escape($this->value); ?>'
+        />
+        <script type="text/javascript">
+            $(function () {
+                $('#<?php echo $this->escape($this->name); ?>_picker')
+                    .timeEntry({
+                        'spinnerImage'  : '',
+                        'ampmPrefix'    : ' '
+                    })
+                    .timeEntry('setTime', new Date('2000-01-01 <?php echo $this->escape($this->value); ?>'))
+                    .change(Fisma.Util.updateTimeField);
+            });
+        </script>
+    </td>
+</tr>

@@ -760,5 +760,18 @@ Fisma.TableFormat = {
         jqAnchor.text(oData);
         jqAnchor.attr("href", prefix + oRecord.getData('id'));
         $(elCell).html(jqAnchor);
+    },
+
+    /**
+     * Parse a JSON array ('utc': ... , 'local': ...)
+     */
+    formatDateTimeLocal : function (elCell, oRecord, oColumn, oData) {
+        try {
+            oData = YAHOO.lang.JSON.parse(oData);
+            elCell.innerHTML = oData.local;
+            elCell.title = 'UTC: ' + oData.utc;
+        } catch (e) {
+            Fisma.TableFormat.formatHtml(elCell, oRecord, oColumn, oData);
+        }
     }
 };

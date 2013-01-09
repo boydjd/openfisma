@@ -100,6 +100,7 @@
                 <td>ECD:</td>
                 <td><?php
                         $originalEcd = new Zend_Date($finding->originalEcd, Fisma_Date::FORMAT_DATE);
+                        $originalEcd->setTimezone(CurrentUser::getAttribute('timezone'));
                         echo $this->escape($originalEcd->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR));
                     ?> (<?php
                     if (strpos($this->onTimeState, 'On Time') === 0) {
