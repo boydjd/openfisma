@@ -111,7 +111,56 @@ Incident:
             comment: The time at which the incident was known or believed to have occurred
         incidentTimezone:
             type: enum
-            values: [Pacific/Kwajalein, Pacific/Midway, Pacific/Honolulu, America/Anchorage, America/Los_Angeles, America/Dawson_Creek, America/Denver, America/Chicago, America/Cancun, America/Belize, America/Bogota, America/New_York, America/Indianapolis, America/Glace_Bay, America/Caracas, America/St_Johns, America/Argentina/Buenos_Aires, America/Sao_Paulo, America/Noronha, Atlantic/Cape_Verde, Europe/London, Africa/Abidjan, Europe/Amsterdam, Europe/Belgrade, Europe/Brussels, Africa/Algiers, Asia/Beirut, Africa/Cairo, Europe/Minsk, Africa/Blantyre, Asia/Jerusalem, Africa/Addis_Ababa, Europe/Moscow, Asia/Tehran, Asia/Dubai, Asia/Kabul, Asia/Tashkent, Asia/Dhaka, Asia/Bangkok, Asia/Hong_Kong, Australia/Perth, Asia/Tokyo, Australia/Adelaide, Australia/Brisbane, Asia/Vladivostok, Australia/Hobart, Asia/Magadan, Pacific/Fiji, Pacific/Auckland]
+            values:
+                - Pacific/Kwajalein
+                - Pacific/Midway
+                - Pacific/Honolulu
+                - America/Anchorage
+                - America/Los_Angeles
+                - America/Dawson_Creek
+                - America/Denver
+                - America/Chicago
+                - America/Cancun
+                - America/Belize
+                - America/Bogota
+                - America/New_York
+                - America/Indianapolis
+                - America/Glace_Bay
+                - America/Caracas
+                - America/St_Johns
+                - America/Argentina/Buenos_Aires
+                - America/Sao_Paulo
+                - America/Noronha
+                - Atlantic/Cape_Verde
+                - Europe/London
+                - Africa/Abidjan
+                - Europe/Amsterdam
+                - Europe/Belgrade
+                - Europe/Brussels
+                - Africa/Algiers
+                - Asia/Beirut
+                - Africa/Cairo
+                - Europe/Minsk
+                - Africa/Blantyre
+                - Asia/Jerusalem
+                - Africa/Addis_Ababa
+                - Europe/Moscow
+                - Asia/Tehran
+                - Asia/Dubai
+                - Asia/Kabul
+                - Asia/Tashkent
+                - Asia/Dhaka
+                - Asia/Bangkok
+                - Asia/Hong_Kong
+                - Australia/Perth
+                - Asia/Tokyo
+                - Australia/Adelaide
+                - Australia/Brisbane
+                - Asia/Vladivostok
+                - Australia/Hobart
+                - Asia/Magadan
+                - Pacific/Fiji
+                - Pacific/Auckland
             extra:
                 auditLog: true
                 logicalName: Incident Timezone
@@ -124,7 +173,56 @@ Incident:
             comment: The time at which the incident was reported
         reportTz:
             type: enum
-            values: [Pacific/Kwajalein, Pacific/Midway, Pacific/Honolulu, America/Anchorage, America/Los_Angeles, America/Dawson_Creek, America/Denver, America/Chicago, America/Cancun, America/Belize, America/Bogota, America/New_York, America/Indianapolis, America/Glace_Bay, America/Caracas, America/St_Johns, America/Argentina/Buenos_Aires, America/Sao_Paulo, America/Noronha, Atlantic/Cape_Verde, Europe/London, Africa/Abidjan, Europe/Amsterdam, Europe/Belgrade, Europe/Brussels, Africa/Algiers, Asia/Beirut, Africa/Cairo, Europe/Minsk, Africa/Blantyre, Asia/Jerusalem, Africa/Addis_Ababa, Europe/Moscow, Asia/Tehran, Asia/Dubai, Asia/Kabul, Asia/Tashkent, Asia/Dhaka, Asia/Bangkok, Asia/Hong_Kong, Australia/Perth, Asia/Tokyo, Australia/Adelaide, Australia/Brisbane, Asia/Vladivostok, Australia/Hobart, Asia/Magadan, Pacific/Fiji, Pacific/Auckland]
+            values:
+                - Pacific/Kwajalein
+                - Pacific/Midway
+                - Pacific/Honolulu
+                - America/Anchorage
+                - America/Los_Angeles
+                - America/Dawson_Creek
+                - America/Denver
+                - America/Chicago
+                - America/Cancun
+                - America/Belize
+                - America/Bogota
+                - America/New_York
+                - America/Indianapolis
+                - America/Glace_Bay
+                - America/Caracas
+                - America/St_Johns
+                - America/Argentina/Buenos_Aires
+                - America/Sao_Paulo
+                - America/Noronha
+                - Atlantic/Cape_Verde
+                - Europe/London
+                - Africa/Abidjan
+                - Europe/Amsterdam
+                - Europe/Belgrade
+                - Europe/Brussels
+                - Africa/Algiers
+                - Asia/Beirut
+                - Africa/Cairo
+                - Europe/Minsk
+                - Africa/Blantyre
+                - Asia/Jerusalem
+                - Africa/Addis_Ababa
+                - Europe/Moscow
+                - Asia/Tehran
+                - Asia/Dubai
+                - Asia/Kabul
+                - Asia/Tashkent
+                - Asia/Dhaka
+                - Asia/Bangkok
+                - Asia/Hong_Kong
+                - Australia/Perth
+                - Asia/Tokyo
+                - Australia/Adelaide
+                - Australia/Brisbane
+                - Asia/Vladivostok
+                - Australia/Hobart
+                - Asia/Magadan
+                - Pacific/Fiji
+                - Pacific/Auckland
             extra:
                 logicalName: Report Timezone
             comment: The timezone in which the report timestamp belongs

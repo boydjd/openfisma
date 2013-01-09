@@ -142,29 +142,4 @@ class Fisma_Date
             'Pacific/Auckland' => '(GMT+12:00) Wellington'
         );
     }
-
-    public static function getOldTimezones() {
-        return
-            array('ADT', 'AST', 'EDT', 'EST', 'CDT', 'CST', 'MDT', 'MST', 'PDT', 'PST', 'AKDT', 'AKST', 'HADT', 'HAST');
-    }
-
-    public static function getFormattedTimezone($timezone) {
-        $aTimeZones = array(
-            'ADT'   =>  'America/Glace_Bay',
-            'AST'   =>  'America/Glace_Bay',
-            'EDT'   =>  'America/New_York',
-            'EST'   =>  'America/New_York',
-            'CDT'   =>  'America/Chicago',
-            'CST'   =>  'America/Chicago',
-            'MDT'   =>  'America/Denver',
-            'MST'   =>  'America/Denver',
-            'PDT'   =>  'America/Los_Angeles',
-            'PST'   =>  'America/Los_Angeles',
-            'AKDT'  =>  'America/Anchorage',
-            'AKST'  =>  'America/Anchorage',
-            'HADT'  =>  'Pacific/Honolulu',
-            'HAST'  =>  'Pacific/Honolulu'
-        );
-        return $aTimeZones[$timezone];
-    }
 }

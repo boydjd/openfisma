@@ -78,15 +78,15 @@ class Application_Migration_030100_Timezone extends Fisma_Migration_Abstract
             'reportts'
         );
 
-        foreach (Fisma_Date::getOldTimezones() as $oldTimezone) {
+        foreach (self::getOldTimezones() as $oldTimezone) {
             $this->getHelper()->update(
                 'incident',
-                array('incidenttimezone' => Fisma_Date::getFormattedTimezone($oldTimezone)),
+                array('incidenttimezone' => self::toNewTimezone($oldTimezone)),
                 array('incidenttimezone' => $oldTimezone)
             );
             $this->getHelper()->update(
                 'incident',
-                array('reporttz' => Fisma_Date::getFormattedTimezone($oldTimezone)),
+                array('reporttz' => self::toNewTimezone($oldTimezone)),
                 array('reporttz' => $oldTimezone)
             );
         }
@@ -119,5 +119,30 @@ class Application_Migration_030100_Timezone extends Fisma_Migration_Abstract
             "art','Asia/Magadan','Pacific/Fiji','Pacific/Auckland')",
             'reportts'
         );
+    }
+
+    public static function getOldTimezones() {
+        return
+            array('ADT', 'AST', 'EDT', 'EST', 'CDT', 'CST', 'MDT', 'MST', 'PDT', 'PST', 'AKDT', 'AKST', 'HADT', 'HAST');
+    }
+
+    public static function toNewTimezone($timezone) {
+        $aTimeZones = array(
+            'ADT'   =>  'America/Glace_Bay',
+            'AST'   =>  'America/Glace_Bay',
+            'EDT'   =>  'America/New_York',
+            'EST'   =>  'America/New_York',
+            'CDT'   =>  'America/Chicago',
+            'CST'   =>  'America/Chicago',
+            'MDT'   =>  'America/Denver',
+            'MST'   =>  'America/Denver',
+            'PDT'   =>  'America/Los_Angeles',
+            'PST'   =>  'America/Los_Angeles',
+            'AKDT'  =>  'America/Anchorage',
+            'AKST'  =>  'America/Anchorage',
+            'HADT'  =>  'Pacific/Honolulu',
+            'HAST'  =>  'Pacific/Honolulu'
+        );
+        return $aTimeZones[$timezone];
     }
 }
