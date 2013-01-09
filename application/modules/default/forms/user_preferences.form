@@ -13,6 +13,20 @@ name = "userPreferences"
 method = "post"
 elementFilters.tags = "StripTags"
 
+elements.timezoneAuto.type = "checkbox"
+elements.timezoneAuto.options.label = "Your preferred time zone"
+elements.timezoneAuto.options.longdesc = "Set time zone automatically using current location"
+displayGroups.home.elements.timezoneAuto = "timezoneAuto"
+
+elements.timezoneDetector.type = "Element_TimezoneDetector"
+displayGroups.home.elements.timezoneDetector = "timezoneDetector"
+
+elements.timezone.type = "select"
+elements.timezone.options.filters.stringtrim.filter = "StringTrim"
+elements.timezone.options.filters.null.filter = "Null"
+elements.timezone.options.label = "Manual selection"
+displayGroups.home.elements.timezone = "timezone"
+
 elements.homeSelect.type = "select"
 elements.homeSelect.options.label = "Home page"
 elements.homeSelect.options.multiOptions.custom = "Custom URL ..."

@@ -7,6 +7,7 @@
         echo $this->escape($this->headTitle(), 'none');
 
         $this->headScript()->appendFile('/javascripts/jquery-min.js');
+        $this->headScript()->appendFile('/javascripts/jstz-min.js');
         $this->injectAsset('/stylesheets/login.css', 'css', false, 'screen,print');
         $this->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
 

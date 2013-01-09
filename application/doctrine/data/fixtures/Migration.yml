@@ -167,6 +167,11 @@ Migration:
         minorVersion: 1
         tagNumber: 0
         name: IncidentTags
+    030100_Timezone:
+        majorVersion: 3
+        minorVersion: 1
+        tagNumber: 0
+        name: Timezone
     030100_VulnerabilityPoc:
         majorVersion: 3
         minorVersion: 1

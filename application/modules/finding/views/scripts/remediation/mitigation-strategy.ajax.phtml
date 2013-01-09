@@ -185,24 +185,35 @@ if ($finding->status != 'NEW'
         echo $this->escape('<div class="approvalStep"><p><b>', 'none');
         echo $this->escape($findingEvaluation->Evaluation->name);
         echo $this->escape(':</b>', 'none');
+
+        $createdTs = new Zend_Date($findingEvaluation->createdTs, Fisma_Date::FORMAT_DATETIME);
+        $createdTs->setTimezone('UTC');
+        $createdDateTime = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                              . ' at '
+                              . $createdTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+        $createdTs->setTimezone(CurrentUser::getAttribute('timezone'));
+        $createdDateTimeLocal = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                              . ' at '
+                              . $createdTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+
         if ('APPROVED' == $decision) {
-            echo $this->escape('<span class="approved"><b>', 'none');
+            echo $this->escape('<span class="approved" title="UTC: ' . $createdDateTime . '"><b>', 'none');
             echo $this->escape($decision);
             echo $this->escape('</b>', 'none');
             echo $this->escape($this->userInfo($user->displayName, $user->id), 'none');
             echo $this->escape(' at ', 'none');
-            echo $this->escape($findingEvaluation->createdTs);
+            echo $this->escape($createdDateTimeLocal);
             echo $this->escape('</span></p>', 'none');
             if (!empty($findingEvaluation->comment)) {
                 echo $this->escape($this->textToHtml(htmlspecialchars($findingEvaluation->comment)), 'none');
             }
         } elseif ('DENIED' == $decision) {
-            echo $this->escape('<span class="denied"><b>', 'none');
+            echo $this->escape('<span class="denied" title="UTC: ' . $createdDateTime . '"><b>', 'none');
             echo $this->escape($decision);
             echo $this->escape('</b>', 'none');
             echo $this->escape($this->userInfo($user->displayName, $user->id), 'none');
             echo $this->escape(' at ', 'none');
-            echo $this->escape($findingEvaluation->createdTs);
+            echo $this->escape($createdDateTimeLocal);
             echo $this->escape('</span></p>', 'none');
             if (!empty($findingEvaluation->comment)) {
                 echo $this->escape($this->textToHtml(htmlspecialchars($findingEvaluation->comment)), 'none');

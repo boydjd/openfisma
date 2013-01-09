@@ -70,17 +70,19 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             ),
             'incidentDate' => array(
                 'initiallyVisible' => true,
-                'label' => 'Discovered',
+                'label' => 'Occured',
                 'sortable' => true,
                 'type' => 'date',
-                'formatter' => 'date'
+                'formatter' => 'date',
+                'timezoneAbbrField' => 'incidentTimezone'
             ),
             'reportTs' => array(
                 'initiallyVisible' => false,
                 'label' => 'Reported',
                 'sortable' => true,
                 'type' => 'datetime',
-                'formatter' => 'datetime'
+                'formatter' => 'datetime',
+                'timezoneAbbrField' => 'reportTz'
             ),
             'reporter' => array(
                 'initiallyVisible' => false,
@@ -414,6 +416,18 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'initiallyVisible' => false,
                 'type' => 'integer',
                 'hidden' => true
+            ),
+            'reportTz' => array(
+                'initiallyVisible' => false,
+                'type' => 'text',
+                'hidden' => true,
+                'sortable' => false
+            ),
+            'incidentTimezone' => array(
+                'initiallyVisible' => false,
+                'type' => 'text',
+                'hidden' => true,
+                'sortable' => false
             )
         );
     }

@@ -84,6 +84,17 @@ class CommentController extends Fisma_Zend_Controller_Action_Security
                 $commentRecord->User->id
             );
             $commentArray['comment'] = Fisma_String::textToHtml(htmlspecialchars($commentArray['comment']));
+            $commentTs = new Zend_Date($commentArray['createdTs'], Fisma_Date::FORMAT_DATETIME);
+            $commentTs->setTimezone('UTC');
+            $commentDateTime = $commentTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $commentTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+            $commentTs->setTimezone(CurrentUser::getAttribute('timezone'));
+            $commentDateTimeLocal = $commentTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $commentTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+            $commentArray['createdTs'] =
+                Zend_Json::encode(array("local" => $commentDateTimeLocal, "utc" => $commentDateTime));
 
             $response->comment = $commentArray;
 

@@ -961,26 +961,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Add a comment to a specified user
-     *
-     */
-    public function addCommentAction()
-    {
-        $id = $this->getRequest()->getParam('id');
-        $user = Doctrine::getTable('User')->find($id);
-
-        $comment = $this->getRequest()->getParam('comment');
-
-        if ('' != trim(strip_tags($comment))) {
-            $user->getComments()->addComment($comment);
-        } else {
-            $this->view->priorityMessenger('Comment field is blank', 'warning');
-        }
-
-        $this->_redirect("/user/comments/id/$id");
-    }
-
-    /**
      * Displays the user comment interface
      *
      * @GETAllowed
@@ -999,8 +979,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $commentRows = array();
 
         foreach ($comments as $comment) {
+            $commentTs = new Zend_Date($comment['createdTs'], Fisma_Date::FORMAT_DATETIME);
+            $commentTs->setTimezone('UTC');
+            $commentDateTime = $commentTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $commentTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
+            $commentTs->setTimezone(CurrentUser::getAttribute('timezone'));
+            $commentDateTimeLocal = $commentTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
+                                  . ' at '
+                                  . $commentTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
             $commentRows[] = array(
-                'timestamp' => $comment['createdTs'],
+                'timestamp' => Zend_Json::encode(array("local" => $commentDateTimeLocal, "utc" => $commentDateTime)),
                 'username' => $this->view->userInfo($comment['User']['displayName'], $comment['User']['id']),
                 'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment'])),
                 'delete' => (($comment['User']['id'] === CurrentUser::getAttribute('id'))
@@ -1016,7 +1005,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             new Fisma_Yui_DataTable_Column(
                 'Timestamp',
                 true,
-                null,
+                'Fisma.TableFormat.formatDateTimeLocal',
                 null,
                 'timestamp'
             )
@@ -1222,6 +1211,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $form->getElement('lockReason')->setValue($reason);
 
             $lockTs = new Zend_Date($user->lockTs, Zend_Date::ISO_8601);
+            $lockTs->setTimezone(CurrentUser::getAttribute('timezone'));
             $form->getElement('lockTs')->setValue($lockTs->get(Fisma_Date::FORMAT_DATETIME));
         } else {
             $form->removeElement('lockReason');
@@ -1776,26 +1766,48 @@ class UserController extends Fisma_Zend_Controller_Action_Object
      */
     public function preferencesAction()
     {
-        $currentHomeUrl = CurrentUser::getAttribute('homeUrl');
+        $user = CurrentUser::getInstance();
+        $currentHomeUrl = $user->homeUrl;
+        $currentTimezone = $user->timezone;
 
         if ($this->_request->isPost()) {
+
             $newUrl = $this->_request->getPost('homeUrl');
             if ($newUrl !== $currentHomeUrl) {
                 if (filter_var(Fisma_Url::customUrl($newUrl), FILTER_VALIDATE_URL)) {
-                    $user = CurrentUser::getInstance();
                     $user->homeUrl = $newUrl;
-                    $user->save();
-                    $user->refresh();
                     $currentHomeUrl = $newUrl;
-                    $this->view->priorityMessenger('Your preferences has been updated.', 'info');
                 } else {
                     $this->view->priorityMessenger('Invalid URL submitted.', 'warning');
                 }
             }
+            if ($timezoneAuto = $this->getRequest()->getPost('timezoneAuto')) {
+                $user->timezoneAuto = true;
+                $user->timezone = $this->getRequest()->getPost('timezoneDetector');
+            } else {
+                if ($timezone = $this->getRequest()->getPost('timezone')) {
+                    $user->timezoneAuto = false;
+                    $user->timezone = $timezone;
+                }
+            }
+            $user->save();
+            $user->refresh();
+            $currentTimezone = $user->timezone;
+            $this->view->priorityMessenger('Your preferences has been updated.', 'info');
         }
 
         $form = Fisma_Zend_Form_Manager::loadForm('user_preferences');
         $form = Fisma_Zend_Form_Manager::prepareForm($form);
+
+        $tz = $form->getElement('timezone');
+        $tz->addMultiOptions(Fisma_Date::getTimezones());
+        if ($currentTimezone) {
+            $tz->setValue($currentTimezone);
+        }
+
+        $form->getElement('timezoneAuto')->setValue(CurrentUser::getAttribute('timezoneAuto'));
+        $form->getElement('timezoneAuto')->setOptions(array('onChange' => 'Fisma.User.preferredTimezoneToggle(this)'));
+        $tz->setAttrib('hidden', CurrentUser::getAttribute('timezoneAuto'));
 
         if (!$this->_acl->hasArea('finding')) {
             $form->getElement('homeSelect')->removeMultiOption('finding');
