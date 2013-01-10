@@ -619,7 +619,7 @@ Fisma.Util = {
      * Submit the first form on the page
      */
     submitFirstForm : function(event, config) {
-        var form = $('form').eq(0);
+        var form = $('form').not(function() { return $(this).parents('div#toolbarForm').length > 0; }).eq(0);
         var buttons = $('.yui-menu-button', form).get();
         var i, button;
 

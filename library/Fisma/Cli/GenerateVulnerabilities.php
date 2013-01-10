@@ -97,6 +97,7 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
             foreach ($entries as $entry) {
                 $e = new Vulnerability();
                 $e->merge($entry);
+                $e->CreatedBy = $this->_getRandomUser();
                 $e->save();
                 $e->free();
                 unset($e);

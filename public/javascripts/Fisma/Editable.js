@@ -243,7 +243,7 @@
             target      = $('#' + t_name),
             type        = target.attr('type'),
             field_name  = target.attr('name'),
-            form        = $('form').eq(0),
+            form        = $('form').not(function() { return $(this).parents('div#toolbarForm').length > 0; }).eq(0),
             csrf        = form.find('input[name=csrf]').val(),
             action      = form.attr('action'),
             value       = null,

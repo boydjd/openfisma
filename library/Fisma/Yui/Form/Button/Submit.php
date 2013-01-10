@@ -37,9 +37,10 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
     function renderSelf()
     {
         $view = Zend_Layout::getMvcInstance()->getView();
-        return $view->partial('yui/button.phtml', array(
+        return $view->partial('yui/button-submit.phtml', array(
             'id'        => $this->getName(),
-            'label'     => $this->getValue() ? $this->getValue() : $this->getLabel(),
+            'label'     => $this->getLabel(),
+            'value'     => ($this->getValue()) ? $this->getValue() : $this->getName(),
             'imageUrl'  => $this->getAttrib('imageSrc'),
             'function'  => $this->getAttrib('onClickFunction'),
             'arguments' => $this->getAttrib('onClickArgument'),

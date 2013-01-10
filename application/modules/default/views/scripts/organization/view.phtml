@@ -1,9 +1,9 @@
 <form enctype="multipart/form-data"
-      action="/organization/update/id/<?php echo $this->escape($this->organizationId . $this->fromSearchParams) ?>" 
+      action="/organization/update/id/<?php echo $this->escape($this->organizationId . $this->fromSearchParams) ?>"
       method="post">
 
 <?php
     echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
-    echo $this->escape($this->tabView, 'none'); 
+    echo $this->escape($this->tabView, 'none');
 ?>
 </form>
