@@ -22,6 +22,7 @@ elements.responsibleOrganizationId.type = "select"
 elements.responsibleOrganizationId.options.label = "Organization/System"
 elements.responsibleOrganizationId.options.required = true
 elements.responsibleOrganizationId.options.tooltip = "<b>Organization/System</b><p>This is the organization or system which is the target (or subject) of this finding.</p><p>Notice that you can assign findings either to a management organization or directly to an information system.</p>"
+elements.responsibleOrganizationId.options.attribs.onChange = "Fisma.Finding.updateDefaultPoc(this)"
 displayGroups.finding.elements.responsibleOrganizationId = "responsibleOrganizationId"
 
 elements.pocAutocomplete.type = "Form_AutoComplete"

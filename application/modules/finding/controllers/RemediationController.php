@@ -193,8 +193,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $selectArray = $this->view->systemSelect($systems);
 
         $form->getElement('responsibleOrganizationId')->addMultiOptions($selectArray);
-        $form->getElement('responsibleOrganizationId')
-            ->setOptions(array('onChange' => 'Fisma.Finding.updateDefaultPoc(this)'));
 
         $organizationIds = array_keys($selectArray);
         $defaultOrgId = array_shift($organizationIds);
