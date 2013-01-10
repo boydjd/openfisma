@@ -50,11 +50,17 @@ Fisma.Icon = {
                 uploadIconTooltipTxt += "will be distorted, please make sure that you are uploading a square image ";
                 uploadIconTooltipTxt += "file. Formats accepted are JPEG, GIF, SVG, BMP, and PNG.";
 
-                // make the submit button a YUI widget
+                // convert input:submit into decorated button:submit
                 $('input[type=submit]', panel.body).each(function() {
-                   $(this).replaceWith(
-                       $('<button/>').text($(this).val()).button().attr('title', uploadIconTooltipTxt)
-                   );
+                    $(this).replaceWith(
+                        $('<button/>')
+                        .text($(this).val())
+                        .button()
+                        .attr({
+                            'title': uploadIconTooltipTxt,
+                            'type': 'submit'
+                        })
+                    );
                 });
 
                 // Register listener for the panel close event

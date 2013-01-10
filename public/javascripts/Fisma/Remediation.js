@@ -46,7 +46,7 @@ Fisma.Remediation = {
                     .addClass('ie9-only')
                     .click(Fisma.Remediation.addUploadEvidence);
 
-                $('button[type=submit]').button();
+                $('button[type=submit]', panel.body).button();
 
                 // Register listener for the panel close event
                 panel.hideEvent.subscribe(function () {
@@ -426,9 +426,9 @@ Fisma.Remediation = {
                 });
 
                 $('#dialog_confirm', panel.body).button();
-                var $select = $('select[name=startRelationship]', panel.body),
-                    html = $select.html();
-                $select.button().html(html);
+                var select = $('select[name=startRelationship]', panel.body),
+                    html = select.html();
+                select.button().html(html);
 
                 $('form#addRelationship').submit(function(event){
                     if (

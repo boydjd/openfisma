@@ -68,7 +68,7 @@ Fisma.Commentable = {
                 success: function(o) {
                     var panel = o.argument;
                     panel.setBody(o.responseText);
-                    $('button[type=submit]').button();
+                    $('button[type=submit]', panel.body).button();
                     $('textarea').focus();
                     panel.center();
                 },

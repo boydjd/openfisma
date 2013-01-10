@@ -50,9 +50,9 @@ class Application_Migration_030100_Msso extends Fisma_Migration_Abstract
             'text',
             'system_name'
         );
-        $this->getHelper()->exec(
-            "UPDATE configuration SET `organization_poc_list` = 'Business Owner,Information Security Officer,Authoriz" .
-            "ing Official';"
+        $this->getHelper()->update(
+            'configuration',
+            array('organization_poc_list' => 'Business Owner,Information Security Officer,Authorizing Official')
         );
         $this->getHelper()->createTable(
             'organization_poc',
@@ -76,9 +76,12 @@ class Application_Migration_030100_Msso extends Fisma_Migration_Abstract
             'text',
             'finding_draft_due'
         );
-        $this->getHelper()->exec(
-            "UPDATE configuration SET `finding_link_types` = 'repeats/is repeated by,relates to,duplicates/is duplica" .
-            "ted by,fixes/is fixed by,blocks/is blocked by';"
+        $this->getHelper()->update(
+            'configuration',
+            array(
+                'finding_link_types' =>
+                'repeats/is repeated by,relates to,duplicates/is duplicated by,fixes/is fixed by,blocks/is blocked by'
+            )
         );
         $this->getHelper()->createTable(
             'finding_relationship',
