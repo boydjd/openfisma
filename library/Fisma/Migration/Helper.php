@@ -189,16 +189,25 @@ class Fisma_Migration_Helper
             $f .= ' = ?';
         }
         $setClause = implode($setArray, ', ');
-        $whereArray = array_keys($where);
-        foreach ($whereArray as &$w) {
-            $w .= ' = ?';
+
+        if (!empty($where)) {
+            $whereArray = array_keys($where);
+            foreach ($whereArray as &$w) {
+                $w .= ' = ?';
+            }
+            $whereClause = implode($whereArray, ' AND ');
+
+            $update = 'UPDATE %s SET %s WHERE %s';
+            $sql = sprintf($update, $table, $setClause, $whereClause);
+            $stmt = $this->_db->prepare($sql);
+            $params = array_values($fields);
+            array_splice($params, count($params), 0, array_values($where));
+        } else {
+            $update = 'UPDATE %s SET %s';
+            $sql = sprintf($update, $table, $setClause);
+            $stmt = $this->_db->prepare($sql);
+            $params = array_values($fields);
         }
-        $whereClause = implode($whereArray, ' AND ');
-        $update = 'UPDATE %s SET %s WHERE %s';
-        $sql = sprintf($update, $table, $setClause, $whereClause);
-        $stmt = $this->_db->prepare($sql);
-        $params = array_values($fields);
-        array_splice($params, count($params), 0, array_values($where));
         $stmt->execute($params);
     }
 

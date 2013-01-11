@@ -39,22 +39,14 @@ Fisma.Remediation = {
                 // have same tart action. So set the latter`s action with the former`s.
                 document.finding_detail_upload_evidence.action = document.finding_detail.action;
 
-                var addAnotherFileButton = new YAHOO.widget.Button("add-another-file-button");
-                // YUI strips away the classes, replace them
-                YAHOO.util.Dom.addClass("add-another-file-button", "ie7-only");
-                YAHOO.util.Dom.addClass("add-another-file-button", "ie8-only");
-                YAHOO.util.Dom.addClass("add-another-file-button", "ie9-only");
+                $('#add-another-file-button')
+                    .button()
+                    .addClass('ie7-only')
+                    .addClass('ie8-only')
+                    .addClass('ie9-only')
+                    .click(Fisma.Remediation.addUploadEvidence);
 
-                // add the appropriate event listener to the button
-                YAHOO.util.Event.addListener("add-another-file-button", "click", Fisma.Remediation.addUploadEvidence);
-               // make the submit button a YUI widget
-                var inputs = panel.body.getElementsByTagName("input");
-                var i;
-                for (i in inputs) {
-                    if (inputs[i].type === 'submit') {
-                        var submitButton = new YAHOO.widget.Button(inputs[i]);
-                    }
-                }
+                $('button[type=submit]', panel.body).button();
 
                 // Register listener for the panel close event
                 panel.hideEvent.subscribe(function () {
@@ -428,13 +420,15 @@ Fisma.Remediation = {
             function(){
                 $('input[name=thisFindingId]').val(findingId);
 
-                var closeButton = new YAHOO.widget.Button('dialog_close');
-                YAHOO.util.Event.addListener("dialog_close", "click", function(){
+                $('#dialog_close', panel.body).button().click(function(event){
+                    event.preventDefault();
                     panel.destroy();
-                    return false;
                 });
 
-                var confirmButton = new YAHOO.widget.Button('dialog_confirm');
+                $('#dialog_confirm', panel.body).button();
+                var select = $('select[name=startRelationship]', panel.body),
+                    html = select.html();
+                select.button().html(html);
 
                 $('form#addRelationship').submit(function(event){
                     if (

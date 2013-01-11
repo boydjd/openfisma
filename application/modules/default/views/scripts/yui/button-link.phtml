@@ -3,7 +3,7 @@
 	href = '<?php echo $this->escape($this->href); ?>'
 	<?php if ($this->disabled): ?>disabled<?php endif; ?>
 >
-	<?php if ($this->imageUrl): ?><img src='<?php echo $this->escape($this->imageUrl); ?>' /><?php endif; ?>
+	<?php if ($this->imageUrl): ?><img src='<?php echo $this->escape($this->imageUrl); ?>' alt='' /><?php endif; ?>
 	<?php echo $this->escape($this->label); ?>
 </a>
 <script type='text/javascript'>

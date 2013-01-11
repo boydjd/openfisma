@@ -41,8 +41,7 @@ body
 {
     font: 12px 'Lucida Sans Unicode', 'Trebuchet MS', Arial, Helvetica;
     margin: 0;
-    background: #326988 url('/images/background_1600x1200.png') no-repeat center;
-    background-size: cover;
+    background: #326988;
 }
 
 /*--------------------*/
@@ -265,7 +264,7 @@ fieldset
 }
 
 #content > h1 {
-    color: #326988;
+    color: #FCFCFC;
     text-align:center;
     font-size:56px;
     position:absolute;

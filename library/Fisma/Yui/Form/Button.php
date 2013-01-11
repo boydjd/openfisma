@@ -46,12 +46,20 @@ class Fisma_Yui_Form_Button extends Zend_Form_Element_Submit
     }
 
     /**
+     * Override Zend Form default behavior
+     */
+    function render(Zend_View_Interface $view = NULL)
+    {
+        return $this->renderSelf($view);
+    }
+
+    /**
      * A default implementation of render() that creates a standard button. This is overridden in subclasses to
      * implement more unique button types.
      *
      * @return string The HTML expressed YUI button element
      */
-    function renderSelf()
+    function renderSelf(Zend_View_Interface $view = NULL)
     {
         $view = Zend_Layout::getMvcInstance()->getView();
         return $view->partial('yui/button.phtml', array(

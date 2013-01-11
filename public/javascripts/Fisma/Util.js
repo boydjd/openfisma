@@ -50,12 +50,11 @@ Fisma.Util = {
             }
 
             // make the submit button a YUI widget
-            var inputs = panel.body.getElementsByTagName("input");
-            for (i in inputs) {
-                if (!YAHOO.lang.isUndefined(inputs[i]) && inputs[i].type === 'submit') {
-                    var submitButton = new YAHOO.widget.Button(inputs[i]);
-                }
-            }
+            $('input[type=submit]', panel.body).each(function() {
+                $(this).replaceWith(
+                    $('<button/>').text($(this).val()).button()
+                );
+            });
 
             // Fix the bug where the panel doesn't close if opened the second time in IE
             panel.subscribe("hide", function() {
@@ -185,40 +184,57 @@ Fisma.Util = {
     showConfirmDialog : function (event, config) {
         var confirmDialog = Fisma.Util.getDialog();
 
-        var buttons = [ { text:"Yes", handler : function () {
-                            if (config.url) {
-                                document.location = config.url;
-                             } else if (config.func) {
-                                 var funcObj = config.func;
+        var buttons = [
+            {
+                'text': "Yes",
+                'handler': function () {
+                    if (config.url) {
+                        document.location = config.url;
+                    } else if (config.func) {
+                        var funcObj = config.func;
 
-                                 if (!YAHOO.lang.isFunction(funcObj)) {
-                                    funcObj = Fisma.Util.getObjectFromName(config.func);
-                                 }
+                        if (!YAHOO.lang.isFunction(funcObj)) {
+                            funcObj = Fisma.Util.getObjectFromName(config.func);
+                        }
 
-                                 if (YAHOO.lang.isFunction(funcObj)) {
-                                     if (config.args) {
-                                         funcObj.apply(this, config.args);
-                                     } else {
-                                         funcObj.call();
-                                     }
-                                 }
-                             }
-                             this.destroy();
-                            }
-                        },
-                        { text:"No",  handler : function () {
-                            this.destroy();
+                        if (YAHOO.lang.isFunction(funcObj)) {
+                            if (config.args) {
+                                funcObj.apply(this, config.args);
+                            } else {
+                                funcObj.call();
                             }
                         }
-                     ];
+                    }
+                    this.destroy();
+                }
+            },
+            {
+                'text': "No",
+                'handler': function () {
+                    this.destroy();
+                }
+            }
+        ];
 
         confirmDialog.setHeader("Are you sure?");
         confirmDialog.setBody(config.text);
-        confirmDialog.cfg.queueProperty("buttons", buttons);
         if (config.width) {
             confirmDialog.cfg.setProperty("width", config.width);
         }
         confirmDialog.render(document.body);
+        for (var i in buttons) {
+            var buttonDef = buttons[i];
+            $('<button/>')
+                .text(buttonDef.text)
+                .button()
+                .data('fn', buttonDef.handler)
+                .click(function() {
+                    $(this).data('fn').apply(confirmDialog);
+                })
+                .appendTo(confirmDialog.body)
+                .css('margin-right', '4px')
+            ;
+        }
         confirmDialog.show();
         if (config.isLink) {
             YAHOO.util.Event.preventDefault(event);
@@ -246,11 +262,10 @@ Fisma.Util = {
                 config.callback();
             }
         };
-        var button = [ { text: "Ok", handler: handleOk } ];
+        var button = [{'text': "Ok", 'handler': handleOk } ];
 
         alertDialog.setHeader("WARNING");
         alertDialog.setBody(alertMessage);
-        alertDialog.cfg.queueProperty("buttons", button);
 
         if (!YAHOO.lang.isUndefined(config) && config.width) {
             alertDialog.cfg.setProperty("width", config.width);
@@ -260,6 +275,19 @@ Fisma.Util = {
         }
 
         alertDialog.render(document.body);
+        for (var i in buttons) {
+            var buttonDef = buttons[i];
+            $('<button/>')
+                .text(buttonDef.text)
+                .button()
+                .data('fn', buttonDef.handler)
+                .click(function() {
+                    $(this).data('fn').apply(alertDialog);
+                })
+                .appendTo(confirmDialog.body)
+                .css('margin-right', '4px')
+            ;
+        }
         alertDialog.show();
 
         alertDialog.hideEvent.subscribe(function (e) {
@@ -533,51 +561,6 @@ Fisma.Util = {
         return fileForm;
     },
 
-     /**
-     * Display the description div to the below of element.
-     *
-     * @param {String} targetId The id of element
-     * @param {String} description The description of element
-     */
-    showDescription: function (targetId, description) {
-
-        // Create a description div for showing description
-        var container = document.createElement("div");
-        container.className = 'descriptionBox';
-        container.id = targetId + '_description';
-
-        var containerTop = document.createElement("div");
-        containerTop.className = 'descriptionBoxTop';
-        container.appendChild(containerTop);
-
-        var containerCenter = document.createElement("div");
-        containerCenter.className = 'descriptionBoxCenter';
-        containerCenter.innerHTML = description;
-        container.appendChild(containerCenter);
-
-        var containerBottom = document.createElement("div");
-        containerBottom.className = 'descriptionBoxBottom';
-        container.appendChild(containerBottom);
-
-        var targetEl;
-        if (jQuery('#' + targetId)[0]) {
-            targetEl = jQuery('#' + targetId);
-        } else {
-            targetEl = jQuery('#' + targetId + '-button');
-        }
-
-        // Clone a tr element from the tr of the current element.
-        // Clean the content of cloned tr and insert it to the next sibling of the tr of current element.
-        // Append the description div to the second td of the cloned tr.
-        var tr = targetEl.closest('tr');
-        var cloneTr = tr.clone();
-        cloneTr.children().text("").last().html(container);
-        tr.after(cloneTr);
-
-        // Remove the description attribute from element
-        targetEl.removeAttr('description');
-    },
-
     /**
      * Get Previous/Next record based on the id passed by config and then view the record.
      *
@@ -664,7 +647,7 @@ Fisma.Util = {
             errorDiv = document.createElement("div"),
             form = document.createElement('form'),
             textField = $('<input type="text"/>').get(0),
-            button = $('<input type="submit" value="OK"/>').get(0),
+            button = $('<button/>').text('OK').get(0),
             table = $('<table class="fisma_crud"><tbody><tr><td>' + query + ': </td><td></td><td></td></tr></tbody></table>');
         table.appendTo(form);
         $("td", table).get(1).appendChild(textField);
@@ -673,13 +656,14 @@ Fisma.Util = {
         contentDiv.appendChild(form);
 
         // Make Go button YUI widget
-        button = new YAHOO.widget.Button(button);
+        $(button).button();
 
         // Prepare the panel
         var panel = new Panel(Dom.generateId(), {modal: true});
         panel.setHeader(title);
         panel.setBody(contentDiv);
         panel.render(document.body);
+        $(textField).focus();
         panel.center();
 
         // Add event listener

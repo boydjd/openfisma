@@ -19,5 +19,5 @@ elements.comment.options.cols = 50
 elements.comment.options.rows = 6
 elements.comment.options.required = true
 
-elements.submitButton.type = "submit"
+elements.submitButton.type = "Form_Button_Submit"
 elements.submitButton.options.label = "Add Comment"

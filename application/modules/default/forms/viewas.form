@@ -27,6 +27,6 @@ displayGroups.viewAs.elements.userId = "userId"
 elements.url.type = "hidden"
 displayGroups.viewAs.elements.url = "url"
 
-elements.submit.type = "submit"
+elements.submit.type = "Form_Button_Submit"
 elements.submit.options.attribs.value = "Submit"
 displayGroups.viewAs.elements.submit = "submit"

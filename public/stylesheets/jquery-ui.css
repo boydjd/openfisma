@@ -459,11 +459,11 @@
  *
  * http://docs.jquery.com/UI/Autocomplete#theming
  */
-.ui-autocomplete { 
-	position: absolute; 
+.ui-autocomplete {
+	position: absolute;
 	top: 0;
 	left: 0;
-	cursor: default; 
+	cursor: default;
 }
 
 /* workarounds */
@@ -485,9 +485,9 @@
 .ui-menu .ui-menu-divider { margin: 5px -2px 5px -2px; height: 0; font-size: 0; line-height: 0; border-width: 1px 0 0 0; }
 .ui-menu .ui-menu-item a { text-decoration: none; display: block; padding: 2px .4em; line-height: 1.5; zoom: 1; font-weight: normal; }
 .ui-menu .ui-menu-item a.ui-state-focus,
-.ui-menu .ui-menu-item a.ui-state-active { 
-  font-weight: normal; 
-  margin: 0; 
+.ui-menu .ui-menu-item a.ui-state-active {
+  font-weight: normal;
+  margin: 0;
   color: #ffffff;
   background: #0064cd;
   background-color: #0064cd;
@@ -754,8 +754,8 @@ button.ui-button::-moz-focus-inner { border: 0; padding: 0; } /* reset extra pad
   opacity: 0.25;
 }
 
-.ui-dialog .ui-dialog-titlebar-close span { 
-  display: block; 
+.ui-dialog .ui-dialog-titlebar-close span {
+  display: block;
   margin: 1px;
   text-indent: 9999px;
 }
@@ -1148,19 +1148,20 @@ input[type=file]:focus, input[type=checkbox]:focus, select:focus {
 input[type="text"],
 input[type="password"],
 .ui-autocomplete-input,
-textarea,
-.uneditable-input {
+textarea {
   display: inline-block;
   padding: 4px;
   font-size: 13px;
   line-height: 18px;
-  color: #808080;
   border: 1px solid #ccc;
   -webkit-border-radius: 3px;
   -moz-border-radius: 3px;
   border-radius: 3px;
 }
 
+.uneditable-input {
+  color: #808080;
+}
 
 
 /**Toolbar**/
@@ -1250,7 +1251,7 @@ div.wijmo-wijmenu{
   color:#BFBFBF;
 }
 
-.wijmo-wijmenu .ui-state-default .wijmo-wijmenu-text{    
+.wijmo-wijmenu .ui-state-default .wijmo-wijmenu-text{
   color:#BFBFBF;
 }
 

@@ -315,7 +315,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->byPocTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Reporting Organization',
+                'Parent',
                 false,
                 null,
                 null,
@@ -325,7 +325,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->byPocTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Reporting Organization',
+                'Parent',
                 true,
                 'Fisma.TableFormat.formatOrganization',
                 null,
@@ -500,7 +500,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->bySystemTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Parent Organization',
+                'Parent',
                 false,
                 null,
                 null,
@@ -510,7 +510,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->bySystemTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Parent Organization',
+                'Parent',
                 true,
                 'Fisma.TableFormat.formatOrganization',
                 null,

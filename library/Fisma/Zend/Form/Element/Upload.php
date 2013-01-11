@@ -63,11 +63,11 @@ class Fisma_Zend_Form_Element_Upload extends Zend_Form_Element_File
 
         $render .= '<p> <button class="ie7-only ie8-only ie9-only" id="add-another-file-button">';
         $render .= 'Add another file</button>';
-        $render .= '<input type="submit" name="upload_' . $this->getName() .'" value="Upload"/></p>';
+        $render .= '<button type="submit" name="upload_' . $this->getName() .'" value="Upload">Upload</button></p>';
         $render .= '<ul> <li>Each file must be <b>under '
                    . substr($maxUploadSize, 0, -1) . ' megabytes</b> in size</li>';
         $render .= '<li>Please ensure no <b>Personally Identifiable Information</b> is included (eg, SSN, DOB)</li>';
-        $render .= '</ul>';
+        $render .= '</ul><script>$(function(){$("button[name=upload_' . $this->getName() .']").button();});</script>';
 
         return $render;
 

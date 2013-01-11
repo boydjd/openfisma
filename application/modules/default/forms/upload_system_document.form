@@ -30,5 +30,5 @@ elements.file.options.required = true
 elements.file.options.decorators.file.decorator = "File"
 elements.file.options.decorators.definitionList.decorator = "DtDdWrapper"
 
-elements.uploadButton.type = "submit"
+elements.uploadButton.type = "Form_Button_Submit"
 elements.uploadButton.options.label = "Upload"

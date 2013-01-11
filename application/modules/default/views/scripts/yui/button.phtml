@@ -2,7 +2,7 @@
 	id = '<?php echo $this->escape($this->id); ?>'
 	<?php if ($this->disabled): ?>disabled<?php endif; ?>
 >
-	<?php if ($this->imageUrl): ?><img src='<?php echo $this->escape($this->imageUrl); ?>' /><?php endif; ?>
+	<?php if ($this->imageUrl): ?><img src='<?php echo $this->escape($this->imageUrl); ?>' alt='' /><?php endif; ?>
 	<?php echo $this->escape($this->label); ?>
 </button>
 <script type='text/javascript'>
@@ -11,11 +11,11 @@ $(function() {
 		.button()
 	<?php if ($this->function): ?>
 		.click(function(e) {
+			e.preventDefault();
 			<?php echo $this->escape($this->function, 'javascript'); ?>.apply(
 				this,
 				[e, <?php echo $this->escape($this->arguments, 'json'); ?>]
 			);
-			return false;
 		})
 	<?php endif; ?>
 	;

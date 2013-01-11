@@ -93,7 +93,6 @@ div.yui-dt.yui-dt-scrollable {
 }
 
 .searchCriteria select {
-    border-color: gray;
-    height: 2.5em;
+    border-color: #808080;
     margin: 2px;
 }

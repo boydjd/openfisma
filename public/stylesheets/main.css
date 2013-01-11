@@ -804,17 +804,17 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 }
 
 /* hide elements when not using IE (ie7hacks undoes this) */
-.ie7-only {
+*.ie7-only, .ui-button.ie7-only {
     display: none;
 }
 
 /* hide elements when not using IE (ie8hacks undoes this) */
-.ie8-only {
+*.ie8-only, .ui-button.ie8-only {
     display: none;
 }
 
 /* hide elements when not using IE (ie9hacks undoes this) */
-.ie9-only {
+*.ie9-only, .ui-button.ie9-only {
     display: none;
 }
 

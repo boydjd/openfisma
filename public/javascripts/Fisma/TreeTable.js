@@ -208,7 +208,7 @@
 
         /**
          * Collapse a node and all nodes underneath it.
-         * 
+         *
          * @param node {Array}
          */
         collapseSubtree: function(node) {
@@ -222,7 +222,7 @@
                     this.collapseSubtree(node.children[i]);
                 }
             }
-        }, 
+        },
 
         /**
          * Collapse all nodes.
@@ -275,31 +275,32 @@
         _renderButtons: function (container) {
             var button, buttonDefinition;
             var i;
+            var that = this;
 
             for (i in this._buttons) {
-                var div = document.createElement("div");
-                container.appendChild(div);
-                div.className = "treeTableButton";
-
                 buttonDefinition = this._buttons[i];
 
-                button = new YAHOO.widget.Button({
-                    type: "button",
-                    container: div,
-                    label: buttonDefinition.label,
-                    onclick: {
-                        fn: buttonDefinition.fn,
-                        scope: this
-                    }
-                });
-
-                // To fix the IE popup insecure warning window problem 
-                buttonDefinition.image = window.location.protocol
-                                       + '//'
-                                       + window.location.host + buttonDefinition.image;
-
-                button._button.style.background = 'url(' + buttonDefinition.image + ') 10% 50% no-repeat';
-                button._button.style.paddingLeft = '3em';
+                $('<button/>')
+                    .data('fn', buttonDefinition.fn)
+                    .click(function() {
+                        $(this).data('fn').apply(that);
+                    })
+                    .appendTo(
+                        $('<div/>')
+                            .addClass('treeTableButton')
+                            .appendTo(container)
+                    )
+                    .text(buttonDefinition.label)
+                    .prepend(
+                        $('<img/>')
+                            .attr('src', buttonDefinition.image)
+                            .css({
+                                'height': '14px',
+                                'vertical-align': 'middle',
+                                'margin-right': '4px'
+                            })
+                    )
+                    .button();
             }
         },
 
@@ -336,6 +337,7 @@
 
                 // Closures inside loops are a little hacky…
                 select.onchange = selectOnChangeEvent(filter.callback, filterName, select);
+                $(select).button();
 
                 var key;
                 for (key in filter.values) {
@@ -410,7 +412,7 @@
 
         /**
          * Render the error bar.
-         * 
+         *
          * @param containerRow {HTMLElement} The parent container (a TR element) to render the error bar inside of.
          */
         _renderErrorBar: function (containerRow) {
@@ -469,20 +471,20 @@
          */
         _requestData: function () {
             YAHOO.util.Connect.asyncRequest(
-                'GET', 
-                this._getDataUrl(), 
+                'GET',
+                this._getDataUrl(),
                 {
                     success: this._handleDataRefresh,
                     failure: this._handleDataRefreshFailed,
                     scope: this
-                }, 
+                },
                 null
             );
         },
 
         /**
          * Handle a data refresh event.
-         * 
+         *
          * @param response {Object} YUI Response object
          */
         _handleDataRefresh: function (response) {
@@ -610,14 +612,17 @@
                 case TT.NodeState.EXPANDED:
                     YAHOO.util.Event.addListener(firstCellDiv, "click", this.toggleNode, node, this);
                     toggleControlImage.src = "/images/minus.png";
+                    toggleControlImage.alt = "collapse";
                     break;
                 case TT.NodeState.COLLAPSED:
                     YAHOO.util.Event.addListener(firstCellDiv, "click", this.toggleNode, node, this);
                     toggleControlImage.src = "/images/plus.png";
+                    toggleControlImage.alt = "expand";
                     break;
                 case TT.NodeState.LEAF_NODE:
                     // This state uses an invisible PNG and has no click event.
                     toggleControlImage.src = "/images/leaf_node.png";
+                    toggleControlImage.alt = "";
                     break;
                 default:
                     throw "Unexpected nodeState (" + nodeState + ")";
@@ -746,7 +751,7 @@
 
         /**
          * Recursively hide all children of a given node.
-         * 
+         *
          * @param node {Array}
          */
         _hideChildren: function(node) {
