@@ -34,9 +34,9 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
      *
      * @return string The HTML snippet of the YUI submit button rendered
      */
-    function renderSelf()
+    function renderSelf(Zend_View_Interface $view = NULL)
     {
-        $view = Zend_Layout::getMvcInstance()->getView();
+        $view = ($view) ? $view : Zend_Layout::getMvcInstance()->getView();
         return $view->partial('yui/button-submit.phtml', array(
             'id'        => $this->getName(),
             'label'     => $this->getLabel(),

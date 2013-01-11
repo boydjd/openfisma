@@ -50,6 +50,7 @@ class CommentController extends Fisma_Zend_Controller_Action_Security
         $this->_helper->layout->disableLayout();
 
         $form = Fisma_Zend_Form_Manager::loadForm('add_comment');
+        //$form->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
 
         $this->view->form = $form;
     }
