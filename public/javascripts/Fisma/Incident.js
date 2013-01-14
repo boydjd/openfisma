@@ -372,6 +372,8 @@ Fisma.Incident = {
                         }
 
                         Fisma.Incident.addUserToTable(user, dataTable);
+                        $('#' + type + 'Id').val('');
+                        $('#' + type + 'Autocomplete').val('').focus();
                         Fisma.Registry.get('messageBoxStack').peek().hide();
                     } else {
                         var message = "Cannot add actor or observer: " + response.message;

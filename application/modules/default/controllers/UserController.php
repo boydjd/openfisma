@@ -1396,28 +1396,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     public function autocompleteAction()
     {
         $keyword = $this->getRequest()->getParam('keyword');
-        $expr = 'u.nameFirst LIKE ? OR u.nameLast LIKE ? OR u.email LIKE ? OR u.username LIKE ?';
-        $params = array_fill(0, 4, '%' . $keyword . '%');
+        $users = Doctrine::getTable('User')->getAutocompleteQuery($keyword)->execute();
 
-        $query = Doctrine_Query::create()
-                    ->from('User u')
-                    ->select("u.id, u.nameFirst, u.nameLast, u.username, u.email")
-                    ->where($expr, $params)
-                    ->andWhere('(u.lockType IS NULL OR u.lockType <> ?)', 'manual')
-                    ->andWhere('u.published')
-                    ->orderBy("u.nameFirst, u.nameLast, u.username, u.email")
-                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-
-        $users = $query->execute();
-        foreach ($users as &$poc) {
-            $poc['name'] = $poc['nameFirst'] . ' ' . $poc['nameLast'] . ' ';
-            if (!empty($poc['username'])) {
-                $poc['name'] .= '(' . $poc['username'] . ') ';
-            }
-            $poc['name'] .= '<' . $poc['email'] . '>';
-            $poc['name'] = trim(preg_replace('/\s+/', ' ', $poc['name']));
-            unset($poc['nameFirst'], $poc['nameLast'], $poc['username'], $poc['email']);
-        }
+        Doctrine::getTable('User')->parseAutocompleteResult($users);
 
         $this->view->pointsOfContact = $users;
     }
