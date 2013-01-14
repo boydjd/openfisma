@@ -262,7 +262,7 @@ Fisma.Util = {
                 config.callback();
             }
         };
-        var button = [{'text': "Ok", 'handler': handleOk } ];
+        var buttons = [{'text': "Ok", 'handler': handleOk}];
 
         alertDialog.setHeader("WARNING");
         alertDialog.setBody(alertMessage);
@@ -284,7 +284,7 @@ Fisma.Util = {
                 .click(function() {
                     $(this).data('fn').apply(alertDialog);
                 })
-                .appendTo(confirmDialog.body)
+                .appendTo(alertDialog.body)
                 .css('margin-right', '4px')
             ;
         }
