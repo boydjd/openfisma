@@ -220,6 +220,18 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'source' => array(
+                'initiallyVisible' => false,
+                'label' => 'Source',
+                'type' => 'text',
+                'sortable' => true
+            ),
+            'severityLevel' => array(
+                'initiallyVisible' => false,
+                'label' => 'Severity',
+                'type' => 'text',
+                'sortable' => true
+            ),
             'impact' => array(
                 'initiallyVisible' => true,
                 'label' => 'Impact',
@@ -395,13 +407,13 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             ),
             'sourceIp' => array(
                 'initiallyVisible' => false,
-                'label' => 'Source IP',
+                'label' => 'Attacker IP',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'sourceAdditional' => array(
                 'initiallyVisible' => false,
-                'label' => 'Source Additional Information',
+                'label' => 'Attacker Additional Information',
                 'sortable' => false,
                 'type' => 'text'
             ),
