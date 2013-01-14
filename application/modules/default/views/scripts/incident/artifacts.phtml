@@ -1,11 +1,6 @@
-<div class="buttonBar">
-    <?php echo $this->escape($this->uploadPanelButton, 'none'); ?>
-</div>
+<?php Fisma_Format_Section::startSection('Incident ' . $this->escape($this->translate('Incident_Attachments'))); ?>
 
-<?php
-Fisma_Format_Section::startSection('Incident ' . $this->escape($this->translate('Incident_Attachments')));
+    <div class="buttonBar"><?php echo $this->escape($this->uploadPanelButton, 'none'); ?></div>
+    <?php echo $this->escape($this->dataTable, 'none'); ?>
 
-echo $this->escape($this->dataTable, 'none');
-
-Fisma_Format_Section::stopSection();
-?>
+<?php Fisma_Format_Section::stopSection(); ?>

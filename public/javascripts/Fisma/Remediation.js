@@ -75,6 +75,10 @@ Fisma.Remediation = {
         var panelTitle = args.panelTitle;
         var findingId = args.findingId;
         var panel;
+        var closeDialogFunction = function(event) {
+            event.preventDefault();
+            panel.destroy();
+        };
 
         if ('REJECTED' === action) {
             panel = Fisma.UrlPanel.showPanel(
@@ -82,13 +86,8 @@ Fisma.Remediation = {
                 '/finding/remediation/reject-evidence/id/' + findingId,
                 function(){
                     document.finding_detail_reject_evidence.action = document.finding_detail.action;
-                    var rejectEvidenceButton = new YAHOO.widget.Button(
-                        YAHOO.util.Selector.query("input[type=submit]", "finding_detail_reject_evidence", true)
-                    );
-                    var closeDialogFunction = function() {
-                        panel.destroy();
-                    };
-                    var closeButton = new YAHOO.widget.Button("dialog_close", {onclick: {fn: closeDialogFunction}});
+                    $('button[type=submit]', panel.body).button();
+                    $('#dialog_close', panel.body).button().click(closeDialogFunction);
                 }
             );
         } else {
@@ -127,8 +126,7 @@ Fisma.Remediation = {
             div.appendChild(cancelButton);
 
             panel = Fisma.HtmlPanel.showPanel(panelTitle, content.innerHTML);
-
-            var continueButton = new YAHOO.widget.Button("dialog_continue", {onclick: {fn: function () {
+            $('#dialog_continue', panel.body).button().click(function() {
                 var form2 = document.getElementById(formId);
                 var comment = document.getElementById('dialog_comment').value;
 
@@ -151,12 +149,9 @@ Fisma.Remediation = {
                 form2.appendChild(sub);
                 form2.submit();
                 return;
-            }}});
+            });
 
-            var closeButton = new YAHOO.widget.Button("dialog_close", {onclick: {fn: function () {
-                panel.destroy();
-                return false;
-            }}});
+            $('#dialog_close', panel.body).button().click(closeDialogFunction);
         }
 
         // Register listener for the panel close event

@@ -759,8 +759,8 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      */
     public function deleteEvidenceAction()
     {
-        $this->_helper->layout->disableLayout();
-        $this->_helper->viewRenderer->setNoRender(true);
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
 
         $id = $this->_request->getParam('id');
         $attachmentId = $this->_request->getParam('attachmentId');
@@ -788,6 +788,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $finding->save();
 
         $finding->getAuditLog()->write($message);
+        $this->_redirect("/finding/remediation/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -1105,9 +1106,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 'fileSize'     => $attachment->getFileSize(),
                 'user'         => $this->view->userInfo($attachment->User->displayName, $attachment->User->id),
                 'date'         => Zend_Json::encode(array("local" => $createdDateTimeLocal, "utc" => $createdDateTime)),
-                'action'       => 'Delete',
-                'id'           => $this->view->finding->id,
-                'attachmentId' => $attachment->id
+                'delete'       => "{$baseUrl}delete-evidence{$currentUrl}{$this->view->fromSearchUrl}"
             );
         }
 
@@ -1183,41 +1182,18 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->_acl->hasPrivilegeForObject('upload_evidence', $this->view->finding) &&
             !$this->view->finding->isDeleted() &&
             in_array($this->view->finding->status, array('EN', 'EA'))
-        ):
+        )
+        {
             $dataTable->addColumn(
                 new Fisma_Yui_DataTable_Column(
                     'Action',
-                    true,
-                    'YAHOO.widget.DataTable.formatButton',
+                    false,
+                    'Fisma.TableFormat.deleteControl',
                     null,
-                    null
+                    'delete'
                 )
             );
-
-            $dataTable->addColumn(
-                new Fisma_Yui_DataTable_Column(
-                    'id',
-                    null,
-                    null,
-                    null,
-                    null,
-                    true
-                )
-            );
-
-            $dataTable->addColumn(
-                new Fisma_Yui_DataTable_Column(
-                    'attachmentId',
-                    null,
-                    null,
-                    null,
-                    null,
-                    true
-                )
-            );
-
-            $dataTable->addEventListener("buttonClickEvent", 'Fisma.Finding.deleteEvidence');
-        endif;
+        }
 
         $dataTable->setData($attachmentRows);
         $this->view->evidencePackage = $dataTable;
