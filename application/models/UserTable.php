@@ -251,4 +251,43 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
                           ->setHydrationMode($hydrationMode);
         return $userRolesQuery;
     }
+
+    /**
+     * Build the basic query for Autocomplete control
+     *
+     * @param string $keyword The keyword users typed in to look up
+     * @return Doctrine_Query
+     */
+    public function getAutocompleteQuery($keyword) {
+        $expr = 'u.nameFirst LIKE ? OR u.nameLast LIKE ? OR u.email LIKE ? OR u.username LIKE ?';
+        $params = array_fill(0, 4, '%' . $keyword . '%');
+
+        $query = Doctrine_Query::create()
+                    ->from('User u')
+                    ->select("u.id, u.nameFirst, u.nameLast, u.username, u.email")
+                    ->where($expr, $params)
+                    ->andWhere('(u.lockType IS NULL OR u.lockType <> ?)', 'manual')
+                    ->andWhere('u.published')
+                    ->orderBy("u.nameFirst, u.nameLast, u.username, u.email")
+                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        return $query;
+    }
+
+    /**
+     * Parse the resultset from getAutocompleteQuery() into an array of 2 columns: id & name
+     *
+     * @param array By reference. The array result from getAutocompleteQuery()->execute()
+     * @return array [['id' => x, 'name' => y], [...], ...]
+     */
+    public function parseAutocompleteResult(&$resultSet) {
+        foreach ($resultSet as &$poc) {
+            $poc['name'] = $poc['nameFirst'] . ' ' . $poc['nameLast'] . ' ';
+            if (!empty($poc['username'])) {
+                $poc['name'] .= '(' . $poc['username'] . ') ';
+            }
+            $poc['name'] .= '<' . $poc['email'] . '>';
+            $poc['name'] = trim(preg_replace('/\s+/', ' ', $poc['name']));
+            unset($poc['nameFirst'], $poc['nameLast'], $poc['username'], $poc['email']);
+        }
+    }
 }

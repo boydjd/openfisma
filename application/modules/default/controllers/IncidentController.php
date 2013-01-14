@@ -884,7 +884,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                    ->addColumn(new $col('Last Name', true, null, null, 'nameLast'));
 
         if ($updateIncidentPrivilege) {
-            $actorTable->addColumn(new $col('', true, 'Fisma.TableFormat.remover', null, 'remover'));
+            $actorTable->addColumn(new $col('Action', true, 'Fisma.TableFormat.remover', null, 'remover'));
         }
 
         $actorTable->setData($actorRows);
@@ -931,7 +931,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                       ->addColumn(new $col('Last Name', true, null, null, 'nameLast'));
 
         if ($updateIncidentPrivilege) {
-            $observerTable->addColumn(new $col('', true, 'Fisma.TableFormat.remover', null, 'remover'));
+            $observerTable->addColumn(new $col('Action', true, 'Fisma.TableFormat.remover', null, 'remover'));
         }
 
         $observerTable->setData($observerRows);
@@ -942,11 +942,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->view->actorAutocomplete = new Fisma_Yui_Form_AutoComplete(
             'actorAutocomplete',
             array(
-                'resultsList' => 'users',
-                'fields' => 'username',
+                'resultsList' => 'pointsOfContact',
+                'fields' => 'name',
                 'xhr' => "/incident/get-eligible-users/id/$id",
                 'hiddenField' => 'actorId',
-                'queryPrepend' => '/query/',
+                'queryPrepend' => '/keyword/',
                 'containerId' => 'actorAutocompleteContainer',
                 'enterKeyEventHandler' => 'Fisma.Incident.handleAutocompleteEnterKey',
                 'enterKeyEventArgs' => 'actor'
@@ -966,11 +966,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->view->observerAutocomplete = new Fisma_Yui_Form_AutoComplete(
             'observerAutocomplete',
             array(
-                'resultsList' => 'users',
-                'fields' => 'username',
+                'resultsList' => 'pointsOfContact',
+                'fields' => 'name',
                 'xhr' => "/incident/get-eligible-users/id/$id",
                 'hiddenField' => 'observerId',
-                'queryPrepend' => '/query/',
+                'queryPrepend' => '/keyword/',
                 'containerId' => 'observerAutocompleteContainer',
                 'enterKeyEventHandler' => 'Fisma.Incident.handleAutocompleteEnterKey',
                 'enterKeyEventArgs' => 'observer'
@@ -1876,22 +1876,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     public function getEligibleUsersAction()
     {
         $id = Inspekt::getInt($this->getRequest()->getParam('id'));
-        $queryString = $this->getRequest()->getParam('query');
+        $keyword = $this->getRequest()->getParam('keyword');
 
-        $userQuery = Doctrine_Query::create()
-                     ->select('u.username')
-                     ->from('User u')
-                     ->leftJoin("u.IrIncidentUser iu ON u.id = iu.userId AND iu.incidentId = $id")
-                     ->where("u.username like ?", "%$queryString%")
-                     ->andWhere('iu.incidentId IS NULL')
-                     ->orderBy('u.username')
-                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $users = Doctrine::getTable('User')
+            ->getAutocompleteQuery($keyword)
+            ->leftJoin("u.IrIncidentUser iu ON u.id = iu.userId AND iu.incidentId = $id")
+            ->andWhere('iu.incidentId IS NULL')
+            ->execute();
+        Doctrine::getTable('User')->parseAutocompleteResult($users);
 
-        $users = $userQuery->execute();
-
-        $list = array('users' => array_values($users));
-
-        return $this->_helper->json($list);
+        return $this->_helper->json(array('pointsOfContact' => $users));
     }
 
     /**

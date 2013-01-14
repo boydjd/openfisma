@@ -4,11 +4,11 @@
     if ($this->updateIncidentPrivilege):
     ?>
         <input type="hidden" id="actorId" />
-        <div style="float: left; margin-top: 3px; width: 50%;">
-            <?php echo $this->escape($this->actorAutocomplete, 'none'); ?>
-        </div>
-        <div style="float: left; margin-left: 15px; margin-bottom: 15px;">
+        <div style="float: left; margin-right: 15px; margin-bottom: 15px;">
             <?php echo $this->escape($this->addActorButton, 'none'); ?>
+        </div>
+        <div style="float: left; margin-top: 3px; width: 75%;">
+            <?php echo $this->escape($this->actorAutocomplete, 'none'); ?>
         </div>
         <div style="clear: both;"></div>
     <?php
@@ -26,11 +26,11 @@
     if ($this->updateIncidentPrivilege):
     ?>
         <input type="hidden" id="observerId" />
-        <div style="float: left; margin-top: 3px; width: 50%;">
-            <?php echo $this->escape($this->observerAutocomplete, 'none'); ?>
-        </div>
-        <div style="float: left; margin-left: 15px; margin-bottom: 15px;">
+        <div style="float: left; margin-right: 15px; margin-bottom: 15px;">
             <?php echo $this->escape($this->addObserverButton, 'none'); ?>
+        </div>
+        <div style="float: left; margin-top: 3px; width: 72%;">
+            <?php echo $this->escape($this->observerAutocomplete, 'none'); ?>
         </div>
         <div style="clear: both;"></div>
     <?php
