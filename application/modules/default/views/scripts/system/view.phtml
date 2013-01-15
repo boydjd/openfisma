@@ -1,6 +1,9 @@
-<?php echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none'); ?>
-<form enctype="multipart/form-data"
+<form editable="true"
+      enctype="multipart/form-data"
       action="/system/edit/id/<?php echo $this->escape($this->organization->id . $this->fromSearchParams, 'none') ?>"
       method="post">
-    <?php echo $this->escape($this->tabView, 'none'); ?>
+<?php
+    echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
+    echo $this->escape($this->tabView, 'none');
+?>
 </form>
