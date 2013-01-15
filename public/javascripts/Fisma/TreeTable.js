@@ -293,7 +293,10 @@
                     .text(buttonDefinition.label)
                     .prepend(
                         $('<img/>')
-                            .attr('src', buttonDefinition.image)
+                            .attr({
+                                'src': buttonDefinition.image,
+                                'alt': ''
+                            })
                             .css({
                                 'height': '14px',
                                 'vertical-align': 'middle',
