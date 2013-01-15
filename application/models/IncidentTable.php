@@ -417,6 +417,12 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => false,
                 'type' => 'text'
             ),
+            'actionsTaken' => array(
+                'initiallyVisible' => false,
+                'label' => 'Actions Taken',
+                'sortable' => false,
+                'type' => 'text'
+            ),
             'closedTs' => array(
                 'initiallyVisible' => false,
                 'label' => 'Resolved',

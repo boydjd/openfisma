@@ -38,10 +38,5 @@ class Application_Migration_021700_IncidentModelCleanup extends Fisma_Migration_
 
         $this->getHelper()->addColumn('incident', 'pocid', 'bigint(20)', 'organizationid');
         $this->getHelper()->addForeignKey('incident', 'pocid', 'poc', 'id');
-
-        $this->message("Dropping the \"Actions Taken\" column from the Incident table");
-
-        $this->getDb()->exec("UPDATE incident SET additionalInfo = CONCAT(additionalinfo, actionstaken)");
-        $this->getHelper()->dropColumn('incident', 'actionstaken');
     }
 }

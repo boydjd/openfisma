@@ -98,11 +98,6 @@ Migration:
         minorVersion: 18
         tagNumber: 0
         name: PocUserChanges
-    021800_add_default_poc_to_organization:
-        majorVersion: 2
-        minorVersion: 18
-        tagNumber: 0
-        name: AddDefaultPocToOrganization
     021800_migrate_user_notifications:
         majorVersion: 2
         minorVersion: 18
@@ -177,3 +172,8 @@ Migration:
         minorVersion: 1
         tagNumber: 0
         name: VulnerabilityPoc
+    030100_IncidentActionsTaken:
+        majorVersion: 3
+        minorVersion: 1
+        tagNumber: 0
+        name: IncidentActionsTaken

@@ -58,6 +58,12 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
 
         $this->getHelper()->exec("RENAME TABLE poc TO user");
 
+        $this->message("Adding pocid field to organization table");
+
+        $option = "bigint(20) DEFAULT NULL";
+
+        $this->getHelper()->addColumn('organization', 'pocid', $option, 'systemid');
+
         $this->_createStuff();
 
         /*
@@ -137,7 +143,6 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
         'ir_incident_user' => 'ir_incident_user_userid_poc_id',
         'ir_incident_workflow' => 'ir_incident_workflow_userid_poc_id',
         'notification' => 'notification_userid_poc_id',
-        'organization' => 'organization_pocid_poc_id',
         'upload' => 'upload_userid_poc_id',
         'poc' => 'poc_reportingorganizationid_organization_id',
         'user_audit_log' => 'user_audit_log_userid_poc_id',
@@ -161,7 +166,6 @@ class Application_Migration_021800_PocUserChanges extends Fisma_Migration_Abstra
         'ir_incident_user' => array('ir_incident_user_userid_poc_id'),
         'ir_incident_workflow' => 'userid_idx',
         'notification' => 'userid_idx',
-        'organization'  => 'pocid_idx',
         'poc' => 'reportingorganizationid_idx',
         'upload'  => 'userid_idx',
         'user_audit_log'  => 'userid_idx',

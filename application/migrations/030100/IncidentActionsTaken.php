@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2012 Endeavor Systems, Inc.
+ * Copyright (c) 2013 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
@@ -17,25 +17,19 @@
  */
 
 /**
- * Set the max upload file size for the whole application, for OFJ-1824.
+ * This migration reverts the change in OFJ-1662.
  *
- * @author     Mark Ma <mark.ma@reyosoft.com>
- * @copyright  (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
+ * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2013 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Migration
  */
-class Application_Migration_021800_AddDefaultPocToOrganization extends Fisma_Migration_Abstract
+class Application_Migration_030100_IncidentActionsTaken extends Fisma_Migration_Abstract
 {
-    /**
-     * Add an int collumn
-     */
     public function migrate()
     {
-        $this->message("Adding pocid field to organization table");
+        $this->message("Ensure ActionsTaken field is in the Incident table");
 
-        $option = "bigint(20) DEFAULT NULL";
-
-        $this->getHelper()->addColumn('organization', 'pocid', $option, 'systemid');
-        $this->getHelper()->addForeignKey('organization', 'pocid', 'poc', 'id');
+        $this->getHelper()->addMissingColumn('incident', 'actionstaken', 'text', 'sourceadditional');
     }
 }
