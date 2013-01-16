@@ -1124,3 +1124,20 @@ select.ui-button {
 span.longdesc {
     margin-left: 4px;
 }
+
+.section table.keyValues div.editable {
+    display:inline-block;
+}
+
+.section table.keyValues div.editable p:first-child {
+    margin-top: 0px;
+}
+
+.left .section table.keyValues > tbody > tr > td:first-child {
+    width: 200px;
+}
+
+.right .section table.keyValues > tbody > tr > td:first-child {
+    width: 150px;
+}
+
