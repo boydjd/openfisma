@@ -113,17 +113,34 @@ class Incident extends BaseIncident
      */
     public function setCategoryId($categoryId)
     {
-        if ($categoryId === '0') {
-            // This is the "I don't know" category in the report wizard
+        $oldValue = $this->categoryId;
+        if (
+            $categoryId === '0'   // This is the "I don't know" category in the report wizard
+            || $categoryId === '' // Empty option
+        ) {
+            $categoryId = null;
+        }
+
+        if ($oldValue == $categoryId) {
             return;
         }
 
         $this->_set('categoryId', $categoryId);
-        $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
 
-        // Setting a category makes the incident 'open'
         if ('new' == $this->status) {
             $this->status = 'open';
+        }
+        $this->CurrentWorkflowStep = null;
+        $this->save();
+        Doctrine_Query::create()->delete()
+                                ->from('IrIncidentWorkflow w')
+                                ->where('w.incidentId = ?', $this->id)
+                                ->andWhere('w.status <> ?', 'completed')
+                                ->execute();
+
+        $category = null;
+        if (!empty($categoryId)) {
+            $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
         }
 
         // Handle any pre-existing workflows (e.g. when changing from one category to another)
@@ -131,85 +148,68 @@ class Incident extends BaseIncident
 
         $changedWorkflowName = "Change Workflows";
 
-        $changedWorkflowMessage = "<p>The category has been changed to \"{$category->name}\" and the workflow"
-                                . " has been modified accordingly.</p>";
-
-        if ($this->currentWorkflowStepId) {
-            if ($this->CurrentWorkflowStep->cardinality > 1) {
-                // The current workflow is already in progress so change the step to show that the workflow has changed
-                $this->CurrentWorkflowStep->name = $changedWorkflowName;
-                $this->CurrentWorkflowStep->description = $changedWorkflowMessage;
-                $this->CurrentWorkflowStep->completeStep();
-                $this->CurrentWorkflowStep->save();
-
-                $baseCardinality = $this->CurrentWorkflowStep->cardinality;
-            }
-
-            // Delete all remaining workflow items
-            $this->CurrentWorkflowStep = null;
-            $this->save();
-
-            Doctrine_Query::create()->delete()
-                                    ->from('IrIncidentWorkflow w')
-                                    ->where('w.incidentId = ?', $this->id)
-                                    ->andWhere('w.cardinality > ?', $baseCardinality)
-                                    ->execute();
+        if (!empty($category)) {
+            $changedWorkflowMessage = "<p>The category has been changed to \"{$category->name}\" and the workflow"
+                                    . " has been modified accordingly.</p>";
+        } else {
+            $changedWorkflowMessage = "<p>The category has been removed and the workflow has been closed.</p>";
         }
 
-        // Make sure no same cardinalities of workflow step related to an incident
-        if (empty($this->currentWorkflowStepId) && 0 == $baseCardinality && !empty($this->id)) {
-            $irIncidentWorkflow = Doctrine::getTable('IrIncidentWorkflow')->findByIncidentId($this->id);
-            $irIncidentWorkflowCount = $irIncidentWorkflow->count();
-            if ($irIncidentWorkflowCount > 0) {
-                $iw = new IrIncidentWorkflow();
-                $iw->Incident = $this;
-                $iw->name = $changedWorkflowName;
-                $iw->description = $changedWorkflowMessage;
-                $iw->cardinality = $irIncidentWorkflowCount + 1;
-                $iw->completeStep();
-                $iw->save();
-
-                $baseCardinality = $iw->cardinality;
-            }
-        }
-
-        /*
-         * Create a copy of the workflow and assign it to this incident. This is like a SQL
-         * 'INSERT INTO <table> SELECT...' statement, except Doctrine doesn't support that kind of query.
-         */
-        $workflowQuery = Doctrine_Query::create()
-                         ->select('s.id, s.roleId, s.cardinality, s.name, s.description')
-                         ->from('IrStep s')
-                         ->where('s.workflowid = ?', $category->workflowId)
-                         ->orderby('s.cardinality');
-
-        $workflowSteps = $workflowQuery->execute();
-
-        $firstLoop = true;
-
-        foreach ($workflowSteps as $step) {
+        $irIncidentWorkflow = Doctrine::getTable('IrIncidentWorkflow')->findByIncidentId($this->id);
+        $irIncidentWorkflowCount = $irIncidentWorkflow->count();
+        if ($irIncidentWorkflowCount > 0) {
             $iw = new IrIncidentWorkflow();
-
             $iw->Incident = $this;
-            $iw->Role = $step->Role;
-            $iw->name = $step->name;
-            $iw->description = $step->description;
-            $iw->cardinality = $step->cardinality + $baseCardinality;
-
+            $iw->name = $changedWorkflowName;
+            $iw->description = $changedWorkflowMessage;
+            $iw->cardinality = $irIncidentWorkflowCount + 1;
+            $iw->completeStep();
             $iw->save();
 
-            if ($firstLoop) {
-                $firstLoop = false;
-
-                $iw->status = 'current';
-                $iw->save();
-
-                $this->currentWorkflowStepId = $iw->id;
-                $this->save();
-            }
+            $baseCardinality = $iw->cardinality;
         }
 
-        $this->getAuditLog()->write('Changed Category: ' .  $category->name);
+        if (!empty($category)) {
+            /*
+             * Create a copy of the workflow and assign it to this incident. This is like a SQL
+             * 'INSERT INTO <table> SELECT...' statement, except Doctrine doesn't support that kind of query.
+             */
+            $workflowQuery = Doctrine_Query::create()
+                             ->select('s.id, s.roleId, s.cardinality, s.name, s.description')
+                             ->from('IrStep s')
+                             ->where('s.workflowid = ?', $category->workflowId)
+                             ->orderby('s.cardinality');
+
+            $workflowSteps = $workflowQuery->execute();
+
+            $firstLoop = true;
+
+            foreach ($workflowSteps as $step) {
+                $iw = new IrIncidentWorkflow();
+
+                $iw->Incident = $this;
+                $iw->Role = $step->Role;
+                $iw->name = $step->name;
+                $iw->description = $step->description;
+                $iw->cardinality = $step->cardinality + $baseCardinality;
+
+                $iw->save();
+
+                if ($firstLoop) {
+                    $firstLoop = false;
+
+                    $iw->status = 'current';
+                    $iw->save();
+
+                    $this->currentWorkflowStepId = $iw->id;
+                    $this->save();
+                }
+            }
+
+            $this->getAuditLog()->write('Changed Category: ' .  $category->name);
+        } else {
+            $this->getAuditLog()->write('Removed Category');
+        }
     }
 
     /**
@@ -219,8 +219,7 @@ class Incident extends BaseIncident
      */
     public function setOrganizationId($organizationId)
     {
-        if ($organizationId === '0') {
-            // This is the "I don't know" category in the report wizard
+        if ($organizationId === '0' || empty($organizationId)) {
             $this->_set('organizationId', null);
         } else {
             $this->_set('organizationId', $organizationId);

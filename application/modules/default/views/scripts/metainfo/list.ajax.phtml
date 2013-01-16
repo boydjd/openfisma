@@ -1,3 +1,6 @@
+<?php if ($this->isOptional): ?>
+    <option value=""></option>
+<?php endif; ?>
 <?php
 
 if ('nested' == $this->selectStyle):
@@ -7,7 +10,7 @@ if ('nested' == $this->selectStyle):
 
         <?php
         foreach ($items as $name => $label):
-            $selected = ($label == urldecode($this->selected)) ? 'selected="selected"' : '';
+            $selected = ($name == $this->selected) ? 'selected="selected"' : '';
         ?>
 
             <option value="<?php echo $this->escape($name); ?>" <?php echo $this->escape($selected);?>>

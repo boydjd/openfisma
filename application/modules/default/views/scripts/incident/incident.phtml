@@ -11,8 +11,9 @@
                     <span name="incident[categoryId]"
                          id="categoryId"
                          type="select"
-                         href="/metainfo/list/o/incidentCategories/format/html/"
+                         href="/metainfo/list/o/incidentCategories/format/html/optional/true/"
                          target="categoryId"
+                         value="<?php echo $this->escape($this->incident['categoryId']); ?>"
                          <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
                             class="editable"
                          <?php endif; ?>>
@@ -54,7 +55,7 @@
                           name="incident[organizationId]"
                           class="editable"
                           target="organization"
-                          href="/metainfo/list/o/organization/format/html/">
+                          href="/metainfo/list/o/organization/format/html/optional/true/">
                         <?php if (isset($this->incident['Organization'])): ?>
                         <?php $orgId = $this->incident['Organization']['id']; ?>
 
