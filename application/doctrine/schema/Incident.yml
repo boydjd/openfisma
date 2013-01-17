@@ -367,6 +367,14 @@ Incident:
                 logicalName: Additional Details About Incident Source
             comment: Additional description of the source or origin of the incident
 
+        actionsTaken:
+            type: string
+            extra:
+                auditLog: true
+                purify: html
+                logicalName: Actions That Were Taken
+            comment: What actions were taken to the incident?
+
         status:
             type: enum
             values: [new, open, closed]

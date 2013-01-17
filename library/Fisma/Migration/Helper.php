@@ -182,7 +182,7 @@ class Fisma_Migration_Helper
      * @param array $where  An array of field => value pairs to use to constrain the update.  By default, all records
      *                      will be updated.
      */
-    public function update($table, $fields, $where)
+    public function update($table, $fields, $where = array())
     {
         $setArray = array_keys($fields);
         foreach ($setArray as &$f) {
@@ -280,6 +280,23 @@ class Fisma_Migration_Helper
         }
 
         $this->exec($sql);
+    }
+
+    /**
+     * Add a column if not exists
+     *
+     * @param string $table
+     * @param string $column
+     * @param string $definition
+     * @param string $after If specified, add this column immediately after the $after column.
+     */
+    public function addMissingColumn($table, $column, $definition, $after = null)
+    {
+        $checkIfExistsSql = "SHOW COLUMNS FROM `$table` LIKE ?";
+        $result = $this->query($checkIfExistsSql, array($column));
+        if (count($result) <= 0) {
+            $this->addColumn($table, $column, $definition, $after);
+        }
     }
 
     /**

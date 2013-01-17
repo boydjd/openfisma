@@ -125,6 +125,17 @@
         </div>
     <?php Fisma_Format_Section::stopSection(); ?>
 
+    <?php if ($this->updateIncidentPrivilege):
+        Fisma_Format_Section::startSection('Actions Taken', 'actionsTaken');
+    else:
+        Fisma_Format_Section::startSection('Actions Taken');
+    endif;
+    ?>
+        <div name="incident[actionsTaken]" id="actionsTaken" type="textarea">
+            <?php echo $this->escape($this->incident['actionsTaken'], 'none'); ?>
+        </div>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
     <?php Fisma_Format_Section::startSection('Attacker Details'); ?>
         <table class="keyValues">
             <tr>
