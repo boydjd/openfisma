@@ -97,282 +97,36 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function reportAction()
     {
-        $subFormValid = true;
+        $this->view->toolbarButtons = array(
+            new Fisma_Yui_Form_Button(
+                'submitButton',
+                array(
+                    'label' => 'Submit',
+                    'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                    'imageSrc' => '/images/ok.png'
+                )
+            )
+        );
+        $this->view->form = $this->getForm('incident_report');
+
 
         // Unauthenticated users see a different layout that doesn't have a menubar
         if (!$this->_me) {
             $this->_helper->layout->setLayout('anonymous');
         }
 
-        // Get the current step of the process, defaults to zero
-        $step = $this->getRequest()->getParam('step');
-
-        // Fetch the incident report draft from the session or create it if necessary
-        $session = Fisma::getSession();
-        if (isset($session->irDraft)) {
-            $incident = unserialize($session->irDraft);
-        } else {
-            $incident = new Incident();
-        }
-
         // Save the current form into the Incident and save the incident into the session
         if ($this->_request->isPost()) {
-            if (!is_null($step) && $step != 0 && $step < 8) {
-                $subForm = $this->getFormPart($step);
-
-                // Add a customized error message to the "Describe the incident" field
-                $descIncidentElement = $subForm->getElement('additionalInfo');
-                if (!empty($descIncidentElement)) {
-                    $descIncidentValidator = $descIncidentElement->getValidator('MceNotEmpty');
-                    $descIncidentValidator->setMessage('You must enter a description of the incident to continue.');
-                }
-
-                $subFormValid = $subForm->isValid($this->_request->getPost());
-                $incident->merge($subForm->getValues());
+            if ($this->view->form->isValid($this->getRequest()->getPost())) {
+                $incident = new Incident();
+                $incident->merge($this->view->form->getValues());
+                $session = Fisma::getSession();
                 $session->irDraft = serialize($incident);
-            }
-        }
-
-        if (is_null($step)) {
-            $step = 0;
-        } elseif ($this->_hasParam('irReportCancel')) {
-            $this->_redirect('/incident/cancel-report');
-            return;
-        } elseif (!$incident->isValid()) {
-            $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
-        } else {
-            // The user can move forwards or backwards
-            if ($this->_hasParam('irReportForwards')) {
-
-                // Only validate the form when moving forward
-                if (!$subFormValid) {
-                    $errorString = Fisma_Zend_Form_Manager::getErrors($subForm);
-                    $this->view->priorityMessenger("Unable to create the incident:<br>$errorString", 'warning');
-                } else {
-                    $step++;
-                }
-            } elseif ($this->_hasParam('irReportBackwards')) {
-                $step--;
+                $this->_redirect('/incident/review-report');
             } else {
-                throw new Fisma_Zend_Exception('User must move forwards, backwards, or cancel');
+                $this->view->priorityMessenger(Fisma_Zend_Form_Manager::getErrors($this->view->form), 'warning');
             }
         }
-
-        if ($step < 0) {
-            throw new Fisma_Zend_Exception("Illegal step number: $step");
-        }
-
-        // Some business logic to determine if any steps can be skipped based on previous answers:
-        // Authenticated users skip step 1 (which is reporter contact information)
-        if ($this->_me && 1 == $step) {
-            if ($this->_hasParam('irReportForwards')) {
-                $incident->ReportingUser = $this->_me;
-                $step++;
-            } else {
-                $step--;
-            }
-        }
-
-        // Skip past PII sections if they are not applicable
-        if (($step == 5 || $step == 6) && 'YES' != $incident->piiInvolved) {
-            if ($this->_hasParam('irReportForwards')) {
-                $step = 7;
-            } else {
-                $step = 4;
-            }
-        } elseif ($step == 6 && 'YES' != $incident->piiShipment) {
-            if ($this->_hasParam('irReportForwards')) {
-                $step = 7;
-            } else {
-                $step = 5;
-            }
-        }
-
-        // Load the form part corresponding to this step
-        if ($step < count($this->_formParts)) {
-            $formPart = $this->getFormPart($step);
-        } else {
-            $this->_redirect('/incident/review-report');
-            return;
-        }
-
-        // Authenticated users and unauthenticated users have different form actions
-        if ($this->_me) {
-            $formPart->setAction("/incident/report/step/$step");
-        } else {
-            $formPart->setAction("/incident/report/step/$step");
-        }
-
-        // Initialize incidentDate with current system date
-        if (empty($incident->incidentDate)) {
-            $incident->incidentDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
-        }
-
-        // Initialize the default selection of piiInvolved with 'NO' option.
-        if (empty($incident->piiInvolved)) {
-            $incident->piiInvolved = 'NO';
-        }
-
-        // Initialize incidentTime with current system time
-        if (empty($incident->incidentTime)) {
-            $time = Zend_Date::now()->setSecond(0)
-                                    ->get(Fisma_Date::FORMAT_TIME);
-
-            $incident->incidentTime = $time;
-        }
-
-        // Initialize incidentTimezone with current system timezone
-        if (empty($incident->incidentTimezone)) {
-            $timezone = Zend_Date::now()->getTimezone();
-            $supportedTimezones = Fisma_Date::getTimezones();
-
-            $incident->incidentTimezone = isset($supportedTimezones[$timezone]) ? $timezone : null;
-        }
-
-        // Use the validator to load the incident data into the form. Notice that there aren't actually any
-        // validators which could fail here.
-        $formPart->isValid($incident->toArray());
-
-        // Render the current step
-        $this->view->assign('formPart', $formPart);
-        $this->view->assign('stepNumber', $step);
-        $this->view->assign('stepTitle', $this->_formParts[$step]['title']);
-    }
-
-    /**
-     * Loads the specified part of the incident report form
-     *
-     * @param int $step The step number
-     * @return Zend_Form
-     */
-    public function getFormPart($step)
-    {
-        $formPart = Fisma_Zend_Form_Manager::loadForm($this->_formParts[$step]['name']);
-        $formPart->setAttrib('id', 'incident_wizard');
-
-        $cancelButton = new Fisma_Yui_Form_Button_Submit(
-            'irReportCancel',
-            array(
-                'label' => 'Cancel Report',
-                'imageSrc' => '/images/del.png',
-            )
-        );
-        $formPart->addElement($cancelButton);
-
-        if ($step > 0) {
-            $backwardButton = new Fisma_Yui_Form_Button_Submit(
-                'irReportBackwards',
-                array(
-                    'label' => 'Go Back',
-                    'imageSrc' => '/images/left_arrow.png',
-                )
-            );
-            $formPart->addElement($backwardButton);
-        }
-
-        $forwardButton = new Fisma_Yui_Form_Button_Submit(
-            'irReportForwards',
-            array(
-                'label' => 'Continue',
-                'imageSrc' => '/images/right_arrow.png',
-            )
-        );
-        $formPart->addElement($forwardButton);
-
-        // Assign decorators
-        $formPart->setDisplayGroupDecorators(
-            array(
-                new Zend_Form_Decorator_FormElements(),
-                new Fisma_Zend_Form_Decorator_Incident_Create()
-            )
-        );
-        $formPart->setElementDecorators(array(new Fisma_Zend_Form_Decorator_Incident_Create()));
-
-        // Each step has some specific data that needs to be set up
-        switch ($step) {
-            case 1:
-                // setting up state dropdown
-                $formPart->getElement('reporterState')->addMultiOptions(array(0 => '--select--'));
-                foreach ($this->_getStates() as $key => $val) {
-                    $formPart->getElement('reporterState')->addMultiOptions(array($key => $val));
-                }
-                break;
-            case 2:
-                // Decorators for the timestamp
-                $timestamp = $formPart->getElement('incidentDate');
-                $timestamp->clearDecorators();
-                $timestamp->addDecorator(new Fisma_Zend_Form_Decorator_Incident_Create);
-                $timestamp->addDecorator(new Fisma_Zend_Form_Decorator_Date);
-                $tz = $formPart->getElement('incidentTimezone');
-                $tz->addMultiOptions(Fisma_Date::getTimezones());
-
-                if ($this->_me) {
-                    // Load data into organization/system field for authenticated users only
-                    $organizationSelect = $formPart->getElement('organizationId');
-
-                    $organizations  = CurrentUser::getInstance()
-                        ->getOrganizationsQuery()
-                        ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
-                        ->leftJoin('o.System s')
-                        ->andWhere('s.sdlcPhase IS NULL OR s.sdlcPhase <> ?', 'disposal')
-                        ->orderBy('label')
-                        ->execute()
-                        ->toKeyValueArray('id', 'label');
-
-                    $organizationSelect->addMultiOption(0, "I don't know");
-                    $organizationSelect->addMultiOptions($organizations);
-
-                    // Load incident categories for authenticated users only
-                    $categorySelect = $formPart->getElement('categoryId');
-
-                    $categorySelect->addMultiOption(0, "I don't know");
-                    $categorySelect->addMultiOptions(IrCategoryTable::getCategoriesForSelect());
-                } else {
-                    $formPart->removeElement('organizationId');
-                    $formPart->removeElement('categoryId');
-                }
-
-                // Remove the building/room fields
-                $formPart->removeElement('locationBuilding');
-                $formPart->removeElement('locationRoom');
-                break;
-            case 3:
-                foreach ($this->_getOS() as $key => $os) {
-                    $formPart->getElement('hostOs')
-                             ->addMultiOptions(array($key => $os));
-                }
-                break;
-            case 4:
-                $this->_createBoolean($formPart, array('piiInvolved'));
-
-                // Remove '--select--' option
-                $formPart->getElement('piiInvolved')->removeMultiOption('');
-                break;
-            case 5:
-                $this->_createBoolean(
-                    $formPart,
-                    array(
-                        'piiMobileMedia',
-                        'piiEncrypted',
-                        'piiAuthoritiesContacted',
-                        'piiPoliceReport',
-                        'piiIndividualsNotified',
-                        'piiShipment'
-                    )
-                );
-                $formPart->getElement('piiMobileMediaType')->addMultiOptions(array(0 => '--select--'));
-                foreach ($this->_getMobileMedia() as $key => $mm) {
-                    $formPart->getElement('piiMobileMediaType')
-                             ->addMultiOptions(array($key => $mm));
-                }
-                break;
-            case 6:
-                $this->_createBoolean($formPart, array('piiShipmentSenderContacted'));
-                break;
-        }
-
-        $formPart = Fisma_Zend_Form_Manager::addDefaultElementDecorators($formPart);
-        return $formPart;
     }
 
     /**
@@ -393,7 +147,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         if (isset($session->irDraft)) {
             $incident = unserialize($session->irDraft);
         } else {
-            throw new Fisma_Zend_Exception('No incident report found in session');
+            $this->_redirect('/incident/report');
+            return;
         }
 
         // Load the view with all of the non-empty values that the user provided
@@ -437,6 +192,19 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->view->actionUrlBase = $this->_me
                                    ? '/incident'
                                    : '/incident';
+        $this->view->toolbarButtons = array(
+            new Fisma_Yui_Form_Button(
+                'submitReportButton',
+                array(
+                    'label' => 'Submit Report',
+                    'onClickFunction' => 'Fisma.Util.formPostAction',
+                    'onClickArgument' => array(
+                        'action' => '/incident/save-report'
+                    ),
+                    'imageSrc' => '/images/ok.png'
+                )
+            )
+        );
     }
 
     /**
@@ -528,16 +296,14 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
      */
     public function cancelReportAction()
     {
-        // Unauthenticated users see a different layout that doesn't have a menubar
-        if (!$this->_me) {
-            $this->_helper->layout->setLayout('anonymous');
-        }
-
+        $this->view->priorityMessenger('The incident report has been canceled.');
         $session = Fisma::getSession();
 
         if (isset($session->irDraft)) {
             unset($session->irDraft);
         }
+
+        $this->_redirect('/');
     }
 
     /**
@@ -2034,5 +1800,18 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         if ($returnUrl = $this->getRequest()->getParam('returnUrl')) {
             $this->_redirect($returnUrl);
         }
+    }
+
+    public function getForm($formName = null)
+    {
+        $form = parent::getForm($formName);
+        $form->setDefaults(
+            array(
+                'incidentDate' => Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE),
+                'incidentTime' => Zend_Date::now()->setSecond(0)->get(Fisma_Date::FORMAT_TIME)
+            )
+        );
+        $form->getElement('incidentDate')->addDecorator(new Fisma_Zend_Form_Decorator_Date());
+        return $form;
     }
 }
