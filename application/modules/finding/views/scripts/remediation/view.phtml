@@ -1,10 +1,11 @@
-<form enctype="multipart/form-data"
+<form editable="true"
+      enctype="multipart/form-data"
       action="/finding/remediation/modify/id/<?php echo $this->escape($this->finding->id . $this->fromSearchUrl)?>"
       method="post"
       id="finding_detail"
       name="finding_detail">
-    <?php
-        echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
-    ?>
-    <?php echo $this->escape($this->tabView, 'none'); ?>
+<?php
+    echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
+    echo $this->escape($this->tabView, 'none');
+?>
 </form>

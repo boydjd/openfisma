@@ -2,10 +2,3 @@
 <form method="post" action="/user/view/id/<?php echo $this->escape($this->id . $this->fromSearchUrl); ?>">
     <?php echo $this->escape($this->tabView, 'none'); ?>
 </form>
-<script>
-$(function() {
-    if ($('.editable').length <= 0) {
-        Fisma.Editable.turnAllOn();
-    }
-});
-</script>

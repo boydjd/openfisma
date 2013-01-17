@@ -1,11 +1,10 @@
-<form action="<?php echo $this->escape($this->formAction); ?>"
+<form editable="true"
+      action="<?php echo $this->escape($this->formAction); ?>"
       method="post"
       id="incident_detail"
       name="incident_detail">
-
-    <?php
+<?php
     echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
     echo $this->escape($this->tabView, 'none');
-    ?>
-
+?>
 </form>
