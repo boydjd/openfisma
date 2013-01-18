@@ -183,7 +183,7 @@ Fisma.Util = {
      */
     showConfirmDialog : function (event, config) {
         var confirmDialog = Fisma.Util.getDialog();
-
+        var i;
         var buttons = [
             {
                 'text': "Yes",
@@ -222,7 +222,7 @@ Fisma.Util = {
             confirmDialog.cfg.setProperty("width", config.width);
         }
         confirmDialog.render(document.body);
-        for (var i in buttons) {
+        for (i in buttons) {
             var buttonDef = buttons[i];
             $('<button/>')
                 .text(buttonDef.text)
@@ -255,7 +255,7 @@ Fisma.Util = {
      */
     showAlertDialog : function (alertMessage, config) {
         var alertDialog = Fisma.Util.getDialog();
-
+        var i;
         var handleOk =  function() {
             this.destroy();
             if (!YAHOO.lang.isUndefined(config) && config.callback) {
@@ -275,7 +275,7 @@ Fisma.Util = {
         }
 
         alertDialog.render(document.body);
-        for (var i in buttons) {
+        for (i in buttons) {
             var buttonDef = buttons[i];
             $('<button/>')
                 .text(buttonDef.text)

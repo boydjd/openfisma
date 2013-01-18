@@ -276,15 +276,16 @@
             var button, buttonDefinition;
             var i;
             var that = this;
+            var buttonClick = function() {
+                $(this).data('fn').apply(that);
+            };
 
             for (i in this._buttons) {
                 buttonDefinition = this._buttons[i];
 
                 $('<button/>')
                     .data('fn', buttonDefinition.fn)
-                    .click(function() {
-                        $(this).data('fn').apply(that);
-                    })
+                    .click(buttonClick)
                     .appendTo(
                         $('<div/>')
                             .addClass('treeTableButton')

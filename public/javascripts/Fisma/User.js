@@ -376,8 +376,8 @@ Fisma.User = {
             }
         } else { //init population
             var index,
-                selectElement = $('#homeSelect'),
                 currentValue = input.val();
+            selectElement = $('#homeSelect');
             for (index in builtins) {
                 if (currentValue === builtins[index]) {
                     selectElement.val(index);
