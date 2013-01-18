@@ -20,10 +20,12 @@
             id='toolbarForm'
             class="<?php echo $this->escape(($this->searchFormLeft) ? 'left' : 'right'); ?>" style='margin-left:5px;'
         >
-            <?php if ($this->searchForm->getElement('keywords')): ?>
+        <?php if ($this->searchForm->getElement('keywords')): ?>
             <label for='keywords' style='display:none'>Keywords</label>
-            <?php endif; ?>
-            <?php echo $this->escape(Fisma_Zend_Form_Manager::addDefaultElementDecorators($this->searchForm), 'none'); ?>
+        <?php endif; ?>
+        <?php
+            echo $this->escape(Fisma_Zend_Form_Manager::addDefaultElementDecorators($this->searchForm), 'none');
+        ?>
         </div>
     <?php endif; ?>
 

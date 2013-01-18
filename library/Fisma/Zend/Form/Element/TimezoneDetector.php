@@ -36,7 +36,9 @@ class Fisma_Zend_Form_Element_TimezoneDetector extends Zend_Form_Element_Hidden
     function render(Zend_View_Interface $view = null)
     {
         $render = parent::render($view)
-                . '<script>$(function(){$("input[name=' . $this->getName() . ']").val(Fisma.Util.getTimezone());});</script>';
+                . '<script>$(function(){$("input[name='
+                . $this->getName()
+                . ']").val(Fisma.Util.getTimezone());});</script>';
 
         return $render;
     }

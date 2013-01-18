@@ -121,12 +121,14 @@ class Application_Migration_030100_Timezone extends Fisma_Migration_Abstract
         );
     }
 
-    public static function getOldTimezones() {
+    public static function getOldTimezones()
+    {
         return
             array('ADT', 'AST', 'EDT', 'EST', 'CDT', 'CST', 'MDT', 'MST', 'PDT', 'PST', 'AKDT', 'AKST', 'HADT', 'HAST');
     }
 
-    public static function toNewTimezone($timezone) {
+    public static function toNewTimezone($timezone)
+    {
         $aTimeZones = array(
             'ADT'   =>  'America/Glace_Bay',
             'AST'   =>  'America/Glace_Bay',

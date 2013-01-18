@@ -89,7 +89,8 @@ class Fisma_Date
      *
      * @todo this doesn't belong here
      */
-    public static function getTimezones() {
+    public static function getTimezones()
+    {
         return array(
             'Pacific/Kwajalein' => '(GMT-12:00) Enewetak, Kwajalein',
             'Pacific/Midway' => '(GMT-11:00) Midway Island, Samoa',

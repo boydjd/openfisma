@@ -258,7 +258,8 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
      * @param string $keyword The keyword users typed in to look up
      * @return Doctrine_Query
      */
-    public function getAutocompleteQuery($keyword) {
+    public function getAutocompleteQuery($keyword)
+    {
         $expr = 'u.nameFirst LIKE ? OR u.nameLast LIKE ? OR u.email LIKE ? OR u.username LIKE ?';
         $params = array_fill(0, 4, '%' . $keyword . '%');
 
@@ -279,7 +280,8 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
      * @param array By reference. The array result from getAutocompleteQuery()->execute()
      * @return array [['id' => x, 'name' => y], [...], ...]
      */
-    public function parseAutocompleteResult(&$resultSet) {
+    public function parseAutocompleteResult(&$resultSet)
+    {
         foreach ($resultSet as &$poc) {
             $poc['name'] = $poc['nameFirst'] . ' ' . $poc['nameLast'] . ' ';
             if (!empty($poc['username'])) {

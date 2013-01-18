@@ -1182,8 +1182,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->_acl->hasPrivilegeForObject('upload_evidence', $this->view->finding) &&
             !$this->view->finding->isDeleted() &&
             in_array($this->view->finding->status, array('EN', 'EA'))
-        )
-        {
+        ) {
             $dataTable->addColumn(
                 new Fisma_Yui_DataTable_Column(
                     'Action',
