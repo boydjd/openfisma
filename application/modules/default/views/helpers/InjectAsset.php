@@ -38,6 +38,7 @@ class View_Helper_InjectAsset
     private static $_depMap = array(
                                 '/javascripts/combined.js' =>
                                 array('/javascripts/php.js',
+                                      '/javascripts/jstz.js',
                                       '/javascripts/tiny_mce_config.js',
                                       '/javascripts/groupeddatatable.js',
                                       '/javascripts/Fisma.js',
