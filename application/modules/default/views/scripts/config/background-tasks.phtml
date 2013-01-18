@@ -102,6 +102,7 @@
         };
 
         var dataTable = new YAHOO.widget.GroupedDataTable("tasksTable_container", columnDefs, dataSource, {});
+        $('select').each(function(){var html = $(this).html(); $(this).button().html(html); });
     });
 </script>
 </form>
