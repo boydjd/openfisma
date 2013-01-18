@@ -49,6 +49,7 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
     {
         $module = $this->_request->getParam('o');
         $this->view->selected = $this->_request->getParam('value', '');
+        $this->view->isOptional = $this->getRequest()->getParam('optional', false);
         if ($module == 'organization') {
             $organizations  = CurrentUser::getInstance()
                 ->getOrganizationsQuery()

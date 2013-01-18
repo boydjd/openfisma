@@ -282,6 +282,7 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
     public function optionsAction()
     {
         $this->view->options = Doctrine::getTable('Tag')->findOneByTagId($this->_tagId)->labels;
+        $this->view->selected = $this->getRequest()->getParam("value");
         $this->renderScript('tag/options.phtml');
     }
 

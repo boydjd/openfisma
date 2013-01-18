@@ -1559,6 +1559,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             // Update the incident's data
             $newValues = $this->getRequest()->getParam('incident');
             if (!empty($newValues)) {
+                foreach ($newValues as &$value) {
+                    $value = $value == '' ? null : $value;
+                }
                 $incident->merge($newValues);
                 $incident->save();
             }

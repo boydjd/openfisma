@@ -5,7 +5,7 @@ if ('closed' == $this->incident['status']):
 ?>
     <p><b>This workflow has been completed and the incident is now officially closed.</b></p>
 <?php
-elseif ('new' == $this->incident['status']):
+elseif (count($this->steps) === 0):
 ?>
     <p><b>This incident does not have a workflow assigned to it yet.</b></p>
     <p>

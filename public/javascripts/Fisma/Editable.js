@@ -117,6 +117,7 @@
                 var val = ($(target).text().trim() === 'YES');
                 $(target).html('');
                 $('<select/>')
+                    .button()
                     .attr('name', name)
                     .append(
                         $('<option/>')

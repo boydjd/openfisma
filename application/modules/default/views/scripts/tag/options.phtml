@@ -1,3 +1,6 @@
+<option value=""></option>
 <?php foreach ($this->options as $option): ?>
-    <option><?php echo $this->escape($option); ?></option>
+    <option<?php if ($this->selected == $option): ?> selected="true"<?php endif; ?>>
+        <?php echo $this->escape($option); ?>
+    </option>
 <?php endforeach; ?>
