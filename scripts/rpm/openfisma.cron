@@ -1,0 +1,11 @@
+# Flush email notification queue once every minute
+* * * * * wwwrun php /usr/share/openfisma/scripts/bin/notify.php 2>&1 >> /usr/share/openfisma/data/logs/notify.log
+
+# Enable OpenFISMA Overdue alerts at 4 AM
+0 4 * * * wwwrun php /usr/share/openfisma/scripts/bin/ecd-notifier.php 2>&1  >> /usr/share/openfisma/data/logs/ecd_notifier.log
+
+# Flush the email queues once every minute (this is when emails are actually sent)
+* * * * * wwwrun php /usr/share/openfisma/scripts/bin/send-mail.php 2>&1 >> /usr/share/openfisma/data/logs/send_mail.log
+
+# Update locking/unlocking status (once every 5 minutes)
+5 * * * * wwwrun php /usr/share/openfisma/scripts/bin/lock-user.php 2>&1 >> /usr/share/openfisma/data/logs/lock-user.log
