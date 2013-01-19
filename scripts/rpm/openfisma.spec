@@ -4,7 +4,7 @@
 # norootforbuild
 
 %define name openfisma
-%define version 2.17.1
+%define version 3.1.0
 %define install_directory /usr/share/%{name}
 
 Name:       %{name}
