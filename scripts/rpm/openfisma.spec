@@ -125,7 +125,7 @@ mkdir -p %{buildroot}/etc/%{apache}/vhosts.d/
 cp -avL %{S:1} %{buildroot}/etc/%{apache}/vhosts.d/%{name}.conf
 
 mkdir -p %{buildroot}/etc/init.d
-ln -s %{install_directory}/scripts/init.d/openfisma_solr %{buildroot}/etc/init.d/openfisma_solr
+ln -s %{install_directory}/scripts/rpm/openfisma_solr %{buildroot}/etc/init.d/openfisma_solr
 
 mkdir -p %{buildroot}/etc/cron.d
 cp -avL %{S:5} %{buildroot}/etc/cron.d/openfisma
