@@ -3,22 +3,18 @@
 #
 # norootforbuild
 
-%define name openfisma
-%define version 3.1.0
-%define openfisma_installation_directory /usr/share/%{name}
+%define installation_dir /usr/share/%{name}
 
-Name:       %{name}
-Version:    %{version}
+Name:       openfisma
+Version:    3.1.0
 Release:    1
 Summary:    Web application for automating FISMA compliance
 Group:      Productivity/Networking/Security
 License:    GPL-3.0
 URL:        http://www.openfisma.org
 Source0:    OpenFISMA-%{version}.tgz
-Source1:    %{name}_apache2
-Source5:    %{name}_cron
-BuildRoot:  %{_tmppath}/%{name}-%{version}-build 
 BuildArch:  noarch
+BuildRoot:  %{_tmppath}/%{name}-%{version}-build
 
 # For more information on buildrequires and requires check out
 # http://en.opensuse.org/openSUSE:Build_Service_cross_distribution_howto
@@ -93,16 +89,22 @@ Requires: php5-zip
 Requires: php5-zlib
 %endif
 
-
 %description
 OpenFISMA is an open, customizable application sponsored by Endeavor Systems, Inc. that greatly reduces the cost and complexity associated with FISMA compliance and risk management for U.S. Federal agencies.
 
+# It is in the %prep section that the build environment for the software is created, starting with removing the remnants of any previous builds.
 %prep
-
-# creates a temporary source directory
-# unpack the source tarball into the source directory
-# then change into this directory
 %setup -q
+
+# the part of the spec file that is responsible for performing the build. Like the %prep section, the %build section is an ordinary sh script. 
+%build
+
+# turns off APC and secure cookies
+sed --in-place "s/resources.session.cookie_secure = true/resources.session.cookie_secure = false/" application/config/application.ini
+sed --in-place "s/cache_id_prefix = openfisma_ /cache_id_prefix = openfisma_test2_ /" application/config/application.ini
+sed --in-place "s/resources.cachemanager.default.backend.name = Apc/;resources.cachemanager.default.backend.name = Apc/" application/config/application.ini
+sed --in-place "s/;resources.cachemanager.default.backend.name = File/resources.cachemanager.default.backend.name = File/" application/config/application.ini
+sed --in-place "s/;resources.cachemanager.default.backend.options.cache_dir/resources.cachemanager.default.backend.options.cache_dir/" application/config/application.ini
 
 # find and remove unwanted files while in source directory
 find . -type f -name '.DS_Store' -exec rm {} \;
@@ -111,47 +113,54 @@ find . -type f -name '.gitignore' -exec rm {} \;
 find . -type f -name '.cvsignore' -exec rm {} \; 
 find . -type f -name '._*' -exec rm {} \;
 
-# creeate a temporary buildroot directory
-%build
-
+# The %install section is executed as a sh script, just like %prep and %build. 
 %install
 
 # disables brp-check-bytecode-version which throws an error on jar files
 export NO_BRP_CHECK_BYTECODE_VERSION=true
 
 # create openfisma installation directory to represent how the files should be installed into the target system. 
-mkdir -p %{buildroot}/%{openfisma_installation_directory}
+%{__mkdir_p} %{buildroot}/%{installation_dir}
 
 # copy all of the files from the source directory into the new installation directory
-cp -avL * %{buildroot}/%{openfisma_installation_directory}
+cp -rp * %{buildroot}/%{installation_dir}
 
 # Copy configuration files from current location into location of where they should be installed
-mkdir -p %{buildroot}/etc/%{apache}/vhosts.d/
-mkdir -p %{buildroot}/etc/init.d/
-mkdir -p %{buildroot}/etc/cron.d/
-cp -avL %{buildroot}/%{openfisma_installation_directory}/scripts/rpm/openfisma_apache2 %{buildroot}/etc/%{apache}/vhosts.d/%{name}.conf
-cp -avL %{buildroot}/%{openfisma_installation_directory}/scripts/rpm/openfisma_solr %{buildroot}/etc/init.d/openfisma_solr
-cp -avL %{buildroot}/%{openfisma_installation_directory}/scripts/rpm/openfisma_cron %{buildroot}/etc/cron.d/openfisma_cron
+%{__mkdir_p} %{buildroot}/etc/%{apache}/vhosts.d/
+%{__mkdir_p} %{buildroot}/etc/init.d/
+%{__mkdir_p} %{buildroot}/etc/cron.d/
+cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_apache2 %{buildroot}/etc/%{apache}/vhosts.d/%{name}.conf
+cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_solr %{buildroot}/etc/init.d/openfisma_solr
+cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_cron %{buildroot}/etc/cron.d/openfisma_cron
 
+# By adding a sh script to the %clean section, such situations can be handled gracefully, right after the binary package is created.
 %clean
-rm -rf %{buildroot}
 
-# The files list indicates to RPM which files on the build system are to be packaged.
+# The %files section is different from the others, in that it contains a list of the files that are part of the package. Always remember — if it isn't in the file list, it won't be put in the package!
 %files
 %defattr(-,root,root,-)
-%attr(-,root,root) %{openfisma_installation_directory}
+%{installation_dir}
 %config /etc/apache2/vhosts.d/openfisma.conf
 %config /etc/cron.d/openfisma_cron
 %config /etc/init.d/openfisma_solr
-%config /usr/share/openfisma/application/config/application.ini
+%config %{installation_dir}/application/config/application.ini
 
 # run the following scripts after installation of rpm
 %post
 
+# check to see if apache user is in the sudoers file, if not add it
+if grep "^%{webuser}.*ALL=NOPASSWD:.*/usr/sbin/%{apache}.*/sbin/ifconfig" /etc/sudoers > /dev/null ; then
+    echo "sudo active"
+else
+    echo "%{webuser} ALL=NOPASSWD:/usr/sbin/%{apache}, /sbin/ifconfig" >> /etc/sudoers
+fi
+
 # Check and update all permissions
-sudo chown -R %{webuser}:%{webgroup} /usr/share/openfisma 
-sudo find /usr/share/openfisma -type d -exec chmod 770 {} \;
-sudo find /usr/share/openfisma -type f -exec chmod 660 {} \;
+find %{installation_dir} -type d -exec chmod 770 {} \;
+find %{installation_dir} -type f -exec chmod 660 {} \;
+chown -R %{webuser}:%{webgroup} %{installation_dir} 
+chmod 755 /etc/init.d/openfisma_solr
+chmod 666 %{installation_dir}/data/logs/*
 
 # if this is the first installation run the following
 if [ "$1" == "1" ] ; then
@@ -171,11 +180,49 @@ echo "enabling Apache rewrite module"
 # echo "generating ssl certificates"
 # sudo gensslcert -y 3650 -Y 3650 > /dev/null 2>&1
 
+###########################################
+#%pre
+#
+# Create dekiwiki user
+#grep "^dekiwiki" /etc/passwd >>/dev/null
+#if [ $? -ne 0 ]; then
+#  useradd -s /bin/sh -d %{webhome} -g %{webgroup} \
+#          -c "DekiWiki user" dekiwiki 2>/dev/null
+#fi
+#
+#exit 0
+
+# Changing init script to use dekiwiki user
+#sed -i -e "s/^DEKIWIKI_USER=.*$/"'DEKIWIKI_USER="dekiwiki"/' \
+#       /etc/init.d/dekiwiki
+
+#%if 0%{?fedora}||0%{?fedora_version}||0%{?rhel_version}||0%{?centos_version}
+   # Make sure paths are good for RedHat
+#   sed -i -e 's/\/var\/log\/apache2/\/var\/log\/httpd/g' \
+#         %{buildroot}/etc/%{apache}/vhost.d/openfisma_apache
+#%endif
+#%elseif 0%{?suse_version}
+#%if 0%{?suse_version} || 0%{?sles_version}
+   # For OpenSUSE we need to change some default values
+#   sed -i -e 's/\/var\/log\/httpd/\/var\/log\/apache2/g' \
+#          -e 's/\/var\/www/\/srv\/www/g' \
+#          %{buildroot}/etc/%{apache}/vhost.d/openfisma_apache
+#%endif
+
+# Populate the conf files with the host name
+#HNAME=$(hostname)
+#SHNAME=$(hostname -s)
+#sed -i -e "s/.*#ServerName.*/        ServerName $HNAME/" \
+#       /etc/%{apache}/conf.d/openfisma.conf
+#sed -i -e "s/.*#ServerAlias.*/        ServerAlias $SHNAME/" \
+#       /etc/%{apache}/conf.d/openfisma.conf
+
 # autostart mysql, apache2, and solr
 echo "enable autostart of mysql, apache, and solr"
 %if 0%{?suse_version} >= 1210  
    systemctl enable apache2.service
    systemctl enable mysql.service
+   insserv openfisma_solr
 %else
    insserv apache2
    insserv mysql
@@ -187,6 +234,7 @@ echo "restarting apache2, mysql, and solr"
 %if 0%{?suse_version} >= 1210
    systemctl restart apache2.service
    systemctl restart mysql.service
+   /etc/init.d/openfisma_solr restart
 %else
    /etc/init.d/apache2 reload
    /etc/init.d/mysql restart
@@ -194,7 +242,7 @@ echo "restarting apache2, mysql, and solr"
 %endif
 
 echo "create database.ini file"
-sudo -u %{webuser} cat > /usr/share/openfisma/application/config/database.ini << EOF
+sudo -u %{webuser} cat > %{installation_dir}/application/config/database.ini << EOF
 [production]
 db.adapter = mysql
 db.host = localhost
@@ -209,7 +257,7 @@ EOF
 # generates a random password for database.ini
 echo "generate random password for openfisma application account"
 openfisma_app_password=`dd if=/dev/urandom count=100 | tr -dc "A-Za-z0-9" | fold -w 20 | head -n 1`
-sed --in-place "s/##DB_PASS##/$openfisma_app_password/" /usr/share/openfisma/application/config/database.ini
+sed --in-place "s/##DB_PASS##/$openfisma_app_password/" %{installation_dir}/application/config/database.ini
 
 # mysql configuration
 echo "setup MySQL permissions for openfisma database"
@@ -219,17 +267,18 @@ echo "flush privileges;" | mysql -u root
 
 # build the openfisma database and load sample data
 echo "build the openfisma database and load sample data"
-php /usr/share/openfisma/scripts/bin/doctrine.php -bs
-php /usr/share/openfisma/scripts/bin/generate-findings.php -n 50
-php /usr/share/openfisma/scripts/bin/generate-vulnerabilities.php -n 50
-php /usr/share/openfisma/scripts/bin/generate-incidents.php -n 50
+php %{installation_dir}/scripts/bin/doctrine.php -bs
+php %{installation_dir}/scripts/bin/generate-findings.php -n 50
+php %{installation_dir}/scripts/bin/generate-vulnerabilities.php -n 50
+php %{installation_dir}/scripts/bin/generate-incidents.php -n 50
+php %{installation_dir}/scripts/bin/rebuild-index.php -a
 
 # turns off APC and secure cookies
-sed --in-place "s/resources.session.cookie_secure = true/resources.session.cookie_secure = false/" /usr/share/openfisma/application/config/application.ini
-sed --in-place "s/cache_id_prefix = openfisma_ /cache_id_prefix = openfisma_test2_ /" /usr/share/openfisma/application/config/application.ini
-sed --in-place "s/resources.cachemanager.default.backend.name = Apc/;resources.cachemanager.default.backend.name = Apc/" /usr/share/openfisma/application/config/application.ini
-sed --in-place "s/;resources.cachemanager.default.backend.name = File/resources.cachemanager.default.backend.name = File/" /usr/share/openfisma/application/config/application.ini
-sed --in-place "s/;resources.cachemanager.default.backend.options.cache_dir/resources.cachemanager.default.backend.options.cache_dir/" /usr/share/openfisma/application/config/application.ini
+#sed --in-place "s/resources.session.cookie_secure = true/resources.session.cookie_secure = false/" %{installation_dir}/application/config/application.ini
+#sed --in-place "s/cache_id_prefix = openfisma_ /cache_id_prefix = openfisma_test2_ /" %{installation_dir}/application/config/application.ini
+#sed --in-place "s/resources.cachemanager.default.backend.name = Apc/;resources.cachemanager.default.backend.name = Apc/" %{installation_dir}/application/config/application.ini
+#sed --in-place "s/;resources.cachemanager.default.backend.name = File/resources.cachemanager.default.backend.name = File/" %{installation_dir}/application/config/application.ini
+#sed --in-place "s/;resources.cachemanager.default.backend.options.cache_dir/resources.cachemanager.default.backend.options.cache_dir/" %{installation_dir}/application/config/application.ini
 
 # finish installation scripts
 fi
@@ -241,8 +290,8 @@ exit 0
 if [ "$1" == "2" ] ; then
 echo "Upgrading OpenFISMA"
 
-/usr/share/openfisma/scripts/bin/doctrine.php -m || true
-/usr/share/openfisma/scripts/bin/migrate.php || true
+%{installation_dir}/scripts/bin/doctrine.php -m || true
+%{installation_dir}/scripts/bin/migrate.php || true
 /etc/init.d/mysql restart
 /etc/init.d/openfisma_solr restart
 /etc/init.d/apache2 try-restart
