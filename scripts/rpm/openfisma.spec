@@ -5,7 +5,7 @@
 
 %define name openfisma
 %define version 3.1.0
-%define install_directory /usr/share/%{name}
+%define openfisma_installation_directory /usr/share/%{name}
 
 Name:       %{name}
 Version:    %{version}
@@ -99,16 +99,19 @@ OpenFISMA is an open, customizable application sponsored by Endeavor Systems, In
 
 %prep
 
-# unpack the source and cd into the source directory
+# creates a temporary source directory
+# unpack the source tarball into the source directory
+# then change into this directory
 %setup -q
 
-# find and remove unwanted files
+# find and remove unwanted files while in source directory
 find . -type f -name '.DS_Store' -exec rm {} \;
 find . -type f -name '.braids' -exec rm {} \;
 find . -type f -name '.gitignore' -exec rm {} \;
 find . -type f -name '.cvsignore' -exec rm {} \; 
 find . -type f -name '._*' -exec rm {} \;
 
+# creeate a temporary buildroot directory
 %build
 
 %install
@@ -116,19 +119,19 @@ find . -type f -name '._*' -exec rm {} \;
 # disables brp-check-bytecode-version which throws an error on jar files
 export NO_BRP_CHECK_BYTECODE_VERSION=true
 
-# get openfisma files ready for installation
-# create temporary installation directory in buildroot
-# copy all of the files from the tarball into the directory
-mkdir -p %{buildroot}/%{install_directory}
-cp -avL * %{buildroot}/%{install_directory}
+# create openfisma installation directory to represent how the files should be installed into the target system. 
+mkdir -p %{buildroot}/%{openfisma_installation_directory}
 
-# Copy configuration files to the proper location
+# copy all of the files from the source directory into the new installation directory
+cp -avL * %{buildroot}/%{openfisma_installation_directory}
+
+# Copy configuration files from current location into location of where they should be installed
 mkdir -p %{buildroot}/etc/%{apache}/vhosts.d/
 mkdir -p %{buildroot}/etc/init.d/
 mkdir -p %{buildroot}/etc/cron.d/
-cp -avL %{install_directory}/scripts/rpm/openfisma_apache2 %{buildroot}/etc/%{apache}/vhosts.d/%{name}.conf
-cp -avL %{install_directory}/scripts/rpm/openfisma_solr %{buildroot}/etc/init.d/openfisma_solr
-cp -avL %{install_directory}/scripts/rpm/openfisma_cron %{buildroot}/etc/cron.d/openfisma_cron
+cp -avL %{buildroot}/%{openfisma_installation_directory}/scripts/rpm/openfisma_apache2 %{buildroot}/etc/%{apache}/vhosts.d/%{name}.conf
+cp -avL %{buildroot}/%{openfisma_installation_directory}/scripts/rpm/openfisma_solr %{buildroot}/etc/init.d/openfisma_solr
+cp -avL %{buildroot}/%{openfisma_installation_directory}/scripts/rpm/openfisma_cron %{buildroot}/etc/cron.d/openfisma_cron
 
 %clean
 rm -rf %{buildroot}
@@ -136,7 +139,7 @@ rm -rf %{buildroot}
 # The files list indicates to RPM which files on the build system are to be packaged.
 %files
 %defattr(-,root,root,-)
-%attr(-,root,root) %{install_directory}
+%attr(-,root,root) %{openfisma_installation_directory}
 %config /etc/apache2/vhosts.d/openfisma.conf
 %config /etc/cron.d/openfisma_cron
 %config /etc/init.d/openfisma_solr
