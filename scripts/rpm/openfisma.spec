@@ -15,8 +15,8 @@ Group:      Productivity/Networking/Security
 License:    GPL-3.0
 URL:        http://www.openfisma.org
 Source0:    OpenFISMA-%{version}.tgz
-Source1:    %{name}.conf
-Source5:    %{name}.cron
+Source1:    %{name}_apache2
+Source5:    %{name}_cron
 BuildRoot:  %{_tmppath}/%{name}-%{version}-build 
 BuildArch:  noarch
 
@@ -117,18 +117,18 @@ find . -type f -name '._*' -exec rm {} \;
 export NO_BRP_CHECK_BYTECODE_VERSION=true
 
 # get openfisma files ready for installation
+# create temporary installation directory in buildroot
+# copy all of the files from the tarball into the directory
 mkdir -p %{buildroot}/%{install_directory}
 cp -avL * %{buildroot}/%{install_directory}
 
-# get apache configuration files ready for installation
+# Copy configuration files to the proper location
 mkdir -p %{buildroot}/etc/%{apache}/vhosts.d/
-cp -avL %{S:1} %{buildroot}/etc/%{apache}/vhosts.d/%{name}.conf
-
-mkdir -p %{buildroot}/etc/init.d
-ln -s %{install_directory}/scripts/rpm/openfisma_solr %{buildroot}/etc/init.d/openfisma_solr
-
-mkdir -p %{buildroot}/etc/cron.d
-cp -avL %{S:5} %{buildroot}/etc/cron.d/openfisma
+mkdir -p %{buildroot}/etc/init.d/
+mkdir -p %{buildroot}/etc/cron.d/
+cp -avL %{install_directory}/scripts/rpm/openfisma_apache2 %{buildroot}/etc/%{apache}/vhosts.d/%{name}.conf
+cp -avL %{install_directory}/scripts/rpm/openfisma_solr %{buildroot}/etc/init.d/openfisma_solr
+cp -avL %{install_directory}/scripts/rpm/openfisma_cron %{buildroot}/etc/cron.d/openfisma_cron
 
 %clean
 rm -rf %{buildroot}
@@ -138,7 +138,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %attr(-,root,root) %{install_directory}
 %config /etc/apache2/vhosts.d/openfisma.conf
-%config /etc/cron.d/openfisma
+%config /etc/cron.d/openfisma_cron
 %config /etc/init.d/openfisma_solr
 %config /usr/share/openfisma/application/config/application.ini
 
