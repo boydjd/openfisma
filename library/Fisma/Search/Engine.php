@@ -539,7 +539,6 @@ class Fisma_Search_Engine
             $query->addFilterQuery($queryString);
             $query->setQuery($keywordQueryString);
         } else {
-            $query->setHighlight($highlightCriteria);
             $query->setQuery($queryString);
         }
 
