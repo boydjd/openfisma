@@ -185,7 +185,7 @@
                                             datatable.updateRow(row, {
                                                 'Position': input,
                                                 'Assignees': jcell.siblings().eq(0).text(),
-                                                'Edit': "javascript:Fisma.Organization.renameTag('" + encodeURIComponent(input) + "')",
+                                                'Edit': {func:Fisma.Organization.renameTag, param:input},
                                                 'Delete': '/organization/remove-poc-list/tag/' + encodeURIComponent(input)
                                             });
                                         }
@@ -238,7 +238,7 @@
                                             datatable.addRow({
                                                 'Position': input,
                                                 'Assignees': '0',
-                                                'Edit': "javascript:Fisma.Organization.renameTag('" + encodeURIComponent(input) + "')",
+                                                'Edit': {func:Fisma.Organization.renameTag, param:input},
                                                 'Delete': '/organization/remove-poc-list/tag/' + encodeURIComponent(input)
                                             });
                                         }

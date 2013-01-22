@@ -32,6 +32,7 @@
      * Handle the onclick event of the pencil icon
      */
     FE.handleClickEvent = function(o) {
+        var val;
         // ignore clicks on anchor tags
         var targetElement = o.target || o.srcElement;
         if (targetElement.tagName === "A") {
@@ -87,12 +88,12 @@
                 textareaEl.style.height = oldHeight + "px";
                 tinyMCE.execCommand("mceAddControl", true, 'txt_' + t_name);
                 setTimeout(function() {
-                    tinymce.execCommand('mceFocus', false, 'txt_' + t_name);
+                    tinyMCE.execCommand('mceFocus', false, 'txt_' + t_name);
                 }, '500');
             } else if (type === 'autocomplete') {
                 Fisma.Editable.makeAutocomplete(target);
             } else if (type === 'select') {
-                var val = target.getAttribute('value');
+                val = target.getAttribute('value');
                 if (val) {
                     cur_val = val;
                 }
@@ -114,7 +115,7 @@
                 }, null);
             } else if (type === 'checked') {
                 // Get current value
-                var val = ($(target).text().trim() === 'YES');
+                val = ($(target).text().trim() === 'YES');
                 $(target).html('');
                 $('<select/>')
                     .button()
@@ -148,13 +149,13 @@
      * Replace editable fields with appropriate form elements
      */
     FE.setupEditFields = function(editable) {
-        var editable = (editable) ? $(editable).focus() : '.editable';
+        editable = (editable) ? $(editable).focus() : '.editable';
         $(editable)
             .attr('title', '(click to edit)')
             .attr('tabindex', 0)
             .click(Fisma.Editable.handleClickEvent)
             .keypress(function(e) {
-                if (YAHOO.util.Event.getCharCode(e) == YAHOO.util.KeyListener.KEY.ENTER) {
+                if (YAHOO.util.Event.getCharCode(e) === YAHOO.util.KeyListener.KEY.ENTER) {
                     Fisma.Editable.handleClickEvent.call( YAHOO.util.Event.getTarget(e), e);
                 }
             });
