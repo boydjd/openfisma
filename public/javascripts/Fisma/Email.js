@@ -82,16 +82,13 @@ Fisma.Email = (function() {
                 panelConfig);
 
             // Make button a YUI widget and set up onclick event
-            var sendButton = new YAHOO.widget.Button("dialogRecipientSendBtn", {
-                onclick: {fn: Fisma.Email.sendTestEmail}
-            });
+            $('#dialogRecipientSendBtn').button().click(Fisma.Email.sendTestEmail);
         },
 
         /**
          * Send test email to specified recipient
          */
         sendTestEmail : function() {
-
             if (document.getElementById('testEmailRecipient').value === '') {
                 /** @todo english */
                 var alertMessage = "Recipient is required.";
@@ -106,8 +103,7 @@ Fisma.Email = (function() {
             var form = document.getElementById('email_config');
             form.elements.recipient.value = recipient;
 
-            var menu = YAHOO.widget.Button.getButton('send_type-button').getMenu();
-            var sendType = YAHOO.lang.isNull(menu.activeItem) ? menu.srcElement.value : menu.activeItem.value;
+            var sendType = $('#send_type').val();
 
             var sendTypeEle = document.createElement('input');
             sendTypeEle.type = 'hidden';
