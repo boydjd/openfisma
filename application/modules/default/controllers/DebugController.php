@@ -66,7 +66,7 @@ class DebugController extends Zend_Controller_Action
         $this->_helper->layout()->enableLayout();
         $this->_helper->viewRenderer->setNoRender(false);
         $this->view->errorLog = ($errorLog = @file_get_contents(APPLICATION_PATH . '/../data/logs/error.log'))
-            ? $errorLog : 'The error log does not exist.';
+            ? $errorLog : 'There are no recent errors.';
     }
 
     /**
