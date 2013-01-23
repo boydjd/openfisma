@@ -2,6 +2,13 @@
 # spec file for package openfisma
 #
 # norootforbuild
+#
+# TODO LIST
+# - configure the upgrade section and test upgrading from one version to the next
+# - symlink all configuration file into an /etc/openfisma directory
+# - check if ssl certs already exist, if not then generate them, if so then leave them alone
+# - tag user documentation
+# - configure and test rpm for RHEL/CentOS
 
 %define installation_dir /usr/share/%{name}
 
@@ -16,23 +23,47 @@ Source0:    OpenFISMA-%{version}.tgz
 BuildArch:  noarch
 BuildRoot:  %{_tmppath}/%{name}-%{version}-build
 
-# For more information on buildrequires and requires check out
-# http://en.opensuse.org/openSUSE:Build_Service_cross_distribution_howto
-# http://repo.mindtouch.com/home:mindtouch/MindTouch_10.0.1/mindtouch.spec
-
-# REDHAT flavor specifications
+# If REDHAT based operating system do the following
 %if 0%{?fedora} || 0%{?fedora_version} || 0%{?rhel_version} || 0%{?centos_version}
 %define webuser apache
 %define webgroup apache
 %define apache httpd
+%define mysql mysqld
+%define apache_conf_location /etc/httpd/conf.d
+%define platform rhel
+
+# Packages required by all REDHAT based operating systems
+BuildRequires: httpd
+BuildRequires: java-1.6.0-openjdk
+BuildRequires: mysql-server
+BuildRequires: php
+BuildRequires: sudo
+Requires: cronie
+Requires: logrotate
+Requires: httpd
+Requires: java-1.6.0-openjdk
+Requires: mysql
+Requires: mysql-server
+Requires: php
+Requires: php-bcmath
+Requires: php-ldap
+Requires: php-mbstring
+Requires: php-mysql
+Requires: php-pdo
+Requires: php-xml
+Requires: sudo
 %endif
 
-# SUSE flavor specifications
+# If SUSE based operating system do the following
 %if 0%{?suse_version} || 0%{?sles_version}
 %define webuser wwwrun
 %define webgroup www
 %define apache apache2
-# If openSUSE version 12.2 do the following
+%define mysql mysql
+%define apache_conf_location /etc/apache2/vhosts.d
+%define platform suse
+
+# If openSUSE version 12.2 use the following packages
 %if 0%{?suse_version} == 1220
 BuildRequires: java-1_7_0-openjdk
 BuildRequires: mysql-community-server
@@ -40,7 +71,8 @@ Requires: java-1_7_0-openjdk
 Requires: ImageMagick
 Requires: mysql-community-server
 %endif
-# If openSUSE version 12.1 or 11.4 do the following
+
+# If openSUSE version 12.1 or 11.4 use the following packages
 %if 0%{?suse_version} == 1210 || 0%{?suse_version} == 1140
 BuildRequires: java-1_6_0-openjdk
 BuildRequires: mysql-community-server
@@ -48,7 +80,8 @@ Requires: java-1_6_0-openjdk
 Requires: ImageMagick
 Requires: mysql-community-server
 %endif
-# If SLES version 11 do the following
+
+# If SLES version 11 use the following packages
 %if 0%{?sles_version} == 11
 BuildRequires: java-1_6_0-ibm
 BuildRequires: mysql
@@ -56,15 +89,15 @@ Requires: java-1_6_0-ibm
 Requires: libMagickCore
 Requires: mysql
 %endif
-BuildRequires: apache2 
-BuildRequires: fdupes  
+
+# Packages required by all SUSE based operating systems
+BuildRequires: apache2
 BuildRequires: php5
 BuildRequires: sudo
 Requires: apache2
 Requires: apache2-mod_php5
 Requires: cron
 Requires: logrotate
-Requires: perl-Config-Crontab
 Requires: php5
 Requires: php5-apc
 Requires: php5-bcmath
@@ -87,16 +120,14 @@ Requires: php5-xmlreader
 Requires: php5-xmlwriter
 Requires: php5-zip
 Requires: php5-zlib
+Requires: sudo
 %endif
 
 %description
 OpenFISMA is an open, customizable application sponsored by Endeavor Systems, Inc. that greatly reduces the cost and complexity associated with FISMA compliance and risk management for U.S. Federal agencies.
 
-# It is in the %prep section that the build environment for the software is created, starting with removing the remnants of any previous builds.
 %prep
 %setup -q
-
-# the part of the spec file that is responsible for performing the build. Like the %prep section, the %build section is an ordinary sh script. 
 %build
 
 # turns off APC and secure cookies
@@ -113,7 +144,7 @@ find . -type f -name '.gitignore' -exec rm {} \;
 find . -type f -name '.cvsignore' -exec rm {} \; 
 find . -type f -name '._*' -exec rm {} \;
 
-# The %install section is executed as a sh script, just like %prep and %build. 
+# The install section is executed as a sh script, just like prep and build. 
 %install
 
 # disables brp-check-bytecode-version which throws an error on jar files
@@ -126,12 +157,12 @@ export NO_BRP_CHECK_BYTECODE_VERSION=true
 cp -rp * %{buildroot}/%{installation_dir}
 
 # Copy configuration files from current location into location of where they should be installed
-%{__mkdir_p} %{buildroot}/etc/%{apache}/vhosts.d/
+%{__mkdir_p} %{buildroot}%{apache_conf_location}
 %{__mkdir_p} %{buildroot}/etc/init.d/
 %{__mkdir_p} %{buildroot}/etc/cron.d/
-cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_apache2 %{buildroot}/etc/%{apache}/vhosts.d/%{name}.conf
-cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_solr %{buildroot}/etc/init.d/openfisma_solr
-cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_cron %{buildroot}/etc/cron.d/openfisma_cron
+cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_%{apache} %{buildroot}%{apache_conf_location}/%{name}.conf
+cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_solr_%{platform} %{buildroot}/etc/init.d/solr
+cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_cron %{buildroot}/etc/cron.d/openfisma
 
 # By adding a sh script to the %clean section, such situations can be handled gracefully, right after the binary package is created.
 %clean
@@ -140,32 +171,32 @@ cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_cron %{buildroot}/e
 %files
 %defattr(-,root,root,-)
 %{installation_dir}
-%config /etc/apache2/vhosts.d/openfisma.conf
-%config /etc/cron.d/openfisma_cron
-%config /etc/init.d/openfisma_solr
+%config %{apache_conf_location}/openfisma.conf
+%config /etc/cron.d/openfisma
+%config /etc/init.d/solr
 %config %{installation_dir}/application/config/application.ini
 
 # run the following scripts after installation of rpm
 %post
 
 # check to see if apache user is in the sudoers file, if not add it
-if grep "^%{webuser}.*ALL=NOPASSWD:.*/usr/sbin/%{apache}.*/sbin/ifconfig" /etc/sudoers > /dev/null ; then
+if grep "^%{webuser}.*ALL=NOPASSWD:.*/usr/sbin/%{apache}" /etc/sudoers > /dev/null ; then
     echo "sudo active"
 else
-    echo "%{webuser} ALL=NOPASSWD:/usr/sbin/%{apache}, /sbin/ifconfig" >> /etc/sudoers
+    echo "%{webuser} ALL=NOPASSWD:/usr/sbin/%{apache}" >> /etc/sudoers
 fi
 
 # Check and update all permissions
 find %{installation_dir} -type d -exec chmod 770 {} \;
 find %{installation_dir} -type f -exec chmod 660 {} \;
 chown -R %{webuser}:%{webgroup} %{installation_dir} 
-chmod 755 /etc/init.d/openfisma_solr
-chmod 666 %{installation_dir}/data/logs/*
+chmod 755 /etc/init.d/solr
 
 # if this is the first installation run the following
 if [ "$1" == "1" ] ; then
 echo "installing openfisma for the first time"
 
+# only applies to suse/debian based operating systems
 echo "enabling Apache rewrite module"
 %{_sbindir}/a2enmod env
 %{_sbindir}/a2enmod expires
@@ -176,69 +207,39 @@ echo "enabling Apache rewrite module"
 %{_sbindir}/a2enmod setenvif
 %{_sbindir}/a2enmod ssl
 
-# uncomment this section to generate SSL certificates
-# echo "generating ssl certificates"
-# sudo gensslcert -y 3650 -Y 3650 > /dev/null 2>&1
+# use some sed magic to enable apache modules for RHEL based systems
 
-###########################################
-#%pre
-#
-# Create dekiwiki user
-#grep "^dekiwiki" /etc/passwd >>/dev/null
-#if [ $? -ne 0 ]; then
-#  useradd -s /bin/sh -d %{webhome} -g %{webgroup} \
-#          -c "DekiWiki user" dekiwiki 2>/dev/null
-#fi
-#
-#exit 0
-
-# Changing init script to use dekiwiki user
-#sed -i -e "s/^DEKIWIKI_USER=.*$/"'DEKIWIKI_USER="dekiwiki"/' \
-#       /etc/init.d/dekiwiki
-
-#%if 0%{?fedora}||0%{?fedora_version}||0%{?rhel_version}||0%{?centos_version}
-   # Make sure paths are good for RedHat
-#   sed -i -e 's/\/var\/log\/apache2/\/var\/log\/httpd/g' \
-#         %{buildroot}/etc/%{apache}/vhost.d/openfisma_apache
-#%endif
-#%elseif 0%{?suse_version}
-#%if 0%{?suse_version} || 0%{?sles_version}
-   # For OpenSUSE we need to change some default values
-#   sed -i -e 's/\/var\/log\/httpd/\/var\/log\/apache2/g' \
-#          -e 's/\/var\/www/\/srv\/www/g' \
-#          %{buildroot}/etc/%{apache}/vhost.d/openfisma_apache
-#%endif
 
 # Populate the conf files with the host name
-#HNAME=$(hostname)
-#SHNAME=$(hostname -s)
-#sed -i -e "s/.*#ServerName.*/        ServerName $HNAME/" \
-#       /etc/%{apache}/conf.d/openfisma.conf
-#sed -i -e "s/.*#ServerAlias.*/        ServerAlias $SHNAME/" \
-#       /etc/%{apache}/conf.d/openfisma.conf
+HNAME=$(hostname)
+SHNAME=$(hostname -s)
+sed -i -e "s/.*ServerName.*/        ServerName $HNAME/" \
+       %{apache_conf_location}/%{name}.conf
+#sed -i -e "s/.*ServerAlias.*/        ServerAlias $SHNAME/" \
+#       %{apache_conf_location}/%{name}.conf
 
 # autostart mysql, apache2, and solr
 echo "enable autostart of mysql, apache, and solr"
 %if 0%{?suse_version} >= 1210  
-   systemctl enable apache2.service
-   systemctl enable mysql.service
-   insserv openfisma_solr
+   systemctl enable %{apache}.service
+   systemctl enable %{mysql}.service
+   insserv solr
 %else
-   insserv apache2
-   insserv mysql
-   insserv openfisma_solr
+   chkconfig %{apache} on
+   chkconfig %{mysql} on
+   chkconfig solr on
 %endif
 
 # restar apache2, mysql, and solr
 echo "restarting apache2, mysql, and solr"
 %if 0%{?suse_version} >= 1210
-   systemctl restart apache2.service
-   systemctl restart mysql.service
-   /etc/init.d/openfisma_solr restart
+   systemctl restart %{apache}.service
+   systemctl restart %{mysql}.service
+   /etc/init.d/solr restart
 %else
-   /etc/init.d/apache2 reload
-   /etc/init.d/mysql restart
-   /etc/init.d/openfisma_solr start
+   /etc/init.d/%{apache} reload
+   /etc/init.d/%{mysql} restart
+   /etc/init.d/solr start
 %endif
 
 echo "create database.ini file"
@@ -267,18 +268,11 @@ echo "flush privileges;" | mysql -u root
 
 # build the openfisma database and load sample data
 echo "build the openfisma database and load sample data"
-php %{installation_dir}/scripts/bin/doctrine.php -bs
-php %{installation_dir}/scripts/bin/generate-findings.php -n 50
-php %{installation_dir}/scripts/bin/generate-vulnerabilities.php -n 50
-php %{installation_dir}/scripts/bin/generate-incidents.php -n 50
-php %{installation_dir}/scripts/bin/rebuild-index.php -a
-
-# turns off APC and secure cookies
-#sed --in-place "s/resources.session.cookie_secure = true/resources.session.cookie_secure = false/" %{installation_dir}/application/config/application.ini
-#sed --in-place "s/cache_id_prefix = openfisma_ /cache_id_prefix = openfisma_test2_ /" %{installation_dir}/application/config/application.ini
-#sed --in-place "s/resources.cachemanager.default.backend.name = Apc/;resources.cachemanager.default.backend.name = Apc/" %{installation_dir}/application/config/application.ini
-#sed --in-place "s/;resources.cachemanager.default.backend.name = File/resources.cachemanager.default.backend.name = File/" %{installation_dir}/application/config/application.ini
-#sed --in-place "s/;resources.cachemanager.default.backend.options.cache_dir/resources.cachemanager.default.backend.options.cache_dir/" %{installation_dir}/application/config/application.ini
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/doctrine.php -bs
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-findings.php -n 50
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-vulnerabilities.php -n 50
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-incidents.php -n 50
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/rebuild-index.php -a
 
 # finish installation scripts
 fi
@@ -290,11 +284,22 @@ exit 0
 if [ "$1" == "2" ] ; then
 echo "Upgrading OpenFISMA"
 
-%{installation_dir}/scripts/bin/doctrine.php -m || true
-%{installation_dir}/scripts/bin/migrate.php || true
-/etc/init.d/mysql restart
-/etc/init.d/openfisma_solr restart
-/etc/init.d/apache2 try-restart
+# Load new fixtures / YAML
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/doctrine.php -m || true
+
+# Run database migrations
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/migrate.php || true
+
+# Restart apache, mysql, and solr
+%if 0%{?suse_version} >= 1210
+   systemctl restart %{apache}.service
+   systemctl restart %{mysql}.service
+   /etc/init.d/solr restart
+%else
+   /etc/init.d/%{apache} reload
+   /etc/init.d/%{mysql} restart
+   /etc/init.d/solr start
+%endif
 
 # finish upgrade scripts
 fi
