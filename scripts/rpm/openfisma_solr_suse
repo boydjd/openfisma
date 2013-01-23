@@ -1,0 +1,100 @@
+#!/bin/sh
+#
+# Copyright (c) 2011 Endeavor Systems, Inc.
+# 
+# This file is part of OpenFISMA.
+# 
+# OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+# License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+# version.
+# 
+# OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+# details.
+# 
+# You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+# http://www.gnu.org/licenses/.
+#
+### BEGIN INIT INFO
+# Provides:          openfisma_solr
+# Required-Start:    $local_fs $network
+# Should-Start:
+# Required-Stop:     $local_fs $network
+# Should-Stop:
+# Default-Start:     3 5
+# Default-Stop:      0 1 2 6
+# Short-Description: Solr/Jetty instance for OpenFISMA.
+# Description:       Solr provides the search engine for OpenFISMA, and it must be running in order for search features 
+#                    to work.
+### END INIT INFO
+
+INSTANCE_NAME=openfisma_solr
+HTTP_PORT=8983
+STOP_PORT=8984
+
+OPENFISMA_DIR=${OPENFISMA_DIR:="/usr/share/openfisma"}
+SOLR_DIR="$OPENFISMA_DIR/library/Solr"
+LOG_FILE=/dev/null
+#LOG_FILE="$OPENFISMA_DIR/data/logs/solr.log"
+
+JAVA="/usr/bin/java"
+JAVA_OPTIONS="-Djetty.home=$SOLR_DIR -Dsolr.solr.home=$SOLR_DIR/solr -Dsolr.data.dir=$SOLR_DIR/solr/data \
+              -Djetty.port=$HTTP_PORT \
+              -DSTOP.PORT=$STOP_PORT -DSTOP.KEY=$INSTANCE_NAME -Djetty.logs=$SOLR_DIR/logs \
+              -jar $SOLR_DIR/start.jar"
+
+USER=${OPENFISMA_USER:="wwwrun"}
+
+# Shell functions sourced from /etc/rc.status. See /etc/init.d/skeleton for details.
+. /etc/rc.status
+
+rc_reset
+
+case "$1" in
+    start)
+    	echo -n "Starting $INSTANCE_NAME "
+    	/sbin/startproc -f -l $LOG_FILE -u $USER $JAVA $JAVA_OPTIONS
+    	rc_status -v
+    	;;
+
+    stop)
+    	echo -n "Shutting down $INSTANCE_NAME "
+    	$JAVA $JAVA_OPTIONS --stop
+    	rc_status -v
+    	;;
+
+    try-restart|condrestart)
+    	if test "$1" = "condrestart"; then
+    		echo "${attn} Use try-restart ${done}(LSB)${attn} rather than condrestart ${warn}(RH)${norm}"
+    	fi
+
+    	$0 status
+
+    	if test $? = 0; then
+    		$0 restart
+    	else
+    		rc_reset	# Not running is not a failure.
+    	fi
+
+    	rc_status
+    	;;
+
+    restart)
+    	$0 stop
+    	$0 start
+
+    	rc_status
+    	;;
+
+    status)
+    	echo -n "Checking for service $INSTANCE_NAME "
+    	/sbin/checkproc $JAVA
+    	rc_status -v
+    	;;
+
+    *)
+    	echo "Usage: $0 {start|stop|status|try-restart|restart}"
+    	exit 1
+    	;;
+esac
+rc_exit
