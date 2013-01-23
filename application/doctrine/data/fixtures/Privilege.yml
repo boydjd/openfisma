@@ -294,24 +294,6 @@ Privilege:
         action: manage_poc_list
         description: Manage POC Positions
 
-    # Pocs CRUD
-    poc_create:
-        resource: poc
-        action: create
-        description: Create Points of Contact
-    poc_read:
-        resource: poc
-        action: read
-        description: View Points of Contact
-    poc_update:
-        resource: poc
-        action: update
-        description: Edit Points of Contact
-    poc_delete:
-        resource: poc
-        action: delete
-        description: Delete Points of Contact
-
     # Products CRUD
     product_create:
         resource: product
@@ -468,7 +450,11 @@ Privilege:
     incident_manage_sources:
         resource: incident
         action: manage_sources
-        description: Manage Incident Sources 
+        description: Manage Incident Sources
+    incident_comment:
+        resource: incident
+        action: comment
+        description: Comment on Incidents
 
     # IRWorkflow CRUD
     ir_workflow_def_create:

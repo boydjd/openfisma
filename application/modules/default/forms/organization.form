@@ -49,5 +49,5 @@ elements.copyOrganizationId.options.label = "Copy user access from"
 elements.copyOrganizationId.options.validators.strlen.validator = "StringLength"
 elements.copyOrganizationId.options.validators.strlen.options.min = "1"
 elements.copyOrganizationId.options.validators.strlen.options.max = "10"
-elements.copyOrganizationId.options.required = false
+elements.copyOrganizationId.options.required = true
 displayGroups.organization.elements.copyOrganizationId = "copyOrganizationId"

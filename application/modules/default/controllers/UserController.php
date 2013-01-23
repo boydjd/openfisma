@@ -637,6 +637,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             foreach ($userOrgs as $userOrg) {
                 $assignedOrgs[] = $userOrg->id;
             }
+        } else { // by default, assign to all
+            $allOrgs = Doctrine_Query::create()->select('id')->from('Organization')->orderBy('lft')->execute();
+            foreach ($allOrgs as $org) {
+                $assignedOrgs[] = $org->id;
+            }
         }
 
         $subForm = new Zend_Form_SubForm();

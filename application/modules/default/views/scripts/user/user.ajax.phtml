@@ -27,3 +27,18 @@ $opts = array('roles' => $this->roles, 'id' => $this->id, 'readOnly' => 0);
 echo $this->partial('yui/roles.phtml', $opts);
 unset($opts);
 ?>
+<script type="text/javascript">
+$(function() {
+    $("<br>").insertBefore(
+        $("<label>").text("Advanced Roles").prepend(
+            $("<input>").attr({"type":"checkbox","name":"advancedRoles"}).change(function(ev) {
+                if ($(ev.target).is(":checked")) {
+                    $("#TabView_UserView_TabViewContainer").show();
+                } else {
+                    $("#TabView_UserView_TabViewContainer").hide();
+                }
+            }).change()
+        ).insertAfter($("#role"))
+    );
+});
+</script>

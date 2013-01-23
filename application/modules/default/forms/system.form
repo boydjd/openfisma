@@ -75,5 +75,5 @@ elements.cloneOrganizationId.options.label = "Copy user access from"
 elements.cloneOrganizationId.options.validators.strlen.validator = "StringLength"
 elements.cloneOrganizationId.options.validators.strlen.options.min = "1"
 elements.cloneOrganizationId.options.validators.strlen.options.max = "10"
-elements.cloneOrganizationId.options.required = false
+elements.cloneOrganizationId.options.required = true
 displayGroups.system.elements.cloneOrganizationId = "cloneOrganizationId"
