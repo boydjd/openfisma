@@ -815,18 +815,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     }
 
     /**
-     * Check to see if the finding has been soft deleted or not. Only existing deletions are checked,
-     * and not pending deletes!
-     *
-     * @return boolean True if the finding is soft deleted, false if it is not.
-     */
-    public function isDeleted()
-    {
-        $oldValues = $this->getModified(true);
-        return ($this['deleted_at'] && !array_key_exists('deleted_at', $oldValues));
-    }
-
-    /**
      * Update the denormalized status field, which is a string field that contains the logical value for the status
      * as derived from the actual status field and the currentEvaluationId
      */

@@ -437,6 +437,10 @@ Privilege:
         resource: incident
         action: update
         description: Update Incident
+    incident_delete:
+        resource: incident
+        action: delete
+        description: Delete Incident
     incident_classify:
         resource: incident
         action: classify

@@ -156,60 +156,77 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
         }
 
-        if (
-            (
+        if ($isView && !$record->isDeleted() && $id = $this->getRequest()->getParam('id')) {
+            if (
                 !$this->_enforceAcl ||
                 $this->_acl->hasPrivilegeForClass('update', $this->getAclResourceName()) ||
                 $this->_acl->hasPrivilegeForClass('update_*', $this->getAclResourceName())
-            ) &&
-            $isView && $id = $this->getRequest()->getParam('id')
-        ) {
-            $fromSearchUrl = '';
-            $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
-            if (!empty($fromSearchParams)) {
-                $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+            ) {
+                $fromSearchUrl = '';
+                $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+                if (!empty($fromSearchParams)) {
+                    $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+                }
+
+                $buttons['editButton'] = new Fisma_Yui_Form_Button(
+                    'editMode',
+                    array(
+                        'label' => 'Edit',
+                        'onClickFunction' => 'Fisma.Editable.turnAllOn',
+                        'imageSrc' => '/images/edit.png'
+                    )
+                );
+
+                $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+                    'saveChanges',
+                    array(
+                        'label' => 'Save',
+                        'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                        'imageSrc' => '/images/ok.png',
+                        'hidden' => true
+                    )
+                );
+
+                $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+                    'discardChanges',
+                    array(
+                        'value' => 'Cancel',
+                        'imageSrc' => '/images/no_entry.png',
+                        'href' => $this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl,
+                        'hidden' => true
+                    )
+                );
+
+                if (!empty($this->_associatedModel)) {
+                    $buttons['reassociate'] = new Fisma_Yui_Form_Button(
+                        'toolbarReassociateButton',
+                        array(
+                            'label' => 'Migrate',// Associated ' . $this->_associatedPlural,
+                            'onClickFunction' => 'Fisma.Util.showReassociatePanel',
+                            'onClickArgument' => array(
+                                'title' => 'Migrate Associated ' . $this->_associatedPlural,
+                                'url'   => $this->getBaseUrl() . '/reassociate/id/' . $id . $fromSearchUrl
+                            ),
+                            'imageSrc' => '/images/move.png'
+                        )
+                    );
+                }
             }
 
-            $buttons['editButton'] = new Fisma_Yui_Form_Button(
-                'editMode',
-                array(
-                    'label' => 'Edit',
-                    'onClickFunction' => 'Fisma.Editable.turnAllOn',
-                    'imageSrc' => '/images/edit.png'
-                )
-            );
-
-            $buttons['submitButton'] = new Fisma_Yui_Form_Button(
-                'saveChanges',
-                array(
-                    'label' => 'Save',
-                    'onClickFunction' => 'Fisma.Util.submitFirstForm',
-                    'imageSrc' => '/images/ok.png',
-                    'hidden' => true
-                )
-            );
-
-            $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
-                'discardChanges',
-                array(
-                    'value' => 'Cancel',
-                    'imageSrc' => '/images/no_entry.png',
-                    'href' => $this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl,
-                    'hidden' => true
-                )
-            );
-
-            if (!empty($this->_associatedModel)) {
-                $buttons['reassociate'] = new Fisma_Yui_Form_Button(
-                    'toolbarReassociateButton',
+            if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
+                $args = array(null, $this->getBaseUrl() . '/delete/id/', $id);
+                $buttons['delete'] = new Fisma_Yui_Form_Button(
+                    'delete',
                     array(
-                        'label' => 'Migrate',// Associated ' . $this->_associatedPlural,
-                        'onClickFunction' => 'Fisma.Util.showReassociatePanel',
-                        'onClickArgument' => array(
-                            'title' => 'Migrate Associated ' . $this->_associatedPlural,
-                            'url'   => $this->getBaseUrl() . '/reassociate/id/' . $id . $fromSearchUrl
-                        ),
-                        'imageSrc' => '/images/move.png'
+                          'label' => 'Delete',
+                          'imageSrc' => '/images/trash_recyclebin_empty_closed.png',
+                          'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                          'onClickArgument' => array(
+                              'args' => $args,
+                              'text' => "WARNING: You are about to delete this record. This action cannot be "
+                                        . "undone. Do you want to continue?",
+                              'func' => 'Fisma.Util.formPostAction'
+                        )
                     )
                 );
             }
@@ -270,6 +287,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 );
             }
         }
+
         return $buttons;
     }
 

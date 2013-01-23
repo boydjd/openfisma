@@ -280,4 +280,17 @@ abstract class Fisma_Doctrine_Record extends Doctrine_Record
 
         return ($bootstrap) ? $bootstrap->getResource('cachemanager')->getCache('default') : null;
     }
+
+    /**
+     * Check to see if the record has been soft deleted or not. Only existing deletions are checked,
+     * and not pending deletes!
+     *
+     * @return boolean True if the finding is soft deleted, false if it is not.
+     */
+    public function isDeleted()
+    {
+        $oldValues = $this->getModified(true);
+        return !empty($this['deleted_at']) && !array_key_exists('deleted_at', $oldValues);
+    }
+
 }
