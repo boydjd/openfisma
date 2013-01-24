@@ -83,6 +83,7 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
              ->addActionContext('create', 'json')
              ->addActionContext('update', 'json')
              ->addActionContext('options', 'html')
+             ->addActionContext('options', 'json')
              ->initContext();
 
         parent::init();
@@ -283,7 +284,9 @@ abstract class Fisma_Zend_Controller_Action_AbstractTagController extends Fisma_
     {
         $this->view->options = Doctrine::getTable('Tag')->findOneByTagId($this->_tagId)->labels;
         $this->view->selected = $this->getRequest()->getParam("value");
-        $this->renderScript('tag/options.phtml');
+        if ($this->getRequest()->getParam("format") != 'json') {
+            $this->renderScript('tag/options.phtml');
+        }
     }
 
     protected function _mkRow($tag, $counts = array())

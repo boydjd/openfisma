@@ -63,6 +63,7 @@ class Incident extends BaseIncident
         $this->hasMutator('reporterEmail', 'setReporterEmail');
         $this->hasMutator('ReportingUser', 'setReportingUser');
         $this->hasMutator('sourceIp', 'setSourceIp');
+        $this->hasMutator('responseStrategies', 'setResponseStrategies');
     }
 
     /**
@@ -395,5 +396,25 @@ class Incident extends BaseIncident
                 array('userId' => $sanitized, 'url' => '/incident/view/id/')
             );
         }
+    }
+
+    /**
+     * setResponseStrategies
+     *
+     * @param array $value
+     * @return void
+     */
+    public function setResponseStrategies($value)
+    {
+        // allow JSON strings as input
+        if (is_string($value)) {
+            try {
+                $value = Zend_Json::decode($value);
+            } catch (Zend_Json_Exception $e) {
+                throw new Fisma_Zend_Exception("Invalid value for response strategies.", $e);
+            }
+        }
+        $this->denormalizedResponseStrategies = implode('; ', $value);
+        $this->_set('responseStrategies', $value);
     }
 }

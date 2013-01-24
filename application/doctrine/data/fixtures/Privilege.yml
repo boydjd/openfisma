@@ -443,6 +443,10 @@ Privilege:
         resource: incident
         action: manage_impacts
         description: Manage Incident Impacts
+    incident_manage_response_strategies:
+        resource: incident
+        action: manage_response_strategies
+        description: Manage Response Strategies
     incident_manage_severity_levels:
         resource: incident
         action: manage_severity_levels

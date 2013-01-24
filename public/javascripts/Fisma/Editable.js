@@ -48,93 +48,21 @@
         $(this).removeClass('editable');
 
         if (t_name) {
+            var editableObj = null;
             var target = document.getElementById(t_name);
-            var name = target.getAttribute('name');
             var type = target.getAttribute('type');
-            var url = target.getAttribute('href');
-            var eclass = target.className;
-            var oldWidth = target.offsetWidth;
-            var oldHeight = target.offsetHeight;
-            var cur_val = target.innerText || target.textContent;
-            var cur_html = target.innerHTML;
-            var editable = this;
             if (type === 'text') {
-                jQuery(target).html(
-                    '<input length="50" name="' + name + '" id="txt_' + t_name + '" class="' + eclass + '" type="text" />'
-                );
-                var textEl = document.getElementById('txt_' + t_name);
-
-                // set value attribute using JS call instead of string concatenation
-                // so we don't have to worry about escaping special characters
-                textEl.setAttribute('value', cur_val.trim());
-                if (oldWidth < 200) {
-                    oldWidth = 200;
-                }
-
-                textEl.style.width = (oldWidth - 10) + "px";
-                if (eclass === 'date') {
-                    Fisma.Calendar.addCalendarPopupToTextField(textEl);
-                }
-                $(textEl).focus();
+                editableObj = new FE.Text(target);
             } else if (type === 'textarea') {
-                var row = target.getAttribute('rows');
-                var col = target.getAttribute('cols');
-                jQuery(target).html(
-                    '<textarea id="txt_' + t_name + '" rows="' + row + '" cols="' + col + '" name="' + name + '"></textarea>'
-                );
-                var textareaEl = document.getElementById('txt_' + t_name);
-                textareaEl.value = cur_html;
-                textareaEl.style.width = oldWidth + "px";
-                textareaEl.style.height = oldHeight + "px";
-                tinyMCE.execCommand("mceAddControl", true, 'txt_' + t_name);
-                setTimeout(function() {
-                    tinyMCE.execCommand('mceFocus', false, 'txt_' + t_name);
-                }, '500');
+                editableObj = new FE.Textarea(target);
             } else if (type === 'autocomplete') {
-                Fisma.Editable.makeAutocomplete(target);
+                editableObj = new FE.Autocomplete(target);
             } else if (type === 'select') {
-                val = target.getAttribute('value');
-                if (val) {
-                    cur_val = val;
-                }
-                $(target).html('');
-                YAHOO.util.Connect.asyncRequest('GET', url + 'value/' + cur_val.trim(), {
-                    success: function(o) {
-                        if (type === 'select') {
-                            $('<select/>')
-                                .button()
-                                .attr('name', name)
-                                .html(o.responseText)
-                                .prependTo(target)
-                                .focus();
-                        }
-                    },
-                    failure: function(o) {
-                        Fisma.Util.showAlertDialog('Failed to load the specified panel.');
-                    }
-                }, null);
+                editableObj = new FE.Select(target);
             } else if (type === 'checked') {
-                // Get current value
-                val = ($(target).text().trim() === 'YES');
-                $(target).html('');
-                $('<select/>')
-                    .button()
-                    .attr('name', name)
-                    .append(
-                        $('<option/>')
-                            .attr('value', 1)
-                            .text('YES')
-                            .attr('selected', val)
-                    )
-                    .append(
-                        $('<option/>')
-                            .attr('value', 0)
-                            .text('NO')
-                            .attr('selected', !val)
-                    )
-                    .prependTo(target)
-                    .focus()
-                ;
+                editableObj = new FE.Checked(target);
+            } else if (type === 'multiselect') {
+                editableObj = new FE.Multiselect(target);
             }
 
             $(this).append('<span class="editresponse">' +
@@ -159,61 +87,6 @@
                     Fisma.Editable.handleClickEvent.call( YAHOO.util.Event.getTarget(e), e);
                 }
             });
-    };
-
-    /**
-     * Convert an element into an autocomplete text field
-     */
-    FE.makeAutocomplete = function (element) {
-
-        // Create an autocomplete form control
-        var container = document.createElement('span');
-        container.id = element.id;
-        container.className = "yui-ac";
-        $(container).attr('type', 'autocomplete');
-        YAHOO.util.Dom.generateId(container);
-
-        var hiddenTextField = document.createElement('input');
-        hiddenTextField.type = "hidden";
-        hiddenTextField.name = element.getAttribute("name");
-        hiddenTextField.value = element.getAttribute("value");
-        YAHOO.util.Dom.generateId(hiddenTextField);
-        container.appendChild(hiddenTextField);
-
-        var autocompleteTextField = document.createElement('input');
-        autocompleteTextField.type = "text";
-        autocompleteTextField.name = "autocomplete_" + element.id;
-        autocompleteTextField.value = element.getAttribute("defaultValue");
-        YAHOO.util.Dom.generateId(autocompleteTextField);
-        container.appendChild(autocompleteTextField);
-
-        var autocompleteResultsDiv = document.createElement('div');
-        YAHOO.util.Dom.generateId(autocompleteResultsDiv);
-        container.appendChild(autocompleteResultsDiv);
-
-        var spinner = document.createElement('img');
-        spinner.src = "/images/spinners/small.gif";
-        spinner.className = "spinner";
-        spinner.id = autocompleteResultsDiv.id + "Spinner"; // required by AC API
-        spinner.alt = "working";
-        container.appendChild(spinner);
-
-        element.parentNode.replaceChild(container, element);
-
-        // Set up the autocomplete hooks on the new form control
-        YAHOO.util.Event.onDOMReady(
-            Fisma.AutoComplete.init,
-            {
-                schema: [element.getAttribute("schemaObject"), element.getAttribute("schemaField")],
-                xhr: element.getAttribute("xhr"),
-                fieldId: autocompleteTextField.id,
-                containerId: autocompleteResultsDiv.id,
-                hiddenFieldId: hiddenTextField.id,
-                queryPrepend: element.getAttribute("queryPrepend"),
-                setupCallback: element.getAttribute('setupCallback'),
-                autofocus: true
-            }
-        );
     };
 
     /**
@@ -256,6 +129,7 @@
                 value = target.find('select').val();
                 break;
             case 'text':
+            case "multiselect":
                 value = target.find('input').val();
                 break;
             case 'textarea':
@@ -295,9 +169,11 @@
                             $.ajax({
                                 url: refreshUrl,
                                 success: function(data, textStatus, request) {
-                                    target.html($(data).find('#' + t_name).html());
+                                    var newTarget = $(data).find("#" + t_name);
+                                    target.replaceWith(newTarget);
+                                    target = newTarget;
                                     if (target.hasClass('editable')) {
-                                        target.attr('tabindex', 0).focus();
+                                        Fisma.Editable.setupEditFields(target);
                                     }
                                 },
                                 failure: function(data, textStatus, request) {
@@ -324,6 +200,289 @@
         $('.yui-content > div').not('.yui-hidden').find('.editable').click();
         $('#editMode').hide();
         $('#saveChanges, #discardChanges').css('display', 'inline-block');
+    };
+
+    FE.Text = function(target) {
+        var jqTarget = $(target),
+            jqInput = $("<input />"),
+            oldWidth = jqTarget.outerWidth();
+        jqInput.attr({
+            length: 50,
+            id: "txt_" + target.id,
+            name: jqTarget.attr("name"),
+            "class": jqTarget.attr("class"),
+            type: "text",
+            value: jqTarget.text().trim()
+        });
+        jqTarget.empty().append(jqInput);
+
+        if (oldWidth < 200) {
+            oldWidth = 200;
+        }
+
+        jqInput.width(oldWidth - 10);
+        if (jqInput.hasClass("date")) {
+            Fisma.Calendar.addCalendarPopupToTextField(jqInput.get(0));
+        }
+
+        jqInput.focus();
+    };
+
+    FE.Textarea = function(target) {
+        var jqTarget = $(target),
+            jqFormEl = $("<textarea/>"),
+            oldHeight = jqTarget.outerHeight(),
+            oldWidth = jqTarget.outerWidth();
+        jqFormEl.attr({
+            id: "txt_" + target.id,
+            name: jqTarget.attr("name"),
+            rows: jqTarget.attr("rows"),
+            cols: jqTarget.attr("cols"),
+            value: jqTarget.html()
+        });
+        jqTarget.empty().append(jqFormEl);
+
+        jqFormEl.height(oldHeight);
+        jqFormEl.width(oldWidth);
+
+        tinyMCE.execCommand("mceAddControl", true, jqFormEl.attr("id"));
+        setTimeout(function() {
+            tinyMCE.execCommand('mceFocus', false, jqFormEl.attr("id"));
+        }, '500');
+    };
+
+    FE.Autocomplete = function (element) {
+        var container = $("<span/>"),
+            hiddenTextField = $("<input/>"),
+            autocompleteTextField = $("<input/>"),
+            autocompleteResultsDiv = $("<div/>"),
+            spinner = $("<img/>");
+
+        container.attr({
+            id: element.id,
+            type: "autocomplete"
+        }).addClass("yui-ac");
+
+        hiddenTextField.attr({
+            type: "hidden",
+            name: element.getAttribute("name"),
+            value: element.getAttribute("value"),
+            id: YAHOO.util.Dom.generateId()
+        }).appendTo(container);
+
+        autocompleteTextField.attr({
+            type: "text",
+            name: "autocomplete_" + element.id,
+            value: element.getAttribute("defaultValue"),
+            id: YAHOO.util.Dom.generateId()
+        }).appendTo(container);
+
+        autocompleteResultsDiv.attr("id", YAHOO.util.Dom.generateId())
+            .appendTo(container);
+
+        spinner.attr({
+            src: "/images/spinners/small.gif",
+            id: autocompleteResultsDiv.attr("id") + "Spinner" // required by AC API
+        }).addClass("spinner")
+            .appendTo(container);
+
+        $(element).replaceWith(container);
+
+        // Set up the autocomplete hooks on the new form control
+        YAHOO.util.Event.onDOMReady(
+            Fisma.AutoComplete.init,
+            {
+                schema: [element.getAttribute("schemaObject"), element.getAttribute("schemaField")],
+                xhr: element.getAttribute("xhr"),
+                fieldId: autocompleteTextField.attr("id"),
+                containerId: autocompleteResultsDiv.attr("id"),
+                hiddenFieldId: hiddenTextField.attr("id"),
+                queryPrepend: element.getAttribute("queryPrepend"),
+                setupCallback: element.getAttribute('setupCallback'),
+                autofocus: true
+            }
+        );
+    };
+
+    FE.Select = function(target) {
+        var jqTarget = $(target),
+            val = jqTarget.val() || jqTarget.text(),
+            href = jqTarget.attr("href") + "value/" + encodeURI(val.trim()),
+            select = $("<select/>");
+        jqTarget.empty();
+        select.attr({
+            id: jqTarget.attr("id") + "-select",
+            name: jqTarget.attr("name")
+        });
+        jqTarget.html(select);
+        select.load(href).focus();
+    };
+
+    FE.Checked = function(target) {
+        var jqTarget = $(target),
+            val = ($(target).text().trim() === 'YES');
+        jqTarget.empty();
+
+        $('<select/>')
+            .attr('name', name)
+            .append(
+                $('<option/>')
+                    .attr('value', 1)
+                    .text('YES')
+                    .attr('selected', val)
+            )
+            .append(
+                $('<option/>')
+                    .attr('value', 0)
+                    .text('NO')
+                    .attr('selected', !val)
+            )
+            .prependTo(target)
+            .focus()
+        ;
+    };
+
+    FE.Multiselect = function(target) {
+        target = $(target);
+        var that = this,
+            val = target.attr("value"),
+            valArray = [],
+            jsonUrl = target.attr("json") + "value/" + encodeURI(val.trim()),
+            selected = this.selected = $("<span>"),
+            addMenu = this.addMenu = $("<div>").css("position", "absolute").zIndex(1).hide(),
+            addImg = this.addImg = $("<img>").attr({
+                "src": "/images/add.png",
+                "alt": "Add",
+                "tabindex": 0,
+                width: 16,
+                height: 16
+            }).css("vertical-align", "text-bottom"),
+            inputElement = this.inputElement = $("<input>")
+                .attr({name: target.attr("id"), type: "hidden"})
+                .val(val);
+        try {
+            valArray = JSON.parse(val);
+        } catch(e) {
+            // probably empty string/null - do nothing
+        }
+        if (!$.isArray(valArray)) {
+            valArray = [];
+        }
+        $.each(valArray, function(k, v) {
+            that._addSelected(v);
+        });
+        target.empty();
+        target.append(inputElement, selected, addImg, addMenu);
+        addMenu.menu({
+            menus: "div.menu",
+            select: $.proxy(this, "_onMenuSelect")
+        });
+        $.getJSON(jsonUrl, null, function(data, text, xhr) {
+            $.each(data.options, function(k, v) {
+                if ($.inArray(v, valArray) < 0) {
+                    addMenu.append(that._buildMenuItem(v));
+                }
+            });
+            addMenu.menu("refresh");
+        });
+        addImg.on({
+            click: function(event) {
+                event.stopPropagation();
+                addMenu.show();
+                addMenu.position({my: "left top", at: "left bottom", of: addImg});
+                addMenu.menu("focus", null, addMenu.find(".ui-menu-item:first"));
+            },
+            keydown: function(event) {
+                switch (event.keyCode) {
+                case $.ui.keyCode.ENTER:
+                case $.ui.keyCode.SPACE:
+                    addMenu.show();
+                    addMenu.menu("focus", null, addMenu.find(".ui-menu-item:first"));
+                    break;
+                }
+            }
+
+        });
+        $(document).on({
+            click: function( event ) {
+                if ( !$.contains(addMenu, event.target)) {
+                    addMenu.hide();
+                }
+            },
+            keydown: function(event) {
+                switch (event.keyCode) {
+                case $.ui.keyCode.ESCAPE:
+                    addMenu.hide();
+                    break;
+                }
+            }
+        });
+    };
+    FE.Multiselect.prototype._buildMenuItem = function (content, submenu) {
+        var a = $("<a>").attr("href", "#"),
+            d = $("<div>").append(a);
+        ($.type(content) === 'string' ? a.text : a.html).call(a, content);
+        if (submenu) {
+            d.append(submenu);
+        }
+        return d;
+    };
+    FE.Multiselect.prototype._addSelected = function (itemText) {
+        var item, anchor;
+        anchor = $("<a>")
+            .append(
+                $("<img>").attr({src: "/images/trash_recyclebin_empty_closed.png", alt: "Remove"})
+            ).attr({
+                "href": "#",
+                "title": "Remove"
+            }).css({
+                position: "static",
+                "float": "right"
+            }).on({
+                click: $.proxy(this, "_onRemove")
+            });
+        item = $("<div>")
+            .css({
+                display: "inline-block",
+                padding: "0.2em"
+            })
+            .text(itemText)
+            .append(anchor);
+        this.selected.append(item);
+        this._refreshInputElement();
+    };
+    FE.Multiselect.prototype._onMenuSelect = function (event, ui) {
+        this._addSelected(ui.item.text());
+        ui.item.remove();
+        this.addMenu.hide();
+    };
+    FE.Multiselect.prototype._onRemove = function (event) {
+        var item, text, newItem;
+        event.stopPropagation();
+        item = $(event.target).parents("div").first();
+        text = item.text();
+        item.remove();
+        newItem = this._buildMenuItem(text);
+        // insert in sorted order
+        this.addMenu.children().each(function () {
+            if (text.toLowerCase() < $(this).text().toLowerCase()) {
+                newItem.insertBefore(this);
+                newItem = null;
+                return false;
+            }
+        });
+        if (newItem) {
+            this.addMenu.append(newItem);
+        }
+        this.addMenu.menu("refresh");
+        this._refreshInputElement();
+    };
+    FE.Multiselect.prototype._refreshInputElement = function() {
+        var values = [];
+        this.selected.children().each(function() {
+            values.push($(this).text());
+        });
+        this.inputElement.val(JSON.stringify(values));
     };
 
     Fisma.Editable = FE;
