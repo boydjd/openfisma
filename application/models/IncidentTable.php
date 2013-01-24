@@ -202,6 +202,17 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'parentOrganization' => array(
+                'initiallyVisible' => true,
+                'label' => 'Parent Organization/System',
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'ParentOrganization',
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
             'additionalInfo' => array(
                 'initiallyVisible' => true,
                 'label' => 'Description',

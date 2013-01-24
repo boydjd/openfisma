@@ -69,6 +69,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $this->hasMutator('status', 'setStatus');
         $this->hasMutator('threatLevel', 'setThreatLevel');
         $this->hasMutator('type', 'setType');
+        $this->hasMutator('responsibleOrganizationId', 'setResponsibleOrganizationId');
     }
 
     /**
@@ -884,5 +885,36 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             $discoveredDate = new Zend_Date($this->discoveredDate, Fisma_Date::FORMAT_DATE);
             $this->_set('auditYear', $discoveredDate->toString(Zend_Date::YEAR));
         }
+    }
+
+    /**
+     * setResponsibleOrganizationId
+     *
+     * @param mixed $value
+     * @param mixed $load
+     * @return void
+     */
+    public function setResponsibleOrganizationId($value, $load = true)
+    {
+        $this->_set('responsibleOrganizationId', $value);
+
+        // if $load is false, early out to avoid creating worthless objects
+        if (!$load) {
+            return;
+        }
+
+        // now deal with the parent organization
+        $parentOrganizationId = null;
+        if (!empty($value)) {
+            $this->refreshRelated('Organization');
+            $parent = $this->Organization->getNode()->getParent();
+            while (!empty($parent) && !empty($parent->systemId)) {
+                $parent = $parent->getNode()->getParent();
+            }
+            if (!empty($parent)) {
+                $parentOrganizationId = $parent->id;
+            }
+        }
+        $this->_set('denormalizedParentOrganizationId', $parentOrganizationId);
     }
 }

@@ -403,6 +403,11 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Affected System/Organization
+        denormalizedParentOrganizationId:
+            type: integer
+            extra:
+                auditLog: true
+                logicalName: Parent Organization
         pocId:
             type: integer
             extra:
@@ -451,6 +456,11 @@ Incident:
             local: organizationId
             foreign: id
             foreignAlias: Incidents
+        ParentOrganization:
+            class: Organization
+            local: denormalizedParentOrganizationId
+            foreign: id
+            foreignAlias: ChildIncidents
         PointOfContact:
             class: User
             local: pocId

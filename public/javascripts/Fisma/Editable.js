@@ -122,7 +122,8 @@
             csrf        = form.find('input[name=csrf]').val(),
             action      = form.attr('action'),
             value       = null,
-            refreshUrl  = Fisma.tabView.get('activeTab').get('dataSrc');
+            refreshUrl  = Fisma.tabView.get('activeTab').get('dataSrc'),
+            affected = target.attr("affected");
         switch (type) {
             case 'select':
             case 'checked':
@@ -174,6 +175,9 @@
                                     target = newTarget;
                                     if (target.hasClass('editable')) {
                                         Fisma.Editable.setupEditFields(target);
+                                    }
+                                    if (affected) {
+                                        $("#"+affected).html($(data).find("#"+affected).html());
                                     }
                                 },
                                 failure: function(data, textStatus, request) {

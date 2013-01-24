@@ -53,24 +53,41 @@
                     <span id="organization"
                           type="select"
                           name="incident[organizationId]"
-                          class="editable"
                           target="organization"
+                          affected="parentOrganization"
                           href="/metainfo/list/o/organization/format/html/optional/true/">
                         <?php if (isset($this->incident['Organization'])): ?>
-                        <?php $orgId = $this->incident['Organization']['id']; ?>
-
-                            <?php if ($this->userCanViewOrganization === true) : ?>
-                                <a href="/organization/view/id/<?php echo $this->escape($orgId); ?>">
-                            <?php endif; ?>
-
-                            <?php echo $this->escape($this->incident['Organization']['nickname']);?>
-                            - <?php echo $this->escape($this->incident['Organization']['name']);?>
-
-                            <?php if ($this->userCanViewOrganization === true): ?>
-                                </a>
-                            <?php endif; ?>
-
-                        <?php endif; ?>&nbsp;
+                            <?php
+                                echo $this->escape(
+                                    $this->organizationInfo(
+                                        $this->incident['Organization']['nickname'] . " - " . $this->incident['Organization']['name'],
+                                        $this->incident['Organization']['id']
+                                    ),
+                                    'none'
+                                );
+                            ?>
+                        <?php endif; ?>
+                    </span>
+                        <span class="editable" target="organization">&nbsp;</span>
+                </td>
+            </tr>
+            <tr>
+                <td>Parent Organization:</td>
+                <td>
+                    <span id="parentOrganization">
+                        <?php if (isset($this->incident['ParentOrganization'])): ?>
+                            <?php
+                                echo $this->escape(
+                                    $this->organizationInfo(
+                                        $this->incident['ParentOrganization']['nickname'] . " - " . $this->incident['ParentOrganization']['name'],
+                                        $this->incident['ParentOrganization']['id']
+                                    ),
+                                    'none'
+                                );
+                            ?>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
                     </span>
                 </td>
             </tr>
