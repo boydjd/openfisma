@@ -291,7 +291,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->view->result = new Fisma_AsyncResponse;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
 
-        if ($this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
+        if (!$this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
             $this->view->result->fail('Invalid permission');
         } else {
             $tag = $this->getRequest()->getParam('tag');
