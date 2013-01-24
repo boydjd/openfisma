@@ -1,0 +1,74 @@
+###############################################################################
+# Non-Encrypted Virtual Host
+#
+# By default OpenFISMA will listen on the non-secure port 80. We highly 
+# recommend that you use SSL to secure communications with web users over
+# port 443. We have provided a recommended secure connection below, if you 
+# wish to activate it, simply comment this virtual host and uncomment the 
+# Encrypted virtual host below.
+
+<VirtualHost *:80>
+    DocumentRoot /usr/share/openfisma/public
+    ServerName www.openfisma.org
+    ErrorLog /var/log/httpd/openfisma-error.log
+    CustomLog /var/log/httpd/openfisma-access.log combined
+
+    <Directory "/usr/share/openfisma/public">
+        Options +FollowSymLinks
+        AllowOverride All
+        Order allow,deny
+        Allow from all
+    </Directory>
+</VirtualHost>
+
+
+###############################################################################
+# Encrypted Virtual Host
+#
+# If you wish to use SSL, uncomment this virtual host and comment the second
+# listed below. If activated, this virtual host will redirect all non-secure
+# traffic on port 80 to port 443
+
+#<VirtualHost *:80>
+#    RewriteEngine On
+#
+#    RewriteRule ^(.*) https://%{SERVER_NAME}%{REQUEST_URI}
+#</VirtualHost>
+#
+#SSLCertificateFile      /etc/apache2/ssl.crt/server.crt
+#SSLCertificateKeyFile   /etc/apache2/ssl.key/server.key
+#SetEnvIf                User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown downgrade-1.0 force-response-1.0
+#SSLCipherSuite          -ALL:DHE-RSA-AES256-SHA:AES256-SHA:DES-CBC3-SHA:AES128-SHA:DHA-RSA-AES128-SH
+#SSLOptions              +FakeBasicAuth +ExportCertData
+#SSLProtocol             TLSv1 SSLv3
+#SSLSessionCache         shmcb:/var/lib/apache2/ssl_scache(512000)
+#SSLSessionCacheTimeout  600
+#
+#<VirtualHost *:443>
+#    # Remove Trace and Track messages from the header response.
+#    RewriteEngine on
+#    RewriteCond %{REQUEST_METHOD} ^TRAC(E|K)
+#    RewriteRule .* - [F]
+#    TraceEnable off
+#
+#    # Prevents apache from using user-defined http headers to determine the server name
+#    UseCanonicalName On
+#    
+#    # Sets the Document Root for apache to serve files
+#    DocumentRoot "/usr/share/openfisma/public"
+# 
+#     # Sets the permissions on the document root directory
+#     <Directory "/usr/share/openfisma/public">
+#         <LimitExcept GET POST>
+#             deny from all
+#         </LimitExcept>
+# 
+#         Order allow,deny
+#         Allow from all
+# 
+#         AllowOverride FileInfo Options Indexes
+#         Options -Indexes +FollowSymLinks -Includes -Multiviews -ExecCGI
+#     </Directory>
+# 
+#     SSLEngine On
+# </VirtualHost>

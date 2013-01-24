@@ -1,0 +1,10 @@
+# OpenFISMA Cron Configuration
+#
+# OpenFISMA runs the background-tasks.php file every minute which in turn
+# dispatches all of the other tasks OpenFISMA must needs to handle in a task
+# fashion such as sending email and updating search indexes. Output will
+# be logged to /usr/share/openfisma/data/logs/background-tasks.log or you
+# can grep the system messages log for cron for information as well.
+
+# Run background tasks for openfisma (once every minute)
+* * * * * wwwrun php /usr/share/openfisma/scripts/bin/background-tasks.php 2>&1 >> /usr/share/openfisma/data/logs/cron.log
