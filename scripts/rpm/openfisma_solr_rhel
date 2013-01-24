@@ -1,0 +1,63 @@
+#!/bin/sh
+#
+# Copyright (c) 2011 Endeavor Systems, Inc.
+# 
+# This file is part of OpenFISMA.
+# 
+# OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+# License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
+# version.
+# 
+# OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
+# warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+# details.
+# 
+# You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+# http://www.gnu.org/licenses/.
+#
+### BEGIN INIT INFO
+# Provides:          openfisma_solr
+# Required-Start:    $local_fs $network
+# Should-Start:
+# Required-Stop:     $local_fs $network
+# Should-Stop:
+# Default-Start:     3 5
+# Default-Stop:      0 1 2 6
+# chkconfig:         35 92 08
+# Short-Description: Solr/Jetty instance for OpenFISMA.
+# Description:       Solr provides the search engine for OpenFISMA, and it must be running in order for search features 
+#                    to work.
+### END INIT INFO
+
+
+SOLR_DIR=/usr/share/openfisma/library/Solr
+LOG_FILE=/usr/share/openfisma/data/logs/solr.log
+JAVA="/usr/bin/java"
+JAVA_OPTIONS="-Djetty.home=$SOLR_DIR -Dsolr.solr.home=$SOLR_DIR/solr -Dsolr.data.dir=$SOLR_DIR/solr/data \
+              -Djetty.port=8983 \
+              -DSTOP.PORT=8984 -DSTOP.KEY=openfisma -Djetty.logs=/usr/share/openfisma/data/logs \
+              -jar $SOLR_DIR/start.jar"
+
+# description: Starts and stops Apache Solr
+
+case $1 in
+    start)
+        echo "Starting Solr"
+        cd $SOLR_DIR
+        sudo -u apache $JAVA $JAVA_OPTIONS 2> $LOG_FILE &
+        ;;
+    stop)
+        echo "Stopping Solr"
+        cd $SOLR_DIR
+        sudo -u apache $JAVA $JAVA_OPTIONS --stop
+        ;;
+    restart)
+        $0 stop
+        sleep 1
+        $0 start
+        ;;
+    *)
+        echo "Usage: $0 {start|stop|restart}" >&2
+        exit 1
+        ;;
+esac
