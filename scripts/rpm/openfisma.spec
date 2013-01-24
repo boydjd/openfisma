@@ -32,16 +32,26 @@ BuildRoot:  %{_tmppath}/%{name}-%{version}-build
 %define apache_conf_location /etc/httpd/conf.d
 %define platform rhel
 
+# If Fedora version 17 use the following packages
+%if 0%{?fedora} == 17 
+BuildRequires: java-1.7.0-openjdk-devel
+Requires: java-1.7.0-openjdk
+%endif
+
+%if 0%{?fedora_version} <= 16 || 0%{?rhel_version} || 0%{?centos_version}
+BuildRequires: java-1.6.0-openjdk-devel
+Requires: java-1.6.0-openjdk
+%endif
+
 # Packages required by all REDHAT based operating systems
 BuildRequires: httpd
-BuildRequires: java-1.6.0-openjdk
 BuildRequires: mysql-server
 BuildRequires: php
 BuildRequires: sudo
+BuildRequires: ant
 Requires: cronie
 Requires: logrotate
 Requires: httpd
-Requires: java-1.6.0-openjdk
 Requires: mysql
 Requires: mysql-server
 Requires: php
@@ -65,7 +75,7 @@ Requires: sudo
 
 # If openSUSE version 12.2 use the following packages
 %if 0%{?suse_version} == 1220
-BuildRequires: java-1_7_0-openjdk
+#BuildRequires: java-1_7_0-openjdk
 BuildRequires: mysql-community-server
 Requires: java-1_7_0-openjdk
 Requires: ImageMagick
@@ -74,7 +84,7 @@ Requires: mysql-community-server
 
 # If openSUSE version 12.1 or 11.4 use the following packages
 %if 0%{?suse_version} == 1210 || 0%{?suse_version} == 1140
-BuildRequires: java-1_6_0-openjdk
+#BuildRequires: java-1_6_0-openjdk
 BuildRequires: mysql-community-server
 Requires: java-1_6_0-openjdk
 Requires: ImageMagick
@@ -94,6 +104,7 @@ Requires: mysql
 BuildRequires: apache2
 BuildRequires: php5
 BuildRequires: sudo
+BuildRequires: ant
 Requires: apache2
 Requires: apache2-mod_php5
 Requires: cron
@@ -143,6 +154,10 @@ find . -type f -name '.braids' -exec rm {} \;
 find . -type f -name '.gitignore' -exec rm {} \;
 find . -type f -name '.cvsignore' -exec rm {} \; 
 find . -type f -name '._*' -exec rm {} \;
+
+# minify the css files
+cd scripts/build
+ant minify
 
 # The install section is executed as a sh script, just like prep and build. 
 %install
@@ -268,11 +283,11 @@ echo "flush privileges;" | mysql -u root
 
 # build the openfisma database and load sample data
 echo "build the openfisma database and load sample data"
-sudo -u %{webuser} php %{installation_dir}/scripts/bin/doctrine.php -bs
-sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-findings.php -n 50
-sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-vulnerabilities.php -n 50
-sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-incidents.php -n 50
-sudo -u %{webuser} php %{installation_dir}/scripts/bin/rebuild-index.php -a
+sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/doctrine.php -bs
+sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/generate-findings.php -n 50
+sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/generate-vulnerabilities.php -n 50
+sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/generate-incidents.php -n 50
+sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/rebuild-index.php -a
 
 # finish installation scripts
 fi
@@ -285,10 +300,10 @@ if [ "$1" == "2" ] ; then
 echo "Upgrading OpenFISMA"
 
 # Load new fixtures / YAML
-sudo -u %{webuser} php %{installation_dir}/scripts/bin/doctrine.php -m || true
+sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/doctrine.php -m || true
 
 # Run database migrations
-sudo -u %{webuser} php %{installation_dir}/scripts/bin/migrate.php || true
+sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/migrate.php || true
 
 # Restart apache, mysql, and solr
 %if 0%{?suse_version} >= 1210
