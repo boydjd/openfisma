@@ -353,6 +353,7 @@
             addImg = this.addImg = $("<img>").attr({
                 "src": "/images/add.png",
                 "alt": "Add",
+                "tabindex": 0,
                 width: 16,
                 height: 16
             }).css("vertical-align", "text-bottom"),
