@@ -84,8 +84,8 @@ class Asset extends BaseAsset implements Fisma_Zend_Acl_OrganizationDependency
         // now deal with the parent organization
         $parentOrganizationId = null;
         if (!empty($value)) {
-            $this->refreshRelated('Organization');
-            $parent = $this->Organization->getNode()->getParent();
+            $org = Doctrine::getTable('Organization')->find($value);
+            $parent = $org->getNode()->getParent();
             while (!empty($parent) && !empty($parent->systemId)) {
                 $parent = $parent->getNode()->getParent();
             }
