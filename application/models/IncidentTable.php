@@ -434,6 +434,13 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => false,
                 'type' => 'text'
             ),
+            'jsonComments' => array(
+                'initiallyVisible' => true,
+                'label' => 'Comments',
+                'sortable' => false,
+                'type' => 'text',
+                'formatter' => 'Fisma.TableFormat.formatComments'
+            ),
             'closedTs' => array(
                 'initiallyVisible' => false,
                 'label' => 'Resolved',
