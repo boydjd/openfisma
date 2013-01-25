@@ -463,26 +463,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($message, $model);
             $this->_redirect('/user/password');
         }
-        $this->view->form    =  $form;
 
-        $buttons = array();
-        $buttons['submitButton'] = new Fisma_Yui_Form_Button(
-            'saveChanges',
-            array(
-                'label' => 'Save',
-                'onClickFunction' => 'Fisma.Util.submitFirstForm',
-                'imageSrc' => '/images/ok.png'
-            )
-        );
-        $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
-            'discardChanges',
-            array(
-                'value' => 'Discard',
-                'imageSrc' => '/images/no_entry.png',
-                'href' => '/user/password'
-            )
-        );
-        $this->view->toolbarButtons = $buttons;
+        $this->view->form           = $form;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -1298,16 +1281,19 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         if (
             $this->_request->getActionName() === 'notification' ||
+            $this->_request->getActionName() === 'preferences' ||
+            $this->_request->getActionName() === 'password' ||
             (
                 $this->_request->getActionName() === 'profile' &&
                 Fisma::configuration()->getConfig('user_editable_profiles')
             )
         ) {
-            $buttons['save'] = new Fisma_Yui_Form_Button_Submit(
+            $buttons['save'] = new Fisma_Yui_Form_Button(
                 'saveChanges',
                 array(
                     'label' => 'Save',
-                    'imageSrc' => '/images/ok.png'
+                    'imageSrc' => '/images/ok.png',
+                    'onClickFunction' => 'Fisma.Util.submitFirstForm'
                 )
             );
             $buttons['discard'] =  new Fisma_Yui_Form_Button_Link(
@@ -1315,7 +1301,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 array(
                     'value' => 'Discard',
                     'imageSrc' => '/images/no_entry.png',
-                    'href' => "/user/notification"
+                    'href' => '/user/' . $this->_request->getActionName()
                 )
             );
             return $buttons;
@@ -1344,9 +1330,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
         }
 
-        if ($this->_request->getActionName() !== 'profile') {
-            $buttons = array_merge($buttons, parent::getToolbarButtons($record));
-        }
+        $buttons = array_merge($buttons, parent::getToolbarButtons($record));
 
         if (!empty($record) && $this->getRequest()->getActionName() === 'view') {
             $fromSearchParams = $this->_getFromSearchParams($this->_request);
@@ -1812,25 +1796,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form->setDefault('homeUrl', $currentHomeUrl);
 
         $this->view->form = $form;
-
-        $buttons = array();
-        $buttons['submitButton'] = new Fisma_Yui_Form_Button(
-            'saveChanges',
-            array(
-                'label' => 'Save',
-                'onClickFunction' => 'Fisma.Util.submitFirstForm',
-                'imageSrc' => '/images/ok.png'
-            )
-        );
-        $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
-            'discardChanges',
-            array(
-                'value' => 'Discard',
-                'imageSrc' => '/images/no_entry.png',
-                'href' => '/user/password'
-            )
-        );
-        $this->view->toolbarButtons = $buttons;
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
