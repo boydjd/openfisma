@@ -222,16 +222,16 @@ class Incident extends BaseIncident
     public function setOrganizationId($organizationId, $load = true)
     {
         if ($organizationId === '0' || empty($organizationId)) {
-            $this->_set('organizationId', null);
-        } else {
-            $this->_set('organizationId', $organizationId);
+            $organizationId = null;
         }
+
+        $this->_set('organizationId', $organizationId);
 
         // now deal with the parent organization
         $parentOrganizationId = null;
         if (!empty($organizationId)) {
-            $this->refreshRelated('Organization');
-            $parent = $this->Organization->getNode()->getParent();
+            $organization = Doctrine::getTable('Organization')->find($organizationId);
+            $parent = $organization->getNode()->getParent();
             while (!empty($parent) && !empty($parent->systemId)) {
                 $parent = $parent->getNode()->getParent();
             }

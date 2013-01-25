@@ -171,7 +171,7 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
                 if (rand(1, 100) > 50) {
                     $i->ReportingUser = $this->_getRandomUser();
                 }
-                $i->Organization = $this->_getRandomOrganization();
+                $i->organizationId = $this->_getRandomOrganization()->id;
 
                 $i->pocId = $this->_getRandomUser()->id;
 
