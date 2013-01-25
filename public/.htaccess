@@ -64,12 +64,22 @@ AddDefaultCharset UTF-8
 # Sets the maximum upload filesize, this size will determine the
 # maximum size of files OpenFISMA will accept when uploaded.
 php_value	upload_max_filesize	1024M
+
 # Make sure that post_max_size is bigger than upload_max_filesize, otherwise
 # warnings about files being too large will not be able to be displayed.
 php_value	post_max_size		1024M
 
 # Turns off all errors, useful setting in production environments.
-# php_flag	display_errors		Off
+php_flag	display_errors		Off
+
+# Turn off php startup errors, recommended for production environments
+php_flag	display_startup_errors	Off
+
+# Enable php logging, recommended for production environments
+php_flag	log_errors		On
+
+# Sets the location of the error log
+php_flag	error_log	/usr/share/openfisma/data/logs/php_error.log
 
 # Sets the magic_quotes state for GPC (Get/Post/Cookie) operations
 # It is recommended that magic_quotes_gpc be disabled, and input
@@ -78,6 +88,8 @@ php_flag	magic_quotes_gpc	Off
 
 # Turns off register globals
 php_flag	register_globals	Off
+php_flag 	magic_quotes_sybase 	Off 
+
 </IfModule>
 
 <IfModule mod_deflate.c>

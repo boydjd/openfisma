@@ -4,11 +4,9 @@
 # norootforbuild
 #
 # TODO LIST
-# - configure the upgrade section and test upgrading from one version to the next
-# - symlink all configuration file into an /etc/openfisma directory
-# - check if ssl certs already exist, if not then generate them, if so then leave them alone
-# - tag user documentation
-# - configure and test rpm for RHEL/CentOS
+# - SSL Configuration: enable secure cookies, activate ssl conf, generate self signed certificates
+# - Upgrade Testing: test rpm's upgrade capability from one version of OpenFISMA to the next
+# - Multi Host RPM Build: validate and fix build errors for RHEL/CentOS
 
 %define installation_dir /usr/share/%{name}
 
@@ -207,6 +205,10 @@ find %{installation_dir} -type f -exec chmod 660 {} \;
 chown -R %{webuser}:%{webgroup} %{installation_dir} 
 chmod 755 /etc/init.d/solr
 
+# remove known security vulnerabilities from php.ini
+[ -f /etc/php5/apache2/php.ini ] && sed -i "s,expose_php = On,expose_php = Off,g" /etc/php5/apache2/php.ini || echo "expose_php is already off"
+[ -f /etc/php5/apache2/php.ini ] && sed -i 's#^safe_mode = Off#;safe_mode = On#' /etc/php5/apache2/php.ini || echo "safe_mode is already on"
+
 # if this is the first installation run the following
 if [ "$1" == "1" ] ; then
 echo "installing openfisma for the first time"
@@ -283,11 +285,11 @@ echo "flush privileges;" | mysql -u root
 
 # build the openfisma database and load sample data
 echo "build the openfisma database and load sample data"
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/doctrine.php -bs
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/generate-findings.php -n 50
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/generate-vulnerabilities.php -n 50
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/generate-incidents.php -n 50
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/rebuild-index.php -a
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/doctrine.php -bs
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-findings.php -n 50
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-vulnerabilities.php -n 50
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-incidents.php -n 50
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/rebuild-index.php -a
 
 # finish installation scripts
 fi
@@ -300,10 +302,10 @@ if [ "$1" == "2" ] ; then
 echo "Upgrading OpenFISMA"
 
 # Load new fixtures / YAML
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/doctrine.php -m || true
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/doctrine.php -m || true
 
 # Run database migrations
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/migrate.php || true
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/migrate.php || true
 
 # Restart apache, mysql, and solr
 %if 0%{?suse_version} >= 1210
