@@ -13,9 +13,11 @@ general operating procedures for making changes.
 
 ## Recommended Reading
 
-http://en.opensuse.org/openSUSE:Specfile_guidelines
-http://en.opensuse.org/openSUSE:Build_Service_cross_distribution_howto
+[openSUSE Packaging Guidelines][4]
+[openSUSE Cross Distribution How To][5]
 
 [1]: http://en.wikipedia.org/wiki/RPM_Package_Manager
 [2]: http://en.opensuse.org/openSUSE:Packaging_guidelines
 [3]: https://openfisma.atlassian.net/wiki/display/INFRA/RPM+Management
+[4]: http://en.opensuse.org/openSUSE:Specfile_guidelines
+[5]: http://en.opensuse.org/openSUSE:Build_Service_cross_distribution_howto

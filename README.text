@@ -1,27 +1,31 @@
+# Overview
+
 The OpenFISMA project is an open source application designed to reduce the
 complexity and automate the regulatory requirements of the Federal Information
 Security Management Act (FISMA) and the National Institute of Standards and
 Technology (NIST) Risk Management Framework (RMF).
 
+# Resources
+
 Please see the following resources for more information:
 
-Installation:
+## Installation
 http://manual.openfisma.org/display/ADMIN/Administrator+Manual
 
-Website:
+## Website
 http://www.openfisma.org
 
-License:
+## License
 http://www.openfisma.org/node/3
 
-Documentation:
-http://manual.openfisma.org
-http://api.openfisma.org
+## Documentation
+http://manual.openfisma.org (User/Admin Docs)
+http://api.openfisma.org (Code Docs)
 
-Issue Tracking/Build Status:
+## Developer Goodies (Bugz, Code, and Builds)
 http://jira.openfisma.org (Bug reports, feature requests)
-http://crucible.openfisma.org (Peer code review, source code browser)
+https://bitbucket.org/openfisma-ondemand (Peer code review, source code browser)
 http://bamboo.openfisma.org (Continuous Integration)
 
-Help:
+# Getting Help
 Please visit the forums at http://www.openfisma.org/forum or email openfisma@endeavorsystems.com
