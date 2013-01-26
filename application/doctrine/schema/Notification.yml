@@ -25,12 +25,12 @@ Notification:
             type: string(255)
             comment: the url which is sent to the user
     relations:
-        User:
-            local: userId
-            foreign: id
-            foreignAlias: Notifications
         Event:
             local: eventId
+            foreign: id
+            foreignAlias: Notifications
+        User:
+            local: userId
             foreign: id
             foreignAlias: Notifications
     actAs:

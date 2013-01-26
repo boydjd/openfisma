@@ -1,5 +1,5 @@
 Incident:
-    listeners: [IndexListener]
+    listeners: [IndexListener, NotificationListener]
 
     columns:
         modifiedTs: timestamp
@@ -230,6 +230,7 @@ Incident:
         additionalInfo:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
                 logicalName: Incident Description
@@ -238,12 +239,14 @@ Incident:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: PII Involved
             comment: Indicates whether personally identifiable information was involved
         piiAdditional:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
                 logicalName: Additional PII Details
@@ -252,6 +255,7 @@ Incident:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: PII Stored On Mobile Media
             comment: Was the PII stored on mobile media, such as a disc or removable drive?
@@ -259,12 +263,14 @@ Incident:
             type: enum
             values: [laptop, disc, document, usb, tape, other]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: PII Type Of Mobile Media
         piiEncrypted:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: PII Encrypted
             comment: Was PII data encrypted on the lost media?
@@ -272,6 +278,7 @@ Incident:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Authorities Contacted For Loss Of PII
             comment: Have the relevant authorities been contacted?
@@ -279,12 +286,14 @@ Incident:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Police Report Filed For Loss Of PII
             comment: Has a police report been filed?
         piiIndividualsCount:
             type: integer(10)
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Number Of Individuals Affected By Loss Of PII
             comment: "The number of individuals potentially compromised by this incident\'s loss of PII"
@@ -292,6 +301,7 @@ Incident:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Inviduals Affected By PII Have Been Notified
             comment: Have the affected individuals been contacted?
@@ -299,6 +309,7 @@ Incident:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: PII Lost During Shipment
             comment: Was the loss of PII due to a shipment?
@@ -306,23 +317,27 @@ Incident:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Shipping Company Contacted
             comment: Contact information for the company responsible for shipping the PII
         piiShipmentSenderCompany:
             type: string(255)
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Name Of Shipping Company
         piiShipmentTimeline:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
                 logicalName: Description Of Shipment Timeline
         piiShipmentTrackingNumbers:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
                 logicalName: Shipment Tracking Numbers
@@ -331,23 +346,27 @@ Incident:
             type: string(39)
             Fisma_Doctrine_Validator_Ip: true
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Host IP Address
             comment: The IP address of the affected host
         hostName:
             type: string(255)
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Host Name
         hostOs:
             type: enum
             values: [win7, vista, xp, macos, linux, unix]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Host Operating System
         hostAdditional:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
                 logicalName: Additional Host Details
@@ -356,12 +375,14 @@ Incident:
             type: string(15)
             Fisma_Doctrine_Validator_Ip: true
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Source IP Address
             comment: The IP address from which the incident is believed to have originated
         sourceAdditional:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
                 logicalName: Additional Details About Incident Source
@@ -370,6 +391,7 @@ Incident:
         actionsTaken:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
                 logicalName: Actions That Were Taken
@@ -397,20 +419,34 @@ Incident:
         categoryId:
             type: integer
             comment: Foreign key to the IR sub category in which this incident belongs
+            extra:
+                notify: true
+                class: IrCategory
+                field: name
+                logicalName: Incident Category
         organizationId:
             type: integer
             comment: Foreign key to the affected organization/system
             extra:
+                notify: true
+                class: Organization
+                field: nickname
                 auditLog: true
                 logicalName: Affected System/Organization
         denormalizedParentOrganizationId:
             type: integer
             extra:
+                notify: true
+                class: Organization
+                field: nickname
                 auditLog: true
                 logicalName: Parent Organization
         pocId:
             type: integer
             extra:
+                notify: true
+                class: User
+                field: displayName
                 auditLog: true
                 logicalName: Point Of Contact
                 requiredPrivilege: update_poc
@@ -418,22 +454,26 @@ Incident:
         severityLevel:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Severity Level
         source:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Source
         impact:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Impact
         responseStrategies: array
         denormalizedResponseStrategies:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Response Strategies
 

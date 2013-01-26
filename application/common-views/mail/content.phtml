@@ -24,6 +24,11 @@
         case 'USER_DELETED':
             $eventTitle = "User account deleted by {$user->displayName}";
             break;
+        case 'USER_POC':
+            $recordClass = get_class($record);
+            $assigner = ($user) ? $user->displayName : $systemName;
+            $eventTitle = "You're assigned to {$recordClass} {$record->id} by {$assigner}";
+            break;
         case 'ACCOUNT_LOGIN_SUCCESS':
             $eventTitle = "{$user->displayName} logged in successfully";
             break;
@@ -63,8 +68,6 @@
     background-color: #ffffff;
     border-top: none;
     padding: 10px;
-    position: relative;
-    height: 100%;
     margin-bottom: 0px;
 ">
 <table cellpadding='4' cellspacing='2'>
@@ -92,6 +95,7 @@
         'SYSTEM_UPDATED',
         'ASSET_UPDATED',
         'FINDING_UPDATED',
+        'INCIDENT_UPDATED',
         'VULNERABILITY_UPDATED'
     ))): ?>
 <div style="
@@ -109,8 +113,6 @@
     background-color: #ffffff;
     border-top: none;
     padding: 10px;
-    position: relative;
-    height: 100%;
     margin-bottom: 0px;
 ">
 <table cellpadding='4' cellspacing='2'>
@@ -122,8 +124,8 @@
     <?php foreach ($this->modifiedFields as $name => $values): ?>
     <tr>
         <th><?php echo $this->escape($this->translate($values[2])); ?></th>
-        <td><?php echo $this->escape($values[0]); ?></td>
-        <td><?php echo $this->escape($values[1]); ?></td>
+        <td><?php echo $this->escape($values[0], $values[3]); ?></td>
+        <td><?php echo $this->escape($values[1], $values[3]); ?></td>
     </tr>
     <?php endforeach; ?>
 </table>

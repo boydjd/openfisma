@@ -491,41 +491,13 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $conn->commit();
 
-        // Send emails to IRCs
-        $coordinators = $this->_getIrcs();
-        foreach ($coordinators as $coordinator) {
-            $options = array(
-                'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incident->id,
-                'incidentId' => $incident->id
-            );
-
-            $mail = new Mail();
-            $mail->recipient     = $coordinator['u_email'];
-            $mail->recipientName = $coordinator['u_name'];
-            $mail->subject       = "A new incident has been reported.";
-
-            $mail->mailTemplate('ir_reported', $options);
-
-            Zend_Registry::get('mail_handler')->setMail($mail)->send();
-        }
-
-        // Set the intial POC to one of the ISSOs (Yes, this code stinks, but the requirements lack
-        // specificity on this topic.)
         if ($incident->organizationId) {
             $org = Doctrine::getTable('Organization')->find($incident->organizationId);
             if (!empty($org->pocId)) {
-                $poc = Doctrine::getTable("User")->find($org->pocId);
-                $incident->pocId = $poc->id;
+                $incident->pocId = $org->pocId;
                 $incident->save();
 
-                $mailSubject = "You have been assigned as the "
-                             . $this->view->translate('Incident_Point_of_Contact')
-                             . " for an incident.";
-                $this->_sendMailToAssignedUser($poc->id, $incident->id, $mailSubject);
-
-                $message = "The " . $this->view->translate('Incident_Point_of_Contact')
-                            . " (" . $poc->username . ") "
-                            . "has been notified of this incident.";
+                $message = "Responsible people have been notified of this incident.";
                 $this->view->priorityMessenger($message, 'notice');
             }
         }
@@ -741,6 +713,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incident->save();
 
         $incident->getAuditLog()->write("The incident has been locked.");
+        Notification::notify('INCIDENT_LOCKED', $incident, CurrentUser::getInstance());
 
         $fromSearchParams = $this->_getFromSearchParams($this->_request);
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
@@ -764,6 +737,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incident->save();
 
         $incident->getAuditLog()->write("The incident has been unlocked.");
+        Notification::notify('INCIDENT_UNLOCKED', $incident, CurrentUser::getInstance());
 
         $fromSearchParams = $this->_getFromSearchParams($this->_request);
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
@@ -1138,7 +1112,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $currentStep = $incident->CurrentWorkflowStep;
 
             $incident->completeStep($comment);
-
+            /*
             foreach ($this->_getAssociatedUsers($incident->id) as $user) {
                 $options = array(
                     'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incident->id,
@@ -1155,7 +1129,15 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $mail->mailTemplate('ir_step', $options);
 
                 Zend_Registry::get('mail_handler')->setMail($mail)->send();
-            }
+            }//*/
+            Notification::notify(
+                'INCIDENT_STEP',
+                $incident,
+                CurrentUser::getInstance(),
+                array(
+                    'recipientList' => $this->_getAssociatedUsers($incident->id)
+                )
+            );
 
             $message = 'Workflow step completed. ';
             if ('closed' == $incident->status) {
@@ -1903,15 +1885,17 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     private function _getAssociatedUsers($incidentId)
     {
         $incidentUsersQuery = Doctrine_Query::create()
-                              ->select("u.email as email, CONCAT(u.nameFirst, ' ', u.nameLast) as name")
+                              ->select("iru.userId as id")
                               ->from('IrIncidentUser iru')
-                              ->leftJoin('iru.User u')
                               ->where('iru.incidentId = ?', $incidentId)
                               ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         $incidentUsers = $incidentUsersQuery->execute();
+        array_walk($incidentUsers, function(&$item, $key) { //flatten the array to use with whereIn
+            $item = $item['iru_id'];
+        });
 
-        return $incidentUsers;
+        return array_values($incidentUsers);
     }
 
     /**

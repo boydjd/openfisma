@@ -1,9 +1,9 @@
 IrIncidentUser:
     columns:
-        incidentId: 
+        incidentId:
             type: integer
             primary: true
-        userId: 
+        userId:
             type: integer
             primary: true
         accessType:
@@ -19,3 +19,4 @@ IrIncidentUser:
         User:
             local: userId
             foreign: id
+            foreignAlias: IrIncidentUsers

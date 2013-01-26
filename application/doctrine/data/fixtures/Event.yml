@@ -138,6 +138,7 @@ Event:
         urlPath: /vm/vulnerability/list
 
     VULNERABILITY_CLOSED:
+        defaultActive: true
         name: VULNERABILITY_CLOSED
         description: a vulnerability is resolved
         Privilege: notification_vulnerability
@@ -145,6 +146,7 @@ Event:
         urlPath: /vm/vulnerability/view/id
 
     VULNERABILITY_UPDATED:
+        defaultActive: true
         name: VULNERABILITY_UPDATED
         description: a vulnerability is modified
         Privilege: notification_vulnerability
@@ -183,6 +185,7 @@ Event:
         urlPath: /finding/remediation/list
 
     FINDING_CLOSED:
+        defaultActive: true
         name: FINDING_CLOSED
         description: a finding is resolved
         Privilege: notification_finding
@@ -244,3 +247,50 @@ Event:
         Privilege: notification_finding
         category: evaluation
         urlPath: /finding/remediation/view/id/
+
+    INCIDENT_CREATED:
+        defaultActive: true
+        name: INCIDENT_CREATED
+        description: an incident is reported
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
+
+    INCIDENT_UPDATED:
+        defaultActive: true
+        name: INCIDENT_UPDATED
+        description: an incident is modified
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
+
+    INCIDENT_LOCKED:
+        defaultActive: true
+        name: INCIDENT_LOCKED
+        description: an incident is locked
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
+
+    INCIDENT_UNLOCKED:
+        defaultActive: true
+        name: INCIDENT_UNLOCKED
+        description: an incident is unlocked
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
+
+    INCIDENT_STEP:
+        defaultActive: true
+        name: INCIDENT_STEP
+        description: a workflow step is completed for my assigned incidents
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
+
+    INCIDENT_DELETED:
+        defaultActive: true
+        name: INCIDENT_DELETED
+        description: an incident is deleted
+        Privilege: notification_incident
+        category: incident
