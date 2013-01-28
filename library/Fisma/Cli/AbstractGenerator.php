@@ -113,13 +113,14 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
                                           ->from('Organization o')
                                           ->leftJoin('o.System s')
                                           ->limit(50)
-                                          ->execute();
+                                          ->execute()
+                                          ->getData();
 
             if (0 == count($this->_sampleOrganizations)) {
                 throw new Fisma_Exception("Cannot generate sample data because the application has no organizations.");
             }
         }
-        return $this->_sampleOrganizations[$this->_randomLog(0, count($this->_sampleOrganizations))];
+        return $this->_sampleOrganizations[$this->_randomLog(0, count($this->_sampleOrganizations) - 1)];
     }
 
     /**
