@@ -183,3 +183,8 @@ Migration:
         minorVersion: 2
         tagNumber: 0
         name: ParentOrganization
+    030200_Incident:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: Incident
