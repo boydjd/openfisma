@@ -154,7 +154,7 @@
                 <td>Parent Organization:</td>
                 <td>
                     <span id="parentOrganization">
-                        <?php if (!empty($this->finding->ParentOrganization)): ?>
+                        <?php if (!empty($this->finding->denormalizedParentOrganizationId)): ?>
                             <?php
                                 echo $this->escape(
                                     $this->organizationInfo(
