@@ -100,11 +100,13 @@ Role:
             - incident_comment
             - incident_create
             - incident_update
+            - incident_delete
             - incident_classify
             - incident_resolve
             - incident_close
             - incident_lock
             - incident_manage_impacts
+            - incident_manage_response_strategies
             - incident_manage_severity_levels
             - incident_manage_sources
             - ir_workflow_def_create
