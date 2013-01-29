@@ -168,7 +168,7 @@
             };
 
             // The actual DataTable instance
-            var dataTable = new YAHOO.widget.ScrollingDataTable(
+            var dataTable = new YAHOO.widget.DataTable(
                 "<?php echo $this->escape($this->containerId, 'javascript'); ?>",
                 columnDefs,
                 dataSource,
@@ -264,13 +264,6 @@
 
                 dataTable.subscribe("renderEvent", function () {
                     renderEventFunction(dataTable);
-                    $('.yui-dt-scrollable .yui-dt-bd').each(function() {
-                        $(this).css('maxHeight', (
-                            $(window).height()
-                            - 320
-                            - (($('#advancedSearch').css('display') === 'none') ? 0 : $('#advancedSearch').height())
-                        ) + 'px');
-                    });
                 });
             <?php endif; ?>
 
@@ -342,14 +335,7 @@
                 prefs.persist();
             }, tablePrefs);
 
-            $(window).resize(function(event){
-                dataTable.set('height', ($(window).height() - 290) + 'px');
-                dataTable.render();
-            });
-
             Fisma.Search.initializeSearchColumnsPanel(Dom.get("searchColumnsButtons"));
-
-
         });
     });
 })();
