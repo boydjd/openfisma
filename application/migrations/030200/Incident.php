@@ -41,8 +41,8 @@ class Application_Migration_030200_Incident extends Fisma_Migration_Abstract
             'INSERT INTO role_privilege '
             . 'SELECT r.id, p.id '
             . 'FROM role r, privilege p '
-            . 'WHERE r.nickname = ? AND p.resource = ? AND (p.action = ? OR p.action = ?)',
-            array('ADMIN', 'incident', 'manage_response_strategies', 'delete')
+            . 'WHERE r.name = ? AND p.resource = ? AND (p.action = ? OR p.action = ?)',
+            array('Administrator', 'incident', 'manage_response_strategies', 'delete')
         );
     }
 }
