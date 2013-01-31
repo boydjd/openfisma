@@ -160,11 +160,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         $system = $organization->System;
         $system->loadReference('AggregateSystem');
-        $aggregateSystem = empty($system->aggregateSystemId) ? null : $system->AggregateSystem;
 
         $this->view->organization = $organization;
         $this->view->system = $system;
-        $this->view->aggregateSystem = $aggregateSystem;
 
         $createdDate = new Zend_Date($organization->createdTs, Fisma_Date::FORMAT_DATE);
         $createdDate->setTimezone(CurrentUser::getAttribute('timezone'));
