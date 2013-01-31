@@ -31,18 +31,5 @@ class Application_Migration_030200_Incident extends Fisma_Migration_Abstract
     {
         $this->getHelper()->addColumn('incident', 'responsestrategies', 'text NULL', 'impact');
         $this->getHelper()->addColumn('incident', 'denormalizedresponsestrategies', 'text NULL', 'responsestrategies');
-
-        $this->getHelper()->insert('privilege', array('resource' => 'incident', 'action' => 'delete'));
-        $this->getHelper()->insert(
-            'privilege',
-            array('resource' => 'incident', 'action' => 'manage_response_strategies')
-        );
-        $this->getHelper()->exec(
-            'INSERT INTO role_privilege '
-            . 'SELECT r.id, p.id '
-            . 'FROM role r, privilege p '
-            . 'WHERE r.name = ? AND p.resource = ? AND (p.action = ? OR p.action = ?)',
-            array('Administrator', 'incident', 'manage_response_strategies', 'delete')
-        );
     }
 }

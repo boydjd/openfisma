@@ -4,7 +4,7 @@ IrWorkflowDef:
         Steps:
             - 
                 cardinality: 1
-                Role: IRS
+                Role: user_role
                 name: Prioritize handling the incident based on the business impact
                 description: >
                     <ol><li>Identify which resources have been affected and forecast which resources will be 
@@ -13,30 +13,30 @@ IrWorkflowDef:
                     resources</li></ol>
             - 
                 cardinality: 2
-                Role: IRS
+                Role: user_role
                 name: Report the incident to the appropriate internal personnel and external organizations
             - 
                 cardinality: 3
-                Role: IRS
+                Role: user_role
                 name: Perform an initial containment of the incident
             - 
                 cardinality: 4
-                Role: IRS
+                Role: user_role
                 name: Acquire, preserve, secure, and document evidence
             - 
                 cardinality: 5
-                Role: IRS
+                Role: user_role
                 name: Confirm the containment of the incident
                 description: >
                     <ol><li>Further analyze the incident and determine if containment was sufficient</li><li>Implement 
                     additional containment measures if necessary</li></ol>
             - 
                 cardinality: 6
-                Role: IRS
+                Role: user_role
                 name: Eradicate the incident
             - 
                 cardinality: 7
-                Role: IRS
+                Role: user_role
                 name: Recover from the incident
                 description: >
                     <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
@@ -44,11 +44,11 @@ IrWorkflowDef:
                     monitoring to look for future related activity.</li></ol>
             - 
                 cardinality: 8
-                Role: IRS
+                Role: user_role
                 name: Create a follow-up report
             - 
                 cardinality: 9
-                Role: IRS
+                Role: user_role
                 name: Hold a lessons learned meeting
 
     denial_of_service_wkflw:
@@ -56,7 +56,7 @@ IrWorkflowDef:
         Steps:
             - 
                 cardinality: 1
-                Role: IRS
+                Role: user_role
                 name: Prioritize handling the incident based on the business impact
                 description: >
                     <ol><li>Identify which resources have been affected and forecast which resources will be 
@@ -65,15 +65,15 @@ IrWorkflowDef:
                     resources</li></ol>
             - 
                 cardinality: 2
-                Role: IRS
+                Role: user_role
                 name: Report the incident to the appropriate internal personnel and external organizations
             - 
                 cardinality: 3
-                Role: IRS
+                Role: user_role
                 name: Acquire, preserve, secure, and document evidence
             - 
                 cardinality: 4
-                Role: IRS
+                Role: user_role
                 name: Contain the incident – halt the DoS if it has not already been stopped
                 description: >
                     <ol><li>Identify and mitigate all vulnerabilities that were used</li><li>If not yet contained, 
@@ -82,13 +82,13 @@ IrWorkflowDef:
                     target</li></ol>
             -
                 cardinality: 5
-                Role: IRS
+                Role: user_role
                 name: >
                     Eradicate the incident; if previous step was not performed, identify and mitigate all 
                     vulnerabilities that were used.
             - 
                 cardinality: 6
-                Role: IRS
+                Role: user_role
                 name: Recover from the incident
                 description: >
                     <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
@@ -96,11 +96,11 @@ IrWorkflowDef:
                     monitoring to look for future related activity.</li></ol>
             - 
                 cardinality: 7
-                Role: IRS
+                Role: user_role
                 name: Create a follow-up report
             - 
                 cardinality: 8
-                Role: IRS
+                Role: user_role
                 name: Hold a lessons learned meeting
               
     malicious_code_wkflw:
@@ -108,7 +108,7 @@ IrWorkflowDef:
         Steps:
             - 
                 cardinality: 1
-                Role: IRS
+                Role: user_role
                 name: Prioritize handling the incident based on the business impact
                 description: >
                     <ol><li>Identify which resources have been affected and forecast which resources will be 
@@ -117,11 +117,11 @@ IrWorkflowDef:
                     resources</li></ol>
             - 
                 cardinality: 2
-                Role: IRS
+                Role: user_role
                 name: Report the incident to the appropriate internal personnel and external organizations
             - 
                 cardinality: 3
-                Role: IRS
+                Role: user_role
                 name: Contain the incident
                 description: >
                     <ol><li>Identify infected systems</li><li>Disconnect infected systems from the 
@@ -129,14 +129,14 @@ IrWorkflowDef:
                     necessary, block the transmission mechanisms for the malicious code</li></ol>
             - 
                 cardinality: 4
-                Role: IRS
+                Role: user_role
                 name: Eradicate the incident
                 description: >
                     <ol><li>Disinfect, quarantine, delete, and replace infected files</li><li>Mitigate the exploited 
                     vulnerabilities for other hosts within the organization</li></ol>
             - 
                 cardinality: 5
-                Role: IRS
+                Role: user_role
                 name: Recover from the incident
                 description: >
                     <ol><li>Return affected systems to an operationally ready statei</li><li>Confirm that the affected 
@@ -144,11 +144,11 @@ IrWorkflowDef:
                     monitoring to look for future related activity.</li></ol>
             - 
                 cardinality: 6
-                Role: IRS
+                Role: user_role
                 name: Create a follow-up report
             - 
                 cardinality: 7
-                Role: IRS
+                Role: user_role
                 name: Hold a lessons learned meeting            
             
     improper_usage_wkflw: 
@@ -156,7 +156,7 @@ IrWorkflowDef:
         Steps:
             - 
                 cardinality: 1
-                Role: IRS
+                Role: user_role
                 name: Prioritize handling the incident based on the business impact
                 description: >
                     <ol><li>Identify which resources have been affected and forecast which resources will be 
@@ -165,19 +165,19 @@ IrWorkflowDef:
                     resources</li></ol>
             - 
                 cardinality: 2
-                Role: IRS
+                Role: user_role
                 name: Report the incident to the appropriate internal personnel and external organizations
             - 
                 cardinality: 3
-                Role: IRS
+                Role: user_role
                 name: Acquire, preserve, secure, and document evidence
             - 
                 cardinality: 4
-                Role: IRS
+                Role: user_role
                 name: If necessary, contain and eradicate the incident
             - 
                 cardinality: 5
-                Role: IRS
+                Role: user_role
                 name: Recover from the incident
                 description: >
                     <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
@@ -185,11 +185,11 @@ IrWorkflowDef:
                     monitoring to look for future related activity.</li></ol>
             - 
                 cardinality: 6
-                Role: IRS
+                Role: user_role
                 name: Create a follow-up report
             - 
                 cardinality: 7
-                Role: IRS
+                Role: user_role
                 name: Hold a lessons learned meeting
 
     scan_probe_wkflw:
@@ -197,7 +197,7 @@ IrWorkflowDef:
         Steps:
             - 
                 cardinality: 1
-                Role: IRS
+                Role: user_role
                 name: Prioritize handling the incident based on the business impact
                 description: >
                     <ol><li>Identify which resources have been affected and forecast which resources will be 
@@ -206,23 +206,23 @@ IrWorkflowDef:
                     resources</li></ol>
             - 
                 cardinality: 2
-                Role: IRS
+                Role: user_role
                 name: Report the incident to the appropriate internal personnel and external organizations
             - 
                 cardinality: 3
-                Role: IRS
+                Role: user_role
                 name: Acquire, preserve, secure, and document evidence
             - 
                 cardinality: 4
-                Role: IRS
+                Role: user_role
                 name: Contain the incident
             - 
                 cardinality: 5
-                Role: IRS
+                Role: user_role
                 name: Eradicate the incident
             - 
                 cardinality: 6
-                Role: IRS
+                Role: user_role
                 name: Recover from the incident
                 description: >
                     <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
@@ -230,11 +230,11 @@ IrWorkflowDef:
                     monitoring to look for future related activity.</li></ol>
             - 
                 cardinality: 7
-                Role: IRS
+                Role: user_role
                 name: Create a follow-up report
             - 
                 cardinality: 8
-                Role: IRS
+                Role: user_role
                 name: Hold a lessons learned meeting
 
     defacement_wkflw:
@@ -242,7 +242,7 @@ IrWorkflowDef:
         Steps:
             - 
                 cardinality: 1
-                Role: IRS
+                Role: user_role
                 name: Prioritize handling the incident based on the business impact
                 description: >
                     <ol><li>Identify which resources have been affected and forecast which resources will be 
@@ -251,23 +251,23 @@ IrWorkflowDef:
                     resources</li></ol>
             - 
                 cardinality: 2
-                Role: IRS
+                Role: user_role
                 name: Report the incident to the appropriate internal personnel and external organizations
             - 
                 cardinality: 3
-                Role: IRS
+                Role: user_role
                 name: Acquire, preserve, secure, and document evidence
             - 
                 cardinality: 4
-                Role: IRS
+                Role: user_role
                 name: Contain the incident
             - 
                 cardinality: 5
-                Role: IRS
+                Role: user_role
                 name: Eradicate the incident
             - 
                 cardinality: 6
-                Role: IRS
+                Role: user_role
                 name: Recover from the incident
                 description: >
                     <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
@@ -275,11 +275,11 @@ IrWorkflowDef:
                     monitoring to look for future related activity.</li></ol>
             - 
                 cardinality: 7
-                Role: IRS
+                Role: user_role
                 name: Create a follow-up report
             - 
                 cardinality: 8
-                Role: IRS
+                Role: user_role
                 name: Hold a lessons learned meeting
 
     social_engineering_wkflw:
@@ -287,7 +287,7 @@ IrWorkflowDef:
         Steps:
             - 
                 cardinality: 1
-                Role: IRS
+                Role: user_role
                 name: Prioritize handling the incident based on the business impact
                 description: >
                     <ol><li>Identify which resources have been affected and forecast which resources will be 
@@ -296,23 +296,23 @@ IrWorkflowDef:
                     resources</li></ol>
             - 
                 cardinality: 2
-                Role: IRS
+                Role: user_role
                 name: Report the incident to the appropriate internal personnel and external organizations
             - 
                 cardinality: 3
-                Role: IRS
+                Role: user_role
                 name: Acquire, preserve, secure, and document evidence
             - 
                 cardinality: 4
-                Role: IRS
+                Role: user_role
                 name: Contain the incident
             - 
                 cardinality: 5
-                Role: IRS
+                Role: user_role
                 name: Eradicate the incident
             - 
                 cardinality: 6
-                Role: IRS
+                Role: user_role
                 name: Recover from the incident
                 description: >
                     <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
@@ -320,11 +320,11 @@ IrWorkflowDef:
                     monitoring to look for future related activity.</li></ol>
             - 
                 cardinality: 7
-                Role: IRS
+                Role: user_role
                 name: Create a follow-up report
             - 
                 cardinality: 8
-                Role: IRS
+                Role: user_role
                 name: Hold a lessons learned meeting
 
     pii_compromise_wkflw:
@@ -332,7 +332,7 @@ IrWorkflowDef:
         Steps:
             - 
                 cardinality: 1
-                Role: IRS
+                Role: user_role
                 name: Prioritize handling the incident based on the business impact
                 description: >
                     <ol><li>Identify which resources have been affected and forecast which resources will be 
@@ -341,23 +341,23 @@ IrWorkflowDef:
                     resources</li></ol>
             - 
                 cardinality: 2
-                Role: IRS
+                Role: user_role
                 name: Report the incident to the appropriate internal personnel and external organizations
             - 
                 cardinality: 3
-                Role: IRS
+                Role: user_role
                 name: Acquire, preserve, secure, and document evidence
             - 
                 cardinality: 4
-                Role: IRS
+                Role: user_role
                 name: Contain the incident
             - 
                 cardinality: 5
-                Role: IRS
+                Role: user_role
                 name: Eradicate the incident
             - 
                 cardinality: 6
-                Role: IRS
+                Role: user_role
                 name: Recover from the incident
                 description: >
                     <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected 
@@ -365,9 +365,9 @@ IrWorkflowDef:
                     monitoring to look for future related activity.</li></ol>
             - 
                 cardinality: 7
-                Role: IRS
+                Role: user_role
                 name: Create a follow-up report
             - 
                 cardinality: 8
-                Role: IRS
+                Role: user_role
                 name: Hold a lessons learned meeting
