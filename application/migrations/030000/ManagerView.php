@@ -52,7 +52,7 @@ class Application_Migration_030000_ManagerView extends Fisma_Migration_Abstract
         $this->getHelper()->insert(
             'privilege',
             array(
-                'resource' => 'organzation',
+                'resource' => 'organization',
                 'action' => 'oversee',
                 'description' => 'Oversee Organizations/Systems'
             )
