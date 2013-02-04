@@ -362,7 +362,7 @@
                 height: 16
             }).css("vertical-align", "text-bottom"),
             inputElement = this.inputElement = $("<input>")
-                .attr({name: target.attr("id"), type: "hidden"})
+                .attr({name: target.attr("name"), type: "hidden"})
                 .val(val);
         try {
             valArray = JSON.parse(val);
