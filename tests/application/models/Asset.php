@@ -27,7 +27,7 @@ require_once(realpath(dirname(__FILE__) . '/../../Case/Unit.php'));
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class Test_Application_Models_Asset extends Test_Case_Database
+class Test_Application_Models_Asset extends Test_Case_Unit
 {
     /**
      * testGetOrganizationDependencyId
