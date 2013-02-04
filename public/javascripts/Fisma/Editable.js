@@ -310,7 +310,7 @@
 
     FE.Select = function(target) {
         var jqTarget = $(target),
-            val = jqTarget.val() || jqTarget.text(),
+            val = jqTarget.val() || jqTarget.attr("value") || jqTarget.text(),
             href = jqTarget.attr("href") + "value/" + encodeURI(val.trim()),
             select = $("<select/>");
         jqTarget.empty();
