@@ -130,7 +130,9 @@
                             <?php
                                 echo $this->escape(
                                     $this->organizationInfo(
-                                        $this->finding->Organization->nickname . " - " . $this->finding->Organization->name,
+                                        $this->finding->Organization->nickname
+                                            . " - "
+                                            . $this->finding->Organization->name,
                                         $this->finding->Organization->id
                                     ),
                                     'none'
@@ -158,7 +160,9 @@
                             <?php
                                 echo $this->escape(
                                     $this->organizationInfo(
-                                        $this->finding->ParentOrganization->nickname . " - " . $this->finding->ParentOrganization->name,
+                                        $this->finding->ParentOrganization->nickname
+                                            . " - "
+                                            . $this->finding->ParentOrganization->name,
                                         $this->finding->ParentOrganization->id
                                     ),
                                     'none'

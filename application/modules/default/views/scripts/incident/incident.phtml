@@ -60,7 +60,9 @@
                             <?php
                                 echo $this->escape(
                                     $this->organizationInfo(
-                                        $this->incident['Organization']['nickname'] . " - " . $this->incident['Organization']['name'],
+                                        $this->incident['Organization']['nickname']
+                                            . " - "
+                                            . $this->incident['Organization']['name'],
                                         $this->incident['Organization']['id']
                                     ),
                                     'none'
@@ -79,7 +81,9 @@
                             <?php
                                 echo $this->escape(
                                     $this->organizationInfo(
-                                        $this->incident['ParentOrganization']['nickname'] . " - " . $this->incident['ParentOrganization']['name'],
+                                        $this->incident['ParentOrganization']['nickname']
+                                            . " - "
+                                            . $this->incident['ParentOrganization']['name'],
                                         $this->incident['ParentOrganization']['id']
                                     ),
                                     'none'
@@ -136,7 +140,9 @@
                         <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
                           name="incident[responseStrategies]"
                           type="multiselect"
-                          value="<?php echo $this->escape($this->escape($this->incident['responseStrategies'],'json')); ?>"
+                          value="<?php echo $this->escape(
+                                    $this->escape($this->incident['responseStrategies'], 'json')
+                                ); ?>"
                           json="/incident-response-strategy/options/format/json/"
                           target="responseStrategies"
                           class="editable"

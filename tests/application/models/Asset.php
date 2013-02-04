@@ -38,7 +38,7 @@ class Test_Application_Models_Asset extends Test_Case_Database
     public function testGetOrganizationDependencyId()
     {
        $asset = new Asset();
-       $asset->orgSystemId = 1;
+       $asset->setOrgSystemId(1, false);
 
        $this->assertEquals(1, $asset->getOrganizationDependencyId());
     }
