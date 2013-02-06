@@ -57,6 +57,8 @@ Finding:
         denormalizedStatus:
             type: string(255)
             comment: A denormalized status field that is used for search engine indexing
+            extra:
+                logicalName: Workflow Step
         currentEvaluationId:
             type: integer
             comment: Points to the current evaluation level when the status is MSA or EA. Null otherwise.

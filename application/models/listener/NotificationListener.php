@@ -95,9 +95,7 @@ class NotificationListener extends Fisma_Doctrine_Record_Listener
                         ((!empty($newObject)) ? $newObject->$columnDef['extra']['field'] : '(none)')
                     );
                 }
-                $modifiedFields[$name][] = (@$columnDef['extra']['logicalName'])
-                                         ? $columnDef['extra']['logicalName']
-                                         : $name;
+                $modifiedFields[$name][] = $table->getLogicalName($name);
                 $modifiedFields[$name][] = (@$columnDef['extra']['purify'])
                                          ? 'none'
                                          : 'html';

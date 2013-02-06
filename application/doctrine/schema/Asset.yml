@@ -48,20 +48,31 @@ Asset:
             type: integer
             comment: Foreign key to product table
             extra:
+                class: Product
+                field: cpeName
                 logicalName: Product
         orgSystemId:
             type: integer
             comment: Foreign key to a system object in the organization table
             extra:
+                class: Organization
+                field: nickname
+                notify: true
                 logicalName: System
         denormalizedParentOrganizationId:
             type: integer
             extra:
+                class: Organization
+                field: nickname
+                notify: true
                 logicalName: Parent Organization
         networkId:
             type: integer
             comment: Foreign key to network table
             extra:
+                class: Network
+                field: nickname
+                notify: true
                 logicalName: Network
 
     relations:

@@ -1112,26 +1112,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $currentStep = $incident->CurrentWorkflowStep;
 
             $incident->completeStep($comment);
-            /*
-            foreach ($this->_getAssociatedUsers($incident->id) as $user) {
-                $options = array(
-                    'incidentUrl' => Fisma_Url::baseUrl() . '/incident/view/id/' . $incident->id,
-                    'incidentId' => $incident->id,
-                    'workflowStep' => $currentStep->name,
-                    'workflowCompletedBy' => $currentStep->User->username
-                );
-
-                $mail = new Mail();
-                $mail->recipient     = $user['u_email'];
-                $mail->recipientName = $user['u_name'];
-                $mail->subject       = "A workflow step has been completed";
-
-                $mail->mailTemplate('ir_step', $options);
-
-                Zend_Registry::get('mail_handler')->setMail($mail)->send();
-            }//*/
             Notification::notify(
-                'INCIDENT_STEP',
+                (($incident->status === 'closed') ? 'INCIDENT_RESOLVED' : 'INCIDENT_STEP'),
                 $incident,
                 CurrentUser::getInstance(),
                 array(

@@ -92,6 +92,22 @@ class Application_Migration_030200_NotificationsOverhaul extends Fisma_Migration
             ),
             array(
                 'defaultactive' => 'true',
+                'name' => 'INCIDENT_RESOLVED',
+                'description' => 'an incident is resolved',
+                'privilegeid' => $privilegeId,
+                'category' => 'incident',
+                'urlpath' => '/incident/view/id/'
+            ),
+            array(
+                'defaultactive' => 'true',
+                'name' => 'INCIDENT_REJECTED',
+                'description' => 'an incident is rejected',
+                'privilegeid' => $privilegeId,
+                'category' => 'incident',
+                'urlpath' => '/incident/view/id/'
+            ),
+            array(
+                'defaultactive' => 'true',
                 'name' => 'INCIDENT_DELETED',
                 'description' => 'an incident is deleted',
                 'privilegeid' => $privilegeId,

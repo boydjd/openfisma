@@ -28,6 +28,10 @@
 class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
                                                                 Fisma_Search_CustomIndexBuilder_Interface
 {
+    protected $_customLogicalNames = array(
+        'parentNickname' => 'Parent'
+    );
+
     /**
      * Implement the interface for Searchable
      */

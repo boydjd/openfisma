@@ -44,6 +44,8 @@ User:
         displayName:
             type: string
             comment: An internally-modified field which combines first/last/email together.
+            extra:
+                logicalName: Full Name
         phoneOffice:
             type: string(15)
             fixed: true

@@ -93,6 +93,7 @@ class Incident extends BaseIncident
         $this->status = 'closed';
         $this->closedTs = Zend_Date::now()->get(Zend_Date::ISO_8601);
         $this->resolution = 'rejected';
+        Notification::notify('INCIDENT_REJECTED', $this, CurrentUser::getInstance());
 
         // Update incident log
         $this->getAuditLog()->write('Rejected Incident Report');

@@ -114,6 +114,52 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
         $this->hasMutator('fipsCategory', 'setFipsCategory');
         $this->hasMutator('integrity', 'setIntegrity');
         $this->hasMutator('uniqueProjectId', 'setUniqueProjectId');
+
+        $this->hasAccessor('name', 'getOrganizationName');
+        $this->hasAccessor('nickname', 'getOrganizationNickname');
+        $this->hasAccessor('parentNickname', 'getParentNickname');
+    }
+
+    /**
+     * Get $this->Organization->name
+     *
+     * @return String
+     */
+    public function getOrganizationName()
+    {
+        $organization = $this->Organization;
+        if ($organization) {
+            return $organization->name;
+        }
+        return '';
+    }
+
+    /**
+     * Get $this->Organization->nickname
+     *
+     * @return String
+     */
+    public function getOrganizationNickname()
+    {
+        $organization = $this->Organization;
+        if ($organization) {
+            return $organization->nickname;
+        }
+        return '';
+    }
+
+    /**
+     * Get $this->Organization->parentNickname
+     *
+     * @return String
+     */
+    public function getParentNickname()
+    {
+        $organization = $this->Organization;
+        if ($organization) {
+            return $organization->parentNickname;
+        }
+        return '';
     }
 
     public static function getAllTypeLabels()

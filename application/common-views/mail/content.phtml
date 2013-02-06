@@ -44,10 +44,11 @@
         case 'FINDING_DELETED':
             $eventTitle = "Finding {$record->id} deleted by {$user->displayName}";
             break;
+        case 'FINDING_UPDATED':
+            $eventTitle = "Finding {$record->id} modified by {$user->displayName}";
+            break;
         case 'FINDING_CLOSED':
             $eventTitle = "Finding {$record->id} resolved by {$user->displayName}";
-            break;
-        case 'FINDING_IMPORTED':
             break;
         default:
             $eventTitle = "{$event->description} by {$user->displayName}";
@@ -62,7 +63,7 @@
     border-bottom: none;
     font-weight: bold;
     text-align: left;
-">Summary</div>
+">Overview</div>
 <div style="
     border: 1px solid #d3d3d3;
     background-color: #ffffff;
@@ -87,17 +88,13 @@
 <?php endif; ?>
 </table>
 </div>
-<?php if (!$paranoid): ?>
-    <?php if (in_array($event->name, array(
-        'CONFIGURATION_UPDATED',
-        'USER_UPDATED',
-        'ORGANIZATION_UPDATED',
-        'SYSTEM_UPDATED',
-        'ASSET_UPDATED',
-        'FINDING_UPDATED',
-        'INCIDENT_UPDATED',
-        'VULNERABILITY_UPDATED'
-    ))): ?>
+<?php
+    $mail_template = Zend_Registry::get('mail_template');
+    $recordClass = get_class($record);
+    if (isset($mail_template[$recordClass]) && !$paranoid):
+        $template = $mail_template[$recordClass];
+        $table = Doctrine::getTable($recordClass);
+?>
 <div style="
     margin-top: 10px;
     padding: 3px 8px;
@@ -107,7 +104,7 @@
     border-bottom: none;
     font-weight: bold;
     text-align: left;
-">Details</div>
+"><?php echo $this->escape($recordClass); ?> Summary</div>
 <div style="
     border: 1px solid #d3d3d3;
     background-color: #ffffff;
@@ -115,20 +112,74 @@
     padding: 10px;
     margin-bottom: 0px;
 ">
-<table cellpadding='4' cellspacing='2'>
-    <tr>
-        <th>Field</th>
-        <th>Old value</th>
-        <th>New value</th>
-    </tr>
-    <?php foreach ($this->modifiedFields as $name => $values): ?>
-    <tr>
-        <th><?php echo $this->escape($this->translate($values[2])); ?></th>
-        <td><?php echo $this->escape($values[0], $values[3]); ?></td>
-        <td><?php echo $this->escape($values[1], $values[3]); ?></td>
-    </tr>
+    <table cellpadding='4' cellspacing='2'>
+    <?php foreach ($template as $field):
+        $columnDef = $table->getColumnDefinition($table->getColumnName($field));
+        $value = $record->$field;
+        $name = $table->getLogicalName($field);
+        $purify = (@$columnDef['extra']['purify']) ? 'none' : 'html';
+        if (@$columnDef['extra']['class'] && $columnDef['extra']['field']):
+            $rel = Doctrine::getTable($columnDef['extra']['class']);
+            $value = $rel->find($value)->$columnDef['extra']['field'];
+        endif;
+    ?>
+        <tr>
+            <th><?php echo $this->escape($this->translate($name)); ?></th>
+            <td><?php echo $this->escape($value, $purify); ?></td>
+        </tr>
     <?php endforeach; ?>
-</table>
+    </table>
 </div>
 <?php endif; ?>
+
+<?php if (in_array($event->name, array(
+    'CONFIGURATION_UPDATED',
+    'USER_UPDATED',
+    'ORGANIZATION_UPDATED',
+    'SYSTEM_UPDATED',
+    'ASSET_UPDATED',
+    'FINDING_UPDATED',
+    'INCIDENT_UPDATED',
+    'VULNERABILITY_UPDATED'
+))): ?>
+<div style="
+    margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+">Updated Field(s)</div>
+<div style="
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    margin-bottom: 0px;
+">
+    <?php if (!$paranoid): ?>
+    <table cellpadding='4' cellspacing='2'>
+        <tr>
+            <th>Field</th>
+            <th>Old value</th>
+            <th>New value</th>
+        </tr>
+        <?php foreach ($this->modifiedFields as $name => $values): ?>
+        <tr>
+            <th><?php echo $this->escape($this->translate($values[2])); ?></th>
+            <td><?php echo $this->escape($values[0], $values[3]); ?></td>
+            <td><?php echo $this->escape($values[1], $values[3]); ?></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+    <?php else: ?>
+    <ul>
+        <?php foreach ($this->modifiedFields as $name => $values): ?>
+        <li><?php echo $this->escape($this->translate($values[2])); ?></li>
+        <?php endforeach; ?>
+    </ul>
+    <?php endif; ?>
+</div>
 <?php endif; ?>

@@ -1,15 +1,14 @@
 <?php
-	$systemName = $this->systemName;
-	$event = $this->event;
+    $systemName = $this->systemName;
+    $event = $this->event;
+    $title = $event->description;
 
-	switch ($event->name) {
-		case 'FINDING_CREATED':
-			echo "[{$systemName}] New Finding Created";
-			break;
-        case 'CONFIGURATION_UPDATED':
-            echo "[{$systemName}] Configuration Modified";
+    foreach (Zend_Registry::get('mail_title') as $eventName => $customTitle) {
+        if ($eventName === $event->name) {
+            $title = $customTitle;
             break;
-		default:
-			echo "[{$systemName}] {$event->description}";
-	}
+        }
+    }
+
+    echo $this->escape("[{$systemName}] {$title}");
 ?>

@@ -288,6 +288,22 @@ Event:
         category: incident
         urlPath: /incident/view/id/
 
+    INCIDENT_RESOLVED:
+        defaultActive: true
+        name: INCIDENT_RESOLVED
+        description: an incident is resolved
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
+
+    INCIDENT_REJECTED:
+        defaultActive: true
+        name: INCIDENT_REJECTED
+        description: an incident is rejected
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
+
     INCIDENT_DELETED:
         defaultActive: true
         name: INCIDENT_DELETED

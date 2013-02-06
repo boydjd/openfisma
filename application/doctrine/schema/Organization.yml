@@ -40,9 +40,8 @@ Organization:
             extra:
                 logicalName: Description
                 notify: true
-            type: string
-            extra:
                 purify: html
+            type: string
 
     relations:
         System:

@@ -236,4 +236,13 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
 
         Zend_Registry::set('mail_handler', $mailHandler);
     }
+
+    /**
+     * Cached the mail templates
+     */
+    protected function _initMailTemplate()
+    {
+        Zend_Registry::set('mail_template', $this->getOption('mail_template'));
+        Zend_Registry::set('mail_title', $this->getOption('mail_title'));
+    }
 }

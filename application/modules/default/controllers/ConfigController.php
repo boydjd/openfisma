@@ -505,7 +505,9 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 if (Fisma::configuration()->getConfig($item) === $value) {
                     continue;
                 }
-                $modifiedFields[$item] = array(Fisma::configuration()->getConfig($item), $value, $item);
+                $columnDef = Doctrine::getTable('Configuration')->getColumnDefinition($item);
+                $purify = (@$columnDef['extra']['purify']) ? 'none' : 'html';
+                $modifiedFields[$item] = array(Fisma::configuration()->getConfig($item), $value, $item, $purify);
                 Fisma::configuration()->setConfig($item, $value);
             }
 
