@@ -122,10 +122,10 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
 
         for ($i = 1; $i <= $numFindings; $i++) {
             $date = new Zend_Date();
-            $date->setTimestamp(rand(time()-1e8, time()));
+            $date->setTimestamp(rand(time()-2e7, time()));
             $discoveredDate = $date->getDate()->toString(Fisma_Date::FORMAT_DATE);
 
-            $date->addTimestamp(rand(0, 2e8));
+            $date->addTimestamp(rand(0, 4e7));
             $currentEcd = $date->getDate()->toString(Fisma_Date::FORMAT_DATE);
 
             $finding = array();

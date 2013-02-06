@@ -570,7 +570,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             new Fisma_Chart(380, 275, 'chartFindForecast',
                     '/finding/dashboard/findingforecast/format/json');
         $chartFindForecast
-            ->setTitle('Findings Approaching Estimated Completion Date')
+            ->setTitle($this->view->translate('Finding_Chart_To_ECD'))
             ->addWidget('dayRangesStatChart', 'Day Ranges:', 'text', '0, 15, 30, 60, 90')
             ->addWidget(
                 'forcastThreatLvl',
@@ -593,7 +593,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $chartOverdueFinding =
             new Fisma_Chart(380, 275, 'chartOverdueFinding', '/finding/dashboard/chartoverdue/format/json');
         $chartOverdueFinding
-            ->setTitle('Findings Past Estimated Completion Date')
+            ->setTitle($this->view->translate('Finding_Chart_Past_ECD'))
             ->addWidget('dayRanges', 'Day Ranges:', 'text', '1, 30, 60, 90, 120')
             ->addWidget(
                 'pastThreatLvl',
@@ -636,7 +636,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         // Mid-right chart - Findings Without Corrective Actions
         $chartNoMit = new Fisma_Chart(380, 275);
         $chartNoMit
-            ->setTitle('Findings Without Estimated Completion Date')
+            ->setTitle($this->view->translate('Finding_Chart_No_ECD'))
             ->setUniqueid('chartNoMit')
             ->setExternalSource('/finding/dashboard/chartfindnomitstrat/format/json')
             ->addWidget('dayRangesMitChart', 'Day Ranges:', 'text', '1, 30, 60, 90, 120')
