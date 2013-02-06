@@ -1,5 +1,5 @@
 <div class="column66 left">
-    <?php Fisma_Format_Section::startSection('Incident Details'); ?>
+    <?php Fisma_Format_Section::startSection('Summary'); ?>
         <table class="keyValues">
             <tr>
                 <td>Status:</td>
@@ -155,6 +155,25 @@
                     </span>
                 </td>
             </tr>
+            <tr>
+                <td>PII Involved:</td>
+                <td>
+                    <div name="incident[piiInvolved]"
+                         id="piiInvolved"
+                         <?php
+                         if ($this->updateIncidentPrivilege):
+                         ?>
+                             class="editable"
+                             type="select"
+                             href="/metainfo/list/o/yesNo/format/html/"
+                             target="piiInvolved"
+                         <?php
+                         endif;
+                         ?>>
+                        <?php echo $this->escape($this->incident['piiInvolved']); ?>&nbsp;
+                    </div>
+                </td>
+            </tr
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 
@@ -170,9 +189,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->updateIncidentPrivilege):
-        Fisma_Format_Section::startSection('Actions Taken', 'actionsTaken');
+        Fisma_Format_Section::startSection('Timeline', 'actionsTaken');
     else:
-        Fisma_Format_Section::startSection('Actions Taken');
+        Fisma_Format_Section::startSection('Timeline');
     endif;
     ?>
         <div name="incident[actionsTaken]" id="actionsTaken" type="textarea">
@@ -225,27 +244,7 @@
         <table class="keyValues">
         <?php if ('YES' != $this->incident['piiInvolved']): ?>
             <tr><th colspan="2">No PII reported in this incident.</th></tr>
-        <?php endif; ?>
-            <tr>
-                <td>PII Involved:</td>
-                <td>
-                    <div name="incident[piiInvolved]"
-                         id="piiInvolved"
-                         <?php
-                         if ($this->updateIncidentPrivilege):
-                         ?>
-                             class="editable"
-                             type="select"
-                             href="/metainfo/list/o/yesNo/format/html/"
-                             target="piiInvolved"
-                         <?php
-                         endif;
-                         ?>>
-                        <?php echo $this->escape($this->incident['piiInvolved']); ?>&nbsp;
-                    </div>
-                </td>
-            </tr>
-        <?php if ('YES' == $this->incident['piiInvolved']): ?>
+        <?php else: ?>
             <tr>
                 <td>Description:</td>
                 <td>
