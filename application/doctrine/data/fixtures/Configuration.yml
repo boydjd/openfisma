@@ -64,7 +64,7 @@ Configuration:
                 number: 1
                 unit: day
                 time: 23:00:00
-                arguments: -d /path/to/backup/dir
+                arguments: -d /path/to/backup/dir --age 90
             lockUser:
                 enabled: 1
                 number: 1
