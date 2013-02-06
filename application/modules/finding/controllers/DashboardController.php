@@ -570,7 +570,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             new Fisma_Chart(380, 275, 'chartFindForecast',
                     '/finding/dashboard/findingforecast/format/json');
         $chartFindForecast
-            ->setTitle('Finding Forecast')
+            ->setTitle($this->view->translate('Finding_Chart_To_ECD'))
             ->addWidget('dayRangesStatChart', 'Day Ranges:', 'text', '0, 15, 30, 60, 90')
             ->addWidget(
                 'forcastThreatLvl',
@@ -593,7 +593,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $chartOverdueFinding =
             new Fisma_Chart(380, 275, 'chartOverdueFinding', '/finding/dashboard/chartoverdue/format/json');
         $chartOverdueFinding
-            ->setTitle('Findings Past Due')
+            ->setTitle($this->view->translate('Finding_Chart_Past_ECD'))
             ->addWidget('dayRanges', 'Day Ranges:', 'text', '1, 30, 60, 90, 120')
             ->addWidget(
                 'pastThreatLvl',
@@ -615,7 +615,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $chartTotalStatus
             = new Fisma_Chart(420, 275, 'chartTotalStatus', '/dashboard/chart-finding/format/json');
         $chartTotalStatus
-            ->setTitle('Findings by Workflow Process')
+            ->setTitle('Findings by Workflow Step')
             ->addWidget(
                 'findingType',
                 'Finding Type:',
@@ -636,7 +636,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         // Mid-right chart - Findings Without Corrective Actions
         $chartNoMit = new Fisma_Chart(380, 275);
         $chartNoMit
-            ->setTitle('Findings Without Corrective Actions')
+            ->setTitle($this->view->translate('Finding_Chart_No_ECD'))
             ->setUniqueid('chartNoMit')
             ->setExternalSource('/finding/dashboard/chartfindnomitstrat/format/json')
             ->addWidget('dayRangesMitChart', 'Day Ranges:', 'text', '1, 30, 60, 90, 120')
@@ -1243,7 +1243,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $noMitChart = new Fisma_Chart();
         $noMitChart
-            ->setAxisLabelX('Number of Days Without Mitigation Strategy')
+            ->setAxisLabelX('Number of Days Without Estimated Completion Date')
             ->setAxisLabelY('Number of Findings')
             ->setChartType('stackedbar')
             ->setThreatLegendVisibility(true)
@@ -1285,8 +1285,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
              * Since the createdts column is timestamp type. It needs to add one extra day to the first label so that
              * the finding created yesterday can be searched.
              */
-            if ( $x == 0 ) {
-                $toDayInt = $dayRange[$x] - 1;
+            if ($x == 0) {
+                $toDayInt = $dayRange[$x] - 2;
                 $thisColumnLabel = $dayRange[$x]  . '-' . $fromDayInt;
             } else {
                 $toDayInt = $dayRange[$x];
@@ -1306,11 +1306,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             $q = Doctrine_Query::create()
                 ->select('count(f.id), f.' . $threatField)
                 ->from('Finding f')
-                ->where('f.status="NEW" OR f.status="DRAFT"')
-                ->andWhere('f.status <> "CLOSED"')
+                ->where('f.originalEcd is NULL')
                 ->andWhere('f.createdts BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
                 ->groupBy('f.' . $threatField)
-                ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
+                ->andWhereIn('f.responsibleOrganizationId', FindingTable::getOrganizationIds())
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
             $rslts = $q->execute();
 
@@ -1341,15 +1340,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
 
             // Make URL to the search page with date params
-            $basicSearchLink = '/finding/remediation/list?q=' .
-                '/createdTs/dateBetween/' . $fromDayStr . '/' . $toDayStr;
-
-            // Rake this url filter out CLOSED, EN, and anything on evaluation.nickname (MS ISSO, EV ISSO, etc)
-            $basicSearchLink .= '/denormalizedStatus/enumIsNot/CLOSED';
-            $basicSearchLink .= '/denormalizedStatus/enumIsNot/EN';
-            foreach ($this->_getEvaluationNames() as $thisStatus) {
-                $basicSearchLink .= '/denormalizedStatus/enumIsNot/' . $thisStatus;
-            }
+            $basicSearchLink = '/finding/remediation/list?q='
+                             . '/createdTs/dateBetween/' . $fromDayStr . '/' . $toDayStr
+                             . '/originalEcd/unspecified';
 
             // Remembers links for a non-stacked bar chart in the even the user is querying "totals"
             $nonStackedLinks[] = $basicSearchLink;

@@ -57,3 +57,47 @@ Configuration:
         hash_type: sha1
 
         optionalFields: [systemFismaReportable]
+
+        backgroundTasks:
+            backup:
+                enabled: 0
+                number: 1
+                unit: day
+                time: 23:00:00
+                arguments: -d /path/to/backup/dir --age 90
+            lockUser:
+                enabled: 1
+                number: 1
+                unit: minute
+                time:
+                arguments:
+            notify:
+                enabled: 1
+                number: 1
+                unit: minute
+                time:
+                arguments:
+            sendMail:
+                enabled:
+                number: 1
+                unit: minute
+                time:
+                arguments:
+            refreshUser:
+                enabled:
+                number: 30
+                unit: day
+                time: 03:00:00
+                arguments:
+            rebuildIndex:
+                enabled: 1
+                number: 30
+                unit: day
+                time: 00:00:00
+                arguments: --all
+            optimizeIndex:
+                enabled: 1
+                number: 7
+                unit: day
+                time: 01:00:00
+                arguments:

@@ -110,8 +110,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
     private function _copyApplication()
     {
         $this->getLog()->info("Backing up application, please wait…");
-        $this->getLog()->info("   Copying $this->_appRoot to $this->_backupDir…");
-        mkdir($this->_backupDir);
+        $this->getLog()->info("   Copying {$this->_appRoot} to {$this->_backupDir}...");
         $this->_recursiveCopy($this->_appRoot, $this->_backupDir, "   ");
         $this->getLog()->info("   done.");
     }
@@ -200,7 +199,7 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         $mySqlDumpCmd =
             "mysqldump --user=" . $dbUser .
             " --password=" . $dbPass .
-            " --add-drop-database" . $dbSchema .
+            " --add-drop-database " . $dbSchema .
             " --result-file=" . $backupFileSql;
 
         $rtnShell = shell_exec($mySqlDumpCmd);

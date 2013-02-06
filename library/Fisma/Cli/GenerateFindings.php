@@ -103,7 +103,7 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
         $eaResult = $eaQuery->execute();
         $eaEvaluation = $eaResult[0];
 
-        $type = array('NONE', 'CAP', 'AR', 'FP');
+        $type = array('CAP', 'AR', 'FP');
         $status = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED');
         $threat = array('LOW', 'MODERATE', 'HIGH');
         $effectiveness = array('LOW', 'MODERATE', 'HIGH');
@@ -122,16 +122,23 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
 
         for ($i = 1; $i <= $numFindings; $i++) {
             $date = new Zend_Date();
-            $date->setTimestamp(rand(time()-1e8, time()));
+            $date->setTimestamp(rand(time()-2e7, time()));
             $discoveredDate = $date->getDate()->toString(Fisma_Date::FORMAT_DATE);
 
-            $date->addTimestamp(rand(0, 2e8));
+            $date->addTimestamp(rand(0, 4e7));
             $currentEcd = $date->getDate()->toString(Fisma_Date::FORMAT_DATE);
 
             $finding = array();
-            $finding['currentEcd'] = $currentEcd;
-            $finding['type'] = $type[rand(0, $typeCount)];
             $finding['status'] = $status[rand(0, $statusCount)];
+            if ($finding['status'] === 'NEW') {
+                $finding['type'] = 'NONE';
+            } else {
+                $finding['currentEcd'] = $currentEcd;
+                $finding['type'] = $type[rand(0, $typeCount)];
+                $finding['mitigationStrategy'] = Fisma_String::loremIpsum(rand(90, 100));
+                $finding['resourcesRequired'] = '$ ' . rand(0, 999999);
+                $finding['ecdChangeDescription'] = Fisma_String::loremIpsum(rand(4, 5));;
+            }
             $finding['threatLevel'] = $threat[rand(0, $threatCount)];
             $finding['countermeasuresEffectiveness'] = $effectiveness[rand(0, $effectivenessCount)];
 
@@ -143,12 +150,9 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
             $finding['securityControlId'] = $securityControlIds[$this->_randomLog(0, $securityControlIdsCount)][0];
             $finding['description'] = Fisma_String::loremIpsum(rand(90, 100));
             $finding['recommendation'] = Fisma_String::loremIpsum(rand(90, 100));
-            $finding['mitigationStrategy'] = Fisma_String::loremIpsum(rand(90, 100));
-            $finding['resourcesRequired'] = '$ ' . rand(0, 999999);
             $finding['threat'] = Fisma_String::loremIpsum(rand(0, 100));
             $finding['countermeasures'] = Fisma_String::loremIpsum(rand(90, 100));
             $finding['discoveredDate'] = $discoveredDate;
-            $finding['ecdChangeDescription'] = Fisma_String::loremIpsum(rand(4, 5));;
             $finding['ecdLocked'] = FALSE;
             $findings[] = $finding;
             unset($finding);
