@@ -209,6 +209,8 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $thisChart = new Fisma_Chart();
         $thisChart->setChartType('stackedbar')
+            ->setAxisLabelX('Workflow Step')
+            ->setAxisLabelY('Number of Findings')
             ->setThreatLegendVisibility(true)
             ->setThreatLegendTitle($threatType)
             ->setColors($_highModLowColors)
