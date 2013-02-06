@@ -60,7 +60,7 @@ Configuration:
 
         backgroundTasks:
             backup:
-                enabled: 1
+                enabled: 0
                 number: 1
                 unit: day
                 time: 23:00:00
