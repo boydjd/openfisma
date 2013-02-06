@@ -4,11 +4,9 @@
 # norootforbuild
 #
 # TODO LIST
-# - configure the upgrade section and test upgrading from one version to the next
-# - symlink all configuration file into an /etc/openfisma directory
-# - check if ssl certs already exist, if not then generate them, if so then leave them alone
-# - tag user documentation
-# - configure and test rpm for RHEL/CentOS
+# - SSL Configuration: enable secure cookies, activate ssl conf, generate self signed certificates
+# - Upgrade Testing: test rpm's upgrade capability from one version of OpenFISMA to the next
+# - Multi Host RPM Build: validate and fix build errors for RHEL/CentOS
 
 %define installation_dir /usr/share/%{name}
 
@@ -175,44 +173,70 @@ cp -rp * %{buildroot}/%{installation_dir}
 %{__mkdir_p} %{buildroot}%{apache_conf_location}
 %{__mkdir_p} %{buildroot}/etc/init.d/
 %{__mkdir_p} %{buildroot}/etc/cron.d/
+%{__mkdir_p} %{buildroot}/etc/openfisma
+cp -rp %{buildroot}%{installation_dir}/scripts/rpm/database.ini %{buildroot}%{installation_dir}/application/config/database.ini
 cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_%{apache} %{buildroot}%{apache_conf_location}/%{name}.conf
 cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_solr_%{platform} %{buildroot}/etc/init.d/solr
 cp -rp %{buildroot}%{installation_dir}/scripts/rpm/openfisma_cron %{buildroot}/etc/cron.d/openfisma
 
-# By adding a sh script to the %clean section, such situations can be handled gracefully, right after the binary package is created.
+# By adding a sh script to the clean section, such situations can be handled gracefully, right after the binary package is created.
 %clean
 
-# The %files section is different from the others, in that it contains a list of the files that are part of the package. Always remember — if it isn't in the file list, it won't be put in the package!
+# The files section is different from the others, in that it contains a list of the files that are part of the package. Always remember — if it isn't in the file list, it won't be put in the package!
 %files
 %defattr(-,root,root,-)
-%{installation_dir}
-%config %{apache_conf_location}/openfisma.conf
-%config /etc/cron.d/openfisma
-%config /etc/init.d/solr
-%config %{installation_dir}/application/config/application.ini
+/usr/share/openfisma
+/etc/openfisma
+/etc/cron.d/openfisma
+/etc/init.d/solr
+%{apache_conf_location}/openfisma.conf
 
 # run the following scripts after installation of rpm
 %post
 
 # check to see if apache user is in the sudoers file, if not add it
 if grep "^%{webuser}.*ALL=NOPASSWD:.*/usr/sbin/%{apache}" /etc/sudoers > /dev/null ; then
-    echo "sudo active"
+    echo "%{webuser} already found in /etc/sudoers, nothing to do"
 else
     echo "%{webuser} ALL=NOPASSWD:/usr/sbin/%{apache}" >> /etc/sudoers
+    echo "Adding %{webuser} to the sudoers file"
 fi
 
 # Check and update all permissions
+echo "Updating directory and file permissions"
 find %{installation_dir} -type d -exec chmod 770 {} \;
 find %{installation_dir} -type f -exec chmod 660 {} \;
 chown -R %{webuser}:%{webgroup} %{installation_dir} 
 chmod 755 /etc/init.d/solr
 
+# generate ssl certificates if they do not exist
+if [ -f /etc/apache2/ssl.crt/server.crt ] ; then 
+   echo "Existing SSL Certificates found, skipping SSL certificate generation"
+else
+   sudo gensslcert -y 3650 -Y 3650 > /dev/null 2>&1
+   echo "Generating SSL Certificates"
+fi
+
+# remove known security vulnerabilities from php.ini
+if [ -f /etc/php5/apache2/php.ini ] ; then 
+   sed -i "s,expose_php = On,expose_php = Off,g" /etc/php5/apache2/php.ini 
+   echo "Turning off expose_php"
+else
+   echo "WARNING: Could not locate php.ini"
+fi
+if [ -f /etc/php5/apache2/php.ini ] ; then
+   sed -i 's#^safe_mode = Off#;safe_mode = On#' /etc/php5/apache2/php.ini 
+   echo "Turning save_mode on"
+else
+   echo "WARNING: Could not locate php.ini"
+fi
+
 # if this is the first installation run the following
 if [ "$1" == "1" ] ; then
-echo "installing openfisma for the first time"
+echo "First time installation detected, running post installation scripts"
 
 # only applies to suse/debian based operating systems
-echo "enabling Apache rewrite module"
+echo "Enabling Apache modules"
 %{_sbindir}/a2enmod env
 %{_sbindir}/a2enmod expires
 %{_sbindir}/a2enmod log_config
@@ -222,19 +246,15 @@ echo "enabling Apache rewrite module"
 %{_sbindir}/a2enmod setenvif
 %{_sbindir}/a2enmod ssl
 
-# use some sed magic to enable apache modules for RHEL based systems
-
-
 # Populate the conf files with the host name
+echo "Setting the hostname in Apache configuration file"
 HNAME=$(hostname)
 SHNAME=$(hostname -s)
 sed -i -e "s/.*ServerName.*/        ServerName $HNAME/" \
        %{apache_conf_location}/%{name}.conf
-#sed -i -e "s/.*ServerAlias.*/        ServerAlias $SHNAME/" \
-#       %{apache_conf_location}/%{name}.conf
 
 # autostart mysql, apache2, and solr
-echo "enable autostart of mysql, apache, and solr"
+echo "Enable autostart of mysql, apache, and solr"
 %if 0%{?suse_version} >= 1210  
    systemctl enable %{apache}.service
    systemctl enable %{mysql}.service
@@ -246,7 +266,7 @@ echo "enable autostart of mysql, apache, and solr"
 %endif
 
 # restar apache2, mysql, and solr
-echo "restarting apache2, mysql, and solr"
+echo "Restarting apache2, mysql, and solr"
 %if 0%{?suse_version} >= 1210
    systemctl restart %{apache}.service
    systemctl restart %{mysql}.service
@@ -257,37 +277,29 @@ echo "restarting apache2, mysql, and solr"
    /etc/init.d/solr start
 %endif
 
-echo "create database.ini file"
-sudo -u %{webuser} cat > %{installation_dir}/application/config/database.ini << EOF
-[production]
-db.adapter = mysql
-db.host = localhost
-db.port = 3306
-db.username = openfisma_app
-db.password = ##DB_PASS##
-db.schema = openfisma
-
-[development : production]
-EOF
-
 # generates a random password for database.ini
-echo "generate random password for openfisma application account"
+echo "Generating random password for openfisma application account"
 openfisma_app_password=`dd if=/dev/urandom count=100 | tr -dc "A-Za-z0-9" | fold -w 20 | head -n 1`
 sed --in-place "s/##DB_PASS##/$openfisma_app_password/" %{installation_dir}/application/config/database.ini
 
 # mysql configuration
-echo "setup MySQL permissions for openfisma database"
+echo "Setting up MySQL permissions"
 echo "grant all on openfisma.* to openfisma_app@localhost identified by '$openfisma_app_password'" | mysql -u root
 echo "flush mysql privileges"
 echo "flush privileges;" | mysql -u root
 
 # build the openfisma database and load sample data
-echo "build the openfisma database and load sample data"
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/doctrine.php -bs
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/generate-findings.php -n 50
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/generate-vulnerabilities.php -n 50
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/generate-incidents.php -n 50
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/rebuild-index.php -a
+echo "Building database and loading sample data"
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/doctrine.php -bs
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-findings.php -n 50
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-vulnerabilities.php -n 50
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/generate-incidents.php -n 50
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/rebuild-index.php -a
+
+# create symlinks
+ln -sf /usr/share/openfisma/public/.htaccess /etc/openfisma/.htaccess
+ln -sf /usr/share/openfisma/application/config/database.ini /etc/openfisma/database.ini
+ln -sr /usr/share/openfisma/application/config/application.ini /etc/openfisma/application.ini
 
 # finish installation scripts
 fi
@@ -297,15 +309,18 @@ exit 0
 
 # if this is an upgrade then run the following
 if [ "$1" == "2" ] ; then
-echo "Upgrading OpenFISMA"
+echo "Upgrade detected, running post upgrade scripts"
 
 # Load new fixtures / YAML
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/doctrine.php -m || true
+echo "Loading new fixtures"
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/doctrine.php -m || true
 
 # Run database migrations
-sudo -u %{webuser} php -qc %{installation_dir}/scripts/bin/migrate.php || true
+echo "Running database migrations"
+sudo -u %{webuser} php %{installation_dir}/scripts/bin/migrate.php || true
 
 # Restart apache, mysql, and solr
+echo "Restarting apache, mysql, and solr"
 %if 0%{?suse_version} >= 1210
    systemctl restart %{apache}.service
    systemctl restart %{mysql}.service
