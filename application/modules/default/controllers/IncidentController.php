@@ -1278,7 +1278,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             )
         );
 
-        if (!$this->_currentUserCanUpdateIncident($id)) {
+        if (!$this->_currentUserCanComment($id)) {
             $commentButton->readOnly = true;
         }
 
@@ -1631,6 +1631,43 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         }
 
         return $userCanUpdate;
+    }
+
+    /**
+     * Check whether the current user can comment on an incident
+     *
+     * This is an expensive operation. DO NOT CALL IT IN A TIGHT LOOP.
+     *
+     * @param int $incidentId The ID of the incident
+     * @return bool
+     */
+    public function _currentUserCanComment($incidentId)
+    {
+        $userCanComment = false;
+        $incident = Doctrine::getTable('Incident')->findOneById($incidentId);
+
+        if (
+            $this->_acl->hasPrivilegeForObject('comment', $incident) &&
+            ((!$incident->isLocked) ||
+            ($incident->isLocked && $this->_acl->hasPrivilegeForObject('lock', $incident)))
+        ) {
+            $userCanComment = true;
+        } else {
+            // Check if this user is an actor
+            $userId = $this->_me->id;
+            $userCount = Doctrine_Query::create()
+                 ->from('Incident i')
+                 ->innerJoin('i.IrIncidentUser iu')
+                 ->innerJoin('iu.User u')
+                 ->where('i.id = ? AND u.id = ?', array($incidentId, $this->_me->id))
+                 ->count();
+
+            if ($userCount > 0) {
+                $userCanComment = true;
+            }
+        }
+
+        return $userCanComment;
     }
 
     /**
