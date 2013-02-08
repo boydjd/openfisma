@@ -20,8 +20,34 @@
 </div>
 
 <?php Fisma_Format_Section::startSection($this->pluralModelName . " <span id='searchResultsTotalFound'></span>"); ?>
-<?php if (isset($this->facet)): ?>
 <div class='facetBox'>
+    <h1>Reports</h1>
+    Save as
+    <select id='reportSelector' style='width:160px;'>
+        <option value='blank'>&nbsp;</option>
+        <option value='new'>New report...</option>
+    <?php foreach($this->filters as $filter): ?>
+        <option value='<?php echo $this->escape($filter->id); ?>'><?php echo $this->escape($filter->name); ?></option>
+    <?php endforeach; ?>
+    </select>
+    <script type='text/javascript'>
+        $(function() {
+            var select  = $('select#reportSelector'),
+                html    = select.html();
+            select.button().html(html).change(Fisma.Search.saveQuery);
+        });
+    </script>
+    <ul id='reportList'>
+    <?php foreach($this->filters as $filter): ?>
+        <li>
+            <a href='<?php echo $this->escape($filter->url); ?>'><?php echo $this->escape($filter->name); ?></a>
+            <img src='/images/trash_recyclebin_empty_closed.png' onclick='Fisma.Search.deleteQuery(this)' value='<?php
+                echo $this->escape($filter->id);
+            ?>' />
+        </li>
+    <?php endforeach; ?>
+    </ul>
+<?php if (isset($this->facet)): ?>
     <h1>Filters</h1>
     <?php foreach ($this->facet as $field): ?>
     <h2><?php echo $this->escape($field['label']); ?></h2>
@@ -53,11 +79,9 @@
         <?php endforeach; ?>
     </ul>
     <?php endforeach; ?>
+<?php endif; ?>
 </div>
-<div style='padding-left:240px;'
-<?php else: ?>
-<div
-<?php endif; ?> id="<?php echo $this->escape($this->containerId, 'javascript'); ?>"></div>
+<div style='padding-left:240px;' id="<?php echo $this->escape($this->containerId, 'javascript'); ?>"></div>
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <script type="text/javascript">
@@ -67,20 +91,19 @@
 
         Fisma.Search.searchPreferences = <?php echo $this->escape($this->searchPreferences, 'json'); ?>;
 
-        YAHOO.util.Event.onContentReady (
-            "advancedSearch",
-            function () {
-                Fisma.Storage.onReady(function() {
-                    var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
+    YAHOO.util.Event.onContentReady (
+        "advancedSearch",
+        function () {
+            Fisma.Storage.onReady(function() {
+                var advancedSearchOptions = <?php echo $this->escape($this->advancedSearchOptions, 'none'); ?>;
 
-                    var searchPanel = new Fisma.Search.Panel(advancedSearchOptions);
+                var searchPanel = new Fisma.Search.Panel(advancedSearchOptions);
+                Fisma.Search.advancedSearchPanel = searchPanel;
 
-                    Fisma.Search.advancedSearchPanel = searchPanel;
-
-                    searchPanel.render(document.getElementById('advancedSearchCriteria'));
-                });
-            }
-        );
+                searchPanel.render(document.getElementById('advancedSearchCriteria'));
+            });
+        }
+    );
     YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
         var Dom = YAHOO.util.Dom,
             YL = YAHOO.lang,
@@ -90,11 +113,39 @@
             columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
 
         Fisma.Storage.onReady(function() {
+            var queryState = new QueryState(modelName);
+
+            var urlParamString = document.location.search.substring(1); // strip the leading "?" character
+            var urlParams = urlParamString.split('&');
+            var i;
+
+            for (i in urlParams) {
+                var urlParam = urlParams[i];
+                var keyValuePair = urlParam.split("=");
+                var criteriaString = keyValuePair[1];
+
+                // parse parameters
+                if ("k" === keyValuePair[0]) {
+                    if (queryState.getSearchType() === QueryState.TYPE_ADVANCED) {
+                        queryState.setSearchType(QueryState.TYPE_SIMPLE);
+                    }
+                    queryState.setKeywords(decodeURIComponent(keyValuePair[1]));
+                } else if ("f" === keyValuePair[0]) {
+                    queryState.setSearchType(QueryState.TYPE_FACETED);
+                    queryState.setFilters(decodeURIComponent(keyValuePair[1]));
+                }
+            }
 
             // Load saved keyword search
-            var queryState = new QueryState(modelName);
             if (queryState.getSearchType() === QueryState.TYPE_SIMPLE) {
                 Dom.get("keywords").value = queryState.getKeywords();
+            } else if (queryState.getSearchType() === QueryState.TYPE_FACETED) {
+                Dom.get("keywords").value = queryState.getKeywords();
+                var obj, j, filters = queryState.getFilters().split("/");
+                for (j in filters) {
+                    obj = document.getElementById(filters[j]);
+                    YAHOO.util.Event.onContentReady('advancedSearchCriteria', obj.onclick, obj, true);
+                }
             }
 
             /*

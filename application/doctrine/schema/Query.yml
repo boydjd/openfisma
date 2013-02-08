@@ -1,0 +1,74 @@
+Query:
+    columns:
+        createdTs:
+            type: timestamp
+        modifiedTs:
+            type: timestamp
+        creatorId:
+            type: integer
+            comment: Foreign key to the User table
+            extra:
+                logicalName: Creator
+                class: User
+                field: displayName
+        model:
+            type: enum
+            values:
+                - Finding
+                - Source
+                - Vulnerability
+                - VulnerabilityResolution
+                - Asset
+                - Incident
+                - IrCategory
+                - IrWorkflow
+                - SecurittyControl
+                - SecurittyControlCatalog
+                - SystemDocument
+                - DocumentType
+                - Network
+                - Organization
+                - OrganizationType
+                - System
+                - SystemType
+                - User
+                - Role
+        name:
+            type: string
+            comment: Name of the saved query (does not have to be unique)
+            extra:
+                logicalName: Report Name
+        url:
+            type: string
+            comment: The permanent search URL
+            extra:
+                logicalName: URL
+        sharedOrganizationId:
+            type: integer
+            comment: Foreign key to the Organization table
+            extra:
+                logicalName: Shared with
+                class: Organization
+                field: nickname
+
+    relations:
+        Creator:
+            class: User
+            local: creatorId
+            foreign: id
+            foreignAlias: Querries
+
+        SharedOrganzation:
+            class: Organization
+            local: sharedOrganizationId
+            foreign: id
+            foreignAlias: SharedQuerries
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

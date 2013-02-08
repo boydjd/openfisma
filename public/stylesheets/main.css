@@ -933,13 +933,13 @@ fieldset.uploadFileList input {
     color: #444444;
 }
 
-.facetBox h1 {
-    margin-top:0px;
+.facetBox h1, .facetBox h2 {
+    margin-bottom:4px;
     color: #333333;
 }
 
-.facetBox h2 {
-    margin-bottom:0px;
+.facetBox h1:first-child, .facetBox h1 + h2 {
+    margin-top:0px;
 }
 
 .facetBox ul {

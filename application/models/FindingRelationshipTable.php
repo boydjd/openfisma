@@ -21,7 +21,7 @@
  *
  * @uses Fisma_Doctrine_Table
  * @package Model
- * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
+ * @copyright (c) Endeavor Systems, Inc. 2012 {@link http://www.endeavorsystems.com}
  * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
