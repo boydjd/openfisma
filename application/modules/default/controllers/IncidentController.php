@@ -181,7 +181,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $step = 4;
             }
         } elseif ($step == 6 && 'YES' != $incident->piiShipment) {
-            if ($this->_hastParam('irReportForwards')) {
+            if ($this->_hasParam('irReportForwards')) {
                 $step = 7;
             } else {
                 $step = 5;
