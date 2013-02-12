@@ -646,7 +646,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->view->incident = $incident;
         $timezone = date_default_timezone_get();
 
-        date_default_timezone_set($incident['reportTz']);
+        if (!empty($incident['reportTz'])) {
+            date_default_timezone_set($incident['reportTz']);
+        }
         $createdDateTime = new Zend_Date($incident['reportTs'], Fisma_Date::FORMAT_DATETIME);
         date_default_timezone_set($timezone);
         $createdDateTime->setTimezone('UTC');
@@ -658,7 +660,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                                            . ' at '
                                            . $createdDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
 
-        date_default_timezone_set($incident['incidentTimezone']);
+        if (!empty($incident['incidentTimezone'])) {
+            date_default_timezone_set($incident['incidentTimezone']);
+        }
         $incidentDateTime = $incident['incidentDate'] . ' ' . $incident['incidentTime'];
         $incidentDate = new Zend_Date($incidentDateTime, Fisma_Date::FORMAT_DATETIME);
         date_default_timezone_set($timezone);
