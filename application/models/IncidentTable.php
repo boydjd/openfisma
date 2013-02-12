@@ -86,7 +86,7 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             ),
             'reporter' => array(
                 'initiallyVisible' => false,
-                'label' => 'Reporting User',
+                'label' => 'Reporter',
                 'join' => array(
                     'model' => 'User',
                     'relation' => 'ReportingUser',
@@ -94,84 +94,6 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 ),
                 'sortable' => true,
                 'type' => 'text'
-            ),
-            'reporterIp' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter IP Address',
-                'type' => 'text',
-                'sortable' => true
-            ),
-            'reporterTitle' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter Title',
-                'type' => 'text',
-                'sortable' => true
-            ),
-            'reporterFirstName' => array(
-                'initiallyVisible' => false,
-                'label' => 'Annonymous Reporter First Name',
-                'type' => 'text',
-                'sortable' => true
-            ),
-            'reporterLastName' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter Last Name',
-                'type' => 'text',
-                'sortable' => true
-            ),
-            'reporterOrganization' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter Organization',
-                'type' => 'text',
-                'sortable' => true
-            ),
-            'reporterAddress1' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter Address Line 1',
-                'type' => 'text',
-                'sortable' => false
-            ),
-            'reporterAddress2' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter Address Line 2',
-                'type' => 'text',
-                'sortable' => false
-            ),
-            'reporterCity' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter City',
-                'type' => 'text',
-                'sortable' => true
-            ),
-            'reporterState' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter State',
-                'type' => 'text',
-                'sortable' => true
-            ),
-            'reporterZip' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter ZIP',
-                'type' => 'text',
-                'sortable' => true
-            ),
-            'reporterPhone' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter Phone Number',
-                'type' => 'text',
-                'sortable' => true
-            ),
-            'reporterFax' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter Fax Number',
-                'type' => 'text',
-                'sortable' => true
-            ),
-            'reporterEmail' => array(
-                'initiallyVisible' => false,
-                'label' => 'Reporter Email Address',
-                'type' => 'text',
-                'sortable' => true
             ),
             'status' => array(
                 'enumValues' => $this->getEnumValues('status'),
