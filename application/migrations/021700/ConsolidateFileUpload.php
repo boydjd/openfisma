@@ -197,7 +197,7 @@ class Application_Migration_021700_ConsolidateFileUpload extends Fisma_Migration
             );
             $this->getHelper()->insert(
                 'incident_upload',
-                array('uploadid' => $uid, 'objectid' => $artifact->id)
+                array('uploadid' => $uid, 'objectid' => $artifact->objectid)
             );
         }
         Fisma_FileSystem::recursiveDelete(Fisma::getPath('uploads') . '/incident_artifact');
