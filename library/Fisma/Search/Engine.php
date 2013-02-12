@@ -495,11 +495,16 @@ class Fisma_Search_Engine
 
         $queryString = implode($searchTerms, ' AND ');
 
+        $noCriteria = true;
         if (empty($queryString)) {
             $queryString = "id:[* TO *]";
+        } else {
+            $noCriteria = false;
         }
 
         if (!empty($trimmedKeyword)) {
+            $noCriteria = false;
+
             // Tokenize keywords and escape all tokens.
             $keywordTokens = $this->_tokenizeBasicQuery($trimmedKeyword);
             $keywordTokens = array_filter($keywordTokens);
@@ -540,6 +545,10 @@ class Fisma_Search_Engine
             $query->setQuery($keywordQueryString);
         } else {
             $query->setQuery($queryString);
+        }
+
+        if ($noCriteria) {
+            $query->setHighlight(false);
         }
 
         try {

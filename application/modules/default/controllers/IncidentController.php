@@ -512,28 +512,20 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // Set the intial POC to one of the ISSOs (Yes, this code stinks, but the requirements lack
         // specificity on this topic.)
         if ($incident->organizationId) {
-            $issoQuery = Doctrine_Query::create()->from('User u')
-                                                 ->select('u.id')
-                                                 ->addSelect('u.username')
-                                                 ->innerJoin('u.UserRole ur')
-                                                 ->innerJoin('ur.Role r')
-                                                 ->innerJoin('ur.UserRoleOrganization uro')
-                                                 ->where('r.nickname LIKE ?', 'ISSO')
-                                                 ->andWhere('uro.organizationId = ?', $incident->organizationId)
-                                                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-
-            $issos = $issoQuery->execute();
-
-            if (count($issos) > 0) {
-                $incident->pocId = $issos[0]['id'];
+            $org = Doctrine::getTable('Organization')->find($incident->organizationId);
+            if (!empty($org->pocId)) {
+                $poc = Doctrine::getTable("User")->find($org->pocId);
+                $incident->pocId = $poc->id;
                 $incident->save();
 
                 $mailSubject = "You have been assigned as the "
                              . $this->view->translate('Incident_Point_of_Contact')
                              . " for an incident.";
-                $this->_sendMailToAssignedUser($issos[0]['id'], $incident->id, $mailSubject);
+                $this->_sendMailToAssignedUser($poc->id, $incident->id, $mailSubject);
 
-                $message = "The ISSO ({$issos[0]['username']}) has been notified of this incident.";
+                $message = "The " . $this->view->translate('Incident_Point_of_Contact')
+                            . " (" . $poc->username . ") "
+                            . "has been notified of this incident.";
                 $this->view->priorityMessenger($message, 'notice');
             }
         }
@@ -655,7 +647,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->view->incident = $incident;
         $timezone = date_default_timezone_get();
 
-        date_default_timezone_set($incident['reportTz']);
+        if (!empty($incident['reportTz'])) {
+            date_default_timezone_set($incident['reportTz']);
+        }
         $createdDateTime = new Zend_Date($incident['reportTs'], Fisma_Date::FORMAT_DATETIME);
         date_default_timezone_set($timezone);
         $createdDateTime->setTimezone('UTC');
@@ -667,7 +661,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                                            . ' at '
                                            . $createdDateTime->toString(Fisma_Date::FORMAT_AM_PM_TIME);
 
-        date_default_timezone_set($incident['incidentTimezone']);
+        if (!empty($incident['incidentTimezone'])) {
+            date_default_timezone_set($incident['incidentTimezone']);
+        }
         $incidentDateTime = $incident['incidentDate'] . ' ' . $incident['incidentTime'];
         $incidentDate = new Zend_Date($incidentDateTime, Fisma_Date::FORMAT_DATETIME);
         date_default_timezone_set($timezone);

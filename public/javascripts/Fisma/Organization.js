@@ -39,18 +39,17 @@
          */
         typeHandle : function (event, config) {
             // Set the selected organization type
-            var organizationTypeFilter = YAHOO.widget.Button.getButton('orgTypeFilter-button').getMenu().srcElement;
-            var selectedType = organizationTypeFilter.options[organizationTypeFilter.selectedIndex];
+            var orgTypeId = $("#orgTypeFilter").val();
 
             // Store the selected organizationTypeId to storage table
             var orgTypeStorage = new Fisma.PersistentStorage(config.namespace);
-            orgTypeStorage.set('orgType', selectedType.value);
+            orgTypeStorage.set('orgType', orgTypeId);
             orgTypeStorage.sync();
 
             Fisma.Storage.onReady(function() {
                 // Construct the url and refresh the result after a user changes organization type
                 if (!YAHOO.lang.isUndefined(config) && config.url) {
-                    var url = config.url + '?orgTypeId=' + encodeURIComponent(selectedType.value);
+                    var url = config.url + '?orgTypeId=' + encodeURIComponent(orgTypeId);
                     window.location.href = url;
                 }
             });

@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Reports for organizations (in the system inventory module)
- * 
+ *
  * @author     Mark E. Haase
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -47,10 +47,10 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
 
         $this->_acl->requireArea('system_inventory_report');
     }
-    
+
     /**
      * List ISO and ISSO personnel for each organization and system
-     * 
+     *
      * This is the one report which is not constrained by the organizations which a user is allowed to view. This report
      * is kind of like a phone book for security personnel, so all users are allowed to view all entries in it.
      *
@@ -76,7 +76,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
         $personnel = $personnelQuery->execute();
 
         $report = new Fisma_Report();
-        
+
         $report->setTitle('Personnel Report')
                ->addColumn(new Fisma_Report_Column('System', true))
                ->addColumn(new Fisma_Report_Column('Role', true))
@@ -86,9 +86,9 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                ->addColumn(new Fisma_Report_Column('E-mail', true))
                ->setData($personnel);
 
-        $this->_helper->reportContextSwitch()->setReport($report);        
+        $this->_helper->reportContextSwitch()->setReport($report);
     }
-    
+
     /**
      * List privacy status for all systems
      *
@@ -99,7 +99,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
         $storageNamespace = 'Organization.Privacy.Report';
         $orgTypeId = $this->_helper->OrganizationType
                           ->getOrganizationTypeIdByStorageOrRequest($this->_me->id, $storageNamespace);
-        $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId);  
+        $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId);
 
         $this->view->orgTypeId = $orgTypeId;
         $this->view->organizationTypeForm = $filterForm;
@@ -113,19 +113,19 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                             ->addSelect('o.nickname AS name');
         } else {
             $systemQuery = $baseQuery->select('o.nickname AS name');
-        } 
+        }
 
         $systemQuery
                     ->addSelect('systemData.hasPii AS has_pii')
                     ->addSelect('systemData.piaRequired AS pia_required')
                     ->addSelect(
-                        'IF(\'YES\' = systemData.piaRequired, 
+                        'IF(\'YES\' = systemData.piaRequired,
                             IF(systemData.piaUrl IS NULL, \'NO\', \'YES\'),
                             \'N/A\') AS pia_url'
                     )
                     ->addSelect('systemData.sornRequired AS sorn_required')
                     ->addSelect(
-                        'IF(\'YES\' = systemData.sornRequired, 
+                        'IF(\'YES\' = systemData.sornRequired,
                             IF(systemData.sornUrl IS NULL, \'NO\', \'YES\'),
                             \'N/A\') AS sorn_url'
                     )
@@ -144,10 +144,10 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
         $systems = $systemQuery->execute();
 
         $report = new Fisma_Report();
-                
+
         $report->setTitle('Privacy Report');
-         
-        $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId); 
+
+        $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId);
 
         if ('none' != $orgTypeId) {
             $report->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true))
@@ -163,9 +163,9 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                ->addColumn(new Fisma_Report_Column('SORN Completed', true, 'Fisma.TableFormat.yesNo'))
                ->setData($systems);
 
-        $this->_helper->reportContextSwitch()->setReport($report);        
+        $this->_helper->reportContextSwitch()->setReport($report);
     }
-    
+
     /**
      * List security authorization status for all systems
      *
@@ -176,7 +176,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
         $storageNamespace = 'Organization.SecurityAuth.Report';
         $orgTypeId = $this->_helper->OrganizationType
                                    ->getOrganizationTypeIdByStorageOrRequest($this->_me->id, $storageNamespace);
-        $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId);  
+        $filterForm = $this->_helper->OrganizationType->getFilterForm($orgTypeId);
 
         $this->view->orgTypeId = $orgTypeId;
         $this->view->organizationTypeForm = $filterForm;
@@ -190,13 +190,14 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                             ->addSelect('o.nickname AS name');
         } else {
             $systemQuery = $baseQuery->select('o.nickname AS name');
-        } 
-        $systemQuery 
+        }
+        $systemQuery
                     ->addSelect('IFNULL(systemData.fipsCategory, \'NONE\') AS fips_category')
                     ->addSelect('IFNULL(systemData.controlledBy, \'N/A\') AS operated_by')
                     ->addSelect('IFNULL(systemData.securityAuthorizationDt, \'N/A\') AS security_auth_dt')
                     ->addSelect('IFNULL(systemData.controlAssessmentDt, \'N/A\') AS self_assessment_dt')
                     ->addSelect('IFNULL(systemData.contingencyPlanTestDt, \'N/A\') AS cplan_test_dt')
+                    ->addSelect("IF(systemData.fismaReportable,'Yes','No') AS fisma_reportable")
                     ->innerJoin('o.System systemData')
                     ->innerJoin('o.OrganizationType orgType')
                     ->leftJoin('Organization bureau')
@@ -214,9 +215,9 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
         $systems = $systemQuery->execute();
 
         $report = new Fisma_Report();
-                
+
         $report->setTitle('Security Authorizations Report');
-        $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId); 
+        $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId);
 
         if ('none' != $orgTypeId) {
             $report->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true))
@@ -229,25 +230,26 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                ->addColumn(new Fisma_Report_Column('Operated By', true))
                ->addColumn(
                    new Fisma_Report_Column(
-                       'Security Authorization', 
-                       true, 
+                       'Security Authorization',
+                       true,
                        'Fisma.TableFormat.securityAuthorization'
                    )
                )
                ->addColumn(
                    new Fisma_Report_Column(
-                       'Self-Assessment', 
+                       'Self-Assessment',
                        true,
                        'Fisma.TableFormat.selfAssessment'
                    )
                )
                ->addColumn(
                    new Fisma_Report_Column(
-                       'Contingency Plan Test', 
+                       'Contingency Plan Test',
                        true,
                        'Fisma.TableFormat.contingencyPlanTest'
                    )
                )
+               ->addColumn(new Fisma_Report_Column('FISMA Reportable', true))
                ->setData($systems);
 
         $this->_helper->reportContextSwitch()->setReport($report);
@@ -270,13 +272,13 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
             $systemData[] = array(
                 $systemDocument['o_name'],
                 $systemDocument['dt_percentage'],
-                $this->_getMissingDocumentTypeName($allRequiredDocumentTypeName, 
+                $this->_getMissingDocumentTypeName($allRequiredDocumentTypeName,
                                                    $systemDocument['dt_uploadedRequiredDocument'])
             );
         }
 
         $report = new Fisma_Report();
-                
+
         $report->setTitle('Documentation Compliance Report')
                ->addColumn(new Fisma_Report_Column('System', true))
                ->addColumn(
@@ -291,7 +293,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                )
                ->addColumn(
                    new Fisma_Report_Column(
-                       'Incomplete', 
+                       'Incomplete',
                        true,
                        'Fisma.TableFormat.incompleteDocumentType'
                    )
@@ -302,7 +304,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
     }
 
     /**
-     * Get the missing document type name(s) by comparing $allRequiredDocumentType 
+     * Get the missing document type name(s) by comparing $allRequiredDocumentType
      * and $uploadedRequiredDocumentType
      */
     private function _getMissingDocumentTypeName($allRequiredDocumentType, $uploadedRequiredDocumentType)
