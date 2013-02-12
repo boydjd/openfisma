@@ -83,7 +83,7 @@ class Fisma_Zend_Controller_Action_Helper_OrganizationType extends Zend_Controll
         // $includNone is true or the first record id in the organization type table.
         if ($this->getRequest()->getParam('orgTypeId')) {
             $orgTypeId = $this->getRequest()->getParam('orgTypeId');
-        } elseif (!empty($orgTypeStorage)) {
+        } elseif (!empty($orgTypeStorage->data['orgType'])) {
             $orgTypeId = $orgTypeStorage->data['orgType'];
         } else {
             if ($includeNone) {
