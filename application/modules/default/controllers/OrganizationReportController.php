@@ -197,6 +197,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                     ->addSelect('IFNULL(systemData.securityAuthorizationDt, \'N/A\') AS security_auth_dt')
                     ->addSelect('IFNULL(systemData.controlAssessmentDt, \'N/A\') AS self_assessment_dt')
                     ->addSelect('IFNULL(systemData.contingencyPlanTestDt, \'N/A\') AS cplan_test_dt')
+                    ->addSelect("IF(systemData.fismaReportable,'Yes','No') AS fisma_reportable")
                     ->innerJoin('o.System systemData')
                     ->innerJoin('o.OrganizationType orgType')
                     ->leftJoin('Organization bureau')
@@ -248,6 +249,7 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                        'Fisma.TableFormat.contingencyPlanTest'
                    )
                )
+               ->addColumn(new Fisma_Report_Column('FISMA Reportable', true))
                ->setData($systems);
 
         $this->_helper->reportContextSwitch()->setReport($report);
