@@ -520,20 +520,23 @@ Fisma.TableFormat = {
             var isLate = (date < now);
             var isToday = ((date - now) === 0);
 
-            elCell.innerHTML = "<font color='" + ((isLate) ? 'red' : ((isToday) ? 'orange' : 'green')) + "'>"
-                             + Fisma.TableFormat.month[date.getMonth()]
-                             + ' '
-                             + date.getDate()
-                             + ', '
-                             + date.getFullYear()
-                             + "</font>"
-                             + ((isLate)
-                                   ? (' (' + parseInt((now - date)/(1000*60*60*24), 10) + ' day(s) late)')
-                                   : ((isToday)
-                                       ? '(due today)'
-                                       : (' (' + parseInt((date - now)/(1000*60*60*24), 10) + ' day(s) until due)')
-                                   )
-                               );
+            elCell.innerHTML =  Fisma.TableFormat.month[date.getMonth()]
+                             +  ' '
+                             +  date.getDate()
+                             +  ', '
+                             +  date.getFullYear();
+            if (oRecord._oData.status !== 'CLOSED') {
+                elCell.innerHTML =  "<font color='" + ((isLate) ? 'red' : ((isToday) ? 'orange' : 'green')) + "'>"
+                                 +  elCell.innerHTML
+                                 +  "</font>"
+                                 +  ((isLate)
+                                        ? (' (' + parseInt((now - date)/(1000*60*60*24), 10) + ' day(s) late)')
+                                        : ((isToday)
+                                            ? '(due today)'
+                                            : (' (' + parseInt((date - now)/(1000*60*60*24), 10) + ' day(s) until due)')
+                                        )
+                                    );
+            }
         }
     },
 
