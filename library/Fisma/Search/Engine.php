@@ -1003,9 +1003,6 @@ class Fisma_Search_Engine
         $html = preg_replace('/(\W)<.*?>(\w)/', '$1$2', $html);
         $html = preg_replace('/<.*?>/', ' ', $html);
 
-        // Decode entities (this way we don't index words like 'lt', 'rt', and 'amp')
-        $html = html_entity_decode($html);
-
         // Remove excess whitespace
         $html = preg_replace('/[ ]*(?>\r\n|\n|\x0b|\f|\r|\x85)[ ]*/', "\n", $html);
         $html = preg_replace('/^\s+/', '', $html);
