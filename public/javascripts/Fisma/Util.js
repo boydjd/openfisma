@@ -687,6 +687,15 @@ Fisma.Util = {
 
     getTimezone: function() {
         return window.jstz.determine().name();
+    },
+
+    registerJSON: function() {
+        if (typeof JSON !== 'object') {
+            JSON = {
+                'stringify': $.toJSON,
+                'parse': $.secureEvalJSON
+            }
+        }
     }
 };
 
