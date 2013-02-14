@@ -369,26 +369,45 @@
         } catch(e) {
             // probably empty string/null - do nothing
         }
-        if (!$.isArray(valArray)) {
-            valArray = [];
+
+        switch ($.type(valArray)) {
+            case 'array':
+                $.each(valArray, function(k, v) {
+                    that._addSelected(v, v);
+                });
+                break;
+            case 'object':
+                $.each(valArray, function(k, v) {
+                    that._addSelected(v, k);
+                });
+                break;
         }
-        $.each(valArray, function(k, v) {
-            that._addSelected(v);
-        });
+
         target.empty();
         target.append(inputElement, selected, addImg, addMenu);
         addMenu.menu({
             menus: "div.menu",
             select: $.proxy(this, "_onMenuSelect")
         });
-        $.getJSON(jsonUrl, null, function(data, text, xhr) {
-            $.each(data.options, function(k, v) {
-                if ($.inArray(v, valArray) < 0) {
-                    addMenu.append(that._buildMenuItem(v));
+
+        if (target.attr('json')) {
+            $.getJSON(jsonUrl, null, function(data, text, xhr) {
+                $.each(data.options, function(k, v) {
+                    if ($.inArray(v, valArray) < 0) {
+                        addMenu.append(that._buildMenuItem(v));
+                    }
+                });
+                addMenu.menu("refresh");
+            });
+        } else if (target.data('options')) {
+            $.each(target.data('options'), function() {
+                if (!valArray.hasOwnProperty($(this).attr('value'))) {
+                    addMenu.append(that._buildMenuItem($(this).text(), $(this).attr('value')));
                 }
             });
             addMenu.menu("refresh");
-        });
+        }
+
         addImg.on({
             click: function(event) {
                 event.stopPropagation();
@@ -422,16 +441,16 @@
             }
         });
     };
-    FE.Multiselect.prototype._buildMenuItem = function (content, submenu) {
+    FE.Multiselect.prototype._buildMenuItem = function (label, value, submenu) {
         var a = $("<a>").attr("href", "#"),
-            d = $("<div>").append(a);
-        ($.type(content) === 'string' ? a.text : a.html).call(a, content);
+            d = $("<div>").append(a).attr('value', ((value) ? value : label));
+        ($.type(label) === 'string' ? a.text : a.html).call(a, label);
         if (submenu) {
             d.append(submenu);
         }
         return d;
     };
-    FE.Multiselect.prototype._addSelected = function (itemText) {
+    FE.Multiselect.prototype._addSelected = function (itemText, itemValue) {
         var item, anchor;
         anchor = $("<a>")
             .append(
@@ -451,22 +470,24 @@
                 padding: "0.2em"
             })
             .text(itemText)
+            .attr('value', itemValue)
             .append(anchor);
         this.selected.append(item);
         this._refreshInputElement();
     };
     FE.Multiselect.prototype._onMenuSelect = function (event, ui) {
-        this._addSelected(ui.item.text());
+        this._addSelected(ui.item.text(), ui.item.attr('value'));
         ui.item.remove();
         this.addMenu.hide();
     };
     FE.Multiselect.prototype._onRemove = function (event) {
-        var item, text, newItem;
+        var item, text, value, newItem;
         event.stopPropagation();
-        item = $(event.target).parents("div").first();
-        text = item.text();
+        item    = $(event.target).parents("div").first();
+        text    = item.text();
+        value   = item.attr('value');
         item.remove();
-        newItem = this._buildMenuItem(text);
+        newItem = this._buildMenuItem(text, value);
         // insert in sorted order
         this.addMenu.children().each(function () {
             if (text.toLowerCase() < $(this).text().toLowerCase()) {
@@ -482,9 +503,10 @@
         this._refreshInputElement();
     };
     FE.Multiselect.prototype._refreshInputElement = function() {
+        Fisma.Util.registerJSON();
         var values = [];
         this.selected.children().each(function() {
-            values.push($(this).text());
+            values.push($(this).attr('value'));
         });
         this.inputElement.val(JSON.stringify(values));
     };

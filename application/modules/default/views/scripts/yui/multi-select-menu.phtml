@@ -1,0 +1,23 @@
+<?php echo $this->escape($this->content, 'none'); ?>
+<script type='text/javascript'>
+$(function() {
+    Fisma.Util.registerJSON();
+    var select      = $('select#<?php echo $this->escape($this->element->getId()); ?>'),
+        values      = {},
+        options     = $('option', select).each(function(){
+            if ($(this).is('[selected]')) {
+                values[$(this).attr('value')] = $(this).text();
+            }
+        }),
+        target      = $('<span/>')
+            .appendTo('body')
+            .attr('name', select.attr('id'))
+            .attr('id', select.attr('id'))
+            .attr('value', JSON.stringify(values))
+            .data('options', options)
+    ;
+
+    select.replaceWith(target);
+    var a = new Fisma.Editable.Multiselect(target);
+});
+</script>
