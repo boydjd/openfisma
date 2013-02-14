@@ -41,27 +41,12 @@ Fisma.Icon = {
                     .addClass('ie9-only')
                     .click(Fisma.Remediation.addUploadEvidence);
 
-
-
                 var uploadIconTooltipTxt = "Please upload a square image file larger than 32 x 32 pixels. ";
                 uploadIconTooltipTxt += "You don't have to worry about the dimensional size of the image as the ";
                 uploadIconTooltipTxt += "system will automatically resize and scale the image down to 32 x 32 ";
                 uploadIconTooltipTxt += "pixels, but you do have to worry about the shape. As rectangular images ";
                 uploadIconTooltipTxt += "will be distorted, please make sure that you are uploading a square image ";
                 uploadIconTooltipTxt += "file. Formats accepted are JPEG, GIF, SVG, BMP, and PNG.";
-
-                // convert input:submit into decorated button:submit
-                $('input[type=submit]', panel.body).each(function() {
-                    $(this).replaceWith(
-                        $('<button/>')
-                        .text($(this).val())
-                        .button()
-                        .attr({
-                            'title': uploadIconTooltipTxt,
-                            'type': 'submit'
-                        })
-                    );
-                });
 
                 // Register listener for the panel close event
                 panel.hideEvent.subscribe(function () {
