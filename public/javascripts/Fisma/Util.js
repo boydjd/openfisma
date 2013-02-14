@@ -49,13 +49,6 @@ Fisma.Util = {
                 panel.body.getElementsByTagName('form')[0].action = args.url;
             }
 
-            // make the submit button a YUI widget
-            $('input[type=submit]', panel.body).each(function() {
-                $(this).replaceWith(
-                    $('<button/>').text($(this).val()).button()
-                );
-            });
-
             // Fix the bug where the panel doesn't close if opened the second time in IE
             panel.subscribe("hide", function() {
                 Fisma.Registry.get("messageBoxStack").pop();
@@ -649,7 +642,7 @@ Fisma.Util = {
             errorDiv = document.createElement("div"),
             form = document.createElement('form'),
             textField = $('<input type="text"/>').get(0),
-            button = $('<button/>').text('OK').get(0),
+            button = $('<button type="submit"/>').text('OK').get(0),
             table = $('<table class="fisma_crud"><tbody><tr><td>' + query + ': </td><td></td><td></td></tr></tbody></table>');
         table.appendTo(form);
         $("td", table).get(1).appendChild(textField);
@@ -669,8 +662,18 @@ Fisma.Util = {
         panel.center();
 
         // Add event listener
-        Event.addListener(form, "submit", callbacks['continue'], {panel: panel, errorDiv: errorDiv, textField: textField});
-        panel.subscribe("hide", callbacks.cancel);
+        $(form).submit(function(event) {
+            if (callbacks['continue']) {
+                callbacks['continue'].apply(form, [event, {panel: panel, errorDiv: errorDiv, textField: textField}]);
+            } else {
+                event.preventDefault();
+                panel.hide();
+                panel.destroy();
+            }
+        });
+        if (callbacks['cancel']) {
+            panel.subscribe("hide", callbacks['cancel']);
+        }
 
         // Fill in default value if set
         if (defaultValue !== undefined) {
