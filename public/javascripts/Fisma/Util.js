@@ -690,11 +690,11 @@ Fisma.Util = {
     },
 
     registerJSON: function() {
-        if (typeof JSON !== 'object') {
-            JSON = {
+        if (typeof window.JSON !== 'object') {
+            window.JSON = {
                 'stringify': $.toJSON,
                 'parse': $.secureEvalJSON
-            }
+            };
         }
     }
 };
