@@ -443,7 +443,7 @@
     };
     FE.Multiselect.prototype._buildMenuItem = function (label, value, submenu) {
         var a = $("<a>").attr("href", "#"),
-            d = $("<div>").append(a).attr('value', ((value) ? value : label));
+            d = $("<div>").append(a).attr('value', (value || label));
         ($.type(label) === 'string' ? a.text : a.html).call(a, label);
         if (submenu) {
             d.append(submenu);
@@ -459,14 +459,13 @@
                 "href": "#",
                 "title": "Remove"
             }).css({
-                position: "static",
-                "float": "right"
+                'vertical-align': "middle"
             }).on({
                 click: $.proxy(this, "_onRemove")
             });
         item = $("<div>")
             .css({
-                display: "inline-block",
+                display: "inline",
                 padding: "0.2em"
             })
             .text(itemText)
@@ -503,7 +502,6 @@
         this._refreshInputElement();
     };
     FE.Multiselect.prototype._refreshInputElement = function() {
-        Fisma.Util.registerJSON();
         var values = [];
         this.selected.children().each(function() {
             values.push($(this).attr('value'));
