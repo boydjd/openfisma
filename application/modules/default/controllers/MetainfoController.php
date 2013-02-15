@@ -128,7 +128,6 @@ class MetainfoController extends Fisma_Zend_Controller_Action_Security
                 "YES" => "YES",
                 "NO"  => "NO"
             );
-            $this->view->selected = isset($list[$this->view->selected]) ? $list[$this->view->selected] : 'YES';
         } elseif ($module == 'systemType') {
             $list = Doctrine::getTable('SystemType')->getTypeList();
         } elseif ($module == 'systemSdlcPhase') {
