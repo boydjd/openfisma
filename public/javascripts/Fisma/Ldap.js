@@ -58,7 +58,7 @@ Fisma.Ldap = {
         // End hack. @todo Modify controller so that it passes the id of the configuration to validate.
 
         var validateButton = document.getElementById('testConfiguration');
-        validateButton.className = "yui-button yui-push-button yui-button-disabled";
+        $(validateButton).attr('disabled', 'disabled');
 
         var spinner = new Fisma.Spinner(validateButton.parentNode);
         spinner.show();
@@ -74,7 +74,7 @@ Fisma.Ldap = {
 
                     Fisma.Util.message(response.msg, response.type, true);
 
-                    validateButton.className = "yui-button yui-push-button";
+                    $(validateButton).removeAttr('disabled');
                     Fisma.Ldap.validateLdapBusy = false;
                     spinner.hide();
                 },
@@ -83,6 +83,7 @@ Fisma.Ldap = {
                     Fisma.Util.message('Validation failed: ' + o.statusText, 'warning', true);
 
                     spinner.hide();
+                    $(validateButton).removeAttr('disabled');
                 }
             }
         );
