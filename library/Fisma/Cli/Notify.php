@@ -92,8 +92,7 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
                 );
                 self::purgeNotification($notification);
             } catch (Zend_Mail_Exception $e) {
-                $log->err("Failed Sending Email");
-                $log->err($e);
+                $log->err("Failed Sending Email", $e);
             }
         }
     }

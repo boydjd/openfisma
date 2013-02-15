@@ -117,8 +117,8 @@
         $columnDef = $table->getColumnDefinition($table->getColumnName($field));
         $value = $record->$field;
         $name = $table->getLogicalName($field);
-        $purify = (@$columnDef['extra']['purify']) ? 'none' : 'html';
-        if (@$columnDef['extra']['class'] && $columnDef['extra']['field']):
+        $purify = (isset($columnDef['extra']) && isset($columnDef['extra']['purify'])) ? 'none' : 'html';
+        if (isset($columnDef['extra']) && isset($columnDef['extra']['class']) && isset($columnDef['extra']['field'])):
             $rel = Doctrine::getTable($columnDef['extra']['class']);
             $value = $rel->find($value)->$columnDef['extra']['field'];
         endif;
