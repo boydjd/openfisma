@@ -33,27 +33,6 @@ class Application_Migration_030200_SavedSearch extends Fisma_Migration_Abstract
     public function migrate()
     {
         $this->message("Creating Query table...");
-        $models = array(
-            'Finding',
-            'Source',
-            'Vulnerability',
-            'VulnerabilityResolution',
-            'Asset',
-            'Incident',
-            'IrCategory',
-            'IrWorkflow',
-            'SecurittyControl',
-            'SecurittyControlCatalog',
-            'SystemDocument',
-            'DocumentType',
-            'Network',
-            'Organization',
-            'OrganizationType',
-            'System',
-            'SystemType',
-            'User',
-            'Role'
-        )
         $this->getHelper()->createTable(
             'query',
             array(
@@ -61,7 +40,7 @@ class Application_Migration_030200_SavedSearch extends Fisma_Migration_Abstract
                 'createdts' => 'datetime NOT NULL',
                 'modifiedts' => 'datetime NOT NULL',
                 'creatorid' => 'bigint(20)',
-                'model' => "enum('" . implode("','", $models) . "')",
+                'model' => 'varchar(255)',
                 'name' => 'text',
                 'url' => 'text',
                 'sharedorganizationid' => 'bigint(20)'

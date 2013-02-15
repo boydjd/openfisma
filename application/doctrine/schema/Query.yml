@@ -12,27 +12,10 @@ Query:
                 class: User
                 field: displayName
         model:
-            type: enum
-            values:
-                - Finding
-                - Source
-                - Vulnerability
-                - VulnerabilityResolution
-                - Asset
-                - Incident
-                - IrCategory
-                - IrWorkflow
-                - SecurittyControl
-                - SecurittyControlCatalog
-                - SystemDocument
-                - DocumentType
-                - Network
-                - Organization
-                - OrganizationType
-                - System
-                - SystemType
-                - User
-                - Role
+            type: string(255)
+            comment: Name of the model the saved query is to search against
+            extra:
+                logicalName: Model
         name:
             type: string
             comment: Name of the saved query (does not have to be unique)
@@ -56,13 +39,13 @@ Query:
             class: User
             local: creatorId
             foreign: id
-            foreignAlias: Querries
+            foreignAlias: Queries
 
         SharedOrganzation:
             class: Organization
             local: sharedOrganizationId
             foreign: id
-            foreignAlias: SharedQuerries
+            foreignAlias: SharedQueries
 
     actAs:
         Timestampable:

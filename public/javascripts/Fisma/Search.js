@@ -785,8 +785,8 @@ Fisma.Search = (function() {
          */
         getPermanentUrl: function() {
             var searchType  = $('#searchType').val(),
-                keywords    = $('#keywords').val(),
-                advanced    = Fisma.Search.advancedSearchPanel.getQuery(true),
+                keywords    = encodeURIComponent($('#keywords').val()),
+                advanced    = Fisma.Search.advancedSearchPanel.getQuery(true), //already encoded
                 facet       = [],
                 queryString = document.location.pathname + '?';
             if (searchType === 'simple') {

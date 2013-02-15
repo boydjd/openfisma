@@ -51,8 +51,10 @@ class QueryController extends Fisma_Zend_Controller_Action_Security
             $model = $request->getParam('model');
             $url = $request->getParam('url');
             $name = $request->getParam('name');
-            if (in_array($model, $table->getEnumValues('model'))) {
-                try {
+
+            try {
+                $searchTable = Doctrine::getTable($model);
+                if ($searchTable instanceof Fisma_Search_Searchable) {
                     $query = new Query();
                     $query->model = $model;
                     $query->url = $url;
@@ -60,11 +62,13 @@ class QueryController extends Fisma_Zend_Controller_Action_Security
                     $query->creatorId = CurrentUser::getAttribute('id');
                     $query->save();
                     $this->view->query = $query->toArray();
-                } catch (Doctrine_Exception $e) {
-                    $this->view->error = $e->toString();
+                } else {
+                    $this->view->error = 'Invalid model provided.';
                 }
-            } else {
-                $this->view->error = new Fisma_Zend_User_Exception('Invalid model provided.');
+            } catch (ErrorException $e) {
+                $this->view->error = 'Invalid model provided.';
+            } catch (Exception $e) {
+                $this->view->error = $e->toString();
             }
         }
     }

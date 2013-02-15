@@ -80,7 +80,7 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
             }
         } else if ("show" === keyValuePair[0]) {
             this.showAll = "all" === criteriaString;
-        } else {
+        } else if ("k" === keyValuePair[0]) {
             new Fisma.Search.QueryState(Dom.get("modelName").value).setSearchType('simple');
             Fisma.Search.searchPreferences.type = 'simple';
         }
@@ -283,7 +283,7 @@ Fisma.Search.Panel.prototype = {
             var obj = criterion.getQuery();
             queryString += '/' + obj.field + '/' + obj.operator;
             for (j in obj.operands) {
-                queryString += '/' + obj.operands[j];
+                queryString += '/' + encodeURIComponent(obj.operands[j]);
             }
         }
 
