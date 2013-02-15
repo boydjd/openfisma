@@ -671,8 +671,8 @@ Fisma.Util = {
                 panel.destroy();
             }
         });
-        if (callbacks['cancel']) {
-            panel.subscribe("hide", callbacks['cancel']);
+        if (callbacks.cancel) {
+            panel.subscribe('hide', callbacks.cancel);
         }
 
         // Fill in default value if set
