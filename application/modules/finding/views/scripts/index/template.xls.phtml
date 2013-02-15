@@ -206,7 +206,9 @@ echo $this->escape($xmltag, 'none');
     <Cell ss:StyleID="s39"><Data ss:Type="String">Countermeasures Description</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="Verdana" x:Family="Swiss" html:Size="9" html:Color="#000000"> Describe what countermeasures are in place.         </Font></ss:Data></Comment></Cell>
-    <Cell ss:StyleID="s39"><Data ss:Type="String">POC Email</Data><Comment
+    <Cell ss:StyleID="s39"><Data ss:Type="String"><?php
+        echo $this->escape($this->translate('Finding_Point_of_Contact'));
+    ?> Email</Data><Comment
       ss:Author="alix"><ss:Data xmlns="http://www.w3.org/TR/REC-html40"><Font
         html:Face="Verdana" x:Family="Swiss" html:Size="9" html:Color="#000000"> The email for the person who is assigned responsibility for this finding. </Font></ss:Data></Comment></Cell>
    </Row>
