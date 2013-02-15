@@ -34,7 +34,7 @@ else:
         endif;
         ?>
 
-        <option value="<?php echo $this->escape($k)?>" <?php echo $this->escape($select)?>>
+        <option value="<?php echo $this->escape($k)?>" <?php echo $this->escape($select, 'none')?>>
             <?php echo $this->escape($s)?>
         </option>
 
