@@ -188,3 +188,8 @@ Migration:
         minorVersion: 2
         tagNumber: 0
         name: Incident
+    030200_SavedSearch:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: SavedSearch

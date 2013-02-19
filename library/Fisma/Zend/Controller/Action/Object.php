@@ -947,6 +947,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $searchForm->removeElement('advanced');
         }
 
+        $this->view->filters = Doctrine::getTable('Query')->findByModelAndUser(
+            $this->_modelName,
+            CurrentUser::getAttribute('id')
+        );
+
         $this->renderScript('object/list.phtml');
     }
 

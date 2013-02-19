@@ -121,6 +121,7 @@ Fisma.Search = (function() {
          */
         executeSearch: function (form, fromSearchForm) {
             var dataTable = Fisma.Search.yuiDataTable;
+            var queryState = new Fisma.Search.QueryState(form.modelName.value);
 
             var onDataTableRefresh = {
                 success : function (request, response, payload) {
@@ -145,6 +146,9 @@ Fisma.Search = (function() {
                     if (!YAHOO.lang.isUndefined(form.search)  && 'Search' === form.search.value) {
                         dataTable.get('paginator').setPage(1);
                     }
+
+                    var queryState = new Fisma.Search.QueryState(form.modelName.value);
+                    Fisma.Search.updateQueryState(queryState, form);
                 },
                 failure : dataTable.onDataReturnReplaceRows,
                 scope : dataTable,
@@ -175,7 +179,6 @@ Fisma.Search = (function() {
          */
         handleSearchEvent: function(form) {
             try {
-                var queryState = new Fisma.Search.QueryState(form.modelName.value);
                 var searchPrefs = {type: form.searchType.value};
                 if (searchPrefs.type === 'advanced') {
                     var panelState = Fisma.Search.advancedSearchPanel.getPanelState();
@@ -188,7 +191,6 @@ Fisma.Search = (function() {
                 }
                 Fisma.Search.updateSearchPreferences = true;
                 Fisma.Search.searchPreferences = searchPrefs;
-                Fisma.Search.updateQueryState(queryState, form);
             } catch (e) {
                 Fisma.Util.message(e);
             } finally {
@@ -212,6 +214,13 @@ Fisma.Search = (function() {
                 queryState.setKeywords(form.keywords.value);
             } else if (searchType === "advanced") {
                 queryState.setAdvancedQuery(Fisma.Search.advancedSearchPanel.getPanelState());
+            } else if (searchType === "faceted") {
+                queryState.setKeywords(form.keywords.value);
+                var facet = [];
+                $('a.selected').each(function() {
+                    facet.push($(this).attr('id'));
+                });
+                queryState.setFilters(facet.join('/'));
             }
         },
 
@@ -767,6 +776,125 @@ Fisma.Search = (function() {
                                         Fisma.Search.handleSearchEvent(searchForm);
                                     });
             keyHandle.enable();
-         }
+        },
+
+        /**
+         * Get the URL for saved searches
+         *
+         * @return String
+         */
+        getPermanentUrl: function() {
+            var searchType  = $('#searchType').val(),
+                keywords    = encodeURIComponent($('#keywords').val()),
+                advanced    = Fisma.Search.advancedSearchPanel.getQuery(true), //already encoded
+                facet       = [],
+                queryString = document.location.pathname + '?';
+            if (searchType === 'simple') {
+                queryString += 'k=' + keywords;
+            } else if (searchType === 'advanced') {
+                queryString += 'q=' + advanced;
+            } else if (searchType === 'faceted') {
+                $('a.selected').each(function() {
+                    facet.push($(this).attr('id'));
+                });
+                queryString += 'f=' + facet.join('/') + '&k=' + keywords;
+            }
+            return queryString;
+        },
+
+        saveQuery: function(event) {
+            var url     = Fisma.Search.getPermanentUrl(),
+                csrf    = $('input[name=csrf]').val(),
+                select  = this,
+                queryId = $(select).val();
+            if (queryId === 'new') {
+                Fisma.Util.showInputDialog(
+                    'New Report',
+                    'Name',
+                    {
+                        'continue': function(event, args) {
+                            event.preventDefault();
+                            var modelName   = $('#modelName').val(),
+                                reportName  = args.textField.value;
+
+                            $.post(
+                                '/query/new/format/json/model/' + modelName,
+                                {
+                                    'url': url,
+                                    'csrf': csrf,
+                                    'name': reportName
+                                },
+                                function(data) {
+                                    if (data.error) {
+                                        Fisma.Util.showAlertDialog(data.error);
+                                    } else if (data.query) {
+                                        $('ul#reportList').append(
+                                            $('<li/>')
+                                                .append($('<a/>').attr('href', url).html(reportName))
+                                                .append($('<img/>').attr({
+                                                    'src': '/images/trash_recyclebin_empty_closed.png',
+                                                    'onclick': 'Fisma.Search.deleteQuery(this);'
+                                                }))
+                                                .fadeIn()
+                                        );
+                                        $('select#reportSelector').append(
+                                            $('<option/>').attr('value', data.query.id).text(reportName)
+                                        );
+                                    } else {
+                                        Fisma.Util.showAlertDialog('Unexpected error occurred.');
+                                    }
+                                }
+                            );
+
+                            args.panel.hide();
+                            args.panel.destroy();
+                        },
+                        'cancel': function() {
+                        }
+                    }
+                );
+            } else if (queryId !== 'blank') {
+                $.post(
+                    '/query/update/format/json/id/' + queryId,
+                    {
+                        'url': url,
+                        'csrf': csrf
+                    },
+                    function(data) {
+                        if (data.error) {
+                            Fisma.Util.showAlertDialog(data.error);
+                        } else {
+                            $('ul#reportList li:has(img[value=' + queryId + '])').fadeOut().fadeIn();
+                        }
+                    }
+                );
+            }
+
+            $('option[value=blank]', select).attr('selected', true);
+        },
+
+        deleteQuery: function(imgElement) {
+            var queryId = $(imgElement).attr('value');
+            Fisma.Util.showConfirmDialog(window.event, {
+                'text': 'Are you sure you want to delete this query?',
+                'isLink': false,
+                'func': function() {
+                    $.post(
+                        '/query/delete/format/json/id/' + queryId,
+                        {
+                            'csrf': $('input[name=csrf]').val()
+                        },
+                        function(data) {
+                            if (data.error) {
+                                Fisma.Util.showAlertDialog(data.error);
+                            } else {
+                                $('select#reportSelector option[value=' + queryId + ']').remove();
+                                $(imgElement).parents('ul#reportList > li').fadeOut();
+                            }
+                        }
+                    );
+                }
+            });
+        }
     };
 }());

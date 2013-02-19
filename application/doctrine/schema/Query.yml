@@ -1,0 +1,57 @@
+Query:
+    columns:
+        createdTs:
+            type: timestamp
+        modifiedTs:
+            type: timestamp
+        creatorId:
+            type: integer
+            comment: Foreign key to the User table
+            extra:
+                logicalName: Creator
+                class: User
+                field: displayName
+        model:
+            type: string(255)
+            comment: Name of the model the saved query is to search against
+            extra:
+                logicalName: Model
+        name:
+            type: string
+            comment: Name of the saved query (does not have to be unique)
+            extra:
+                logicalName: Report Name
+        url:
+            type: string
+            comment: The permanent search URL
+            extra:
+                logicalName: URL
+        sharedOrganizationId:
+            type: integer
+            comment: Foreign key to the Organization table
+            extra:
+                logicalName: Shared with
+                class: Organization
+                field: nickname
+
+    relations:
+        Creator:
+            class: User
+            local: creatorId
+            foreign: id
+            foreignAlias: Queries
+
+        SharedOrganzation:
+            class: Organization
+            local: sharedOrganizationId
+            foreign: id
+            foreignAlias: SharedQueries
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp
