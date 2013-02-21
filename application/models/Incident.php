@@ -432,6 +432,7 @@ class Incident extends BaseIncident
                 throw new Fisma_Zend_Exception("Invalid value for response strategies.", $e);
             }
         }
+        $value = (is_array($value)) ? $value : array();
         $this->denormalizedResponseStrategies = implode('; ', $value);
         $this->_set('responseStrategies', $value);
     }
