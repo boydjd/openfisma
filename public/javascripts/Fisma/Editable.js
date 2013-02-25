@@ -45,7 +45,7 @@
 
         var t_name = $(this).attr('target');
         $(this).data('old_object', $('#' + t_name).clone());
-        $(this).removeClass('editable');
+        $(this).removeClass('editable').attr('tooltip-disable', 'true');
 
         if (t_name) {
             var editableObj = null;
@@ -229,7 +229,9 @@
             Fisma.Calendar.addCalendarPopupToTextField(jqInput.get(0));
         }
 
-        jqInput.focus();
+        if (!Fisma.Editable.editMode) {
+            jqInput.focus();
+        }
     };
 
     FE.Textarea = function(target) {
@@ -250,9 +252,11 @@
         jqFormEl.width(oldWidth);
 
         tinyMCE.execCommand("mceAddControl", true, jqFormEl.attr("id"));
-        setTimeout(function() {
-            tinyMCE.execCommand('mceFocus', false, jqFormEl.attr("id"));
-        }, '500');
+        if (!Fisma.Editable.editMode) {
+            setTimeout(function() {
+                tinyMCE.execCommand('mceFocus', false, jqFormEl.attr("id"));
+            }, '500');
+        }
     };
 
     FE.Autocomplete = function (element) {
@@ -303,7 +307,7 @@
                 hiddenFieldId: hiddenTextField.attr("id"),
                 queryPrepend: element.getAttribute("queryPrepend"),
                 setupCallback: element.getAttribute('setupCallback'),
-                autofocus: true
+                autofocus: (!Fisma.Editable.editMode)
             }
         );
     };
@@ -319,7 +323,10 @@
             name: jqTarget.attr("name")
         });
         jqTarget.html(select);
-        select.load(href).focus();
+        select.load(href);
+        if (!Fisma.Editable.editMode) {
+            select.focus();
+        }
     };
 
     FE.Checked = function(target) {
@@ -327,7 +334,7 @@
             val = ($(target).text().trim() === 'YES');
         jqTarget.empty();
 
-        $('<select/>')
+        var jqSelect = $('<select/>')
             .attr('name', name)
             .append(
                 $('<option/>')
@@ -342,8 +349,10 @@
                     .attr('selected', !val)
             )
             .prependTo(target)
-            .focus()
         ;
+        if (!Fisma.Editable.editMode) {
+            jqSelect.focus();
+        }
     };
 
     FE.Multiselect = function(target) {
@@ -440,6 +449,9 @@
                 }
             }
         });
+        if (!Fisma.Editable.editMode) {
+            addImg.focus();
+        }
     };
     FE.Multiselect.prototype._buildMenuItem = function (label, value, submenu) {
         var a = $("<a>").attr("href", "#"),
