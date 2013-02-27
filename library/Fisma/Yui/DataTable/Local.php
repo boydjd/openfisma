@@ -88,6 +88,7 @@ class Fisma_Yui_DataTable_Local extends Fisma_Yui_DataTable_Abstract
             'columns' => $this->getColumns(),
             'data' => $this->_data,
             'columnDefinitions' => $this->_getYuiColumnDefinitions(),
+            'respectOrder' => $this->getRespectOrder(),
             'responseSchema' => $this->_getYuiResponseSchema(),
             'eventListeners' => $this->_eventListeners,
             'groupBy' => $this->_groupBy,

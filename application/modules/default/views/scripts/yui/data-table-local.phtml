@@ -15,7 +15,14 @@
             <?php foreach ($this->data as $row): ?>
                 <tr>
                     <?php
-                    foreach ($row = array_values($row) as $key => $cell) :
+                    foreach ($this->columns as $index => $column):
+                        if ($this->respectOrder):
+                            $key = $index;
+                            $row = array_values($row);
+                        else:
+                            $key = $column->getName();
+                        endif;
+                        $cell = isset($row[$key]) ? $row[$key] : $key;
                         if (
                             !empty($this->columnDefinitions[$key]['formatter']) &&
                             $this->columnDefinitions[$key]['formatter'] == 'Fisma.TableFormat.formatHtml'
@@ -31,10 +38,10 @@
         </tbody>
     </table>
 </div>
-<script type="text/javascript" id='asd'>
+<script type="text/javascript">
     YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
 
-        var columnDefs = <?php echo $this->escape($this->columnDefinitions, 'json'); ?>;
+        var columnDefs = <?php echo $this->escape(array_values($this->columnDefinitions), 'json'); ?>;
 
         /*
          * Column definitions are defined in JSON, which cannot embed object references such as formatters. So

@@ -35,6 +35,13 @@ abstract class Fisma_Yui_DataTable_Abstract
     private $_columns;
 
     /**
+     * Whether the order of fields in the record array is respected
+     *
+     * @var boolean
+     */
+    private $_respectOrder = true;
+
+    /**
      * The name that this table will be labeled with in the Javascript registry.
      */
     private $_registryName;
@@ -110,7 +117,11 @@ abstract class Fisma_Yui_DataTable_Abstract
                 $columnDefinition['sortOptions'] = array('field' => $sortField);
             }
 
-            $columnDefinitions[] = $columnDefinition;
+            if ($this->_respectOrder) {
+                $columnDefinitions[] = $columnDefinition;
+            } else {
+                $columnDefinitions[$column->getName()] = $columnDefinition;
+            }
         }
 
         return $columnDefinitions;
@@ -158,5 +169,25 @@ abstract class Fisma_Yui_DataTable_Abstract
     public function setRegistryName($name)
     {
         $this->_registryName = $name;
+    }
+
+    /**
+     * Whether the order of fields in the record array is respected
+     *
+     * @return boolean
+     */
+    public function getRespectOrder()
+    {
+        return $this->_respectOrder;
+    }
+
+    /**
+     * Set the respectOrder
+     *
+     * @param boolean $value
+     */
+    public function setRespectOrder($value)
+    {
+        $this->_respectOrder = $value;
     }
 }
