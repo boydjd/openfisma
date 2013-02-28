@@ -325,7 +325,9 @@ class Fisma_Search_Engine
                     break;
                 case 'dateAfter':
                     try {
-                        $afterDate = $this->_convertToSolrDate($operands[0]);
+                        $afterDate = new Zend_Date($operands[0], Fisma_Date::FORMAT_DATETIME);
+                        $afterDate = $afterDate->add(1, Zend_Date::DAY)->toString(Fisma_Date::FORMAT_DATETIME);
+                        $afterDate = $this->_convertToSolrDate($afterDate);
                         $searchTerms[] = "$fieldName:[$afterDate TO *]";
                     } catch (Zend_Date_Exception $e) {
                         // The input date is invalid, return an empty set.
