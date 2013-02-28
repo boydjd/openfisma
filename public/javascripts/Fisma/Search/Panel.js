@@ -258,6 +258,18 @@ Fisma.Search.Panel.prototype = {
             this.criteria[0].setRemoveButtonEnabled(false);
         }
 
+        /*
+         * Need to remove jquery tooltip.
+         * Uncertain if this is the best place- if there's a better one, then move it.
+         */
+        $(currentRow).find("[title]").each(function() {
+            if ($(this).data("uiTooltipOpen")) {
+                $(this)
+                    .tooltip()
+                    .tooltip("close")
+                    .tooltip("destroy");
+            }
+        });
         // Update DOM
         this.container.removeChild(currentRow);
     },
