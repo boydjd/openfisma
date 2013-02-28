@@ -256,6 +256,62 @@
                     }
                 }
             );
+        },
+
+        addPoc: function(event, args) {
+            event.preventDefault();
+            Fisma.UrlPanel.showPanel(
+                'Add People', //title
+                '/organization/add-poc-form/format/html/', //url
+                function(panel) { //callbackFunction
+                    $('script', panel.body).appendTo(document);
+                    $('button#addPocSubmit').click(function(event) {
+                        $.post(
+                            '/organization/add-poc/format/json/id/' + args.id,
+                            {
+                                'addPocId': $('input#addPocId', panel.body).val(),
+                                'addPocRole': $('select#addPocRole', panel.body).val(),
+                                'returnModule': args.returnModule,
+                                'csrf': $('input[name=csrf]').val()
+                            },
+                            function(data) {
+                                if (data.err) {
+                                    Fisma.Util.showAlertDialog(data.err);
+                                } else {
+                                    Fisma.Organization.addPocResult = data;
+                                    $('div#peopleSection').replaceWith($('div#peopleSection', data));
+                                    $(data).filter('script').appendTo(document);
+                                    panel.hide();
+                                    panel.destroy();
+                                }
+                            }
+                        );
+                    });
+                }
+            );
+        },
+
+        removePoc: function(orgId, pocRole, pocId, returnModule) {
+            $.post(
+                '/organization/remove-poc/format/json/id/' + orgId,
+                {
+                    'pocId': pocId,
+                    'pocRole': pocRole,
+                    'returnModule': returnModule,
+                    'csrf': $('input[name=csrf]').val()
+                },
+                function(data) {
+                    if (data.err) {
+                        Fisma.Util.showAlertDialog(data.err);
+                    } else {
+                        Fisma.Organization.addPocResult = data;
+                        $('div#peopleSection').replaceWith($('div#peopleSection', data));
+                        $(data).filter('script').appendTo(document);
+                        panel.hide();
+                        panel.destroy();
+                    }
+                }
+            );
         }
     };
 

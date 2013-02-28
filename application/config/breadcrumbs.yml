@@ -326,10 +326,6 @@ SystemAdminNetwork:
     url: /network/list
     labels: [System Inventory, Administration, Networks]
     links: [no-link, no-link, no-link]
-SystemAdminOrganizationPOCList:
-    url: /organization/poc-list
-    labels: [System Inventory, Administration, Organization People]
-    links: [no-link, no-link, no-link]
 SystemAdminOrganizationTypeView:
     url: /organization-type/view
     labels: [System Inventory, Administration, Organization Types, View]
@@ -414,17 +410,21 @@ AdminUserManagementRolePrivilegeMatrix:
     url: /role/view-matrix
     labels: [Administration, User Management, Privileges]
     links: [no-link, no-link, no-link]
+AdminUserManagementPOCList:
+    url: /organization/poc-list
+    labels: [Administration, User Management, Organization Roles]
+    links: [no-link, no-link, no-link]
 AdminUserManagementRoleView:
     url: /role/view
-    labels: [Administration, User Management, Roles, View]
+    labels: [Administration, User Management, Permission Schemes, View]
     links: [no-link, no-link, /role/list, no-link]
 AdminUserManagementRoleCreate:
     url: /role/create
-    labels: [Administration, User Management, Roles, Create]
+    labels: [Administration, User Management, Permission Schemes, Create]
     links: [no-link, no-link, /role/list, no-link]
 AdminUserManagementRole:
     url: /role/list
-    labels: [Administration, User Management, Roles]
+    labels: [Administration, User Management, Permission Schemes]
     links: [no-link, no-link, no-link]
 AdminUserManagementUserView:
     url: /user/view

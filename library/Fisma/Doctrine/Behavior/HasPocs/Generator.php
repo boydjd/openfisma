@@ -131,7 +131,7 @@ class Fisma_Doctrine_Behavior_HasPocs_Generator extends Doctrine_Record_Generato
         $pocClass = $this->_options['className'];
         $instanceClass = $this->getOption('table')->getComponentName();
 
-        $pocEntry = $this->fetchOneByType($instance, $type);
+        $pocEntry = $this->fetchOneByType($instance, $pocId, $type);
         if (!$pocEntry) {
             $pocEntry = new $pocClass;
         }
@@ -148,16 +148,17 @@ class Fisma_Doctrine_Behavior_HasPocs_Generator extends Doctrine_Record_Generato
      * Add a poc
      *
      * @param Doctrine_Record $instance The instance to be logged
+     * @param int $pocId
      * @param string $type
      * @return void
      */
-    public function removePoc(Doctrine_Record $instance, $type)
+    public function removePoc(Doctrine_Record $instance, $pocId, $type)
     {
         // Create a new poc
         $pocClass = $this->_options['className'];
         $instanceClass = $this->getOption('table')->getComponentName();
 
-        $pocEntry = $this->fetchOneByType($instance, $type);
+        $pocEntry = $this->fetchOneByType($instance, $pocId, $type);
         if ($pocEntry) {
             $pocEntry->delete();
         }
@@ -224,14 +225,32 @@ class Fisma_Doctrine_Behavior_HasPocs_Generator extends Doctrine_Record_Generato
      * Get a poc based on the type
      *
      * @param mixed $instance The object to get the POC for
+     * @param int $pocId
      * @param string $type The type to specify the POC
      * @return User The POC
      */
-    public function fetchOneByType($instance, $type)
+    public function fetchOneByType($instance, $pocId, $type)
+    {
+        $query = $this->query($instance);
+        $query
+            ->andWhere('o.type = ?', $type)
+            ->andWhere('o.pocId = ?', $pocId);
+
+        return $query->fetchOne();
+    }
+
+    /**
+     * Get a poc based on the type
+     *
+     * @param mixed $instance The object to get the POC for
+     * @param string $type The type to specify the POC
+     * @return User The POC
+     */
+    public function fetchAllByType($instance, $type)
     {
         $query = $this->query($instance);
         $query->andWhere('o.type = ?', $type);
 
-        return $query->fetchOne();
+        return $query->execute();
     }
 }

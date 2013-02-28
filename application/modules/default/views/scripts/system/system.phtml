@@ -155,7 +155,22 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 
-    <?php Fisma_Format_Section::startSection('People'); ?>
+    <?php Fisma_Format_Section::startSection('People', null, null, 'peopleSection'); ?>
+        <?php if ($this->editable): ?>
+        <div class='buttonBar'>
+            <?php echo new Fisma_Yui_Form_Button(
+                'addPoc',
+                array(
+                    'label' => 'Add People',
+                    'onClickFunction' => 'Fisma.Organization.addPoc',
+                    'onClickArgument' => array(
+                        'id' => $this->organization->id,
+                        'returnModule' => 'system'
+                    )
+                )
+            ); ?>
+        </div>
+        <?php endif; ?>
         <table class="keyValues">
             <tr>
                 <td><?php echo $this->escape(new Fisma_Yui_Tooltip(
@@ -197,36 +212,26 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             $pocs = $this->organization->getPocs();
 
             foreach ($tags as $idx => $type):
-                $poc = $pocs->fetchOneByType($type);
+                $pocCollection = $pocs->fetchAllByType($type);
         ?>
             <tr>
                 <td><?php echo $this->escape($type); ?>:</td>
-                <td class="autocomplete-width"><span id="pointOfContact_<?php echo $this->escape($idx); ?>"
-                    type="autocomplete"
-                    xhr="/user/autocomplete/format/json"
-                    queryPrepend="/keyword/"
-                    schemaObject="pointsOfContact"
-                    schemaField="name"
-                    name="poc[<?php echo $this->escape($idx); ?>]"
-                <?php if ($this->acl()->hasPrivilegeForClass('create', 'User')): ?>
-                    setupCallback="Fisma.Finding.setupPocAutocomplete"
-                <?php endif; ?>
-                    value="<?php if ($poc): echo $this->escape($poc->User->id); endif; ?>"
-                    defaultValue="<?php if ($poc): echo $this->escape($poc->User->username); endif; ?>"><?php
-                        if ($poc):
-                            echo $this->escape(
-                                $this->userInfo(
-                                    $poc->User->displayName,
-                                    $poc->User->id
-                                ),
-                                'none'
-                            );
-                        endif;
-                    ?></span>
-                <?php if ($this->editable): ?>
-                    <span class="editable" target="pointOfContact_<?php echo $this->escape($idx); ?>">&nbsp;</span>
-                <?php endif; ?>
-                </td>
+                <td><?php foreach ($pocCollection as $poc): ?>
+                    <div>
+                        <?php echo $this->escape($this->userInfo($poc->User->displayName, $poc->User->id), 'none'); ?>
+                        <?php if ($this->editable): ?>
+                        <img
+                            src='/images/trash_recyclebin_empty_closed.png'
+                            onclick='Fisma.Organization.removePoc(<?php
+                                    echo $this->escape($this->organization->id); ?>, "<?php
+                                    echo $this->escape($poc->type); ?>", <?php
+                                    echo $this->escape($poc->User->id);
+                                ?>, "organization");'
+                            alt='remove this POC'
+                        />
+                        <?php endif; ?>
+                    </div>
+                <?php endforeach; ?></td>
             <tr/>
         <?php endforeach; ?>
         </table>
