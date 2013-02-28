@@ -45,7 +45,7 @@
 
         var t_name = $(this).attr('target');
         $(this).data('old_object', $('#' + t_name).clone());
-        $(this).removeClass('editable').attr('tooltip-disable', 'true');
+        $(this).removeClass('editable');
 
         if (t_name) {
             var editableObj = null;
