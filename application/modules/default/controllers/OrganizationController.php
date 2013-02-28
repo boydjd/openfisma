@@ -980,6 +980,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $returnModule = $this->getRequest()->getParam('returnModule');
 
         $organization = Doctrine::getTable('Organization')->find($id);
+        $this->_acl->requirePrivilegeForObject('update', $organization)
         $organization->getPocs()->addPoc($userId, $role);
 
         switch ($returnModule) {
@@ -1005,6 +1006,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $returnModule = $this->getRequest()->getParam('returnModule');
 
         $organization = Doctrine::getTable('Organization')->find($id);
+        $this->_acl->requirePrivilegeForObject('update', $organization)
         $organization->getPocs()->removePoc($userId, $role);
 
         switch ($returnModule) {
