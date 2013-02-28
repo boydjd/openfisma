@@ -341,13 +341,6 @@ System:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: Network
-                OrganizationPOCList:
-                    label: Organization People
-                    link: /organization/poc-list
-                    privilege:
-                        func: hasPrivilegeForClass
-                        param1: manage_poc_list
-                        param2: Organization
                 OrganizationType:
                     label: Organization Types
                     link: /organization-type/list
@@ -421,8 +414,15 @@ Administration:
         UserManagement:
             label: User Management
             submenu:
+                OrganizationPOCList:
+                    label: Organization Roles
+                    link: /organization/poc-list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage_poc_list
+                        param2: Organization
                 Roles:
-                    label: Roles
+                    label: Permission Schemes
                     link: /role/list
                     privilege:
                         func: hasPrivilegeForClass

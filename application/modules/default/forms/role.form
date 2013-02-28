@@ -13,13 +13,13 @@ method = "post"
 elementFilters.trim = "StringTrim"
 
 elements.name.type = "text"
-elements.name.options.label = "Role Name"
+elements.name.options.label = "Name"
 elements.name.options.validators.alnum.validator = "NotEmpty"
 elements.name.options.required = true
 displayGroups.role.elements.name = "name"
 
 elements.nickname.type = "text"
-elements.nickname.options.label = "Role nickname"
+elements.nickname.options.label = "Nickname"
 elements.nickname.options.validators.alnum.validator = "NotEmpty"
 elements.nickname.options.required = true
 displayGroups.role.elements.nickname = "nickname"

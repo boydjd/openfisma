@@ -54,15 +54,15 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function init()
     {
         parent::init();
-        $this->_helper->contextSwitch()
+        $this->_helper->ajaxContext()
                       ->addActionContext('tree-data', 'json')
                       ->addActionContext('get-poc', 'json')
-                      ->initContext();
-        $this->_helper->ajaxContext()
                       ->addActionContext('convert-to-system-form', 'html')
                       ->addActionContext('info', 'html')
                       ->addActionContext('add-poc-list', 'json')
                       ->addActionContext('rename-poc-list', 'json')
+                      ->addActionContext('add-poc-form', 'html')
+                      //->addActionContext('add-poc', 'json')
                       ->initContext();
     }
 
@@ -773,7 +773,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             'pocId' => empty($organization->pocId) ? '' : $organization->pocId
         );
 
-         echo Zend_Json::encode($data);
+        echo Zend_Json::encode($data);
         $this->_helper->viewRenderer->setNoRender();
 
     }
@@ -948,6 +948,76 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             } else {
                 throw new Fisma_Zend_Exception_User('Position not found.');
             }
+        }
+    }
+
+    /**
+     * @GETAllowed
+     */
+    public function addPocFormAction()
+    {
+        $this->view->userAc = new Fisma_Yui_Form_AutoComplete('addPocAc');
+        $this->view->userAc->setOptions(array(
+            'resultsList' => "pointsOfContact",
+            'fields' => "name",
+            'xhr' => "/user/autocomplete/format/json",
+            'hiddenField' => "addPocId",
+            'queryPrepend' => "/keyword/",
+            'containerId' => "pointOfContactAutocompleteContainer"
+        ));
+        $this->view->roles = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+        $this->view->submitButton = new Fisma_Yui_Form_Button('addPocSubmit', array('label' => 'Add'));
+    }
+
+    /**
+     * Add Poc to Organization
+     */
+    public function addPocAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $role = $this->getRequest()->getParam('addPocRole');
+        $userId = $this->getRequest()->getParam('addPocId');
+        $returnModule = $this->getRequest()->getParam('returnModule');
+
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $this->_acl->requirePrivilegeForObject('update', $organization)
+        $organization->getPocs()->addPoc($userId, $role);
+
+        switch ($returnModule) {
+            case 'organization':
+                $this->_redirect('/organization/organization/id/' . $id);
+                break;
+            case 'system':
+                $this->_redirect('/system/system/id/' . $organization->System->id);
+                break;
+            default:
+                $this->err = 'Action completed.';
+        }
+    }
+
+    /**
+     * Remove Poc from Organization
+     */
+    public function removePocAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $role = $this->getRequest()->getParam('pocRole');
+        $userId = $this->getRequest()->getParam('pocId');
+        $returnModule = $this->getRequest()->getParam('returnModule');
+
+        $organization = Doctrine::getTable('Organization')->find($id);
+        $this->_acl->requirePrivilegeForObject('update', $organization)
+        $organization->getPocs()->removePoc($userId, $role);
+
+        switch ($returnModule) {
+            case 'organization':
+                $this->_redirect('/organization/organization/id/' . $id);
+                break;
+            case 'system':
+                $this->_redirect('/system/system/id/' . $organization->System->id);
+                break;
+            default:
+                $this->err = 'Action completed.';
         }
     }
 }

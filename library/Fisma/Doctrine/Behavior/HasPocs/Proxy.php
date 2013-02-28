@@ -73,12 +73,13 @@ class Fisma_Doctrine_Behavior_HasPocs_Proxy
     /**
      * Proxy method for removing a poc
      *
+     * @param int $pocId
      * @param string $type
      * @return void
      */
-    public function removePoc($type)
+    public function removePoc($pocId, $type)
     {
-        return $this->_generator->removePoc($this->_instance, $type);
+        return $this->_generator->removePoc($this->_instance, $pocId, $type);
     }
 
     /**
@@ -119,8 +120,18 @@ class Fisma_Doctrine_Behavior_HasPocs_Proxy
      *
      * @return User The POC
      */
-    public function fetchOneByType($type)
+    public function fetchOneByType($pocId, $type)
     {
-        return $this->_generator->fetchOneByType($this->_instance, $type);
+        return $this->_generator->fetchOneByType($this->_instance, $type, $pocId);
+    }
+
+    /**
+     * Proxy method for getting pocs based on the type
+     *
+     * @return User The POC
+     */
+    public function fetchAllByType($type)
+    {
+        return $this->_generator->fetchAllByType($this->_instance, $type);
     }
 }
