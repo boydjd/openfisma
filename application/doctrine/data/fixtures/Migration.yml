@@ -193,3 +193,8 @@ Migration:
         minorVersion: 2
         tagNumber: 0
         name: SavedSearch
+    030200_NotificationsOverhaul:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: NotificationsOverhaul

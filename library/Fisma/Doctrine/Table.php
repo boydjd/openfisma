@@ -4,30 +4,53 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Contain table-level functions that are common to all models
- * 
+ *
  * @uses Doctrine_Table
  * @package Fisma
  * @subpackage Fisma_Doctrine_Table
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 abstract class Fisma_Doctrine_Table extends Doctrine_Table
 {
+    /**
+     * Custom logicalName's that would amend YML column definition
+     */
+    protected $_customLogicalNames = array();
+
+    /**
+     * Return logicalName from columns from hard-coded array or YML column definition
+     *
+     * @return String
+     */
+    public function getLogicalName($fieldName)
+    {
+        if (array_key_exists($fieldName, $this->_customLogicalNames)) {
+            return $this->_customLogicalNames[$fieldName];
+        }
+
+        $columnDef = $this->getColumnDefinition($this->getColumnName($fieldName));
+        if (isset($columnDef['extra']) && isset($columnDef['extra']['logicalName'])) {
+            return $columnDef['extra']['logicalName'];
+        }
+
+        return $this->getColumnName($fieldName);
+    }
 
     /**
      * Validates a given field using table ATTR_VALIDATE rules.
@@ -53,7 +76,7 @@ abstract class Fisma_Doctrine_Table extends Doctrine_Table
             $value = $value->getIncremented();
         } else if ($value instanceof Doctrine_Record && ! $value->exists()) {
             foreach ($this->getRelations() as $relation) {
-                if ($fieldName == $relation->getLocalFieldName() && (get_class($value) == $relation->getClass() 
+                if ($fieldName == $relation->getLocalFieldName() && (get_class($value) == $relation->getClass()
                     || is_subclass_of($value, $relation->getClass()))) {
                     return $errorStack;
                 }

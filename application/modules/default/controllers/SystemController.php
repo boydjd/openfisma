@@ -494,7 +494,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             }
 
             $this->view->priorityMessenger($msg, $type);
-            Notification::notify('ORGANIZATION_UPDATED', $organization, CurrentUser::getInstance());
         }
 
         $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
@@ -584,11 +583,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $userRoles->save();
         }
 
-        if ($createNew) {
-            Notification::notify('ORGANIZATION_CREATED', $system, CurrentUser::getInstance());
-        } else {
-            Notification::notify('ORGANIZATION_UPDATED', $system, CurrentUser::getInstance());
-        }
         return $system;
     }
 

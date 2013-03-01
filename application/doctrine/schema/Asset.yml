@@ -39,26 +39,40 @@ Asset:
             comment: The IP port for this asset
         serviceTag:
             type: string(255)
+            extra:
+                logicalName: Environment
+                notify: true
             comment: The service tag of this asset
 
         productId:
             type: integer
             comment: Foreign key to product table
             extra:
+                class: Product
+                field: cpeName
                 logicalName: Product
         orgSystemId:
             type: integer
             comment: Foreign key to a system object in the organization table
             extra:
+                class: Organization
+                field: name
+                notify: true
                 logicalName: System
         denormalizedParentOrganizationId:
             type: integer
             extra:
+                class: Organization
+                field: name
+                notify: true
                 logicalName: Parent Organization
         networkId:
             type: integer
             comment: Foreign key to network table
             extra:
+                class: Network
+                field: name
+                notify: true
                 logicalName: Network
 
     relations:

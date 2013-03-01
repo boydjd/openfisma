@@ -1,29 +1,47 @@
 Organization:
-    listeners: [IndexListener]
+    listeners: [IndexListener, NotificationListener]
 
     columns:
         createdTs: timestamp
         modifiedTs: timestamp
         name:
+            extra:
+                logicalName: Full name
+                notify: true
             type: string(255)
             notblank: true
             notnull: true
         nickname:
+            extra:
+                logicalName: Nick name
+                notify: true
             type: string(255)
             unique: true
             notblank: true
             notnull: true
             unique: true
         orgTypeId:
+            extra:
+                logicalName: Organization Type
+                notify: true
+                class: OrganizationType
+                field: name
             type: integer
         systemId:
             type: integer
         pocId:
+            extra:
+                logicalName: Organization_Point_of_Contact
+                notify: true
+                class: User
+                field: displayName
             type: integer
         description:
-            type: string
             extra:
+                logicalName: Description
+                notify: true
                 purify: html
+            type: string
 
     relations:
         System:

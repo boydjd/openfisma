@@ -65,7 +65,7 @@ class NotificationListener extends Fisma_Doctrine_Record_Listener
      * @param Doctrine_Event $event The listened doctrine event to process
      * @return void
      */
-    public function postUpdate(Doctrine_Event $event)
+    public function preUpdate(Doctrine_Event $event)
     {
         if (!self::$_listenerEnabled) {
             return;
@@ -75,15 +75,43 @@ class NotificationListener extends Fisma_Doctrine_Record_Listener
         $eventName = $this->_classNameToEventName(get_class($record)) . '_UPDATED';
 
         // Only send the notification if a notifiable field was modified
-        $modified = $record->getLastModified();
+        $modified = $record->getModified(true);
         $table = $record->getTable();
+        $modifiedFields = array();
         foreach ($modified as $name => $value) {
-            $columnDef = $table->getColumnDefinition($table->getColumnName($name));
-            // Not all columns will define this index, so the suppression operator is used:
-            if (@$columnDef['extra']['notify']) {
-                Notification::notify($eventName, $record, CurrentUser::getInstance());
-                break;
+            if ($value == $record->$name) {
+                continue;
             }
+            $columnDef = $table->getColumnDefinition($table->getColumnName($name));
+            if (isset($columnDef['extra']) && isset($columnDef['extra']['notify']) && $value !== $record->$name) {
+                $modifiedFields[$name] = array(
+                    ((!empty($value)) ? $value : '(none)'),
+                    ((!empty($record->$name)) ? $record->$name : '(none)')
+                );
+                if (isset($columnDef['extra']['class']) && isset($columnDef['extra']['field'])) {
+                    $rel = Doctrine::getTable($columnDef['extra']['class']);
+                    $oldObject = $rel->find($value);
+                    $newObject = $rel->find($record->$name);
+                    $modifiedFields[$name] = array(
+                        ((!empty($oldObject)) ? $oldObject->$columnDef['extra']['field'] : '(none)'),
+                        ((!empty($newObject)) ? $newObject->$columnDef['extra']['field'] : '(none)')
+                    );
+                }
+                if (isset($columnDef['extra']['masked']) && $columnDef['extra']['masked'] === true):
+                    $modifiedFields[$name] = array('********', '********');
+                endif;
+                $modifiedFields[$name][] = $table->getLogicalName($name);
+                $modifiedFields[$name][] = (isset($columnDef['extra']['purify'])) ? 'none' : 'html';
+            }
+        }
+
+        if (count($modifiedFields) > 0) {
+            Notification::notify(
+                $eventName,
+                $record,
+                CurrentUser::getInstance(),
+                array('modifiedFields' => $modifiedFields)
+            );
         }
     }
 
@@ -114,6 +142,9 @@ class NotificationListener extends Fisma_Doctrine_Record_Listener
      */
     private function _classNameToEventName($className)
     {
+        if ($className == 'System') {
+            $className = 'Organization';
+        }
         return strtoupper(Doctrine_Inflector::tableize($className));
     }
 }

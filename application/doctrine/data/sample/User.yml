@@ -24,9 +24,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     sample_1:
         username: sample1
         password: Sample1
@@ -52,9 +64,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     sample_5:
         username: sample5
         password: Sample1
@@ -80,9 +104,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     mike_green:
         username: mike.green
         password: Sample1
@@ -107,9 +143,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     alexander_ovechkin:
         username: alex.ovechkin
         password: Sample1
@@ -134,9 +182,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     alexander_semin:
         username: alexander.semin
         password: Sample1
@@ -161,9 +221,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     mike_knuble:
         username: mike.knuble
         password: Sample1
@@ -188,9 +260,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     nicklas_backstrom:
         username: nicklas.backstrom
         password: Sample1
@@ -215,9 +299,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     michael_neuvirth:
         username: michael.neuvirth
         password: Sample1
@@ -242,9 +338,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     bruce_boudreau:
         username: bruce.boudreau
         password: Sample1
@@ -269,9 +377,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     george_mcphee:
         username: george.mcphee
         password: Sample1
@@ -296,9 +416,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     semyon_varlamov:
         username: semyon.varlamov
         password: Sample1
@@ -323,9 +455,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     braden_holtby:
         username: braden.holtby
         password: Sample1
@@ -350,9 +494,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     john_erskine:
         username: john.erskine
         password: Sample1
@@ -377,9 +533,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     matt_hendricks:
         username: matt.hendricks
         password: Sample1
@@ -404,9 +572,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     matt_bradley:
         username: matt.bradley
         password: Sample1
@@ -431,9 +611,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     john_carlson:
         username: john.carlson
         password: Sample1
@@ -458,9 +650,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     jeff_schultz:
         username: jeff.schultz
         password: Sample1
@@ -485,9 +689,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     karl_alzner:
         username: karl.alzner
         password: Sample1
@@ -512,9 +728,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     jason_chimera:
         username: jason.chimera
         password: Sample1
@@ -539,9 +767,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     boyd_gordon:
         username: boyd.gordon
         password: Sample1
@@ -566,9 +806,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     marcus_johansson:
         username: marcus.johansson
         password: Sample1
@@ -593,9 +845,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     mathieu_perreault:
         username: mathieu.perreault
         password: Sample1
@@ -620,9 +884,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     brooks_laich:
         username: brooks.laich
         password: Sample1
@@ -647,9 +923,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     marco_sturm:
         username: marco.sturm
         password: Sample1
@@ -674,9 +962,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     dennis_wideman:
         username: dennis.wideman
         password: Sample1
@@ -701,9 +1001,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     tom_poti:
         username: tom.poti
         password: Sample1
@@ -728,9 +1040,21 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+
     sean_collins:
         username: sean.collins
         password: Sample1
@@ -755,6 +1079,18 @@ User:
             - USER_LOGIN_FAILURE
             - USER_POC
             - VULNERABILITY_IMPORTED
+            - VULNERABILITY_CLOSED
+            - VULNERABILITY_UPDATED
             - VULNERABILITY_DELETED
             - FINDING_CREATED
+            - FINDING_UPDATED
+            - FINDING_IMPORTED
+            - FINDING_CLOSED
             - FINDING_DELETED
+            - INCIDENT_CREATED
+            - INCIDENT_UPDATED
+            - INCIDENT_LOCKED
+            - INCIDENT_UNLOCKED
+            - INCIDENT_STEP
+            - INCIDENT_DELETED
+

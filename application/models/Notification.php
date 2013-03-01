@@ -44,46 +44,9 @@ class Notification extends BaseNotification
 
         $event = Doctrine::getTable('Event')->findOneByName($eventName);
 
-        if (!$event) {
-            throw new Fisma_Zend_Exception("No event named '$eventName' was found");
-        }
-
-        if (!empty($extra['rowsProcessed'])) {
-            $eventText = $extra['rowsProcessed'] . " " . $event->description;
-        } else {
-            $eventText = $event->description;
-        }
-
-        // If the model has a "nickname" field, then identify the record by the nickname. Otherwise, identify the record
-        // by it's ID, which is a field that all models are expected to have (except for join tables). Some
-        // notifications won't have a nickname or ID (such as notifications about the application's configuration)
-        $recordClass = get_class($record);
-        if ($recordClass === 'Organization' && $record->systemId != null) {
-            $recordClass = 'System';
-        }
-        if (isset($record->nickname) && !is_null($record->nickname)) {
-            $eventText .= " ($recordClass $record->nickname)";
-        } elseif (isset($record) && isset($record->id)) {
-            $eventText .= " ($recordClass #$record->id)";
-        }
-
-        if (!empty($extra['modifiedFields'])) {
-            $eventText .= " (" . implode(', ', $extra['modifiedFields']) . ")";
-        }
-
-        if (!is_null($user)) {
-            $eventText .= " by $user->nameFirst $user->nameLast";
-        } else {
-            $eventText .= ' by ' . Fisma::configuration()->getConfig('system_name');
-        }
-
-        if (!empty($extra['suppDetail'])) {
-            $eventText .= ", " . $extra['suppDetail'];
-        }
-
         // Figure out which users are listening for this event
         $eventsQuery = Doctrine_Query::create()
-            ->select('e.id, u.id')
+            ->select('DISTINCT e.id, u.id, u.email, u.displayName') //without DISTINCT, a user can receive multiple same emails due to multiple roles
             ->from('User u')
             ->innerJoin('u.Events e')
             ->where('e.id = ?', $event->id)
@@ -92,8 +55,15 @@ class Notification extends BaseNotification
         // If the object has an ACL dependency on Organization, then extend the query for that condition
         if ($record instanceof Fisma_Zend_Acl_OrganizationDependency) {
             $eventsQuery->leftJoin('u.UserRole ur')
-                        ->leftJoin('ur.Organizations o')
-                        ->andWhere('o.id = ?', $record->getOrganizationDependencyId());
+                        ->leftJoin('ur.Organizations o');
+            if (isset($record->pocId)) {
+                $eventsQuery->andWhere(
+                    'o.id = ? OR u.id = ?',
+                    array($record->getOrganizationDependencyId(), $record->pocId)
+                );
+            } else {
+                $eventsQuery->andWhere('o.id = ?', $record->getOrganizationDependencyId());
+            }
         }
 
         // If the event belong to "user" category, only send notifications to the user in question
@@ -106,11 +76,21 @@ class Notification extends BaseNotification
                         ->andWhere('up.id = ep.id');
         }
 
+        /* This code is commented out because the recipient list is currently FORCED
+        // For Incident Workflow Steps, only send notifications to the users assigned to that findings
+        if ($event->name === 'INCIDENT_STEP') {
+            $eventsQuery->leftJoin('u.IrIncidentUsers iu')
+                        ->andWhere('iu.incidentId = ?', $record->id);
+        }//*/
+        if (!empty($extra['recipientList'])) {
+            $eventsQuery->andWhereIn('u.id', $extra['recipientList']);
+        }
+
         $userEvents = $eventsQuery->execute();
 
         $baseUrl = rtrim(Fisma_Url::baseUrl(), '/');
         $urlPath = (isset($extra['url'])) ? $extra['url'] : $event->urlPath;
-        $url = '';
+        $url = ($urlPath) ? ($baseUrl . $urlPath) : null;
 
         if (!empty($extra['appUrl'])) {
             $url = $baseUrl .  $event->urlPath . $extra['appUrl'];
@@ -126,27 +106,49 @@ class Notification extends BaseNotification
             $eventText .= "\n" . $extra['log'];
         }
 
+        $view = new Fisma_Zend_View();
+        $view->setScriptPath(Fisma::getPath('application') . '/common-views/mail/')
+             ->setEncoding('utf-8');
+        $view->event = $event;
+        $view->systemName = Fisma::configuration()->getConfig('system_name');
+        $view->user = $user;
+        $view->url = $url;
+        $view->time = Zend_Date::now();
+        $view->record = $record;
+        if (!empty($extra['modifiedFields'])) {
+            $view->modifiedFields = $extra['modifiedFields'];
+        }
+        $view->detail = Fisma::configuration()->getConfig('email_detail');
+        $title = $view->render('title.phtml');
+        $content = $view->render('content.phtml');
+
         $isIn = false;
         $notifications = new Doctrine_Collection('Notification');
         foreach ($userEvents as $userEvent) {
             $notification = new Notification();
-            $notification->eventId   = $userEvent['e_id'];
-            $notification->userId    = $userEvent['u_id'];
-            $notification->eventText = $eventText;
-            $notification->url = $url;
+            $notification->eventId                  = $userEvent['e_id'];
+            $notification->userId                   = $userEvent['u_id'];
+            $notification->denormalizedEmail        = $userEvent['u_email'];
+            $notification->denormalizedRecipient    = $userEvent['u_displayName'];
+            $notification->url                      = $url;
+            $notification->eventTitle               = $title;
+            $notification->eventText                = $content;
             $notifications[] = $notification;
 
-            if ($userEvent['u_id'] == $user->id) {
+            if ($user && $userEvent['u_id'] == $user->id) {
                 $isIn = true;
             }
         }
 
-        if (! $isIn && $eventName === 'VULNERABILITY_IMPORTED') {
+        if (! $isIn && $eventName === 'VULNERABILITY_IMPORTED') { //uploader doesn't register for this event
             $notification = new Notification();
-            $notification->eventId   = $event->id;
-            $notification->userId    = $user->id;
-            $notification->eventText = $eventText;
-            $notification->url = $url;
+            $notification->eventId                  = $event->id;
+            $notification->userId                   = $user->id;
+            $notification->denormalizedEmail        = $user->email;
+            $notification->denormalizedRecipient    = $user->displayName;
+            $notification->url                      = $url;
+            $notification->eventTitle               = $title;
+            $notification->eventText                = $content;
             $notifications[] = $notification;
         }
 
@@ -154,5 +156,12 @@ class Notification extends BaseNotification
          * unfortunately, DQL does not provide a good alternative that I am aware of.
          */
         $notifications->save();
+
+        $fileWriter = new Zend_Log_Writer_Stream(Fisma::getPath('log') . '/notify.log');
+        $fileWriter->setFormatter(new Zend_Log_Formatter_Simple("[%timestamp%] %message%\n"));
+        $log = new Zend_Log;
+        $log->addWriter($fileWriter);
+
+        Fisma_Cli_Notify::sendNotificationEmail($notifications, $log);
     }
 }

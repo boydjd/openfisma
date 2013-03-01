@@ -95,6 +95,7 @@ Role:
             - notification_admin
             - notification_asset
             - notification_finding
+            - notification_incident
             - notification_vulnerability
             - incident_read
             - incident_comment
@@ -216,6 +217,7 @@ Role:
             - vulnerability_resolution_delete
             - notification_asset
             - notification_finding
+            - notification_incident
             - notification_vulnerability
             - incident_read
             - incident_comment
@@ -282,6 +284,7 @@ Role:
             - vulnerability_resolution_read
             - notification_asset
             - notification_finding
+            - notification_incident
             - notification_vulnerability
             - incident_read
             - incident_comment

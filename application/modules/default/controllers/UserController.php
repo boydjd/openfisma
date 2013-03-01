@@ -550,7 +550,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
 
             $this->_helper->layout->setLayout('layout');
-            $this->_redirect('/Index/index');
+            $this->_redirect('/index/home');
         }
 
         $this->view->behaviorRule = Fisma::configuration()->getConfig('behavior_rule');
@@ -1716,6 +1716,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             } else {
                 $this->view->priorityMessenger('User deleted successfully.', 'info');
             }
+            Notification::notify('USER_DELETED', $subject, CurrentUser::getInstance());
 
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollback();

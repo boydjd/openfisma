@@ -401,6 +401,10 @@ Privilege:
         resource: notification
         action: finding
         description: Finding Notifications
+    notification_incident:
+        resource: notification
+        action: incident
+        description: Incident Notifications
     notification_vulnerability:
         resource: notification
         action: vulnerability

@@ -1,0 +1,14 @@
+<?php
+    $systemName = $this->systemName;
+    $event = $this->event;
+    $title = $event->description;
+
+    foreach (Zend_Registry::get('mail_title') as $eventName => $customTitle) {
+        if ($eventName === $event->name) {
+            $title = $customTitle;
+            break;
+        }
+    }
+
+    echo $this->escape("[{$systemName}] {$title}");
+?>

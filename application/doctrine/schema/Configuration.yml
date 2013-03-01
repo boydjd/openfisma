@@ -50,6 +50,8 @@ Configuration:
             type: string(255)
             comment: Password for SMTP authentication
             default: ""
+            extra:
+                masked: true
         send_type:
             type: enum
             notblank: true
@@ -67,6 +69,10 @@ Configuration:
             notblank: true
             comment: Use Transport Layer Security (TLS)
             default: 0
+        email_detail:
+            type: boolean
+            default: 1
+            comment: Show details in email notifications
         unlock_enabled:
             type: boolean
             notblank: true

@@ -27,6 +27,12 @@
  */
 class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 {
+    protected $_customLogicalNames = array(
+        'name' => 'Full name',
+        'nickname' => 'Nick name',
+        'parentNickname' => 'Parent'
+    );
+
     /**
      * Implement the interface for Searchable
      */

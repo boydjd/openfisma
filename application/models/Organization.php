@@ -29,6 +29,15 @@
 class Organization extends BaseOrganization implements Fisma_Zend_Acl_OrganizationDependency
 {
     /**
+     * Define accessors
+     */
+    public function setup()
+    {
+        parent::setup();
+        $this->hasAccessor('parentNickname', 'getParentNickname');
+    }
+
+    /**
      * Implements the interface for Zend_Acl_Role_Interface
      *
      * @return int The role id
@@ -492,6 +501,20 @@ class Organization extends BaseOrganization implements Fisma_Zend_Acl_Organizati
             ->count();
 
         return $findings;
+    }
+
+    /**
+     * Get $this->getNode()->getParent()->nickname
+     *
+     * @return String
+     */
+    public function getParentNickname()
+    {
+        $parent = $this->getNode()->getParent();
+        if ($parent) {
+            return $parent->nickname;
+        }
+        return '';
     }
 
 }
