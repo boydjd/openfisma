@@ -57,7 +57,6 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
                         ->setHydrationMode(Doctrine::HYDRATE_NONE)
                         ->execute();
 
-        $status = array('OPEN', 'FIXED', 'WONTFIX');
         $threat = array('LOW', 'MODERATE', 'HIGH');
 
         $statusCount = count($status)-1;
@@ -72,12 +71,7 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
             $discoveredDate = rand(0, time());
 
             $entry = array();
-            $randomstatus = $status[rand(0, $statusCount)];
 
-            //Status defaults to OPEN and state transition does not allow from OPEN to OPEN
-            if ($randomstatus != 'OPEN') {
-                $entry['status'] = $randomstatus;
-            }
             $entry['threatLevel'] = $threat[$this->_randomLog(0, $threatCount)];
             $entry['assetId'] = $assetIds[$this->_randomLog(0, $assetIdsCount)][0];
             $entry['description'] = Fisma_String::loremIpsum(rand(90, 100));
@@ -91,6 +85,12 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
             $generateProgressBar->update($i, "Generate Vulnerabilities");
         }
 
+        print "\n";
+        $saveProgressBar = $this->_getProgressBar($numEntries);
+        $saveProgressBar->update(0, "Save Vulnerabilities");
+
+        $currentVulnerability = 0;
+
         try {
             Doctrine_Manager::connection()->beginTransaction();
 
@@ -98,9 +98,18 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
                 $e = new Vulnerability();
                 $e->merge($entry);
                 $e->CreatedBy = $this->_getRandomUser();
+                if (empty($e->pocId)) {
+                    $e->pocId = $this->_getRandomUser()->id;
+                }
+
+                //@TODO workflow simulation
+
                 $e->save();
                 $e->free();
                 unset($e);
+
+                $currentVulnerability++;
+                $saveProgressBar->update($currentVulnerability);
             }
 
             Doctrine_Manager::connection()->commit();
@@ -108,5 +117,6 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
             Doctrine_Manager::connection()->rollBack();
             throw $e;
         }
+        print "\n";
     }
 }

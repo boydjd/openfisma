@@ -51,7 +51,7 @@
             <td class='criteria'><?php echo $this->escape($statistic['criteria']); ?></td>
             <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
             <td width='55%'>
-                <a href='/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/threatLevel/enumIs/<?php
+                <a href='/finding/remediation/list?q=isResolved/booleanNo/threatLevel/enumIs/<?php
                     echo $this->escape($statistic['criteria'], 'url');
                 ?>'><span
                 class='bar <?php echo $this->escape($statistic['criteria']); ?>'
@@ -79,7 +79,7 @@
             <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
             <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
             <td width='55%'>
-                <a href='/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/type/enumIs/<?php
+                <a href='/finding/remediation/list?q=isResolved/booleanNo/workflow/textExactMatch/<?php
                     echo $this->escape($statistic['criteria'], 'url');
                 ?>'><span class='bar normal' style='width:<?php
                         echo $this->escape($statistic['count']/$this->total*80);
@@ -106,7 +106,7 @@
             <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
             <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
             <td width='55%'>
-                <a href='/finding/remediation/list?q=denormalizedStatus/enumIs/<?php
+                <a href='/finding/remediation/list?q=isResolved/booleanNo/workflowStep/textExactMatch/<?php
                     echo $this->escape($statistic['criteria'], 'url');
                 ?>'><span class='bar normal' style='width:<?php
                         echo $this->escape($statistic['count']/$this->total*80);
@@ -133,7 +133,7 @@
             <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
             <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
             <td width='55%'>
-                <a href='/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/source/textContains/<?php
+                <a href='/finding/remediation/list?q=isResolved/booleanNo/source/textContains/<?php
                     echo $this->escape($statistic['criteria'], 'url');
                 ?>'><span class='bar normal' style='width:<?php
                         echo $this->escape($statistic['count']/$this->total*80);

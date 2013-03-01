@@ -30,21 +30,16 @@
      * @constructor
      * @param dataUrl {String}
      * @param numberColumns {Integer} The number of columns to display in the table.
-     * @param msApprovals {Object} An array of the mitigation strategy approval levels.
-     * @param evApprovals {Object} An array of the evidence approval levels.
+     * @param steps {Object} An array of workflow steps.
      */
-    var FS = function(dataUrl, numberColumns, msApprovals, evApprovals) {
+    var FS = function(dataUrl, numberColumns, steps) {
         FS.superclass.constructor.call(this, dataUrl, numberColumns);
 
-        this._msApprovals = msApprovals;
-        this._evApprovals = evApprovals;
+        this._steps = steps;
 
         this._columnLabels = [];
         this._columnLabels = this._columnLabels.concat(
-            FS.MITIGATION_COLUMNS,
-            msApprovals,
-            FS.EVIDENCE_COLUMNS,
-            evApprovals,
+            steps,
             FS.AGGREGATE_COLUMNS
         );
     };
@@ -54,14 +49,14 @@
      *
      * @static
      */
-    FS.MITIGATION_COLUMNS = ["NEW", "DRAFT"];
+    FS.MITIGATION_COLUMNS = [];
 
     /**
      * The labels for evidence columns (not including approvals)
      *
      * @static
      */
-    FS.EVIDENCE_COLUMNS = ["EN"];
+    FS.EVIDENCE_COLUMNS = [];
 
     /**
      * The labels for aggregate columns
@@ -93,14 +88,9 @@
 
     YAHOO.lang.extend(FS, Fisma.TreeTable, {
         /**
-         * An array of the mitigation strategy approval levels.
+         * An array of workflow steps
          */
-        _msApprovals: null,
-
-        /**
-         * An array of the mitigation strategy approval levels.
-         */
-        _evApprovals: null,
+        _steps: null,
 
         /**
          * The columns labels (not including the first column)
@@ -150,24 +140,14 @@
          * @param rows {Array} An array of TR elements to render the header inside of.
          */
         _renderHeader: function (rows) {
-            this._renderHeaderRow1(rows[0]);
-            this._renderHeaderRow2(rows[1]);
-            this._renderHeaderRow3(rows[2]);
-        },
+            var row = rows[0], label, cell, link, index, that = this;
 
-        /**
-         * Render the first row of the header
-         *
-         * @param row {HTMLElement} A TR element to render into.
-         */
-        _renderHeaderRow1: function(row) {
-            var that = this; // For closure
+            Fisma.SummaryTable = this;
 
             // Create top left cell
             var firstCell = document.createElement('th');
             row.appendChild(firstCell);
             firstCell.style.borderBottom = "none";
-            firstCell.rowSpan = 3;
 
             var firstCellSpan = document.createElement('span');
             firstCell.appendChild(firstCellSpan);
@@ -200,96 +180,22 @@
             }
             firstCell.appendChild(select);
 
-            // Create the cell that spans the mitigation strategy columns
-            var mitigationCell = document.createElement('th');
-            mitigationCell.colSpan = FS.MITIGATION_COLUMNS.length + this._msApprovals.length;
-            mitigationCell.style.borderBottom = "none";
-            row.appendChild(mitigationCell);
-
-            var mitigationCellSpan = document.createElement('span');
-            mitigationCell.appendChild(mitigationCellSpan);
-            mitigationCellSpan.appendChild(document.createTextNode("Mitigation Strategy"));
-
-            if (YAHOO.lang.isValue(this._tooltips.mitigationStrategy)) {
-                mitigationCellSpan.className = "tooltip";
-                mitigationCellSpan.title = this._tooltips.mitigationStrategy;
-            }
-
-            // Create the cell that spans the evidence columns
-            var remediationCell = document.createElement('th');
-            remediationCell.colSpan = FS.EVIDENCE_COLUMNS.length + this._evApprovals.length;
-            remediationCell.style.borderBottom = "none";
-            row.appendChild(remediationCell);
-
-            var remediationCellSpan = document.createElement('span');
-            remediationCell.appendChild(remediationCellSpan);
-            remediationCellSpan.appendChild(document.createTextNode("Remediation"));
-
-            if (YAHOO.lang.isValue(this._tooltips.remediation)) {
-                remediationCellSpan.className = "tooltip";
-                remediationCellSpan.title = this._tooltips.remediation;
-            }
-
-            // Create the cell that spans the aggregate columns
-            var blankCell = document.createElement('th');
-            blankCell.colSpan = FS.AGGREGATE_COLUMNS.length;
-            blankCell.rowSpan = 2;
-            row.appendChild(blankCell);
-        },
-
-        /**
-         * Render the second row of the header
-         *
-         * @param row {HTMLElement} A TR element to render into.
-         */
-        _renderHeaderRow2: function(row) {
-            var blankCell1 = document.createElement('th');
-            blankCell1.colSpan = FS.MITIGATION_COLUMNS.length;
-            blankCell1.style.borderTop = "none";
-            row.appendChild(blankCell1);
-
-            var msApprovalCell = document.createElement('th');
-            msApprovalCell.appendChild(document.createTextNode("Approval"));
-            msApprovalCell.colSpan = this._msApprovals.length;
-            row.appendChild(msApprovalCell);
-
-            var blankCell2 = document.createElement('th');
-            blankCell2.style.borderTop = "none";
-            blankCell1.style.colSpan = FS.EVIDENCE_COLUMNS.length;
-            row.appendChild(blankCell2);
-
-            var evApprovalCell = document.createElement('th');
-            evApprovalCell.appendChild(document.createTextNode("Approval"));
-            evApprovalCell.colSpan = this._evApprovals.length;
-            row.appendChild(evApprovalCell);
-        },
-
-        /**
-         * Render the second row of the header
-         *
-         * @param row {HTMLElement} A TR element to render into.
-         */
-        _renderHeaderRow3: function(row) {
-            var label;
-            var cell;
-            var link;
-            var index;
-
             for (index in this._columnLabels) {
                 cell = document.createElement('th');
                 cell.style.borderBottom = "none";
 
                 label = this._columnLabels[index];
+                $(cell).attr('header', label);
 
                 link = document.createElement('a');
                 cell.appendChild(link);
                 if ("OPEN" === label) {
-                    link.href = "/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED";
+                    link.href = "/finding/remediation/list?q=/isResolved/booleanNo";
                 } else if ("TOTAL" === label) {
                     // Pass a blank query, otherwise the saved settings of previous search will be used
                     link.href = "/finding/remediation/list?q=/id/integerEquals/";
                 } else {
-                    link.href = "/finding/remediation/list?q=/denormalizedStatus/enumIs/"
+                    link.href = "/finding/remediation/list?q=/workflowStep/textExactMatch/"
                               + encodeURIComponent(label);
                 }
                 link.appendChild(document.createTextNode(label));
@@ -391,6 +297,7 @@
 
                 // Use php.js urlencode() to mimic the server-side urlencode()
                 var status = $P.urlencode(this._columnLabels[columnNumber - 1]);
+                $(container).attr('header', this._columnLabels[columnNumber - 1]);
 
                 var link = document.createElement("a");
                 var ontimeUrl = this._makeUrl(true, status, nodeState, nodeData.rowLabel, nodeData.searchKey);
@@ -542,9 +449,9 @@
 
             // Add status criterion
             if (status !== "TOTAL" && status !== "OPEN") {
-                url += "/denormalizedStatus/enumIs/" + encodeURIComponent(status);
+                url += "/workflowStep/textExactMatch/" + encodeURIComponent(status);
             } else if (status === "OPEN"){
-                url += "/denormalizedStatus/enumIsNot/CLOSED";
+                url += "/isResolved/booleanNo";
             }
 
             // Add organization/POC criterion
@@ -576,9 +483,9 @@
 
             // Add filter criteria
             var msSelect = this._filters.mitigationType.select;
-            var msValue = msSelect.options[msSelect.selectedIndex].value;
+            var msValue = msSelect.options[msSelect.selectedIndex].text;
             if (msValue !== "none") {
-                url += "/type/enumIs/" + encodeURIComponent(msValue);
+                url += "/workflow/textExactMatch/" + encodeURIComponent(msValue);
             }
 
             var sourceSelect = this._filters.findingSource.select;

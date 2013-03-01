@@ -776,5 +776,35 @@ Fisma.TableFormat = {
         } catch (e) {
             Fisma.TableFormat.formatHtml(elCell, oRecord, oColumn, oData);
         }
+    },
+
+    formatActions: function(elCell, oRecord, oColumn, oData) {
+        try {
+            oData = YAHOO.lang.JSON.parse(oData);
+            var i;
+            $(elCell).empty();
+            for (i in oData) {
+                var button = oData[i];
+                $(elCell).append(
+                    $('<button/>')
+                        .data('record', oRecord._oData)
+                        .attr('title', button.label)
+                        .append($('<img/>').attr({'alt': button.label, 'src': button.icon}))
+                        .button()
+                        .click(Fisma.Util.getObjectFromName(button.handler))
+                );
+            }
+        } catch (e) {
+            Fisma.TableFormat.formatHtml(elCell, oRecord, oColumn, oData);
+        }
+    },
+
+    formatDefault: function(elCell, oRecord, oColumn, oData) {
+        switch(oData) {
+            case 'YES':
+                $(elCell).append($('<img/>').attr({'alt': 'checked', 'src': '/images/default.png'}));
+                break;
+        }
+        $(elCell).css('text-align', 'center');
     }
 };

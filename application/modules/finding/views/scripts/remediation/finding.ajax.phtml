@@ -1,10 +1,10 @@
 <?php
     $finding = $this->finding;
     $orgId = $finding->Organization->nickname;
-    $status  = $finding->getStatus();
     if (!$optionalFields = Fisma::configuration()->getConfig('optionalFields')) {
         $optionalFields = array();
     }
+    $step = $finding->CurrentStep;
 ?>
 
 <div class="column66 left">
@@ -81,9 +81,18 @@
                 </td>
             </tr>
             <tr>
+                <td><?php echo $this->escape($this->translate('Finding_Status')); ?></td>
+                <td><?php echo $this->escape(($finding->isResolved) ? 'YES' : 'NO'); ?></td>
+            <tr>
                 <td>Workflow Step:</td>
                 <td>
-                    <?php echo $this->escape($finding->getLongStatus()); ?>
+                    <span title='<?php echo $this->escape($step->Workflow->description); ?>'>
+                        <?php echo $this->escape($step->Workflow->name); ?>
+                    </span>
+                    -
+                    <span title='<?php echo $this->escape($step->label); ?>'>
+                        <?php echo $this->escape($step->name); ?>
+                    </span>
                     <?php
                     if (strpos($this->workflowOnTimeState, 'On Time') === 0) {
                         ?>(<font color='green'><?php echo $this->escape($this->workflowOnTimeState); ?></font>)<?php
@@ -95,13 +104,13 @@
                     ?>
                 </td>
             </tr>
-        <?php if ($status !== 'NEW' && $status !== 'DRAFT' && $status !== 'CLOSED'): ?>
+        <?php if (!$finding->isResolved && !empty($finding->currentEcd)): ?>
             <tr>
                 <td>ECD:</td>
                 <td><?php
-                        $originalEcd = new Zend_Date($finding->originalEcd, Fisma_Date::FORMAT_DATE);
-                        $originalEcd->setTimezone(CurrentUser::getAttribute('timezone'));
-                        echo $this->escape($originalEcd->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR));
+                    $currentEcd = new Zend_Date($finding->currentEcd, Fisma_Date::FORMAT_DATE);
+                    $currentEcd->setTimezone(CurrentUser::getAttribute('timezone'));
+                    echo $this->escape($currentEcd->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR));
                     ?> (<?php
                     if (strpos($this->onTimeState, 'On Time') === 0) {
                         ?><font color='green'><?php echo $this->escape($this->onTimeState); ?></font><?php
@@ -290,10 +299,11 @@
                 <?php echo $this->escape($relationship->getDirectAction()); ?>
                 <?php echo $this->escape(new Fisma_Yui_Tooltip(
                     'finding' . $endFinding->id,
-                    (($endFinding->status === 'CLOSED') ? '<strike>' : '') .
+                    (($endFinding->isResolved) ? '<strike>' : '') .
                     "<a href='/finding/remediation/view/id/{$endFinding->id}'>Finding #{$endFinding->id}</a>" .
-                    (($endFinding->status === 'CLOSED') ? '</strike>' : ''),
-                    "<b>Status</b>: {$endFinding->getLongStatus()}" .
+                    (($endFinding->isResolved) ? '</strike>' : ''),
+                     "<b>" . $this->escape($this->translate('Finding_Status')) ."</b>: " .
+                    (($finding->isResolved) ? 'YES' : 'NO') .
                     "<p>" . $this->escape($endFinding->description, 'javascript') . "</p>",
                     'none'
                 ), 'none'); ?>
@@ -312,10 +322,11 @@
                 <?php echo $this->escape($relationship->getReverseAction()); ?>
                 <?php echo $this->escape(new Fisma_Yui_Tooltip(
                     'finding' . $startFinding->id,
-                    (($startFinding->status === 'CLOSED') ? '<strike>' : '') .
+                    (($startFinding->isResolved) ? '<strike>' : '') .
                     "Finding #{$startFinding->id}</a>" .
-                    (($startFinding->status === 'CLOSED') ? '</strike>' : ''),
-                    "<b>Status</b>: {$startFinding->getLongStatus()}" .
+                    (($startFinding->isResolved) ? '</strike>' : ''),
+                    "<b>" . $this->escape($this->translate('Finding_Status')) ."</b>: " .
+                    (($finding->isResolved) ? 'YES' : 'NO') .
                     "<p>" . $this->escape($startFinding->description, 'javascript') . "</p>",
                     'none'
                 ), 'none'); ?>

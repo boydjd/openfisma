@@ -66,7 +66,7 @@ class SecurityControlChartController extends Fisma_Zend_Controller_Action_Securi
             ->from('SecurityControl sc')
             ->innerJoin('sc.Findings f')
             ->innerJoin('f.Organization o')
-            ->where('f.status <> ?', 'CLOSED')
+            ->where('f.isResolved <> ?', true)
             ->whereIn('o.id', FindingTable::getOrganizationIds())
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 

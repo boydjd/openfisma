@@ -226,6 +226,8 @@ div.sectionHeader {
     margin-top: 10px;
     padding: 3px 8px;
     background-color: #416ed7;
+    background-image: none !important;
+    text-shadow: none !important;
     color: #fff;
     border: 1px solid #416ed7;
     border-bottom: none;
@@ -333,7 +335,7 @@ table.keyValues td {
     vertical-align: middle;
 }
 /* The first column in a keyValues table is bold text */
-table.keyValues td:first-child {
+table.keyValues td:nth-child(odd) {
     font-weight: bold;
     text-align: right;
     vertical-align: top;
@@ -1054,16 +1056,12 @@ table.custom-widget.no-border td {
 .ui-sortable-placeholder * { visibility: hidden; }
 .ui-sortable-proxy { margin-top:10px; height: 1.5em; line-height: 1.2em; background: #FFEB9C; }
 
-.searchBox img {
+.searchBox img, .ui-button-text img {
     vertical-align: middle;
 }
 
 .searchBox label {
     display: inline-block;
-}
-
-.yui-content .yui-button {
-    vertical-align: middle;
 }
 
 #breadcrumbs a {
@@ -1139,4 +1137,22 @@ span.longdesc {
 
 .right .section table.keyValues > tbody > tr > td:first-child {
     width: 150px;
+}
+
+div.workflowStep {
+    margin: 10px;
+    padding: 10px 10px 10px 40px;
+    border: 2px solid gray;
+    background-color: #f0f0f0;
+}
+
+div.workflowStep.current {
+    border: 2px solid #416ed7;
+    background-color: #edf5ff;
+}
+
+div.workflowStep th[scope=row] {
+    vertical-align: top;
+    text-align: left;
+    width: 100px;
 }

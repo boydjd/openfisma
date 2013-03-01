@@ -1,0 +1,7 @@
+<form action='/workflow/new/type/<?php echo $this->escape($this->module); ?>' method='post'>
+<?php echo $this->partial('workflow/workflow_detail.partial.phtml'); ?>
+<p><?php echo $this->escape(new Fisma_Yui_Form_Button_Submit('submitNewWorkflow', array(
+    'label' => 'Submit',
+    'imageSrc' => '/images/ok.png'
+)), 'none'); ?></p>
+</form>

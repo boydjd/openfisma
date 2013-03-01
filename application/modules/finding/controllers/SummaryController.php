@@ -57,47 +57,37 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         // Create a list of mitigation types
         $this->view->mitigationTypes = array(
-            'none' => '',
-            'AR' => 'Acceptance Of Risk',
-            'CAP' => 'Corrective Action Plan',
-            'FP' => 'False Positive'
+            'none' => ''
         );
 
-        // Get a list of approvals and split them into lists of mitigation and evidence approvals
-        $msApprovals = array();
-        $evApprovals = array();
-        $approvals = Doctrine::getTable('Evaluation')->findAll(Doctrine::HYDRATE_ARRAY);
-
-        foreach ($approvals as $approval) {
-            if ('action' == $approval['approvalGroup']) {
-                $msApprovals[] = $approval['nickname'];
-            } else {
-                $evApprovals[] = $approval['nickname'];
+        // Get a list of workflow steps
+        $allStatuses = array();
+        $workflows = Doctrine::getTable('Workflow')->listArray('finding');
+        foreach ($workflows as $workflow) {
+            $this->view->mitigationTypes[$workflow->id] = $workflow->name;
+            foreach ($workflow->WorkflowSteps as $step) {
+                $allStatuses[$step->label] = $workflow->id;
             }
         }
-
-        $this->view->msApprovals = $msApprovals;
-        $this->view->evApprovals = $evApprovals;
+        $this->view->steps = $allStatuses;
 
         // Create tooltip texts
         $tooltips = array();
         $tooltips['viewBy'] = $this->view->partial("/summary/view-by-tooltip.phtml");
-        $tooltips['ms'] = $this->view->partial("/summary/ms-approvals-tooltip.phtml", array('approvals' => $approvals));
-        $tooltips['ev'] = $this->view->partial("/summary/ev-approvals-tooltip.phtml", array('approvals' => $approvals));
-
         array_walk($tooltips,
             function (&$value)
             {
                 $value = str_replace("\n", " ", $value);
             }
         );
-
         $this->view->tooltips = $tooltips;
 
         // Create a list of finding sources with a default option
         $findingSources = Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'nickname');
         $this->view->findingSources = array('none' => '') + $findingSources;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
+
+
     }
 
     /**
@@ -192,7 +182,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      */
     private function _getOrganizationHierarchyData($findingParams)
     {
-        $joinCondition = $this->_getFindingJoinConditions($findingParams);
+        $sourceJoinCondition = $this->_getFindingSourceJoinConditions($findingParams);
+        $typeJoinCondition = $this->_getFindingTypeJoinConditions($findingParams);
 
         // First get a list of all organizations, even ones this user is not allowed to see. This is used to
         // fill in any "missing" nodes in tree structure.
@@ -220,7 +211,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                   ->leftJoin('s.SystemType st')
                                   ->addSelect("IF(ot.nickname = 'system', st.iconId, ot.iconId) iconId")
                                   ->addSelect("IF(ot.nickname = 'system', st.name, ot.name) typeLabel")
-                                  ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
+                                  ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $sourceJoinCondition")
                                   ->groupBy('o.id')
                                   ->orderBy('o.lft');
 
@@ -230,6 +221,9 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->_addFindingStatusFields($userOrgQuery);
+        if (!empty($typeJoinCondition)) {
+            $userOrgQuery->innerJoin("f.CurrentStep ws")->andWhere($typeJoinCondition);
+        }
 
         $userOrgs = $userOrgQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
         if (empty($userOrgs)) {
@@ -613,19 +607,31 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      * @param $findingParams Array Optional parameters to join condition.
      * @return string
      */
-    public function _getFindingJoinConditions($findingParams)
+    public function _getFindingSourceJoinConditions($findingParams)
     {
         $dql = '';
-
-        // These are escaped in the dataAction method and are safe to interpolate.
-        if (isset($findingParams['mitigationType'])) {
-            $dql .= " AND f.type = " . $findingParams['mitigationType'];
-        }
 
         if (isset($findingParams['findingSource'])) {
             $dql .= " AND f.sourceId = " . $findingParams['findingSource'];
         }
 
+        return $dql;
+    }
+
+    /**
+     * Returns DQL string that can be used as finding join conditions (i.e. part of "ON" clause)
+     *
+     * @param $findingParams Array Optional parameters to join condition.
+     * @return string
+     */
+    public function _getFindingTypeJoinConditions($findingParams)
+    {
+        $dql = '';
+
+        // These are escaped in the dataAction method and are safe to interpolate.
+        if (isset($findingParams['mitigationType'])) {
+            $dql .= "ws.workflowId = " . $findingParams['mitigationType'];
+        }
         return $dql;
     }
 
@@ -641,7 +647,13 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      */
     public function _addFindingStatusFields(Doctrine_Query $query)
     {
-        $allStatuses = Finding::getAllStatuses();
+        $allStatuses = array();
+        $workflows = Doctrine::getTable('Workflow')->listArray('finding');
+        foreach ($workflows as $workflow) {
+            foreach ($workflow->WorkflowSteps as $step) {
+                $allStatuses[] = $step->label;
+            }
+        }
 
         // Get ontime and overdue statistics for each status where we track overdues
         foreach ($allStatuses as $status) {
@@ -655,13 +667,13 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
             $query->addSelect(
                 "SUM(
-                    IF(f.denormalizedStatus LIKE ? AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
+                    IF(f.currentStepId LIKE ? AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
                 ) ontime_$statusName"
             );
 
             $query->addSelect(
                 "SUM(
-                    IF(f.denormalizedStatus LIKE ? AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
+                    IF(f.currentStepId LIKE ? AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
                 ) overdue_$statusName"
             );
         }
@@ -669,17 +681,17 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         // Add the last 3 columns: OPEN, CLOSED, TOTAL
         $query->addSelect(
             "SUM(
-                IF(f.denormalizedStatus NOT LIKE 'CLOSED' AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
+                IF(f.isResolved <> 1 AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
             ) ontime_OPEN"
         );
 
         $query->addSelect(
             "SUM(
-                IF(f.denormalizedStatus NOT LIKE 'CLOSED' AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
+                IF(f.isResolved <> 1 AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
             ) overdue_OPEN"
         );
 
-        $query->addSelect("SUM(IF(f.denormalizedStatus LIKE 'CLOSED', 1, 0)) closed");
+        $query->addSelect("SUM(IF(f.isResolved = 1, 1, 0)) closed");
         $query->addSelect("SUM(IF(f.id IS NOT NULL, 1, 0)) total");
     }
 
@@ -690,10 +702,16 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      */
     private function _prepareSummaryQueryParameters()
     {
-        $allStatus = Finding::getAllStatuses();
+        $allStatuses = array();
+        $workflows = Doctrine::getTable('Workflow')->listArray('finding');
+        foreach ($workflows as $workflow) {
+            foreach ($workflow->WorkflowSteps as $step) {
+                $allStatuses[] = $step->id;
+            }
+        }
         $findingStatus = array();
 
-        foreach ($allStatus as $status) {
+        foreach ($allStatuses as $status) {
             if ($status === 'CLOSED') {
                 continue;
             }

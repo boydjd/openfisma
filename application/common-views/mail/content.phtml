@@ -89,7 +89,12 @@
 </table>
 </div>
 <?php
-    $mailTemplate = Zend_Registry::get('mail_template');
+    try {
+        $mailTemplate = Zend_Registry::get('mail_template');
+    } catch (Zend_Exception $e) {
+        global $application;
+        $mailTemplate = $application->getOption('mail_template');
+    }
     $recordClass = get_class($record);
     if (isset($mailTemplate[$recordClass]) && !$paranoid):
         $template = $mailTemplate[$recordClass];

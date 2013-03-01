@@ -202,6 +202,7 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
             Doctrine_Manager::connection()->rollBack();
             throw $e;
         }
+        print "\n";
     }
 
     /**

@@ -89,13 +89,6 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => true,
                 'type' => 'text'
             ),
-            'denormalizedStatus' => array(
-                'enumValues' => Finding::getAllStatuses(),
-                'initiallyVisible' => true,
-                'label' => 'Workflow Step',
-                'sortable' => true,
-                'type' => 'enum'
-            ),
             'residualRisk' => array(
                 'enumValues' => $this->getEnumValues('residualRisk'),
                 'initiallyVisible' =>
@@ -244,13 +237,6 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.formatComments'
             ),
-            'type' => array(
-                'enumValues' => $this->getEnumValues('type'),
-                'initiallyVisible' => true,
-                'label' => 'Type',
-                'sortable' => true,
-                'type' => 'enum'
-            ),
             'mitigationStrategy' => array(
                 'initiallyVisible' => true,
                 'label' => 'Mitigation Strategy',
@@ -293,6 +279,35 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text',
                 'hidden' => Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? false : true
             ),
+
+            'workflow' => array(
+                'initiallyVisible' => true,
+                'label' => 'Workflow',
+                'sortable' => true,
+                'type' => 'text',
+                'join' => array(
+                    'model' => 'Workflow',
+                    'relation' => 'CurrentStep.Workflow',
+                    'field' => 'name'
+                )
+            ),
+            'workflowStep' => array(
+                'initiallyVisible' => true,
+                'label' => 'Workflow Step',
+                'sortable' => true,
+                'type' => 'text',
+                'join' => array(
+                    'model' => 'WorkflowStep',
+                    'relation' => 'CurrentStep',
+                    'field' => 'label'
+                )
+            ),
+            'isResolved' => array(
+                'initiallyVisible' => true,
+                'label' => 'Finding_Status',
+                'sortable' => true,
+                'type' => 'boolean'
+            ),
             'closedTs' => array(
                 'initiallyVisible' => false,
                 'label' => 'Resolved',
@@ -322,11 +337,6 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'label' => 'Upload ID',
                 'sortable' => true,
                 'type' => 'integer'
-            ),
-            'status' => array(
-                'hidden' => true,
-                'type' => 'text',
-                'sortable' => false
             )
         );
     }
@@ -395,4 +405,20 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                ->where('f.id = ?', $findingId)
                ->andWhere('a.id = ?', $attachmentId);
     }
+
+    protected $_editableFields = array(
+        'pocId',
+        'auditYear',
+        'description',
+        'recommendation',
+        'mitigationStrategy',
+        'resourcesRequired',
+        'currentEcd',
+        'threatLevel',
+        'threat',
+        'countermeasuresEffectiveness',
+        'countermeasures',
+        'securityControlId',
+        'sourceId'
+    );
 }

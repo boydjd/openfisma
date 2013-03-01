@@ -16,6 +16,7 @@ Finding:
             extra:
                 notify: true
                 requiredPrivilege: update_audit_year
+                logicalName: Audit Year
 
         closedTs:
             type: timestamp
@@ -34,35 +35,26 @@ Finding:
             extra:
                 auditLog: true
                 logicalName: Legacy Finding ID
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_legacy_finding_key
             comment: This field can be used by end clients to track findings under a legacy tracking system
 
-        type:
-            type: enum
-            values: [NONE, CAP, AR, FP]
-            default: NONE
-            notnull: true
+        isResolved:
+            type: boolean
+            default: false
             extra:
                 auditLog: true
-                notify: true
-                logicalName: Mitigation Type
-                requiredUpdateStatus: [NEW, DRAFT]
-                requiredPrivilege: update_type
-            comment: The mitigation type (Corrective Action Plan, Accepted Risk, or False Positive)
-        status:
-            type: enum
-            values: [PEND, NEW, DRAFT, MSA, EN, EA, CLOSED]
-            comment: The current status. MSA and EA are physical status codes that need to be translated into logical status codes before displaying to the user
-        denormalizedStatus:
-            type: string(255)
-            comment: A denormalized status field that is used for search engine indexing
-            extra:
-                logicalName: Workflow Step
-        currentEvaluationId:
+                logicalName: Vulnerability_Status
+                searchIndex: unstored
+            comment: The current status.
+        completedSteps: array
+        currentStepId:
             type: integer
-            comment: Points to the current evaluation level when the status is MSA or EA. Null otherwise.
-
+            extra:
+                auditLog: true
+                logicalName: Current Workflow Step
+                class: WorkflowStep
+                field: name
+            comment: Foreign key to the current workflow step
         description:
             type: string
             extra:
@@ -70,7 +62,6 @@ Finding:
                 auditLog: true
                 notify: true
                 logicalName: Finding Description
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_description
             comment: Description of the finding
         recommendation:
@@ -80,7 +71,6 @@ Finding:
                 auditLog: true
                 notify: true
                 logicalName: Recommendation
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_recommendation
             comment: The auditors recommendation to remediate this finding
         mitigationStrategy:
@@ -90,7 +80,6 @@ Finding:
                 auditLog: true
                 notify: true
                 logicalName: Mitigation Strategy
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_course_of_action
             comment: The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)
         resourcesRequired:
@@ -100,7 +89,6 @@ Finding:
                 notify: true
                 auditLog: true
                 logicalName: Resources Required
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_resources
             comment: Any additional resources (financial) required to complete this course of action
         originalEcd:
@@ -136,7 +124,6 @@ Finding:
                 auditLog: true
                 notify: true
                 logicalName: Description of Threat Source
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_threat
             comment: Description of the threat source which affects this finding
         threatLevel:
@@ -146,7 +133,6 @@ Finding:
                 auditLog: true
                 notify: true
                 logicalName: Threat Level
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_threat
             comment: A subjective assessment of the probability and impact of exploiting this finding
         countermeasures:
@@ -156,7 +142,6 @@ Finding:
                 notify: true
                 auditLog: true
                 logicalName: Description of Countermeasures
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_countermeasures
             comment: The countermeasures in place against the threat source
         countermeasuresEffectiveness:
@@ -167,7 +152,6 @@ Finding:
                 auditLog: true
                 notify: true
                 logicalName: Effectiveness of Countermeasures
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_countermeasures
             comment: A subjective assessment of the effectivness of the in-place countermeasures against the described threat
         residualRisk:
@@ -178,20 +162,6 @@ Finding:
                 notify: true
                 logicalName: Residual Risk
             comment: The risk that remains after combining the threat level with countermeasures effectiveness
-        cvssBaseScore:
-           type: float
-           comment: The CVSS Base Score of the finding
-           extra:
-                notify: true
-                auditLog: true
-                logicalName: CVSS Base Score
-        cvssVector:
-            type: string(255)
-            comment: The CVSS Vector of the finding
-            extra:
-                notify: true
-                auditLog: true
-                logicalName: CVSS Vector
         deleted_at:
             type: timestamp
             comment: Column for soft-delete
@@ -229,7 +199,6 @@ Finding:
                 field: name
                 auditLog: true
                 logicalName: Source
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_finding_source
         securityControlId:
             type: integer
@@ -238,7 +207,6 @@ Finding:
                 auditLog: true
                 notify: true
                 logicalName: Security Control
-                requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_control_assignment
         createdByUserId:
             type: integer
@@ -296,14 +264,15 @@ Finding:
             local: pocId
             foreign: id
             foreignAlias: Findings
-        CurrentEvaluation:
-            class: Evaluation
-            local: currentEvaluationId
-            foreign: id
         Upload:
             local: uploadId
             foreign: id
             foreignAlias: Findings
+        CurrentStep:
+            class: WorkflowStep
+            local: currentStepId
+            foreign: id
+            foreignAlias: FindingCollection
 
     actAs:
         Timestampable:

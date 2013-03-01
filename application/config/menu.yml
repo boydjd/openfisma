@@ -387,6 +387,29 @@ Administration:
         func: hasArea
         param: admin
     submenu:
+        Debug:
+            label: Diagnostics
+            submenu:
+                SystemCache:
+                    label: APC System Cache
+                    link: /debug/apc-cache/type/system
+                    condition: return Fisma_Menu::isApc();
+                UserCache:
+                    label: APC User Cache
+                    link: /debug/apc-cache/type/user
+                    condition: return Fisma_Menu::isApc();
+                ErrorLog:
+                    label: Error log
+                    link: /debug/errorlog
+                PHPInfo:
+                    label: PHP Info
+                    link: /debug/phpinfo
+                PHPlog:
+                    label: PHP Log
+                    link: /debug/phplog
+                Search:
+                    label: Search
+                    link: /config/search
         SysConfig:
             label: System Configuration
             submenu:
@@ -449,29 +472,9 @@ Administration:
                         func: hasPrivilegeForClass
                         param1: assignPrivileges
                         param2: Role
-        Debug:
-            label: Diagnostics
-            submenu:
-                SystemCache:
-                    label: APC System Cache
-                    link: /debug/apc-cache/type/system
-                    condition: return Fisma_Menu::isApc();
-                UserCache:
-                    label: APC User Cache
-                    link: /debug/apc-cache/type/user
-                    condition: return Fisma_Menu::isApc();
-                ErrorLog:
-                    label: Error log
-                    link: /debug/errorlog
-                PHPInfo:
-                    label: PHP Info
-                    link: /debug/phpinfo
-                PHPlog:
-                    label: PHP Log
-                    link: /debug/phplog
-                Search:
-                    label: Search
-                    link: /config/search
+        Workflow:
+            label: Workflow Management
+            link: /workflow
 UserPreferences:
     label: <span class=currentUser>$currentUser</span>
     submenu:
