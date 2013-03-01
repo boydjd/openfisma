@@ -430,7 +430,7 @@ Incident:
             extra:
                 notify: true
                 class: Organization
-                field: nickname
+                field: name
                 auditLog: true
                 logicalName: Affected System/Organization
         denormalizedParentOrganizationId:
@@ -438,7 +438,7 @@ Incident:
             extra:
                 notify: true
                 class: Organization
-                field: nickname
+                field: name
                 auditLog: true
                 logicalName: Parent Organization
         pocId:

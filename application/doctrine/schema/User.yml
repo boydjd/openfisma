@@ -71,7 +71,7 @@ User:
                 logicalName: Reporting Organization
                 notify: true
                 class: Organization
-                field: nickname
+                field: name
 
         lockType:
             type: enum

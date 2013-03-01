@@ -25,7 +25,7 @@ Organization:
                 logicalName: Organization Type
                 notify: true
                 class: OrganizationType
-                field: nickname
+                field: name
             type: integer
         systemId:
             type: integer

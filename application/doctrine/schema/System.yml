@@ -24,7 +24,7 @@ System:
                 logicalName: System Type
                 notify: true
                 class: SystemType
-                field: nickname
+                field: name
             type: integer
         confidentialityDescription:
             extra:

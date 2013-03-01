@@ -79,8 +79,10 @@ class NotificationListener extends Fisma_Doctrine_Record_Listener
         $table = $record->getTable();
         $modifiedFields = array();
         foreach ($modified as $name => $value) {
+            if ($value == $record->$name) {
+                continue;
+            }
             $columnDef = $table->getColumnDefinition($table->getColumnName($name));
-            // Not all columns will define this index, so the suppression operator is used:
             if (isset($columnDef['extra']) && isset($columnDef['extra']['notify']) && $value !== $record->$name) {
                 $modifiedFields[$name] = array(
                     ((!empty($value)) ? $value : '(none)'),
@@ -95,6 +97,9 @@ class NotificationListener extends Fisma_Doctrine_Record_Listener
                         ((!empty($newObject)) ? $newObject->$columnDef['extra']['field'] : '(none)')
                     );
                 }
+                if (isset($columnDef['extra']['masked']) && $columnDef['extra']['masked'] === true):
+                    $modifiedFields[$name] = array('********', '********');
+                endif;
                 $modifiedFields[$name][] = $table->getLogicalName($name);
                 $modifiedFields[$name][] = (isset($columnDef['extra']['purify'])) ? 'none' : 'html';
             }

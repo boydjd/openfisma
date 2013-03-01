@@ -50,6 +50,8 @@ Configuration:
             type: string(255)
             comment: Password for SMTP authentication
             default: ""
+            extra:
+                masked: true
         send_type:
             type: enum
             notblank: true

@@ -208,7 +208,7 @@ Finding:
             extra:
                 notify: true
                 class: Organization
-                field: nickname
+                field: name
                 auditLog: true
                 logicalName: Organization
                 requiredPrivilege: update_assignment
@@ -217,7 +217,7 @@ Finding:
             extra:
                 notify: true
                 class: Organization
-                field: nickname
+                field: name
                 auditLog: true
                 logicalName: Parent Organization
         sourceId:
@@ -226,7 +226,7 @@ Finding:
             extra:
                 notify: true
                 class: Source
-                field: nickname
+                field: name
                 auditLog: true
                 logicalName: Source
                 requiredUpdateStatus: [NEW, DRAFT]
@@ -236,6 +236,7 @@ Finding:
             comment: Foreign key to the security control associated with this finding
             extra:
                 auditLog: true
+                notify: true
                 logicalName: Security Control
                 requiredUpdateStatus: [NEW, DRAFT]
                 requiredPrivilege: update_control_assignment

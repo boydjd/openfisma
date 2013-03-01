@@ -56,14 +56,14 @@ Asset:
             comment: Foreign key to a system object in the organization table
             extra:
                 class: Organization
-                field: nickname
+                field: name
                 notify: true
                 logicalName: System
         denormalizedParentOrganizationId:
             type: integer
             extra:
                 class: Organization
-                field: nickname
+                field: name
                 notify: true
                 logicalName: Parent Organization
         networkId:
@@ -71,7 +71,7 @@ Asset:
             comment: Foreign key to network table
             extra:
                 class: Network
-                field: nickname
+                field: name
                 notify: true
                 logicalName: Network
 
