@@ -37,20 +37,10 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
      */
     function getNotificationQuery()
     {
-        $query = Doctrine_Query::create()
-            ->select('n.*, u.email, u.displayName, e.description')
-            ->from('Notification n')
-            ->innerJoin('n.User u')
-            ->innerJoin('n.Event e')
+        return Doctrine_Query::create()
+            ->select('n.*, u.email, u.displayName, u.locked, e.description')
+            ->from('Notification n, n.User u, n.Event e')
             ->orderBy('n.userId, n.eventId, n.createdTs');
-        /*$query = new Doctrine_RawSql();
-        $query->select('{n.eventtext}, {n.createdts}, {n.url}, {u.email}, {u.nameFirst}, {u.nameLast}')
-              ->addComponent('n', 'Notification n')
-              ->addComponent('u', 'n.User u')
-              ->from('poc u INNER JOIN notification n on u.id = n.userid')
-              ->where('(u.locked = FALSE OR (u.locked = TRUE AND u.locktype = "manual"))')
-              ->orderBy('u.id, n.createdts');*/
-        return $query;
     }
 
     /**
@@ -101,6 +91,9 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
     function sendNotificationEmail($notifications, $mailHandler = null)
     {
         $user = $notifications[0]->User;
+        if ($user->locked || !empty($user->deleted_at)) {
+            return; // don't send anything
+        }
         $event = $notifications[0]->Event;
 
         $options = array('notifyData' => $notifications);
