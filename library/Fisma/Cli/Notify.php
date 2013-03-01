@@ -91,10 +91,15 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
     function sendNotificationEmail($notifications, $mailHandler = null)
     {
         $user = $notifications[0]->User;
-        if ($user->locked || !empty($user->deleted_at)) {
+        $event = $notifications[0]->Event;
+
+        if (
+            ($user->locked || !empty($user->deleted_at))
+            && $event->name !== 'USER_LOCKED'
+            && $event->name !== 'USER_DISABLED'
+        ) {
             return; // don't send anything
         }
-        $event = $notifications[0]->Event;
 
         $options = array('notifyData' => $notifications);
 
