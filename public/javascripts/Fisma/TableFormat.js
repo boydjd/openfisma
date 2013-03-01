@@ -549,11 +549,13 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     formatDateTime : function (elCell, oRecord, oColumn, oData) {
-        if (!oData) {
-            return;
+        var m;
+        if (oData) {
+            m = moment(oData);
+            elCell.innerHTML = m.format("MMM DD, YYYY") + " at " + m.format("HH:mm A");
+        } else {
+            elCell.innerHTML = "";
         }
-        var m = moment(oData);
-        elCell.innerHTML = m.format("MMM DD, YYYY") + " at " + m.format("HH:mm A");
     },
 
     /**
