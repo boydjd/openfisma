@@ -89,10 +89,10 @@
 </table>
 </div>
 <?php
-    $mail_template = Zend_Registry::get('mail_template');
+    $mailTemplate = Zend_Registry::get('mail_template');
     $recordClass = get_class($record);
-    if (isset($mail_template[$recordClass]) && !$paranoid):
-        $template = $mail_template[$recordClass];
+    if (isset($mailTemplate[$recordClass]) && !$paranoid):
+        $template = $mailTemplate[$recordClass];
         $table = Doctrine::getTable($recordClass);
 ?>
 <div style="

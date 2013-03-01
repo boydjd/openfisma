@@ -72,7 +72,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
         $notify = $this->getMock('Fisma_Cli_Notify',
             array(
                 'sendNotificationEmail',
-                'purgeNotifications',
+                'purgeNotification',
                 'getNotificationQuery'
             )
         );
@@ -80,7 +80,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
 
         //Expect 2 e-mails for 3 jobs as the $job1 and $job2 are for the same user
         $notify->expects($this->exactly(2))->method('sendNotificationEmail');
-        $notify->expects($this->exactly(2))->method('purgeNotifications');
+        $notify->expects($this->exactly(2))->method('purgeNotification');
         $notify->expects($this->once())->method('getNotificationQuery')->will($this->returnValue($query));
         Fisma::initialize(Fisma::RUN_MODE_TEST);
         $notify->run();
@@ -113,7 +113,7 @@ class Test_Library_Fisma_Cli_Notify extends Test_Case_Unit
         $notification->expects($this->once())->method('delete');
         $notify = new Fisma_Cli_Notify();
         $notify->setLog($this->getMock("Zend_Log"));
-        $notify->purgeNotifications(array($notification));
+        $notify->purgeNotification($notification);
     }
 }
 
