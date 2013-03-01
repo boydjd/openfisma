@@ -287,7 +287,7 @@
                     parent.addClass('editable').attr('tabindex', 0).focus();
                     var errorMsg = $(data).filter('script.priority-messenger-warning');
                     if (errorMsg.length > 0) {
-                        errorMsg.appendTo($(this));
+                        errorMsg.appendTo($(document));
                         Fisma.Editable.discard(element, parent);
                     } else {
                         if ($(data).filter('title').text().indexOf('Error - Error') >= 0) {
