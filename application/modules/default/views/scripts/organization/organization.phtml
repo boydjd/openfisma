@@ -126,7 +126,7 @@ if ($this->editable) {
     <?php Fisma_Format_Section::startSection('People', null, null, 'peopleSection'); ?>
         <?php if ($this->editable): ?>
         <div class='buttonBar'>
-            <?php echo new Fisma_Yui_Form_Button(
+            <?php echo $this->escape(new Fisma_Yui_Form_Button(
                 'addPoc',
                 array(
                     'label' => 'Add People',
@@ -136,7 +136,7 @@ if ($this->editable) {
                         'returnModule' => 'organization'
                     )
                 )
-            ); ?>
+            ), 'none'); ?>
         </div>
         <?php endif; ?>
         <table class="keyValues">

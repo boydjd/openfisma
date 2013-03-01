@@ -81,7 +81,7 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
         } else if ("show" === keyValuePair[0]) {
             this.showAll = "all" === criteriaString;
         } else if ("k" === keyValuePair[0]) {
-            new Fisma.Search.QueryState(Dom.get("modelName").value).setSearchType('simple');
+            new Fisma.Search.QueryState($("#modelName").val()).setSearchType('simple');
             Fisma.Search.searchPreferences.type = 'simple';
         }
     }

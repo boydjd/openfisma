@@ -16,7 +16,6 @@
  * {@link http://www.gnu.org/licenses/}.
  */
 
-
 /**
  * Saved Query
  *

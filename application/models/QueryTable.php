@@ -25,7 +25,7 @@
  * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class QueryTable extends Doctrine_Table
+class QueryTable extends Fisma_Doctrine_Table
 {
     /**
      * List all queries with a specific model for a specific user

@@ -307,8 +307,6 @@
                         Fisma.Organization.addPocResult = data;
                         $('div#peopleSection').replaceWith($('div#peopleSection', data));
                         $(data).filter('script').appendTo(document);
-                        panel.hide();
-                        panel.destroy();
                     }
                 }
             );
