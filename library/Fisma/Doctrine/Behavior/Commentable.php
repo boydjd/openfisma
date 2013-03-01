@@ -69,7 +69,7 @@ class Fisma_Doctrine_Behavior_Commentable extends Doctrine_Template
      */
     public function setTableDefinition()
     {
-        $this->hasColumn('jsonComments', 'string');
+        $this->hasColumn('jsonComments', 'clob');
     }
 
     /**
