@@ -325,7 +325,9 @@ class Fisma_Search_Engine
                     break;
                 case 'dateAfter':
                     try {
-                        $afterDate = $this->_convertToSolrDate($operands[0]);
+                        $afterDate = new Zend_Date($operands[0], Fisma_Date::FORMAT_DATETIME);
+                        $afterDate = $afterDate->add(1, Zend_Date::DAY)->toString(Fisma_Date::FORMAT_DATETIME);
+                        $afterDate = $this->_convertToSolrDate($afterDate);
                         $searchTerms[] = "$fieldName:[$afterDate TO *]";
                     } catch (Zend_Date_Exception $e) {
                         // The input date is invalid, return an empty set.
@@ -346,8 +348,10 @@ class Fisma_Search_Engine
                 case 'dateBetween':
                     try {
                         $afterDate = $this->_convertToSolrDate($operands[0]);
-                        $beforeDate = $this->_convertToSolrDate($operands[1]);
-                        $searchTerms[] = "$fieldName:[$afterDate TO $beforeDate]";
+                        $beforeDate = new Zend_Date($operands[1], Fisma_Date::FORMAT_DATE);
+                        $beforeDate = $beforeDate->add(1, Zend_Date::DAY)->toString(Fisma_Date::FORMAT_DATE);
+                        $beforeDate = $this->_convertToSolrDate($beforeDate);
+                        $searchTerms[] = "$fieldName:[$afterDate/DAY TO $beforeDate/DAY]";
                     } catch (Zend_Date_Exception $e) {
                         // The input date is invalid, return an empty set.
                         return new Fisma_Search_Result(0, 0, array());

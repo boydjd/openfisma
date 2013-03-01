@@ -46,6 +46,8 @@
         var t_name = $(this).attr('target');
         $(this).data('old_object', $('#' + t_name).clone());
         $(this).removeClass('editable');
+        // disable the tooltip which gets in the way of the calendar widget
+        $(this).tooltip().tooltip("disable");
 
         if (t_name) {
             var editableObj = null;
