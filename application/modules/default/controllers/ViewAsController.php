@@ -118,8 +118,27 @@ class ViewAsController extends Fisma_Zend_Controller_Action_Security
      */
     public function selectUserAction()
     {
+        $oids = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'oversee')
+            ->select('o.id')
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+            ->execute();
+        $oids = array_map(
+            function($v)
+            {
+                return array_shift($v);
+            },
+            $oids
+        );
+
         $userId = $this->getRequest()->getParam('userId');
         $user = Doctrine::getTable('User')->find($userId);
+
+        if (!in_array('ADMIN', CurrentUser::getAttribute('Roles')->toKeyValueArray('id', 'nickname'))) {
+            if (!in_array($user->reportingOrganizationId, $oids)) {
+                throw new Fisma_Zend_Exception_User('Permission denied to view as this user.');
+            }
+        }
+
         CurrentUser::getInstance()->viewAs($user);
         $url = $this->getRequest()->getParam('url', '/');
         $this->_redirect($url);
