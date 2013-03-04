@@ -46,6 +46,8 @@
         var t_name = $(this).attr('target');
         $(this).data('old_object', $('#' + t_name).clone());
         $(this).removeClass('editable');
+        // disable the tooltip which gets in the way of the calendar widget
+        $(this).tooltip().tooltip("disable");
 
         if (t_name) {
             var target = document.getElementById(t_name);
@@ -285,7 +287,7 @@
                     parent.addClass('editable').attr('tabindex', 0).focus();
                     var errorMsg = $(data).filter('script.priority-messenger-warning');
                     if (errorMsg.length > 0) {
-                        errorMsg.appendTo($(this));
+                        errorMsg.appendTo($(document));
                         Fisma.Editable.discard(element, parent);
                     } else {
                         if ($(data).filter('title').text().indexOf('Error - Error') >= 0) {

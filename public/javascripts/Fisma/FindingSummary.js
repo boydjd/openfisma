@@ -560,11 +560,15 @@
 
             // Add ontime criteria (if applicable)
             if (status !== "TOTAL" && status !== "CLOSED") {
-                var today = new Date();
-                var todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+                var today = new Date(),
+                    yesterday, todayString, yesterdayString;
+                yesterday = new Date();
+                yesterday.setDate(yesterday.getDate() - 1);
+                todayString = today.getFullYear() + '-' + (today.getMonth() + 1) + '-' + today.getDate();
+                yesterdayString = yesterday.getFullYear() + '-' + (yesterday.getMonth() + 1) + '-' + yesterday.getDate();
 
                 if (ontime) {
-                    url += "/nextDueDate/dateAfter/" + todayString;
+                    url += "/nextDueDate/dateAfter/" + yesterdayString;
                 } else {
                     url += "/nextDueDate/dateBefore/" + todayString;
                 }

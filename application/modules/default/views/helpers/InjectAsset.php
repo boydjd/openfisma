@@ -114,7 +114,8 @@ class View_Helper_InjectAsset
                                       '/javascripts/jqPlot/renderers/jqplot_barRenderer.js',
                                       '/javascripts/jqPlot/renderers/jqplot_pointLabels.js',
                                       '/javascripts/jqPlot/renderers/jqplot_pieRenderer.js',
-                                      '/javascripts/Fisma/Chart.js'
+                                      '/javascripts/Fisma/Chart.js',
+                                      '/javascripts/moment.js'
                                  ),
                                 '/stylesheets/combined.css' =>
                                 array('/stylesheets/main.css',
