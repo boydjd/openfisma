@@ -833,7 +833,8 @@ Fisma.Search = (function() {
                                                 .append($('<a/>').attr('href', url).html(reportName))
                                                 .append($('<img/>').attr({
                                                     'src': '/images/trash_recyclebin_empty_closed.png',
-                                                    'onclick': 'Fisma.Search.deleteQuery(this);'
+                                                    'onclick': 'Fisma.Search.deleteQuery(this);',
+                                                    'value': data.query.id
                                                 }))
                                                 .fadeIn()
                                         );
