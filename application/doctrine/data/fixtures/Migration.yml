@@ -198,3 +198,8 @@ Migration:
         minorVersion: 2
         tagNumber: 0
         name: NotificationsOverhaul
+    030200_Privilege:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: Privilege

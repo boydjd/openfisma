@@ -137,7 +137,7 @@ Role:
             - security_control_catalog_delete
 
     user_role:
-        name: Power User
+        name: User
         nickname: USER
         description: <p>The general users who can create, read, update, and delete findings, incidents, vulnerabilities, and related metadata.</p>
         Privileges:

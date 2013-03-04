@@ -788,7 +788,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         }
 
         $roles = Doctrine_Query::create()
-            ->select('r.id, r.nickname')
+            ->select('r.id, r.name')
             ->from('Role r')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
@@ -1169,7 +1169,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     ->orderBy('nickname')
                     ->execute();
         foreach ($roles as $role) {
-            $form->getElement('role')->addMultiOptions(array($role->id => $role->nickname . ' - ' . $role->name));
+            $form->getElement('role')->addMultiOptions(array($role->id => $role->name));
         }
 
         // Show lock explanation if account is locked. Hide explanation otherwise.
