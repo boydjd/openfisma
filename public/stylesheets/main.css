@@ -661,6 +661,9 @@ input[type=text].date {
     background-color: white;
     width: 10em;
 }
+input[type=text].hasTimeEntry {
+    width: 10em;
+}
 
 /* Begin user access css */
 

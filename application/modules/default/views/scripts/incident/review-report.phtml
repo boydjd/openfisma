@@ -1,5 +1,5 @@
 <?php
-echo $this->escape($this->searchBox(array()), 'none');
+echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
 Fisma_Format_Section::startSection("Review Incident Report");
 ?>
 
@@ -32,54 +32,5 @@ Fisma_Format_Section::startSection("Review Incident Report");
         ?>
     </table>
 </div>
-
-    <form method="post"
-          action="<?php echo $this->escape($this->actionUrlBase, 'none'); ?>/save-report"
-          style="display: inline">
-        <?php
-        $saveReportButton = new Fisma_Yui_Form_Button_Submit(
-                'irReportSave',
-                array(
-                    'label' => 'Submit Report',
-                    'imageSrc' => '/images/add.png',
-                    'class' => 'left'
-                )
-            );
-        echo $this->escape($saveReportButton, 'none');
-        ?>
-    </form>
-
-    <form method="post" action="/incident/cancel-report" style="display: inline;">
-        <?php
-        $irReportCancelButton = new Fisma_Yui_Form_Button_Submit(
-            'irReportCancel',
-            array(
-                'label' => 'Cancel Report',
-                'imageSrc' => '/images/del.png',
-            )
-        );
-        echo $this->escape($irReportCancelButton, 'none');
-
-        $formAction = $this->actionUrlBase . '/report/step/' . $this->escape($this->step);
-        ?>
-    </form>
-
-    <form method="post"
-          action="<?php echo $this->escape($formAction, 'none'); ?>"
-          style="display: inline;">
-        <?php
-        $backwardButton = new Fisma_Yui_Form_Button_Submit(
-                'irReportBackwards',
-                array(
-                    'label' => 'Go Back',
-                    'imageSrc' => '/images/left_arrow.png',
-                    'class' => 'left'
-                )
-            );
-        echo $this->escape($backwardButton, 'none');
-        ?>
-    </form>
-
-<?php
-Fisma_Format_Section::stopSection();
-?>
+<?php Fisma_Format_Section::stopSection(); ?>
+<form><?php /* dummy form for CSRF token */ ?></form>

@@ -202,6 +202,13 @@ Incident:
                     controller: /incident
         Separator1:
             label: Separator
+        Create:
+            label: Create New Incident
+            link: /incident/create
+            privilege:
+                func: hasPrivilegeForClass
+                param1: create
+                param2: Incident
         ReportIncident:
             label: Report An Incident
             link: /incident/report
