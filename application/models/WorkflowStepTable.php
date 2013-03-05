@@ -31,7 +31,7 @@ class WorkflowStepTable extends Fisma_Doctrine_Table
     {
         $query = Doctrine_Query::create()->from('WorkflowStep ws')->orderBy('ws.cardinality');
         if ($workflow) {
-            $query->where('ws.workflowId = ?', (is_object ($workflow)) ? $workflow->id : $workflow);
+            $query->where('ws.workflowId = ?', (($workflow instanceof Workflow) ? $workflow->id : $workflow));
         }
 
         return $query->execute();

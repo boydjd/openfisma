@@ -160,7 +160,6 @@ class WorkflowStep extends BaseWorkflowStep
                 return $transition;
             }
         }
-        die (print_r($this->transitions));
         return null;
     }
 
@@ -191,10 +190,11 @@ class WorkflowStep extends BaseWorkflowStep
     public function validateObject($object, $duedate = null)
     {
         $missingFields = array();
+        $table = Doctrine::getTable(ucfirst($this->Workflow->module));
 
         foreach ((array)$this->prerequisites as $field) {
             if (empty($object->$field)) {
-                $missingFields[] = $field;
+                $missingFields[] = $table->getLogicalName($field);
             }
         }
 

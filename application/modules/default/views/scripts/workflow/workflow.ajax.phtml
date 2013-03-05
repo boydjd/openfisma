@@ -112,7 +112,7 @@ if (count($restrictedFields) > 0):
         if ($organization):
             $currentRoles = $organization->getPocs()->fetchAllPositions(CurrentUser::getAttribute('id'));
 
-            foreach ($step->transitions as $index => $transition):
+            foreach ((array)$step->transitions as $index => $transition):
                 $transitionRoles = array_intersect(
                     $currentRoles,
                     Zend_Json::decode($transition['roles'])

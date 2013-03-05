@@ -68,7 +68,7 @@ class Workflow extends BaseWorkflow
     public function getFirstStep()
     {
         foreach ($this->WorkflowSteps as $step) {
-            if ($step->cardinality = 1) {
+            if ((int)$step->cardinality == 1) {
                 return $step;
             }
         }

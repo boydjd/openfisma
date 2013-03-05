@@ -41,6 +41,7 @@ Finding:
         isResolved:
             type: boolean
             default: false
+            notnull: true
             extra:
                 auditLog: true
                 logicalName: Vulnerability_Status
@@ -79,7 +80,7 @@ Finding:
                 purify: html
                 auditLog: true
                 notify: true
-                logicalName: Mitigation Strategy
+                logicalName: Action Plan
                 requiredPrivilege: update_course_of_action
             comment: The ISSOs plan to handle this finding. This can be a course of action (for CAPs or FPs) or a business case (for ARs)
         resourcesRequired:
@@ -102,7 +103,7 @@ Finding:
             extra:
                 auditLog: true
                 notify: true
-                logicalName: Current ECD
+                logicalName: Expected Completion Date
             comment: If an ECD needs to be changed, but the original ECD is locked, then the updated ECD is stored here
         ecdLocked:
             type: boolean

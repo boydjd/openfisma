@@ -882,6 +882,14 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             'defaultUnit' => 'day',
             'defaultTime' => '03:00:00'
         ),
+        'workflowTransition' => array(
+            'name' => 'workflow-transition.php',
+            'description' => 'Facilitate workflow auto-transition feature',
+            'defaultEnabled' => true,
+            'defaultNumber' => 1,
+            'defaultUnit' => 'day',
+            'defaultTime' => '02:00:00'
+        ),
         'rebuildIndex' => array(
             'name' => 'rebuild-index.php',
             'description' => 'Refresh the indexing cache from database',

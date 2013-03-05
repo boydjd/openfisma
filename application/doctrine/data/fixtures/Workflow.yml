@@ -14,7 +14,7 @@ Workflow:
                 description: "Decide whether to fix the vulnerability and if not, why ('Breaks system', 'Cost prohibitive', 'Technically infeasible'...)."
                 attachmentEditable: false
                 allottedTime: "days"
-                allottedDays: -1
+                allottedDays: 30
                 autoTransition: true
                 autoTransitionDestination: 2
                 transitions:
@@ -157,6 +157,26 @@ Workflow:
                 allottedTime: days
                 allottedDays: 7
                 description: "Please approve or deny the RAF and provide explanation."
+                prerequisites:
+                    - mitigationStrategy
+                    - currentEcd
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
                 transitions:
                     -
                         name: "Approve and Submit to Business Owner"
@@ -178,6 +198,18 @@ Workflow:
                 allottedTime: days
                 allottedDays: 7
                 description: "Please approve or deny the RAF and provide explanation."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
                 transitions:
                     -
                         name: "Approve and Submit to CISO"
@@ -199,6 +231,18 @@ Workflow:
                 allottedTime: days
                 allottedDays: 7
                 description: "Please approve or deny the RAF and provide explanation."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
                 transitions:
                     -
                         name: "Approve"
@@ -221,6 +265,18 @@ Workflow:
                 autoTransition: true
                 autoTransitionDestination: 5
                 description: "Please provide a reason (if required) to re-evaluate the finding."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
                 isResolved: true
                 attachmentEditable: false
                 transitions:
@@ -242,6 +298,18 @@ Workflow:
                 name: "Closed"
                 label: "CLOSED"
                 description: "Please provide a reason (if required) to re-evaluate the finding."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
                 isResolved: true
                 attachmentEditable: false
                 transitions:
@@ -287,6 +355,30 @@ Workflow:
                 allottedTime: days
                 allottedDays: 7
                 description: "Please approve or deny the Mitigation Strategy and provide explanation."
+                prerequisites:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
                 transitions:
                     -
                         name: "Approve"
@@ -307,6 +399,18 @@ Workflow:
                 label: "EN"
                 allottedTime: "ecd"
                 description: "Please remediate the finding and submit evidence."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
                 transitions:
                     -
                         name: "Submit"
@@ -328,6 +432,18 @@ Workflow:
                 allottedTime: days
                 allottedDays: 7
                 description: "Please approve or deny the Evidence Package and provide explanation."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
                 transitions:
                     -
                         name: "Approve"
@@ -348,6 +464,18 @@ Workflow:
                 label: "CLOSED"
                 autoTransitionDestination: 5
                 description: "Please provide a reason (if required) to re-evaluate the finding."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
                 isResolved: true
                 attachmentEditable: false
                 transitions:

@@ -19,6 +19,7 @@ Workflow:
         isDefault:
             type: boolean
             default: false
+            notnull: true
             extra:
                 logicalName: Default
             comment: Is this the default workflow for its module

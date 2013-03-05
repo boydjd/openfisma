@@ -181,6 +181,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             $table = Doctrine::getTable('Finding');
             foreach ($modified as $key => $value) {
                 if (!$this->canEdit($key)) {
+                    $key = $this->getTable()->getLogicalName($key);
                     throw new Fisma_Zend_Exception_User($key . ' cannot be editted in the current workflow step.');
                 }
             }
