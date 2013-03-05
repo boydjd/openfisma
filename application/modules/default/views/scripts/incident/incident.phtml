@@ -14,7 +14,7 @@
                          href="/metainfo/list/o/incidentCategories/format/html/optional/true/"
                          target="categoryId"
                          value="<?php echo $this->escape($this->incident['categoryId']); ?>"
-                         <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
+                         <?php if ($this->updateIncidentPrivilege): ?>
                             class="editable"
                          <?php endif; ?>>
                         <?php if (!empty($this->incident['Category'])): ?>
@@ -32,7 +32,7 @@
                 <td>Severity Level:</td>
                 <td>
                     <span id="severityLevel"
-                        <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
+                        <?php if ($this->updateIncidentPrivilege): ?>
                           name="incident[severityLevel]"
                           type="select"
                           href="/incident-severity-level/options/format/html/"
@@ -99,7 +99,7 @@
                 <td>Source:</td>
                 <td>
                     <span id="source"
-                        <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
+                        <?php if ($this->updateIncidentPrivilege): ?>
                           name="incident[source]"
                           type="select"
                           href="/incident-source/options/format/html/"
@@ -118,7 +118,7 @@
                 <td>Impact:</td>
                 <td>
                     <span id="impact"
-                        <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
+                        <?php if ($this->updateIncidentPrivilege): ?>
                           name="incident[impact]"
                           type="select"
                           href="/incident-impact/options/format/html/"
@@ -137,7 +137,7 @@
                 <td>Response Strategies:</td>
                 <td>
                     <span id="responseStrategies"
-                        <?php if ($this->updateIncidentPrivilege && $this->incident['status'] != 'closed'): ?>
+                        <?php if ($this->updateIncidentPrivilege): ?>
                           name="incident[responseStrategies]"
                           type="multiselect"
                           value="<?php echo $this->escape(
