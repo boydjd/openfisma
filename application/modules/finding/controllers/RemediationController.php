@@ -513,6 +513,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $finding = $this->_getSubject($id);
+        $this->acl()->requirePrivilegeForObject('update', $finding);
 
         // Security control is a hidden field. If it is blank, that means the user did not submit it, and it needs to
         // be unset.
@@ -1198,25 +1199,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      */
     private function _isEditable($column, $table, $finding)
     {
-        $editable = false;
-
-        $fieldDefinition = $table->getDefinitionOf($column);
-
-        if (isset($fieldDefinition['extra'])
-             && isset ($fieldDefinition['extra']['requiredPrivilege'])) {
-
-            $updatePrivilege = $fieldDefinition['extra']['requiredPrivilege'];
-        }
-
-        if (!$finding->isDeleted()
-            && isset($updatePrivilege) && $this->_acl->hasPrivilegeForObject($updatePrivilege, $finding)) {
-
-            // Some fields might not need to check status such as POC
-            if ($finding->canEdit($column)) {
-                $editable = true ;
-            }
-        }
-
-        return $editable;
+        return $finding->canEdit($column);
     }
 }

@@ -320,7 +320,7 @@ Workflow:
                         actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
                         customDestination: 5
     finding_remediation:
-        name: "Remidation"
+        name: "Remediation"
         description: "Workflow to remediate the findings"
         isDefault: false
         module: "finding"

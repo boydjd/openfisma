@@ -287,7 +287,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     public function isEcdEditable()
     {
         // The ECD is only editable in NEW or DRAFT state
-        if (!$this->isDeleted()) {
+        if (!$this->isDeleted() && $this->canEdit('currentEcd')) {
 
             // If the ECD is unlocked, then you need the update_ecd privilege
             if (!$this->ecdLocked && CurrentUser::getInstance()->acl()->hasPrivilegeForObject('update_ecd', $this)) {
@@ -401,7 +401,8 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
 
     public function canEdit($field)
     {
-        if ($this->CurrentStep && !empty($this->CurrentStep->restrictedFields)) {
+        $privilege = CurrentUser::getInstance()->acl()->requirePrivilegeForObject('update', $this);
+        if ($privilege && $this->CurrentStep && !empty($this->CurrentStep->restrictedFields)) {
             if (in_array($field, $this->CurrentStep->restrictedFields)) {
                 return false;
             }

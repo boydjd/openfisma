@@ -83,9 +83,6 @@ Finding:
                 func: hasArea
                 param: finding_admin
             submenu:
-                Finding_Workflow:
-                    label: Workflow
-                    link: /finding/workflow/view
                 Finding_General:
                     label: General
                     link: /finding/config/general
@@ -475,6 +472,10 @@ Administration:
         Workflow:
             label: Workflow Management
             link: /workflow
+            privilege:
+                func: hasPrivilegeForClass
+                param1: manage
+                param2: Workflow
 UserPreferences:
     label: <span class=currentUser>$currentUser</span>
     submenu:

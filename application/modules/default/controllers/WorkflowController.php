@@ -117,7 +117,20 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
             $this->_validateWorkflowId();
         }
         $this->view->availableWorkflows = Doctrine::getTable('Workflow')->listArray($this->view->workflow->module);
+
         $this->view->editableFields = Doctrine::getTable(ucfirst($this->view->workflow->module))->getEditableFields();
+
+        $this->view->prerequisites = new Fisma_Yui_Form_JsonMultiselect('prerequisites');
+        $this->view->prerequisites->setMultiOptions($this->view->editableFields);
+        if ($this->view->step && $this->view->step->prerequisites) {
+            $this->view->prerequisites->setValue($this->view->step->prerequisites);
+        }
+
+        $this->view->restrictedFields = new Fisma_Yui_Form_JsonMultiselect('restrictedFields');
+        $this->view->restrictedFields->setMultiOptions($this->view->editableFields);
+        if ($this->view->step && $this->view->step->restrictedFields) {
+            $this->view->restrictedFields->setValue($this->view->step->restrictedFields);
+        }
 
         if ($this->getRequest()->isPost()) {
             $stepArray = $this->getRequest()->getPost('step');
@@ -277,7 +290,7 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
 
     protected function _requireManagePrivilege()
     {
-        //$this->_acl->requirePrivilegeForClass('manage', 'Workflow');
+        $this->_acl->requirePrivilegeForClass('manage', 'Workflow');
     }
 
     /**

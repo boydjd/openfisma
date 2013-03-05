@@ -96,25 +96,11 @@ or fields that cannot be modified during this step.</i>
     </tr>
     <tr>
         <td title='Fields that must be completed before entering this step'>Prerequisites</td>
-        <td><?php
-            $prerequisites = new Fisma_Yui_Form_JsonMultiselect('prerequisites');
-            $prerequisites->setMultiOptions($this->editableFields);
-            if ($this->step && $this->step->prerequisites):
-                $prerequisites->setValue($this->step->prerequisites);
-            endif;
-            echo $this->escape($prerequisites, 'none');
-        ?></td>
+        <td><?php echo $this->escape($this->prerequisites, 'none'); ?></td>
     </tr>
     <tr>
         <td title='Fields that cannot be editted in this step'>Restricted Fields</td>
-        <td><?php
-            $restrictedFields = new Fisma_Yui_Form_JsonMultiselect('restrictedFields');
-            $restrictedFields->setMultiOptions($this->editableFields);
-            if ($this->step && $this->step->restrictedFields):
-                $restrictedFields->setValue($this->step->restrictedFields);
-            endif;
-            echo $this->escape($restrictedFields, 'none');
-        ?></td>
+        <td><?php echo $this->escape($this->restrictedFields, 'none'); ?></td>
     </tr>
 </table>
 <?php Fisma_Format_Section::stopSection(); ?>

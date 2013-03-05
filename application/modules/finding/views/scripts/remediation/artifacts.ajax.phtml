@@ -6,7 +6,7 @@ Fisma_Format_Section::startSection('Finding ' . $this->escape($this->translate('
 if (!(
     $this->finding->isDeleted() ||
     ($this->finding->CurrentStep && !$this->finding->CurrentStep->attachmentEditable) ||
-    !$this->acl()->hasPrivilegeForObject('upload_evidence', $this->finding)
+    !$this->acl()->hasPrivilegeForObject('update', $this->finding)
 )):
     $uploadEvidenceButton = new Fisma_Yui_Form_Button(
         'uploadEvidenceButton',
