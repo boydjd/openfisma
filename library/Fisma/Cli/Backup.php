@@ -126,17 +126,23 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
 
         if (!is_null($optCompress) && $optCompress === true) {
 
-            $zipPath = realpath($this->_backupRoot) . '/' . $this->_myTimeStamp . ".zip";
-            $this->getLog()->info("Compressing backup into " . $zipPath);
-            chdir($this->_backupRoot);
+            $dirPath = realpath($this->_backupRoot) . '/' . $this->_myTimeStamp;
+            $tarPath = $dirPath . '.tar';
+            $this->getLog()->info("Bundling backup into " . $tarPath);
+            $tar = new PharData($tarPath);
+            $tar->buildFromDirectory($dirPath);
+            unset($tar);
 
-            if (!$this->_createZip($this->_myTimeStamp . '/', $zipPath)) {
-                $this->getLog()->info("   compression failed.");
-                return false;
-            } else {
-                $this->_removeDirectory($this->_myTimeStamp . '/');
-            }
-            $this->getLog()->info("   done.");
+            $this->getLog()->info("Removing backup directory $dirPath");
+            $this->_removeDirectory($dirPath);
+
+            $tarGzPath = $tarPath . '.gz';
+            $this->getLog()->info("Compressing backup into $tarGzPath");
+            copy($tarPath, "compress.zlib://$tarGzPath");
+
+            $this->getLog()->info("Removing uncompressed backup archive $tarPath");
+            unlink($tarPath);
+
             return true;
         }
 
@@ -243,38 +249,39 @@ class Fisma_Cli_Backup extends Fisma_Cli_Abstract
         foreach ($previousBackups as $oldBackupName) {
 
             // Ignore . and .. directories
-            if ($oldBackupName !== '.' && $oldBackupName !== "..") {
+            if ($oldBackupName === '.' || $oldBackupName === "..") {
+                continue;
+            }
 
-                // convert to full path
-                $oldBackupName = realpath($this->_backupRoot . '/' . $oldBackupName);
+            // Get the creation time of this old backup, this should be the file/directory name
+            $oldTime = (integer) $oldBackupName;
 
-                // Get the creation time of this old backup, this should be the file/directory name
-                $oldTime = (integer) str_replace('.tgz', '', basename($oldBackupName));
+            // Is $oldTime less (older) than $timeThreshold? If so, remove this backup
+            if ($oldTime > $timeThreshold) {
+                continue;
+            }
 
-                // Is $oldTime less (older) than $timeThreshold? If so, remove this backup
-                if ($oldTime < $timeThreshold) {
+            $backupPath = realpath($this->_backupRoot . '/' . $oldBackupName);
 
-                    if (is_dir($oldBackupName)) {
+            if (is_dir($backupPath)) {
 
-                        $this->getLog()->info("   Removing old backup directory: " . basename($oldBackupName));
+                $this->getLog()->info("   Removing old backup directory: " . basename($backupPath));
 
-                        $s = $this->_removeDirectory($oldBackupName);
-                        if (file_exists("$oldBackupName")) {
-                            $this->getLog()->err("   directory deletion failed: " . $oldBackupName);
-                        } else {
-                            $toReturn[] = $oldBackupName;
-                        }
+                $s = $this->_removeDirectory($backupPath);
+                if (file_exists($backupPath)) {
+                    $this->getLog()->err("   directory deletion failed: " . $backupPath);
+                } else {
+                    $toReturn[] = $backupPath;
+                }
 
-                    } else {
+            } else {
 
-                        $this->getLog()->info("   Removing old backup archive: " . basename($oldBackupName));
+                $this->getLog()->info("   Removing old backup archive: " . basename($backupPath));
 
-                        if (!unlink($oldBackupName)) {
-                            $this->getLog()->info("   archive deletion failed: " . $oldBackupName);
-                        } else {
-                            $toReturn[] = $oldBackupName;
-                        }
-                    }
+                if (!unlink($backupPath)) {
+                    $this->getLog()->info("   archive deletion failed: " . $backupPath);
+                } else {
+                    $toReturn[] = $backupPath;
                 }
             }
         }
