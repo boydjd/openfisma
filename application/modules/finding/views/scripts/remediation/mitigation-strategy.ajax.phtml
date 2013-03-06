@@ -85,18 +85,4 @@
         <span id="currentChangeDescription"><?php echo $this->escape($finding->ecdChangeDescription); ?></span>
     </p>
 <?php endif; ?>
-
-<p>
-    <b>Actual Completion Date: </b>
-    <span>
-        <?php
-            if (empty($finding->actualCompletionDate)) {
-                echo $this->escape('(not completed)', 'none');
-            } else {
-                echo $this->escape($finding->actualCompletionDate, 'none');
-            }
-        ?>
-    </span>
-</p>
-
 <?php Fisma_Format_Section::stopSection(); ?>

@@ -116,8 +116,6 @@ Finding:
                 auditLog: true
                 logicalName: Justification for modifying ECD
             comment: If the current ECD needs to be changed, then this field holds the users justification for changing it
-        actualCompletionDate:
-            type: date
         threat:
             type: string
             extra:
