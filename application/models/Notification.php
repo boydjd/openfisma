@@ -53,38 +53,35 @@ class Notification extends BaseNotification
             ->where('e.id = ?', $event->id)
             ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        // If the object has an ACL dependency on Organization, then extend the query for that condition
-        if ($record instanceof Fisma_Zend_Acl_OrganizationDependency) {
-            $eventsQuery->leftJoin('u.UserRole ur')
-                        ->leftJoin('ur.Organizations o');
-            if (isset($record->pocId)) {
-                $eventsQuery->andWhere(
-                    'o.id = ? OR u.id = ?',
-                    array($record->getOrganizationDependencyId(), $record->pocId)
-                );
-            } else {
-                $eventsQuery->andWhere('o.id = ?', $record->getOrganizationDependencyId());
+        if (isset($extra['recipientList'])) {
+            if (empty($extra['recipientList'])) {
+                return;
             }
-        }
-
-        // If the event belong to "user" category, only send notifications to the user in question
-        if ($event->category === 'user') {
-            $eventsQuery->andWhere('u.id = ?', $extra['userId']);
-        } else { // Otherwise, check for privileges
-            $eventsQuery->leftJoin('u.Roles r')
-                        ->leftJoin('r.Privileges up')
-                        ->leftJoin('e.Privilege ep')
-                        ->andWhere('up.id = ep.id');
-        }
-
-        /* This code is commented out because the recipient list is currently FORCED
-        // For Incident Workflow Steps, only send notifications to the users assigned to that findings
-        if ($event->name === 'INCIDENT_STEP') {
-            $eventsQuery->leftJoin('u.IrIncidentUsers iu')
-                        ->andWhere('iu.incidentId = ?', $record->id);
-        }//*/
-        if (!empty($extra['recipientList'])) {
             $eventsQuery->andWhereIn('u.id', $extra['recipientList']);
+        } else {
+            // If the event belong to "user" category, only send notifications to the user in question
+            if ($event->category === 'user') {
+                $eventsQuery->andWhere('u.id = ?', $extra['userId']);
+            } else {
+                // If the object has an ACL dependency on Organization, then extend the query for that condition
+                if ($record instanceof Fisma_Zend_Acl_OrganizationDependency) {
+                    $eventsQuery->leftJoin('u.UserRole ur')
+                                ->leftJoin('ur.Organizations o');
+                    if (isset($record->pocId)) {
+                        $eventsQuery->andWhere(
+                            'o.id = ? OR u.id = ?',
+                            array($record->getOrganizationDependencyId(), $record->pocId)
+                        );
+                    } else {
+                        $eventsQuery->andWhere('o.id = ?', $record->getOrganizationDependencyId());
+                    }
+                }
+                // Then, check for privileges
+                $eventsQuery->leftJoin('u.Roles r')
+                            ->leftJoin('r.Privileges up')
+                            ->leftJoin('e.Privilege ep')
+                            ->andWhere('up.id = ep.id');
+            }
         }
 
         $userEvents = $eventsQuery->execute();
@@ -118,6 +115,9 @@ class Notification extends BaseNotification
         $view->record = $record;
         if (!empty($extra['modifiedFields'])) {
             $view->modifiedFields = $extra['modifiedFields'];
+        }
+        if (!empty($extra['completedStep'])) {
+            $view->completedStep = $extra['completedStep'];
         }
         $view->detail = Fisma::configuration()->getConfig('email_detail');
         $title = $view->render('title.phtml');

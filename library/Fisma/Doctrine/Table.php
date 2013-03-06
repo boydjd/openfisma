@@ -33,6 +33,7 @@ abstract class Fisma_Doctrine_Table extends Doctrine_Table
      */
     protected $_customLogicalNames = array();
     protected $_editableFields = array();
+    protected $_viewUrl;
 
     /**
      * Return logicalName from columns from hard-coded array or YML column definition
@@ -138,5 +139,10 @@ abstract class Fisma_Doctrine_Table extends Doctrine_Table
         }
 
         return $errorStack;
+    }
+
+    public function getViewUrl()
+    {
+        return (empty($this->_viewUrl) ? '/' . $this->getComponentName() . '/view/id/' : $this->_viewUrl);
     }
 }

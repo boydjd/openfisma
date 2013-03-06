@@ -3,7 +3,7 @@
     <tr>
         <td>Name</td>
         <td><span
-            class='editable'
+            <?php if (!isset($this->editable) || $this->editable): ?> class='editable' <?php endif; ?>
             name='workflow[name]'
             type='text'
             id='workflowName'
@@ -16,7 +16,7 @@
     <tr>
         <td>Default</td>
         <td><span
-            class='editable'
+            <?php if (!isset($this->editable) || $this->editable): ?> class='editable' <?php endif; ?>
             name='workflow[isDefault]'
             type='checked'
             id='workflowDefault'
@@ -29,7 +29,11 @@
 </table>
 <?php Fisma_Format_Section::stopSection(); ?>
 
-<?php Fisma_Format_Section::startSection('Description', 'workflowDescription'); ?>
+<?php if (!isset($this->editable) || $this->editable):
+    Fisma_Format_Section::startSection('Description', 'workflowDescription');
+else:
+    Fisma_Format_Section::startSection('Description');
+endif; ?>
     <div
         name='workflow[description]'
         id='workflowDescription'

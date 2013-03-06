@@ -88,6 +88,65 @@
 <?php endif; ?>
 </table>
 </div>
+
+<?php if (isset($this->completedStep) && !$paranoid): $completedStep = $this->completedStep; ?>
+<div style="
+    margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+">Details</div>
+<div style="
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    margin-bottom: 0px;
+">
+    <table cellpadding='4' cellspacing='2'>
+        <tr>
+            <th scope='row'>Step</th>
+            <td>
+                <span title='<?php echo $this->escape($completedStep['workflow']['description']); ?>'>
+                    <?php echo $this->escape($completedStep['workflow']['name']); ?>
+                </span>
+                -
+                <span title='<?php echo $this->escape($completedStep['step']['label']); ?>'>
+                    <?php echo $this->escape($completedStep['step']['name']); ?>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th scope='row'>Instruction(s)</th>
+            <td><?php echo $this->escape($completedStep['step']['description'], 'none'); ?></td>
+        </tr>
+        <tr>
+            <th scope='row'>Comment</th>
+            <td><?php echo $this->escape($completedStep['comment']); ?></td>
+        </tr>
+        <tr>
+            <th scope='row'>Action</th>
+            <td><?php echo $this->escape($completedStep['transitionName']); ?></td>
+        </tr>
+        <tr>
+            <th scope='row'>Completed by</th>
+            <td><?php
+                $user = Doctrine::getTable('User')->find($completedStep['userId']);
+                echo $this->escape($user->displayName);
+            ?></td>
+        </tr>
+        <tr>
+            <th scope='row'>Completed on</th>
+            <td><?php echo $this->escape($completedStep['timestamp']); ?></td>
+        </tr>
+    </table>
+</div>
+<?php endif; ?>
+
 <?php
     try {
         $mailTemplate = Zend_Registry::get('mail_template');
@@ -98,7 +157,7 @@
     $recordClass = get_class($record);
     if (isset($mailTemplate[$recordClass]) && !$paranoid):
         $template = $mailTemplate[$recordClass];
-        $table = Doctrine::getTable($recordClass);
+        $table = $record->getTable();
 ?>
 <div style="
     margin-top: 10px;
@@ -120,11 +179,11 @@
     <table cellpadding='4' cellspacing='2'>
     <?php foreach ($template as $field):
         $value = $record->$field;
+        $name = $table->getLogicalName($field);
         if (empty($value)):
             $value = "(none)";
         else:
             $columnDef = $table->getColumnDefinition($table->getColumnName($field));
-            $name = $table->getLogicalName($field);
             $purify = (isset($columnDef['extra']['purify'])) ? 'none' : 'html';
             if (isset($columnDef['extra']['class']) && isset($columnDef['extra']['field'])):
                 $rel = Doctrine::getTable($columnDef['extra']['class']);

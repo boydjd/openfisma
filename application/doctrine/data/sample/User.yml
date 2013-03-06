@@ -9,6 +9,7 @@ User:
         hashType: sha1
         ReportingOrganization: RNI_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -49,6 +50,7 @@ User:
         hashType: sha1
         ReportingOrganization: BGA_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -89,6 +91,7 @@ User:
         hashType: sha1
         ReportingOrganization: BGA_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -128,6 +131,7 @@ User:
         phoneOffice: (202) 555-9271
         ReportingOrganization: MIDWEST_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -167,6 +171,7 @@ User:
         phoneOffice: (202) 555-9627
         ReportingOrganization: NORTHEAST_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -206,6 +211,7 @@ User:
         phoneOffice: (301) 555-1462
         ReportingOrganization: SOUTHEAST_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -245,6 +251,7 @@ User:
         phoneOffice: (571) 555-5821
         ReportingOrganization: WEST_COAST_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -284,6 +291,7 @@ User:
         phoneOffice: (301) 555-7751
         ReportingOrganization: OCIO_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -323,6 +331,7 @@ User:
         phoneOffice: (571) 555-8129
         ReportingOrganization: OCOO_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -362,6 +371,7 @@ User:
         phoneOffice: (571) 555-8130
         ReportingOrganization: OIG_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -401,6 +411,7 @@ User:
         phoneOffice: (571) 555-8231
         ReportingOrganization: ARP_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -440,6 +451,7 @@ User:
         phoneOffice: (571) 555-8132
         ReportingOrganization: PRINT_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -479,6 +491,7 @@ User:
         phoneOffice: (571) 555-8233
         ReportingOrganization: HIWAY_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -518,6 +531,7 @@ User:
         phoneOffice: (571) 555-8134
         ReportingOrganization: RAIL_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -557,6 +571,7 @@ User:
         phoneOffice: (571) 555-8235
         ReportingOrganization: MARITIME_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -596,6 +611,7 @@ User:
         phoneOffice: (571) 555-8136
         ReportingOrganization: OS_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -635,6 +651,7 @@ User:
         phoneOffice: (571) 555-8237
         ReportingOrganization: OCIO_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -674,6 +691,7 @@ User:
         phoneOffice: (571) 555-8138
         ReportingOrganization: OCIO_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -713,6 +731,7 @@ User:
         phoneOffice: (571) 555-8239
         ReportingOrganization: OCOO_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -752,6 +771,7 @@ User:
         phoneOffice: (571) 555-8401
         ReportingOrganization: OCOO_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -791,6 +811,7 @@ User:
         phoneOffice: (571) 555-8502
         ReportingOrganization: NRL_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -830,6 +851,7 @@ User:
         phoneOffice: (571) 555-8403
         ReportingOrganization: ARP_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -869,6 +891,7 @@ User:
         phoneOffice: (571) 555-8504
         ReportingOrganization: RNI_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -908,6 +931,7 @@ User:
         phoneOffice: (571) 555-8405
         ReportingOrganization: PRINT_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -947,6 +971,7 @@ User:
         phoneOffice: (571) 555-8506
         ReportingOrganization: OIG_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -986,6 +1011,7 @@ User:
         phoneOffice: (571) 555-8508
         ReportingOrganization: OCIO_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -1025,6 +1051,7 @@ User:
         phoneOffice: (571) 555-8409
         ReportingOrganization: HIWAY_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED
@@ -1064,6 +1091,7 @@ User:
         phoneOffice: (571) 555-8510
         ReportingOrganization: MARITIME_ORG
         Events:
+            - WORKFLOW_COMPLETED
             - CONFIGURATION_UPDATED
             - USER_CREATED
             - USER_UPDATED

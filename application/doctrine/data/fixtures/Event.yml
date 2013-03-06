@@ -261,3 +261,9 @@ Event:
         description: an incident is deleted
         Privilege: notification_incident
         category: incident
+
+    WORKFLOW_COMPLETED:
+        defaultActive: true
+        name: WORKFLOW_COMPLETED
+        description: new items arrive in a workflow step I watch
+        category: user

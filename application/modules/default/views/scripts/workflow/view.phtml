@@ -1,7 +1,10 @@
 <?php echo $this->escape($this->searchBox($this->toolbarButtons), 'none'); ?>
 <form action='/workflow/edit/' method='post' editable='true'>
     <div class='column33 right'>
-        <?php echo $this->partial('workflow/workflow_detail.partial.phtml', array('workflow' => $this->workflow)); ?>
+        <?php echo $this->partial(
+            'workflow/workflow_detail.partial.phtml',
+            array('workflow' => $this->workflow, 'editable' => $this->editable)
+        ); ?>
     </div>
 
     <div class='column66 left'>

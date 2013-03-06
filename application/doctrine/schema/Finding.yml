@@ -44,7 +44,7 @@ Finding:
             notnull: true
             extra:
                 auditLog: true
-                logicalName: Vulnerability_Status
+                logicalName: Finding_Status
                 searchIndex: unstored
             comment: The current status.
         completedSteps: array
