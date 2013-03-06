@@ -68,13 +68,15 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $this->_acl->requireArea('finding');
 
-        $this->_helper->fismaContextSwitch()
+        $this->_helper->ajaxContext()
             ->addActionContext('chartoverdue', 'json')
             ->addActionContext('chartfindingstatus', 'json')
             ->addActionContext('total-type', 'json')
             ->addActionContext('findingforecast', 'json')
             ->addActionContext('chartfindnomitstrat', 'json')
             ->addActionContext('chartfindingbyorgdetail', 'json')
+            ->addActionContext('summary', 'html')
+            ->addActionContext('summary-data', 'json')
             ->initContext();
 
         $this->_visibleOrgs = $this->_me
@@ -125,9 +127,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $totalFindingsQuery = Doctrine_Query::create()
             ->from('Finding f')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('f.responsibleOrganizationId', $myOrgSystemIds)
-            ->orWhere('f.status <> ?', 'CLOSED')
+            ->orWhere('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhere('f.pocId = ?', $viewUser->id);
         $this->view->total = $totalFindingsQuery->count();
         if ($this->view->total < 1) {
@@ -139,68 +141,40 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->select('COUNT(id) as count, threatlevel as criteria')
             ->from('Finding f')
             ->groupBy('f.threatlevel')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
-            ->orWhere('f.status <> ?', 'CLOSED')
+            ->orWhere('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhere('f.pocId = ?', $viewUser->id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->execute();
+
+        $this->view->byType = Doctrine_Query::create()
+            ->select('COUNT(f.id) as count, IFNULL(w.name, "Unassigned") as criteria, IFNULL(w.description, "") as tooltip, f.currentStepId, ws.id, w.id')
+            ->from('Finding f')
+            ->leftJoin('f.CurrentStep ws')
+            ->leftJoin('ws.Workflow w')
+            ->groupBy('criteria')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
+            ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
+            ->orWhere('f.deleted_at is NULL AND f.isResolved <> ?', true)
+            ->andWhere('f.pocId = ?', $viewUser->id)
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->orderBy('w.id ASC')
             ->execute();
 
         $this->view->byStatus = Doctrine_Query::create()
-            ->select('COUNT(id) as count, denormalizedstatus as criteria')
+            ->select('COUNT(f.id) as count, IFNULL(ws.name, "Unassigned") as criteria, CONCAT(IFNULL(w.name, "No "), " Workflow") as tooltip, f.currentStepId, w.id, ws.id')
             ->from('Finding f')
-            ->groupBy('f.denormalizedstatus')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
+            ->leftJoin('f.CurrentStep ws')
+            ->leftJoin('ws.Workflow w')
+            ->groupBy('criteria')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
-            ->orWhere('f.status <> ?', 'CLOSED')
+            ->orWhere('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhere('f.pocId = ?', $viewUser->id)
+            ->orderBy('w.id ASC, ws.cardinality')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
-        $emptyFinding = new Finding();
-        foreach ($this->view->byStatus as &$status) {
-            $status['tooltip'] = "<b>" . $emptyFinding->getLongStatus($status['criteria']) . "</b>";
-        }
-        usort($this->view->byStatus, function($a, $b){
-            $allStatuses = Finding::getAllStatuses();
-            return array_search($a['criteria'], $allStatuses) - array_search($b['criteria'], $allStatuses);
-        });
-        unset($emptyFinding);
-
-        $this->view->byType = Doctrine_Query::create()
-            ->select('COUNT(id) as count, type as criteria')
-            ->from('Finding f')
-            ->groupBy('f.type')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
-            ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
-            ->orWhere('f.status <> ?', 'CLOSED')
-            ->andWhere('f.pocId = ?', $viewUser->id)
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-            ->execute();
-        foreach ($this->view->byType as &$type) {
-            switch ($type['criteria']) {
-                case 'CAP':
-                    $type['tooltip'] = "<b>CAP - Corrective Action Plan</b><br/>"
-                                     . "<p>A corrective action plan is a mitigation strategy that aims to reduce the "
-                                     . "overall risk of a finding by correcting the underlying deficiency.</p>";
-                    break;
-                case 'FP':
-                    $type['tooltip'] = "<b>FP - False Positive</b><br/>"
-                                     . "<p>A false positive is not a true mitigation strategy, per se, but it is a plan"
-                                     . " to document that the auditor's finding did not exist as documented on the day "
-                                     . "that it was observed. Notice that if a finding was true at the time it was "
-                                     . "reported by the auditor but has since become invalid, that is not considered a "
-                                     . "false positive.</p>";
-                    break;
-                case 'AR':
-                    $type['tooltip'] = "<b>AR - Accepted Risk</b><br/><p>"
-                                     . "An accept risk is a mitigation strategy that aims to reduce risk down to an acc"
-                                     . "eptable level, then seek official sign-off from the authorizing official.</p>";
-                    break;
-                case 'NONE':
-                    $type['tooltip'] = "<b>NONE - No Mitigation Strategy Selected</b>";
-                    break;
-            }
-        }
 
         $this->view->bySource = Doctrine_Query::create()
             ->select('COUNT(f.id) as count, f.sourceid, s.nickname as criteria, ' .
@@ -208,9 +182,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->from('Finding f')
             ->innerJoin('f.Source s')
             ->groupBy('f.sourceid')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
-            ->orWhere('f.status <> ?', 'CLOSED')
+            ->orWhere('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhere('f.pocId = ?', $viewUser->id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
@@ -226,9 +200,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->leftJoin('o.OrganizationType ot')
             ->leftJoin('ot.Icon i')
             ->groupBy('f.pocid, f.threatlevel')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
-            ->orWhere('f.status <> ?', 'CLOSED')
+            ->orWhere('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhere('f.pocId = ?', $viewUser->id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
@@ -281,7 +255,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 )),
                 'total' => $statistic['count'],
                 'displayTotal' => json_encode(array(
-                    'url' => '/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/'
+                    'url' => '/finding/remediation/list?q=isResolved/booleanNo/'
                            . 'pocUser/textContains/'
                            . $this->view->escape($statistic['PointOfContact']['displayName'], 'url'),
                     'displayText' => $statistic['count']
@@ -381,9 +355,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->leftJoin('o.OrganizationType ot')
             ->leftJoin('o.Findings f')
             ->groupBy('f.threatlevel, o.id')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('o.id', $myOrgSystemIds)
-            ->orWhere('f.status <> ?', 'CLOSED')
+            ->orWhere('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhere('f.pocId = ?', $viewUser->id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
@@ -466,7 +440,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 )),
                 'total' => $statistic['count'],
                 'displayTotal' => json_encode(array(
-                    'url' => '/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/'
+                    'url' => '/finding/remediation/list?q=isResolved/booleanNo/'
                            . 'organization/textContains/'
                            . $this->view->escape($statistic['criteria'], 'url'),
                     'displayText' => $statistic['count']
@@ -735,7 +709,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->from('SecurityControl sc')
             ->innerJoin('sc.Findings f')
             ->innerJoin('f.Organization o')
-            ->andWhere('f.status <> ?', 'CLOSED')
+            ->andWhere('f.isResolved <> ?', true)
             ->whereIn('o.id', $this->_visibleOrgs)
             ->groupBy('fam')
             ->orderBy('fam')
@@ -794,7 +768,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $basicLink =
             '/finding/remediation/list?q=' .
-            '/denormalizedStatus/enumIsNot/CLOSED' .
+            '/isResolved/booleanNo' .
             '/organization/organizationSubtree/';
 
         if ($displayBy === 'system') {
@@ -807,7 +781,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->from('Organization parent')
                 ->leftJoin('parent.System system')
                 ->leftJoin('Organization node')
-                ->leftJoin("node.Findings finding WITH finding.status <> 'CLOSED'")
+                ->leftJoin("node.Findings finding WITH finding.isResolved <> ?", true)
                 ->leftJoin('node.System nodeSystem')
                 ->where('node.lft BETWEEN parent.lft and parent.rgt')
                 ->andWhere('nodeSystem.sdlcPhase <> ?', array('disposal'))
@@ -880,7 +854,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ->setThreatLegendVisibility(false)
                     ->setLinks(
                             '/finding/remediation/list?q=' .
-                            '/denormalizedStatus/enumIsNot/CLOSED' .
+                            '/isResolved/booleanNo' .
                             '/organization/organizationSubtree/#ColumnLabel#'
                             );
 
@@ -1010,7 +984,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->where('f.responsibleorganizationid=o.id')
             ->whereIn('f.responsibleOrganizationId', $this->_visibleOrgs)
             ->andWhere("? < o.lft", $parLft)
-            ->andWhere('f.status <> "CLOSED"')
+            ->andWhere('f.isResolved <> ?', true)
             ->andWhere("? > o.rgt", $parRgt)
             ->groupBy('o.nickname, f.' . $threatField)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
@@ -1025,7 +999,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->leftJoin('o.Findings f')
                 ->whereIn('f.responsibleorganizationid', $this->_visibleOrgs)
                 ->where('o.id = ?', $orgId)
-                ->andWhere('f.status <> "CLOSED"')
+                ->andWhere('f.isResolved <> ?', true)
                 ->groupBy('o.nickname, f.' . $threatField)
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
@@ -1120,7 +1094,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->addSelect($threatField . ' threat, COUNT(f.id)')
                 ->from('Finding f')
                 ->where('f.currentecd BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
-                ->andWhere('f.status <> "CLOSED"')
+                ->andWhere('f.isResolved <> ?', true)
                 ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
                 ->groupBy($threatField)
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
@@ -1159,10 +1133,10 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             // The links to associate with entire columns when this is not a stacked bar chart
             $nonStackedLinks[] = '/finding/remediation/list?q=' .
-                '/denormalizedStatus/enumIsNot/CLOSED' .
+                '/isResolved/booleanNo' .
                 '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr;
 
-            $linkPrefix = '/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED'
+            $linkPrefix = '/finding/remediation/list?q=/isResolved/booleanNo'
                         . '/currentEcd/dateBetween/' . $fromDayStr . '/' . $toDayStr
                         . '/' . $threatField . '/enumIs/';
             $thisChart->addColumn(
@@ -1505,7 +1479,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                 ->select('COUNT(f.id), f.' . $threatField)
                 ->from('Finding f')
                 ->where('f.currentecd BETWEEN "' . $fromDayStr . '" AND "' . $toDayStr . '"')
-                ->andWhere('f.status <> "CLOSED"')
+                ->andWhere('f.isResolved <> ?', true)
                 ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
                 ->groupBy('f.' . $threatField)
                 ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
@@ -1535,7 +1509,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
 
             // Add column assuming this is a stacked-bar chart with High, Mod, and Low findings
-            $linkPrefix = '/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED'
+            $linkPrefix = '/finding/remediation/list?q=/isResolved/booleanNo'
                         . '/currentEcd/dateBetween/'
                         . $fromDay->toString(Fisma_Date::FORMAT_DATE).'/'.$toDay->toString(Fisma_Date::FORMAT_DATE)
                         . '/' . $threatField . '/enumIs/';
@@ -1557,7 +1531,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
             // Note the links to set in the even this is a totals (basic-bar) chart
             $totalChartLinks[] = '/finding/remediation/list?q=' .
-                '/denormalizedStatus/enumIsNot/CLOSED' .
+                '/isResolved/booleanNo' .
                 '/currentEcd/dateBetween/' . $fromDay->toString(Fisma_Date::FORMAT_DATE) . '/'
                 . $toDay->toString(Fisma_Date::FORMAT_DATE);
         }
@@ -1619,4 +1593,3 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
     }
 }
-

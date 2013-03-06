@@ -514,7 +514,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         if ($this->_acl->hasPrivilegeForClass('finding', 'Notification')) {
             $this->view->findingEvents = Doctrine::getTable('Event')->findByCategory('finding');
-            $this->view->evaluationEvents = Doctrine::getTable('Event')->findByCategory('evaluation');
         }
 
         if ($this->_acl->hasPrivilegeForClass('incident', 'Notification')) {

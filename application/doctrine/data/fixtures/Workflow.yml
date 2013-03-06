@@ -1,0 +1,488 @@
+Workflow:
+    vulnerability_acceptance:
+        name: "Acceptance"
+        description: "Decide whether to fix a vulnerability"
+        isDefault: true
+        module: "vulnerability"
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 1
+                cardinality: 1
+                name: "Action Plan"
+                label: "AP"
+                description: "Decide whether to fix the vulnerability and if not, why ('Breaks system', 'Cost prohibitive', 'Technically infeasible'...)."
+                attachmentEditable: false
+                allottedTime: "days"
+                allottedDays: 30
+                autoTransition: true
+                autoTransitionDestination: 2
+                transitions:
+                    -
+                        name: "Fix"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 3
+                    -
+                        name: "Won't Fix"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 2
+    vulnerability_wontfix:
+        name: "Won't Fix"
+        description: "Decide not to fix the vulnerability"
+        module: "vulnerability"
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 2
+                cardinality: 1
+                name: "Won't Fix"
+                label: "WP"
+                description: "Please provide a reason if this vulnerability needs re-evaluation"
+                isResolved: true
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: "Re-evaluate"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 1
+    vulnerability_remediation:
+        name: "Remediation"
+        description: "Remediate a vulnerability"
+        isDefault: false
+        module: "vulnerability"
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 3
+                cardinality: 1
+                name: "Actions Required"
+                label: "AR"
+                description: "Please provide details about the actions taken to remediate the vulnerability"
+                transitions:
+                    -
+                        name: "Complete"
+                        destination: "next"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+            -
+                id: 4
+                cardinality: 2
+                name: "Fixed"
+                label: "FIXED"
+                description: "Please provide a reason if this vulnerability needs to be re-opened"
+                isResolved: true
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: "Re-open"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 1
+    finding_acceptance:
+        name: "Acceptance"
+        description: "Default bucket for new findings"
+        isDefault: true
+        module: "finding"
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 5
+                cardinality: 1
+                name: "Action Plan"
+                label: "AP"
+                allottedTime: days
+                allottedDays: 30
+                description: "Decide whether to accept the risks, to start remediation, or to discard the finding as False Positive"
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: "Accept Risk"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 6
+                    -
+                        name: "False Positive"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 11
+                    -
+                        name: "Remediate"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 12
+    finding_ar:
+        name: "Accept Risk"
+        description: "Workflow to accept the risks"
+        isDefault: false
+        module: "finding"
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 6
+                cardinality: 1
+                name: "Risk Analysis Form"
+                label: "RAF"
+                allottedTime: days
+                allottedDays: 30
+                description: "Please provide the following details:<ol><li>Categorize (input below)</li><li>Business Case (Mitigation Strategy tab)</li><li>Residual Risk (Risk Analysis tab)</li><li>Evidence (Attachments tab)</li><li>Estimated Completion Date (Mitigation Strategy tab)</li><li>Countermeasures (Risk Analysis tab)</li></ol>"
+                transitions:
+                    -
+                        name: "Submit to IV&V"
+                        destination: "next"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+                    -
+                        name: "Re-evaluate"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 5
+            -
+                id: 7
+                cardinality: 2
+                name: "IV&V Approval"
+                label: "IV&V"
+                allottedTime: days
+                allottedDays: 7
+                description: "Please approve or deny the RAF and provide explanation."
+                prerequisites:
+                    - mitigationStrategy
+                    - currentEcd
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                transitions:
+                    -
+                        name: "Approve and Submit to Business Owner"
+                        destination: "next"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+                    -
+                        name: "Deny"
+                        destination: "back"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+            -
+                id: 8
+                cardinality: 3
+                name: "Business Owner Approval"
+                label: "BO"
+                allottedTime: days
+                allottedDays: 7
+                description: "Please approve or deny the RAF and provide explanation."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                transitions:
+                    -
+                        name: "Approve and Submit to CISO"
+                        destination: "next"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+                    -
+                        name: "Deny"
+                        destination: "back"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+            -
+                id: 9
+                cardinality: 4
+                name: "CISO Approval"
+                label: "CISO"
+                allottedTime: days
+                allottedDays: 7
+                description: "Please approve or deny the RAF and provide explanation."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                transitions:
+                    -
+                        name: "Approve"
+                        destination: "next"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+                    -
+                        name: "Deny"
+                        destination: "back"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+            -
+                id: 10
+                cardinality: 5
+                name: "Active"
+                label: "Active"
+                allottedTime: custom
+                autoTransition: true
+                autoTransitionDestination: 5
+                description: "Please provide a reason (if required) to re-evaluate the finding."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                isResolved: true
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: "Re-evaluate"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 5
+    finding_fp:
+        name: "False Positive"
+        description: "Discard findings as False Positives"
+        module: "finding"
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 11
+                cardinality: 1
+                name: "Closed"
+                label: "CLOSED"
+                description: "Please provide a reason (if required) to re-evaluate the finding."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                isResolved: true
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: "Re-evaluate"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 5
+    finding_remediation:
+        name: "Remediation"
+        description: "Workflow to remediate the findings"
+        isDefault: false
+        module: "finding"
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 12
+                cardinality: 1
+                name: "Mitigation Strategy"
+                label: "DRAFT"
+                allottedTime: days
+                allottedDays: 30
+                description: "Please complete the Mitigation Strategy, Risk Analysis, and Security Control tabs"
+                transitions:
+                    -
+                        name: "Submit"
+                        destination: "next"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+                    -
+                        name: "Re-evaluate"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 5
+            -
+                id: 13
+                cardinality: 2
+                name: "Mitigation Strategy Approval"
+                label: "MSA"
+                allottedTime: days
+                allottedDays: 7
+                description: "Please approve or deny the Mitigation Strategy and provide explanation."
+                prerequisites:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                transitions:
+                    -
+                        name: "Approve"
+                        destination: "next"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+                    -
+                        name: "Deny"
+                        destination: "back"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+            -
+                id: 14
+                cardinality: 3
+                name: "Evidence Needed"
+                label: "EN"
+                allottedTime: "ecd"
+                description: "Please remediate the finding and submit evidence."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                transitions:
+                    -
+                        name: "Submit"
+                        destination: "next"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+                    -
+                        name: "Revise Mitigation Strategy"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 12
+            -
+                id: 15
+                cardinality: 4
+                name: "Evidence Approval"
+                label: "EA"
+                allottedTime: days
+                allottedDays: 7
+                description: "Please approve or deny the Evidence Package and provide explanation."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                transitions:
+                    -
+                        name: "Approve"
+                        destination: "next"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+                    -
+                        name: "Deny"
+                        destination: "back"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: "undefined"
+            -
+                id: 16
+                cardinality: 5
+                name: "Closed"
+                label: "CLOSED"
+                autoTransitionDestination: 5
+                description: "Please provide a reason (if required) to re-evaluate the finding."
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                isResolved: true
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: "Re-evaluate"
+                        destination: "custom"
+                        roles: '["Information Security Officer"]'
+                        actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
+                        customDestination: 5
+

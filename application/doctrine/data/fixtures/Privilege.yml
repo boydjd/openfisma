@@ -83,120 +83,26 @@ Privilege:
         resource: finding
         action: read
         description: View Findings
-    # findings_update:
-        # ACL for findings is more fine-grained than for other objects, so there is no "update" action. See below.
+    findings_update:
+        resource: finding
+        action: update
+        description: Update Findings
     findings_delete:
         resource: finding
         action: delete
         description: Delete Findings
-
-    # Granular finding privileges
     findings_inject:
         resource: finding
         action: inject
         description: Inject Findings
-    findings_update_type:
-        resource: finding
-        action: update_type
-        description: Update Mitigation Type
-    findings_update_description:
-        resource: finding
-        action: update_description
-        description: Update Finding Description
-    findings_update_course_of_action:
-        resource: finding
-        action: update_course_of_action
-        description: Edit Course of Action
-    findings_update_findings_assignment:
-        resource: finding
-        action: update_assignment
-        description: Edit Finding Organization
-    findings_update_control_assignment:
-        resource: finding
-        action: update_control_assignment
-        description: Edit 800-53 Control Assignment
-    findings_update_countermeasures:
-        resource: finding
-        action: update_countermeasures
-        description: Edit Countermeasures
-    findings_update_threat:
-        resource: finding
-        action: update_threat
-        description: Edit Threat Source
-    findings_update_finding_recommendation:
-        resource: finding
-        action: update_recommendation
-        description: Edit Finding Recommendation
-    findings_update_finding_resources:
-        resource: finding
-        action: update_resources
-        description: Edit Resources Required
-    findings_update_ecd:
-        resource: finding
-        action: update_ecd
-        description: Edit Expected Completion Date (Unless the ECD is Locked)
-    findings_update_locked_ecd:
-        resource: finding
-        action: update_locked_ecd
-        description: Override a Locked ECD
-    findings_upload_evidence:
-        resource: finding
-        action: upload_evidence
-        description: Upload Evidence Artifacts
-    findings_mitigation_strategy_submit:
-        resource: finding
-        action: mitigation_strategy_submit
-        description: Submit Mitigation Strategy
-    findings_mitigation_strategy_revise:
-        resource: finding
-        action: mitigation_strategy_revise
-        description: Revise Mitigation Strategy
     findings_comment:
         resource: finding
         action: comment
         description: Comment on Finding
-    findings_update_legacy_finding_key:
-        resource: finding
-        action: update_legacy_finding_key
-        description: Update Legacy Finding Key
-    findings_update_finding_source:
-        resource: finding
-        action: update_finding_source
-        description: Update Finding Source
-    findings_update_poc:
-        resource: finding
-        action: update_poc
-        description: Update Finding Point Of Contact
-    findings_update_audit_year:
-        resource: finding
-        action: update_audit_year
-        description: Update Finding Audit Year
-    findings_update_relationship:
-        resource: finding
-        action: update_relationship
-        description: Update Finding Links
     finding_manage_relationships:
         resource: finding
         action: manage_relationships
         description: Manage Finding Link Types
-
-    # Default Finding Approval Privileges
-    finding_mitigation_isso:
-        resource: finding
-        action: mitigation_isso
-        description: MS ISSO Approval
-    finding_mitigation_ivv:
-        resource: finding
-        action: mitigation_ivv
-        description: MS IV&V Approval
-    finding_evidence_isso:
-        resource: finding
-        action: evidence_isso
-        description: EV ISSO Approval
-    finding_evidence_ivv:
-        resource: finding
-        action: evidence_ivv
-        description: EV IV&V Approval
 
     # Vulnerability CRUD
     vulnerability_create:
@@ -576,3 +482,8 @@ Privilege:
         resource: security_control_catalog
         action: delete
         description: Delete Security Control Catalog
+
+    workflows_manage:
+        resource: workflow
+        action: manage
+        description: Manage Workflows

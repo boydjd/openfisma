@@ -117,19 +117,6 @@
                     <?php echo $this->escape($event->description); ?>
                 </label>
                 <br/>
-            <?php endforeach; ?>
-            <hr/>
-            <?php foreach($this->evaluationEvents as $event): ?>
-                <input
-                    type='checkbox'
-                    name='event[<?php echo $this->escape($event->id); ?>]'
-                    id='chkEvent[<?php echo $this->escape($event->id); ?>]'
-                    <?php if (in_array($this->user, $event->Users->getData())): ?>checked<?php endif; ?>
-                />
-                <label for='chkEvent[<?php echo $this->escape($event->id); ?>]'>
-                    <?php echo $this->escape($event->description); ?>
-                </label>
-                <br/>
             <?php endforeach; ?></td>
         </tr>
     </table>

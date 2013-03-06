@@ -42,7 +42,8 @@ YAHOO.util.Event.onDOMReady(function () {
         document.URL.match('/debug') ||
         document.URL.match('/user/list') ||
         document.URL.match('/user/view') ||
-        document.URL.match('/user/create')
+        document.URL.match('/user/create') ||
+        document.URL.match('/workflow')
     ) {
         module = 'Administration';
     } else if (document.URL.match('/user')) {

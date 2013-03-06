@@ -22,34 +22,12 @@ Role:
             - evaluation_update
             - evaluation_delete
             - findings_create
+            - findings_update
             - findings_read
             - findings_delete
             - findings_inject
-            - findings_update_type
-            - findings_update_description
-            - findings_update_findings_assignment
-            - findings_update_control_assignment
-            - findings_update_countermeasures
-            - findings_update_course_of_action
-            - findings_update_threat
-            - findings_update_finding_recommendation
-            - findings_update_finding_resources
-            - findings_update_ecd
-            - findings_update_locked_ecd
-            - findings_upload_evidence
-            - findings_mitigation_strategy_submit
-            - findings_mitigation_strategy_revise
             - findings_comment
-            - findings_update_legacy_finding_key
-            - findings_update_finding_source
-            - findings_update_poc
-            - findings_update_audit_year
-            - findings_update_relationship
             - finding_manage_relationships
-            - finding_mitigation_isso
-            - finding_mitigation_ivv
-            - finding_evidence_isso
-            - finding_evidence_ivv
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update
@@ -135,6 +113,7 @@ Role:
             - security_control_catalog_read
             - security_control_catalog_update
             - security_control_catalog_delete
+            - workflows_manage
 
     user_role:
         name: User
@@ -158,34 +137,12 @@ Role:
             - evaluation_update
             - evaluation_delete
             - findings_create
+            - findings_update
             - findings_read
             - findings_delete
             - findings_inject
-            - findings_update_type
-            - findings_update_description
-            - findings_update_findings_assignment
-            - findings_update_control_assignment
-            - findings_update_course_of_action
-            - findings_update_countermeasures
-            - findings_update_threat
-            - findings_update_finding_recommendation
-            - findings_update_finding_resources
-            - findings_update_ecd
-            - findings_update_locked_ecd
-            - findings_upload_evidence
-            - findings_mitigation_strategy_submit
-            - findings_mitigation_strategy_revise
             - findings_comment
-            - findings_update_legacy_finding_key
-            - findings_update_finding_source
-            - findings_update_poc
-            - findings_update_audit_year
-            - findings_update_relationship
             - finding_manage_relationships
-            - finding_mitigation_isso
-            - finding_mitigation_ivv
-            - finding_evidence_isso
-            - finding_evidence_ivv
             - vulnerability_create
             - vulnerability_read
             - vulnerability_update

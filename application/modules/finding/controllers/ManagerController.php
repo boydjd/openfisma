@@ -150,7 +150,7 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
             ->leftJoin('f.PointOfContact u')
             ->leftJoin('u.ReportingOrganization o')
             ->groupBy('f.pocid, f.threatlevel')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhere('o.id = ?', $orgId)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
@@ -197,7 +197,7 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
                 )),
                 'total' => $statistic['count'],
                 'displayTotal' => json_encode(array(
-                    'url' => '/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/'
+                    'url' => '/finding/remediation/list?q=isResolved/booleanNo/'
                            . 'pocUser/textContains/' . $statistic['PointOfContact']['displayName'],
                     'displayText' => $statistic['count']
                 ))
@@ -272,7 +272,7 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
             ->leftJoin('o.OrganizationType ot')
             ->leftJoin('o.Findings f')
             ->groupBy('f.threatlevel, o.id')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('o.id', $myOrgSystemIds)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
@@ -321,7 +321,7 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
                 )),
                 'total' => $statistic['count'],
                 'displayTotal' => json_encode(array(
-                    'url' => '/finding/remediation/list?q=denormalizedStatus/enumIsNot/CLOSED/'
+                    'url' => '/finding/remediation/list?q=isResolved/booleanNo/'
                            . 'organization/textContains/' . $statistic['criteria'],
                     'displayText' => $statistic['count']
                 ))
@@ -432,7 +432,7 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
 
         $basicLink =
             '/finding/remediation/list?q=' .
-            '/denormalizedStatus/enumIsNot/CLOSED' .
+            '/isResolved/booleanNo' .
             '/pocOrg/textExactMatch/' . $organization->nickname .
             '/threatLevel/enumIs/';
 
@@ -450,7 +450,7 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
             ->leftJoin('f.PointOfContact u')
             ->leftJoin('u.ReportingOrganization o')
             ->groupBy('f.threatlevel')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhere('o.id = ?', $orgId)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
@@ -495,7 +495,7 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
 
         $basicLink =
             '/finding/remediation/list?q=' .
-            '/denormalizedStatus/enumIsNot/CLOSED' .
+            '/isResolved/booleanNo' .
             '/organization/organizationChildren/' . $organization->nickname .
             '/threatLevel/enumIs/';
 
@@ -519,7 +519,7 @@ class Finding_ManagerController extends Fisma_Zend_Controller_Action_Security
             ->from('Finding f')
             ->leftJoin('f.Organization o')
             ->groupBy('f.threatlevel')
-            ->where('f.deleted_at is NULL AND f.status <> ?', 'CLOSED')
+            ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('o.id', $myOrgSystemIds)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();

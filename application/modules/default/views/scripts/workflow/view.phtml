@@ -1,0 +1,21 @@
+<?php echo $this->escape($this->searchBox($this->toolbarButtons), 'none'); ?>
+<form action='/workflow/edit/' method='post' editable='true'>
+    <div class='column33 right'>
+        <?php echo $this->partial('workflow/workflow_detail.partial.phtml', array('workflow' => $this->workflow)); ?>
+    </div>
+
+    <div class='column66 left'>
+        <?php Fisma_Format_Section::startSection('Workflow Steps'); ?>
+            <?php echo $this->escape($this->dataTable, 'none'); ?>
+        <?php Fisma_Format_Section::stopSection(); ?>
+    </div>
+
+    <div class='clear'>
+        <input type='hidden' value='<?php echo $this->escape($this->workflow->id); ?>' name='id' id='workflowId' />
+        <script type='text/javascript'>
+            $(function() {
+                Fisma.Editable.setupEditFields();
+            });
+        </script>
+    </div>
+</form>

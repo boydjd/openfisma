@@ -253,4 +253,19 @@ class Fisma_Doctrine_Behavior_HasPocs_Generator extends Doctrine_Record_Generato
 
         return $query->execute();
     }
+
+    /**
+     * Get positions for a poc
+     *
+     * @param mixed $instance The object to get the POC for
+     * @param int $pocId
+     * @return array The list of positions
+     */
+    public function fetchAllPositions($instance, $pocId)
+    {
+        $query = $this->query($instance);
+        $query->andWhere('o.pocId = ?', $pocId);
+
+        return array_values($query->execute()->toKeyValueArray('type', 'type'));
+    }
 }

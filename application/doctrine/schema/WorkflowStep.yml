@@ -1,0 +1,97 @@
+WorkflowStep:
+    columns:
+        createdTs:
+            type: timestamp
+        modifiedTs:
+            type: timestamp
+
+        cardinality:
+            type: integer
+            comment: The order of this step relative to the other steps within this workflow
+            extra:
+                logicalName: Order
+        name:
+            type: string(255)
+            extra:
+                logicalName: Workflow Name
+            comment: The name of this workflow step
+        label:
+            type: string(255)
+            extra:
+                logicalName: Chart Label
+            comment: The chart label of this workflow step
+        description:
+            type: string
+            extra:
+                purify: html
+                logicalName: Instructions
+            comment: The description of this workflow step
+        isResolved:
+            type: boolean
+            default: false
+            notnull: true
+            extra:
+                logicalName: Resolved
+            comment: Does this step mark the workflow as resolved
+        allottedTime:
+            type: enum
+            values: [unlimited, days, ecd, custom]
+            default: unlimited
+            comment: How long will this step remain on-time
+            extra:
+                logicalName: Allotted Time
+        allottedDays:
+            type: integer
+            comment: The number of days this step remain on-time, if allotedTime == days
+            extra:
+                logicalName: Allotted Days
+        autoTransition:
+            type: boolean
+            comment: Should the workflow jumps to another step after allotedTime expires
+            extra:
+                logicalName: Automated Transition
+        autoTransitionDestination:
+            type: integer
+            comment: Foreign key to the destination step for autoTransition
+            extra:
+                logicalName: Automated Transition Destination
+        attachmentEditable:
+            type: boolean
+            default: true
+            comment: Whether to allow users to upload / update / remove attachments during this step
+            extra:
+                logicalName: Attachment Editable
+        prerequisites:
+            type: array
+            comment: Fields that must be completed before entering this step
+            extra:
+                logicalName: Prerequisites
+        restrictedFields:
+            type: array
+            comment: Fields that cannot be editted during this step
+            extra:
+                logicalName: Restricted Fields
+        transitions:
+            type: array
+            comment: List of transitions from this step
+
+        workflowId:
+            type: integer
+            comment: Foreign key to workflow table
+            extra:
+                logicalName: Workflow
+
+    relations:
+        Workflow:
+            local: workflowId
+            foreign: id
+            foreignAlias: WorkflowSteps
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

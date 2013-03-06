@@ -1,0 +1,50 @@
+Workflow:
+    columns:
+        createdTs:
+            type: timestamp
+        modifiedTs:
+            type: timestamp
+
+        name:
+            type: string(255)
+            extra:
+                logicalName: Workflow Name
+            comment: The name of this workflow
+        description:
+            type: string
+            extra:
+                purify: html
+                logicalName: Description
+            comment: The description of this workflow
+        isDefault:
+            type: boolean
+            default: false
+            notnull: true
+            extra:
+                logicalName: Default
+            comment: Is this the default workflow for its module
+        module:
+            type: enum
+            values: [finding, incident, vulnerability]
+            notnull: true
+            comment: The module this workflow ties to
+        creatorId:
+            type: integer
+            comment: Foreign key to user table
+            extra:
+                logicalName: Creator
+
+    relations:
+        Creator:
+            class: User
+            local: creatorId
+            foreign: id
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp

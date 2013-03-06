@@ -134,4 +134,14 @@ class Fisma_Doctrine_Behavior_HasPocs_Proxy
     {
         return $this->_generator->fetchAllByType($this->_instance, $type);
     }
+
+    /**
+     * Proxy method for getting positions of a poc
+     *
+     * @return array The list of positions
+     */
+    public function fetchAllPositions($pocId)
+    {
+        return $this->_generator->fetchAllPositions($this->_instance, $pocId);
+    }
 }

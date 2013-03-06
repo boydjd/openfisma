@@ -1,0 +1,43 @@
+<?php Fisma_Format_Section::startSection('Workflow Details'); ?>
+<table class='keyValues'>
+    <tr>
+        <td>Name</td>
+        <td><span
+            class='editable'
+            name='workflow[name]'
+            type='text'
+            id='workflowName'
+            target='workflowName'>
+            <?php if ($this->workflow): echo $this->escape($this->workflow->name); else: ?>
+                &nbsp;
+            <?php endif; ?>
+        </span></td>
+    </tr>
+    <tr>
+        <td>Default</td>
+        <td><span
+            class='editable'
+            name='workflow[isDefault]'
+            type='checked'
+            id='workflowDefault'
+            target='workflowDefault'>
+            <?php if ($this->workflow): echo $this->escape(($this->workflow->isDefault) ? 'YES' : 'NO'); else: ?>
+                NO
+            <?php endif; ?>
+        </span></td>
+    </tr>
+</table>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php Fisma_Format_Section::startSection('Description', 'workflowDescription'); ?>
+    <div
+        name='workflow[description]'
+        id='workflowDescription'
+        type='textarea'
+        rows='3'
+        cols='160'>
+        <?php if ($this->workflow): echo $this->escape($this->workflow->description, 'none'); else: ?>
+            &nbsp;
+        <?php endif; ?>
+    </div>
+<?php Fisma_Format_Section::stopSection(); ?>

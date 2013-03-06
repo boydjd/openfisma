@@ -87,24 +87,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
                                 ->setHydrationMode(Doctrine::HYDRATE_NONE)
                                 ->execute();
 
-        // Get the evaluation ID for MSA
-        $msaQuery = Doctrine_Query::create()
-                    ->select('id')
-                    ->from('Evaluation')
-                    ->where('precedence = 0 AND approvalGroup = \'action\'');
-        $msaResult = $msaQuery->execute();
-        $msaEvaluation = $msaResult[0];
-
-        // Get the evaluation ID for EA
-        $eaQuery = Doctrine_Query::create()
-                    ->select('id')
-                    ->from('Evaluation')
-                    ->where('precedence = 0 AND approvalGroup = \'evidence\'');
-        $eaResult = $eaQuery->execute();
-        $eaEvaluation = $eaResult[0];
-
-        $type = array('CAP', 'AR', 'FP');
-        $status = array('NEW', 'DRAFT', 'MSA', 'EN', 'EA', 'CLOSED');
         $threat = array('LOW', 'MODERATE', 'HIGH');
         $effectiveness = array('LOW', 'MODERATE', 'HIGH');
 
@@ -129,16 +111,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
             $currentEcd = $date->getDate()->toString(Fisma_Date::FORMAT_DATE);
 
             $finding = array();
-            $finding['status'] = $status[rand(0, $statusCount)];
-            if ($finding['status'] === 'NEW') {
-                $finding['type'] = 'NONE';
-            } else {
-                $finding['currentEcd'] = $currentEcd;
-                $finding['type'] = $type[rand(0, $typeCount)];
-                $finding['mitigationStrategy'] = Fisma_String::loremIpsum(rand(90, 100));
-                $finding['resourcesRequired'] = '$ ' . rand(0, 999999);
-                $finding['ecdChangeDescription'] = Fisma_String::loremIpsum(rand(4, 5));;
-            }
             $finding['threatLevel'] = $threat[rand(0, $threatCount)];
             $finding['countermeasuresEffectiveness'] = $effectiveness[rand(0, $effectivenessCount)];
 
@@ -173,35 +145,14 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
             foreach ($findings as $finding) {
                 $f = new Finding();
 
-                // Because the finding model is awful, we're setting the current evaluation early so that
-                // the mutators don't freak out.
-                if ($finding['status'] == 'MSA') {
-                    $f->CurrentEvaluation = $msaEvaluation;
-                } elseif ($finding['status'] == 'EA') {
-                    $f->CurrentEvaluation = $eaEvaluation;
-                }
-
                 $f->merge($finding);
                 $f->CreatedBy = $this->_getRandomUser();
                 if (empty($f->pocId)) {
                     $f->pocId = $this->_getRandomUser()->id;
                 }
 
-                if ($f->status == 'MSA') {
-                    $f->updateDenormalizedStatus();
+                //@TODO workflow simulation
 
-                    if (rand(0, 1)) {
-                        $f->approve($this->_getRandomUser(), 'Approved by generate-findings.php script.');
-                    }
-                } elseif ($f->status == 'EA') {
-                    // Create a sample piece of evidence
-                    $f->Attachments[] = $this->_getSampleAttachment();
-                    $f->updateDenormalizedStatus();
-
-                    if (rand(0, 1)) {
-                        $f->approve($this->_getRandomUser(), 'Approved by generate-findings.php script.');
-                    }
-                }
                 $f->save();
                 $f->free();
                 unset($f);
@@ -215,5 +166,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
             Doctrine_Manager::connection()->rollBack();
             throw $e;
         }
+        print "\n";
     }
 }

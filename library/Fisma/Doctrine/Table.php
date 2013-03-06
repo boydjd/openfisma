@@ -32,6 +32,7 @@ abstract class Fisma_Doctrine_Table extends Doctrine_Table
      * Custom logicalName's that would amend YML column definition
      */
     protected $_customLogicalNames = array();
+    protected $_editableFields = array();
 
     /**
      * Return logicalName from columns from hard-coded array or YML column definition
@@ -50,6 +51,20 @@ abstract class Fisma_Doctrine_Table extends Doctrine_Table
         }
 
         return $this->getColumnName($fieldName);
+    }
+
+    /**
+     * Return the list of editable fields in assoc-array format ('field' => 'logicalName')
+     *
+     * @return array
+     */
+    public function getEditableFields()
+    {
+        $result = array();
+        foreach ($this->_editableFields as $field) {
+            $result[$field] = $this->getLogicalName($field);
+        }
+        return $result;
     }
 
     /**

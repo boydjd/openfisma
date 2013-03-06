@@ -16,7 +16,15 @@ $(function() {
             .data('options', options)
     ;
 
-    select.replaceWith(target);
+    var ddParent = $('dd#<?php echo $this->escape($this->element->getId()); ?>-element'),
+        dtParent = $('dt#<?php echo $this->escape($this->element->getId()); ?>-label');
+    if (dtParent.text().trim() == '') {
+        ddParent.replaceWith(target);
+        dtParent.remove();
+    } else {
+        select.replaceWith(target);
+    }
+
     var a = new Fisma.Editable.Multiselect(target);
 });
 </script>

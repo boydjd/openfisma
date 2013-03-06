@@ -94,7 +94,7 @@
     /**
      * Handle the onclick event of the discard icon
      */
-    FE.discard = function (element, parent) {
+    FE.discard = function(element, parent) {
         parent = parent || $(element).parents('[target]');
         parent.attr('tabindex', 0).focus();
         var target = parent.attr('target');
@@ -114,7 +114,7 @@
     /**
      * Handle the onclick event of the commit icon
      */
-    FE.commit = function (element) {
+    FE.commit = function(element) {
         var parent      = $(element).parents('[target]'),
             t_name      = parent.attr('target'),
             target      = $('#' + t_name),
@@ -162,7 +162,7 @@
                     parent.addClass('editable').attr('tabindex', 0).focus();
                     var errorMsg = $(data).filter('script.priority-messenger-warning');
                     if (errorMsg.length > 0) {
-                        errorMsg.appendTo($(this));
+                        errorMsg.appendTo(document);
                         Fisma.Editable.discard(element, parent);
                     } else {
                         if ($(data).filter('title').text().indexOf('Error - Error') >= 0) {
@@ -203,7 +203,11 @@
      */
     FE.turnAllOn = function() {
         Fisma.Editable.editMode = true;
-        $('.yui-content > div').not('.yui-hidden').find('.editable').click();
+        if (Fisma.tabView) {
+            $('.yui-content > div').not('.yui-hidden').find('.editable').click();
+        } else {
+            $('.editable').click();
+        }
         $('#editMode').hide();
         $('#saveChanges, #discardChanges').css('display', 'inline-block');
     };
@@ -261,7 +265,7 @@
         }
     };
 
-    FE.Autocomplete = function (element) {
+    FE.Autocomplete = function(element) {
         var container = $("<span/>"),
             hiddenTextField = $("<input/>"),
             autocompleteTextField = $("<input/>"),
@@ -318,7 +322,7 @@
         var jqTarget = $(target),
             val = jqTarget.val() || jqTarget.attr("value") || jqTarget.text(),
             href = jqTarget.attr("href") + "value/" + encodeURI(val.trim()),
-            select = $("<select/>");
+            select = $("<select/>").button();
         jqTarget.empty();
         select.attr({
             id: jqTarget.attr("id") + "-select",
@@ -337,7 +341,8 @@
         jqTarget.empty();
 
         var jqSelect = $('<select/>')
-            .attr('name', name)
+            .attr('name', jqTarget.attr('name'))
+            .button()
             .append(
                 $('<option/>')
                     .attr('value', 1)
@@ -375,6 +380,7 @@
             inputElement = this.inputElement = $("<input>")
                 .attr({name: target.attr("name"), type: "hidden"})
                 .val(val);
+
         try {
             valArray = JSON.parse(val);
         } catch(e) {
@@ -451,11 +457,13 @@
                 }
             }
         });
+        target.data('multiselectControl', this);
+
         if (!Fisma.Editable.editMode) {
             addImg.focus();
         }
     };
-    FE.Multiselect.prototype._buildMenuItem = function (label, value, submenu) {
+    FE.Multiselect.prototype._buildMenuItem = function(label, value, submenu) {
         var a = $("<a>").attr("href", "#"),
             d = $("<div>").append(a).attr('value', (value || label));
         ($.type(label) === 'string' ? a.text : a.html).call(a, label);
@@ -464,7 +472,7 @@
         }
         return d;
     };
-    FE.Multiselect.prototype._addSelected = function (itemText, itemValue) {
+    FE.Multiselect.prototype._addSelected = function(itemText, itemValue) {
         var item, anchor;
         anchor = $("<a>")
             .append(
@@ -488,12 +496,12 @@
         this.selected.append(item);
         this._refreshInputElement();
     };
-    FE.Multiselect.prototype._onMenuSelect = function (event, ui) {
+    FE.Multiselect.prototype._onMenuSelect = function(event, ui) {
         this._addSelected(ui.item.text(), ui.item.attr('value'));
         ui.item.remove();
         this.addMenu.hide();
     };
-    FE.Multiselect.prototype._onRemove = function (event) {
+    FE.Multiselect.prototype._onRemove = function(event) {
         var item, text, value, newItem;
         event.stopPropagation();
         item    = $(event.target).parents("div").first();
@@ -502,7 +510,7 @@
         item.remove();
         newItem = this._buildMenuItem(text, value);
         // insert in sorted order
-        this.addMenu.children().each(function () {
+        this.addMenu.children().each(function() {
             if (text.toLowerCase() < $(this).text().toLowerCase()) {
                 newItem.insertBefore(this);
                 newItem = null;
@@ -521,6 +529,26 @@
             values.push($(this).attr('value'));
         });
         this.inputElement.val(JSON.stringify(values));
+    };
+    FE.Multiselect.prototype._refreshFromInputElement = function() {
+        var val         = this.inputElement.val(),
+            that        = this,
+            valArray    = [];
+
+        try {
+            valArray = JSON.parse(val);
+        } catch(e) {
+            // probably empty string/null - do nothing
+        }
+
+        $('div a', this.selected).click();
+        if ($.type(valArray) === 'array') {
+            $.each(valArray, function(k, v) {
+                that._onMenuSelect(null, {
+                    'item': $('[value="' + v + '"]', that.addMenu)
+                });
+            });
+        }
     };
 
     Fisma.Editable = FE;

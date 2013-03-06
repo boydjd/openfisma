@@ -5,19 +5,6 @@
     $fromSearchUrl = $this->fromSearchUrl;
 ?>
 <p>
-    <b>Action Type:</b>
-
-    <span type="select" name="finding[type]" href="/metainfo/list/o/type/format/html/" id="type"
-        <?php
-            if ($this->isTypeEditable) {
-                echo $this->escape('class="editable" target="type"', 'none');
-            }
-        ?>>
-        <?php echo $this->escape($finding->type)?>&nbsp;&nbsp;
-    </span>
-</p>
-
-<p>
     <b target="mitigation_strategy"
         <?php
             if ($this->isMitigationStrategyEditable) {
@@ -51,7 +38,7 @@
             <b>Expected Completion Date:</b>
             <span name="finding[currentEcd]" id="currentEcd" type="text"
                 <?php
-                    if ($finding->isEcdEditable()) {
+                    if ($finding->canEdit('currentEcd')) {
                         echo $this->escape(' class="date editable" target="currentEcd"', 'none');
                     }
                     echo $this->escape('>', 'none');
@@ -79,7 +66,7 @@
             <b>Current ECD:</b>
             <span name="finding[currentEcd]" id="currentEcd" type="text"
                 <?php
-                    if ($finding->isEcdEditable()) {
+                    if ($finding->canEdit('currentEcd')) {
                         echo $this->escape(' class="date editable" target="currentEcd"', 'none');
                         $onclick = "Fisma.Finding.editEcdJustification();";
                         echo $this->escape('onclick="', 'none');
@@ -113,184 +100,3 @@
 </p>
 
 <?php Fisma_Format_Section::stopSection(); ?>
-
-<?php
-Fisma_Format_Section::startSection("Mitigation Strategy Approval");
-
-$warning = "WARNING: You are about to submit mitigation strategy. This action cannot be undone. "
-           . 'Please click "YES" to confirm your action or click "No" to stop.';
-$args = array(null, '/finding/remediation/msa/do/submitmitigation' . $fromSearchUrl, $finding->id);
-
-if ('NEW' == $finding->status || 'DRAFT' == $finding->status) {
-    $submitMitigationButton = new Fisma_Yui_Form_Button(
-        'submitMitigation',
-        array(
-              'label' => 'Submit Mitigation Strategy',
-              'onClickFunction' => 'Fisma.Remediation.submitMitigation',
-              'onClickArgument' => array(
-                  'args' => $args,
-                  'func' => 'Fisma.Util.formPostAction',
-                  'text' => $warning,
-                  'id'   => $this->finding->id
-              )
-        )
-    );
-
-    if (
-        $this->finding->isDeleted() ||
-        !$this->acl()->hasPrivilegeForObject('mitigation_strategy_submit', $finding)
-    ) {
-        $submitMitigationButton->readOnly = true;
-    }
-?>
-    <p><i>The mitigation strategy, security control, and risk analysis sections must
-          be fully completed before this can be submitted for approval.</i></p>
-
-    <div class='buttonBar'><?php echo $this->escape($submitMitigationButton, 'none')?></div>
-<?php
-}
-
-if (
-    !$this->finding->isDeleted() &&
-    'EN' == $finding->status &&
-    $this->acl()->hasPrivilegeForObject('mitigation_strategy_revise', $finding)
-) {
-    $message = 'The revised mitigation strategy must be fully approved before evidence can be re-submitted.'
-             . ' Are you sure that you want to continue?';
-    $args = array(null, '/finding/remediation/msa/do/revisemitigation' . $fromSearchUrl . '/id/', $finding->id);
-    $reviseMitigationButton = new Fisma_Yui_Form_Button(
-        'reviseMitigationButton',
-        array(
-              'label' => 'Revise Mitigation Strategy',
-              'onClickFunction' => 'Fisma.Util.showConfirmDialog',
-              'onClickArgument' => array(
-                  'args' =>  $args,
-                  'func' => 'Fisma.Util.formPostAction',
-                  'text' => $message
-            )
-        )
-    );
-?>
-    <div class='buttonBar'><?php echo $this->escape($reviseMitigationButton, 'none')?></div>
-<?php
-}
-
-if ($finding->status != 'NEW'
-    && ($finding->status != 'DRAFT' || $finding->FindingEvaluations->count() > 0)) {
-    echo $this->escape('<div class="approval">', 'none');
-    foreach ($findingEvaluations = $finding->getFindingEvaluations('action') as $k => $findingEvaluation) {
-        $user = $findingEvaluation->User;
-
-        $decision = $findingEvaluation->decision;
-        echo $this->escape('<div class="approvalStep"><p><b>', 'none');
-        echo $this->escape($findingEvaluation->Evaluation->name);
-        echo $this->escape(':</b>', 'none');
-
-        $createdTs = new Zend_Date($findingEvaluation->createdTs, Fisma_Date::FORMAT_DATETIME);
-        $createdTs->setTimezone('UTC');
-        $createdDateTime = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
-                              . ' at '
-                              . $createdTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
-        $createdTs->setTimezone(CurrentUser::getAttribute('timezone'));
-        $createdDateTimeLocal = $createdTs->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR)
-                              . ' at '
-                              . $createdTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
-
-        if ('APPROVED' == $decision) {
-            echo $this->escape('<span class="approved" title="UTC: ' . $createdDateTime . '"><b>', 'none');
-            echo $this->escape($decision);
-            echo $this->escape('</b>', 'none');
-            echo $this->escape($this->userInfo($user->displayName, $user->id), 'none');
-            echo $this->escape(' at ', 'none');
-            echo $this->escape($createdDateTimeLocal);
-            echo $this->escape('</span></p>', 'none');
-            if (!empty($findingEvaluation->comment)) {
-                echo $this->escape($this->textToHtml(htmlspecialchars($findingEvaluation->comment)), 'none');
-            }
-        } elseif ('DENIED' == $decision) {
-            echo $this->escape('<span class="denied" title="UTC: ' . $createdDateTime . '"><b>', 'none');
-            echo $this->escape($decision);
-            echo $this->escape('</b>', 'none');
-            echo $this->escape($this->userInfo($user->displayName, $user->id), 'none');
-            echo $this->escape(' at ', 'none');
-            echo $this->escape($createdDateTimeLocal);
-            echo $this->escape('</span></p>', 'none');
-            if (!empty($findingEvaluation->comment)) {
-                echo $this->escape($this->textToHtml(htmlspecialchars($findingEvaluation->comment)), 'none');
-            }
-        }
-        echo $this->escape('</div>', 'none');
-        if ($findingEvaluation->Evaluation->nextId == null || 'DENIED' == $decision) {
-            echo $this->escape('</div>', 'none');
-            if ($k != count($findingEvaluations)-1 || 'MSA' == $finding->status) {
-                echo $this->escape('<div class="approval">', 'none');
-            }
-        }
-    }
-
-    $activeEvaluation = $finding->CurrentEvaluation;
-    if ($activeEvaluation->id != null && $activeEvaluation->approvalGroup == 'action') {
-        echo $this->escape('<div class="approvalStep"><p><b>', 'none');
-        echo $this->escape($activeEvaluation->name);
-        echo $this->escape('</b>', 'none');
-        if (
-            !$this->finding->isDeleted() &&
-            $this->acl()->hasPrivilegeForObject($activeEvaluation->Privilege->action, $finding)
-        ) {
-            echo $this->escape('<input type="hidden" name="comment" value="" />', 'none');
-            echo $this->escape('<input type="hidden" name="decision" value="APPROVED" />', 'none');
-
-            $approveButton = new Fisma_Yui_Form_Button(
-                'approveButton',
-                array(
-                    'label' => 'APPROVE',
-                    'onClickFunction' => 'Fisma.Remediation.remediationAction',
-                    'onClickArgument' => array(
-                        'action' => "APPROVED",
-                        'formId' => "finding_detail",
-                        'panelTitle' => "Mitigation Strategy Approval",
-                        'findingId' => $this->finding->id
-                    )
-                )
-            );
-            echo $this->escape($approveButton, 'none');
-
-            $denyButton = new Fisma_Yui_Form_Button(
-                'denyButton',
-                array(
-                    'label' => 'DENIED',
-                    'onClickFunction' => 'Fisma.Remediation.remediationAction',
-                    'onClickArgument' => array(
-                        'action' => "DENIED",
-                        'formId' => "finding_detail",
-                        'panelTitle' => "Mitigation Strategy Denial",
-                        'findingId' => $this->finding->id
-                    )
-                )
-            );
-
-            echo $this->escape($denyButton, 'none');
-        } else {
-            echo $this->escape("PENDING", 'none');
-        }
-        echo $this->escape('</div>', 'none');
-    }
-
-    $disableEvaluations = array();
-    $currentEvaluation  = $finding->CurrentEvaluation;
-    if ($currentEvaluation->approvalGroup == 'action') {
-        while ($currentEvaluation->nextId != null) {
-            $currentEvaluation    = $currentEvaluation->NextEvaluation;
-            $disableEvaluations[] = $currentEvaluation;
-        }
-    }
-
-    foreach ($disableEvaluations as $evaluation) {
-        echo $this->escape('<div class="approvalStep"><p><b>', 'none');
-        echo $this->escape($evaluation->name);
-        echo $this->escape('</b>N/A</div>', 'none');
-    }
-    echo $this->escape('</div>', 'none');
-}
-Fisma_Format_Section::stopSection();
-?>

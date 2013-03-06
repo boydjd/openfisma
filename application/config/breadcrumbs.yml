@@ -406,6 +406,14 @@ AdminSysConfigContact:
     url: /config/contact
     labels: [Administration, System Configuration, Technical Contact]
     links: [no-link, no-link, no-link]
+AdminWorkflow:
+    url: /workflow/manage
+    labels: [Administration, Workflow Management]
+    links: [no-link, no-link]
+AdminWorkflowView:
+    url: /workflow/view/
+    labels: [Administration, Workflow Management, View]
+    links: [no-link, /workflow, no-link]
 AdminUserManagementRolePrivilegeMatrix:
     url: /role/view-matrix
     labels: [Administration, User Management, Privileges]
