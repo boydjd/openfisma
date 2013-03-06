@@ -50,6 +50,10 @@
         case 'FINDING_CLOSED':
             $eventTitle = "Finding {$record->id} resolved by {$user->displayName}";
             break;
+        case 'INCIDENT_CREATED':
+            $displayName = empty($user) ? '(Anonymous)' : $user->displayName;
+            $eventTitle = "{$event->description} by {$displayName}";
+            break;
         default:
             $eventTitle = "{$event->description} by {$user->displayName}";
     }
