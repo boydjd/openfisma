@@ -1,6 +1,14 @@
 <?php
 echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
 Fisma_Format_Section::startSection("Report A Security Incident");
+?>
+<p>
+    If you would like to report a computer security incident, please complete the following form. Required fields are
+    denoted with an asterisk. Please specify as much information as you can. If there are questions that you do not
+    know the answer to, you are encouraged to leave those questions blank and to submit the incident report in a timely
+    manner. You will be given a chance to review your report before submission. To cancel click the Back button.
+</p>
+<?php
 echo $this->escape($this->form, 'none');
 Fisma_Format_Section::stopSection();
 ?>
