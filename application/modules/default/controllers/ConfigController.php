@@ -575,7 +575,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $form->setDefault($configuration, Fisma::configuration()->getConfig($configuration));
         }
 
-        $form->setDefault('smtp_password', '********');
+        $smtpPw = Fisma::configuration()->getConfig('smtp_password');
+        $form->setDefault('smtp_password', (empty($smtpPw) ? '' : '********'));
         $form->getElement('smtp_password')->setRenderPassword(true);
 
         $this->view->form = $form;
