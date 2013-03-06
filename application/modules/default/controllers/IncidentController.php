@@ -99,11 +99,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     {
         $this->view->toolbarButtons = array(
             new Fisma_Yui_Form_Button(
-                'submitButton',
+                'nextButton',
                 array(
-                    'label' => 'Submit',
+                    'label' => 'Next',
                     'onClickFunction' => 'Fisma.Util.submitFirstForm',
-                    'imageSrc' => '/images/ok.png'
+                    'imageSrc' => '/images/next.png'
                 )
             )
         );
