@@ -18,9 +18,6 @@ Role:
             - incident_area
             - incident_admin_area
             - incident_report_area
-            - evaluation_create
-            - evaluation_update
-            - evaluation_delete
             - findings_create
             - findings_update
             - findings_read
@@ -133,9 +130,6 @@ Role:
             - incident_area
             - incident_admin_area
             - incident_report_area
-            - evaluation_create
-            - evaluation_update
-            - evaluation_delete
             - findings_create
             - findings_update
             - findings_read

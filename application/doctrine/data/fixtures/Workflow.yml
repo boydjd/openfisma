@@ -40,7 +40,7 @@ Workflow:
                 id: 2
                 cardinality: 1
                 name: "Won't Fix"
-                label: "WP"
+                label: "WONTFIX"
                 description: "Please provide a reason if this vulnerability needs re-evaluation"
                 isResolved: true
                 attachmentEditable: false

@@ -47,6 +47,8 @@ WorkflowStep:
                 logicalName: Allotted Days
         autoTransition:
             type: boolean
+            default: false
+            notnull: true
             comment: Should the workflow jumps to another step after allotedTime expires
             extra:
                 logicalName: Automated Transition
@@ -58,6 +60,7 @@ WorkflowStep:
         attachmentEditable:
             type: boolean
             default: true
+            notnull: true
             comment: Whether to allow users to upload / update / remove attachments during this step
             extra:
                 logicalName: Attachment Editable

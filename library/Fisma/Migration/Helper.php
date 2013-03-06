@@ -146,7 +146,7 @@ class Fisma_Migration_Helper
      */
     public function dropTable($tableName)
     {
-        $result = $this->_db->exec("DROP TABLE `$tableName`");
+        $result = $this->_db->exec("DROP TABLE IF EXISTS `$tableName`");
 
         if ($result === FALSE) {
             throw new Fisma_Zend_Exception_Migration("Not able to drop table ($tableName).");
@@ -162,16 +162,20 @@ class Fisma_Migration_Helper
      */
     public function insert($table, $fields)
     {
-        $fieldNames = array_keys($fields);
-        $fieldValues = array_values($fields);
-        $fieldList = implode($fieldNames, ',');
-        $valueList = implode(array_fill(0, count($fieldValues), '?'), ',');
-        $sql = sprintf('INSERT INTO %s (%s) VALUES(%s)', $table, $fieldList, $valueList);
-        $stmt = $this->_db->prepare($sql);
-        if (!$stmt->execute($fieldValues)) {
-            throw new Exception('Unable to insert record.');
+        if ($this->tableExists($table)) {
+            $fieldNames = array_keys($fields);
+            $fieldValues = array_values($fields);
+            $fieldList = implode($fieldNames, ',');
+            $valueList = implode(array_fill(0, count($fieldValues), '?'), ',');
+            $sql = sprintf('INSERT INTO %s (%s) VALUES(%s)', $table, $fieldList, $valueList);
+            $stmt = $this->_db->prepare($sql);
+            if (!$stmt->execute($fieldValues)) {
+                throw new Exception('Unable to insert record.');
+            }
+            return $this->_db->lastInsertId();
+        } else {
+            return false;
         }
-        return $this->_db->lastInsertId();
     }
 
     /**
@@ -184,31 +188,35 @@ class Fisma_Migration_Helper
      */
     public function update($table, $fields, $where = array())
     {
-        $setArray = array_keys($fields);
-        foreach ($setArray as &$f) {
-            $f .= ' = ?';
-        }
-        $setClause = implode($setArray, ', ');
-
-        if (!empty($where)) {
-            $whereArray = array_keys($where);
-            foreach ($whereArray as &$w) {
-                $w .= ' = ?';
+        if ($this->tableExists($table)) {
+            $setArray = array_keys($fields);
+            foreach ($setArray as &$f) {
+                $f .= ' = ?';
             }
-            $whereClause = implode($whereArray, ' AND ');
+            $setClause = implode($setArray, ', ');
 
-            $update = 'UPDATE %s SET %s WHERE %s';
-            $sql = sprintf($update, $table, $setClause, $whereClause);
-            $stmt = $this->_db->prepare($sql);
-            $params = array_values($fields);
-            array_splice($params, count($params), 0, array_values($where));
+            if (!empty($where)) {
+                $whereArray = array_keys($where);
+                foreach ($whereArray as &$w) {
+                    $w .= ' = ?';
+                }
+                $whereClause = implode($whereArray, ' AND ');
+
+                $update = 'UPDATE %s SET %s WHERE %s';
+                $sql = sprintf($update, $table, $setClause, $whereClause);
+                $stmt = $this->_db->prepare($sql);
+                $params = array_values($fields);
+                array_splice($params, count($params), 0, array_values($where));
+            } else {
+                $update = 'UPDATE %s SET %s';
+                $sql = sprintf($update, $table, $setClause);
+                $stmt = $this->_db->prepare($sql);
+                $params = array_values($fields);
+            }
+            $stmt->execute($params);
         } else {
-            $update = 'UPDATE %s SET %s';
-            $sql = sprintf($update, $table, $setClause);
-            $stmt = $this->_db->prepare($sql);
-            $params = array_values($fields);
+            return false;
         }
-        $stmt->execute($params);
     }
 
     /**
@@ -222,16 +230,20 @@ class Fisma_Migration_Helper
      */
     public function addForeignKey($localTable, $localColumn, $remoteTable, $remoteColumn, $constraintName = null)
     {
-        if (!$constraintName) {
-            $constraintName = "{$localTable}_{$localColumn}_{$remoteTable}_{$remoteColumn}";
+        if ($this->tableExists($localTable) && $this->tableExists($remoteTable) ) {
+            if (!$constraintName) {
+                $constraintName = "{$localTable}_{$localColumn}_{$remoteTable}_{$remoteColumn}";
+            }
+
+            // MySQL will implicitly add the correct index, but it uses a different naming convention than Doctrine,
+            // so we need to add the index explicitly using Doctrine's naming convention.
+            $this->exec("ALTER TABLE `$localTable` ADD INDEX `{$localColumn}_idx` (`$localColumn`)");
+
+            $this->exec("ALTER TABLE `$localTable` ADD CONSTRAINT `$constraintName`
+                         FOREIGN KEY `$constraintName` (`$localColumn`) REFERENCES `$remoteTable` (`$remoteColumn`)");
+        } else {
+            return false;
         }
-
-        // MySQL will implicitly add the correct index, but it uses a different naming convention than Doctrine,
-        // so we need to add the index explicitly using Doctrine's naming convention.
-        $this->exec("ALTER TABLE `$localTable` ADD INDEX `{$localColumn}_idx` (`$localColumn`)");
-
-        $this->exec("ALTER TABLE `$localTable` ADD CONSTRAINT `$constraintName`
-                     FOREIGN KEY `$constraintName` (`$localColumn`) REFERENCES `$remoteTable` (`$remoteColumn`)");
     }
 
     /**
@@ -243,24 +255,28 @@ class Fisma_Migration_Helper
      */
     public function addUniqueKey($table, $columns, $name = null)
     {
-        if (is_array($columns)) {
-            if (!$name) {
-                throw new Fisma_Zend_Exception_Migration("Name is required for multi-column unique key.");
+        if ($this->tableExists($table)) {
+            if (is_array($columns)) {
+                if (!$name) {
+                    throw new Fisma_Zend_Exception_Migration("Name is required for multi-column unique key.");
+                }
+
+                // Add backticks to each column name
+                $addBackticks = function ($column) {
+                    return "`$column`";
+                };
+
+                $columns = array_map($addBackticks, $columns);
+                $columns = implode(',', $columns);
+            } else {
+                $name = $columns;
+                $columns = "`$columns`";
             }
 
-            // Add backticks to each column name
-            $addBackticks = function ($column) {
-                return "`$column`";
-            };
-
-            $columns = array_map($addBackticks, $columns);
-            $columns = implode(',', $columns);
+            $this->exec("ALTER TABLE `$table` ADD UNIQUE `$name` ($columns)");
         } else {
-            $name = $columns;
-            $columns = "`$columns`";
+            return false;
         }
-
-        $this->exec("ALTER TABLE `$table` ADD UNIQUE `$name` ($columns)");
     }
 
     /**
@@ -273,13 +289,17 @@ class Fisma_Migration_Helper
      */
     public function addColumn($table, $column, $definition, $after = null)
     {
-        $sql = "ALTER TABLE `$table` ADD COLUMN `$column` $definition";
+        if ($this->tableExists($table)) {
+            $sql = "ALTER TABLE `$table` ADD COLUMN `$column` $definition";
 
-        if ($after) {
-            $sql .= " AFTER `$after`";
+            if ($after) {
+                $sql .= " AFTER `$after`";
+            }
+
+            $this->exec($sql);
+        } else {
+            return false;
         }
-
-        $this->exec($sql);
     }
 
     /**
@@ -292,10 +312,14 @@ class Fisma_Migration_Helper
      */
     public function addMissingColumn($table, $column, $definition, $after = null)
     {
-        $checkIfExistsSql = "SHOW COLUMNS FROM `$table` LIKE ?";
-        $result = $this->query($checkIfExistsSql, array($column));
-        if (count($result) <= 0) {
-            $this->addColumn($table, $column, $definition, $after);
+        if ($this->tableExists($table)) {
+            $checkIfExistsSql = "SHOW COLUMNS FROM `$table` LIKE ?";
+            $result = $this->query($checkIfExistsSql, array($column));
+            if (count($result) <= 0) {
+                $this->addColumn($table, $column, $definition, $after);
+            }
+        } else {
+            return false;
         }
     }
 
@@ -309,8 +333,12 @@ class Fisma_Migration_Helper
      */
     public function modifyColumn($table, $column, $definition, $after)
     {
-        $sql = "ALTER TABLE `$table` MODIFY COLUMN `$column` $definition AFTER `$after`";
-        $this->exec($sql);
+        if ($this->tableExists($table)) {
+            $sql = "ALTER TABLE `$table` MODIFY COLUMN `$column` $definition AFTER `$after`";
+            $this->exec($sql);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -336,12 +364,16 @@ class Fisma_Migration_Helper
      */
     public function dropColumn($table, $column)
     {
-        $view = $this->_createView();
-        $view->table = $table;
-        $view->column = $column;
+        if ($this->tableExists($table)) {
+            $view = $this->_createView();
+            $view->table = $table;
+            $view->column = $column;
 
-        $alterTableSql = $view->render('drop_column.phtml');
-        $this->exec($alterTableSql);
+            $alterTableSql = $view->render('drop_column.phtml');
+            $this->exec($alterTableSql);
+        } else {
+            return false;
+        }
     }
 
     /**
@@ -366,33 +398,37 @@ class Fisma_Migration_Helper
      */
     public function addIndex($table, $columns, $index = null)
     {
-        $view = $this->_createView();
+        if ($this->tableExists($table)) {
+            $view = $this->_createView();
 
-        $view->table = $table;
+            $view->table = $table;
 
-        if ($index) {
-            $view->index = $index;
-        } else {
-            if (!is_array($columns) || count($columns) == 1) {
-                // This naming convention mirror's Doctrine's
-                $view->index = (is_array($columns) ? $columns[0] : $columns) . '_idx';
+            if ($index) {
+                $view->index = $index;
             } else {
-                throw new Fisma_Zend_Exception_Migration("Index name is required when using more than 1 column.");
+                if (!is_array($columns) || count($columns) == 1) {
+                    // This naming convention mirror's Doctrine's
+                    $view->index = (is_array($columns) ? $columns[0] : $columns) . '_idx';
+                } else {
+                    throw new Fisma_Zend_Exception_Migration("Index name is required when using more than 1 column.");
+                }
             }
-        }
 
-        $backquoteFunction = function ($v) {
-            return "`$v`";
-        };
+            $backquoteFunction = function ($v) {
+                return "`$v`";
+            };
 
-        if (is_array($columns)) {
-            $view->columns = implode(', ', array_map($backquoteFunction, $columns));
+            if (is_array($columns)) {
+                $view->columns = implode(', ', array_map($backquoteFunction, $columns));
+            } else {
+                $view->columns = "`$columns`";
+            }
+
+            $alterTableSql = $view->render('add_index.phtml');
+            $this->exec($alterTableSql);
         } else {
-            $view->columns = "`$columns`";
+            return false;
         }
-
-        $alterTableSql = $view->render('add_index.phtml');
-        $this->exec($alterTableSql);
     }
 
     /**
@@ -403,17 +439,21 @@ class Fisma_Migration_Helper
      */
     public function dropIndexes($table, $indexes)
     {
-        if (is_array($indexes)) {
-            foreach ($indexes as $index) {
-                $this->dropIndexes($table, $index);
+        if ($this->tableExists($table)) {
+            if (is_array($indexes)) {
+                foreach ($indexes as $index) {
+                    $this->dropIndexes($table, $index);
+                }
+            } else {
+                $view = $this->_createView();
+                $view->table = $table;
+                $view->index = $indexes;
+
+                $alterTableSql = $view->render('drop_key_or_index.phtml');
+                $this->exec($alterTableSql);
             }
         } else {
-            $view = $this->_createView();
-            $view->table = $table;
-            $view->index = $indexes;
-
-            $alterTableSql = $view->render('drop_key_or_index.phtml');
-            $this->exec($alterTableSql);
+            return false;
         }
     }
 
@@ -425,17 +465,21 @@ class Fisma_Migration_Helper
      */
     public function dropForeignKeys($table, $foreignKeys)
     {
-        if (is_array($foreignKeys)) {
-            foreach ($foreignKeys as $foreignKey) {
-                $this->dropForeignKeys($table, $foreignKey);
+        if ($this->tableExists($table)) {
+            if (is_array($foreignKeys)) {
+                foreach ($foreignKeys as $foreignKey) {
+                    $this->dropForeignKeys($table, $foreignKey);
+                }
+            } else {
+                $view = $this->_createView();
+                $view->table = $table;
+                $view->foreignKey = $foreignKeys;
+
+                $alterTableSql = $view->render('drop_key_or_index.phtml');
+                $this->exec($alterTableSql);
             }
         } else {
-            $view = $this->_createView();
-            $view->table = $table;
-            $view->foreignKey = $foreignKeys;
-
-            $alterTableSql = $view->render('drop_key_or_index.phtml');
-            $this->exec($alterTableSql);
+            return false;
         }
     }
 }

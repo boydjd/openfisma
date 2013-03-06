@@ -90,8 +90,6 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
         $threat = array('LOW', 'MODERATE', 'HIGH');
         $effectiveness = array('LOW', 'MODERATE', 'HIGH');
 
-        $typeCount = count($type)-1;
-        $statusCount = count($status)-1;
         $threatCount = count($threat)-1;
         $effectivenessCount = count($effectiveness)-1;
         $organizationIdsCount = count($organizationIds)-1;

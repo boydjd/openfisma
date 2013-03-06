@@ -60,20 +60,6 @@ Privilege:
         action: incident_report
         description: Incident Module Reports
 
-    # Evaluations CRUD
-    evaluation_create:
-        resource: evaluation
-        action: create
-        description: Create Evaluations
-    evaluation_update:
-        resource: evaluation
-        action: update
-        description: Update Evaluations
-    evaluation_delete:
-        resource: evaluation
-        action: delete
-        description: Delete Evaluations
-
     # Findings CRUD
     findings_create:
         resource: finding

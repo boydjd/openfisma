@@ -59,7 +59,6 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
 
         $threat = array('LOW', 'MODERATE', 'HIGH');
 
-        $statusCount = count($status)-1;
         $threatCount = count($threat)-1;
         $assetIdsCount = count($assetIds)-1;
 
