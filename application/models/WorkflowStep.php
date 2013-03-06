@@ -235,8 +235,9 @@ class WorkflowStep extends BaseWorkflowStep
      * @param int       $destinationId  Optional. Override $transitionName for auto-transition.
      * @return void
      */
-    public static function completeOnObject
-        ($object, $transitionName, $comment, $userId, $expirationDate, $destinationId = null)
+    public static function completeOnObject(
+        $object, $transitionName, $comment, $userId, $expirationDate, $destinationId = null
+    )
     {
         if (empty($comment)) {
             throw new Fisma_Zend_Exception_User('Comment cannot be enmpty.');
@@ -280,8 +281,7 @@ class WorkflowStep extends BaseWorkflowStep
             );
         }
 
-        $completedSteps = $object->completedSteps;
-        $completedSteps[] = array(
+        $completedStep = array(
             'workflow' => array(
                 'name' => $object->CurrentStep->Workflow->name,
                 'description' => $object->CurrentStep->Workflow->description
@@ -297,9 +297,22 @@ class WorkflowStep extends BaseWorkflowStep
             'userId' => $userId,
             'timestamp' => Fisma::now()
         );
+        $completedSteps = $object->completedSteps;
+        $completedSteps[] = $completedStep;
         $object->completedSteps = $completedSteps;
 
         $object->CurrentStep = $nextStep;
+        $watchers = array_values($nextStep->Watchers->toKeyValueArray('id', 'id'));
+        Notification::notify(
+            'WORKFLOW_COMPLETED',
+            $object,
+            CurrentUser::getInstance(),
+            array(
+                'recipientList' => $watchers,
+                'completedStep' => $completedStep,
+                'url' => $object->getTable()->getViewUrl()
+            )
+        );
 
         $object->isResolved = $object->CurrentStep->isResolved;
         $object->closedTs = ($object->isResolved) ? Fisma::now() : null;

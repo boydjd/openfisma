@@ -287,5 +287,63 @@ Fisma.Workflow = {
                 }
             }
         );
+    },
+
+    /**
+     * Subscribe
+     *
+     * @param int   stepId      ID of the step to subscribe to
+     * @param int   objectId    ID of the current object (to compute returnUrl)
+     */
+    subscribe: function(stepId, objectId) {
+        $(this)
+            .after('<img src="/images/spinners/small.gif" style="vertical-align:text-top"/>')
+        ;
+        var that = this;
+        $.post(
+            '/workflow/subscribe/format/json',
+            {
+                'csrf': $('input[name=csrf]').val(),
+                'stepId': stepId,
+                'id': objectId
+            },
+            function(data) {
+                if (data.err) {
+                    $(that).next('img').remove();
+                    Fisma.Util.showAlertDialog(data.err);
+                } else {
+                    $('#workflowTabContent').replaceWith(data);
+                }
+            }
+        );
+    },
+
+    /**
+     * Unsubscribe
+     *
+     * @param int   stepId      ID of the step to subscribe to
+     * @param int   objectId    ID of the current object (to compute returnUrl)
+     */
+    unsubscribe: function(stepId, objectId) {
+        $(this)
+            .after('<img src="/images/spinners/small.gif" style="vertical-align:text-top"/>')
+        ;
+        var that = this;
+        $.post(
+            '/workflow/unsubscribe/format/json',
+            {
+                'csrf': $('input[name=csrf]').val(),
+                'stepId': stepId,
+                'id': objectId
+            },
+            function(data) {
+                if (data.err) {
+                    $(that).next('img').remove();
+                    Fisma.Util.showAlertDialog(data.err);
+                } else {
+                    $('#workflowTabContent').replaceWith(data);
+                }
+            }
+        );
     }
 };

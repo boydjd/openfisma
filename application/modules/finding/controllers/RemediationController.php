@@ -513,7 +513,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         $finding = $this->_getSubject($id);
-        $this->acl()->requirePrivilegeForObject('update', $finding);
+        $this->_acl->requirePrivilegeForObject('update', $finding);
 
         // Security control is a hidden field. If it is blank, that means the user did not submit it, and it needs to
         // be unset.

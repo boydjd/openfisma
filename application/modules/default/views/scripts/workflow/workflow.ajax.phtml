@@ -12,6 +12,9 @@ $organization = $object->Organization;
     <b><?php echo $this->escape($this->translate(ucfirst($model) . '_Status')); ?></b>:
     <?php echo $this->escape(($object->isResolved) ? 'YES' : 'NO'); ?>
 </p>
+<?php if (empty($object->currentStepId)): ?>
+<p>This <?php echo $this->escape(ucfirst($model)); ?> is not assigned to any workflow step.</p>
+<?php else: ?>
 <p>
     <b>Current Workflow Step:</b>
     <span title='<?php echo $this->escape($step->Workflow->description); ?>'>
@@ -30,6 +33,31 @@ $organization = $object->Organization;
         ?>(<font color='red'><?php echo $this->escape($this->workflowOnTimeState); ?></font>)<?php
     }
     ?>
+    <br/>
+<?php
+    $query = Doctrine_Query::create()
+        ->from('WorkflowStepUser wsu')
+        ->where('wsu.stepId = ?', $step->id)
+        ->andWhere('wsu.userId = ?', CurrentUser::getAttribute('id'))
+        ->count();
+    $watching = ($query > 0);
+    if ($watching): ?>
+    <a href='#' onclick='Fisma.Workflow.unsubscribe(<?php
+        echo $this->escape($step->id);
+    ?>, <?php
+        echo $this->escape($object->id);
+    ?>);'>
+        Stop emailing me when <?php echo $this->escape($model); ?>(s) enter this workflow step.
+    </a>
+<?php else: ?>
+    <a href='#' onclick='Fisma.Workflow.subscribe(<?php
+        echo $this->escape($step->id);
+    ?>, <?php
+        echo $this->escape($object->id);
+    ?>);'>
+        Email me whenever <?php echo $this->escape($model); ?>(s) enter this workflow step.
+    </a>
+<?php endif; ?>
 </p>
 <?php
 $restrictedFields = (array)$step->restrictedFields;
@@ -156,5 +184,6 @@ if (count($restrictedFields) > 0):
         </tr>
     </table>
 </div>
+<?php endif; ?>
 <?php Fisma_Format_Section::stopSection(); ?>
 </div>

@@ -86,6 +86,11 @@ WorkflowStep:
             local: workflowId
             foreign: id
             foreignAlias: WorkflowSteps
+        Watchers:
+            class: User
+            local: stepId
+            foreign: userId
+            refClass: WorkflowStepUser
 
     actAs:
         Timestampable:

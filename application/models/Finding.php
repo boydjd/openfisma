@@ -156,6 +156,15 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                             );
                         }
                         break;
+                    case 'isResolved':
+                        if ($this->id && $newValue === true) {
+                            Notification::notify(
+                                'FINDING_CLOSED',
+                                $this,
+                                CurrentUser::getInstance()
+                            );
+                        }
+                        break;
                     default:
                         break;
                 }

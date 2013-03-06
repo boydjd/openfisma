@@ -38,6 +38,8 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
             ->addActionContext('transition-form', 'html')
             ->addActionContext('workflow', 'html')
             ->addActionContext('complete-step', 'json')
+            ->addActionContext('subscribe', 'json')
+            ->addActionContext('unsubscribe', 'json')
             ->initContext();
 
         parent::init();
@@ -293,6 +295,11 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
         $this->_acl->requirePrivilegeForClass('manage', 'Workflow');
     }
 
+    protected function _hasManagePrivilege()
+    {
+        return $this->_acl->hasPrivilegeForClass('manage', 'Workflow');
+    }
+
     /**
      * Edit details and steps for a workflow
      *
@@ -309,12 +316,15 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
         $steps = Doctrine::getTable('WorkflowStep')->listArray($this->view->workflow);
         $stepRows = array();
         foreach ($steps as $step) {
-            $stepRows[] = array(
+            $stepRow = array(
                 'id' => $step->id,
                 'name' => $step->name,
                 'label' => $step->label,
-                'description' => $step->description,
-                'actions' => Zend_Json::encode(array(
+                'description' => $step->description
+            );
+
+            if ($this->_hasManagePrivilege()) {
+                $stepRow['actions'] = Zend_Json::encode(array(
                     array(
                         'label'     => 'edit',
                         'icon'      => '/images/edit.png',
@@ -345,8 +355,10 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
                         'icon'      => '/images/trash_recyclebin_empty_open.png',
                         'handler'   => 'Fisma.Workflow.deleteStep'
                     )
-                ))
-            );
+                ));
+            }
+
+            $stepRows[] = $stepRow;
         }
 
         $this->view->dataTable = new Fisma_Yui_DataTable_Local();
@@ -387,16 +399,20 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
                 'description'
             )
         );
-        $this->view->dataTable->addColumn(
-            new Fisma_Yui_DataTable_Column(
-                'Actions',
-                true,
-                'Fisma.TableFormat.formatActions',
-                null,
-                'actions'
-            )
-        );
+        if ($this->_hasManagePrivilege()) {
+            $this->view->dataTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'Actions',
+                    true,
+                    'Fisma.TableFormat.formatActions',
+                    null,
+                    'actions'
+                )
+            );
+        }
         $this->view->dataTable->setData($stepRows);
+
+        $this->view->editable = $this->_hasManagePrivilege();
     }
 
     /**
@@ -429,29 +445,32 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
 
         $workflows = $this->view->table->listArray($this->view->module);
         $workflowRows = array();
+        $actionArray = array(
+            array(
+                'label'     => 'Workflow details',
+                'icon'      => '/images/application_view_columns.png',
+                'handler'   => 'Fisma.Workflow.editWorkflow'
+            )
+        );
+        if ($this->_hasManagePrivilege()) {
+            $actionArray[] = array(
+                'label'     => 'Delete the workflow',
+                'icon'      => '/images/trash_recyclebin_empty_open.png',
+                'handler'   => 'Fisma.Workflow.deleteWorkflow'
+            );
+            $actionArray[] = array(
+                'label'     => 'Set the default workflow for new ' . $this->view->module . '(s)',
+                'icon'      => '/images/default.png',
+                'handler'   => 'Fisma.Workflow.setDefaultWorkflow'
+            );
+        }
         foreach ($workflows as $workflow) {
             $workflowRows[] = array(
                 'id' => $workflow->id,
                 'isDefault' => ($workflow->isDefault) ? "YES" : "NO",
                 'name' => $workflow->name,
                 'description' => $workflow->description,
-                'actions' => Zend_Json::encode(array(
-                    array(
-                        'label'     => 'Edit the workflow',
-                        'icon'      => '/images/edit.png',
-                        'handler'   => 'Fisma.Workflow.editWorkflow'
-                    ),
-                    array(
-                        'label'     => 'Delete the workflow',
-                        'icon'      => '/images/trash_recyclebin_empty_open.png',
-                        'handler'   => 'Fisma.Workflow.deleteWorkflow'
-                    ),
-                    array(
-                        'label'     => 'Set the default workflow for new ' . $this->view->module . '(s)',
-                        'icon'      => '/images/default.png',
-                        'handler'   => 'Fisma.Workflow.setDefaultWorkflow'
-                    )
-                ))
+                'actions' => Zend_Json::encode($actionArray)
             );
         }
 
@@ -523,14 +542,16 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
 
         switch ($action) {
             case 'manage':
-                $buttons['newWorkflow'] = new Fisma_Yui_Form_Button(
-                    'newWorkflow',
-                    array(
-                        'label' => 'New',
-                        'onClickFunction' => 'Fisma.Workflow.addWorkflow',
-                        'imageSrc' => '/images/create.png'
-                    )
-                );
+                if ($this->_hasManagePrivilege()) {
+                    $buttons['newWorkflow'] = new Fisma_Yui_Form_Button(
+                        'newWorkflow',
+                        array(
+                            'label' => 'New',
+                            'onClickFunction' => 'Fisma.Workflow.addWorkflow',
+                            'imageSrc' => '/images/create.png'
+                        )
+                    );
+                }
                 break;
             case 'view':
                 $id = $this->getRequest()->getParam('id');
@@ -544,43 +565,45 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
                 );
 
                 //check manage privilege
-                $buttons['editButton'] = new Fisma_Yui_Form_Button(
-                    'editMode',
-                    array(
-                        'label' => 'Edit',
-                        'onClickFunction' => 'Fisma.Editable.turnAllOn',
-                        'imageSrc' => '/images/edit.png'
-                    )
-                );
+                if ($this->_hasManagePrivilege()) {
+                    $buttons['editButton'] = new Fisma_Yui_Form_Button(
+                        'editMode',
+                        array(
+                            'label' => 'Edit',
+                            'onClickFunction' => 'Fisma.Editable.turnAllOn',
+                            'imageSrc' => '/images/edit.png'
+                        )
+                    );
 
-                $buttons['submitButton'] = new Fisma_Yui_Form_Button(
-                    'saveChanges',
-                    array(
-                        'label' => 'Save',
-                        'onClickFunction' => 'Fisma.Util.submitFirstForm',
-                        'imageSrc' => '/images/ok.png',
-                        'hidden' => true
-                    )
-                );
+                    $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+                        'saveChanges',
+                        array(
+                            'label' => 'Save',
+                            'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                            'imageSrc' => '/images/ok.png',
+                            'hidden' => true
+                        )
+                    );
 
-                $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
-                    'discardChanges',
-                    array(
-                        'value' => 'Cancel',
-                        'imageSrc' => '/images/no_entry.png',
-                        'href' => '/workflow/view/id/' . $id,
-                        'hidden' => true
-                    )
-                );
+                    $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+                        'discardChanges',
+                        array(
+                            'value' => 'Cancel',
+                            'imageSrc' => '/images/no_entry.png',
+                            'href' => '/workflow/view/id/' . $id,
+                            'hidden' => true
+                        )
+                    );
 
-                $buttons['addStep'] = new Fisma_Yui_Form_Button(
-                    'addStep',
-                    array(
-                        'label' => 'Add Step',
-                        'onClickFunction' => 'Fisma.Workflow.addStep',
-                        'imageSrc' => '/images/create.png'
-                    )
-                );
+                    $buttons['addStep'] = new Fisma_Yui_Form_Button(
+                        'addStep',
+                        array(
+                            'label' => 'Add Step',
+                            'onClickFunction' => 'Fisma.Workflow.addStep',
+                            'imageSrc' => '/images/create.png'
+                        )
+                    );
+                }
                 break;
         }
 
@@ -657,5 +680,48 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
         } else {
             $this->view->err = 'Invalid ID provided (' . $id . ').';
         }
+    }
+
+    /**
+     * Subscribe current user to a workflow step
+     */
+    public function subscribeAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $stepId = $this->getRequest()->getParam('stepId');
+        $model = Doctrine::getTable('WorkflowStep')->find($stepId)->Workflow->module;
+        $query = Doctrine_Query::create()
+            ->from('WorkflowStepUser wsu')
+            ->where('wsu.stepId = ?', $stepId)
+            ->andWhere('wsu.userId = ?', CurrentUser::getAttribute('id'));
+        $watching = ($query->count() > 0);
+
+        if (!$watching) {
+            $wsu = new WorkflowStepUser();
+            $wsu->stepId = $stepId;
+            $wsu->userId = CurrentUser::getAttribute('id');
+            $wsu->save();
+        }
+
+        $this->_redirect('/workflow/workflow/format/html/model/' . $model . '/id/' . $id);
+    }
+
+    /**
+     * Unsubscribe current user from a workflow step
+     */
+    public function unsubscribeAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        $stepId = $this->getRequest()->getParam('stepId');
+        $model = Doctrine::getTable('WorkflowStep')->find($stepId)->Workflow->module;
+        $query = Doctrine_Query::create()
+            ->from('WorkflowStepUser wsu')
+            ->where('wsu.stepId = ?', $stepId)
+            ->andWhere('wsu.userId = ?', CurrentUser::getAttribute('id'));
+        if ($wsu = $query->fetchOne()) {
+            $wsu->delete();
+        }
+
+        $this->_redirect('/workflow/workflow/format/html/model/' . $model . '/id/' . $id);
     }
 }

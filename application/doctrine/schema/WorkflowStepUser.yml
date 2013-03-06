@@ -1,0 +1,8 @@
+WorkflowStepUser:
+    columns:
+        userId:
+            type: integer
+            primary: true
+        stepId:
+            type: integer
+            primary: true

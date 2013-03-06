@@ -28,6 +28,8 @@
 class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
                                                            Fisma_Search_CustomChunkSize_Interface
 {
+    protected $_viewUrl = '/finding/remediation/view/id/';
+
     /**
      * Because the finding model is quite complex, it has a smaller-than-normal index chunk size which
      * uses less memory and should provide a more responsive UI.

@@ -173,6 +173,12 @@ User:
             foreign: incidentId
             refClass: IrIncidentUser
 
+        WatchingSteps:
+            class: WorkflowStep
+            local: userId
+            foreign: stepId
+            refClass: WorkflowStepUser
+
     actAs:
         Timestampable:
             created:
