@@ -120,9 +120,13 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             if ($this->view->form->isValid($this->getRequest()->getPost())) {
                 $incident = new Incident();
                 $incident->merge($this->view->form->getValues());
-                $session = Fisma::getSession();
-                $session->irDraft = serialize($incident);
-                $this->_redirect('/incident/review-report');
+                if ($incident->isValid()) {
+                    $session = Fisma::getSession();
+                    $session->irDraft = serialize($incident);
+                    $this->_redirect('/incident/review-report');
+                } else {
+                    $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
+                }
             } else {
                 $this->view->priorityMessenger(Fisma_Zend_Form_Manager::getErrors($this->view->form), 'warning');
             }
