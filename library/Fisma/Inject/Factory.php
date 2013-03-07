@@ -61,6 +61,7 @@ class Fisma_Inject_Factory
         } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
             throw $e;
         } catch(Exception $e) {
+            Zend_Registry::get('Zend_Log')->err($e);
             $msg = $e->getMessage();
             throw new Fisma_Zend_Exception("An exception occured while instantiating a Fisma_Inject object: $msg");
         }

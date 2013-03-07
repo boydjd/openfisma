@@ -44,6 +44,11 @@
         }
 
         var t_name = $(this).attr('target');
+        // if target isn't specified, set the current element up as the target
+        if (!t_name) {
+            t_name = $(this).attr("id");
+            $(this).attr("target", t_name);
+        }
         $(this).data('old_object', $('#' + t_name).clone());
         $(this).removeClass('editable');
         // disable the tooltip which gets in the way of the calendar widget
@@ -124,8 +129,11 @@
             csrf        = form.find('input[name=csrf]').val(),
             action      = form.attr('action'),
             value       = null,
-            refreshUrl  = Fisma.tabView.get('activeTab').get('dataSrc'),
-            affected = target.attr("affected");
+            affected = target.attr("affected"),
+            refreshUrl = document.location.pathname;
+        if (Fisma.tabView) {
+            refreshUrl  = Fisma.tabView.get('activeTab').get('dataSrc');
+        }
         switch (type) {
             case 'select':
             case 'checked':
@@ -321,6 +329,7 @@
     FE.Select = function(target) {
         var jqTarget = $(target),
             val = jqTarget.val() || jqTarget.attr("value") || jqTarget.text(),
+            json = jqTarget.attr("json"),
             href = jqTarget.attr("href") + "value/" + encodeURI(val.trim()),
             select = $("<select/>").button();
         jqTarget.empty();
@@ -329,7 +338,29 @@
             name: jqTarget.attr("name")
         });
         jqTarget.html(select);
-        select.load(href);
+        if (json) {
+            $.getJSON(json, function (data) {
+                var valueField = jqTarget.attr("jsonValueField") || "id",
+                    labelFields = (jqTarget.attr("jsonLabelFields") || "id").split(" "),
+                    format = jqTarget.attr("jsonLabelFormat") || "%s";
+                $("<option/>").appendTo(select);
+                // this assumes search format- could easily be extended to be more flexible
+                $.each(data.records, function() {
+                    var record = this,
+                        params = [format];
+                    $.each(labelFields, function() {
+                        params.push(record[this]);
+                    });
+                    $("<option/>")
+                        .attr("value", record[valueField])
+                        .text($P.sprintf.apply({}, params))
+                        .attr("selected", record[valueField] == val ? "selected" : null)
+                        .appendTo(select);
+                });
+            });
+        } else if (json) { // pull from a json data source such as search
+            select.load(href);
+        }
         if (!Fisma.Editable.editMode) {
             select.focus();
         }

@@ -1,0 +1,21 @@
+AssetService:
+    columns:
+        addressPort:
+            type: integer
+            unsigned: true
+            extra:
+                logicalName: IP Port Number
+                notify: true
+        protocol: string
+        service: string
+        assetId: integer
+        productId: integer
+    relations:
+        Asset:
+            local: assetId
+            foreign: id
+            foreignAlias: AssetServices
+        Product:
+            local: productId
+            foreign: id
+            foreignAlias: AssetServices
