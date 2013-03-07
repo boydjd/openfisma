@@ -126,6 +126,13 @@ class Notification extends BaseNotification
         $isIn = false;
         $notifications = new Doctrine_Collection('Notification');
         foreach ($userEvents as $userEvent) {
+            if (
+                ($userEvent['u_locked'] || !empty($userEvent['deleted_at']))
+                && $event->name !== 'USER_LOCKED'
+                && $event->name !== 'USER_DISABLED'
+            ) {
+                continue; // don't send anything
+            }
             $notification = new Notification();
             $notification->eventId                  = $userEvent['e_id'];
             $notification->userId                   = $userEvent['u_id'];

@@ -178,6 +178,12 @@ Migration:
         tagNumber: 0
         name: IncidentActionsTaken
 
+    030104_Commentable:
+        majorVersion: 3
+        minorVersion: 1
+        tagNumber: 4
+        name: Commentable
+
     030200_ParentOrganization:
         majorVersion: 3
         minorVersion: 2
