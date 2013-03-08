@@ -100,7 +100,7 @@
 
     <target name="jslint-default" depends="check-jslint-cond" unless="cond-is-true">
         <jslint options="browser,sloppy,white,vars,plusplus,nomen,forin,continue,evil" haltOnFailure="false">
-            <predef>jQuery,$$,Fisma,YAHOO,document,PHP_JS,$$P,tinyMCE</predef>
+            <predef>jQuery,$$,Fisma,YAHOO,document,PHP_JS,$$P,tinyMCE,moment</predef>
             <formatter type="plain" />
             <fileset dir="../../public/javascripts/Fisma" includes="**/*.js" excludes="**/*-min.js" />
         </jslint>
