@@ -464,9 +464,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      */
     public function modifyAction()
     {
-        // ACL for finding objects is handled inside the finding listener, because it has to do some
-        // very fine-grained error checking
-
         $id = $this->_request->getParam('id');
 
         $fromSearchParams = $this->_getFromSearchParams($this->_request);
@@ -1199,6 +1196,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
      */
     private function _isEditable($column, $table, $finding)
     {
-        return $finding->canEdit($column);
+        $privilege = $this->_acl->hasPrivilegeForObject('update', $finding);
+        return $privilege && $finding->canEdit($column);
     }
 }
