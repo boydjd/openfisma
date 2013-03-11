@@ -145,7 +145,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testAddForeignKeyWithName()
     {
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
 
         $addIndexRegex = '/alter\s+table\s+`footable`\s+add\s+index.*`foocolumn_idx`\s+\(`foocolumn`\)/Usi';
         $addFkRegex = '/alter\s+table\s+`footable`\s+add\s+constraint.*foobar/Usi';
@@ -166,7 +167,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testAddForeignKeyWithoutName()
     {
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
 
         $addIndexRegex = '/alter\s+table\s+`footable`\s+add\s+index.*`foocolumn_idx`\s+\(`foocolumn`\)/Usi';
         $addFkRegex = '/alter\s+table\s+`footable`\s+add\s+constraint.*footable_foocolumn_bartable_barcolumn/Usi';
@@ -187,7 +189,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testUniqueKeyWithOneColumn()
     {
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
@@ -201,7 +204,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testUniqueKeyWithMultipleColumns()
     {
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
@@ -217,7 +221,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testUniqueKeyWithMultipleColumnsAndNoName()
     {
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->addUniqueKey('foo', array('apple', 'banana'));
     }
 
@@ -226,7 +231,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testAddColumn()
     {
-        $helper = $this->getMock('Fisma_Migration_helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
@@ -240,7 +246,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testAddColumnAfterColumn()
     {
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
@@ -254,7 +261,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testDropColumn()
     {
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
@@ -268,7 +276,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testDropForeignKey()
     {
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
@@ -284,7 +293,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
     {
         $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`bar`\s+\(`alpha`\)/Usi';
 
-        $helper = $this->getMock('Fisma_Migration_helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
@@ -300,7 +310,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
     {
         $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`bar`\s+\(`alpha`,\s*`beta`\)/Usi';
 
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
@@ -316,7 +327,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
     {
         $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`alpha_idx`\s+\(`alpha`\)/Usi';
 
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
@@ -334,7 +346,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
     {
         $regex = '/alter\s+table\s+`Foo`\s+add\s+index\s+`alpha_idx`\s+\(`alpha`\)/Usi';
 
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
 
         $helper->addIndex('Foo', array('alpha', 'beta'));
     }
@@ -344,7 +357,8 @@ class Test_Library_Fisma_Migration_Helper extends Test_Case_Unit
      */
     public function testDropIndex()
     {
-        $helper = $this->getMock('Fisma_Migration_Helper', array('exec'), array(null));
+        $helper = $this->getMock('Fisma_Migration_Helper', array('exec', 'tableExists'), array(null));
+        $helper->expects($this->any())->method('tableExists')->will($this->returnValue(true));
         $helper->expects($this->once())
            ->method('exec')
            // PCRE flags (since nobody memorizes these) U=ungreedy, s=skip newlines, i=case insensitive
