@@ -86,8 +86,6 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $findingSources = Doctrine::getTable('Source')->findAll()->toKeyValueArray('id', 'nickname');
         $this->view->findingSources = array('none' => '') + $findingSources;
         $this->view->csrfToken = $this->_helper->csrf->getToken();
-
-
     }
 
     /**

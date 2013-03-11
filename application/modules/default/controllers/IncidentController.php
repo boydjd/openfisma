@@ -109,7 +109,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         );
         $this->view->form = $this->getForm('incident_report');
 
-
         // Unauthenticated users see a different layout that doesn't have a menubar
         if (!$this->_me) {
             $this->_helper->layout->setLayout('anonymous');

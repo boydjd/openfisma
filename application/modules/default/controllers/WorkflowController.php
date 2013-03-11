@@ -69,7 +69,6 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
         $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
-
     /**
      * Add a new workflow
      *

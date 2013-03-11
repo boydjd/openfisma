@@ -111,8 +111,10 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
                     $transition = $transitions[$randTransition]['name'];
                     $userId = $this->_getRandomUser()->id;
                     try {
-                        $nextStep = $e->CurrentStep->getNextStep($transition); //Use destionationId to bypass ACL checking
-                        WorkflowStep::completeOnObject($e, $transition, 'Completed by generation script', $userId, rand(7, 30), $nextStep->id);
+                        $nextStep = $e->CurrentStep->getNextStep($transition); //Use destionationId to bypass ACL
+                        WorkflowStep::completeOnObject(
+                            $e, $transition, 'Completed by generation script', $userId, rand(7, 30), $nextStep->id
+                        );
                     } catch (Exception $e) {
                     }
                 }

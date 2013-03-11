@@ -15,7 +15,8 @@ Fisma_Format_Section::stopSection();
 <script type="text/javascript">
     $(function() {
         var assetRow = $("table.fisma_crud > tbody > tr:has(#assetInfo)"),
-            piiRows = $("table.fisma_crud > tbody > tr:has(input[name=piiMobileMedia], input[name=piiEncrypted], input[name=piiIndividualsCount])");
+            piiRows = $("table.fisma_crud > tbody > tr:has(input[name=piiMobileMedia], " +
+                        "input[name=piiEncrypted], input[name=piiIndividualsCount])");
         assetRow.hide();
         piiRows.hide();
         $("input[name=assetInvolved]").change(function(ev) {

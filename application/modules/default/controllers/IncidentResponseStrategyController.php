@@ -43,7 +43,7 @@ class IncidentResponseStrategyController extends Fisma_Zend_Controller_Action_Ab
     protected $_relatedModels = array(
             array(
                 'model' => 'Incident',
-                'column' => 'responseStrategy',
+                'column' => 'responseStrategies',
                 'label' => 'Incident(s)',
                 'modelControllerPrefix' => '/incident'
             )

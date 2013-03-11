@@ -75,7 +75,7 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
             ),
             'id'
         );
-        //Add foreign keys
+        //Add foreign key
         $helper->addForeignKey('workflow', 'creatorid', 'user', 'id');
         $helper->addForeignKey('workflow_step', 'workflowid', 'workflow', 'id');
         //Create default records
@@ -343,14 +343,25 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'cardinality' => '1',
                 'name' => 'Action Plan',
                 'label' => 'AP',
-                'description' => 'Decide whether to fix the vulnerability and if not, why (\'Breaks system\', \'Cost prohibitive\', \'Technically infeasible\'...).',
+                'description' => 'Decide whether to fix the vulnerability and if not, why (\'Breaks system\', \'Cost ' .
+                                 'prohibitive\', \'Technically infeasible\'...).',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
                 'allotteddays' => '30',
                 'autotransition' => '1',
                 'autotransitiondestination' => '2',
                 'attachmenteditable' => '0',
-                'prerequisites'=>NULL,'restrictedfields'=>NULL,'transitions' => 'a:2:{i:0;a:5:{s:4:"name";s:3:"Fix";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"3";}i:1;a:5:{s:4:"name";s:9:"Won\'t Fix";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"2";}}',
+                'prerequisites' => NULL,
+                'restrictedfields' => NULL,
+                'transitions' =>
+                    'a:2:{i:0;a:5:{s:4:"name";s:3:"Fix";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Informati' .
+                    'on Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler"' .
+                    ':"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.' .
+                    'png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"3";}i:1;a:5:{s' .
+                    ':4:"name";s:9:"Won\'t Fix";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Secur' .
+                    'ity Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.' .
+                    'Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","ha' .
+                    'ndler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"2";}}',
                 'workflowid' => '1'
             ),
             array(
@@ -363,9 +374,17 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'description' => 'Please provide a reason if this vulnerability needs re-evaluation',
                 'isresolved' => '1',
                 'allottedtime' => 'unlimited',
-                'allotteddays'=>NULL,'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '0',
-                'prerequisites'=>NULL,'restrictedfields'=>NULL,'transitions' => 'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"1";}}',
+                'allotteddays' => NULL,
+                'autotransition' => '0',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '0',
+                'prerequisites' => NULL,
+                'restrictedfields' => NULL,
+                'transitions' =>
+                    'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["' .
+                    'Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png",' .
+                    '"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_em' .
+                    'pty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"1";}}',
                 'workflowid' => '2'
             ),
             array(
@@ -378,9 +397,18 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'description' => 'Please provide details about the actions taken to remediate the vulnerability',
                 'isresolved' => '0',
                 'allottedtime' => 'unlimited',
-                'allotteddays'=>NULL,'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '1',
-                'prerequisites'=>NULL,'restrictedfields'=>NULL,'transitions' => 'a:1:{i:0;a:5:{s:4:"name";s:8:"Complete";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
+                'allotteddays' => NULL,
+                'autotransition' => '0',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '1',
+                'prerequisites' => NULL,
+                'restrictedfields' => NULL,
+                'transitions' =>
+                    'a:1:{i:0;a:5:{s:4:"name";s:8:"Complete";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Inform' .
+                    'ation Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handl' .
+                    'er":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_op' .
+                    'en.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";' .
+                    '}}',
                 'workflowid' => '3'
             ),
             array(
@@ -393,9 +421,17 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'description' => 'Please provide a reason if this vulnerability needs to be re-opened',
                 'isresolved' => '1',
                 'allottedtime' => 'unlimited',
-                'allotteddays'=>NULL,'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '0',
-                'prerequisites'=>NULL,'restrictedfields'=>NULL,'transitions' => 'a:1:{i:0;a:5:{s:4:"name";s:7:"Re-open";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"1";}}',
+                'allotteddays' => NULL,
+                'autotransition' => '0',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '0',
+                'prerequisites' => NULL,
+                'restrictedfields' => NULL,
+                'transitions' =>
+                    'a:1:{i:0;a:5:{s:4:"name";s:7:"Re-open";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Infor' .
+                    'mation Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","hand' .
+                    'ler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_o' .
+                    'pen.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"1";}}',
                 'workflowid' => '3'
             ),
             array(
@@ -405,13 +441,29 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'cardinality' => '1',
                 'name' => 'Action Plan',
                 'label' => 'AP',
-                'description' => 'Decide whether to accept the risks, to start remediation, or to discard the finding as False Positive',
+                'description' => 'Decide whether to accept the risks, to start remediation, or to discard the finding' .
+                                 ' as False Positive',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
                 'allotteddays' => '30',
                 'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '0',
-                'prerequisites'=>NULL,'restrictedfields'=>NULL,'transitions' => 'a:3:{i:0;a:5:{s:4:"name";s:11:"Accept Risk";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"6";}i:1;a:5:{s:4:"name";s:14:"False Positive";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:2:"11";}i:2;a:5:{s:4:"name";s:9:"Remediate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:2:"12";}}',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '0',
+                'prerequisites' => NULL,
+                'restrictedfields' => NULL,
+                'transitions' =>
+                    'a:3:{i:0;a:5:{s:4:"name";s:11:"Accept Risk";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["' .
+                    'Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png",' .
+                    '"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_em' .
+                    'pty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"6";}i' .
+                    ':1;a:5:{s:4:"name";s:14:"False Positive";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Inf' .
+                    'ormation Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","ha' .
+                    'ndler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty' .
+                    '_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:2:"11";}i:2' .
+                    ';a:5:{s:4:"name";s:9:"Remediate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information' .
+                    ' Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"' .
+                    'Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.pn' .
+                    'g","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:2:"12";}}',
                 'workflowid' => '4'
             ),
             array(
@@ -421,13 +473,28 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'cardinality' => '1',
                 'name' => 'Risk Analysis Form',
                 'label' => 'RAF',
-                'description' => 'Please provide the following details:<ol><li>Categorize (input below)</li><li>Business Case (Mitigation Strategy tab)</li><li>Residual Risk (Risk Analysis tab)</li><li>Evidence (Attachments tab)</li><li>Estimated Completion Date (Mitigation Strategy tab)</li><li>Countermeasures (Risk Analysis tab)</li></ol>',
+                'description' => 'Please provide the following details:<ol><li>Categorize (input below)</li><li>Busin' .
+                                 'ess Case (Mitigation Strategy tab)</li><li>Residual Risk (Risk Analysis tab)</li><l' .
+                                 'i>Evidence (Attachments tab)</li><li>Estimated Completion Date (Mitigation Strategy' .
+                                 ' tab)</li><li>Countermeasures (Risk Analysis tab)</li></ol>',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
                 'allotteddays' => '30',
                 'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '1',
-                'prerequisites'=>NULL,'restrictedfields'=>NULL,'transitions' => 'a:2:{i:0;a:5:{s:4:"name";s:14:"Submit to IV&V";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i:1;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '1',
+                'prerequisites' => NULL,
+                'restrictedfields' => NULL,
+                'transitions' =>
+                    'a:2:{i:0;a:5:{s:4:"name";s:14:"Submit to IV&V";s:11:"destination";s:4:"next";s:5:"roles";s:32:"[' .
+                    '"Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png"' .
+                    ',"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_e' .
+                    'mpty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"unde' .
+                    'fined";}i:1;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:' .
+                    '"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.pn' .
+                    'g","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin' .
+                    '_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5"' .
+                    ';}}',
                 'workflowid' => '5'
             ),
             array(
@@ -442,10 +509,27 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'allottedtime' => 'days',
                 'allotteddays' => '7',
                 'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '1',
-                'prerequisites' => 'a:7:{i:0;s:18:"mitigationStrategy";i:1;s:10:"currentEcd";i:2;s:11:"threatLevel";i:3;s:6:"threat";i:4;s:28:"countermeasuresEffectiveness";i:5;s:15:"countermeasures";i:6;s:17:"securityControlId";}',
-                'restrictedfields' => 'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threat";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControlId";}',
-                'transitions' => 'a:2:{i:0;a:5:{s:4:"name";s:36:"Approve and Submit to Business Owner";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '1',
+                'prerequisites' =>
+                    'a:7:{i:0;s:18:"mitigationStrategy";i:1;s:10:"currentEcd";i:2;s:11:"threatLevel";i:3;s:6:"threat"' .
+                    ';i:4;s:28:"countermeasuresEffectiveness";i:5;s:15:"countermeasures";i:6;s:17:"securityControlId"' .
+                    ';}',
+                'restrictedfields' =>
+                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
+                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
+                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
+                    'Id";}',
+                'transitions' =>
+                    'a:2:{i:0;a:5:{s:4:"name";s:36:"Approve and Submit to Business Owner";s:11:"destination";s:4:"nex' .
+                    't";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","ic' .
+                    'on":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/ima' .
+                    'ges/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"custom' .
+                    'Destination";s:9:"undefined";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"' .
+                    'roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/im' .
+                    'ages/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/tras' .
+                    'h_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestinat' .
+                    'ion";s:9:"undefined";}}',
                 'workflowid' => '5'
             ),
             array(
@@ -460,9 +544,24 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'allottedtime' => 'days',
                 'allotteddays' => '7',
                 'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '1',
-                'prerequisites'=>NULL,'restrictedfields' => 'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threat";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControlId";}',
-                'transitions' => 'a:2:{i:0;a:5:{s:4:"name";s:26:"Approve and Submit to CISO";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '1',
+                'prerequisites' => NULL,
+                'restrictedfields' =>
+                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
+                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
+                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
+                    'Id";}',
+                'transitions' =>
+                    'a:2:{i:0;a:5:{s:4:"name";s:26:"Approve and Submit to CISO";s:11:"destination";s:4:"next";s:5:"ro' .
+                    'les";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/imag' .
+                    'es/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_' .
+                    'recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestinatio' .
+                    'n";s:9:"undefined";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:3' .
+                    '2:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.' .
+                    'png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recycleb' .
+                    'in_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"' .
+                    'undefined";}}',
                 'workflowid' => '5'
             ),
             array(
@@ -477,9 +576,23 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'allottedtime' => 'days',
                 'allotteddays' => '7',
                 'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '1',
-                'prerequisites'=>NULL,'restrictedfields' => 'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threat";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControlId";}',
-                'transitions' => 'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '1',
+                'prerequisites' => NULL,
+                'restrictedfields' =>
+                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
+                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
+                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
+                    'Id";}',
+                'transitions' =>
+                    'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Informa' .
+                    'tion Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handle' .
+                    'r":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_ope' .
+                    'n.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}' .
+                    'i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Sec' .
+                    'urity Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fism' .
+                    'a.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","' .
+                    'handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
                 'workflowid' => '5'
             ),
             array(
@@ -492,11 +605,21 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'description' => 'Please provide a reason (if required) to re-evaluate the finding.',
                 'isresolved' => '1',
                 'allottedtime' => 'custom',
-                'allotteddays'=>NULL,'autotransition' => '1',
+                'allotteddays' => NULL,
+                'autotransition' => '1',
                 'autotransitiondestination' => '5',
                 'attachmenteditable' => '0',
-                'prerequisites'=>NULL,'restrictedfields' => 'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threat";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControlId";}',
-                'transitions' => 'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
+                'prerequisites' => NULL,
+                'restrictedfields' =>
+                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
+                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
+                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
+                    'Id";}',
+                'transitions' =>
+                    'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["' .
+                    'Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png",' .
+                    '"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_em' .
+                    'pty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
                 'workflowid' => '5'
             ),
             array(
@@ -509,10 +632,21 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'description' => 'Please provide a reason (if required) to re-evaluate the finding.',
                 'isresolved' => '1',
                 'allottedtime' => 'unlimited',
-                'allotteddays'=>NULL,'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '0',
-                'prerequisites'=>NULL,'restrictedfields' => 'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threat";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControlId";}',
-                'transitions' => 'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
+                'allotteddays' => NULL,
+                'autotransition' => '0',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '0',
+                'prerequisites' => NULL,
+                'restrictedfields' =>
+                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
+                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
+                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
+                    'Id";}',
+                'transitions' =>
+                    'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["' .
+                    'Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png",' .
+                    '"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_em' .
+                    'pty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
                 'workflowid' => '6'
             ),
             array(
@@ -527,8 +661,19 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'allottedtime' => 'days',
                 'allotteddays' => '30',
                 'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '1',
-                'prerequisites'=>NULL,'restrictedfields'=>NULL,'transitions' => 'a:2:{i:0;a:5:{s:4:"name";s:6:"Submit";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i:1;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '1',
+                'prerequisites' => NULL,
+                'restrictedfields' => NULL,
+                'transitions' =>
+                    'a:2:{i:0;a:5:{s:4:"name";s:6:"Submit";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Informat' .
+                    'ion Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler' .
+                    '":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open' .
+                    '.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i' .
+                    ':1;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Inform' .
+                    'ation Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handl' .
+                    'er":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_op' .
+                    'en.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
                 'workflowid' => '7'
             ),
             array(
@@ -543,10 +688,27 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'allottedtime' => 'days',
                 'allotteddays' => '7',
                 'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '1',
-                'prerequisites' => 'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threat";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControlId";}',
-                'restrictedfields' => 'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threat";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControlId";}',
-                'transitions' => 'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '1',
+                'prerequisites' =>
+                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
+                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
+                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
+                    'Id";}',
+                'restrictedfields' =>
+                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
+                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
+                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
+                    'Id";}',
+                'transitions' =>
+                    'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Informa' .
+                    'tion Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handle' .
+                    'r":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_ope' .
+                    'n.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}' .
+                    'i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Sec' .
+                    'urity Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fism' .
+                    'a.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","' .
+                    'handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
                 'workflowid' => '7'
             ),
             array(
@@ -559,10 +721,26 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'description' => 'Please remediate the finding and submit evidence.',
                 'isresolved' => '0',
                 'allottedtime' => 'ecd',
-                'allotteddays'=>NULL,'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '1',
-                'prerequisites'=>NULL,'restrictedfields' => 'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threat";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControlId";}',
-                'transitions' => 'a:2:{i:0;a:5:{s:4:"name";s:6:"Submit";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i:1;a:5:{s:4:"name";s:26:"Revise Mitigation Strategy";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:2:"12";}}',
+                'allotteddays' => NULL,
+                'autotransition' => '0',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '1',
+                'prerequisites' => NULL,
+                'restrictedfields' =>
+                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
+                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
+                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
+                    'Id";}',
+                'transitions' =>
+                    'a:2:{i:0;a:5:{s:4:"name";s:6:"Submit";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Informat' .
+                    'ion Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler' .
+                    '":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open' .
+                    '.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i' .
+                    ':1;a:5:{s:4:"name";s:26:"Revise Mitigation Strategy";s:11:"destination";s:6:"custom";s:5:"roles"' .
+                    ';s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/e' .
+                    'dit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recy' .
+                    'clebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s' .
+                    ':2:"12";}}',
                 'workflowid' => '7'
             ),
             array(
@@ -577,9 +755,23 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'allottedtime' => 'days',
                 'allotteddays' => '7',
                 'autotransition' => '0',
-                'autotransitiondestination'=>NULL,'attachmenteditable' => '1',
-                'prerequisites'=>NULL,'restrictedfields' => 'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threat";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControlId";}',
-                'transitions' => 'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
+                'autotransitiondestination' => NULL,
+                'attachmenteditable' => '1',
+                'prerequisites' => NULL,
+                'restrictedfields' =>
+                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
+                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
+                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
+                    'Id";}',
+                'transitions' =>
+                    'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Informa' .
+                    'tion Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handle' .
+                    'r":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_ope' .
+                    'n.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}' .
+                    'i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Sec' .
+                    'urity Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fism' .
+                    'a.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","' .
+                    'handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
                 'workflowid' => '7'
             ),
             array(
@@ -592,11 +784,21 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'description' => 'Please provide a reason (if required) to re-evaluate the finding.',
                 'isresolved' => '1',
                 'allottedtime' => 'unlimited',
-                'allotteddays'=>NULL,'autotransition' => '0',
+                'allotteddays' => NULL,
+                'autotransition' => '0',
                 'autotransitiondestination' => '5',
                 'attachmenteditable' => '0',
-                'prerequisites'=>NULL,'restrictedfields' => 'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threat";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControlId";}',
-                'transitions' => 'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
+                'prerequisites' => NULL,
+                'restrictedfields' =>
+                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
+                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
+                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
+                    'Id";}',
+                'transitions' =>
+                    'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["' .
+                    'Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png",' .
+                    '"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_em' .
+                    'pty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
                 'workflowid' => '7'
             )
         );

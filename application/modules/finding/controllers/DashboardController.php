@@ -149,7 +149,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->execute();
 
         $this->view->byType = Doctrine_Query::create()
-            ->select('COUNT(f.id) as count, IFNULL(w.name, "Unassigned") as criteria, IFNULL(w.description, "") as tooltip, f.currentStepId, ws.id, w.id')
+            ->select('COUNT(f.id) as count, IFNULL(w.name, "Unassigned") as criteria, ' .
+                     'IFNULL(w.description, "") as tooltip, f.currentStepId, ws.id, w.id')
             ->from('Finding f')
             ->leftJoin('f.CurrentStep ws')
             ->leftJoin('ws.Workflow w')
@@ -163,7 +164,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->execute();
 
         $this->view->byStatus = Doctrine_Query::create()
-            ->select('COUNT(f.id) as count, IFNULL(ws.name, "Unassigned") as criteria, CONCAT(IFNULL(w.name, "No "), " Workflow") as tooltip, f.currentStepId, w.id, ws.id')
+            ->select('COUNT(f.id) as count, IFNULL(ws.name, "Unassigned") as criteria, ' .
+                     'CONCAT(IFNULL(w.name, "No "), " Workflow") as tooltip, f.currentStepId, w.id, ws.id')
             ->from('Finding f')
             ->leftJoin('f.CurrentStep ws')
             ->leftJoin('ws.Workflow w')
