@@ -410,8 +410,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
 
     public function canEdit($field)
     {
-        $privilege = CurrentUser::getInstance()->acl()->requirePrivilegeForObject('update', $this);
-        if ($privilege && $this->CurrentStep && !empty($this->CurrentStep->restrictedFields)) {
+        if ($this->CurrentStep && !empty($this->CurrentStep->restrictedFields)) {
             if (in_array($field, $this->CurrentStep->restrictedFields)) {
                 return false;
             }

@@ -100,8 +100,22 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
                 if (empty($e->pocId)) {
                     $e->pocId = $this->_getRandomUser()->id;
                 }
+                $e->save();
 
-                //@TODO workflow simulation
+                //workflow simulation
+                $rand = rand(0, 100);
+                while ($rand >= 25) {
+                    $rand = rand(0, $rand);
+                    $transitions = $e->CurrentStep->transitions;
+                    $randTransition = rand(0, count($transitions) -1);
+                    $transition = $transitions[$randTransition]['name'];
+                    $userId = $this->_getRandomUser()->id;
+                    try {
+                        $nextStep = $e->CurrentStep->getNextStep($transition); //Use destionationId to bypass ACL checking
+                        WorkflowStep::completeOnObject($e, $transition, 'Completed by generation script', $userId, rand(7, 30), $nextStep->id);
+                    } catch (Exception $e) {
+                    }
+                }
 
                 $e->save();
                 $e->free();

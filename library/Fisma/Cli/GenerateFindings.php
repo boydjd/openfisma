@@ -109,6 +109,11 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
             $currentEcd = $date->getDate()->toString(Fisma_Date::FORMAT_DATE);
 
             $finding = array();
+            $finding['currentEcd'] = $currentEcd;
+            $finding['mitigationStrategy'] = Fisma_String::loremIpsum(rand(90, 100));
+            $finding['resourcesRequired'] = '$ ' . rand(0, 999999);
+            $finding['ecdChangeDescription'] = Fisma_String::loremIpsum(rand(4, 5));;
+
             $finding['threatLevel'] = $threat[rand(0, $threatCount)];
             $finding['countermeasuresEffectiveness'] = $effectiveness[rand(0, $effectivenessCount)];
 
@@ -148,8 +153,22 @@ class Fisma_Cli_GenerateFindings extends Fisma_Cli_AbstractGenerator
                 if (empty($f->pocId)) {
                     $f->pocId = $this->_getRandomUser()->id;
                 }
+                $f->save();
 
-                //@TODO workflow simulation
+                //workflow simulation
+                $rand = rand(0, 100);
+                while ($rand >= 10) {
+                    $rand = rand(0, $rand);
+                    $transitions = $f->CurrentStep->transitions;
+                    $randTransition = rand(0, count($transitions) -1);
+                    $transition = $transitions[$randTransition]['name'];
+                    $userId = $this->_getRandomUser()->id;
+                    try {
+                        $nextStep = $f->CurrentStep->getNextStep($transition); //Use destionationId to bypass ACL checking
+                        WorkflowStep::completeOnObject($f, $transition, 'Completed by generation script', $userId, rand(7, 30), $nextStep->id);
+                    } catch (Exception $e) {
+                    }
+                }
 
                 $f->save();
                 $f->free();
