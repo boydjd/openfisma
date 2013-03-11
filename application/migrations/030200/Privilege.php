@@ -42,10 +42,10 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
             array('resource' => 'incident', 'action' => 'manage_response_strategies')
         );
 
-        $fdgUpdate = $this->getHelper()->insert('privilege', array('resource' => 'finding', 'action' => 'update'));
+        $findingUpdate = $this->getHelper()->insert('privilege', array('resource' => 'finding', 'action' => 'update'));
         $this->getHelper()->exec(
             'INSERT into role_privilege (roleid, privilegeid) (' .
-                'SELECT DISTINCT roleid, ' . $fdgUpdate . ' from role_privilege WHERE privilegeid IN (' .
+                'SELECT DISTINCT roleid, ' . $findingUpdate . ' from role_privilege WHERE privilegeid IN (' .
                     'SELECT id FROM privilege WHERE resource = ? AND (' .
                         'action like ? OR action like ?' .
                     ')' .
@@ -69,10 +69,11 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
             array('finding', 'update_%', 'upload_evidence', 'mitigation_%', 'evidence_%')
         );
 
-        $wflManage = $this->getHelper()->insert('privilege', array('resource' => 'workflow', 'action' => 'manage'));
+        $workflowManage =
+            $this->getHelper()->insert('privilege', array('resource' => 'workflow', 'action' => 'manage'));
         $this->getHelper()->exec(
             'INSERT into role_privilege (roleid, privilegeid) (' .
-                'SELECT DISTINCT roleid, ' . $wflManage . ' from role_privilege WHERE privilegeid IN (' .
+                'SELECT DISTINCT roleid, ' . $workflowManage . ' from role_privilege WHERE privilegeid IN (' .
                     'SELECT id FROM privilege WHERE resource = ? AND action like ?' .
                 ')' .
             ');',

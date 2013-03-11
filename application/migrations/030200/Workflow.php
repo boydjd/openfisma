@@ -242,7 +242,7 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
         //Add workflowTransition backgroundTask enabled 1, number 1, unit day, time 02:00:00
         $bt = $helper->query("SELECT backgroundtasks from configuration");
         $bt = unserialize($bt[0]->backgroundtasks);
-        $bt[] = array(
+        $bt['workflowTransition'] = array(
             'enabled' => '1',
             'number' => '1',
             'unit' => 'day',
