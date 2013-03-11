@@ -209,3 +209,8 @@ Migration:
         minorVersion: 2
         tagNumber: 0
         name: Privilege
+    030200_Workflow:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: Workflow

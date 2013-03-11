@@ -36,10 +36,59 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
         );
         $this->getHelper()->insert('privilege', array('resource' => 'incident', 'action' => 'comment'));
         $this->getHelper()->insert('privilege', array('resource' => 'incident', 'action' => 'delete'));
+
         $this->getHelper()->insert(
             'privilege',
             array('resource' => 'incident', 'action' => 'manage_response_strategies')
         );
+
+        $findingUpdate = $this->getHelper()->insert('privilege', array('resource' => 'finding', 'action' => 'update'));
+        $this->getHelper()->exec(
+            'INSERT into role_privilege (roleid, privilegeid) (' .
+                'SELECT DISTINCT roleid, ' . $findingUpdate . ' from role_privilege WHERE privilegeid IN (' .
+                    'SELECT id FROM privilege WHERE resource = ? AND (' .
+                        'action like ? OR action like ?' .
+                    ')' .
+                ')' .
+            ');',
+            array('finding', 'update_%', 'upload_evidence')
+        );
+        $this->getHelper()->dropForeignKeys('evaluation', 'evaluation_privilegeid_privilege_id');
+        $this->getHelper()->exec(
+            'DELETE FROM role_privilege WHERE privilegeid IN (' .
+                'SELECT id FROM privilege WHERE resource = ? AND (' .
+                    'action like ? OR action like ? OR action like ? OR action like ?' .
+                ')' .
+            ');',
+            array('finding', 'update_%', 'upload_evidence', 'mitigation_%', 'evidence_%')
+        );
+        $this->getHelper()->exec(
+            'DELETE FROM privilege WHERE resource = ? AND (' .
+                'action like ? OR action like ? OR action like ? OR action like ?' .
+            ')',
+            array('finding', 'update_%', 'upload_evidence', 'mitigation_%', 'evidence_%')
+        );
+
+        $workflowManage =
+            $this->getHelper()->insert('privilege', array('resource' => 'workflow', 'action' => 'manage'));
+        $this->getHelper()->exec(
+            'INSERT into role_privilege (roleid, privilegeid) (' .
+                'SELECT DISTINCT roleid, ' . $workflowManage . ' from role_privilege WHERE privilegeid IN (' .
+                    'SELECT id FROM privilege WHERE resource = ? AND action like ?' .
+                ')' .
+            ');',
+            array('evaluation', 'create')
+        );
+
+        $this->getHelper()->exec(
+            'DELETE FROM role_privilege WHERE privilegeid IN (SELECT id FROM privilege WHERE resource = ?)',
+            array('evaluation')
+        );
+        $this->getHelper()->exec(
+            'DELETE FROM privilege WHERE resource = ?',
+            array('evaluation')
+        );
+
     }
 
     protected function _updateRoles()
@@ -79,7 +128,7 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
 
     protected function _assignPrivileges()
     {
-        $builtinRoles = array('Administrator', 'Power User', 'Limited User', 'Viewer');
+        $builtinRoles = array('Administrator', 'Power User', 'Viewer');
         $inExpr = 'IN (' . implode(',', array_fill(0, count($builtinRoles), '?')) . ')';
         $this->getHelper()->exec(
             'DELETE FROM role_privilege '
