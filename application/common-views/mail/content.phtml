@@ -185,7 +185,8 @@
         $value = $record->$field;
         $name = $table->getLogicalName($field);
         if (empty($value)):
-            $value = "(none)";
+            $value = '(none)';
+            $purify = 'none';
         else:
             $columnDef = $table->getColumnDefinition($table->getColumnName($field));
             $purify = (isset($columnDef['extra']['purify'])) ? 'none' : 'html';
