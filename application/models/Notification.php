@@ -47,7 +47,7 @@ class Notification extends BaseNotification
         // Figure out which users are listening for this event
         $eventsQuery = Doctrine_Query::create()
             //without DISTINCT, a user can receive multiple same emails due to multiple roles
-            ->select('DISTINCT e.id, u.id, u.email, u.displayName')
+            ->select('DISTINCT e.id, u.id, u.email, u.displayName, u.locked, u.deleted_at')
             ->from('User u')
             ->innerJoin('u.Events e')
             ->where('e.id = ?', $event->id)
