@@ -102,6 +102,10 @@ VulnerabilityList:
     url: /vm/vulnerability/list
     labels: [Vulnerabilities, Search]
     links: [no-link, no-link]
+VulnerabilityDashboard:
+    url: /vm/dashboard
+    labels: [Vulnerabilities, Dashboard]
+    links: [no-link, no-link]
 VulnerabilityView:
     url: /vm/vulnerability/view
     labels: [Vulnerabilities, Search, View]

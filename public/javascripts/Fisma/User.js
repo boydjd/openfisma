@@ -358,7 +358,7 @@ Fisma.User = {
             builtins = {
                 'system'        : '/',
                 'finding'       : '/finding/dashboard',
-                'vulnerability' : '/vm/vulnerability/list',
+                'vulnerability' : '/vm/dashboard',
                 'incident'      : '/incident-dashboard',
                 'inventory'     : '/organization-dashboard'
             };

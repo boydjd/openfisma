@@ -398,13 +398,15 @@ Fisma.Finding = {
         }
 
         //hide layout if not in Analyst view
-        Fisma.tabView.subscribe('activeIndexChange', function(args) {
-            if (args.newValue === 0) {
-                $('#changeLayout').show();
-            } else {
-                $('#changeLayout').hide();
-            }
-        });
+        if (Fisma.tabView) {
+            Fisma.tabView.subscribe('activeIndexChange', function(args) {
+                if (args.newValue === 0) {
+                    $('#changeLayout').show();
+                } else {
+                    $('#changeLayout').hide();
+                }
+            });
+        }
     },
 
     /**
