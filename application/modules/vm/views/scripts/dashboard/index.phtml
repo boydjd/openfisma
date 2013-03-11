@@ -1,6 +1,163 @@
-<?php Fisma_Format_Section::startSection('Vulnerability Dashboard'); ?>
-
-<div class='dashboardChart'>
+<?php
+    echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
+?>
+<?php if ($this->message): ?>
+<div class='message'><?php echo $this->escape($this->message); ?></div>
+<?php else: ?>
+<div id='changeLayout'>
+    Sidebar position:
+    <span id="menuLayoutSelect">
+        <input type="radio" id="layoutLeft" name="layoutSelect" title="Left"/>
+        <label for="layoutLeft">Left</label>
+        <input type="radio" id="layoutRight" name="layoutSelect" checked="checked" title="Right" />
+        <label for="layoutRight">Right</label>
+    </span>
 </div>
 
-<?php Fisma_Format_Section::stopSection(); ?>
+<div class='column66 left findingAnalystLeft'>
+    <?php Fisma_Format_Section::startSection(
+        'Unresolved: By ' . $this->escape($this->translate('Vulnerability_Point_of_Contact')),
+        null,
+        null,
+        'byPoc'
+    ); ?>
+    <?php echo $this->escape($this->byPocTable, 'none'); ?>
+    <?php if ($this->byPocTable->countData() > 8): ?>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 0, "<?php
+            echo $this->escape($this->byPocTable->getRegistryName());
+        ?>")'>Show all
+            <?php echo $this->escape($this->byPocTable->countData()); ?> records</a>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 8, "<?php
+            echo $this->escape($this->byPocTable->getRegistryName());
+        ?>")'>Show first 8 records only</a>
+    <?php endif; ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Unresolved: By System', null, null, 'bySystem'); ?>
+    <?php echo $this->escape($this->bySystemTable, 'none'); ?>
+    <?php if ($this->bySystemTable->countData() > 8): ?>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 0, "<?php
+            echo $this->escape($this->bySystemTable->getRegistryName());
+        ?>")'>Show all
+            <?php echo $this->escape($this->bySystemTable->countData()); ?> records</a>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 8, "<?php
+            echo $this->escape($this->bySystemTable->getRegistryName());
+        ?>")'>Show first 8 records only</a>
+    <?php endif; ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
+</div>
+<div class='column33 right findingAnalystRight'>
+    <?php Fisma_Format_Section::startSection('Unresolved: By Threat', null, null, 'byThreat'); ?>
+    <table class='custom-widget no-border'>
+    <?php foreach($this->byThreat as $statistic): ?>
+        <tr>
+            <td class='criteria'><?php echo $this->escape($statistic['criteria']); ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
+            <td width='55%'>
+                <a href='/vm/vulnerability/list?q=isResolved/booleanNo/threatLevel/enumIs/<?php
+                    echo $this->escape($statistic['criteria'], 'url');
+                ?>'><span
+                class='bar <?php echo $this->escape($statistic['criteria']); ?>'
+                style='width:<?php echo $this->escape($statistic['count']/$this->total*80); ?>%;'
+                >
+                </span></a>
+                <span class='percentage'><?php
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
+                ?>%</span>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Unresolved: By Workflow', null, null, 'byWorkflow'); ?>
+    <table class='custom-widget no-border'>
+    <?php foreach($this->byWorkflow as $statistic):
+        $criteria = new Fisma_Yui_Tooltip('workflow_' . uniqid(), $statistic['criteria'], $statistic['tooltip']);
+    ?>
+        <tr>
+            <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
+            <td width='55%'>
+                <a href='/vm/vulnerability/list?q=isResolved/booleanNo/workflow/textExactMatch/<?php
+                    echo $this->escape($statistic['criteria'], 'url');
+                ?>'><span class='bar normal' style='width:<?php
+                        echo $this->escape($statistic['count']/$this->total*80);
+                    ?>%;'>
+                </span></a>
+                <span class='percentage'><?php
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
+                ?>%</span>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Unresolved: By Workflow Step', null, null, 'byWorkflowStep'); ?>
+    <table class='custom-widget no-border'>
+    <?php foreach($this->byWorkflowStep as $statistic):
+        $criteria = new Fisma_Yui_Tooltip('workflow_step_' . uniqid(), $statistic['criteria'], $statistic['tooltip']);
+    ?>
+        <tr>
+            <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
+            <td width='55%'>
+                <a href='/vm/vulnerability/list?q=isResolved/booleanNo/workflowStep/textExactMatch/<?php
+                    echo $this->escape($statistic['criteria'], 'url');
+                ?>'><span class='bar normal' style='width:<?php
+                        echo $this->escape($statistic['count']/$this->total*80);
+                    ?>%;'>
+                </span></a>
+                <span class='percentage'><?php
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
+                ?>%</span>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Unresolved: By Network', null, null, 'byNetwork'); ?>
+    <table class='custom-widget no-border'>
+    <?php foreach($this->byNetwork as $statistic):
+        $criteria = new Fisma_Yui_Tooltip('source_' . uniqid(), $statistic['criteria'], $statistic['tooltip']);
+    ?>
+        <tr>
+            <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
+            <td width='55%'>
+                <a href='/vm/vulnerability/list?q=isResolved/booleanNo/network/textContains/<?php
+                    echo $this->escape($statistic['criteria'], 'url');
+                ?>'><span class='bar normal' style='width:<?php
+                        echo $this->escape($statistic['count']/$this->total*80);
+                    ?>%;'>
+                </span></a>
+                <span class='percentage'><?php
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
+                ?>%</span>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+</div>
+<div class='clear'></div>
+<script>
+$(function() {
+    Fisma.Finding.initDashboard();
+});
+</script>
+<?php endif; ?>

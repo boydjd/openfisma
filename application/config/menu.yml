@@ -144,6 +144,9 @@ Vulnerability:
                 param2: Vulnerability
         Separator2:
             label: Separator
+        Dashboard:
+            label: Dashboard
+            link: /vm/dashboard
         Administration:
             label: Administration
             privilege:

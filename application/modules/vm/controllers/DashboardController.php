@@ -1,26 +1,26 @@
 <?php
 /**
- * Copyright (c) 2010 Endeavor Systems, Inc.
+ * Copyright (c) 2013 Endeavor Systems, Inc.
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Dashboard for vulnerabilities
- * 
- * @author     Andrew Reeves <andrew.reeves@endeavorsystems.com>
- * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
+ *
+ * @author     Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @copyright  (c) Endeavor Systems, Inc. 2013 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
  * @package    Vulnerability
  */
@@ -40,6 +40,11 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->_acl->requireArea('vulnerability');
+        $this->_visibleOrgs = $this->_me
+            ->getOrganizationsByPrivilegeQuery('finding', 'read')
+            ->select('o.id')
+            ->execute()
+            ->toKeyValueArray('id', 'id');
     }
 
     /**
@@ -47,5 +52,430 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
      */
     public function indexAction()
     {
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+
+        $totalQuery = Doctrine_Query::create()
+            ->from('Vulnerability v');
+        $this->_addAclConditions($totalQuery);
+        $this->view->total = $totalQuery->count();
+        if ($this->view->total < 1) {
+            $this->view->message = "There are no unresolved vulnerabilities under your responsibility.";
+            return;
+        }
+
+        $byThreatQuery = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, v.threatlevel as criteria')
+            ->from('Vulnerability v')
+            ->groupBy('criteria')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $this->_addAclConditions($byThreatQuery);
+        $this->view->byThreat = $byThreatQuery->execute();
+
+        $byWorkflowQuery = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, IFNULL(w.name, "Unassigned") as criteria, ' .
+                     'IFNULL(w.description, "") as tooltip, f.currentStepId, ws.id, w.id')
+            ->from('Vulnerability v')
+            ->leftJoin('v.CurrentStep ws')
+            ->leftJoin('ws.Workflow w')
+            ->groupBy('criteria')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->orderBy('w.id ASC');
+        $this->_addAclConditions($byWorkflowQuery);
+        $this->view->byWorkflow = $byWorkflowQuery->execute();
+
+        $byWorkflowStepQuery = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, IFNULL(ws.name, "Unassigned") as criteria, ' .
+                     'CONCAT(IFNULL(w.name, "No "), " Workflow") as tooltip, f.currentStepId, w.id, ws.id')
+            ->from('Vulnerability v')
+            ->leftJoin('v.CurrentStep ws')
+            ->leftJoin('ws.Workflow w')
+            ->groupBy('criteria')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->orderBy('w.id ASC, ws.cardinality');
+        $this->_addAclConditions($byWorkflowStepQuery);
+        $this->view->byWorkflowStep = $byWorkflowStepQuery->execute();
+
+        $byNetworkQuery = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, a.networkId, n.nickname as criteria, ' .
+                     'CONCAT("<b>", n.nickname, " - ", n.name, "</b><br/>", n.description) as tooltip')
+            ->from('Vulnerability v')
+            ->groupBy('criteria')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->orderBy('a.networkId ASC');
+        $this->_addAclConditions($byNetworkQuery);
+        $byNetworkQuery->leftJoin('a.Network n'); //(v.Asset a) is joined by _addAclConditions
+        $this->view->byNetwork = $byNetworkQuery->execute();
+
+        $byPocQuery = Doctrine_Query::create()
+            ->select(
+                'COUNT(v.id) as count, v.threatlevel, i.id as icon, o.id, o.nickname, ot.nickname as type, ' .
+                'v.pocid, u.id, u.displayName'
+            )
+            ->from('Vulnerability v')
+            ->leftJoin('v.PointOfContact u')
+            ->leftJoin('u.ReportingOrganization o')
+            ->leftJoin('o.OrganizationType ot')
+            ->leftJoin('ot.Icon i')
+            ->groupBy('v.pocid, v.threatlevel')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $this->_addAclConditions($byPocQuery);
+        $this->view->byPoc = $byPocQuery->execute();
+
+        $criteria = array();
+        foreach ($this->view->byPoc as $index => &$statistic) {
+            if (empty($statistic['pocId'])) {
+                $statistic['criteria'] = 'Unassigned';
+                $statistic['pocId'] = 'empty';
+            } else {
+                $statistic['criteria'] = $this->view->userInfo(
+                    $statistic['PointOfContact']['displayName'],
+                    $statistic['PointOfContact']['id']
+                );
+            }
+
+            $pocid = $statistic['pocId'];
+            $threatlevel = $statistic['threatLevel'];
+            if (!isset($criteria[$pocid])) {
+                $criteria[$pocid] = $index;
+                $this->view->byPoc[$index][$threatlevel] = $statistic['count'];
+            } else {
+                $currentIndex = $criteria[$pocid];
+                $this->view->byPoc[$currentIndex][$threatlevel] = $statistic['count'];
+                $this->view->byPoc[$currentIndex]['count'] += $statistic['count'];
+                unset($this->view->byPoc[$index]);
+            }
+        }
+        $byPoc = array();
+        foreach ($this->view->byPoc as $statistic) {
+            $statistic['LOW'] = (empty($statistic['LOW'])) ? 0 : $statistic['LOW'];
+            $statistic['MODERATE'] = (empty($statistic['MODERATE'])) ? 0 : $statistic['MODERATE'];
+            $statistic['HIGH'] = (empty($statistic['HIGH'])) ? 0 : $statistic['HIGH'];
+            $byPoc[] = array(
+                'poc' => $statistic['PointOfContact']['displayName'],
+                'displayPoc' => $statistic['criteria'],
+                'parentOrganization' => $statistic['PointOfContact']['ReportingOrganization']['nickname'],
+                'displayParentOrganization' => json_encode(array(
+                    'iconId' => $statistic['icon'],
+                    'iconSize' => 'small',
+                    'displayName' => $statistic['PointOfContact']['ReportingOrganization']['nickname'],
+                    'orgId' => $statistic['PointOfContact']['ReportingOrganization']['id'],
+                    'iconAlt' => $statistic['type']
+                )),
+                'threatLevel' => json_encode(array(
+                    'LOW' => $statistic['LOW'],
+                    'MODERATE' => $statistic['MODERATE'],
+                    'HIGH' => $statistic['HIGH'],
+                    'criteriaQuery' => '/threatLevel/enumIs/',
+                    'total' => $this->view->total
+                )),
+                'total' => $statistic['count'],
+                'displayTotal' => json_encode(array(
+                    'url' => '/vm/vulnerability/list?q=isResolved/booleanNo/'
+                           . 'pocUser/textContains/'
+                           . $this->view->escape($statistic['PointOfContact']['displayName'], 'url'),
+                    'displayText' => $statistic['count']
+                ))
+            );
+        }
+        $this->view->byPocTable = new Fisma_Yui_DataTable_Local();
+        $this->view->byPocTable->setRegistryName('Vulnerability.Dashboard.Analyst.byPocTable');
+        $this->view->byPocTable->addEventListener('renderEvent', 'Fisma.Finding.restrictTableLength');
+        $this->view->byPocTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $this->view->translate('Vulnerability_Point_of_Contact'),
+                false,
+                null,
+                null,
+                'poc',
+                true
+            )
+        );
+        $this->view->byPocTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $this->view->translate('Vulnerability_Point_of_Contact'),
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'displayPoc',
+                false,
+                'string',
+                'poc'
+            )
+        );
+        $this->view->byPocTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Parent',
+                false,
+                null,
+                null,
+                'parentOrganization',
+                true
+            )
+        );
+        $this->view->byPocTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Parent',
+                true,
+                'Fisma.TableFormat.formatOrganization',
+                null,
+                'displayParentOrganization',
+                false,
+                'string',
+                'parentOrganization'
+            )
+        );
+        $this->view->byPocTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Threat Level',
+                true,
+                'Fisma.TableFormat.formatThreatBar',
+                null,
+                'threatLevel',
+                false,
+                'string',
+                'total'
+            )
+        );
+        $this->view->byPocTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Total',
+                false,
+                null,
+                null,
+                'total',
+                true,
+                'number'
+            )
+        );
+        $this->view->byPocTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Total',
+                true,
+                'Fisma.TableFormat.formatLink',
+                null,
+                'displayTotal',
+                false,
+                'string',
+                'total'
+            )
+        );
+        $this->view->byPocTable->setData($byPoc);
+
+        $bySystemQuery = Doctrine_Query::create()
+            ->select(
+                'COUNT(v.id) as count, o.nickname as criteria, v.threatlevel, o.id, o.lft, o.rgt, o.level, ' .
+                'a.orgSystemId, ot.iconId as icon, ot.nickname as type'
+            )
+            ->from('Organization o')
+            ->leftJoin('o.OrganizationType ot')
+            ->leftJoin('o.Assets a')
+            ->leftJoin('a.Vulnerabilities v')
+            ->groupBy('o.id, v.threatlevel')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        //manually handle ACL conditions due to this query's unique join path (Organization => Asset => Vulnerabilities)
+        $myOrgSystemIds = $this->_visibleOrgs;
+        $viewUser = ($this->_me->viewAs()) ? $this->_me->viewAs() : $this->_me;
+        $bySystemQuery
+            ->where('v.deleted_at is NULL AND v.isResolved <> ?', true)
+            ->andWhereIn('o.id', $myOrgSystemIds)
+            ->orWhere('v.deleted_at is NULL AND v.isResolved <> ?', true)
+            ->andWhere('v.pocId = ?', $viewUser->id);
+        $this->view->bySystem = $bySystemQuery->execute();
+        $bySystem = array();
+        foreach ($this->view->bySystem as &$statistic) {
+            $count = 0;
+            foreach ($statistic['Assets'] as &$asset) {
+                foreach ($asset['Vulnerabilities'] as &$finding) {
+                    $threatLevel = $finding['threatLevel'];
+                    if (!isset($statistic[$threatLevel])) {
+                        $statistic[$threatLevel] = 0;
+                    }
+                    $statistic[$threatLevel] += $finding['count'];
+                    $count += $finding['count'];
+                }
+            }
+            $statistic['LOW'] = (empty($statistic['LOW'])) ? 0 : $statistic['LOW'];
+            $statistic['MODERATE'] = (empty($statistic['MODERATE'])) ? 0 : $statistic['MODERATE'];
+            $statistic['HIGH'] = (empty($statistic['HIGH'])) ? 0 : $statistic['HIGH'];
+            $statistic['count'] = $count;
+
+            $statistic['parent'] = Doctrine_Query::create()
+                ->select('o.id, o.nickname, i.id as icon, ot.nickname as type')
+                ->from('Organization o')
+                ->leftJoin('o.OrganizationType ot')
+                ->leftJoin('ot.Icon i')
+                ->where('o.lft < ?', $statistic['lft'])
+                ->andWhere('o.rgt > ?', $statistic['rgt'])
+                ->andWhere('o.level = ?', $statistic['level'] - 1)
+                ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                ->fetchOne();
+            if (empty($statistic['icon'])) { // the OrganizationType "system" doesn't have an icon
+                $statistic['icon'] = Doctrine_Query::create()
+                    ->select('o.id, s.id, st.iconId as icon')
+                    ->from('Organization o')
+                    ->leftJoin('o.System s')
+                    ->leftJoin('s.SystemType st')
+                    ->where('o.id = ?', $statistic['id'])
+                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                    ->fetchOne();
+                $statistic['icon'] = $statistic['icon']['icon'];
+            }
+            if (empty($statistic['parent']['icon'])) { // the OrganizationType "system" doesn't have an icon
+                $statistic['parent']['icon'] = Doctrine_Query::create()
+                    ->select('o.id, s.id, st.iconId as icon, st.nickname as type')
+                    ->from('Organization o')
+                    ->leftJoin('o.System s')
+                    ->leftJoin('s.SystemType st')
+                    ->where('o.id = ?', $statistic['parent']['id'])
+                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                    ->fetchOne();
+                $statistic['parent']['type'] = $statistic['parent']['icon']['type'];
+                $statistic['parent']['icon'] = $statistic['parent']['icon']['icon'];
+            }
+            if (empty($statistic['parent']['nickname'])) {
+                $statistic['parent']['nickname'] = "(top level)";
+                $statistic['parent']['id'] = null;
+                $statistic['parent']['icon'] = null;
+                $statistic['parent']['type'] = "";
+            }
+
+            $bySystem[] = array(
+                'organization' => $statistic['criteria'],
+                'displayOrganization' => json_encode(array(
+                    'iconId' => $statistic['icon'],
+                    'iconSize' => 'small',
+                    'displayName' => $statistic['criteria'],
+                    'orgId' => $statistic['id'],
+                    'iconAlt' => $statistic['type']
+                )),
+                'parentOrganization' => $statistic['parent']['nickname'],
+                'displayParentOrganization' => json_encode(array(
+                    'iconId' => $statistic['parent']['icon'],
+                    'iconSize' => 'small',
+                    'displayName' => $statistic['parent']['nickname'],
+                    'orgId' => $statistic['parent']['id'],
+                    'iconAlt' => $statistic['parent']['type']
+                )),
+                'threatLevel' => json_encode(array(
+                    'LOW' => $statistic['LOW'],
+                    'MODERATE' => $statistic['MODERATE'],
+                    'HIGH' => $statistic['HIGH'],
+                    'criteriaQuery' => '/threatLevel/enumIs/',
+                    'total' => $this->view->total
+                )),
+                'total' => $statistic['count'],
+                'displayTotal' => json_encode(array(
+                    'url' => '/vm/vulnerability/list?q=isResolved/booleanNo/'
+                           . 'organization/textContains/'
+                           . $this->view->escape($statistic['criteria'], 'url'),
+                    'displayText' => $statistic['count']
+                ))
+            );
+        }
+        $this->view->bySystemTable = new Fisma_Yui_DataTable_Local();
+        $this->view->bySystemTable->setRegistryName('Vulnerability.Dashboard.Analyst.bySystemTable');
+        $this->view->bySystemTable->addEventListener('renderEvent', 'Fisma.Finding.restrictTableLength');
+        $this->view->bySystemTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'System',
+                false,
+                null,
+                null,
+                'organization',
+                true
+            )
+        );
+        $this->view->bySystemTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'System',
+                true,
+                'Fisma.TableFormat.formatOrganization',
+                null,
+                'displayOrganization',
+                false,
+                'string',
+                'organization'
+            )
+        );
+        $this->view->bySystemTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Parent',
+                false,
+                null,
+                null,
+                'parentOrganization',
+                true
+            )
+        );
+        $this->view->bySystemTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Parent',
+                true,
+                'Fisma.TableFormat.formatOrganization',
+                null,
+                'displayParentOrganization',
+                false,
+                'string',
+                'parentOrganization'
+            )
+        );
+        $this->view->bySystemTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Threat Level',
+                true,
+                'Fisma.TableFormat.formatThreatBar',
+                null,
+                'threatLevel',
+                false,
+                'string',
+                'total'
+            )
+        );
+        $this->view->bySystemTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Total',
+                false,
+                null,
+                null,
+                'total',
+                true,
+                'number'
+            )
+        );
+        $this->view->bySystemTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Total',
+                true,
+                'Fisma.TableFormat.formatLink',
+                null,
+                'displayTotal',
+                false,
+                'string',
+                'total'
+            )
+        );
+        $this->view->bySystemTable->setData($bySystem);
+    }
+
+    protected function _addAclConditions(&$query)
+    {
+        $myOrgSystemIds = $this->_visibleOrgs;
+        $viewUser = ($this->_me->viewAs()) ? $this->_me->viewAs() : $this->_me;
+
+        $query
+            ->leftJoin('v.Asset a')
+            ->addSelect('v.threatlevel, a.id')
+            ->where('v.deleted_at is NULL AND v.isResolved <> ?', true)
+            ->andWhereIn('a.orgSystemId', $myOrgSystemIds)
+            ->orWhere('v.deleted_at is NULL AND v.isResolved <> ?', true)
+            ->andWhere('v.pocId = ?', $viewUser->id)
+        ;
+    }
+
+    public function getToolbarButtons()
+    {
+        $buttons = array();
+
+        return $buttons;
     }
 }
