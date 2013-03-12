@@ -238,6 +238,26 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
             $workflow = Doctrine::getTable('Workflow')->find($id);
 
             if (!$workflow->isDefault) {
+                if ($workflow->WorkflowSteps->count() > 0) {
+                    $defaultStep = $workflow->getTable()->findDefaultByModule($workflow->module)->getFirstStep();
+                    foreach ($workflow->WorkflowSteps as $step) {
+                        $relation = ucfirst($workflow->module) . 'Collection';
+                        $collection = $step->$relation;
+                        if ($collection->count() > 0) {
+                            foreach ($collection as $object) {
+                                WorkflowStep::completeOnObject(
+                                    $object,
+                                    'Migrating',
+                                    'The current workflow step is being removed.',
+                                    CurrentUser::getAttribute('id'),
+                                    '0',
+                                    $defaultStep->id
+                                );
+                            }
+                        }
+                        $step->delete();
+                    }
+                }
                 $workflow->delete();
             } else {
                 $this->view->priorityMessenger(
@@ -261,7 +281,31 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
         if ($this->getRequest()->isPost()) {
             $id = $this->getRequest()->getParam('id');
             $step = Doctrine::getTable('WorkflowStep')->find($id);
-            $step->delete();
+            $workflow = $step->Workflow;
+
+            if ($workflow->isDefault && $step->cardinality == 1) {
+                $this->view->priorityMessenger(
+                    'Cannot delete the first step of the default workflow.',
+                    'warning'
+                );
+            } else {
+                $defaultStep = $workflow->getTable()->findDefaultByModule($workflow->module)->getFirstStep();
+                $relation = ucfirst($workflow->module) . 'Collection';
+                $collection = $step->$relation;
+                if ($collection->count() > 0) {
+                    foreach ($collection as $object) {
+                        WorkflowStep::completeOnObject(
+                            $object,
+                            'Migrating',
+                            'The current workflow step is being removed.',
+                            CurrentUser::getAttribute('id'),
+                            '0',
+                            $defaultStep->id
+                        );
+                    }
+                }
+                $step->delete();
+            }
             $this->_redirect('/workflow/view/id/' . $this->view->workflow->id);
         }
     }
