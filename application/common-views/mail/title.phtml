@@ -9,10 +9,12 @@
         $titleOptions = $application->getOption('mail_title');
     }
 
-    foreach ($titleOptions as $eventName => $customTitle) {
-        if ($eventName === $event->name) {
-            $title = $customTitle;
-            break;
+    if ($titleOptions) {
+        foreach ($titleOptions as $eventName => $customTitle) {
+            if ($eventName === $event->name) {
+                $title = $customTitle;
+                break;
+            }
         }
     }
 
