@@ -64,6 +64,7 @@ class Incident extends BaseIncident
         $this->hasMutator('ReportingUser', 'setReportingUser');
         $this->hasMutator('sourceIp', 'setSourceIp');
         $this->hasMutator('responseStrategies', 'setResponseStrategies');
+        $this->hasMutator('incidentDateTime', 'setIncidentDateTime');
     }
 
     /**
@@ -436,5 +437,19 @@ class Incident extends BaseIncident
         $value = (is_array($value)) ? $value : array();
         $this->denormalizedResponseStrategies = implode('; ', $value);
         $this->_set('responseStrategies', $value);
+    }
+
+    /**
+     * setIncidentDateTime
+     *
+     * @param mixed $value
+     * @return void
+     */
+    public function setIncidentDateTime($value)
+    {
+        $value = str_replace(' at ', ' ', $value);
+        $date = new Zend_Date($value);
+        $this->incidentDate = $date->toString(Fisma_Date::FORMAT_DATE);
+        $this->incidentTime = $date->toString(Fisma_Date::FORMAT_TIME);
     }
 }

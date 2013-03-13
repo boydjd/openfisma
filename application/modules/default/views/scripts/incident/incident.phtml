@@ -498,7 +498,16 @@
             <tr>
                 <td>Occurred:</td>
                 <td title='UTC: <?php echo $this->escape($this->incidentDateTime); ?>'>
-                    <?php echo $this->escape($this->incidentDateTimeLocal); ?>
+                    <span id="occurred"
+                        <?php if ($this->updateIncidentPrivilege): ?>
+                          name="incident[incidentDateTime]"
+                          type="text"
+                          target="occurred"
+                          class="editable"
+                         <?php endif; ?>>
+                        <?php echo $this->escape($this->incidentDateTimeLocal); ?>
+                    </span>
+
                 </td>
             </tr>
             <tr>
