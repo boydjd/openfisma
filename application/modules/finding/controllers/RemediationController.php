@@ -814,7 +814,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $this->view->closedTs = $closedDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
         }
 
-        $this->view->relationshipEditable = $this->_acl->hasPrivilegeForObject('update_relationship', $finding);
+        $this->view->relationshipEditable = $this->_acl->hasPrivilegeForObject('update', $finding);
     }
 
     /**
