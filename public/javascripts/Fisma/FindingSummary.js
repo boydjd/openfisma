@@ -63,7 +63,7 @@
      *
      * @static
      */
-    FS.AGGREGATE_COLUMNS = ["OPEN", "CLOSED", "TOTAL"];
+    FS.AGGREGATE_COLUMNS = ["ALL OPEN", "ALL CLOSED", "TOTAL"];
 
     /**
      * The options for the summary type menu.
@@ -189,8 +189,10 @@
 
                 link = document.createElement('a');
                 cell.appendChild(link);
-                if ("OPEN" === label) {
+                if ("ALL+OPEN" === label) {
                     link.href = "/finding/remediation/list?q=/isResolved/booleanNo";
+                } else if ("ALL+CLOSED" === label) {
+                    link.href = "/finding/remediation/list?q=/isResolved/booleanYes";
                 } else if ("TOTAL" === label) {
                     // Pass a blank query, otherwise the saved settings of previous search will be used
                     link.href = "/finding/remediation/list?q=/id/integerEquals/";
@@ -223,7 +225,7 @@
             for (index in this._columnLabels) {
                 column = $P.urlencode(this._columnLabels[index]);
 
-                if (column === 'CLOSED' || column === 'TOTAL') {
+                if (column === 'ALL+CLOSED' || column === 'TOTAL') {
                     // These columns don't distinguish ontime from overdue (they're handled above)
                     continue;
                 }
@@ -248,7 +250,7 @@
                     for (j in this._columnLabels) {
                         column = $P.urlencode(this._columnLabels[j]);
 
-                        if (column === 'CLOSED' || column === 'TOTAL') {
+                        if (column === 'ALL+CLOSED' || column === 'TOTAL') {
                             // These columns don't distinguish ontime from overdue (they're handled above)
                             continue;
                         }
@@ -308,7 +310,7 @@
                     nodeData = nodeData.aggregate;
                 }
 
-                if (status === "CLOSED") {
+                if (status === "ALL+CLOSED") {
                     link.href = ontimeUrl;
                     link.title = "Resolved findings";
                     container.appendChild(link);
@@ -448,10 +450,12 @@
             status = $P.urldecode(status);
 
             // Add status criterion
-            if (status !== "TOTAL" && status !== "OPEN") {
+            if (status !== "TOTAL" && status !== "ALL+OPEN" && status !== "ALL+CLOSED") {
                 url += "/workflowStep/textExactMatch/" + encodeURIComponent(status);
-            } else if (status === "OPEN"){
+            } else if (status === "ALL+OPEN"){
                 url += "/isResolved/booleanNo";
+            } else if (status === "ALL+CLOSED"){
+                url += "/isResolved/booleanYes";
             }
 
             // Add organization/POC criterion
@@ -466,7 +470,7 @@
             }
 
             // Add ontime criteria (if applicable)
-            if (status !== "TOTAL" && status !== "CLOSED") {
+            if (status !== "TOTAL" && status !== "ALL+CLOSED") {
                 var today = new Date(),
                     yesterday, todayString, yesterdayString;
                 yesterday = new Date();
@@ -483,15 +487,16 @@
 
             // Add filter criteria
             var msSelect = this._filters.mitigationType.select;
-            var msValue = msSelect.options[msSelect.selectedIndex].text;
-            if (msValue !== "none") {
-                url += "/workflow/textExactMatch/" + encodeURIComponent(msValue);
+            var msValue = msSelect.options[msSelect.selectedIndex].value;
+            var msLabel = msSelect.options[msSelect.selectedIndex].text;
+            if (msValue != "none") {
+                url += "/workflow/textExactMatch/" + encodeURIComponent(msLabel);
             }
 
             var sourceSelect = this._filters.findingSource.select;
             var sourceValue = sourceSelect.options[sourceSelect.selectedIndex].value;
             var sourceLabel = sourceSelect.options[sourceSelect.selectedIndex].text;
-            if (sourceValue !== "none") {
+            if (sourceValue != "none") {
                 url += "/source/textExactMatch/" + encodeURIComponent(sourceLabel);
             }
 

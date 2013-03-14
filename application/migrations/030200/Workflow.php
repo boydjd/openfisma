@@ -779,7 +779,7 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'modifiedts' => $now,
                 'cardinality' => '5',
                 'name' => 'Closed',
-                'label' => 'CLOSED',
+                'label' => 'FIXED',
                 'description' => 'Please provide a reason (if required) to re-evaluate the finding.',
                 'isresolved' => '1',
                 'allottedtime' => 'unlimited',

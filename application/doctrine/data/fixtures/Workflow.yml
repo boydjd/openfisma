@@ -461,7 +461,7 @@ Workflow:
                 id: 16
                 cardinality: 5
                 name: "Closed"
-                label: "CLOSED"
+                label: "FIXED"
                 autoTransitionDestination: 5
                 description: "Please provide a reason (if required) to re-evaluate the finding."
                 restrictedFields:
