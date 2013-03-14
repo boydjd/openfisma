@@ -301,7 +301,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'join' => array(
                     'model' => 'WorkflowStep',
                     'relation' => 'CurrentStep',
-                    'field' => 'label'
+                    'field' => 'name'
                 )
             ),
             'isResolved' => array(
