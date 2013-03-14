@@ -66,6 +66,9 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         foreach ($workflows as $workflow) {
             $this->view->mitigationTypes[$workflow->id] = $workflow->name;
             foreach ($workflow->WorkflowSteps as $step) {
+                if ($step->isResolved) {
+                    //continue;
+                }
                 $allStatuses[$step->label] = $workflow->id;
             }
         }
@@ -222,6 +225,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         if (!empty($typeJoinCondition)) {
             $userOrgQuery->innerJoin("f.CurrentStep ws")->andWhere($typeJoinCondition);
         }
+
+        //die(print_r($this->_prepareSummaryQueryParameters()) . '');
 
         $userOrgs = $userOrgQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
         if (empty($userOrgs)) {
@@ -649,18 +654,15 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $workflows = Doctrine::getTable('Workflow')->listArray('finding');
         foreach ($workflows as $workflow) {
             foreach ($workflow->WorkflowSteps as $step) {
+                if ($step->isResolved) {
+                    //continue;
+                }
                 $allStatuses[] = $step->label;
             }
         }
 
         // Get ontime and overdue statistics for each status where we track overdues
         foreach ($allStatuses as $status) {
-
-            // CLOSED doesn't have ontime/overdue, so it's handled separately
-            if ($status === 'CLOSED') {
-                continue;
-            }
-
             $statusName = urlencode($status);
 
             $query->addSelect(
@@ -704,16 +706,15 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $workflows = Doctrine::getTable('Workflow')->listArray('finding');
         foreach ($workflows as $workflow) {
             foreach ($workflow->WorkflowSteps as $step) {
+                if ($step->isResolved) {
+                    //continue;
+                }
                 $allStatuses[] = $step->id;
             }
         }
         $findingStatus = array();
 
         foreach ($allStatuses as $status) {
-            if ($status === 'CLOSED') {
-                continue;
-            }
-
             // Since there are two finding status in a query constructed at _addFindingStatusFields(),
             // it needs to add the status twice accordingly.
             array_push($findingStatus, $status);
