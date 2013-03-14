@@ -214,13 +214,13 @@ Workflow:
                     -
                         name: "Approve and Submit to CISO"
                         destination: "next"
-                        roles: '["Information Security Officer"]'
+                        roles: '["Business Owner"]'
                         actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
                         customDestination: "undefined"
                     -
                         name: "Deny"
                         destination: "back"
-                        roles: '["Information Security Officer"]'
+                        roles: '["Business Owner"]'
                         actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
                         customDestination: "undefined"
             -
@@ -247,13 +247,13 @@ Workflow:
                     -
                         name: "Approve"
                         destination: "next"
-                        roles: '["Information Security Officer"]'
+                        roles: '["Authorizing Official"]'
                         actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
                         customDestination: "undefined"
                     -
                         name: "Deny"
                         destination: "back"
-                        roles: '["Information Security Officer"]'
+                        roles: '["Authorizing Official"]'
                         actions: '[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]'
                         customDestination: "undefined"
             -

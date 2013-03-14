@@ -554,14 +554,13 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                     'Id";}',
                 'transitions' =>
                     'a:2:{i:0;a:5:{s:4:"name";s:26:"Approve and Submit to CISO";s:11:"destination";s:4:"next";s:5:"ro' .
-                    'les";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/imag' .
-                    'es/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_' .
-                    'recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestinatio' .
-                    'n";s:9:"undefined";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:3' .
-                    '2:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.' .
-                    'png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recycleb' .
-                    'in_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"' .
-                    'undefined";}}',
+                    'les";s:14:"["Business Owner"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","' .
+                    'handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_emp' .
+                    'ty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefi' .
+                    'ned";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:14:"["Business ' .
+                    'Owner"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workfl' .
+                    'ow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler"' .
+                    ':"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
                 'workflowid' => '5'
             ),
             array(
@@ -585,14 +584,14 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                     't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
                     'Id";}',
                 'transitions' =>
-                    'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Informa' .
-                    'tion Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handle' .
-                    'r":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_ope' .
-                    'n.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}' .
-                    'i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Sec' .
-                    'urity Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fism' .
+                    'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:20:"["Authori' .
+                    'zing Official"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fism' .
                     'a.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","' .
-                    'handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
+                    'handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i:1;a:5:' .
+                    '{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:20:"["Authorizing Official"]"' .
+                    ';s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editT' .
+                    'ransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.' .
+                    'Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
                 'workflowid' => '5'
             ),
             array(
