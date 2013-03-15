@@ -489,14 +489,14 @@
             var msSelect = this._filters.mitigationType.select;
             var msValue = msSelect.options[msSelect.selectedIndex].value;
             var msLabel = msSelect.options[msSelect.selectedIndex].text;
-            if (msValue != "none") {
+            if (msValue !== "none") {
                 url += "/workflow/textExactMatch/" + encodeURIComponent(msLabel);
             }
 
             var sourceSelect = this._filters.findingSource.select;
             var sourceValue = sourceSelect.options[sourceSelect.selectedIndex].value;
             var sourceLabel = sourceSelect.options[sourceSelect.selectedIndex].text;
-            if (sourceValue != "none") {
+            if (sourceValue !== "none") {
                 url += "/source/textExactMatch/" + encodeURIComponent(sourceLabel);
             }
 
