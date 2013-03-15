@@ -194,6 +194,7 @@ abstract class Fisma_Inject_Abstract
         // Prepare finding
         $finding = new Vulnerability();
         $finding->merge($findingData);
+        $finding->createdByUserId = CurrentUser::getAttribute('id');
 
         // Handle related objects, since merge doesn't
         if (!empty($findingData['cve'])) {
@@ -219,7 +220,7 @@ abstract class Fisma_Inject_Abstract
         if ($duplicateFinding) {
             $this->_duplicates[] = array(
                 'vulnerability' => $duplicateFinding,
-                'action' => $duplicateFinding->status == 'FIXED' ? 'REOPEN' : 'SUPPRESS',
+                'action' => $duplicateFinding->isResolved ? 'REOPEN' : 'SUPPRESS',
                 'message' => 'This vulnerability was discovered again during a subsequent scan.'
             );
             // Deleted findings are not saved, so we exit the _save routine
@@ -273,10 +274,13 @@ abstract class Fisma_Inject_Abstract
                 $vuln = $duplicate['vulnerability'];
                 $mesg = $duplicate['message'];
                 $action = $duplicate['action'];
+                if (!isset($vuln->id)) {
+                    continue; //skip to avoid a vulnerability from being reopened twice
+                }
                 $vuln->getAuditLog()->write($mesg);
                 if ($action == 'REOPEN') {
                     $this->_totals['reopened']++;
-                    $vuln->status = 'OPEN';
+                    $vuln->isResolved = false;
                     $vuln->save();
                 } else {
                     if (!isset($this->_totals['suppressed'])) {
@@ -337,13 +341,12 @@ abstract class Fisma_Inject_Abstract
         $cleanDescription = $xssListener->getPurifier()->purify($finding->description);
 
         $duplicateFindings = Doctrine_Query::create()
-            ->select('v.id, v.status')
             ->from('Vulnerability v')
             ->where('v.description LIKE ?', $cleanDescription)
             ->andWhere('v.assetId = ?', $finding->assetId)
             ->execute();
 
-        return $duplicateFindings->count() > 0 ? $duplicateFindings[0] : FALSE;
+        return $duplicateFindings->count() > 0 ? $duplicateFindings->getFirst() : FALSE;
     }
 
     /**
