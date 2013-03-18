@@ -473,10 +473,10 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'cardinality' => '1',
                 'name' => 'Risk Analysis Form',
                 'label' => 'RAF',
-                'description' => 'Please provide the following details:<ol><li>Categorize (input below)</li><li>Busin' .
-                                 'ess Case (Mitigation Strategy tab)</li><li>Residual Risk (Risk Analysis tab)</li><l' .
-                                 'i>Evidence (Attachments tab)</li><li>Estimated Completion Date (Mitigation Strategy' .
-                                 ' tab)</li><li>Countermeasures (Risk Analysis tab)</li></ol>',
+                'description' => 'Please provide the following details: Categorize (input below), Business Case (Miti' .
+                                 'gation Strategy tab - Action Plan field), Residual Risk (Risk Analysis tab), Eviden' .
+                                 'ce (Attachments tab), Estimated Completion Date (Mitigation Strategy tab), and Coun' .
+                                 'termeasures (Risk Analysis tab)',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
                 'allotteddays' => '30',
