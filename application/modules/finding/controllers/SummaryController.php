@@ -69,7 +69,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                 if ($step->isResolved) {
                     //continue;
                 }
-                $allStatuses[$step->label] = $workflow->id;
+                $allStatuses[$step->name] = $workflow->id;
             }
         }
         $this->view->steps = $allStatuses;
@@ -657,7 +657,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                 if ($step->isResolved) {
                     //continue;
                 }
-                $allStatuses[] = $step->label;
+                $allStatuses[] = $step->name;
             }
         }
 
@@ -667,7 +667,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
             $query->addSelect(
                 "SUM(
-                    IF(f.currentStepId LIKE ? AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
+                    IF(f.currentStepId LIKE ? AND (DATEDIFF(NOW(), f.nextduedate) <= 0 OR f.nextduedate is NULL), 1, 0)
                 ) ontime_$statusName"
             );
 
@@ -681,14 +681,14 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         // Add the last 3 columns: OPEN, CLOSED, TOTAL
         $query->addSelect(
             "SUM(
-                IF(f.isResolved <> 1 AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
-            ) ontime_OPEN"
+                IF(f.isResolved <> 1 AND (DATEDIFF(NOW(), f.nextduedate) <= 0 OR f.nextduedate is NULL), 1, 0)
+            ) ontime_ALL+OPEN"
         );
 
         $query->addSelect(
             "SUM(
                 IF(f.isResolved <> 1 AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
-            ) overdue_OPEN"
+            ) overdue_ALL+OPEN"
         );
 
         $query->addSelect("SUM(IF(f.isResolved = 1, 1, 0)) closed");
