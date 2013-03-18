@@ -189,9 +189,9 @@
 
                 link = document.createElement('a');
                 cell.appendChild(link);
-                if ("ALL+OPEN" === label) {
+                if ("ALL OPEN" === label) {
                     link.href = "/finding/remediation/list?q=/isResolved/booleanNo";
-                } else if ("ALL+CLOSED" === label) {
+                } else if ("ALL CLOSED" === label) {
                     link.href = "/finding/remediation/list?q=/isResolved/booleanYes";
                 } else if ("TOTAL" === label) {
                     // Pass a blank query, otherwise the saved settings of previous search will be used
@@ -450,11 +450,11 @@
             status = $P.urldecode(status);
 
             // Add status criterion
-            if (status !== "TOTAL" && status !== "ALL+OPEN" && status !== "ALL+CLOSED") {
+            if (status !== "TOTAL" && status !== "ALL OPEN" && status !== "ALL CLOSED") {
                 url += "/workflowStep/textExactMatch/" + encodeURIComponent(status);
-            } else if (status === "ALL+OPEN"){
+            } else if (status === "ALL OPEN"){
                 url += "/isResolved/booleanNo";
-            } else if (status === "ALL+CLOSED"){
+            } else if (status === "ALL CLOSED"){
                 url += "/isResolved/booleanYes";
             }
 
@@ -470,7 +470,7 @@
             }
 
             // Add ontime criteria (if applicable)
-            if (status !== "TOTAL" && status !== "ALL+CLOSED") {
+            if (status !== "TOTAL" && status !== "ALL CLOSED") {
                 var today = new Date(),
                     yesterday, todayString, yesterdayString;
                 yesterday = new Date();
