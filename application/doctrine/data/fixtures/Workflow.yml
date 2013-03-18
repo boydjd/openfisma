@@ -135,7 +135,7 @@ Workflow:
                 label: "RAF"
                 allottedTime: days
                 allottedDays: 30
-                description: "Please provide the following details:<ol><li>Categorize (input below)</li><li>Business Case (Mitigation Strategy tab)</li><li>Residual Risk (Risk Analysis tab)</li><li>Evidence (Attachments tab)</li><li>Estimated Completion Date (Mitigation Strategy tab)</li><li>Countermeasures (Risk Analysis tab)</li></ol>"
+                description: "Please provide the following details: Categorize (input below), Business Case (Mitigation Strategy tab - Action Plan field), Residual Risk (Risk Analysis tab), Evidence (Attachments tab), Estimated Completion Date (Mitigation Strategy tab), and Countermeasures (Risk Analysis tab)"
                 transitions:
                     -
                         name: "Submit to IV&V"
