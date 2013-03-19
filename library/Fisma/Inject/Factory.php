@@ -104,6 +104,8 @@ class Fisma_Inject_Factory
             return 'Asset';
         } elseif (stristr($contents, 'report') && stristr($contents, 'format_id')) {
             return 'Greenbone';
+        } elseif (stristr($contents, '<Scan><Name>') !== false) { //not a 100% unique identifier, should be improved later
+            return 'WebInspect';
         } else {
             return FALSE;
         }
