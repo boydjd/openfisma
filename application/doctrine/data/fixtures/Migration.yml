@@ -225,3 +225,8 @@ Migration:
         minorVersion: 3
         tagNumber: 0
         name: Asset
+    030300_SystemAsset:
+        majorVersion: 3
+        minorVersion: 3
+        tagNumber: 0
+        name: SystemAsset

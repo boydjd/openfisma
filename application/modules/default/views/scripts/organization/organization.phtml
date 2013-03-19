@@ -207,4 +207,26 @@ if ($this->editable) {
         <?php endforeach; ?>
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Unresolved Issues'); ?>
+        <table class='keyValues'>
+            <tr>
+                <th scope='row'>Findings:</th>
+                <td><a href='/finding/remediation/list?q=/isResolved/booleanNo/organization/textExactMatch/<?php
+                    echo $this->escape($this->organization->nickname, 'url');
+                ?>'><?php echo $this->escape($this->findingCount); ?></a></td>
+            </tr>
+            <tr>
+                <th scope='row'>Incidents:</th>
+                <td><a href='/incident/list?q=/status/enumIsNot/closed/organization/textExactMatch/<?php
+                    echo $this->escape($this->organization->nickname, 'url');
+                ?>'><?php echo $this->escape($this->incidentCount); ?></a></td>
+            </tr>
+            <tr>
+                <th scope='row'>Vulnerabilities:</th>
+                <td><a href='/vm/vulnerability/list?q=/isResolved/booleanNo/organization/textExactMatch/<?php
+                    echo $this->escape($this->organization->nickname, 'url');
+                ?>'><?php echo $this->escape($this->vulnerabilityCount); ?></a></td>
+            </tr>
+    <?php Fisma_Format_Section::stopSection(); ?>
 </div>

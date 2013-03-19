@@ -1,8 +1,8 @@
-; This is the form for uploading assets 
+; This is the form for uploading assets
 ;
 ; Author    Josh Boyd <joshua.boyd@endeavorsystems.com
 ; Copyright (c) Endeavor Systems, Inc. 2009 (http://www.endeavorsystems.com)
-; License   http://openfisma.org/content/license 
+; License   http://openfisma.org/content/license
 ; Version   $Id$
 
 [asset_upload]
@@ -25,8 +25,4 @@ displayGroups.asset_upload.elements.selectFile = "selectFile"
 elements.selectFile.options.validators.count.validator = "Count"
 elements.selectFile.options.validators.count.options.max = 1
 elements.selectFile.options.validators.count.options.min = 1
-elements.selectFile.options.tooltip = "<p>The file selected should be an nmap XML file.</p>"
-
-elements.upload.type = "Form_Button_Submit"
-elements.upload.options.label = "Upload"
-displayGroups.asset_upload.elements.submit = "upload"
+elements.selectFile.options.tooltip = "<p>The file selected should be an Nmap XML file.</p>"

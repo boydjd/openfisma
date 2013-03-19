@@ -100,13 +100,14 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->view->searchButtons = $this->getSearchButtons($asset, $fromSearchParams);
 
         $this->view->serviceTable = new Fisma_Yui_DataTable_Local();
+        $serviceTable = Doctrine::getTable('AssetService');
         $this->view->serviceTable
              ->addColumn(new Fisma_Yui_DataTable_HiddenColumn('id'))
              ->addColumn(new Fisma_Yui_DataTable_HiddenColumn('assetId'))
-             ->addColumn(new Fisma_Yui_DataTable_Column('Port', true, null, null, 'addressPort'))
-             ->addColumn(new Fisma_Yui_DataTable_Column('Protocol', true, null, null, 'protocol'))
-             ->addColumn(new Fisma_Yui_DataTable_Column('Service', true, null, null, 'service'))
-             ->addColumn(new Fisma_Yui_DataTable_Column('Product', true, null, null, 'product'));
+             ->addColumn(new Fisma_Yui_DataTable_Column($serviceTable->getLogicalName('addressPort'), true, null, null, 'addressPort'))
+             ->addColumn(new Fisma_Yui_DataTable_Column($serviceTable->getLogicalName('protocol'), true, null, null, 'protocol'))
+             ->addColumn(new Fisma_Yui_DataTable_Column($serviceTable->getLogicalName('service'), true, null, null, 'service'))
+             ->addColumn(new Fisma_Yui_DataTable_Column($serviceTable->getLogicalName('productId'), true, null, null, 'product'));
         if ($this->_acl->hasPrivilegeForObject('update', $asset)) {
             $this->view->serviceTable->addColumn(
                 new Fisma_Yui_DataTable_Column(
@@ -286,7 +287,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         }
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
-        if ($this->_acl->hasPrivilegeForClass('create', 'Asset')) {
+        if ($this->_acl->hasPrivilegeForClass('unaffiliated', 'Asset')) {
             $button = new Fisma_Yui_Form_Button_Link(
                 'importAssetsButton',
                 array(
@@ -295,8 +296,9 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                     'imageSrc' => '/images/up.png'
                 )
             );
-
             array_unshift($buttons, $button);
+        } else {
+            unset($buttons['create']);
         }
 
         return $buttons;
@@ -310,6 +312,15 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     public function importAction()
     {
         $this->_acl->requirePrivilegeForClass('create', 'Asset');
+        $this->view->toolbarButtons = array(new Fisma_Yui_Form_Button(
+            'upload',
+            array(
+                'label' => 'Submit',
+                'imageSrc' => '/images/ok.png',
+                'onClickFunction' => 'Fisma.Util.submitFirstForm',
+
+            )
+        ));
 
         $uploadForm = $this->getForm('asset_upload');
 
@@ -379,10 +390,10 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         }
     }
 
-    protected function _isDeletable()
+    /*protected function _isDeletable()
     {
         return false;
-    }
+    }*/
 
     /**
      * Manage service tags

@@ -201,7 +201,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     $buttons['reassociate'] = new Fisma_Yui_Form_Button(
                         'toolbarReassociateButton',
                         array(
-                            'label' => 'Migrate',// Associated ' . $this->_associatedPlural,
+                            'label' => 'Migrate',
                             'onClickFunction' => 'Fisma.Util.showReassociatePanel',
                             'onClickArgument' => array(
                                 'title' => 'Migrate Associated ' . $this->_associatedPlural,
@@ -215,6 +215,17 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
             if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
                 $args = array(null, $this->getBaseUrl() . '/delete/id/', $id);
+                switch ($this->getAclResourceName()) {
+                    case 'Asset':
+                        $vulnerabilities = Doctrine::getTable('Vulnerability')->findByAssetId($id);
+                        if ($vulnerabilities->count()) {
+                            $warningMessage = "All {$vulnerabilities->count()} vulnerabilities associated with this " .
+                                              "asset will also be deleted.";
+                            break;
+                        }
+                    default:
+                        $warningMessage = "You are about to delete this record. This action cannot be undone.";
+                }
                 $buttons['delete'] = new Fisma_Yui_Form_Button(
                     'delete',
                     array(
@@ -223,8 +234,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                           'onClickFunction' => 'Fisma.Util.showConfirmDialog',
                           'onClickArgument' => array(
                               'args' => $args,
-                              'text' => "WARNING: You are about to delete this record. This action cannot be "
-                                        . "undone. Do you want to continue?",
+                              'text' => "WARNING: $warningMessage Do you want to continue?",
                               'func' => 'Fisma.Util.formPostAction'
                         )
                     )
