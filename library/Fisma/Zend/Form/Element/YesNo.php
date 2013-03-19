@@ -29,5 +29,5 @@
 class Fisma_Zend_Form_Element_YesNo extends Zend_Form_Element_Radio
 {
     public $listsep = '&nbsp;&nbsp;';
-    public $options = array(1 => 'Yes', 0 => 'No');
+    public $options = array("YES" => 'Yes', "NO" => 'No');
 }
