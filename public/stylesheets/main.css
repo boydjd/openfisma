@@ -1156,3 +1156,9 @@ div.workflowStep th[scope=row] {
     text-align: left;
     width: 100px;
 }
+
+/* radio buttons and checkboxes need more spacing */
+input[type=radio], input[type=checkbox] {
+    margin-left: 4px;
+    margin-right: 2px;
+}
