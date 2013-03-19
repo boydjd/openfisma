@@ -42,7 +42,7 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     sample_1_user_role:
-        User: sample_1
+        User: viewer
         Role: viewer_role
         Organizations:
             - ARP_ORG
@@ -84,7 +84,7 @@ UserRole:
             - WILDLIFE_ORG
             - WIND_ORG
     sample_5_user_role:
-        User: sample_5
+        User: user
         Role: user_role
         Organizations:
             - ARP_ORG
