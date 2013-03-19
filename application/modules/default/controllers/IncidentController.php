@@ -159,8 +159,14 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $incidentReview = array();
         $richColumns = array();
         $incidentTable = Doctrine::getTable('Incident');
+        $formFields = $this->getForm("incident_report")->getElements();
+        unset($formFields["incidentTimezone"]);
+        $formFields = array_keys($formFields);
 
         foreach ($incidentReport as $key => &$value) {
+            if (!in_array($key, $formFields)) {
+                continue;
+            }
             $cleanValue = trim(strip_tags($value));
             if (!empty($cleanValue)) {
                 $columnDef = $incidentTable->getDefinitionOf($key);
