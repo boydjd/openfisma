@@ -174,6 +174,7 @@ abstract class Fisma_Inject_Abstract
      */
     protected function _save($findingData, $assetData = NULL, $productData = NULL)
     {
+        set_time_limit(180);
         if (empty($findingData)) {
             throw new Fisma_Inject_Exception('Save cannot be called without finding data!');
         }
@@ -245,6 +246,7 @@ abstract class Fisma_Inject_Abstract
         try {
             // commit the new vulnerabilities
             foreach ($this->_findings as &$findingData) {
+                set_time_limit(180);
                 if (@!$findingData['asset']['productId'] && !empty($findingData['product'])) {
                     $findingData['asset']['productId'] = $this->_saveProduct($findingData['product']);
                 }
@@ -271,6 +273,7 @@ abstract class Fisma_Inject_Abstract
 
             // append audit log messages
             foreach ($this->_duplicates as $duplicate) {
+                set_time_limit(180);
                 $vuln = $duplicate['vulnerability'];
                 $mesg = $duplicate['message'];
                 $action = $duplicate['action'];
@@ -301,6 +304,7 @@ abstract class Fisma_Inject_Abstract
                 unset($vuln);
             }
 
+            set_time_limit(180);
             Doctrine_Manager::connection()->commit();
 
             $createdWord    = $this->created > 1 ? ' vulnerabilities were' : ' vulnerability was';
