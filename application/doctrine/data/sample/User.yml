@@ -4,7 +4,7 @@ User:
         password: Sample1
         email: sample@department.gov
         nameFirst: Sample
-        nameLast: User
+        nameLast: Admin
         phoneOffice: (202) 555-7261
         hashType: sha1
         ReportingOrganization: RNI_ORG
@@ -41,11 +41,11 @@ User:
             - INCIDENT_DELETED
 
     sample_1:
-        username: sample1
+        username: viewer
         password: Sample1
         email: sample1@department.gov
         nameFirst: Sample
-        nameLast: ISSO 1
+        nameLast: Viewer
         phoneOffice: (202) 555-7261
         hashType: sha1
         ReportingOrganization: BGA_ORG
@@ -82,11 +82,11 @@ User:
             - INCIDENT_DELETED
 
     sample_5:
-        username: sample5
+        username: user
         password: Sample1
         email: sample5@department.gov
         nameFirst: Sample
-        nameLast: ISSO 5
+        nameLast: User
         phoneOffice: (202) 555-7261
         hashType: sha1
         ReportingOrganization: BGA_ORG
