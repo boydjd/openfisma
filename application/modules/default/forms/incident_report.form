@@ -43,7 +43,8 @@ displayGroups.incident.elements.additionalInfo = "additionalInfo"
 
 elements.assetInvolved.type="Element_YesNo"
 elements.assetInvolved.options.label="Does the incident involve an IT asset?"
-elements.assetInvolved.options.filters.null.filter = "Null"
+elements.assetInvolved.options.value = "NO"
+elements.assetInvolved.options.filters.null = "Null"
 displayGroups.incident.elements.assetInvolved="assetInvolved"
 
 elements.assetInfo.type = "textarea"
@@ -55,19 +56,20 @@ displayGroups.incident.elements.assetInfo = "assetInfo"
 
 elements.piiInvolved.type="Element_YesNo"
 elements.piiInvolved.options.label="Was PII involved?"
-elements.piiInvolved.options.filters.null.filter = "Null"
+elements.piiInvolved.options.value = "NO"
+elements.piiInvolved.options.filters.null = "Null"
 elements.piiInvolved.options.tooltip = "Personally Identifiable Information, or PII, is data that might be used to unique identify an individual. Such data may include (but is not limited to) social security numbers, names, addresses, and phone numbers. If PII may have been compromised, then you will need to answer some additional questions."
 displayGroups.incident.elements.piiInvolved="piiInvolved"
 
 elements.piiMobileMedia.type="Element_YesNo"
 elements.piiMobileMedia.options.label="Was the PII stored on Digital Media?"
+elements.piiMobileMedia.options.filters.null = "Null"
 elements.piiMobileMedia.options.tooltip = "<i>Mobile media</i> refers to any computer storage device which can be removed from a computer and carried separately, such as a CD, DVD, USB drive, etc."
-elements.piiMobileMedia.options.filters.null.filter = "Null"
 displayGroups.incident.elements.piiMobileMedia="piiMobileMedia"
 
 elements.piiEncrypted.type="Element_YesNo"
 elements.piiEncrypted.options.label="Was the PII encrypted?"
-elements.piiEncrypted.options.filters.null.filter = "Null"
+elements.piiEncrypted.options.filters.null = "Null"
 displayGroups.incident.elements.piiEncrypted="piiEncrypted"
 
 elements.piiIndividualsCount.type="text"
