@@ -177,6 +177,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
                 if ($key == 'organizationId') {
                     $value = "{$incident->Organization->nickname} - {$incident->Organization->name}";
+                } else if ($key === 'incidentTime') {
+                    $date = new Zend_Date($value, Fisma_Date::FORMAT_TIME);
+                    $value = $date->toString(Fisma_Date::FORMAT_AM_PM_TIME);
                 }
 
                 if ($columnDef) {
