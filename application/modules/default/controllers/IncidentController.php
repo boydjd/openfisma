@@ -239,7 +239,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // to incident list page.
         $session = Fisma::getSession();
         if (isset($session->irDraft)) {
-            $incident = unserialize($session->irDraft);
+            $incident = new Incident();
+            $incident->merge(unserialize($session->irDraft));
         } else {
             if (!$this->_me) {
                 $this->_redirect('/incident/report');
