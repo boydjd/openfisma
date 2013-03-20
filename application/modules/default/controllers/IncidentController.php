@@ -1687,14 +1687,18 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
         }
 
-        $buttons['create'] = new Fisma_Yui_Form_Button_Link(
-            'toolbarReportIncidentButton',
-            array(
-                'value' => 'New',
-                'href' => $this->getBaseUrl() . '/report',
-                'imageSrc' => '/images/create.png'
-            )
-        );
+        if ($this->getRequest()->getActionName() === 'create') {
+            unset($buttons['discardButton']);
+        } else {
+            $buttons['create'] = new Fisma_Yui_Form_Button_Link(
+                'toolbarReportIncidentButton',
+                array(
+                    'value' => 'New',
+                    'href' => $this->getBaseUrl() . '/report',
+                    'imageSrc' => '/images/create.png'
+                )
+            );
+        }
 
         // Add a "Reject" button if the incident is still in "new" status
         if ($record && 'new' == $record->status) {
