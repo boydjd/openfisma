@@ -182,7 +182,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                     $value = $date->toString(Fisma_Date::FORMAT_AM_PM_TIME);
                 }
 
-
                 if ($columnDef) {
                     if (isset($columnDef['extra']['logicalName'])) {
                         $logicalName = stripslashes($columnDef['extra']['logicalName']);
