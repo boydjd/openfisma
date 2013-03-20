@@ -586,11 +586,31 @@
     <?php if (!isset($this->incident['ReportingUser'])): Fisma_Format_Section::startSection('Reported By'); ?>
         <table class="keyValues">
             <tr>
-                <td>Name:</td>
+                <td>First Name:</td>
                 <td>
-                    <?php echo $this->escape($this->incident['reporterTitle']); ?>
-                    <?php echo $this->escape($this->incident['reporterFirstName']); ?>
-                    <?php echo $this->escape($this->incident['reporterLastName']); ?>
+                    <div name="incident[reporterFirstName]"
+                         id="reporterFirstName"
+                         <?php if ($this->updateIncidentPrivilege): ?>
+                             class="editable"
+                             type="text"
+                             target="reporterFirstName"
+                         <?php endif; ?>>
+                         <?php echo $this->escape($this->incident['reporterFirstName']); ?>&nbsp;
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Last Name:</td>
+                <td>
+                    <div name="incident[reporterLastName]"
+                         id="reporterLastName"
+                         <?php if ($this->updateIncidentPrivilege): ?>
+                             class="editable"
+                             type="text"
+                             target="reporterLastName"
+                         <?php endif; ?>>
+                         <?php echo $this->escape($this->incident['reporterLastName']); ?>&nbsp;
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -648,11 +668,45 @@
                 </td>
             </tr>
             <tr>
-                <td>City/State/Zip:</td>
+                <td>City:</td>
                 <td>
-                    <?php echo $this->escape($this->incident['reporterCity']); ?>
-                    <?php echo $this->escape($this->incident['reporterState']); ?>
-                    <?php echo $this->escape($this->incident['reporterZip']); ?>
+                    <div name="incident[reporterCity]"
+                         id="reporterCity"
+                         <?php if ($this->updateIncidentPrivilege): ?>
+                             class="editable"
+                             type="text"
+                             target="reporterCity"
+                         <?php endif; ?>>
+                         <?php echo $this->escape($this->incident['reporterCity']); ?>&nbsp;
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>State:</td>
+                <td>
+                    <div name="incident[reporterState]"
+                         id="reporterState"
+                         <?php if ($this->updateIncidentPrivilege): ?>
+                             class="editable"
+                             type="text"
+                             target="reporterState"
+                         <?php endif; ?>>
+                         <?php echo $this->escape($this->incident['reporterState']); ?>&nbsp;
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td>Zip:</td>
+                <td>
+                    <div name="incident[reporterZip]"
+                         id="reporterZip"
+                         <?php if ($this->updateIncidentPrivilege): ?>
+                             class="editable"
+                             type="text"
+                             target="reporterZip"
+                         <?php endif; ?>>
+                         <?php echo $this->escape($this->incident['reporterZip']); ?>&nbsp;
+                    </div>
                 </td>
             </tr>
             <tr>
@@ -711,19 +765,7 @@
             <tr>
                 <td>Reported from IP:</td>
                 <td>
-                    <div name="incident[reporterIp]"
-                         id="reporterIp"
-                         <?php
-                         if ($this->updateIncidentPrivilege):
-                         ?>
-                             class="editable"
-                             type="text"
-                             target="reporterIp"
-                         <?php
-                         endif;
-                         ?>>
-                         <?php echo $this->escape($this->incident['reporterIp']); ?>&nbsp;
-                    </div>
+                    <?php echo $this->escape($this->incident['reporterIp']); ?>
                 </td>
             </tr>
         </table>
