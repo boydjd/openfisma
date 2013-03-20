@@ -29,7 +29,7 @@ unset($opts);
 ?>
 <script type="text/javascript">
 $(function() {
-    $("<br>").insertBefore(
+    $("<br /><br />").insertBefore(
         $("<label>").text("Advanced Settings").prepend(
             $("<input>").attr({"type":"checkbox","name":"advancedRoles"}).change(function(ev) {
                 if ($(ev.target).is(":checked")) {
@@ -38,7 +38,7 @@ $(function() {
                     $("#TabView_UserView_TabViewContainer").hide();
                 }
             }).change()
-        ).insertAfter($("#role"))
+        ).appendTo($("input[name^=role]").parents("td").first())
     );
 });
 </script>

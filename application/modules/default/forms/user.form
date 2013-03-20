@@ -112,7 +112,7 @@ displayGroups.accountInfo.elements.phoneMobile = "phoneMobile"
 
 ; The roles are populated dynamically in Fisma_Zend_Form_Manager_User since they can
 ; change at any time.
-elements.role.type = "multiselect"
+elements.role.type = "multiCheckbox"
 elements.role.options.label = "Permission Scheme(s)"
 elements.role.options.required = true
 elements.role.options.size = 10
