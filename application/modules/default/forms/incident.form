@@ -35,9 +35,9 @@ elements.reporterCity.options.label = "City"
 elements.reporterCity.options.style = "width:200px"
 displayGroups.incident.elements.reporterCity = "reporterCity"
 
-;elements.reporterState.type = "select"
-;elements.reporterState.options.label = "State"
-;displayGroups.incident.elements.reporterState = "reporterState"
+elements.reporterState.type = "text"
+elements.reporterState.options.label = "State"
+displayGroups.incident.elements.reporterState = "reporterState"
 
 elements.reporterZip.type = "text"
 elements.reporterZip.options.label = "Zip"
