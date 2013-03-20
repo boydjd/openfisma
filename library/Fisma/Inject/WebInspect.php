@@ -44,7 +44,6 @@ class Fisma_Inject_WebInspect extends Fisma_Inject_Abstract
         try {
             $this->_persist($report, $uploadId);
         } catch (Exception $e) {
-            die ($e->getTraceAsString());
             throw new Fisma_Zend_Exception('An error occured while processing the XML file.', 0, $e);
         }
 
