@@ -112,7 +112,7 @@ or fields that cannot be modified during this step.</i>
 $transitions = ($this->step)
               ? (($this->step->transitions) ? $this->step->transitions : array())
               : array();
-foreach ($transitions as $transition) {
+foreach ($transitions as &$transition) {
     if (!isset($transition['actions'])) {
         $transition['actions'] = Zend_Json::encode(array(
             array(
@@ -126,6 +126,7 @@ foreach ($transitions as $transition) {
                 'handler' => 'Fisma.Workflow.deleteTransition'
             )
         ));
+        //die($transition['actions']);
     }
 }
 
@@ -154,7 +155,7 @@ $transitionTable->addColumn(
     new Fisma_Yui_DataTable_Column(
         'Organization Roles',
         true,
-        null,
+        'Fisma.TableFormat.formatArray',
         null,
         'roles'
     )
