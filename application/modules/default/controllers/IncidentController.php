@@ -1816,6 +1816,39 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     public function getForm($formName = null)
     {
         $form = parent::getForm($formName);
+        if ($elem = $form->getElement('categoryId')) {
+            $elem->addMultiOption('')
+                 ->addMultiOptions(IrCategoryTable::getCategoriesForSelect());
+        }
+        if ($elem = $form->getElement('severityLevel')) {
+            $tags = Doctrine::getTable('Tag')->findOneByTagId('incident-severity-level')->labels;
+            $elem->addMultiOption('')
+                 ->addMultiOptions(array_combine($tags, $tags));
+        }
+        if ($elem = $form->getElement('organizationId')) {
+            $elem->addMultiOption('')
+                ->addMultiOptions(
+                    $this->view->treeToSelect(
+                        CurrentUser::getInstance()
+                            ->getOrganizationsQuery()
+                            ->leftJoin('o.System s')
+                            ->leftJoin('o.OrganizationType orgType ')
+                            ->andWhere('orgType.nickname <> ? OR s.sdlcPhase <> ?', array('system', 'disposal'))
+                            ->execute(),
+                        'nickname'
+                    )
+                );
+        }
+        if ($elem = $form->getElement('source')) {
+            $tags = Doctrine::getTable('Tag')->findOneByTagId('incident-source')->labels;
+            $elem->addMultiOption('')
+                 ->addMultiOptions(array_combine($tags, $tags));
+        }
+        if ($elem = $form->getElement('impact')) {
+            $tags = Doctrine::getTable('Tag')->findOneByTagId('incident-impact')->labels;
+            $elem->addMultiOption('')
+                 ->addMultiOptions(array_combine($tags, $tags));
+        }
         $form->setDefaults(
             array(
                 'incidentDate' => Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE),
