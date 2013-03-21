@@ -2,6 +2,7 @@ Role:
     admin_role:
         name: Administrator
         nickname: ADMIN
+        type: ACCOUNT_TYPE
         description: <p>System and Application Administrators.</p>
         Privileges:
             - areas_dashboard
@@ -115,6 +116,7 @@ Role:
     user_role:
         name: User
         nickname: USER
+        type: ACCOUNT_TYPE
         description: <p>The general users who can create, read, update, and delete findings, incidents, vulnerabilities, and related metadata.</p>
         Privileges:
             - areas_dashboard
@@ -210,6 +212,7 @@ Role:
     viewer_role:
         name: Viewer
         nickname: VIEWER
+        type: ACCOUNT_TYPE
         description: <p>The restricted users who can only read and make comments.</p>
         Privileges:
             - areas_dashboard
@@ -245,3 +248,18 @@ Role:
             - organization_type_read
             - system_type_read
             - security_control_catalog_read
+
+    iso_role:
+        name: Information Security Officer
+        nickname: ISO
+        type: USER_GROUP
+
+    bo_role:
+        name: Business Owner
+        nickname: BO
+        type: USER_GROUP
+
+    ao_role:
+        name: Authorizing Official
+        nickname: AO
+        type: USER_GROUP
