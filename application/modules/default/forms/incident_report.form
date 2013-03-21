@@ -1,7 +1,7 @@
 [incident_report]
 
 elements.instructions.type = "Element_ConstantText"
-elements.instructions.options.value = "If you would like to report a computer security incident, please complete the following form. Required fields are denoted with an asterisk. Please specify as much information as you can. If there are questions that you do not know the answer to, you are encouraged to leave those questions blank and to submit the incident report in a timely manner. You will be given a chance to review your report before submission. To cancel click the Back button."
+elements.instructions.options.value = "If you would like to report a computer security incident, please complete the following form. Required fields are denoted with an asterisk. Please specify as much information as you can. If there are questions that you do not know the answer to, you are encouraged to leave those questions blank and to submit the incident report in a timely manner. You will be given a chance to review your report before submission. To cancel click the Back button.<br /><br />"
 displayGroups.incident.elements.instructions = "instructions"
 
 elements.reporterFirstName.type = "text"

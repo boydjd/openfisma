@@ -2,36 +2,43 @@
 echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
 Fisma_Format_Section::startSection("Review Incident Report");
 ?>
-
-<h1>Review Report</h1>
-
-<p>
-   Please review all of the report details which you have provided. If anything needs to be changed, you can use the
-   "Back" button to revisit the form. When you are satisfied, click the "Submit Report" button.
-</p>
-
-<p>
-    <i>Once you click "Submit Report", the report will be submitted and it cannot be modified after that.</i>
-</p>
-
-<div style="margin: 10px;">
-    <table class="keyValues">
-        <?php
-        foreach ($this->incidentReview as $key => $value):
-        ?>
+<div style="width: 970px;">
+    <div class="form">
+        <div class="subform">
+            <table class="fisma_crud">
+                <tbody>
+                    <tr>
+                        <td colspan="2" style="font-size: inherit; text-align: left; font-weight: normal;">
+                            Please review all of the report details which you have provided. If anything needs to be
+                            changed, you can use the "Back" button to revisit the form. When you are satisfied, click
+                            the "Submit Report" button.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="font-size: inherit; text-align: left; font-weight: normal;">
+                            <i>Once you click "Submit Report", the report will be submitted and it cannot be modified
+                            after that.</i>
+                            <br /><br />
+                        </td>
+                    </tr>
+        <?php foreach ($this->incidentReview as $key => $value): ?>
             <tr>
             <?php if(!empty($this->richColumns[$key]) && $this->richColumns[$key] == 'html'): ?>
-                <td style="padding-top: 14px;"><?php echo $this->escape($key); ?>:</td>
+                <td style="padding-top: 14px;" width="30%"><?php echo $this->escape($key); ?>:</td>
                 <td><?php echo $this->escape($value, 'none'); ?><td>
             <?php else: ?>
-                <td><?php echo $this->escape($key); ?>:</td>
+                <td width="30%"><?php echo $this->escape($key); ?>:</td>
                 <td><?php echo $this->escape($value); ?></td>
             <?php endif; ?>
             </tr>
-        <?php
-        endforeach;
-        ?>
-    </table>
+        <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
+
+
+
 <?php Fisma_Format_Section::stopSection(); ?>
 <form><?php /* dummy form for CSRF token */ ?></form>
