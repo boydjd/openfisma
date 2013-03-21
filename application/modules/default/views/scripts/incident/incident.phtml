@@ -535,9 +535,19 @@
         <table class="keyValues">
             <tr>
                 <td>Reporter:</td>
-                <td>
-                    <?php
-                        if (isset($this->incident['ReportingUser'])):
+                <td><span id="reportingUser"
+                    type="autocomplete"
+                    xhr="/user/autocomplete/format/json"
+                    queryPrepend="/keyword/"
+                    schemaObject="pointsOfContact"
+                    schemaField="name"
+                    name="incident[reportingUserId]"
+                <?php if ($this->acl()->hasPrivilegeForClass('create', 'User')): ?>
+                    setupCallback="Fisma.Finding.setupPocAutocomplete"
+                <?php endif; ?>
+                    value="<?php echo $this->escape($this->incident['reportingUserId']); ?>"
+                    defaultValue="<?php echo $this->escape($this->incident['ReportingUser']['displayName']); ?>"><?php
+                        if (!empty($this->incident['reportingUserId'])) {
                             echo $this->escape(
                                 $this->userInfo(
                                     $this->incident['ReportingUser']['displayName'],
@@ -545,10 +555,11 @@
                                 ),
                                 'none'
                             );
-                        else:
-                            echo $this->escape("Not reported by a registered user. (See below.)");
-                        endif;
-                    ?>
+                        }
+                    ?></span>
+                <?php if ($this->updateIncidentPrivilege): ?>
+                    <span class="editable" target="reportingUser">&nbsp;</span>
+                <?php endif; ?>
                 </td>
             </tr>
             <tr>
