@@ -177,6 +177,9 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
                 if ($key == 'organizationId') {
                     $value = "{$incident->Organization->nickname} - {$incident->Organization->name}";
+                } else if ($key === 'incidentTime') {
+                    $date = new Zend_Date($value, Fisma_Date::FORMAT_TIME);
+                    $value = $date->toString(Fisma_Date::FORMAT_AM_PM_TIME);
                 }
 
                 if ($columnDef) {
@@ -239,7 +242,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         // to incident list page.
         $session = Fisma::getSession();
         if (isset($session->irDraft)) {
-            $incident = unserialize($session->irDraft);
+            $incident = new Incident();
+            $incident->merge(unserialize($session->irDraft));
         } else {
             if (!$this->_me) {
                 $this->_redirect('/incident/report');
@@ -1687,14 +1691,18 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
         }
 
-        $buttons['create'] = new Fisma_Yui_Form_Button_Link(
-            'toolbarReportIncidentButton',
-            array(
-                'value' => 'New',
-                'href' => $this->getBaseUrl() . '/report',
-                'imageSrc' => '/images/create.png'
-            )
-        );
+        if ($this->getRequest()->getActionName() === 'create') {
+            unset($buttons['discardButton']);
+        } else {
+            $buttons['create'] = new Fisma_Yui_Form_Button_Link(
+                'toolbarReportIncidentButton',
+                array(
+                    'value' => 'New',
+                    'href' => $this->getBaseUrl() . '/report',
+                    'imageSrc' => '/images/create.png'
+                )
+            );
+        }
 
         // Add a "Reject" button if the incident is still in "new" status
         if ($record && 'new' == $record->status) {
