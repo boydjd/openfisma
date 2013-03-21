@@ -273,12 +273,14 @@ class WorkflowStep extends BaseWorkflowStep
             throw new Fisma_Zend_Exception_User('Invalid destination provided (' . $transition['destination'] . ').');
         }
 
-        $missingFields = $nextStep->validateObject($object, $expirationDate);
-        if (count($missingFields) > 0) {
-            throw new Fisma_Zend_Exception_User(
-                '"' . $nextStep->name . '" workflow step requires the following field(s): '
-                . implode(', ', $missingFields)
-            );
+        if (!$destinationId) {
+            $missingFields = $nextStep->validateObject($object, $expirationDate);
+            if (count($missingFields) > 0) {
+                throw new Fisma_Zend_Exception_User(
+                    '"' . $nextStep->name . '" workflow step requires the following field(s): '
+                    . implode(', ', $missingFields)
+                );
+            }
         }
 
         $completedStep = array(

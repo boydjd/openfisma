@@ -9,22 +9,22 @@
 <i>Provide metadata that helps users understand what they need to do in order to complete this step.</i>
 <table class='keyValues'>
     <tr>
-        <td>Name</td>
+        <th scope='row'>Name</th>
         <td><input type='text' name='step[name]' id='stepName' autofocus value='<?php
             if ($this->step): echo $this->escape($this->step->name); endif;
         ?>' /></td>
-        <td>Label</td>
+        <th scope='row'>Label</th>
         <td><input type='text' name='step[label]' id='stepLabel' value='<?php
             if ($this->step): echo $this->escape($this->step->label); endif;
         ?>' /></td>
     </tr>
     <tr>
-        <td>Resolved</td>
+        <th scope='row'>Resolved</th>
         <td colspan='3'><input type='checkbox' name='step[isResolved]' <?php
             if ($this->step && $this->step->isResolved): echo $this->escape('checked'); endif;
         ?>/> Mark the entity as resolved and the workflow as completed.</td>
     </tr><tr>
-        <td>Instruction(s)</td>
+        <th scope='row'>Instruction(s)</th>
         <td colspan='3'><textarea name='step[description]' id='stepDescription' cols='60' rows='3'><?php
             if ($this->step): echo $this->escape($this->step->description, 'none'); endif;
         ?></textarea></td>
@@ -36,7 +36,7 @@
 <i>Define the allotted time period in which users should complete this step.</i>
 <table class='keyValues'>
     <tr>
-        <td>Allotted Time</td>
+        <th scope='row'>Allotted Time</th>
         <td>
             <input type='radio' name='step[allottedTime]' value='unlimited' <?php
                 if (!$this->step || $this->step->allottedTime === 'unlimited'): echo $this->escape('checked'); endif;
@@ -56,7 +56,7 @@
         </td>
     </tr>
     <tr>
-        <td>Automated Transition</td>
+        <th scope='row'>Automated Transition</th>
         <td>
             <input type='checkbox' name='step[autoTransition]' <?php
                 if ($this->step && $this->step->autoTransition): echo $this->escape('checked'); endif;
@@ -78,34 +78,44 @@
             </select> after allotted time expires.
         </td>
     </tr>
+    <tr>
+        <td colspan='2' style="font-size: inherit; text-align: left; font-weight: normal">
+            Automated transitions cannot be used when the allotted time is set to unlimited. Any specific privileges, required fields, or pre-requisites will be ignored.
+        </td>
+    </tr>
 </table>
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <?php Fisma_Format_Section::startSection('Field Prerequisites and Restrictions'); ?>
-<i>Specify (if necessary) fields that should have been already filled out before this step
-or fields that cannot be modified during this step.</i>
+<i>Specify any custom prerequisites or restrictions you wish to apply to this workflow step.</i>
 <table class='keyValues'>
     <tr>
-        <td>Attachments</td>
+        <th scope='row'>Attachments</th>
         <td>
             <input type='checkbox' name='step[attachmentEditable]' <?php
                 if (!$this->step || $this->step->attachmentEditable): echo $this->escape('checked'); endif;
             ?>/>
-            Allow users to upload and modify attachments in this step.
+            Allow users to upload and modify attachments.
         </td>
     </tr>
     <tr>
-        <td title='Fields that must be completed before entering this step'>Prerequisites</td>
+        <th scope='row' title='Fields that must be completed before entering this step'>Prerequisites</th>
         <td><?php echo $this->escape($this->prerequisites, 'none'); ?></td>
     </tr>
     <tr>
-        <td title='Fields that cannot be editted in this step'>Restricted Fields</td>
+        <th scope='row' title='Fields that cannot be editted in this step'>Restrictions</th>
         <td><?php echo $this->escape($this->restrictedFields, 'none'); ?></td>
     </tr>
 </table>
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <?php Fisma_Format_Section::startSection('Transitions'); ?>
+<p><?php echo $this->escape(new Fisma_Yui_Form_Button('addTransition', array(
+    'label' => 'Add Transition',
+    'imageSrc' => '/images/create.png',
+    'onClickFunction' => 'Fisma.Workflow.addTransition'
+)), 'none');
+?></p>
 <i>Define the options for completing this step.</i>
 
 <?php
@@ -186,14 +196,13 @@ echo $this->escape($transitionTable, 'none');
 <?php Fisma_Format_Section::stopSection(); ?>
 
 <p>
-    <?php echo $this->escape(new Fisma_Yui_Form_Button('addTransition', array(
-        'label' => 'Add Transition',
-        'imageSrc' => '/images/create.png',
-        'onClickFunction' => 'Fisma.Workflow.addTransition'
-    )), 'none'); ?>
     <?php echo $this->escape(new Fisma_Yui_Form_Button_Submit('submitStep', array(
         'label' => 'Save',
         'imageSrc' => '/images/ok.png'
+    )), 'none'); ?>
+    <?php echo $this->escape(new Fisma_Yui_Form_Button('closeStep', array(
+        'label' => 'Cancel',
+        'imageSrc' => '/images/no_entry.png'
     )), 'none'); ?>
 </p>
 </form>
