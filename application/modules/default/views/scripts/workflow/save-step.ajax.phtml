@@ -112,6 +112,22 @@ or fields that cannot be modified during this step.</i>
 $transitions = ($this->step)
               ? (($this->step->transitions) ? $this->step->transitions : array())
               : array();
+foreach ($transitions as $transition) {
+    if (!isset($transition['actions'])) {
+        $transition['actions'] = Zend_Json::encode(array(
+            array(
+                'label' => 'edit',
+                'icon' => '/images/edit.png',
+                'handler' => 'Fisma.Workflow.editTransition'
+            ),
+            array(
+                'label' => 'delete',
+                'icon' => '/images/trash_recyclebin_empty_open.png',
+                'handler' => 'Fisma.Workflow.deleteTransition'
+            )
+        ));
+    }
+}
 
 $transitionTable = new Fisma_Yui_DataTable_Local();
 $transitionTable->setRegistryName('transition-table');
