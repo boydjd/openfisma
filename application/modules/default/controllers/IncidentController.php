@@ -1698,7 +1698,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'toolbarReportIncidentButton',
                 array(
                     'value' => 'New',
-                    'href' => $this->getBaseUrl() . '/report',
+                    'href' => $this->getBaseUrl() . '/create',
                     'imageSrc' => '/images/create.png'
                 )
             );
