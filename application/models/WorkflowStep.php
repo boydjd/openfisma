@@ -261,7 +261,7 @@ class WorkflowStep extends BaseWorkflowStep
                 $currentRoles,
                 Zend_Json::decode($transition['roles'])
             );
-            if (count($transitionRoles) < 1) {
+            if (count(Zend_Json::decode($transition['roles'])) > 0 && count($transitionRoles) < 1) {
                 throw new Fisma_Zend_Exception_User(
                     'Current user does not have the required role for this transition (' . $transitionName . ').'
                 );
@@ -328,8 +328,12 @@ class WorkflowStep extends BaseWorkflowStep
                     ->addDay($expirationDate)
                     ->toString(Fisma_Date::FORMAT_DATE);
                 break;
-            case 'unlimited':
             case 'ecd':
+                if ($object->currentEcd) {
+                    $object->nextDueDate = $object->currentEcd;
+                }
+                break;
+            case 'unlimited':
             default:
                 $object->nextDueDate = null;
         }

@@ -1,67 +1,21 @@
 <div id='workflowTabContent'>
 <?php
 $object = $this->object;
+$table = $object->getTable();
 $model = $this->model;
 $completedSteps = (array)$object->completedSteps;
 $step = $object->CurrentStep;
 $organization = $object->Organization;
 ?>
 
-<?php Fisma_Format_Section::startSection('Overview'); ?>
-<p>
-    <b><?php echo $this->escape($this->translate(ucfirst($model) . '_Status')); ?></b>:
-    <?php echo $this->escape(($object->isResolved) ? 'YES' : 'NO'); ?>
-</p>
+<?php Fisma_Format_Section::startSection('Workflow Steps'); ?>
 <?php if (empty($object->currentStepId)): ?>
 <p>This <?php echo $this->escape(ucfirst($model)); ?> is not assigned to any workflow step.</p>
 <?php else: ?>
-<p>
-    <b>Current Workflow Step:</b>
-    <span title='<?php echo $this->escape($step->Workflow->description); ?>'>
-        <?php echo $this->escape($step->Workflow->name); ?>
-    </span>
-    -
-    <span title='<?php echo $this->escape($step->label); ?>'>
-        <?php echo $this->escape($step->name); ?>
-    </span>
-    <?php
-    if (strpos($this->workflowOnTimeState, 'On Time') === 0) {
-        ?>(<font color='green'><?php echo $this->escape($this->workflowOnTimeState); ?></font>)<?php
-    } else if (strpos($this->workflowOnTimeState, 'Due Today') === 0) {
-        ?>(<font color='orange'>Due Today</font>)<?php
-    } else if (strpos($this->workflowOnTimeState, 'Overdue') === 0) {
-        ?>(<font color='red'><?php echo $this->escape($this->workflowOnTimeState); ?></font>)<?php
-    }
-    ?>
-    <br/>
-<?php
-    $query = Doctrine_Query::create()
-        ->from('WorkflowStepUser wsu')
-        ->where('wsu.stepId = ?', $step->id)
-        ->andWhere('wsu.userId = ?', CurrentUser::getAttribute('id'))
-        ->count();
-    $watching = ($query > 0);
-    if ($watching): ?>
-    <a href='#' onclick='Fisma.Workflow.unsubscribe(<?php
-        echo $this->escape($step->id);
-    ?>, <?php
-        echo $this->escape($object->id);
-    ?>);'>
-        Stop emailing me when <?php echo $this->escape($model); ?>(s) enter this workflow step.
-    </a>
-<?php else: ?>
-    <a href='#' onclick='Fisma.Workflow.subscribe(<?php
-        echo $this->escape($step->id);
-    ?>, <?php
-        echo $this->escape($object->id);
-    ?>);'>
-        Email me whenever <?php echo $this->escape($model); ?>(s) enter this workflow step.
-    </a>
-<?php endif; ?>
-</p>
+
 <?php
 $restrictedFields = (array)$step->restrictedFields;
-$table = Doctrine::getTable(ucfirst($model));
+
 foreach ($restrictedFields as $key => $value):
     $restrictedFields[$key] = $this->translate($table->getLogicalName($value));
 endforeach;
@@ -75,10 +29,125 @@ if (count($restrictedFields) > 0):
     <?php echo $this->escape(implode(', ', $restrictedFields)); ?>.
 </p>
 <?php endif; ?>
-<?php Fisma_Format_Section::stopSection(); ?>
 
-<?php Fisma_Format_Section::startSection('Workflow Steps'); ?>
-<?php foreach ($completedSteps as $completedStep): ?>
+<div class='workflowStep current<?php if ($step->isResolved): ?> resolved<?php endif; ?>'>
+    <table class='keyValues'>
+        <tr>
+            <th scope='row'>Step</th>
+            <td>
+                <span title='<?php echo $this->escape($step->Workflow->description); ?>'>
+                    <?php echo $this->escape($step->Workflow->name); ?>
+                </span>
+                -
+                <span title='<?php echo $this->escape($step->label); ?>'>
+                    <?php echo $this->escape($step->name); ?>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th scope='row'>Status</th>
+            <td> <?php
+            if (strpos($this->workflowOnTimeState, 'On Time') === 0) {
+                ?><font color='green'><?php echo $this->escape($this->workflowOnTimeState); ?></font><?php
+            } else if (strpos($this->workflowOnTimeState, 'Due Today') === 0) {
+                ?><font color='orange'>Due Today</font><?php
+            } else if (strpos($this->workflowOnTimeState, 'Overdue') === 0) {
+                ?><font color='red'><?php echo $this->escape($this->workflowOnTimeState); ?></font><?php
+            }
+            ?></td>
+        </tr>
+        <?php if ($step->isResolved && $lastStep = end($completedSteps)): ?>
+        <tr>
+            <th scope='row'>Resolved by</th>
+            <td><?php
+                $user = Doctrine::getTable('User')->find($lastStep['userId']);
+                echo $this->escape($this->userInfo($user->displayName, $user->id), 'none');
+            ?></td>
+        </tr>
+        <tr>
+            <th scope='row'>Resolved on</th>
+            <td><?php echo $this->escape($lastStep['timestamp']); ?></td>
+        </tr>
+        <?php endif; ?>
+        <tr>
+            <th scope='row'>Instruction(s)</th>
+        <?php
+        $actions = '';
+        if ($organization):
+            $currentRoles = $organization->getPocs()->fetchAllPositions(CurrentUser::getAttribute('id'));
+
+            foreach ((array)$step->transitions as $index => $transition):
+                $transitionRoles = array_intersect(
+                    $currentRoles,
+                    Zend_Json::decode($transition['roles'])
+                );
+                if (count(Zend_Json::decode($transition['roles'])) == 0 || count($transitionRoles) > 0):
+                    $actions .= new Fisma_Yui_Form_Button(
+                        'transitionButton' . $index,
+                        array(
+                            'label' => $transition['name'],
+                            'onClickFunction' => 'Fisma.Workflow.completeStep',
+                            'onClickArgument' => array(
+                                'objectId' => $object->id,
+                                'stepId' => $step->id,
+                                'transitionName' => $transition['name'],
+                                'url' => '/workflow/complete-step/format/json/model/' . $model
+                            )
+                        )
+                    );
+                endif;
+            endforeach;
+        endif;
+
+        if ($actions !== ''):
+        ?>
+            <td><?php echo $this->escape($step->description, 'none'); ?></td>
+        </tr>
+        <tr>
+            <th scope='row'>Comment</th>
+            <td><textarea rows='8' cols='60' name='stepComment'></textarea></td>
+        </tr>
+        <tr>
+            <th scope='row'>Action</th>
+            <td>
+                <?php echo $this->escape($actions, 'none'); ?>
+                <input name='stepExpirationDate' type='hidden' />
+            </td>
+        </tr>
+        <?php else: ?>
+            <td>You don't have permission to perform any actions in this step</td>
+        <?php endif; ?>
+        </tr>
+    </table>
+
+    <!--Email notification-->
+    <?php
+        $query = Doctrine_Query::create()
+            ->from('WorkflowStepUser wsu')
+            ->where('wsu.stepId = ?', $step->id)
+            ->andWhere('wsu.userId = ?', CurrentUser::getAttribute('id'))
+            ->count();
+        $watching = ($query > 0);
+        if ($watching): ?>
+        <a href='#' onclick='Fisma.Workflow.unsubscribe(<?php
+            echo $this->escape($step->id);
+        ?>, <?php
+            echo $this->escape($object->id);
+        ?>);'>
+            Stop emailing me when <?php echo $this->escape($model); ?>(s) enter this workflow step.
+        </a>
+    <?php else: ?>
+        <a href='#' onclick='Fisma.Workflow.subscribe(<?php
+            echo $this->escape($step->id);
+        ?>, <?php
+            echo $this->escape($object->id);
+        ?>);'>
+            Email me whenever <?php echo $this->escape($model); ?>(s) enter this workflow step.
+        </a>
+    <?php endif; ?>
+</div>
+
+<?php foreach (array_reverse($completedSteps) as $completedStep): ?>
 <div class='workflowStep'>
     <table class='keyValues'>
         <tr>
@@ -119,71 +188,6 @@ if (count($restrictedFields) > 0):
     </table>
 </div>
 <?php endforeach; ?>
-<div class='workflowStep current'>
-    <table class='keyValues'>
-        <tr>
-            <th scope='row'>Step</th>
-            <td>
-                <span title='<?php echo $this->escape($step->Workflow->description); ?>'>
-                    <?php echo $this->escape($step->Workflow->name); ?>
-                </span>
-                -
-                <span title='<?php echo $this->escape($step->label); ?>'>
-                    <?php echo $this->escape($step->name); ?>
-                </span>
-            </td>
-        </tr>
-        <tr>
-            <th scope='row'>Instruction(s)</th>
-        <?php
-        $actions = '';
-        if ($organization):
-            $currentRoles = $organization->getPocs()->fetchAllPositions(CurrentUser::getAttribute('id'));
-
-            foreach ((array)$step->transitions as $index => $transition):
-                $transitionRoles = array_intersect(
-                    $currentRoles,
-                    Zend_Json::decode($transition['roles'])
-                );
-                if (count($transitionRoles) > 0):
-                    $actions .= new Fisma_Yui_Form_Button(
-                        'transitionButton' . $index,
-                        array(
-                            'label' => $transition['name'],
-                            'onClickFunction' => 'Fisma.Workflow.completeStep',
-                            'onClickArgument' => array(
-                                'objectId' => $object->id,
-                                'stepId' => $step->id,
-                                'transitionName' => $transition['name'],
-                                'url' => '/workflow/complete-step/format/json/model/' . $model
-                            )
-                        )
-                    );
-                endif;
-            endforeach;
-        endif;
-
-        if ($actions !== ''):
-        ?>
-            <td><?php echo $this->escape($step->description, 'none'); ?></td>
-        </tr>
-        <tr>
-            <th scope='row'>Comment</th>
-            <td><textarea rows='8' cols='60' name='stepComment'></textarea></td>
-        </tr>
-        <tr>
-            <th scope='row'>Action</th>
-            <td>
-                <?php echo $this->escape($actions, 'none'); ?>
-                <input name='stepExpirationDate' type='hidden' />
-            </td>
-        </tr>
-        <?php else: ?>
-            <td>You don't have permission to perform any actions in this step</td>
-        <?php endif; ?>
-        </tr>
-    </table>
-</div>
 <?php endif; ?>
 <?php Fisma_Format_Section::stopSection(); ?>
 </div>

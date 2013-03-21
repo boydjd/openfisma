@@ -100,6 +100,9 @@ Finding:
                         func: hasPrivilegeForClass
                         param1: manage_relationships
                         param2: Finding
+                Finding_Workflow:
+                    label: Workflows
+                    link: /workflow/manage#0
         Reports:
             label: Reports
             privilege:
@@ -167,6 +170,9 @@ Vulnerability:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: VulnerabilityResolution
+                Vulnerability_Workflow:
+                    label: Workflows
+                    link: /workflow/manage#2
         Reports:
             label: Reports
             privilege:
@@ -475,10 +481,6 @@ Administration:
         Workflow:
             label: Workflow Management
             link: /workflow
-            privilege:
-                func: hasPrivilegeForClass
-                param1: manage
-                param2: Workflow
 UserPreferences:
     label: <span class=currentUser>$currentUser</span>
     submenu:

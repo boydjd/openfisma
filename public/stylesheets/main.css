@@ -1151,6 +1151,11 @@ div.workflowStep.current {
     background-color: #edf5ff;
 }
 
+div.workflowStep.current.resolved {
+    border: 2px solid green;
+    background-color: lightgreen;
+}
+
 div.workflowStep th[scope=row] {
     vertical-align: top;
     text-align: left;

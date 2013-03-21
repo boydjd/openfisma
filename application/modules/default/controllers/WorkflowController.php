@@ -64,8 +64,8 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
     {
         $this->view->tabView = new Fisma_Yui_TabView('WorkflowManage');
         $this->view->tabView->addTab("Finding", '/workflow/list/format/html/type/finding');
-        $this->view->tabView->addTab("Incident", '/workflow/list/format/html/type/incident');
         $this->view->tabView->addTab("Vulnerability", '/workflow/list/format/html/type/vulnerability');
+        //$this->view->tabView->addTab("Incident", '/workflow/list/format/html/type/incident');
         $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
@@ -372,12 +372,12 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
                         'label'     => 'edit',
                         'icon'      => '/images/edit.png',
                         'handler'   => 'Fisma.Workflow.editStep'
-                    ),
+                    ),/*// Hidden until monitors with small resolutions become extinct
                     array(
                         'label'     => 'move first',
                         'icon'      => '/images/move_first.png',
                         'handler'   => 'Fisma.Workflow.moveStepFirst'
-                    ),
+                    ),//*/
                     array(
                         'label'     => 'move up',
                         'icon'      => '/images/move_up.png',
@@ -387,12 +387,12 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
                         'label'     => 'move down',
                         'icon'      => '/images/move_down.png',
                         'handler'   => 'Fisma.Workflow.moveStepDown'
-                    ),
+                    ),/*// Hidden until monitors with small resolutions become extinct
                     array(
                         'label'     => 'move last',
                         'icon'      => '/images/move_last.png',
                         'handler'   => 'Fisma.Workflow.moveStepLast'
-                    ),
+                    ),//*/
                     array(
                         'label'     => 'delete',
                         'icon'      => '/images/trash_recyclebin_empty_open.png',
@@ -671,7 +671,7 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
 
         $nextDueDate = new Zend_Date($object->nextDueDate, Fisma_Date::FORMAT_DATE);
         if (is_null($object->nextDueDate)) {
-            $workflowOnTimeState = 'N/A';
+            $workflowOnTimeState = 'On Time';
         } else {
             $workflowCompare = $nextDueDate->compareDate(new Zend_Date());
             $workflowOnTimeState = (($workflowCompare >= 0)

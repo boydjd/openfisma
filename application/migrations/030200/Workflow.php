@@ -111,14 +111,20 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
         //Remove actualCompletionDate, cvssBaseScore, cvssVector
         $helper->dropColumns('finding', array('actualcompletiondate', 'cvssbasescore', 'cvssvector'));
         //if status = CLOSED set isresolved = 1, check type and send to destination step
-        $helper->exec(
-            "UPDATE finding SET isresolved = 1, currentstepid = 16 WHERE status = 'CLOSED' and type = 'CAP';"
+        $helper->update(
+            'finding',
+            array('isresolved' => 1, 'currentstepid' => 16),
+            array('status' => 'CLOSED', 'type' => 'CAP')
         );
-        $helper->exec(
-            "UPDATE finding SET isresolved = 1, currentstepid = 11 WHERE status = 'CLOSED' and type = 'FP';"
+        $helper->update(
+            'finding',
+            array('isresolved' => 1, 'currentstepid' => 9),
+            array('status' => 'CLOSED', 'type' => 'FP')
         );
-        $helper->exec(
-            "UPDATE finding SET isresolved = 1, currentstepid = 10 WHERE status = 'CLOSED' and type = 'AR';"
+        $helper->update(
+            'finding',
+            array('isresolved' => 1, 'currentstepid' => 8),
+            array('status' => 'CLOSED', 'type' => 'AR')
         );
         //save old evaluations => completedsteps
         $evaluations = $helper->query(
@@ -162,21 +168,36 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
             $completedSteps = array();
         }
         //send NEW/DRAFT, MSA, EN, EA to Remediation
-        $helper->exec(
-            "UPDATE finding SET currentstepid = 12 WHERE status in ('NEW', 'DRAFT');"
+        $helper->update(
+            'finding',
+            array('currentstepid' => 10),
+            array('status' => 'NEW')
         );
-        $helper->exec(
-            "UPDATE finding SET currentstepid = 13 WHERE status = 'MSA';"
+        $helper->update(
+            'finding',
+            array('currentstepid' => 10),
+            array('status' => 'DRAFT')
         );
-        $helper->exec(
-            "UPDATE finding SET currentstepid = 14 WHERE status = 'EN';"
+        $helper->update(
+            'finding',
+            array('currentstepid' => 11),
+            array('status' => 'MSA')
         );
-        $helper->exec(
-            "UPDATE finding SET currentstepid = 15 WHERE status = 'EA';"
+        $helper->update(
+            'finding',
+            array('currentstepid' => 12),
+            array('status' => 'EN')
+        );
+        $helper->update(
+            'finding',
+            array('currentstepid' => 13),
+            array('status' => 'EA')
         );
         //send everything without type to Acceptance (this will override some NEW/DRAFT findings above)
-        $helper->exec(
-            "UPDATE finding SET currentstepid = 5 WHERE type = 'NONE';"
+        $helper->update(
+            'finding',
+            array('currentstepid' => 5),
+            array('type' => 'NONE')
         );
         //Remove type, status, denormalizedStatus, currentEvaluationId
         $helper->dropColumns('finding', array('type', 'status', 'denormalizedstatus', 'currentevaluationid'));
@@ -224,14 +245,20 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
         $helper->addColumn('vulnerability', 'currentstepid', 'bigint(20) DEFAULT NULL', 'completedsteps');
         $helper->addColumn('vulnerability', 'nextduedate', 'date DEFAULT NULL', 'currentstepid');
         //if status != OPEN set isresolved = 1, check status and send to destination step
-        $helper->exec(
-            "UPDATE vulnerability SET isresolved = 1, currentstepid = 2 WHERE status = 'WONTFIX';"
+        $helper->update(
+            'vulnerability',
+            array('isresolved' => 1, 'currentstepid' => 2),
+            array('status' => 'WONTFIX')
         );
-        $helper->exec(
-            "UPDATE vulnerability SET isresolved = 1, currentstepid = 4 WHERE status = 'FIXED';"
+        $helper->update(
+            'vulnerability',
+            array('isresolved' => 1, 'currentstepid' => 4),
+            array('status' => 'FIXED')
         );
-        $helper->exec(
-            "UPDATE vulnerability SET currentstepid = 1 WHERE status = 'OPEN';"
+        $helper->update(
+            'vulnerability',
+            array('currentstepid' => 1),
+            array('status' => 'OPEN')
         );
         //Remove status
         $helper->dropColumn('vulnerability', 'status');
@@ -248,7 +275,11 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
             'unit' => 'day',
             'time' => '02:00:00'
         );
-        $helper->exec("UPDATE configuration SET backgroundtasks = ?", array(serialize($bt)));
+
+        $helper->update(
+            'configuration',
+            array('backgroundtasks' => serialize($bt))
+        );
     }
 
     private function _getWorkflowArray()
@@ -302,7 +333,7 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'id' => '5',
                 'createdts' => $now,
                 'modifiedts' => $now,
-                'name' => 'Accept Risk',
+                'name' => 'Risk Acceptance',
                 'description' => 'Workflow to accept the risks',
                 'isdefault' => '0',
                 'module' => 'finding',
@@ -343,25 +374,21 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'cardinality' => '1',
                 'name' => 'Action Plan',
                 'label' => 'AP',
-                'description' => 'Decide whether to fix the vulnerability and if not, why (\'Breaks system\', \'Cost ' .
-                                 'prohibitive\', \'Technically infeasible\'...).',
+                'description' =>
+                    'Decide whether to fix the vulnerability and if not, why (\'Breaks system\', \'Cost prohibitive\'' .
+                    ', \'Technically infeasible\'...).',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
                 'allotteddays' => '30',
-                'autotransition' => '1',
-                'autotransitiondestination' => '2',
+                'autotransition' => '0',
+                'autotransitiondestination' => NULL,
                 'attachmenteditable' => '0',
                 'prerequisites' => NULL,
                 'restrictedfields' => NULL,
                 'transitions' =>
-                    'a:2:{i:0;a:5:{s:4:"name";s:3:"Fix";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Informati' .
-                    'on Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler"' .
-                    ':"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.' .
-                    'png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"3";}i:1;a:5:{s' .
-                    ':4:"name";s:9:"Won\'t Fix";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information Secur' .
-                    'ity Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.' .
-                    'Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","ha' .
-                    'ndler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"2";}}',
+                    'a:2:{i:0;a:4:{s:4:"name";s:3:"Fix";s:11:"destination";s:6:"custom";s:5:"roles";s:2:"[]";s:17:"cu' .
+                    'stomDestination";s:1:"3";}i:1;a:4:{s:4:"name";s:9:"Won\'t Fix";s:11:"destination";s:6:"custom";s' .
+                    ':5:"roles";s:2:"[]";s:17:"customDestination";s:1:"2";}}',
                 'workflowid' => '1'
             ),
             array(
@@ -381,10 +408,8 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'prerequisites' => NULL,
                 'restrictedfields' => NULL,
                 'transitions' =>
-                    'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["' .
-                    'Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png",' .
-                    '"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_em' .
-                    'pty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"1";}}',
+                    'a:1:{i:0;a:4:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:2:"[]"' .
+                    ';s:17:"customDestination";s:1:"1";}}',
                 'workflowid' => '2'
             ),
             array(
@@ -392,9 +417,9 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '1',
-                'name' => 'Actions Required',
+                'name' => NULL,
                 'label' => 'AR',
-                'description' => 'Please provide details about the actions taken to remediate the vulnerability',
+                'description' => NULL,
                 'isresolved' => '0',
                 'allottedtime' => 'unlimited',
                 'allotteddays' => NULL,
@@ -404,11 +429,8 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'prerequisites' => NULL,
                 'restrictedfields' => NULL,
                 'transitions' =>
-                    'a:1:{i:0;a:5:{s:4:"name";s:8:"Complete";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Inform' .
-                    'ation Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handl' .
-                    'er":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_op' .
-                    'en.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";' .
-                    '}}',
+                    'a:1:{i:0;a:4:{s:4:"name";s:8:"Complete";s:11:"destination";s:4:"next";s:5:"roles";s:2:"[]";s:17:' .
+                    '"customDestination";s:9:"undefined";}}',
                 'workflowid' => '3'
             ),
             array(
@@ -428,10 +450,8 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'prerequisites' => NULL,
                 'restrictedfields' => NULL,
                 'transitions' =>
-                    'a:1:{i:0;a:5:{s:4:"name";s:7:"Re-open";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Infor' .
-                    'mation Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","hand' .
-                    'ler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_o' .
-                    'pen.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"1";}}',
+                    'a:1:{i:0;a:4:{s:4:"name";s:7:"Re-open";s:11:"destination";s:6:"custom";s:5:"roles";s:2:"[]";s:17' .
+                    ':"customDestination";s:1:"1";}}',
                 'workflowid' => '3'
             ),
             array(
@@ -439,10 +459,11 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '1',
-                'name' => 'Action Plan',
-                'label' => 'AP',
-                'description' => 'Decide whether to accept the risks, to start remediation, or to discard the finding' .
-                                 ' as False Positive',
+                'name' => 'Mitigation Strategy',
+                'label' => 'MS',
+                'description' =>
+                    'Decide whether to accept the risks, to start remediation, or to discard the finding as False Pos' .
+                    'itive',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
                 'allotteddays' => '30',
@@ -452,18 +473,10 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'prerequisites' => NULL,
                 'restrictedfields' => NULL,
                 'transitions' =>
-                    'a:3:{i:0;a:5:{s:4:"name";s:11:"Accept Risk";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["' .
-                    'Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png",' .
-                    '"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_em' .
-                    'pty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"6";}i' .
-                    ':1;a:5:{s:4:"name";s:14:"False Positive";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Inf' .
-                    'ormation Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","ha' .
-                    'ndler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty' .
-                    '_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:2:"11";}i:2' .
-                    ';a:5:{s:4:"name";s:9:"Remediate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Information' .
-                    ' Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"' .
-                    'Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.pn' .
-                    'g","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:2:"12";}}',
+                    'a:3:{i:0;a:4:{s:4:"name";s:11:"Accept Risk";s:11:"destination";s:6:"custom";s:5:"roles";s:2:"[]"' .
+                    ';s:17:"customDestination";s:1:"6";}i:1;a:4:{s:4:"name";s:14:"False Positive";s:11:"destination";' .
+                    's:6:"custom";s:5:"roles";s:2:"[]";s:17:"customDestination";s:1:"9";}i:2;a:4:{s:4:"name";s:9:"Rem' .
+                    'ediate";s:11:"destination";s:6:"custom";s:5:"roles";s:2:"[]";s:17:"customDestination";s:2:"10";}}',
                 'workflowid' => '4'
             ),
             array(
@@ -471,12 +484,12 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '1',
-                'name' => 'Risk Analysis Form',
-                'label' => 'RAF',
-                'description' => 'Please provide the following details: Categorize (input below), Business Case (Miti' .
-                                 'gation Strategy tab - Action Plan field), Residual Risk (Risk Analysis tab), Eviden' .
-                                 'ce (Attachments tab), Estimated Completion Date (Mitigation Strategy tab), and Coun' .
-                                 'termeasures (Risk Analysis tab)',
+                'name' => 'Accept Risk Justification',
+                'label' => 'ARJ',
+                'description' =>
+                    'Please provide the following details: Categorize (input below), Business Case (Mitigation Strate' .
+                    'gy tab - Action Plan field), Residual Risk (Risk Analysis tab), Evidence (Attachments tab), Esti' .
+            'mated Completion Date (Mitigation Strategy tab), and Countermeasures (Risk Analysis tab)',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
                 'allotteddays' => '30',
@@ -486,15 +499,9 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'prerequisites' => NULL,
                 'restrictedfields' => NULL,
                 'transitions' =>
-                    'a:2:{i:0;a:5:{s:4:"name";s:14:"Submit to IV&V";s:11:"destination";s:4:"next";s:5:"roles";s:32:"[' .
-                    '"Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png"' .
-                    ',"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_e' .
-                    'mpty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"unde' .
-                    'fined";}i:1;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:' .
-                    '"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.pn' .
-                    'g","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin' .
-                    '_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5"' .
-                    ';}}',
+                    'a:2:{i:0;a:4:{s:4:"name";s:20:"Submit Justification";s:11:"destination";s:4:"next";s:5:"roles";s' .
+                    ':2:"[]";s:17:"customDestination";s:9:"undefined";}i:1;a:4:{s:4:"name";s:26:"Change Mitigation St' .
+                    'rategy";s:11:"destination";s:6:"custom";s:5:"roles";s:2:"[]";s:17:"customDestination";s:1:"5";}}',
                 'workflowid' => '5'
             ),
             array(
@@ -502,9 +509,9 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '2',
-                'name' => 'IV&V Approval',
-                'label' => 'IV&V',
-                'description' => 'Please approve or deny the RAF and provide explanation.',
+                'name' => 'Accept Risk Approval',
+                'label' => 'ARA',
+                'description' => 'Please approve or deny the Accept-Risk justification and provide explanation.',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
                 'allotteddays' => '7',
@@ -521,15 +528,9 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                     't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
                     'Id";}',
                 'transitions' =>
-                    'a:2:{i:0;a:5:{s:4:"name";s:36:"Approve and Submit to Business Owner";s:11:"destination";s:4:"nex' .
-                    't";s:5:"roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","ic' .
-                    'on":"/images/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/ima' .
-                    'ges/trash_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"custom' .
-                    'Destination";s:9:"undefined";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"' .
-                    'roles";s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/im' .
-                    'ages/edit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/tras' .
-                    'h_recyclebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestinat' .
-                    'ion";s:9:"undefined";}}',
+                    'a:2:{i:0;a:4:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:2:"[]";s:17:"' .
+                    'customDestination";s:9:"undefined";}i:1;a:4:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back"' .
+                    ';s:5:"roles";s:2:"[]";s:17:"customDestination";s:9:"undefined";}}',
                 'workflowid' => '5'
             ),
             array(
@@ -537,70 +538,8 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '3',
-                'name' => 'Business Owner Approval',
-                'label' => 'BO',
-                'description' => 'Please approve or deny the RAF and provide explanation.',
-                'isresolved' => '0',
-                'allottedtime' => 'days',
-                'allotteddays' => '7',
-                'autotransition' => '0',
-                'autotransitiondestination' => NULL,
-                'attachmenteditable' => '1',
-                'prerequisites' => NULL,
-                'restrictedfields' =>
-                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
-                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
-                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
-                    'Id";}',
-                'transitions' =>
-                    'a:2:{i:0;a:5:{s:4:"name";s:26:"Approve and Submit to CISO";s:11:"destination";s:4:"next";s:5:"ro' .
-                    'les";s:14:"["Business Owner"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","' .
-                    'handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_emp' .
-                    'ty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefi' .
-                    'ned";}i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:14:"["Business ' .
-                    'Owner"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workfl' .
-                    'ow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler"' .
-                    ':"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
-                'workflowid' => '5'
-            ),
-            array(
-                'id' => '9',
-                'createdts' => $now,
-                'modifiedts' => $now,
-                'cardinality' => '4',
-                'name' => 'CISO Approval',
-                'label' => 'CISO',
-                'description' => 'Please approve or deny the RAF and provide explanation.',
-                'isresolved' => '0',
-                'allottedtime' => 'days',
-                'allotteddays' => '7',
-                'autotransition' => '0',
-                'autotransitiondestination' => NULL,
-                'attachmenteditable' => '1',
-                'prerequisites' => NULL,
-                'restrictedfields' =>
-                    'a:11:{i:0;s:11:"description";i:1;s:14:"recommendation";i:2;s:8:"sourceId";i:3;s:10:"currentEcd";' .
-                    'i:4;s:18:"mitigationStrategy";i:5;s:17:"resourcesRequired";i:6;s:11:"threatLevel";i:7;s:6:"threa' .
-                    't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
-                    'Id";}',
-                'transitions' =>
-                    'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:20:"["Authori' .
-                    'zing Official"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fism' .
-                    'a.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","' .
-                    'handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i:1;a:5:' .
-                    '{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:20:"["Authorizing Official"]"' .
-                    ';s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fisma.Workflow.editT' .
-                    'ransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","handler":"Fisma.' .
-                    'Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
-                'workflowid' => '5'
-            ),
-            array(
-                'id' => '10',
-                'createdts' => $now,
-                'modifiedts' => $now,
-                'cardinality' => '5',
-                'name' => 'Active',
-                'label' => 'Active',
+                'name' => 'Accepted Risk',
+                'label' => 'AR',
                 'description' => 'Please provide a reason (if required) to re-evaluate the finding.',
                 'isresolved' => '1',
                 'allottedtime' => 'custom',
@@ -615,14 +554,12 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                     't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
                     'Id";}',
                 'transitions' =>
-                    'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["' .
-                    'Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png",' .
-                    '"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_em' .
-                    'pty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
+                    'a:1:{i:0;a:4:{s:4:"name";s:11:"Review Risk";s:11:"destination";s:6:"custom";s:5:"roles";s:2:"[]"' .
+                    ';s:17:"customDestination";s:1:"6";}}',
                 'workflowid' => '5'
             ),
             array(
-                'id' => '11',
+                'id' => '9',
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '1',
@@ -642,19 +579,17 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                     't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
                     'Id";}',
                 'transitions' =>
-                    'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["' .
-                    'Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png",' .
-                    '"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_em' .
-                    'pty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
+                    'a:1:{i:0;a:4:{s:4:"name";s:15:"Re-Open Finding";s:11:"destination";s:6:"custom";s:5:"roles";s:2:' .
+                    '"[]";s:17:"customDestination";s:1:"5";}}',
                 'workflowid' => '6'
             ),
             array(
-                'id' => '12',
+                'id' => '10',
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '1',
-                'name' => 'Mitigation Strategy',
-                'label' => 'DRAFT',
+                'name' => 'Remediation Plan',
+                'label' => 'RP',
                 'description' => 'Please complete the Mitigation Strategy, Risk Analysis, and Security Control tabs',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
@@ -665,23 +600,18 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                 'prerequisites' => NULL,
                 'restrictedfields' => NULL,
                 'transitions' =>
-                    'a:2:{i:0;a:5:{s:4:"name";s:6:"Submit";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Informat' .
-                    'ion Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler' .
-                    '":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open' .
-                    '.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i' .
-                    ':1;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["Inform' .
-                    'ation Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handl' .
-                    'er":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_op' .
-                    'en.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
+                    'a:2:{i:0;a:4:{s:4:"name";s:6:"Submit";s:11:"destination";s:4:"next";s:5:"roles";s:2:"[]";s:17:"c' .
+                    'ustomDestination";s:9:"undefined";}i:1;a:4:{s:4:"name";s:26:"Change Mitigation Strategy";s:11:"d' .
+                    'estination";s:6:"custom";s:5:"roles";s:2:"[]";s:17:"customDestination";s:1:"5";}}',
                 'workflowid' => '7'
             ),
             array(
-                'id' => '13',
+                'id' => '11',
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '2',
-                'name' => 'Mitigation Strategy Approval',
-                'label' => 'MSA',
+                'name' => 'Remediation Plan Approval',
+                'label' => 'RPA',
                 'description' => 'Please approve or deny the Mitigation Strategy and provide explanation.',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
@@ -700,23 +630,18 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                     't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
                     'Id";}',
                 'transitions' =>
-                    'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Informa' .
-                    'tion Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handle' .
-                    'r":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_ope' .
-                    'n.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}' .
-                    'i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Sec' .
-                    'urity Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fism' .
-                    'a.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","' .
-                    'handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
+                    'a:2:{i:0;a:4:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:2:"[]";s:17:"' .
+                    'customDestination";s:9:"undefined";}i:1;a:4:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back"' .
+                    ';s:5:"roles";s:2:"[]";s:17:"customDestination";s:9:"undefined";}}',
                 'workflowid' => '7'
             ),
             array(
-                'id' => '14',
+                'id' => '12',
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '3',
-                'name' => 'Evidence Needed',
-                'label' => 'EN',
+                'name' => 'Implementation',
+                'label' => 'RI',
                 'description' => 'Please remediate the finding and submit evidence.',
                 'isresolved' => '0',
                 'allottedtime' => 'ecd',
@@ -731,24 +656,18 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                     't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
                     'Id";}',
                 'transitions' =>
-                    'a:2:{i:0;a:5:{s:4:"name";s:6:"Submit";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Informat' .
-                    'ion Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler' .
-                    '":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open' .
-                    '.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}i' .
-                    ':1;a:5:{s:4:"name";s:26:"Revise Mitigation Strategy";s:11:"destination";s:6:"custom";s:5:"roles"' .
-                    ';s:32:"["Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/e' .
-                    'dit.png","handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recy' .
-                    'clebin_empty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s' .
-                    ':2:"12";}}',
+                    'a:2:{i:0;a:4:{s:4:"name";s:6:"Submit";s:11:"destination";s:4:"next";s:5:"roles";s:2:"[]";s:17:"c' .
+                    'ustomDestination";s:9:"undefined";}i:1;a:4:{s:4:"name";s:17:"Request Extension";s:11:"destinatio' .
+                    'n";s:6:"custom";s:5:"roles";s:2:"[]";s:17:"customDestination";s:2:"10";}}',
                 'workflowid' => '7'
             ),
             array(
-                'id' => '15',
+                'id' => '13',
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '4',
-                'name' => 'Evidence Approval',
-                'label' => 'EA',
+                'name' => 'Implementation Validation',
+                'label' => 'RIV',
                 'description' => 'Please approve or deny the Evidence Package and provide explanation.',
                 'isresolved' => '0',
                 'allottedtime' => 'days',
@@ -763,18 +682,13 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                     't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
                     'Id";}',
                 'transitions' =>
-                    'a:2:{i:0;a:5:{s:4:"name";s:7:"Approve";s:11:"destination";s:4:"next";s:5:"roles";s:32:"["Informa' .
-                    'tion Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handle' .
-                    'r":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_ope' .
-                    'n.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}' .
-                    'i:1;a:5:{s:4:"name";s:4:"Deny";s:11:"destination";s:4:"back";s:5:"roles";s:32:"["Information Sec' .
-                    'urity Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png","handler":"Fism' .
-                    'a.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_empty_open.png","' .
-                    'handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:9:"undefined";}}',
+                    'a:2:{i:0;a:4:{s:4:"name";s:15:"Approve & Close";s:11:"destination";s:4:"next";s:5:"roles";s:2:"[' .
+                    ']";s:17:"customDestination";s:9:"undefined";}i:1;a:4:{s:4:"name";s:4:"Deny";s:11:"destination";s' .
+                    ':4:"back";s:5:"roles";s:2:"[]";s:17:"customDestination";s:9:"undefined";}}',
                 'workflowid' => '7'
             ),
             array(
-                'id' => '16',
+                'id' => '14',
                 'createdts' => $now,
                 'modifiedts' => $now,
                 'cardinality' => '5',
@@ -794,10 +708,8 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
                     't";i:8;s:28:"countermeasuresEffectiveness";i:9;s:15:"countermeasures";i:10;s:17:"securityControl' .
                     'Id";}',
                 'transitions' =>
-                    'a:1:{i:0;a:5:{s:4:"name";s:11:"Re-evaluate";s:11:"destination";s:6:"custom";s:5:"roles";s:32:"["' .
-                    'Information Security Officer"]";s:7:"actions";s:198:"[{"label":"edit","icon":"/images/edit.png",' .
-                    '"handler":"Fisma.Workflow.editTransition"},{"label":"delete","icon":"/images/trash_recyclebin_em' .
-                    'pty_open.png","handler":"Fisma.Workflow.deleteTransition"}]";s:17:"customDestination";s:1:"5";}}',
+                    'a:1:{i:0;a:4:{s:4:"name";s:15:"Re-open Finding";s:11:"destination";s:6:"custom";s:5:"roles";s:2:' .
+                    '"[]";s:17:"customDestination";s:1:"5";}}',
                 'workflowid' => '7'
             )
         );
