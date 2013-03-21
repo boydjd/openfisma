@@ -56,6 +56,13 @@ Fisma.Workflow = {
             function(panel) { //callback
                 //Execute scripts
                 $('script', panel.body).appendTo($('body'));
+
+                //Register cancel button
+                $('button#closeStep', panel.body).click(function(e) {
+                    e.preventDefault();
+                    panel.hide();
+                    panel.destroy();
+                });
             }
         );
     },
@@ -109,6 +116,13 @@ Fisma.Workflow = {
             function(panel) { //callback
                 //Execute scripts
                 $('script', panel.body).appendTo($('body'));
+
+                //Register cancel button
+                $('button#closeStep', panel.body).click(function(e) {
+                    e.preventDefault();
+                    panel.hide();
+                    panel.destroy();
+                });
             }
         );
     },
