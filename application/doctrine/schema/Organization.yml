@@ -62,7 +62,6 @@ Organization:
             foreignAlias: Organization
 
     actAs:
-        Fisma_Doctrine_Behavior_HasPocs: true
         NestedSet:
         SoftDelete:
         Timestampable:

@@ -459,8 +459,8 @@ Administration:
                     link: /role/list?f=filter_type_enumIs_USER\_GROUP
                     privilege:
                         func: hasPrivilegeForClass
-                        param1: manage_poc_list
-                        param2: Organization
+                        param1: read
+                        param2: Role
                 Users:
                     label: Users
                     link: /user/list
