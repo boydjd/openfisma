@@ -24,11 +24,11 @@ Fisma_Format_Section::startSection("Review Incident Report");
         <?php foreach ($this->incidentReview as $key => $value): ?>
             <tr>
             <?php if(!empty($this->richColumns[$key]) && $this->richColumns[$key] == 'html'): ?>
-                <td style="padding-top: 14px;" width="30%"><?php echo $this->escape($key); ?>:</td>
-                <td><?php echo $this->escape($value, 'none'); ?><td>
+                <td style="padding-top: 10px;" width="30%"><?php echo $this->escape($key); ?>:</td>
+                <td style="padding-top: 0px;"><?php echo $this->escape($value, 'none'); ?><td>
             <?php else: ?>
                 <td width="30%"><?php echo $this->escape($key); ?>:</td>
-                <td><?php echo $this->escape($value); ?></td>
+                <td style="padding-top: 8px;"><?php echo $this->escape($value); ?></td>
             <?php endif; ?>
             </tr>
         <?php endforeach; ?>
