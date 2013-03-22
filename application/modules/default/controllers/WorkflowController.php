@@ -165,8 +165,8 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
                 $step->allottedDays = $stepArray['allottedDays'];
                 $step->autoTransition = !empty($stepArray['autoTransition']);
                 $step->attachmentEditable = !empty($stepArray['attachmentEditable']);
-                $step->prerequisites = Zend_Json::decode($prerequisites);
-                $step->restrictedFields = Zend_Json::decode($restrictedFields);
+                $step->prerequisites = array_keys(Zend_Json::decode($prerequisites));
+                $step->restrictedFields = array_keys(Zend_Json::decode($restrictedFields));
                 if (!empty($stepArray['autoTransitionDestination'])) {
                     $step->autoTransitionDestination = $stepArray['autoTransitionDestination'];
                 }
