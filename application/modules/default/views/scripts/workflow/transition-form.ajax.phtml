@@ -34,12 +34,7 @@
         <td>Organization Roles</td>
         <td><?php
             $roleSelect = new Fisma_Yui_Form_JsonMultiselect('roles');
-            $roles = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
-            $roleOptions = array();
-            foreach ($roles as $role):
-                $roleOptions[$role] = $role;
-            endforeach;
-            $roleSelect->setMultiOptions($roleOptions);
+            $roleSelect->setMultiOptions(Doctrine::getTable('Role')->findByType('USER_GROUP')->toKeyValueArray('id', 'name'));
             echo $this->escape($roleSelect, 'none');
         ?></td>
     </tr>

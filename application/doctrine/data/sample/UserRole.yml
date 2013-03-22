@@ -41,6 +41,48 @@ UserRole:
             - WEST_COAST_ORG
             - WILDLIFE_ORG
             - WIND_ORG
+    sample_user_group:
+        User: sample
+        Role: iso_role
+        Organizations:
+            - ARP_ORG
+            - BGA_ORG
+            - CIT_ORG
+            - CRMS_ORG
+            - DISPOSAL_ORG
+            - GREEN_NRG_ORG
+            - H20_RIGHTS_ORG
+            - HAZMAT_ORG
+            - HERNDON_ORG
+            - HIWAY_ORG
+            - IAD_ORG
+            - LINUX_ORG
+            - MAINFRAME_ORG
+            - MARITIME_ORG
+            - MIDWEST_ORG
+            - NORTHEAST_ORG
+            - NRL_ORG
+            - OCIO_ORG
+            - OCOO_ORG
+            - OF_ORG
+            - OIG_ORG
+            - ORACLE_ORG
+            - OSC_ORG
+            - OS_ORG
+            - PRINT_ORG
+            - RAIL_ORG
+            - RCD_ORG
+            - RESMAN_ORG
+            - RESTON_ORG
+            - RMTRP_ORG
+            - RNI_ORG
+            - ROCP_ORG
+            - SCMS_ORG
+            - SOUTHEAST_ORG
+            - TPP_ORG
+            - WEST_COAST_ORG
+            - WILDLIFE_ORG
+            - WIND_ORG
     sample_1_user_role:
         User: sample_1
         Role: viewer_role

@@ -256,12 +256,14 @@ class WorkflowStep extends BaseWorkflowStep
                 throw new Fisma_Zend_Exception_User('Invalid transition provided (' . $transitionName . ').');
             }
 
-            $currentRoles = $object->Organization->getPocs()->fetchAllPositions($userId);
-            $transitionRoles = array_intersect(
-                $currentRoles,
-                Zend_Json::decode($transition['roles'])
-            );
-            if (count(Zend_Json::decode($transition['roles'])) > 0 && count($transitionRoles) < 1) {
+            $allowedRoles = array_keys(Zend_Json::decode($transition['roles']));
+            $roleCheckQuery = Doctrine_Query::create()
+                ->from('UserRoleOrganization url')
+                ->innerJoin('url.UserRole ur')
+                ->where('url.organizationId = ?', $object->Organization->id)
+                ->andWhere('ur.userId = ?', CurrentUser::getAttribute('id'))
+            ;
+            if (count($allowedRoles) > 0 && $roleCheckQuery->andWhereIn('ur.roleId', $allowedRoles)->count() < 1) {
                 throw new Fisma_Zend_Exception_User(
                     'Current user does not have the required role for this transition (' . $transitionName . ').'
                 );

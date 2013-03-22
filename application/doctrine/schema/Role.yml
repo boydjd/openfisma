@@ -21,6 +21,12 @@ Role:
                 logicalName: Description
                 purify: html
             comment: Any extra information about this role, such as security clearances required to hold it, etc.
+        type:
+            type: enum
+            values: [ACCOUNT_TYPE, USER_GROUP]
+            extra:
+                logicalName: Role Type
+            comment: To distinguish between account types (with privileges) and user groups (only used for workflows)
 
     relations:
         # Users is a many-to-many relation

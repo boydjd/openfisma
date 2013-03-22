@@ -523,9 +523,9 @@
         this._refreshInputElement();
     };
     FE.Multiselect.prototype._refreshInputElement = function() {
-        var values = [];
+        var values = {};
         this.selected.children().each(function() {
-            values.push($(this).attr('value'));
+            values[$(this).attr('value')] = $(this).text();
         });
         this.inputElement.val(JSON.stringify(values));
     };
@@ -545,6 +545,12 @@
             $.each(valArray, function(k, v) {
                 that._onMenuSelect(null, {
                     'item': $('[value="' + v + '"]', that.addMenu)
+                });
+            });
+        } else if ($.type(valArray) === 'object') {
+            $.each(valArray, function(k, v) {
+                that._onMenuSelect(null, {
+                    'item': $('[value="' + k + '"]', that.addMenu)
                 });
             });
         }

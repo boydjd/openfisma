@@ -74,14 +74,15 @@ if (count($restrictedFields) > 0):
         <?php
         $actions = '';
         if ($organization):
-            $currentRoles = $organization->getPocs()->fetchAllPositions(CurrentUser::getAttribute('id'));
-
             foreach ((array)$step->transitions as $index => $transition):
-                $transitionRoles = array_intersect(
-                    $currentRoles,
-                    Zend_Json::decode($transition['roles'])
-                );
-                if (count(Zend_Json::decode($transition['roles'])) == 0 || count($transitionRoles) > 0):
+                $allowedRoles = array_keys(Zend_Json::decode($transition['roles']));
+                $roleCheckQuery = Doctrine_Query::create()
+                    ->from('UserRoleOrganization url')
+                    ->innerJoin('url.UserRole ur')
+                    ->where('url.organizationId = ?', $organization->id)
+                    ->andWhere('ur.userId = ?', CurrentUser::getAttribute('id'))
+                ;
+                if (count($allowedRoles) == 0 || $roleCheckQuery->andWhereIn('ur.roleId', $allowedRoles)->count() > 0):
                     $actions .= new Fisma_Yui_Form_Button(
                         'transitionButton' . $index,
                         array(
