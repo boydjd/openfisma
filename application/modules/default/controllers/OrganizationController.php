@@ -62,7 +62,8 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                       ->addActionContext('add-poc-list', 'json')
                       ->addActionContext('rename-poc-list', 'json')
                       ->addActionContext('add-poc-form', 'html')
-                      //->addActionContext('add-poc', 'json')
+                      ->addActionContext('add-poc', 'json')
+                      ->addActionContext('remove-poc', 'json')
                       ->initContext();
     }
 
@@ -961,7 +962,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             'queryPrepend' => "/keyword/",
             'containerId' => "pointOfContactAutocompleteContainer"
         ));
-        $this->view->roles = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+        $this->view->roles = Doctrine::getTable('Role')->findByType('USER_GROUP')->toKeyValueArray('id', 'name');//explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
         $this->view->submitButton = new Fisma_Yui_Form_Button('addPocSubmit', array('label' => 'Add'));
     }
 
@@ -971,13 +972,29 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function addPocAction()
     {
         $id = $this->getRequest()->getParam('id');
-        $role = $this->getRequest()->getParam('addPocRole');
+        $roleId = $this->getRequest()->getParam('addPocRole');
         $userId = $this->getRequest()->getParam('addPocId');
         $returnModule = $this->getRequest()->getParam('returnModule');
 
         $organization = Doctrine::getTable('Organization')->find($id);
         $this->_acl->requirePrivilegeForObject('update', $organization);
-        $organization->getPocs()->addPoc($userId, $role);
+
+        $query = Doctrine_Query::create()
+            ->from('UserRoleOrganization uro')
+            ->innerJoin('uro.UserRole ur')
+            ->where('ur.userId = ?', $userId)
+            ->andWhere('ur.roleId = ?', $roleId)
+            ->andWhere('uro.organizationId = ?', $id);
+        if ($query->count() < 1) {
+            $ur = new UserRole();
+            $ur->userId = $userId;
+            $ur->roleId = $roleId;
+
+            $uro = new UserRoleOrganization();
+            $uro->organizationId = $id;
+            $uro->UserRole = $ur;
+            $uro->save();
+        }
 
         switch ($returnModule) {
             case 'organization':
@@ -987,7 +1004,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $this->_redirect('/system/system/id/' . $organization->System->id);
                 break;
             default:
-                $this->err = 'Action completed.';
+                $this->view->err = 'Action completed.';
         }
     }
 
@@ -997,13 +1014,20 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
     public function removePocAction()
     {
         $id = $this->getRequest()->getParam('id');
-        $role = $this->getRequest()->getParam('pocRole');
+        $roleId = $this->getRequest()->getParam('pocRole');
         $userId = $this->getRequest()->getParam('pocId');
         $returnModule = $this->getRequest()->getParam('returnModule');
 
         $organization = Doctrine::getTable('Organization')->find($id);
         $this->_acl->requirePrivilegeForObject('update', $organization);
-        $organization->getPocs()->removePoc($userId, $role);
+
+        Doctrine_Query::create()
+            ->from('UserRoleOrganization uro')
+            ->innerJoin('uro.UserRole ur')
+            ->where('ur.userId = ?', $userId)
+            ->andWhere('ur.roleId = ?', $roleId)
+            ->andWhere('uro.organizationId = ?', $id)
+            ->execute()->delete();
 
         switch ($returnModule) {
             case 'organization':
@@ -1013,7 +1037,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $this->_redirect('/system/system/id/' . $organization->System->id);
                 break;
             default:
-                $this->err = 'Action completed.';
+                $this->view->err = 'Action completed.';
         }
     }
 }

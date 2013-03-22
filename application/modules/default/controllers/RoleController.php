@@ -142,6 +142,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $rolesQuery = Doctrine_Query::create()
             ->select('r.nickname')
             ->from('Role r')
+            ->where('r.type = ?', 'ACCOUNT_TYPE')
             ->orderBy('r.nickname')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $roles = $rolesQuery->execute();

@@ -275,10 +275,10 @@
                                 'csrf': $('input[name=csrf]').val()
                             },
                             function(data) {
+                                Fisma.Organization.addPocResult = data;
                                 if (data.err) {
                                     Fisma.Util.showAlertDialog(data.err);
                                 } else {
-                                    Fisma.Organization.addPocResult = data;
                                     $('div#peopleSection').replaceWith($('div#peopleSection', data));
                                     $(data).filter('script').appendTo(document);
                                     panel.hide();
@@ -301,10 +301,10 @@
                     'csrf': $('input[name=csrf]').val()
                 },
                 function(data) {
+                    Fisma.Organization.addPocResult = data;
                     if (data.err) {
                         Fisma.Util.showAlertDialog(data.err);
                     } else {
-                        Fisma.Organization.addPocResult = data;
                         $('div#peopleSection').replaceWith($('div#peopleSection', data));
                         $(data).filter('script').appendTo(document);
                     }

@@ -5,12 +5,12 @@
 ?>
 <script type="text/javascript">
 YAHOO.util.Event.onDOMReady(
-    function() { 
+    function() {
         Fisma.TabView.Roles.init(
-            <?php echo $this->escape($roles, 'none') ?>, 
-            <?php echo $this->escape($id, 'none') ?>, 
+            <?php echo $this->escape($roles, 'none') ?>,
+            <?php echo $this->escape($id, 'none') ?>,
             <?php echo $this->escape($readOnly, 'none') ?>
-        )
+        );
     }
 );
 </script>

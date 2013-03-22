@@ -470,7 +470,17 @@ Fisma.Search = (function() {
                     var criterion1 = new Fisma.Search.Criteria(panel, panel.searchableFields);
                     criterion1.currentField = criterion1.getField(field);
                     criterion1.currentQueryType = type;
-                    criterion1.forcedOperands = args;
+                    var operands = [];
+                    var currentArg = '';
+
+                    while (currentArg = args.shift()) {
+                        while (currentArg.match(/\\$/)) {
+                            currentArg = currentArg.slice(0, -1);
+                            currentArg += '_' + args.shift();
+                        }
+                        operands.push(currentArg);
+                    }
+                    criterion1.forcedOperands = operands;
                     panel.criteria.push(criterion1);
                 }
             });

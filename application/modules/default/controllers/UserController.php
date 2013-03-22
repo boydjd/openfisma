@@ -280,14 +280,20 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     protected function setForm($subject, $form)
     {
         $roles = array();
+        $groups = array();
         $assignedRoles = $subject->Roles->toArray();
 
         foreach ($assignedRoles as $assignedRole) {
-            $roles[] = $assignedRole['id'];
+            if ($assignedRole['type'] == 'ACCOUNT_TYPE') {
+                $roles[] = $assignedRole['id'];
+            } else {
+                $groups[] = $assignedRole['id'];
+            }
         }
 
         $form->setDefaults($subject->toArray());
         $form->getElement('role')->setValue($roles);
+        $form->getElement('groups')->setValue($groups);
 
         return $form;
     }
@@ -619,7 +625,9 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             foreach ($userOrgs as $userOrg) {
                 $assignedOrgs[] = $userOrg->id;
             }
-        } else { // by default, assign to all
+        }
+        $role = Doctrine::getTable('Role')->find($roleId);
+        if (empty($assignedRoles) && $role->type == 'ACCOUNT_TYPE') { // by default, assign to all organizations
             $allOrgs = Doctrine_Query::create()->select('id')->from('Organization')->orderBy('lft')->execute();
             foreach ($allOrgs as $org) {
                 $assignedOrgs[] = $org->id;
@@ -778,7 +786,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         if (isset($user[0]['Roles'])) {
             foreach ($user[0]['Roles'] as $role) {
                 $tabView->addTab(
-                    $this->view->escape($role['nickname']),
+                    $this->view->escape($role['name']),
                     "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/$readOnly",
                     $role['id'],
                     $readOnly == 0 ? 'true' : 'false'
@@ -832,7 +840,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $tabView = new Fisma_Yui_TabView('UserView');
 
         $roles = Doctrine_Query::create()
-            ->select('r.id, r.nickname')
+            ->select('r.id, r.name')
             ->from('Role r')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
@@ -1168,7 +1176,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     ->orderBy('nickname')
                     ->execute();
         foreach ($roles as $role) {
-            $form->getElement('role')->addMultiOptions(array($role->id => $role->name));
+            if ($role->type == 'ACCOUNT_TYPE') {
+                $form->getElement('role')->addMultiOptions(array($role->id => $role->name));
+            } else {
+                $form->getElement('groups')->addMultiOptions(array($role->id => $role->name));
+            }
         }
 
         // Show lock explanation if account is locked. Hide explanation otherwise.
