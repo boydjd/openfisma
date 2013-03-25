@@ -134,9 +134,6 @@ Configuration:
             notblank: true
             comment: System name
             default: ""
-        organization_poc_list:
-            type: string(65535)
-            default: "Business Owner,Information Security Officer,Authorizing Official"
         rob_duration:
             type: integer(2)
             notblank: true

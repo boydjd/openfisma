@@ -690,6 +690,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         $rolesAndUsers = Doctrine::getTable('UserRole')
                          ->getRolesAndUsersByOrganizationIdQuery($organization->id)
+                         ->where('r.type = ?', 'ACCOUNT_TYPE')
                          ->orderBy('r.nickname, u.username')
                          ->execute();
 
@@ -698,7 +699,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         // Add roles and their users to the checkbox tree
         foreach ($rolesAndUsers as $role) {
-            $tree->addCheckbox(array('label' => $role->nickname, 'level' => 0));
+            $tree->addCheckbox(array('label' => $role->name, 'level' => 0));
             foreach ($role->UserRole as $userRole) {
                 $tree->addCheckbox(
                     array('name' => $userRole->userRoleId, 'label' => $userRole->User->username, 'level' => 1)
@@ -724,17 +725,18 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $addUserAccessForm = new Zend_Form_SubForm();
 
         $roles = Doctrine_Query::create()
-                 ->select('r.id, r.nickname')
+                 ->select('r.id, r.name')
                  ->from('Role r')
-                 ->orderBy('r.nickname')
+                 ->where('r.type = ?', 'ACCOUNT_TYPE')
+                 ->orderBy('r.name')
                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                  ->execute();
 
         $select = new Zend_Form_Element_Select('roles');
-        $select->setLabel('Role');
+        $select->setLabel('Account');
 
         foreach ($roles as $role) {
-            $select->addMultiOption($role['id'], $role['nickname']);
+            $select->addMultiOption($role['id'], $role['name']);
         }
 
         $userAutoComplete = new Fisma_Yui_Form_AutoComplete(

@@ -34,6 +34,14 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
             'DELETE FROM privilege WHERE resource = ?',
             array('poc')
         );
+        $this->getHelper()->exec(
+            'DELETE FROM role_privilege WHERE privilegeid IN (SELECT id FROM privilege WHERE action = ?)',
+            array('manage_poc_list')
+        );
+        $this->getHelper()->exec(
+            'DELETE FROM privilege WHERE action = ?',
+            array('manage_poc_list')
+        );
         $this->getHelper()->insert('privilege', array('resource' => 'incident', 'action' => 'comment'));
         $this->getHelper()->insert('privilege', array('resource' => 'incident', 'action' => 'delete'));
 

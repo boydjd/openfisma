@@ -13,23 +13,6 @@ $organization = $object->Organization;
 <p>This <?php echo $this->escape(ucfirst($model)); ?> is not assigned to any workflow step.</p>
 <?php else: ?>
 
-<?php
-$restrictedFields = (array)$step->restrictedFields;
-
-foreach ($restrictedFields as $key => $value):
-    $restrictedFields[$key] = $this->translate($table->getLogicalName($value));
-endforeach;
-if (!$step->attachmentEditable):
-    $restrictedFields[] = $this->translate(ucfirst($model) . '_Attachments');
-endif;
-if (count($restrictedFields) > 0):
-?>
-<p>
-    The following items cannot be modified during this current workflow step:
-    <?php echo $this->escape(implode(', ', $restrictedFields)); ?>.
-</p>
-<?php endif; ?>
-
 <div class='workflowStep current<?php if ($step->isResolved): ?> resolved<?php endif; ?>'>
     <table class='keyValues'>
         <tr>
@@ -44,6 +27,7 @@ if (count($restrictedFields) > 0):
                 </span>
             </td>
         </tr>
+        <?php if (!$step->isResolved || $object->nextDueDate): ?>
         <tr>
             <th scope='row'>Status</th>
             <td> <?php
@@ -56,6 +40,7 @@ if (count($restrictedFields) > 0):
             }
             ?></td>
         </tr>
+        <?php endif; ?>
         <?php if ($step->isResolved && $lastStep = end($completedSteps)): ?>
         <tr>
             <th scope='row'>Resolved by</th>
@@ -67,6 +52,24 @@ if (count($restrictedFields) > 0):
         <tr>
             <th scope='row'>Resolved on</th>
             <td><?php echo $this->escape($lastStep['timestamp']); ?></td>
+        </tr>
+        <?php endif; ?>
+        <?php
+        $restrictedFields = (array)$step->restrictedFields;
+
+        foreach ($restrictedFields as $key => $value):
+            $restrictedFields[$key] = $this->translate($table->getLogicalName($value));
+        endforeach;
+        if (!$step->attachmentEditable):
+            $restrictedFields[] = $this->translate(ucfirst($model) . '_Attachments');
+        endif;
+        if (count($restrictedFields) > 0):
+        ?>
+        <tr>
+            <th scope='row'>Restrictions</th>
+            <td>The following items cannot be modified during this current workflow step:
+                <?php echo $this->escape(implode(', ', $restrictedFields)); ?>.
+            </td>
         </tr>
         <?php endif; ?>
         <tr>

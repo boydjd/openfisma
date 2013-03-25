@@ -1,7 +1,0 @@
-<?php
-    echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
-    Fisma_Format_Section::startSection("Manage Organization Roles");
-        echo $this->escape($this->tags, 'none');
-    Fisma_Format_Section::stopSection();
-?>
-<input type='hidden' name='csrf' id='csrf' value='<?php echo $this->escape($this->csrfToken); ?>'/>

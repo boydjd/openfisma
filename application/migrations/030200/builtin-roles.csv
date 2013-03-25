@@ -62,7 +62,6 @@ Administrator,notification,incident
 Administrator,notification,vulnerability
 Administrator,organization,create
 Administrator,organization,delete
-Administrator,organization,manage_poc_list
 Administrator,organization,oversee
 Administrator,organization,read
 Administrator,organization,update

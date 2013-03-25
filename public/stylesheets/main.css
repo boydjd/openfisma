@@ -334,18 +334,19 @@ table.keyValues td {
     padding: 5px;
     vertical-align: middle;
 }
-/* The first column in a keyValues table is bold text */
-table.keyValues td:nth-child(odd) {
-    font-weight: bold;
-    text-align: right;
-    vertical-align: top;
-}
 
 table.keyValues th {
     text-align: center;
     font-weight: bold;
     font-style: normal;
     padding: 5px;
+}
+
+/* The first column in a keyValues table is bold text */
+table.keyValues td:nth-child(odd), table.keyValues th[scope=row] {
+    font-weight: bold;
+    text-align: right;
+    vertical-align: top;
 }
 
 div.buttonBar {
@@ -1131,11 +1132,11 @@ span.longdesc {
     margin-top: 0px;
 }
 
-.left .section table.keyValues > tbody > tr > td:first-child {
+.left .section table.keyValues > tbody > tr > td:first-child, .left .section table.keyValues th[scope=row] {
     width: 200px;
 }
 
-.right .section table.keyValues > tbody > tr > td:first-child {
+.right .section table.keyValues > tbody > tr > td:first-child, .right .section table.keyValues th[scope=row] {
     width: 150px;
 }
 
