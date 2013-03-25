@@ -191,7 +191,7 @@
 
                 label = this._columnLabels[index].label;
                 name = this._columnLabels[index].name;
-                $(cell).attr('header', label);
+                $(cell).attr('header', this._columnLabels[index].workflowId);
 
                 link = document.createElement('a');
                 cell.appendChild(link);
@@ -208,7 +208,7 @@
                               + "/workflow/textExactMatch/"
                               + encodeURIComponent(this._columnLabels[index].workflowName);
                 }
-                link.title = name;
+                link.title = this._columnLabels[index].workflowName + ' - ' + name;
                 link.appendChild(document.createTextNode(label));
 
                 row.appendChild(cell);

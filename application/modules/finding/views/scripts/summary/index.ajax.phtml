@@ -37,13 +37,9 @@ YAHOO.util.Event.onDOMReady(function () {
         );
 
         var hideStepsOutsideWorkflow = function(workflowId) {
-            for (var i in workflowSteps) {
-                if (workflowSteps[i].workflowId !== workflowId) {
-                    $('[header]').filter(function() {
-                        return ($(this).attr('header') === i);
-                    }).hide();
-                }
-            }
+            $('[header]').filter(function() {
+                return ($(this).attr('header') !== workflowId);
+            }).hide();
         };
 
         var defaultMitigationStrategy = storage.get("mitigationType");

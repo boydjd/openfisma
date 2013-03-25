@@ -482,4 +482,9 @@ class Fisma_Migration_Helper
             return false;
         }
     }
+
+    public static function now()
+    {
+        return Zend_Date::now()->toString('yyyy-MM-dd HH:mm:ss');
+    }
 }

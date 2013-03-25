@@ -101,6 +101,7 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
 
     protected function _updateRoles()
     {
+        $now = $this->getHelper()->now();
         $this->getHelper()->exec(
             'UPDATE role SET name = ? WHERE nickname = ?',
             array('Administrator', 'ADMIN')
@@ -110,7 +111,9 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
                 'role',
                 array(
                     'name' => 'Administrator',
-                    'nickname' => 'ADMIN'
+                    'nickname' => 'ADMIN',
+                    'modifiedts' => $now,
+                    'createdts' => $now
                 )
             );
         }
@@ -119,7 +122,9 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
                 'role',
                 array(
                     'name' => 'User',
-                    'nickname' => 'USER'
+                    'nickname' => 'USER',
+                    'modifiedts' => $now,
+                    'createdts' => $now
                 )
             );
         }
@@ -128,7 +133,9 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
                 'role',
                 array(
                     'name' => 'Viewer',
-                    'nickname' => 'VIEWER'
+                    'nickname' => 'VIEWER',
+                    'modifiedts' => $now,
+                    'createdts' => $now
                 )
             );
         }
