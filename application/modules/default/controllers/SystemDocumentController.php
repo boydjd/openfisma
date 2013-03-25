@@ -74,6 +74,7 @@ class SystemDocumentController extends Fisma_Zend_Controller_Action_Object
                 'version' => $history->version,
                 'description' => $this->view->textToHtml($this->view->escape($history->description)),
             );
+            $this->view->firstCreated = $upload->createdTs;
         }
 
         $dataTable = new Fisma_Yui_DataTable_Local();
