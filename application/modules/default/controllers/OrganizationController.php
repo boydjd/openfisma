@@ -808,7 +808,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
             'queryPrepend' => "/keyword/",
             'containerId' => "pointOfContactAutocompleteContainer"
         ));
-        $this->view->roles = Doctrine::getTable('Role')->findByType('USER_GROUP')->toKeyValueArray('id', 'name');//explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
+        $this->view->roles = Doctrine::getTable('Role')->findByType('USER_GROUP')->toKeyValueArray('id', 'name');
         $this->view->submitButton = new Fisma_Yui_Form_Button('addPocSubmit', array('label' => 'Add'));
     }
 

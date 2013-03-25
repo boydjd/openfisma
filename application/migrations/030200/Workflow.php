@@ -297,8 +297,8 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
     {
         $now = Zend_Date::now()->toString('yyyy-MM-dd HH:mm:ss');
 
-        $workflow_step = array();
+        $workflowStep = array();
         include(realpath(dirname(__FILE__) . '/workflow_step.inc'));
-        return $workflow_step;
+        return $workflowStep;
     }
 }

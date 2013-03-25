@@ -473,7 +473,7 @@ Fisma.Search = (function() {
                     var operands = [];
                     var currentArg = '';
 
-                    while (currentArg = args.shift()) {
+                    while ((currentArg = args.shift()) != null) {
                         while (currentArg.match(/\\$/)) {
                             currentArg = currentArg.slice(0, -1);
                             currentArg += '_' + args.shift();
