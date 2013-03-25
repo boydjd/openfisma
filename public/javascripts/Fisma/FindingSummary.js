@@ -320,20 +320,32 @@
                 }
 
                 if (status === "ALL+CLOSED") {
-                    link.href = ontimeUrl;
-                    link.title = "Resolved findings";
-                    container.appendChild(link);
-                    link.appendChild(document.createTextNode(nodeData.closed || 0));
+                    if (nodeData.closed) {
+                        link.href = ontimeUrl;
+                        link.title = "Resolved findings";
+                        container.appendChild(link);
+                        link.appendChild(document.createTextNode(nodeData.closed));
+                    } else {
+                        container.appendChild(document.createTextNode('-'));
+                    }
                 } else if (status === "TOTAL") {
-                    link.href = ontimeUrl;
-                    link.title = "Total findings";
-                    container.appendChild(link);
-                    link.appendChild(document.createTextNode(nodeData.total || 0));
+                    if (nodeData.total) {
+                        link.href = ontimeUrl;
+                        link.title = "Total findings";
+                        container.appendChild(link);
+                        link.appendChild(document.createTextNode(nodeData.total));
+                    } else {
+                        container.appendChild(document.createTextNode('-'));
+                    }
                 } else if ($P.in_array(status, this._closedSteps)) {
-                    link.href = ontimeUrl;
-                    link.title = "Resolved findings";
-                    container.appendChild(link);
-                    link.appendChild(document.createTextNode(nodeData["ontime_" + status] || 0));
+                    if (nodeData["ontime_" + status]) {
+                        link.href = ontimeUrl;
+                        link.title = "Resolved findings";
+                        container.appendChild(link);
+                        link.appendChild(document.createTextNode(nodeData["ontime_" + status]));
+                    } else {
+                        container.appendChild(document.createTextNode('-'));
+                    }
                 } else {
                     // Set the rendering style based on the existence or absence of ontime and overdue findings
                     var ontime = nodeData["ontime_" + status] || 0;
