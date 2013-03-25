@@ -239,9 +239,10 @@ class WorkflowStep extends BaseWorkflowStep
         $object, $transitionName, $comment, $userId, $expirationDate, $destinationId = null
     )
     {
+        /*// Commented out as requested in OFJ-2186
         if (empty($comment)) {
-            throw new Fisma_Zend_Exception_User('Comment cannot be enmpty.');
-        }
+            throw new Fisma_Zend_Exception_User('Comment cannot be empty.');
+        }//*/
 
         $step = $object->CurrentStep;
         if (!$step) {
