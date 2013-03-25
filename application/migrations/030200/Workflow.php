@@ -284,7 +284,7 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
 
     private function _getWorkflowArray()
     {
-        $now = Zend_Date::now()->toString('yyyy-MM-dd HH:mm:ss');
+        $now = $this->getHelper()->now();
         $rootId = $this->getHelper()->query("SELECT id from user where username = 'root'");
         $rootId = $rootId[0]->id;
 
@@ -295,7 +295,7 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
 
     private function _getWorkflowStepArray()
     {
-        $now = Zend_Date::now()->toString('yyyy-MM-dd HH:mm:ss');
+        $now = $this->getHelper()->now();
 
         $workflowStep = array();
         include(realpath(dirname(__FILE__) . '/workflow_step.inc'));
