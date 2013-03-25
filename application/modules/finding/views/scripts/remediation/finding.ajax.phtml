@@ -270,17 +270,13 @@
             $roleQuery = Doctrine_Query::create()
                 ->from('Role r, r.UserRoles ur, ur.User u, ur.Organizations uro')
                 ->where('r.type = ?', 'USER_GROUP')
-                ->andWhere('uro.id is NULL OR uro.id = ?', $finding->Organization->id);
+                ->andWhere('uro.id = ?', $finding->Organization->id);
 
             foreach ($roleQuery->execute() as $r):
         ?>
             <tr>
                 <th scope='row'><?php echo $this->escape($r->name); ?>:</th>
-                <td><?php foreach ($r->UserRoles as $ur):
-                        if ($ur->Organizations->count() < 1):
-                            continue;
-                        endif;
-                    ?>
+                <td><?php foreach ($r->UserRoles as $ur): ?>
                     <div>
                         <?php echo $this->escape($this->userInfo($ur->User->displayName, $ur->User->id), 'none'); ?>
                     </div>
