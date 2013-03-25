@@ -34,7 +34,9 @@
         <td>Organization Roles</td>
         <td><?php
             $roleSelect = new Fisma_Yui_Form_JsonMultiselect('roles');
-            $roleSelect->setMultiOptions(Doctrine::getTable('Role')->findByType('USER_GROUP')->toKeyValueArray('id', 'name'));
+            $roleSelect->setMultiOptions(
+                Doctrine::getTable('Role')->findByType('USER_GROUP')->toKeyValueArray('id', 'name')
+            );
             echo $this->escape($roleSelect, 'none');
         ?></td>
     </tr>
