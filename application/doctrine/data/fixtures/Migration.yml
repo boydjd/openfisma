@@ -214,3 +214,8 @@ Migration:
         minorVersion: 2
         tagNumber: 0
         name: Workflow
+    030200_OrganizationRole:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: OrganizationRole

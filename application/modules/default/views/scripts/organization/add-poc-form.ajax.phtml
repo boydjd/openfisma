@@ -10,8 +10,8 @@
         <th scope='row'><label for='addPocRole'>Role</label></th>
         <td>
             <select id='addPocRole' name='addPocRole'>
-            <?php foreach ($this->roles as $role): ?>
-                <option><?php echo $this->escape($role); ?></option>
+            <?php foreach ($this->roles as $roleId => $role): ?>
+                <option value='<?php echo $this->escape($roleId); ?>'><?php echo $this->escape($role); ?></option>
             <?php endforeach; ?>
             </select>
             <script>

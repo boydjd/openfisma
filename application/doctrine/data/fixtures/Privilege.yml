@@ -181,10 +181,6 @@ Privilege:
         resource: organization
         action: oversee
         description: Oversee Organizations/Systems
-    organization_manage_poc_list:
-        resource: organization
-        action: manage_poc_list
-        description: Manage POC Positions
 
     # Products CRUD
     product_create:

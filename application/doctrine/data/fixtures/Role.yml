@@ -46,7 +46,6 @@ Role:
             - organization_update
             - organization_delete
             - organization_oversee
-            - organization_manage_poc_list
             - product_create
             - product_read
             - product_update

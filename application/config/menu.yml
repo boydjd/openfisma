@@ -447,16 +447,16 @@ Administration:
         UserManagement:
             label: User Management
             submenu:
-                OrganizationPOCList:
-                    label: Organization Roles
-                    link: /organization/poc-list
+                Roles:
+                    label: Account Types
+                    link: /role/list?f=filter_type_enumIs_ACCOUNT\_TYPE
                     privilege:
                         func: hasPrivilegeForClass
-                        param1: manage_poc_list
-                        param2: Organization
-                Roles:
-                    label: Permission Schemes
-                    link: /role/list
+                        param1: read
+                        param2: Role
+                OrganizationPOCList:
+                    label: User Groups
+                    link: /role/list?f=filter_type_enumIs_USER\_GROUP
                     privilege:
                         func: hasPrivilegeForClass
                         param1: read

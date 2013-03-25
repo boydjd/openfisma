@@ -24,7 +24,7 @@
 Fisma.TabView.Roles = (function() {
     return {
         init : function(roles, userid, readOnly) {
-            $("input[name^=role]").change(function(ev) {
+            $("input[name^=role], input[name^=groups]").change(function(ev) {
                 var tabs = Fisma.tabView.get("tabs"),
                     tabShown = false,
                     tabindex = null,

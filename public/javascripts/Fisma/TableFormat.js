@@ -525,7 +525,7 @@ Fisma.TableFormat = {
                              +  date.getDate()
                              +  ', '
                              +  date.getFullYear();
-            if (oRecord._oData.status !== 'CLOSED') {
+            if (!oRecord._oData.isResolved) {
                 elCell.innerHTML =  "<font color='" + ((isLate) ? 'red' : ((isToday) ? 'orange' : 'green')) + "'>"
                                  +  elCell.innerHTML
                                  +  "</font>"

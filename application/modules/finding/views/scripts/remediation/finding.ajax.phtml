@@ -267,22 +267,26 @@
             </tr>
         <?php if ($finding->responsibleOrganizationId): ?>
         <?php
-            $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
-            $pocs = $finding->Organization->getPocs();
+            $roleQuery = Doctrine_Query::create()
+                ->from('Role r, r.UserRoles ur, ur.User u, ur.Organizations uro')
+                ->where('r.type = ?', 'USER_GROUP')
+                ->andWhere('uro.id is NULL OR uro.id = ?', $finding->Organization->id);
 
-            foreach ($tags as $idx => $type):
-                $pocCollection = $pocs->fetchAllByType($type);
-                if ($pocCollection->count() > 0):
+            foreach ($roleQuery->execute() as $r):
         ?>
             <tr>
-                <td><?php echo $this->escape($type); ?>:</td>
-                <td><?php foreach ($pocCollection as $poc): ?>
+                <th scope='row'><?php echo $this->escape($r->name); ?>:</th>
+                <td><?php foreach ($r->UserRoles as $ur):
+                        if ($ur->Organizations->count() < 1):
+                            continue;
+                        endif;
+                    ?>
                     <div>
-                        <?php echo $this->escape($this->userInfo($poc->User->displayName, $poc->User->id), 'none'); ?>
+                        <?php echo $this->escape($this->userInfo($ur->User->displayName, $ur->User->id), 'none'); ?>
                     </div>
                 <?php endforeach; ?></td>
-            <tr/>
-        <?php endif; endforeach; ?>
+            </tr>
+        <?php endforeach; ?>
     <?php endif; ?></table>
     <?php Fisma_Format_Section::stopSection(); ?>
 
