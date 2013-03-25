@@ -31,11 +31,13 @@
      * @param dataUrl {String}
      * @param numberColumns {Integer} The number of columns to display in the table.
      * @param steps {Object} An array of workflow steps.
+     * @param steps {Array} An array of ID's of closed workflow steps.
      */
-    var FS = function(dataUrl, numberColumns, steps) {
+    var FS = function(dataUrl, numberColumns, steps, closedSteps) {
         FS.superclass.constructor.call(this, dataUrl, numberColumns);
 
         this._steps = steps;
+        this._closedSteps = closedSteps || [];
 
         this._columnLabels = [];
         this._columnLabels = this._columnLabels.concat(
@@ -63,7 +65,11 @@
      *
      * @static
      */
-    FS.AGGREGATE_COLUMNS = ["ALL OPEN", "ALL CLOSED", "TOTAL"];
+    FS.AGGREGATE_COLUMNS = [
+        {'label': 'ALL OPEN',   'stepId': 'ALL OPEN',   'name': 'All Open Findings'},
+        {'label': 'ALL CLOSED', 'stepId': 'ALL CLOSED', 'name': 'All Closed Findings'},
+        {'label': 'TOTAL',      'stepId': 'TOTAL',      'name': 'All Findings'}
+    ];
 
     /**
      * The options for the summary type menu.
@@ -74,8 +80,7 @@
      */
     FS.SUMMARY_TYPES = {
         organizationHierarchy: "Organization Hierarchy",
-        pointOfContact: "Point Of Contact",
-        systemAggregation: "System Hierarchy"
+        pointOfContact: "Point Of Contact"
     };
 
     /**
@@ -140,7 +145,7 @@
          * @param rows {Array} An array of TR elements to render the header inside of.
          */
         _renderHeader: function (rows) {
-            var row = rows[0], label, cell, link, index, that = this;
+            var row = rows[0], label, name, cell, link, index, that = this;
 
             Fisma.SummaryTable = this;
 
@@ -184,7 +189,8 @@
                 cell = document.createElement('th');
                 cell.style.borderBottom = "none";
 
-                label = this._columnLabels[index];
+                label = this._columnLabels[index].label;
+                name = this._columnLabels[index].name;
                 $(cell).attr('header', label);
 
                 link = document.createElement('a');
@@ -198,8 +204,11 @@
                     link.href = "/finding/remediation/list?q=/id/integerEquals/";
                 } else {
                     link.href = "/finding/remediation/list?q=/workflowStep/textExactMatch/"
-                              + encodeURIComponent(label);
+                              + encodeURIComponent(name)
+                              + "/workflow/textExactMatch/"
+                              + encodeURIComponent(this._columnLabels[index].workflowName);
                 }
+                link.title = name;
                 link.appendChild(document.createTextNode(label));
 
                 row.appendChild(cell);
@@ -223,7 +232,7 @@
             var index,
                 column;
             for (index in this._columnLabels) {
-                column = $P.urlencode(this._columnLabels[index]);
+                column = $P.urlencode(this._columnLabels[index].stepId);
 
                 if (column === 'ALL+CLOSED' || column === 'TOTAL') {
                     // These columns don't distinguish ontime from overdue (they're handled above)
@@ -248,7 +257,7 @@
 
                     var j;
                     for (j in this._columnLabels) {
-                        column = $P.urlencode(this._columnLabels[j]);
+                        column = $P.urlencode(this._columnLabels[j].stepId);
 
                         if (column === 'ALL+CLOSED' || column === 'TOTAL') {
                             // These columns don't distinguish ontime from overdue (they're handled above)
@@ -298,12 +307,12 @@
                 container.style.padding = "0px";
 
                 // Use php.js urlencode() to mimic the server-side urlencode()
-                var status = $P.urlencode(this._columnLabels[columnNumber - 1]);
-                $(container).attr('header', this._columnLabels[columnNumber - 1]);
+                var status = $P.urlencode(this._columnLabels[columnNumber - 1].stepId);
+                $(container).attr('header', this._columnLabels[columnNumber - 1].workflowId);
 
                 var link = document.createElement("a");
-                var ontimeUrl = this._makeUrl(true, status, nodeState, nodeData.rowLabel, nodeData.searchKey);
-                var overdueUrl = this._makeUrl(false, status, nodeState, nodeData.rowLabel, nodeData.searchKey);
+                var ontimeUrl = this._makeUrl(true, columnNumber - 1, nodeState, nodeData.rowLabel, nodeData.searchKey);
+                var overdueUrl = this._makeUrl(false, columnNumber - 1, nodeState, nodeData.rowLabel, nodeData.searchKey);
 
                 // If we are in a collapsed tree node, then switch single-record node data to aggregate node data
                 if (nodeState === Fisma.TreeTable.NodeState.COLLAPSED) {
@@ -320,6 +329,11 @@
                     link.title = "Total findings";
                     container.appendChild(link);
                     link.appendChild(document.createTextNode(nodeData.total || 0));
+                } else if ($P.in_array(status, this._closedSteps)) {
+                    link.href = ontimeUrl;
+                    link.title = "Resolved findings";
+                    container.appendChild(link);
+                    link.appendChild(document.createTextNode(nodeData["ontime_" + status] || 0));
                 } else {
                     // Set the rendering style based on the existence or absence of ontime and overdue findings
                     var ontime = nodeData["ontime_" + status] || 0;
@@ -437,21 +451,24 @@
          * This function also incorporates filter state to build URLs.
          *
          * @param ontime {Boolean} True if ontime, false if overdue.
-         * @param status {String}
+         * @param index {Integer} Zero-Index to look in _columnLabels
          * @param nodeState {Fisma.TreeTable.NodeState}
          * @param rowLabel {String}
          * @param searchKey {String} The search parameter to search for the rowLabel in.
          * @return {String}
          */
-        _makeUrl: function (ontime, status, nodeState, rowLabel, searchKey) {
+        _makeUrl: function (ontime, index, nodeState, rowLabel, searchKey) {
             var url = "/finding/remediation/list?q=";
 
             // The status contains plus symbols ('+') which is encoded before, so it should be decoded here.
-            status = $P.urldecode(status);
+            var status = this._columnLabels[index].stepId,
+                name = this._columnLabels[index].name,
+                workflowName = this._columnLabels[index].workflowName;
 
             // Add status criterion
             if (status !== "TOTAL" && status !== "ALL OPEN" && status !== "ALL CLOSED") {
-                url += "/workflowStep/textExactMatch/" + encodeURIComponent(status);
+                url += "/workflowStep/textExactMatch/" + encodeURIComponent(name)
+                     + "/workflow/textExactMatch/" + encodeURIComponent(workflowName);
             } else if (status === "ALL OPEN"){
                 url += "/isResolved/booleanNo";
             } else if (status === "ALL CLOSED"){
@@ -470,7 +487,7 @@
             }
 
             // Add ontime criteria (if applicable)
-            if (status !== "TOTAL" && status !== "ALL CLOSED") {
+            if (status !== "TOTAL" && status !== "ALL CLOSED" && !$P.in_array(status, this._closedSteps)) {
                 var today = new Date(),
                     yesterday, todayString, yesterdayString;
                 yesterday = new Date();
@@ -486,13 +503,6 @@
             }
 
             // Add filter criteria
-            var msSelect = this._filters.mitigationType.select;
-            var msValue = msSelect.options[msSelect.selectedIndex].value;
-            var msLabel = msSelect.options[msSelect.selectedIndex].text;
-            if (msValue !== "none") {
-                url += "/workflow/textExactMatch/" + encodeURIComponent(msLabel);
-            }
-
             var sourceSelect = this._filters.findingSource.select;
             var sourceValue = sourceSelect.options[sourceSelect.selectedIndex].value;
             var sourceLabel = sourceSelect.options[sourceSelect.selectedIndex].text;

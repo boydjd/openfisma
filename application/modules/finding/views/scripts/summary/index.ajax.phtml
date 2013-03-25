@@ -6,16 +6,17 @@
 YAHOO.util.Event.onDOMReady(function () {
     var url = '/finding/summary/data/format/json';
 
-    var steps = <?php echo $this->escape(array_keys($this->steps), 'json'); ?>;
+    var closedSteps = <?php echo $this->escape($this->closedSteps, 'json'); ?>;
     var workflowSteps = <?php echo $this->escape($this->steps, 'json'); ?>;
 
+
     var HARDCODED_COLUMN_COUNT = 4; // includes all columns that don't vary, i.e. everything but approvals
-    var columnCount = HARDCODED_COLUMN_COUNT + steps.length;
+    var columnCount = HARDCODED_COLUMN_COUNT + workflowSteps.length;
 
     var storage = new Fisma.PersistentStorage("Finding.Summary");
 
     Fisma.Storage.onReady(function () {
-        var summaryTable = new Fisma.FindingSummary(url, columnCount, steps);
+        var summaryTable = new Fisma.FindingSummary(url, columnCount, workflowSteps, closedSteps);
         Fisma.FindingSummary.SUMMARY_TYPES.pointOfContact = <?php
             echo $this->escape($this->translate('Finding_Point_of_Contact'), 'json');
         ?>;
@@ -37,7 +38,7 @@ YAHOO.util.Event.onDOMReady(function () {
 
         var hideStepsOutsideWorkflow = function(workflowId) {
             for (var i in workflowSteps) {
-                if (workflowSteps[i] !== workflowId) {
+                if (workflowSteps[i].workflowId !== workflowId) {
                     $('[header]').filter(function() {
                         return ($(this).attr('header') === i);
                     }).hide();
