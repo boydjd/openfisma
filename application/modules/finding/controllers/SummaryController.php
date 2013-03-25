@@ -62,17 +62,25 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         // Get a list of workflow steps
         $allStatuses = array();
+        $closedStatuses = array();
         $workflows = Doctrine::getTable('Workflow')->listArray('finding');
         foreach ($workflows as $workflow) {
             $this->view->mitigationTypes[$workflow->id] = $workflow->name;
             foreach ($workflow->WorkflowSteps as $step) {
-                if ($step->isResolved) {
-                    //continue;
+                if ($step->allottedTime === 'unlimited') {
+                    $closedStatuses[] = $step->id;
                 }
-                $allStatuses[$step->name] = $workflow->id;
+                $allStatuses[] = array(
+                    'stepId' => $step->id,
+                    'workflowId' => $workflow->id,
+                    'label' => $step->label,
+                    'name' => $step->name,
+                    'workflowName' => $workflow->name
+                );
             }
         }
         $this->view->steps = $allStatuses;
+        $this->view->closedSteps = $closedStatuses;
 
         // Create tooltip texts
         $tooltips = array();
@@ -281,130 +289,6 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
     }
 
     /**
-     * Get statistics about number of findings in each status for each of this user's systems.
-     *
-     * Systems are grouped together by their aggregation relationship.
-     *
-     * This uses two queries: one query to get the root level and a second query to get the nested level. (The
-     * sysagg relationship does not use nested set, so there is no efficient way to get a deep tree in a single
-     * query.)
-     *
-     * @param $findingParams Array A dictionary of parameters related to findings.
-     * @return Array Flat list of organizations and finding data
-     */
-    private function _getSystemAggregationData($findingParams)
-    {
-        $joinCondition = $this->_getFindingJoinConditions($findingParams);
-
-        // One query to get the outer level and another [similar] query to get the inner level
-        $outerSystemsQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read', true)
-                                       ->select('o.id')
-                                       ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
-                                       ->addSelect('o.nickname AS rowLabel')
-                                       ->innerJoin('o.System s')
-                                       ->leftJoin('s.SystemType st')
-                                       ->addSelect("s.id, st.iconId, st.name AS typeLabel")
-                                       ->addSelect("'organization' AS searchKey")
-                                       ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
-                                       ->andWhere('s.sdlcPhase <> ?', 'disposal')
-                                       ->groupBy('o.id')
-                                       ->orderBy('o.nickname');
-
-        if ($this->_me->username != 'root') {
-            $outerSystemsQuery->distinct()
-                              ->addGroupBy('r.id');
-        }
-
-        $innerSystemsQuery = clone $outerSystemsQuery;
-
-        $outerSystemsQuery->addSelect('0 AS level')->andWhere('s.aggregateSystemId IS NULL')->orderBy('o.nickname');
-        $this->_addFindingStatusFields($outerSystemsQuery);
-        $outerSystems = $outerSystemsQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
-
-        $innerSystemsQuery->addSelect('1 AS level, s.aggregateSystemId')
-                          ->innerJoin('s.AggregateSystem as')
-                          ->innerJoin('as.Organization ao')
-                          ->orderBy('ao.nickname, o.nickname');
-        $this->_addFindingStatusFields($innerSystemsQuery);
-        $innerSystems = $innerSystemsQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
-
-        $disposalSystemIds = Doctrine_Query::create()
-                             ->from('System')
-                             ->where('sdlcphase = ?', 'disposal')
-                             ->execute()
-                             ->toKeyValueArray('id', 'id');
-
-        // If there are child systems, then try to merge them in underneath their parents
-        if (count($innerSystems) > 0) {
-             // Walk down the outer list (the for loop) and splice in children (the while loop).
-            $innerSystemsIndex = 0;
-
-            for ($outerSystemsIndex = 0; $outerSystemsIndex < count($outerSystems); $outerSystemsIndex++) {
-                $outerId = $outerSystems[$outerSystemsIndex]['s_id'];
-                $innerId = isset($innerSystems[$innerSystemsIndex])
-                         ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
-                         : null;
-
-                // Skip all the child systems of a disposal system
-                while (in_array($innerId, $disposalSystemIds)) {
-                    $innerSystemsIndex++;
-                    $innerId = isset($innerSystems[$innerSystemsIndex])
-                             ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
-                             : null;
-                }
-
-                while ($outerId == $innerId) {
-                    array_splice($outerSystems, $outerSystemsIndex + 1, 0, array($innerSystems[$innerSystemsIndex]));
-                    unset($innerSystems[$innerSystemsIndex]);
-                    $innerSystemsIndex++;
-                    $outerSystemsIndex++;
-                    $innerId = isset($innerSystems[$innerSystemsIndex])
-                             ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
-                             : null;
-
-                }
-            }
-        }
-
-        // Merge in any systems not merged above (these are children without matching parents) and move to level 0.
-        if (count($innerSystems) > 0) {
-
-            foreach ($innerSystems as $innerSystem) {
-                $innerSystem['o_level'] = 0;
-                $outerSystemsIndex = 0;
-
-                // Move the outer pointer forward to the next outer system that sorts LOWER than the inner system.
-                foreach ($outerSystems as $key => $outerSystem) {
-                    if ($outerSystem['o_level'] == 0 &&
-                        strcasecmp($outerSystem['o_rowLabel'], $innerSystem['o_rowLabel']) < 0) {
-
-                        $outerSystemsIndex = $key;
-                        $outerSystemsIndex ++;
-                    }
-                }
-
-                if (isset($outerSystems[$outerSystemsIndex])) {
-
-                     // Skip all the child systems of a parent system
-                    for ($i = $outerSystemsIndex, $j = 0; $i < count($outerSystems); $i++) {
-                        if (isset($outerSystems[$i]) && $outerSystems[$i]['o_level'] == 1) {
-                            $j++;
-                        } else {
-                            break;
-                        }
-                    }
-
-                    array_splice($outerSystems, $outerSystemsIndex + $j, 0, array($innerSystem));
-                } else {
-                    $outerSystems[] = $innerSystem;
-                }
-            }
-        }
-
-        return $outerSystems;
-    }
-
-    /**
      * Get statistics about number of findings in each status for Point Of Contact.
      *
      * Every user can see *all* points of contact across *all* organizations.
@@ -414,7 +298,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      */
     private function _getPointOfContactData($findingParams)
     {
-        $joinCondition = $this->_getFindingJoinConditions($findingParams);
+        $sourceJoinCondition = $this->_getFindingSourceJoinConditions($findingParams);
+        $typeJoinCondition = $this->_getFindingTypeJoinConditions($findingParams);
 
         // Get the list of organizations (not including systems)
         $organizationQuery = Doctrine_Query::create()
@@ -471,7 +356,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         // Get a list of finding statistics for each POC
         $findingQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read')
                                   ->select('o.id, f.id, poc.id')
-                                  ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
+                                  ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $sourceJoinCondition")
                                   ->innerJoin('f.PointOfContact poc')
                                   ->groupBy('poc.id')
                                   ->orderBy('poc.id');
@@ -482,6 +367,9 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->_addFindingStatusFields($findingQuery);
+        if (!empty($typeJoinCondition)) {
+            $findingQuery->innerJoin("f.CurrentStep ws")->andWhere($typeJoinCondition);
+        }
         $tempFindings = $findingQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
         $findings = array();
         foreach ($tempFindings as $finding) {
@@ -654,10 +542,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         $workflows = Doctrine::getTable('Workflow')->listArray('finding');
         foreach ($workflows as $workflow) {
             foreach ($workflow->WorkflowSteps as $step) {
-                if ($step->isResolved) {
-                    //continue;
-                }
-                $allStatuses[] = $step->name;
+                $allStatuses[] = $step->id;
             }
         }
 
