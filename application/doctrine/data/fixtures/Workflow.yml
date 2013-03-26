@@ -57,6 +57,8 @@ Workflow:
                 id: 3
                 cardinality: 1
                 label: 'AR'
+                name: 'Action Required'
+                description: 'Please resolve the vulnerability'
                 transitions:
                     -
                         name: 'Complete'
