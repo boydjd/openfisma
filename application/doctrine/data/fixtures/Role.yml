@@ -249,7 +249,7 @@ Role:
             - security_control_catalog_read
 
     iso_role:
-        name: Information Security Officer
+        name: Security Officer
         nickname: ISO
         type: USER_GROUP
 

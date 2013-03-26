@@ -118,7 +118,7 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
         );
         $helper->update(
             'finding',
-            array('isresolved' => 1, 'currentstepid' => 9),
+            array('isresolved' => 1, 'currentstepid' => 18),
             array('status' => 'CLOSED', 'type' => 'FP')
         );
         $helper->update(

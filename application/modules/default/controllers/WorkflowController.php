@@ -172,6 +172,12 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
                 }
                 $step->transitions = Zend_Json::decode($stepArray['transitions']);
                 $step->save();
+
+                $objects = Doctrine::getTable(ucfirst($this->view->workflow->module))->findByCurrentStepId($step->id);
+                foreach ($objects as $object) {
+                    $object->isResolved = $step->isResolved;
+                }
+                $objects->save();
             }
 
             $this->_redirect('/workflow/view/id/' . $this->view->workflow->id);

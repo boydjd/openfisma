@@ -1,6 +1,6 @@
 Workflow:
     vulnerability_acceptance:
-        name: 'Acceptance'
+        name: 'New'
         description: 'Decide whether to fix a vulnerability'
         isDefault: true
         module: 'vulnerability'
@@ -9,46 +9,69 @@ Workflow:
             -
                 id: 1
                 cardinality: 1
-                name: 'Action Plan'
-                label: 'AP'
-                description: 'Decide whether to fix the vulnerability and if not, why ("Breaks system", "Cost prohibitive", "Technically infeasible"...).'
+                name: 'Course of Action'
+                label: 'CA'
+                description: 'Please choose a course of action below. Select "Remediate the Vulnerability" if you can address the items listed in the vulnerability description. If you cannot fix the items identified, select "Accept the Risk". You will then need to provide business justification for accepting the risk. Or select "False Positive" if you believe the finding was identified in error and you have evidence to validate this.'
                 attachmentEditable: false
                 allottedTime: 'days'
-                allottedDays: 30
+                allottedDays: 7
                 transitions:
                     -
-                        name: 'Fix'
+                        name: 'Remediate the Vulnerability'
                         destination: 'custom'
                         roles: '[]'
                         customDestination: 3
                     -
-                        name: "Won't Fix"
+                        name: "Accept the Risk"
                         destination: 'custom'
                         roles: '[]'
                         customDestination: 2
-    vulnerability_wontfix:
-        name: "Won't Fix"
-        description: 'Decide not to fix the vulnerability'
+                    -
+                        name: "False Positive"
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 19
+    vulnerability_ar:
+        name: "Risk Acceptance"
+        description: 'If the vulnerabiity exists and it cannot be remediated you will need to accept the risk.'
         module: 'vulnerability'
         Creator: root
         WorkflowSteps:
             -
                 id: 2
                 cardinality: 1
-                name: "Won't Fix"
-                label: 'WONTFIX'
-                description: 'Please provide a reason if this vulnerability needs re-evaluation'
+                name: "Accepted Risks"
+                label: 'AR'
+                description: 'This vulnerability has been officially designated as accepted risk and will remain valid until it is re-opened and re-evaluated.'
                 isResolved: true
-                attachmentEditable: false
                 transitions:
                     -
-                        name: 'Re-evaluate'
+                        name: 'Re-open Vulnerability'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 1
+    vulnerability_fp:
+        name: "False Positive"
+        description: 'Bucket used for identifying false positives created by various vulnerability scanners.'
+        module: 'vulnerability'
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 19
+                cardinality: 1
+                name: "False Positives"
+                label: 'FP'
+                description: 'This vulnerability has been listed as a false positive, if you believe this is in error you may "Re-Open the Vulnerability". Re-Opening the vulnerability will move the finding back to the "Course of Action" workflow step.'
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Re-open Vulnerability'
                         destination: 'custom'
                         roles: '[]'
                         customDestination: 1
     vulnerability_remediation:
         name: 'Remediation'
-        description: 'Remediate a vulnerability'
+        description: 'Workflow to remediate vulnerabilities.'
         isDefault: false
         module: 'vulnerability'
         Creator: root
@@ -56,26 +79,31 @@ Workflow:
             -
                 id: 3
                 cardinality: 1
-                label: 'AR'
-                name: 'Action Required'
-                description: 'Please resolve the vulnerability'
+                label: 'OPEN'
+                name: 'Implementation'
+                description: 'Implement the required changes to remediate the vulnerability. Once you have completed all actions and you believe the finding is successfully remediated click "Close Vulnerability". If the vulnerability is found later it will re-open the vulnerability.'
                 transitions:
                     -
-                        name: 'Complete'
+                        name: 'Close Vulnerability'
                         destination: 'next'
                         roles: '[]'
                         customDestination: 'undefined'
+                    -
+                        name: 'Change Course of Action'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 1
             -
                 id: 4
                 cardinality: 2
                 name: 'Fixed'
                 label: 'FIXED'
-                description: 'Please provide a reason if this vulnerability needs to be re-opened'
+                description: 'This vulnerability is officially closed and no more action is required. If you believe the vulnerability still exists you may re-open the finding.'
                 isResolved: true
                 attachmentEditable: false
                 transitions:
                     -
-                        name: 'Re-open'
+                        name: 'Re-open Vulnerability'
                         destination: 'custom'
                         roles: '[]'
                         customDestination: 1
@@ -122,7 +150,7 @@ Workflow:
                 id: 6
                 cardinality: 1
                 name: 'Accept Risk Justification'
-                label: 'ACCEPT'
+                label: 'JUSTIFY'
                 allottedTime: days
                 allottedDays: 7
                 description: 'To accept the risk of not remediating a finding you must justify why the finding can not be remediated. There may be several factors such as cost required, technical in feasibility, or possibly the length of the corrective action requires the finding to be listed as an accepted risk until the finding is fully corrected. You must also complete the "Risk Analysis" tab to clearly identify the risk to the organization. Under the "Mitigation Strategy" tab you will need to enter your justification in the action plan field. Fully explain why you are accepting the risk and how long the risk will remain active. Risks will normally be re-evaluated on a yearly basis but this may be changed by the authorizing official. If you believe the risk is no longer active and would like to submit evidence the risk is no longer valid select "Close Accepted Risk".'
@@ -145,8 +173,8 @@ Workflow:
             -
                 id: 7
                 cardinality: 2
-                name: 'Approve Risk Justification'
-                label: 'JUSTIFY'
+                name: 'Accept Risk Approval'
+                label: 'APPROVAL'
                 allottedTime: days
                 allottedDays: 7
                 description: 'Review the risk acceptance justification and evaluate the risk to the organization. If you believe the risk to the organization is acceptable you may approve the risk. If you require additional details select "Request Additional Information".'
@@ -172,12 +200,12 @@ Workflow:
                     -
                         name: 'Accept the Risk'
                         destination: 'next'
-                        roles: '[]'
+                        roles: '{"6":"Authorizing Official"}'
                         customDestination: 'undefined'
                     -
                         name: 'Request Additional Information'
                         destination: 'back'
-                        roles: '[]'
+                        roles: '{"6":"Authorizing Official"}'
                         customDestination: 'undefined'
             -
                 id: 8
@@ -200,7 +228,6 @@ Workflow:
                     - countermeasuresEffectiveness
                     - countermeasures
                     - securityControlId
-                isResolved: true
                 attachmentEditable: false
                 transitions:
                     -
@@ -210,9 +237,9 @@ Workflow:
                         customDestination: 6
                     -
                         name: 'Submit for Closure'
-                        destination: 'custom'
+                        destination: 'next'
                         roles: '[]'
-                        customDestination: 15
+                        customDestination: 'undefined'
             -
                 id: 15
                 cardinality: 4
@@ -225,12 +252,12 @@ Workflow:
                     -
                         name: 'Request Additional Information'
                         destination: 'custom'
-                        roles: '[]'
+                        roles: '{"4":"Security Officer"}'
                         customDestination: 6
                     -
                         name: 'Officially Close Accepted Risk'
                         destination: 'next'
-                        roles: '[]'
+                        roles: '{"4":"Security Officer"}'
                         customDestination: 'undefined'
             -
                 id: 16
@@ -265,12 +292,60 @@ Workflow:
         module: 'finding'
         Creator: root
         WorkflowSteps:
+            finding_fp:
+        name: 'False Positive'
+        description: 'Discard findings as False Positives'
+        module: 'finding'
+        Creator: root
+        WorkflowSteps:
             -
                 id: 9
                 cardinality: 1
-                name: 'Discarded'
-                label: 'FP'
-                description: 'Please provide a reason (if required) to re-evaluate the finding.'
+                name: False Positive Justification
+                label: FPJ
+                description: 'To declare this finding as a false positive you must provide justification which will be independently evaluated. You may also change the course of action to remediate the finding or accept the risk. Under the "Mitigation Strategy" tab you will need to enter your justification in the action plan field. Fully explain why you believe the finding is a false positive and upload any evidence you have to justify this statement and then select "Submit Justification".'
+                allottedTime: days
+                allottedDays: 7
+                transitions:
+                    -
+                        name: 'Submit Justification'
+                        destination: 'next'
+                        roles: '[]'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Change Course of Action'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 5
+            -
+                id: 17
+                cardinality: 2
+                name: False Positive Approval
+                label: FPA
+                description: 'Review the false positive justification and evidence provided. If you believe sufficient information has been provided to validate the finding is a false positive, then select "Approve False Positive". If you need addition information select "Request Additional Information".'
+                allottedTime: days
+                allottedDays: 7
+                prerequisites:
+                    - mitigationStrategy
+                restrictedFields:
+                    - mitigationStrategy
+                transitions:
+                    -
+                        name: 'Approve False Positive'
+                        destination: 'next'
+                        roles: '{"4":"Security Officer"}'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Request Additional Information'
+                        destination: 'back'
+                        roles: '{"4":"Security Officer"}'
+                        customDestination: 'undefined'
+            -
+                id: 18
+                cardinality: 3
+                name: 'Closed'
+                label: 'CLOSED'
+                description: 'This finding is officially closed and no more action is required. If you believe this finding should not be closed or requires additional information you may "Re-Open the Finding". Re-Opening the finding will move the finding back to the "Course of Action" workflow step.'
                 restrictedFields:
                     - description
                     - recommendation
@@ -335,12 +410,12 @@ Workflow:
                     -
                         name: 'Approve Corrective Action'
                         destination: 'next'
-                        roles: '[]'
+                        roles: '{"4":"Security Officer"}'
                         customDestination: 'undefined'
                     -
                         name: 'Request Changes'
                         destination: 'back'
-                        roles: '[]'
+                        roles: '{"4":"Security Officer"}'
                         customDestination: 'undefined'
             -
                 id: 12
@@ -396,12 +471,12 @@ Workflow:
                     -
                         name: 'Approve and Close Finding'
                         destination: 'next'
-                        roles: '[]'
+                        roles: '{"4":"Security Officer"}'
                         customDestination: 'undefined'
                     -
                         name: 'Request Additional Information'
                         destination: 'back'
-                        roles: '[]'
+                        roles: '{"4":"Security Officer"}'
                         customDestination: 'undefined'
             -
                 id: 14
