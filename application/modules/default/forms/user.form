@@ -119,7 +119,6 @@ displayGroups.accountInfo.elements.roles = "role"
 
 elements.groups.type = "multiCheckbox"
 elements.groups.options.label = "User Groups"
-elements.groups.options.required = true
 displayGroups.accountInfo.elements.groups = "groups"
 
 ; The values in the status menu are static so it is hardcoded here.
