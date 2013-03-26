@@ -22,12 +22,12 @@ Workflow:
                         roles: '[]'
                         customDestination: 3
                     -
-                        name: 'Won\'t Fix'
+                        name: "Won't Fix"
                         destination: 'custom'
                         roles: '[]'
                         customDestination: 2
     vulnerability_wontfix:
-        name: 'Won\'t Fix'
+        name: "Won't Fix"
         description: 'Decide not to fix the vulnerability'
         module: 'vulnerability'
         Creator: root
@@ -35,7 +35,7 @@ Workflow:
             -
                 id: 2
                 cardinality: 1
-                name: 'Won\'t Fix'
+                name: "Won't Fix"
                 label: 'WONTFIX'
                 description: 'Please provide a reason if this vulnerability needs re-evaluation'
                 isResolved: true
@@ -91,7 +91,7 @@ Workflow:
                 label: 'CA'
                 allottedTime: days
                 allottedDays: 7
-                description: 'Please choose a course of action below. Select "Remediate the Finding" if you can address the items listed in finding description. If you cannot fix the items identified, select "Accept the Risk\'. You will then need to provide business justification for accepting the risk. Or select "False Positive" if you believe the finding was identified in error and you have evidence to validate this.'
+                description: 'Please choose a course of action below. Select "Remediate the Finding" if you can address the items listed in finding description. If you cannot fix the items identified, select "Accept the Risk". You will then need to provide business justification for accepting the risk. Or select "False Positive" if you believe the finding was identified in error and you have evidence to validate this.'
                 attachmentEditable: false
                 transitions:
                     -
@@ -123,7 +123,7 @@ Workflow:
                 label: 'ACCEPT'
                 allottedTime: days
                 allottedDays: 7
-                description: 'To accept the risk of not remediating a finding you must justify why the finding can not be remediated. There may be several factors such as cost required, technical in feasibility, or possibly the length of the corrective action requires the finding to be listed as an accepted risk until the finding is fully corrected. You must also complete the "Risk Analysis" tab to clearly identify the risk to the organization. Under the "Mitigation Strategy" tab you will need to enter your justification in the action plan field. Fully explain why you are accepting the risk and how long the risk will remain active. Risks will normally be re-evaluated on a yearly basis but this may be changed by the authorizing official. If you believe the risk is no longer active and would like to submit evidence the risk is no longer valid select "Close Accepted Risk\'.'
+                description: 'To accept the risk of not remediating a finding you must justify why the finding can not be remediated. There may be several factors such as cost required, technical in feasibility, or possibly the length of the corrective action requires the finding to be listed as an accepted risk until the finding is fully corrected. You must also complete the "Risk Analysis" tab to clearly identify the risk to the organization. Under the "Mitigation Strategy" tab you will need to enter your justification in the action plan field. Fully explain why you are accepting the risk and how long the risk will remain active. Risks will normally be re-evaluated on a yearly basis but this may be changed by the authorizing official. If you believe the risk is no longer active and would like to submit evidence the risk is no longer valid select "Close Accepted Risk".'
                 transitions:
                     -
                         name: 'Submit Justification'
