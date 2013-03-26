@@ -136,7 +136,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->toolbarButtons = $buttons;
-        $this->view->searchButtons = $this->getSearchButtons($organization, $fromSearchParams);
+        $this->view->searchButtons = $this->getSearchButtons($organization->System, $fromSearchParams);
         $this->view->tabView = $tabView;
     }
 
