@@ -344,7 +344,7 @@ table.keyValues th {
 
 /* The first column in a keyValues table is bold text */
 table.keyValues td:nth-child(odd), table.keyValues th[scope=row] {
-    font-weight: bold;
+    font-weight: bold !important;
     text-align: right;
     vertical-align: top;
 }
@@ -964,7 +964,7 @@ fieldset.uploadFileList input {
 }
 
 .criteria {
-    font-weight: bold;
+    font-weight: bold !important;
 }
 .value {
     text-align: right;

@@ -172,7 +172,7 @@ Vulnerability:
                         param2: VulnerabilityResolution
                 Vulnerability_Workflow:
                     label: Workflows
-                    link: /workflow/manage#2
+                    link: /workflow/manage#1
         Reports:
             label: Reports
             privilege:
