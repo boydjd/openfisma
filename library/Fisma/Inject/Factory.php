@@ -87,7 +87,7 @@ class Fisma_Inject_Factory
     public static function detectType($filename)
     {
         $handle = fopen($filename, "rb");
-        $contents = fread($handle, 128);
+        $contents = fread($handle, 512);
         fclose($handle);
 
         if (stristr($contents, 'NessusClientData_v2')) {
@@ -104,7 +104,7 @@ class Fisma_Inject_Factory
             return 'Asset';
         } elseif (stristr($contents, 'report') && stristr($contents, 'format_id')) {
             return 'Greenbone';
-        } elseif (stristr($contents, '<Scan><Name>') !== false) { //not a 100% unique identifier, should be improved
+        } elseif (stristr($contents, '<Issues>')) { //not a 100% unique identifier, should be improved
             return 'WebInspect';
         } else {
             return FALSE;

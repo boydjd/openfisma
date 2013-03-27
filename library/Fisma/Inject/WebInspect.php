@@ -78,7 +78,7 @@ class Fisma_Inject_WebInspect extends Fisma_Inject_Abstract
             'Severity' => 'threatLevel'
         );
 
-        $discoveredDate = null;
+        $discoveredDate = Fisma::now();
         while ($oXml->read()) {
             if ($oXml->name == 'StartTime' && $oXml->nodeType == XMLReader::ELEMENT) {
                 $discoveredDate = $oXml->readString();
@@ -107,6 +107,9 @@ class Fisma_Inject_WebInspect extends Fisma_Inject_Abstract
                     $assets[$itemCounter] = array();
                 }
 
+                if ($oXml->getAttribute('id')) {
+                    $parsedData[$itemCounter]['debugId'] = $oXml->getAttribute('id'); //Issue ID attribute (if provided)
+                }
                 //Manually parsing <ReportSection>'s
                 if ($name == 'ReportSection') {
                     $nodeType = -1;
@@ -133,15 +136,15 @@ class Fisma_Inject_WebInspect extends Fisma_Inject_Abstract
                             $value = 'HIGH';
                             break;
                         case '3':
-                            $value = 'MODERATE';
-                            break;
                         case '2':
                             $value = 'MODERATE';
                             break;
                         case '1':
                             $value = 'LOW';
+                            break;
+                        case '0':
                         default:
-                            $value = 'NONE';
+                            $value = null;
                     }
                 }
 
@@ -154,17 +157,17 @@ class Fisma_Inject_WebInspect extends Fisma_Inject_Abstract
                 }
 
                 if (in_array($name, array_keys($assetMap))) {
-                    if (isset($assets[$itemCounter][$assetMap[$name]])) {
-                        $assets[$itemCounter][$assetMap[$name]] .= $value;
-                    } else {
-                        $assets[$itemCounter][$assetMap[$name]] = $value;
-                    }
+                    $assets[$itemCounter][$assetMap[$name]] = $value;
                 }
             } elseif ($oXml->nodeType == XMLReader::END_ELEMENT) {
                 if ($oXml->name == 'Issue') {
                     if ($ignoreCurrent) {
                         unset($parsedData[$itemCounter]);
+                        unset($assets[$itemCounter]);
                     } else {
+                        if (empty($assets[$itemCounter]) && $itemCounter > 0) {
+                            $assets[$itemCounter] = $assets[$itemCounter - 1]; //copy from previous issue (same session)
+                        }
                         $itemCounter++;
                     }
                     $ignoreCurrent = false;
@@ -174,7 +177,7 @@ class Fisma_Inject_WebInspect extends Fisma_Inject_Abstract
         $discoveredDate = new Zend_Date(strtotime($discoveredDate));
 
         foreach ($parsedData as $key => $finding) {
-            if (($finding['threatLevel'] != 'NONE')) {
+            if (!empty($finding['threatLevel'])) {
                 // Prepare finding
                 $finding['uploadId'] = (int) $uploadId;
                 $finding['discoveredDate'] = (!empty($discoveredDate)) ?
@@ -184,7 +187,11 @@ class Fisma_Inject_WebInspect extends Fisma_Inject_Abstract
 
                 // Prepare asset
                 $asset = $assets[$key];
-                $asset['source'] = 'scan';
+                if (empty($asset)) {
+                    $asset = NULL;
+                } else {
+                    $asset['source'] = 'scan';
+                }
 
                 // Save finding and asset
                 $this->_save($finding, $asset);

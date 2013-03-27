@@ -403,6 +403,12 @@ abstract class Fisma_Inject_Abstract
     {
         $asset = new Asset();
 
+        foreach ($assetData as $key => $value) {
+            if (!$value) {
+                unset($assetData[$key]);
+            }
+        }
+
         $asset->merge($assetData);
         $asset->save();
 
