@@ -1858,4 +1858,21 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $form->getElement('incidentDate')->addDecorator(new Fisma_Zend_Form_Decorator_Date());
         return $form;
     }
+
+    /**
+     * Hooks for manipulating and saving the values retrieved by Forms
+     *
+     * @param Zend_Form $form The specified form
+     * @param Doctrine_Record|null $subject The specified subject model
+     * @return Fisma_Doctrine_Record The saved object.
+     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
+     */
+    protected function saveValue($form, $subject = null)
+    {
+        if (is_null($subject)) {
+            $subject = new Incident();
+            $subject->reportingUserId = CurrentUser::getAttribute('id');
+        }
+        return parent::saveValue($form, $subject);
+    }
 }
