@@ -226,9 +226,11 @@ class Fisma_Migration_Helper
      * @param string $localColumn
      * @param string $remoteTable
      * @param string $remoteColumn
-     * @param string $constraintName
+     * @param string $constraintName Optional.
+     * @param string $integrityAction Optional.
      */
-    public function addForeignKey($localTable, $localColumn, $remoteTable, $remoteColumn, $constraintName = null)
+    public function addForeignKey(
+        $localTable, $localColumn, $remoteTable, $remoteColumn, $constraintName = null, $integrityAction = "")
     {
         if ($this->tableExists($localTable) && $this->tableExists($remoteTable) ) {
             if (!$constraintName) {
@@ -240,7 +242,8 @@ class Fisma_Migration_Helper
             $this->exec("ALTER TABLE `$localTable` ADD INDEX `{$localColumn}_idx` (`$localColumn`)");
 
             $this->exec("ALTER TABLE `$localTable` ADD CONSTRAINT `$constraintName`
-                         FOREIGN KEY `$constraintName` (`$localColumn`) REFERENCES `$remoteTable` (`$remoteColumn`)");
+                         FOREIGN KEY `$constraintName` (`$localColumn`) REFERENCES `$remoteTable` (`$remoteColumn`)
+                         $integrityAction");
         } else {
             return false;
         }
@@ -481,10 +484,5 @@ class Fisma_Migration_Helper
         } else {
             return false;
         }
-    }
-
-    public static function now()
-    {
-        return Zend_Date::now()->toString('yyyy-MM-dd HH:mm:ss');
     }
 }

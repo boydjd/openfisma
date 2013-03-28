@@ -101,7 +101,7 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
 
     protected function _updateRoles()
     {
-        $now = $this->getHelper()->now();
+        $now = self::now();
         $this->getHelper()->exec(
             'UPDATE role SET name = ? WHERE nickname = ?',
             array('Administrator', 'ADMIN')
