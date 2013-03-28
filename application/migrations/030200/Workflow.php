@@ -102,6 +102,8 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
         //Add foreign keys
         $helper->addForeignKey('workflow_step_user', 'stepid', 'workflow_step', 'id');
         $helper->addForeignKey('workflow_step_user', 'userid', 'user', 'id');
+        $helper->addIndex('workflow_step_user', 'stepid', 'workflow_step_user_stepid_workflow_step_id');
+        $helper->dropIndexes('workflow_step_user', array('stepid_idx', 'userid_idx'));
 
         $this->message('Migrating Finding table');
         //Add isResolved, completedSteps, currentStepId
@@ -284,7 +286,7 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
 
     private function _getWorkflowArray()
     {
-        $now = $this->getHelper()->now();
+        $now = self::now();
         $rootId = $this->getHelper()->query("SELECT id from user where username = 'root'");
         $rootId = $rootId[0]->id;
 
@@ -295,7 +297,7 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
 
     private function _getWorkflowStepArray()
     {
-        $now = $this->getHelper()->now();
+        $now = self::now();
 
         $workflowStep = array();
         include(realpath(dirname(__FILE__) . '/workflow_step.inc'));
