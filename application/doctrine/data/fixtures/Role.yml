@@ -63,10 +63,6 @@ Role:
             - networks_read
             - networks_update
             - networks_delete
-            - vulnerability_resolution_create
-            - vulnerability_resolution_read
-            - vulnerability_resolution_update
-            - vulnerability_resolution_delete
             - notification_admin
             - notification_asset
             - notification_finding
@@ -163,10 +159,6 @@ Role:
             - networks_read
             - networks_update
             - networks_delete
-            - vulnerability_resolution_create
-            - vulnerability_resolution_read
-            - vulnerability_resolution_update
-            - vulnerability_resolution_delete
             - notification_asset
             - notification_finding
             - notification_incident
@@ -234,7 +226,6 @@ Role:
             - source_read
             - roles_read
             - networks_read
-            - vulnerability_resolution_read
             - notification_asset
             - notification_finding
             - notification_incident

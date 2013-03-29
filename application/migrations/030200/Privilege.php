@@ -97,6 +97,14 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
             array('evaluation')
         );
 
+        $this->getHelper()->exec(
+            'DELETE FROM role_privilege WHERE privilegeid IN (SELECT id FROM privilege WHERE resource = ?)',
+            array('vulnerability_resolution')
+        );
+        $this->getHelper()->exec(
+            'DELETE FROM privilege WHERE resource = ?',
+            array('vulnerability_resolution')
+        );
     }
 
     protected function _updateRoles()

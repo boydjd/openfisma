@@ -122,18 +122,6 @@ VulnerabilityAdminProducts:
     url: /vm/product/list
     labels: [Vulnerabilities, Administration, Products]
     links: [no-link, no-link, no-link]
-VulnerabilityAdminResolutionsView:
-    url: /vm/vulnerability-resolution/view
-    labels: [Vulnerabilities, Administration, Resolutions, View]
-    links: [no-link, no-link, /vm/vulnerability-resolution/list, no-link]
-VulnerabilityAdminResolutionsCreate:
-    url: /vm/vulnerability-resolution/create
-    labels: [Vulnerabilities, Administration, Resolutions, Create]
-    links: [no-link, no-link, /vm/vulnerability-resolution/list, no-link]
-VulnerabilityAdminResolutions:
-    url: /vm/vulnerability-resolution/list
-    labels: [Vulnerabilities, Administration, Resolutions]
-    links: [no-link, no-link, no-link]
 VulnerabilityReportAggregated:
     url: /vm/vulnerability-report/risk
     labels: [Vulnerabilities, Reports, Aggregated Risk]
