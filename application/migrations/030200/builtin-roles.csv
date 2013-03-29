@@ -99,10 +99,6 @@ Administrator,vulnerability,create
 Administrator,vulnerability,delete
 Administrator,vulnerability,read
 Administrator,vulnerability,update
-Administrator,vulnerability_resolution,create
-Administrator,vulnerability_resolution,delete
-Administrator,vulnerability_resolution,read
-Administrator,vulnerability_resolution,update
 Administrator,workflow,manage
 User,area,dashboard
 User,area,finding
@@ -185,10 +181,6 @@ User,vulnerability,create
 User,vulnerability,delete
 User,vulnerability,read
 User,vulnerability,update
-User,vulnerability_resolution,create
-User,vulnerability_resolution,delete
-User,vulnerability_resolution,read
-User,vulnerability_resolution,update
 Viewer,area,dashboard
 Viewer,area,finding
 Viewer,area,finding_report
@@ -221,4 +213,3 @@ Viewer,system_type,read
 Viewer,user,read
 Viewer,vulnerability,comment
 Viewer,vulnerability,read
-Viewer,vulnerability_resolution,read
