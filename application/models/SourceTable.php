@@ -35,7 +35,6 @@ class SourceTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
         return array (
             'name' => array(
                 'initiallyVisible' => true,
-                'label' => 'Name',
                 'sortable' => true,
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.recordLink',
@@ -45,13 +44,11 @@ class SourceTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
             ),
             'nickname' => array(
                 'initiallyVisible' => true,
-                'label' => 'Nickname',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'description' => array(
                 'initiallyVisible' => true,
-                'label' => 'Description',
                 'sortable' => false,
                 'type' => 'text'
             )

@@ -67,7 +67,7 @@ class SystemDocumentTable extends Fisma_Doctrine_Table implements Fisma_Search_S
             ),
             'description' => array(
                 'initiallyVisible' => true,
-                'label' => 'Version Notes',
+                'label' => '',
                 'sortable' => false,
                 'type' => 'text'
             ),

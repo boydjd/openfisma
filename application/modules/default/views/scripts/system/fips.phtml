@@ -1,18 +1,19 @@
 <?php
+$this->table = $this->system->getTable();
 Fisma_Format_Section::startSection('Confidentiality');
 ?>
 <table class="keyValues">
     <tr>
-        <td>Confidentiality: </td>
+        <th scope='row'>Confidentiality:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
-            <span id="confidentiality" 
-                  class="editable" 
-                  target="confidentiality" 
-                  name="confidentiality" 
-                  type="select" 
+            <span id="confidentiality"
+                  class="editable"
+                  target="confidentiality"
+                  name="confidentiality"
+                  type="select"
                   href="/metainfo/list/o/confidentiality/format/html/">
                 <?php echo $this->escape($this->system->confidentiality); ?>&nbsp;
             </span>
@@ -28,16 +29,16 @@ Fisma_Format_Section::startSection('Confidentiality');
         </td>
     </tr>
     <tr>
-        <td>Description: </td>
+        <th scope='row'>Description:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
-            <div id="confidentialityDescription" 
-                  class="editable" 
-                  target="confidentialityDescription" 
-                  name="confidentialityDescription" 
-                  type="textarea" 
+            <div id="confidentialityDescription"
+                  class="editable"
+                  target="confidentialityDescription"
+                  name="confidentialityDescription"
+                  type="textarea"
                   rows="4"
                   cols="80">
                 <?php echo $this->escape($this->system->confidentialityDescription, 'none'); ?>&nbsp;
@@ -52,24 +53,24 @@ Fisma_Format_Section::startSection('Confidentiality');
             }
             ?>
         </td>
-    </tr> 
+    </tr>
 </table>
 <?php
 Fisma_Format_Section::stopSection();
 Fisma_Format_Section::startSection('Integrity');
 ?>
-<table class="keyValues">   
+<table class="keyValues">
     <tr>
-        <td>Integrity: </td>
+        <th scope='row'>Integrity:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
-            <span id="integrity" 
-                  class="editable" 
-                  target="integrity" 
-                  name="integrity" 
-                  type="select" 
+            <span id="integrity"
+                  class="editable"
+                  target="integrity"
+                  name="integrity"
+                  type="select"
                   href="/metainfo/list/o/integrity/format/html/">
                   <?php echo $this->escape($this->system->integrity); ?>&nbsp;
             </span>
@@ -85,16 +86,16 @@ Fisma_Format_Section::startSection('Integrity');
         </td>
     </tr>
     <tr>
-        <td>Description: </td>
+        <th scope='row'>Description:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
-            <div id="integrityDescription" 
-                  class="editable" 
-                  target="integrityDescription" 
-                  name="integrityDescription" 
-                  type="textarea" 
+            <div id="integrityDescription"
+                  class="editable"
+                  target="integrityDescription"
+                  name="integrityDescription"
+                  type="textarea"
                   rows="4"
                   cols="80">
                   <?php echo $this->escape($this->system->integrityDescription, 'none'); ?>&nbsp;
@@ -109,31 +110,31 @@ Fisma_Format_Section::startSection('Integrity');
             }
             ?>
         </td>
-    </tr>    
+    </tr>
 </table>
 <?php
 Fisma_Format_Section::stopSection();
 Fisma_Format_Section::startSection('Availability');
 ?>
-<table class="keyValues">    
+<table class="keyValues">
     <tr>
-        <td>Availability: </td>
+        <th scope='row'>Availability:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
-            <span id="availability" 
-                  class="editable" 
-                  target="availability" 
-                  name="availability" 
-                  type="select" 
-                  href="/metainfo/list/o/availability/format/html/">        
+            <span id="availability"
+                  class="editable"
+                  target="availability"
+                  name="availability"
+                  type="select"
+                  href="/metainfo/list/o/availability/format/html/">
             <?php echo $this->escape($this->system->availability); ?>&nbsp;
             </span>
             <?php
             } else {
             ?>
-            <span>        
+            <span>
             <?php echo $this->escape($this->system->availability); ?>&nbsp;
             </span>
             <?php
@@ -142,16 +143,16 @@ Fisma_Format_Section::startSection('Availability');
         </td>
     </tr>
     <tr>
-        <td>Description: </td>
+        <th scope='row'>Description:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ?>
-            <div id="availabilityDescription" 
-                  class="editable" 
-                  target="availabilityDescription" 
-                  name="availabilityDescription" 
-                  type="textarea" 
+            <div id="availabilityDescription"
+                  class="editable"
+                  target="availabilityDescription"
+                  name="availabilityDescription"
+                  type="textarea"
                   rows="4"
                   cols="80">
                   <?php echo $this->escape($this->system->availabilityDescription, 'none'); ?>&nbsp;
@@ -174,7 +175,7 @@ Fisma_Format_Section::startSection('FIPS-199 Security Categorization');
 ?>
 <table class="keyValues">
     <tr>
-        <td>FIPS-199 Categorization: </td>
+        <th scope='row'><?php $this->column('fipsCategory'); ?>:</th>
         <td>
             <?php echo $this->escape($this->system->fipsCategory); ?>
         </td>
