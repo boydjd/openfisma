@@ -258,24 +258,6 @@ Privilege:
         action: delete
         description: Delete Networks
 
-    # Vulnerability Resolution CRUD
-    vulnerability_resolution_create:
-        resource: vulnerability_resolution
-        action: create
-        description: Create Resolution
-    vulnerability_resolution_read:
-        resource: vulnerability_resolution
-        action: read
-        description: View Resolution
-    vulnerability_resolution_update:
-        resource: vulnerability_resolution
-        action: update
-        description: Edit Resolution
-    vulnerability_resolution_delete:
-        resource: vulnerability_resolution
-        action: delete
-        description: Delete Resolution
-
     # Notification privileges
     notification_admin:
         resource: notification

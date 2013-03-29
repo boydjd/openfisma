@@ -239,6 +239,7 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
         //delete from role_privilege
         //Remove {resource:finding, action:[update_*|upload_evidence|mitigation_*|evidence_*]}
         //Remove {resource:evaluation}
+        //Remove {resource:vulnerability_resolution}
 
         $this->message('Migrating Vulnerability table');
         //Add isResolved, completedSteps, currentStepId, nextDueDate
@@ -262,8 +263,11 @@ class Application_Migration_030200_Workflow extends Fisma_Migration_Abstract
             array('currentstepid' => 1),
             array('status' => 'OPEN')
         );
-        //Remove status
+        //Remove columns
+        $helper->dropForeignKeys('vulnerability', 'vulnerability_resolutionid_vulnerability_resolution_id');
         $helper->dropColumn('vulnerability', 'status');
+        $helper->dropColumn('vulnerability', 'resolutionid');
+        $helper->dropTable('vulnerability_resolution');
         //Add foreign key
         $helper->addForeignKey('vulnerability', 'currentstepid', 'workflow_step', 'id');
 
