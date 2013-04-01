@@ -16,6 +16,7 @@ IrIncidentUser:
         Incident:
             local: incidentId
             foreign: id
+            foreignAlias: IrIncidentUsers
         User:
             local: userId
             foreign: id

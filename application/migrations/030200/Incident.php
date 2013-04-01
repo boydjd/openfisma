@@ -31,5 +31,16 @@ class Application_Migration_030200_Incident extends Fisma_Migration_Abstract
     {
         $this->getHelper()->addColumn('incident', 'responsestrategies', 'text NULL', 'impact');
         $this->getHelper()->addColumn('incident', 'denormalizedresponsestrategies', 'text NULL', 'responsestrategies');
+        $this->getHelper()->addColumn('incident', 'currentworkflowname', 'text NULL', 'currentworkflowstepid');
+
+        $this->getHelper()->exec(
+            'UPDATE incident, ir_incident_workflow ' .
+            'SET incident.currentworkflowname = ir_incident_workflow.name ' .
+            'WHERE incident.id = ir_incident_workflow.incidentid AND ir_incident_workflow.status = ?',
+            array('current')
+        );
+
+        $this->getHelper()->dropForeignKeys('incident', 'incident_currentworkflowstepid_ir_incident_workflow_id');
+        $this->getHelper()->dropColumn('incident', 'currentworkflowstepid');
     }
 }
