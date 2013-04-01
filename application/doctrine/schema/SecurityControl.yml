@@ -2,38 +2,53 @@ SecurityControl:
     listeners: [IndexListener]
 
     columns:
-        code: 
+        code:
             type: string(5)
             fixed: true
             comment: The control number, e.g. AC-05
+            extra:
+                logicalName: Code
         name:
             type: string(255)
             comment: Name of the control
-        family: 
+            extra:
+                logicalName: Name
+        family:
             type: string(255)
-                
-        control: 
+            extra:
+                logicalName: Family
+
+        control:
             type: string
             extra:
                 purify: html
-        supplementalGuidance: 
+                logicalName: Control
+        supplementalGuidance:
             type: string
             extra:
                 purify: html
+                logicalName: Supplemental Guidance
         externalReferences:
             type: string
             extra:
                 purify: html
+                logicalName: External References
         priorityCode:
             type: enum
             values: [P0, P1, P2, P3]
+            extra:
+                logicalName: Priority Code
         controlLevel:
             type: enum
             values: [NONE, LOW, MODERATE, HIGH]
-                
+            extra:
+                logicalName: Control Level
+
         securityControlCatalogId:
             type: integer
             comment: Foreign key to the catalog which this control belongs to
+            extra:
+                logicalName: Catalog
 
     indexes:
         codeSecurityControlCatalogIdIndex:

@@ -31,7 +31,6 @@ class SystemTypeTable extends Fisma_Doctrine_Table implements Fisma_Search_Searc
         return array (
             'name' => array(
                 'initiallyVisible' => true,
-                'label' => 'Name',
                 'sortable' => true,
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.recordLink',
@@ -41,13 +40,11 @@ class SystemTypeTable extends Fisma_Doctrine_Table implements Fisma_Search_Searc
             ),
             'nickname' => array(
                 'initiallyVisible' => true,
-                'label' => 'Nickname',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'description' => array(
                 'initiallyVisible' => true,
-                'label' => 'Description',
                 'sortable' => false,
                 'type' => 'text'
             )

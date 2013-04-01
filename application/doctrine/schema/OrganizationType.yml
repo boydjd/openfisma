@@ -6,7 +6,7 @@ OrganizationType:
         modifiedTs: timestamp
         name:
             extra:
-                logicalName: Full Name
+                logicalName: Name
                 notify: true
             type: string(255)
             notblank: true

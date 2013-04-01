@@ -1,6 +1,7 @@
 <?php
     Fisma_Format_Section::startSection("Mitigation Strategy");
     $finding = $this->finding;
+    $this->table = $finding->getTable();
     $organization = $finding->Organization->nickname;
     $fromSearchUrl = $this->fromSearchUrl;
 ?>
@@ -11,7 +12,7 @@
                echo $this->escape('class="editable"', 'none');
             }
         ?>>
-        Action Plan:
+        <?php $this->column('mitigationStrategy'); ?>:
     </b>
 </p>
 <div name="finding[mitigationStrategy]" id="mitigation_strategy" type="textarea">
@@ -25,7 +26,7 @@
                 echo $this->escape('class="editable" target="resources_required"', 'none');
             }
         ?>>
-        Resources Required:
+        <?php $this->column('resourcesRequired'); ?>:
     </b>
 </p>
 <div name="finding[resourcesRequired]" id="resources_required" type="textarea">
@@ -35,7 +36,7 @@
 <?php if (!$finding->ecdLocked): ?>
     <p>
         <div><!-- Rendering calendar depends on this div -->
-            <b>Expected Completion Date:</b>
+            <b><?php $this->column('currentEcd'); ?>:</b>
             <span name="finding[currentEcd]" id="currentEcd" type="text"
                 <?php
                     if ($finding->canEdit('currentEcd')) {
@@ -57,7 +58,7 @@
     </p>
 
     <p>
-        <b>Original ECD:</b>
+        <b><?php $this->column('originalEcd'); ?>:</b>
         <span><?php echo $this->escape($finding->originalEcd); ?></span>
     </p>
 
@@ -81,7 +82,7 @@
     </p>
 
     <p>
-        <b>Justification for changing the ECD: </b>
+        <b><?php $this->column('ecdChangeDescription'); ?>: </b>
         <span id="currentChangeDescription"><?php echo $this->escape($finding->ecdChangeDescription); ?></span>
     </p>
 <?php endif; ?>

@@ -29,7 +29,9 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
                                                                 Fisma_Search_CustomIndexBuilder_Interface
 {
     protected $_customLogicalNames = array(
-        'parentNickname' => 'Parent'
+        'parentNickname' => 'Parent',
+        'createdTs' => 'Created Date',
+        'modifiedTs' => 'Last Modified Date'
     );
 
     /**
@@ -40,13 +42,11 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
         return array (
             'name' => array(
                 'initiallyVisible' => true,
-                'label' => 'Name',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'nickname' => array(
                 'initiallyVisible' => true,
-                'label' => 'Nickname',
                 'sortable' => true,
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.recordLink',
@@ -56,13 +56,11 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
             ),
             'createdTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Creation Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Modification Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
@@ -90,7 +88,6 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
             ),
             'description' => array(
                 'initiallyVisible' => true,
-                'label' => 'Description',
                 'sortable' => false,
                 'type' => 'text'
             ),

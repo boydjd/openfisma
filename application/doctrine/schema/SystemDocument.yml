@@ -12,6 +12,8 @@ SystemDocument:
         description:
             type: string
             comment: A place for the user to enter version comments
+            extra:
+                logicalName: Version Notes
 
         documentTypeId:
             type: integer

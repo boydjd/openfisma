@@ -35,7 +35,6 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
         return array (
             'code' => array(
                 'initiallyVisible' => true,
-                'label' => 'Code',
                 'sortable' => true,
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.recordLink',
@@ -45,38 +44,32 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
             ),
             'name' => array(
                 'initiallyVisible' => true,
-                'label' => 'Name',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'family' => array(
                 'initiallyVisible' => true,
-                'label' => 'Family',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'control' => array(
                 'initiallyVisible' => true,
-                'label' => 'Control',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'supplementalGuidance' => array(
                 'initiallyVisible' => false,
-                'label' => 'Supplemental Guidance',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'externalReferences' => array(
                 'initiallyVisible' => false,
-                'label' => 'External References',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'priorityCode' => array(
                 'enumValues' => $this->getEnumValues('priorityCode'),
                 'initiallyVisible' => false,
-                'label' => 'Priority Code',
                 'sortable' => true,
                 'type' => 'enum'
             ),
@@ -93,7 +86,7 @@ class SecurityControlTable extends Fisma_Doctrine_Table implements Fisma_Search_
             ),
             'published' => array(
                 'initiallyVisible' => true,
-                'label' => 'Published',
+                'label' => 'Published?',
                 'join' => array(
                     'model' => 'SecurityControlCatalog',
                     'relation' => 'Catalog',

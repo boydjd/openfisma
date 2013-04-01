@@ -1,4 +1,5 @@
 <?php
+$this->table = $this->finding->getTable();
 echo $this->escape($this->securityControlSearchButton, 'none')
 ?>
 
@@ -6,8 +7,8 @@ echo $this->escape($this->securityControlSearchButton, 'none')
     <?php echo $this->escape($this->form, 'none'); ?>
 </div>
 
-<?php 
-Fisma_Format_Section::startSection('Security Control');
+<?php
+Fisma_Format_Section::startSection($this->getColumn('securityControlId'));
 ?>
 
 <div id="securityControlContainer">

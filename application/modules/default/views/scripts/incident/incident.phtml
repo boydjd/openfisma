@@ -1,12 +1,13 @@
+<?php $this->table = Doctrine::getTable('Incident'); ?>
 <div class="column66 left">
     <?php Fisma_Format_Section::startSection('Summary'); ?>
         <table class="keyValues">
             <tr>
-                <td>Status:</td>
+                <th scope='row'><?php $this->column('status'); ?>:</th>
                 <td><?php echo $this->escape($this->incident['status']); ?></td>
             </tr>
             <tr>
-                <td>Category:</td>
+                <th scope='row'><?php $this->column('categoryId'); ?>:</th>
                 <td>
                     <span name="incident[categoryId]"
                          id="categoryId"
@@ -29,7 +30,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Severity Level:</td>
+                <th scope='row'><?php $this->column('severityLevel'); ?>:</th>
                 <td>
                     <span id="severityLevel"
                         <?php if ($this->updateIncidentPrivilege): ?>
@@ -48,7 +49,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Organization/System:</td>
+                <th scope='row'><?php $this->column('organizationId'); ?>:</th>
                 <td>
                     <span id="organization"
                           type="select"
@@ -74,7 +75,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Parent Organization:</td>
+                <th scope='row'><?php $this->column('denormalizedParentOrganizationId'); ?>:</th>
                 <td>
                     <span id="parentOrganization">
                         <?php if (isset($this->incident['ParentOrganization'])): ?>
@@ -96,7 +97,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Source:</td>
+                <th scope='row'><?php $this->column('source'); ?>:</th>
                 <td>
                     <span id="source"
                         <?php if ($this->updateIncidentPrivilege): ?>
@@ -115,7 +116,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Impact:</td>
+                <th scope='row'><?php $this->column('impact'); ?>:</th>
                 <td>
                     <span id="impact"
                         <?php if ($this->updateIncidentPrivilege): ?>
@@ -134,7 +135,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Response Strategies:</td>
+                <th scope='row'><?php $this->column('denormalizedResponseStrategies'); ?>:</th>
                 <td>
                     <span id="responseStrategies"
                         <?php if ($this->updateIncidentPrivilege): ?>
@@ -156,7 +157,7 @@
                 </td>
             </tr>
             <tr>
-                <td>PII Involved:</td>
+                <th scope='row'><?php $this->column('piiInvolved'); ?>:</th>
                 <td>
                     <div name="incident[piiInvolved]"
                          id="piiInvolved"
@@ -178,9 +179,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->updateIncidentPrivilege):
-        Fisma_Format_Section::startSection('Description', 'additionalInfo');
+        Fisma_Format_Section::startSection($this->getColumn('additionalInfo'), 'additionalInfo');
     else:
-        Fisma_Format_Section::startSection('Description');
+        Fisma_Format_Section::startSection($this->getColumn('additionalInfo'));
     endif;
     ?>
         <div name="incident[additionalInfo]" id="additionalInfo" type="textarea">
@@ -189,9 +190,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->updateIncidentPrivilege):
-        Fisma_Format_Section::startSection('Timeline', 'actionsTaken');
+        Fisma_Format_Section::startSection($this->getColumn('actionsTaken'), 'actionsTaken');
     else:
-        Fisma_Format_Section::startSection('Timeline');
+        Fisma_Format_Section::startSection($this->getColumn('actionsTaken'));
     endif;
     ?>
         <div name="incident[actionsTaken]" id="actionsTaken" type="textarea">
@@ -202,7 +203,7 @@
     <?php Fisma_Format_Section::startSection('Attacker Details'); ?>
         <table class="keyValues">
             <tr>
-                <td>Source IP:</td>
+                <th scope='row'><?php $this->column('sourceIp'); ?></th>
                 <td>
                     <div name="incident[sourceIp]"
                          id="sourceIp"
@@ -220,7 +221,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Source Description:</td>
+                <th scope='row'><?php $this->column('sourceAdditional'); ?></th>
                 <td>
                     <div name="incident[sourceAdditional]"
                          id="sourceAdditional"
@@ -243,10 +244,10 @@
     <?php Fisma_Format_Section::startSection('Personally Identifiable Information'); ?>
         <table class="keyValues">
         <?php if ('YES' != $this->incident['piiInvolved']): ?>
-            <tr><th colspan="2">No PII reported in this incident.</th></tr>
+            <tr><td colspan="2">No PII reported in this incident.</td></tr>
         <?php else: ?>
             <tr>
-                <td>Description:</td>
+                <th scope='row'><?php $this->column('piiAdditional'); ?>:</th>
                 <td>
                     <div name="incident[piiAdditional]"
                          id="piiAdditional"
@@ -264,7 +265,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Mobile Media Involved:</td>
+                <th scope='row'><?php $this->column('piiMobileMedia'); ?>:</th>
                 <td>
                     <div name="incident[piiMobileMedia]"
                          id="piiMobileMedia"
@@ -283,7 +284,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Media Type:</td>
+                <th scope='row'><?php $this->column('piiMobileMediaType'); ?>:</th>
                 <td>
                     <div name="incident[piiMobileMediaType]"
                          id="piiMobileMediaType"
@@ -302,7 +303,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Encrypted:</td>
+                <th scope='row'><?php $this->column('piiEncrypted'); ?>:</th>
                 <td>
                     <div name="incident[piiEncrypted]"
                          id="piiEncrypted"
@@ -321,7 +322,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Authorities Contacted:</td>
+                <th scope='row'><?php $this->column('piiAuthoritiesContacted'); ?>:</th>
                 <td>
                     <div name="incident[piiAuthoritiesContacted]"
                          id="piiAuthoritiesContacted"
@@ -340,7 +341,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Police Report Filed:</td>
+                <th scope='row'><?php $this->column('piiPoliceReport'); ?>:</th>
                 <td>
                     <div name="incident[piiPoliceReport]"
                          id="piiPoliceReport"
@@ -359,7 +360,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Individual Count:</td>
+                <th scope='row'><?php $this->column('piiIndividualsCount'); ?>:</th>
                 <td>
                     <div name="incident[piiIndividualsCount]"
                          id="piiIndividualsCount"
@@ -377,7 +378,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Individuals Notified:</td>
+                <th scope='row'><?php $this->column('piiIndividualsNotified'); ?>:</th>
                 <td>
                     <div name="incident[piiIndividualsNotified]"
                          id="piiIndividualsNotified"
@@ -396,7 +397,7 @@
                 </td>
             </tr>
             <tr>
-                <td>PII in Shipment:</td>
+                <th scope='row'><?php $this->column('piiShipment'); ?>:</th>
                 <td>
                     <div name="incident[piiShipment]"
                          id="piiShipment"
@@ -415,7 +416,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Shipment Company:</td>
+                <th scope='row'><?php $this->column('piiShipmentSenderCompany'); ?>:</th>
                 <td>
                     <div name="incident[piiShipmentSenderCompany]"
                          id="piiShipmentSenderCompany"
@@ -433,7 +434,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Shipping Company Contacted:</td>
+                <th scope='row'><?php $this->column('piiShipmentSenderContacted'); ?>:</th>
                 <td>
                     <div name="incident[piiShipmentSenderContacted]"
                          id="piiShipmentSenderContacted"
@@ -452,7 +453,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Shipment Timeline:</td>
+                <th scope='row'><?php $this->column('piiShipmentTimeline'); ?>:</th>
                 <td>
                     <div name="incident[piiShipmentTimeline]"
                          id="piiShipmentTimeline"
@@ -470,7 +471,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Shipment Tracking Numbers:</td>
+                <th scope='row'><?php $this->column('piiShipmentTrackingNumbers'); ?>:</th>
                 <td>
                     <div name="incident[piiShipmentTrackingNumbers]"
                          id="piiShipmentTrackingNumbers"
@@ -496,7 +497,7 @@
     <?php Fisma_Format_Section::startSection('Dates'); ?>
         <table class="keyValues">
             <tr>
-                <td>Occurred:</td>
+                <th scope='row'><?php $this->column('incidentDate'); ?>:</th>
                 <td title='UTC: <?php echo $this->escape($this->incidentDateTime); ?>'>
                     <span id="occurred"
                         <?php if ($this->updateIncidentPrivilege): ?>
@@ -511,19 +512,19 @@
                 </td>
             </tr>
             <tr>
-                <td>Reported:</td>
+                <th scope='row'><?php $this->column('reportTs'); ?>:</th>
                 <td title='UTC: <?php echo $this->escape($this->createDateTime); ?>'>
                     <?php echo $this->escape($this->createdDateTimeLocal); ?>
                 </td>
             </tr>
             <tr>
-                <td>Updated:</td>
+                <th scope='row'><?php $this->column('modifiedTs'); ?>:</th>
                 <td title='UTC: <?php echo $this->escape($this->updateTs); ?>'>
                     <?php echo $this->escape($this->updateTsLocal); ?>
                 </td>
             </tr>
             <?php if (!empty($this->incident['closedTs'])): ?><tr>
-                <td>Resolved:</td>
+                <th scope='row'><?php $this->column('closedTs'); ?>:</th>
                 <td title='UTC: <?php echo $this->escape($this->closedTs); ?>'>
                     <?php echo $this->escape($this->closedTsLocal); ?>
                 </td>
@@ -534,7 +535,7 @@
     <?php Fisma_Format_Section::startSection('People'); ?>
         <table class="keyValues">
             <tr>
-                <td>Reporter:</td>
+                <th scope='row'><Reporter:</th>
                 <td><span id="reportingUser"
                     type="autocomplete"
                     xhr="/user/autocomplete/format/json"
@@ -563,7 +564,7 @@
                 </td>
             </tr>
             <tr>
-                <td><?php echo $this->escape($this->translate('Incident_Point_of_Contact')); ?>:</td>
+                <th scope='row'><?php $this->column('pocId'); ?>:</th>
                 <td><span id="pointOfContact"
                     type="autocomplete"
                     xhr="/user/autocomplete/format/json"
@@ -597,7 +598,7 @@
     <?php if (!isset($this->incident['ReportingUser'])): Fisma_Format_Section::startSection('Reported By'); ?>
         <table class="keyValues">
             <tr>
-                <td>First Name:</td>
+                <th scope='row'><First Name:</th>
                 <td>
                     <div name="incident[reporterFirstName]"
                          id="reporterFirstName"
@@ -611,7 +612,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Last Name:</td>
+                <th scope='row'><>Last Name:</th>
                 <td>
                     <div name="incident[reporterLastName]"
                          id="reporterLastName"
@@ -625,7 +626,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Organization:</td>
+                <th scope='row'><Organization:</th>
                 <td>
                     <div name="incident[reporterOrganization]"
                          id="reporterOrganization"
@@ -643,7 +644,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Address 1:</td>
+                <th scope='row'>Address 1:</th>
                 <td>
                     <div name="incident[reporterAddress1]"
                          id="reporterAddress1"
@@ -661,7 +662,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Address 2:</td>
+                <th scope='row'>Address 2:</th>
                 <td>
                     <div name="incident[reporterAddress2]"
                          id="reporterAddress2"
@@ -679,7 +680,7 @@
                 </td>
             </tr>
             <tr>
-                <td>City:</td>
+                <th scope='row'>City:</th>
                 <td>
                     <div name="incident[reporterCity]"
                          id="reporterCity"
@@ -693,7 +694,7 @@
                 </td>
             </tr>
             <tr>
-                <td>State:</td>
+                <th scope='row'>State:</th>
                 <td>
                     <div name="incident[reporterState]"
                          id="reporterState"
@@ -707,7 +708,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Zip:</td>
+                <th scope='row'>Zip:</th>
                 <td>
                     <div name="incident[reporterZip]"
                          id="reporterZip"
@@ -721,7 +722,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Phone:</td>
+                <th scope='row'>Phone:</th>
                 <td>
                     <div name="incident[reporterPhone]"
                          id="reporterPhone"
@@ -756,7 +757,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Email:</td>
+                <th scope='row'>Email:</th>
                 <td>
                     <div name="incident[reporterEmail]"
                          id="reporterEmail"
@@ -774,7 +775,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Reported from IP:</td>
+                <th scope='row'>Reported from IP:</th>
                 <td>
                     <?php echo $this->escape($this->incident['reporterIp']); ?>
                 </td>
@@ -785,7 +786,7 @@
     <?php Fisma_Format_Section::startSection('Location'); ?>
         <table class="keyValues">
             <tr>
-                <td>Building:</td>
+                <th scope='row'>Building:</th>
                 <td>
                     <div name="incident[locationBuilding]"
                          id="locationBuilding"
@@ -803,7 +804,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Room:</td>
+                <th scope='row'>Room:</th>
                 <td>
                     <div name="incident[locationRoom]"
                          id="locationRoom"
@@ -821,7 +822,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Host:</td>
+                <th scope='row'>Host:</th>
                 <td>
                     <div name="incident[hostName]"
                          id="hostName"
@@ -839,7 +840,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Host IP:</td>
+                <th scope='row'>Host IP:</th>
                 <td>
                     <div name="incident[hostIp]"
                          id="hostIp"
@@ -857,7 +858,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Host OS:</td>
+                <th scope='row'>Host OS:</th>
                 <td>
                     <div name="incident[hostOs]"
                          id="hostOs"
@@ -876,7 +877,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Host Description:</td>
+                <th scope='row'>Host Description:</th>
                 <td>
                     <div name="incident[hostAdditional]"
                          id="hostAdditional"

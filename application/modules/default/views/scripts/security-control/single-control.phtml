@@ -1,33 +1,34 @@
+<?php $this->table = $this->securityControl->getTable(); ?>
 <table class="keyValues">
     <tr>
-        <td width="200">
+        <th scope='row' width="200">
             <div>
-                ID:
+                <?php $this->column('code', $this); ?>:
             </div>
-        </td>
+        </th>
         <td>
             <?php echo $this->escape($this->securityControl->code); ?>
         </td>
     </tr>
     <tr>
-        <td>Catalog: </td>
+        <th scope='row'><?php $this->column('catalogId', $this); ?>:</th>
         <td><?php echo $this->escape($this->securityControl->Catalog->name)?></td>
     </tr>
     <tr>
-        <td>Category:</td>
+        <th scope='row'><?php $this->column('family', $this); ?>:</th>
         <td><?php echo $this->escape($this->securityControl->family)?></td>
     </tr>
     <tr>
-        <td>Name:</td>
+        <th scope='row'><?php $this->column('name', $this); ?>:</th>
         <td><?php echo $this->escape($this->securityControl->name)?></td>
     </tr>
     <tr>
-        <td>Description:</td>
+        <th scope='row'><?php $this->column('control', $this); ?>:</th>
         <td><?php echo $this->escape($this->securityControl->control, 'none')?></td>
     </tr>
     <?php if (!empty($this->securityControl->Enhancements)): ?>
     <tr>
-        <td>Enhancements:</td>
+        <th scope='row'>Enhancements:</th>
         <td>
             <ol>
             <?php foreach ($this->securityControl->Enhancements as $enhancement): ?>
@@ -39,7 +40,7 @@
     <?php endif; ?>
     <?php if (!empty($this->securityControl->supplementalGuidance)): ?>
     <tr>
-        <td>Guidance:</td>
+        <th scope='row'><?php $this->column('supplementalGuidance', $this); ?>:</th>
         <td>
             <?php echo $this->escape($this->securityControl->supplementalGuidance, 'none'); ?>
         </td>
@@ -47,7 +48,7 @@
     <?php endif; ?>
     <?php if (!empty($this->securityControl->externalReferences)): ?>
     <tr>
-        <td>References:</td>
+        <th scope='row'><?php $this->column('externalReferences', $this); ?>:</th>
         <td>
             <?php echo $this->escape($this->securityControl->externalReferences); ?>
         </td>
@@ -55,14 +56,14 @@
     <?php endif; ?>
     <?php if (!empty($this->securityControl->priorityCode)): ?>
     <tr>
-        <td>Priority:</td>
+        <th scope='row'><?php $this->column('priorityCode', $this); ?>:</th>
         <td>
             <?php echo $this->escape($this->securityControl->priorityCode); ?>
         </td>
     </tr>
     <?php endif; ?>
     <tr>
-        <td>Low Baseline:</td>
+        <th scope="row">Low Baseline:</th>
         <td>
             <?php
             if ('LOW' == $this->securityControl->controlLevel):
@@ -85,7 +86,7 @@
         </td>
     </tr>
     <tr>
-        <td>Moderate Baseline:</td>
+        <th scope="row">Moderate Baseline:</th>
         <td>
             <?php
             if ('LOW' == $this->securityControl->controlLevel ||
@@ -112,7 +113,7 @@
         </td>
     </tr>
     <tr>
-        <td>High Baseline:</td>
+        <th scope='row'>High Baseline:</th>
         <td>
             <?php
             if ('LOW' == $this->securityControl->controlLevel ||

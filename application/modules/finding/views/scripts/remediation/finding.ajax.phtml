@@ -1,5 +1,6 @@
 <?php
     $finding = $this->finding;
+    $this->table = $finding->getTable();
     $orgId = $finding->Organization->nickname;
     if (!$optionalFields = Fisma::configuration()->getConfig('optionalFields')) {
         $optionalFields = array();
@@ -12,7 +13,7 @@
         <table class="keyValues">
         <?php if (in_array('legacyFindingKey', $optionalFields)): ?>
             <tr>
-                <td>Legacy Finding Key:</td>
+                <th scope='row'><?php $this->column('legacyFindingKey'); ?>:</th>
                 <td>
                     <span
                         <?php if ($this->isLegacyFindingKeyEditable): ?>
@@ -29,7 +30,7 @@
         <?php endif; ?>
         <?php if (in_array('findingAuditYear', $optionalFields)): ?>
             <tr>
-                <td>Audit Year:</td>
+                <th scope='row'><?php $this->column('auditYear'); ?>:</th>
                 <td>
                     <span
                         <?php if ($this->isAuditYearEditable): ?>
@@ -45,7 +46,7 @@
             </tr>
         <?php endif; ?>
             <tr>
-                <td>Source:</td>
+                <th scope='row'><?php $this->column('sourceId'); ?>:</th>
                 <td>
                     <span id="source"
                           type="select"
@@ -81,10 +82,10 @@
                 </td>
             </tr>
             <tr>
-                <td><?php echo $this->escape($this->translate('Finding_Status')); ?></td>
+                <th scope='row'><?php $this->column('isResolved'); ?>:</th>
                 <td><?php echo $this->escape(($finding->isResolved) ? 'YES' : 'NO'); ?></td>
             <tr>
-                <td>Workflow Step:</td>
+                <th scope='row'><?php $this->column('currentStepId'); ?>:</th>
                 <td>
                     <span title='<?php echo $this->escape($step->Workflow->description); ?>'>
                         <?php echo $this->escape($step->Workflow->name); ?>
@@ -106,7 +107,7 @@
             </tr>
         <?php if (!$finding->isResolved && !empty($finding->currentEcd)): ?>
             <tr>
-                <td>ECD:</td>
+                <th scope='row'><?php $this->column('currentEcd'); ?>:</th>
                 <td><?php
                     $currentEcd = new Zend_Date($finding->currentEcd, Fisma_Date::FORMAT_DATE);
                     $currentEcd->setTimezone(CurrentUser::getAttribute('timezone'));
@@ -123,11 +124,7 @@
             </tr>
         <?php endif; ?>
             <tr>
-                <td>
-                    <div>
-                        Organization/System:
-                    </div>
-                </td>
+                <th scope='row'><?php $this->column('responsibleOrganizationId'); ?>:</th>
                 <td>
                     <span id="organization"
                           type="select"
@@ -162,7 +159,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Parent Organization:</td>
+                <th scope='row'><?php $this->column('denormalizedParentOrganizationId'); ?>:</th>
                 <td>
                     <span id="parentOrganization">
                         <?php if (!empty($this->finding->denormalizedParentOrganizationId)): ?>
@@ -187,9 +184,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->isDescriptionEditable):
-        Fisma_Format_Section::startSection('Description', 'finding_description');
+        Fisma_Format_Section::startSection($this->getColumn('description'), 'finding_description');
     else:
-        Fisma_Format_Section::startSection('Description');
+        Fisma_Format_Section::startSection($this->getColumn('description'));
     endif; ?>
         <div name="finding[description]" id="finding_description" type="textarea" rows="3" cols="160">
             <?php echo $this->escape($finding->description, 'none'); ?>
@@ -197,9 +194,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->isRecommendationEditable):
-        Fisma_Format_Section::startSection('Recommendation', 'recommendation');
+        Fisma_Format_Section::startSection($this->getColumn('recommendation'), 'recommendation');
     else:
-        Fisma_Format_Section::startSection('Recommendation');
+        Fisma_Format_Section::startSection($this->getColumn('recommendation'));
     endif; ?>
         <div name="finding[recommendation]" id="recommendation" type="textarea" rows="3" cols="160">
             <?php echo $this->escape($finding->recommendation, 'none'); ?>
@@ -211,15 +208,15 @@
     <?php Fisma_Format_Section::startSection('Dates'); ?>
         <table class="keyValues">
             <tr>
-                <td>Discovered:</td>
+                <th scope='row'><?php $this->column('discoveredDate'); ?>:</th>
                 <td><?php echo $this->escape($this->discoveredDate)?></td>
             </tr>
             <tr>
-                <td>Created:</td>
+                <th scope='row'>Created Date:</th>
                 <td><?php echo $this->escape($this->createdTs)?></td>
             </tr>
             <?php if (!is_null($finding->closedTs)): ?><tr>
-                <td>Resolved:</td>
+                <th scope='row'><?php $this->column('closedTs'); ?>:</th>
                 <td><?php echo $this->escape($this->closedTs); ?></td>
             </tr><?php endif; ?>
         </table>
@@ -228,7 +225,7 @@
     <?php Fisma_Format_Section::startSection('People'); ?>
         <table class="keyValues">
             <tr>
-                <td>Creator:</td>
+                <th scope='row'><?php $this->column('createdByUserId'); ?>:</th>
                 <td>
                     <?php echo $this->escape(
                         $this->userInfo($finding->CreatedBy->displayName, $finding->CreatedBy->id),
@@ -237,7 +234,7 @@
                 </td>
             </tr>
             <tr>
-                <td><?php echo $this->escape($this->translate('Finding_Point_of_Contact')); ?>:</td>
+                <th scope='row'><?php $this->column('pocId'); ?>:</th>
                 <td class="autocomplete-width"><span
                     id="pointOfContact"
                     type="autocomplete"

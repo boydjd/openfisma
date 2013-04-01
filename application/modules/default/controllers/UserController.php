@@ -68,7 +68,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $form = Fisma_Zend_Form_Manager::loadForm('user');
         $fieldsToOmit = array(
             'password', 'confirmPassword', 'generate_password', 'role', 'groups', 'locked', 'lockReason', 'lockTs',
-            'comment', 'reportingOrganizationId', 'mustResetPassword', 'lookup', 'separator', 'username', 'published'
+            'reportingOrganizationId', 'mustResetPassword', 'lookup', 'separator', 'username', 'published'
         );
 
         foreach ($fieldsToOmit as $field) {
@@ -167,10 +167,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $subject->lockAccount(User::LOCK_TYPE_MANUAL);
                 unset($values['locked']);
                 unset($values['lockTs']);
-
-                if (!empty($values['comment'])) {
-                    $subject->getComments()->addComment($values['comment']);
-                }
             } elseif (!$values['locked'] && $subject->locked) {
                 $subject->unlockAccount();
                 unset($values['locked']);

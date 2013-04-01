@@ -9,7 +9,7 @@ Finding:
             comment: The date when the finding was discovered. This is self-reported by users
             extra:
                 auditLog: true
-                logicalName: Date Discovered
+                logicalName: Discovered Date
         auditYear:
             type: string(4)
             comment: The latest audit year of the finding
@@ -22,12 +22,12 @@ Finding:
             type: timestamp
             comment: The timestamp when this finding was closed
             extra:
-                logicalName: Closed Date
+                logicalName: Resolved Date
         nextDueDate:
             type: date
             comment: The deadline date for the next action that needs to be taken on this finding. After this date, the finding is considered to be overdue.
             extra:
-                logicalName: Next Action Due Date
+                logicalName: Workflow Due Date
 
         legacyFindingKey:
             type: string(255)
@@ -62,7 +62,7 @@ Finding:
                 purify: html
                 auditLog: true
                 notify: true
-                logicalName: Finding Description
+                logicalName: Description
                 requiredPrivilege: update_description
             comment: Description of the finding
         recommendation:
@@ -122,7 +122,7 @@ Finding:
                 purify: html
                 auditLog: true
                 notify: true
-                logicalName: Description of Threat Source
+                logicalName: Threat Description
                 requiredPrivilege: update_threat
             comment: Description of the threat source which affects this finding
         threatLevel:
@@ -140,7 +140,7 @@ Finding:
                 purify: html
                 notify: true
                 auditLog: true
-                logicalName: Description of Countermeasures
+                logicalName: Countermeasures Description
                 requiredPrivilege: update_countermeasures
             comment: The countermeasures in place against the threat source
         countermeasuresEffectiveness:
@@ -150,7 +150,7 @@ Finding:
             extra:
                 auditLog: true
                 notify: true
-                logicalName: Effectiveness of Countermeasures
+                logicalName: Countermeasures Effectiveness
                 requiredPrivilege: update_countermeasures
             comment: A subjective assessment of the effectivness of the in-place countermeasures against the described threat
         residualRisk:
@@ -179,7 +179,7 @@ Finding:
                 class: Organization
                 field: name
                 auditLog: true
-                logicalName: Organization
+                logicalName: Organization/System
                 requiredPrivilege: update_assignment
         denormalizedParentOrganizationId:
             type: integer
@@ -210,6 +210,8 @@ Finding:
         createdByUserId:
             type: integer
             comment: Foreign key to the user who created this finding
+            extra:
+                logicalName: Creator
         pocId:
             type: integer
             extra:
@@ -223,6 +225,8 @@ Finding:
         uploadId:
             type: integer
             comment: Foreign key to the upload log
+            extra:
+                logicalName: Upload ID
 
     indexes:
         descriptionindex:
