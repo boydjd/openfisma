@@ -26,7 +26,8 @@
  */
 class View_Helper_GetColumn extends Zend_View_Helper_Abstract
 {
-    function getColumn($columnName, $view = null, $table = null) {
+    function getColumn($columnName, $view = null, $table = null)
+    {
         $view = ($view) ? $view : Zend_Layout::getMvcInstance()->getView();
         $table = ($table) ? $table : (isset($view->table) ? $view->table : null);
 
