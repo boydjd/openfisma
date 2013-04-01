@@ -124,10 +124,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                     $session->irDraft = serialize($incident);
                     $this->_redirect('/incident/review-report');
                 } else {
-                    $this->view->priorityMessenger($incident->getErrorStackAsString(), 'warning');
+                    $this->view->priorityMessenger($incident->getErrorStackAsString(), 'error');
                 }
             } else {
-                $this->view->priorityMessenger(Fisma_Zend_Form_Manager::getErrors($this->view->form), 'warning');
+                $this->view->priorityMessenger(Fisma_Zend_Form_Manager::getErrors($this->view->form), 'error');
             }
         }
     }
@@ -890,11 +890,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 $message .= 'All steps have been now completed and the incident has been marked as closed.';
             }
 
-            $this->view->priorityMessenger($message, 'notice');
+            $this->view->priorityMessenger($message, 'success');
         } catch (Fisma_Zend_Exception_User $e) {
-            $this->view->priorityMessenger($e->getMessage(), 'warning');
+            $this->view->priorityMessenger($e->getMessage(), 'error');
         } catch (Fisma_Doctrine_Behavior_Lockable_Exception $e) {
-            $this->view->priorityMessenger($e->getMessage(), 'warning');
+            $this->view->priorityMessenger($e->getMessage(), 'error');
         }
     }
 
@@ -1246,7 +1246,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $this->view->response = json_encode($response);
 
         if ($response->success) {
-            $this->view->priorityMessenger('Artifact uploaded successfully', 'notice');
+            $this->view->priorityMessenger('Artifact uploaded successfully', 'success');
         }
     }
 
@@ -1318,7 +1318,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                              . '.', 'notice');
             }
         } catch (Doctrine_Validator_Exception $e) {
-            $this->view->priorityMessenger($e->getMessage(), 'warning');
+            $this->view->priorityMessenger($e->getMessage(), 'error');
         }
 
         $this->_redirect("/incident/view/id/$id$fromSearchUrl");

@@ -93,7 +93,7 @@ Fisma.Remediation = {
         } else {
             var content = document.createElement('div');
             var warning = document.createElement('div');
-            warning.className = 'messageBox attention';
+            warning.className = 'messageBox well text-warning';
             var warn_message = 'WARNING: This action cannot be undone.';
             warning.appendChild(document.createTextNode(warn_message));
             content.appendChild(warning);

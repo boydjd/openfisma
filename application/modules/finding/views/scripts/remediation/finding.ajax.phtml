@@ -7,10 +7,10 @@
     }
     $step = $finding->CurrentStep;
 ?>
-
-<div class="column66 left">
+<div class='row-fluid'>
+<div class='span8'>
     <?php Fisma_Format_Section::startSection("Summary"); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
         <?php if (in_array('legacyFindingKey', $optionalFields)): ?>
             <tr>
                 <th scope='row'><?php $this->column('legacyFindingKey'); ?>:</th>
@@ -182,7 +182,6 @@
             </tr>
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
-
     <?php if ($this->isDescriptionEditable):
         Fisma_Format_Section::startSection($this->column('description', null, false), 'finding_description');
     else:
@@ -204,9 +203,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>
 
-<div class="column33 right">
+<div class='span4'>
     <?php Fisma_Format_Section::startSection('Dates'); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
             <tr>
                 <th scope='row'><?php $this->column('discoveredDate'); ?>:</th>
                 <td><?php echo $this->escape($this->discoveredDate)?></td>
@@ -223,7 +222,7 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php Fisma_Format_Section::startSection('People'); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
             <tr>
                 <th scope='row'><?php $this->column('createdByUserId'); ?>:</th>
                 <td>
@@ -339,5 +338,4 @@
         </ul>
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>
-
-<div class="clear"></div>
+</div>

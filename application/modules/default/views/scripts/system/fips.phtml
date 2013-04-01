@@ -2,7 +2,7 @@
 $this->table = $this->system->getTable();
 Fisma_Format_Section::startSection('Confidentiality');
 ?>
-<table class="keyValues">
+<table class="keyValues table-hover">
     <tr>
         <th scope='row'>Confidentiality:</th>
         <td>
@@ -59,7 +59,7 @@ Fisma_Format_Section::startSection('Confidentiality');
 Fisma_Format_Section::stopSection();
 Fisma_Format_Section::startSection('Integrity');
 ?>
-<table class="keyValues">
+<table class="keyValues table-hover">
     <tr>
         <th scope='row'>Integrity:</th>
         <td>
@@ -116,7 +116,7 @@ Fisma_Format_Section::startSection('Integrity');
 Fisma_Format_Section::stopSection();
 Fisma_Format_Section::startSection('Availability');
 ?>
-<table class="keyValues">
+<table class="keyValues table-hover">
     <tr>
         <th scope='row'>Availability:</th>
         <td>
@@ -173,7 +173,7 @@ Fisma_Format_Section::startSection('Availability');
 Fisma_Format_Section::stopSection();
 Fisma_Format_Section::startSection('FIPS-199 Security Categorization');
 ?>
-<table class="keyValues">
+<table class="keyValues table-hover">
     <tr>
         <th scope='row'><?php $this->column('fipsCategory'); ?>:</th>
         <td>

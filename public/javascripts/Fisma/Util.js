@@ -365,7 +365,7 @@ Fisma.Util = {
      * release (which would require diff'ing a lot of lines of code.)
      *
      * @param msg {String} the message to display
-     * @param model {String} either "info" or "warning" -- this affects the color scheme used to display the message
+     * @param model {String} "info/notice", "warning", "error", or "success" -- this affects the color scheme
      * @param clear {Boolean} If true, new message will replace existing message. If false, new message will be
      *              appended.
      */
@@ -384,10 +384,21 @@ Fisma.Util = {
                 messageBox.addMessage(msg);
             }
 
-            if (model === 'warning') {
-                messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN);
-            } else {
-                messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO);
+            switch (model) {
+                case 'warning':
+                    messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.WARN);
+                    break;
+                case 'error':
+                    messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.ERROR);
+                    break;
+                case 'success':
+                    messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.SUCCESS);
+                    break;
+                case 'info':
+                case 'notice':
+                default:
+                    messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO);
+                    break;
             }
 
             messageBox.show();
@@ -635,53 +646,52 @@ Fisma.Util = {
     },
 
     showInputDialog: function(title, query, callbacks, defaultValue) {
-        var Dom = YAHOO.util.Dom,
-            Event = YAHOO.util.Event,
-            Panel = YAHOO.widget.Panel,
-            contentDiv = document.createElement("div"),
-            errorDiv = document.createElement("div"),
-            form = document.createElement('form'),
-            textField = $('<input type="text"/>').get(0),
-            button = $('<button type="submit"/>').text('OK').get(0),
-            table = $('<table class="fisma_crud"><tbody><tr><td>' + query + ': </td><td></td><td></td></tr></tbody></table>');
-        table.appendTo(form);
-        $("td", table).get(1).appendChild(textField);
-        $("td", table).get(2).appendChild(button);
-        contentDiv.appendChild(errorDiv);
-        contentDiv.appendChild(form);
+        var header      = $('<h3/>')
+                            .text(title),
+            closeButton = $('<button/>', {'class': 'close', 'data-dismiss': 'modal', 'aria-hidden': 'true'})
+                            .html('&times'),
+            okButton    = $('<button/>', {'type': 'submit', 'class': 'btn'})
+                            .text('OK'),
+            queryString = $('<label/>', {'class': 'add-on inline', 'for': 'dialogInput'})
+                            .text(query),
+            textField   = $('<input/>', {'id': 'dialogInput', 'type': 'text', 'class': 'span3'})
+                            .val(defaultValue || ''),
+            fieldGroup  = $('<div/>', {'class': 'input-prepend input-append'})
+                            .append(queryString)
+                            .append(textField)
+                            .append(okButton),
+            errorDiv    = $('<div/>', {'class': 'text-error'}),
+            form        = $('<form/>')
+                            .append(fieldGroup)
+                            .submit(function(event) {
+                                if (callbacks['continue']) {
+                                    callbacks['continue'].apply(
+                                        form,
+                                        [
+                                            event,
+                                            {
+                                                panel: panel.get(0),
+                                                errorDiv: errorDiv.get(0),
+                                                textField: textField.get(0)
+                                            }
+                                        ]
+                                    );
+                                } else {
+                                    event.preventDefault();
+                                    panel.modal('hide');
+                                }
+                            }),
+            panel       = $('<div/>',
+                            {'class': 'modal hide fade', 'tabindex': '-1', 'role':'dialog', 'aria-hidden':'true'})
+                            .append($('<div/>', {'class': 'modal-header'}).append(closeButton).append(header))
+                            .append($('<div/>', {'class': 'modal-body'}).append(errorDiv).append(form))
+                            .on('shown', function() { textField.focus(); });
 
-        // Make Go button YUI widget
-        $(button).button();
-
-        // Prepare the panel
-        var panel = new Panel(Dom.generateId(), {modal: true});
-        panel.setHeader(title);
-        panel.setBody(contentDiv);
-        panel.render(document.body);
-        $(textField).focus();
-        panel.center();
-
-        // Add event listener
-        $(form).submit(function(event) {
-            if (callbacks['continue']) {
-                callbacks['continue'].apply(form, [event, {panel: panel, errorDiv: errorDiv, textField: textField}]);
-            } else {
-                event.preventDefault();
-                panel.hide();
-                panel.destroy();
-            }
-        });
         if (callbacks.cancel) {
-            panel.subscribe('hide', callbacks.cancel);
+            panel.on('hidden', callbacks.cancel);
         }
 
-        // Fill in default value if set
-        if (defaultValue !== undefined) {
-            textField.value = defaultValue;
-        }
-        // Show the panel
-        panel.show();
-        textField.focus();
+        panel.modal();
     },
 
     setDefaultTimezone: function(geoip) {

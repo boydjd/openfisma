@@ -2289,23 +2289,13 @@ Fisma.Chart = {
      * @return void
      */
     globalSettingUpdate : function (mouseEvent, chartUniqueId) {
-        // get this chart's GlobSettings menue
-        var settingsMenue = document.getElementById(chartUniqueId + 'GlobSettings');
-
-        // get all elements of this chart's GlobSettings menue
-        var settingOpts = settingsMenue.childNodes;
-
-        var x = 0;
-        for (x = 0; x < settingOpts.length; x++) {
-            var thisOpt = settingOpts[x];
-            if (thisOpt.nodeName === 'INPUT') {
-                if (thisOpt.type === 'checkbox') {
-                    Fisma.Chart.setGlobalSetting(thisOpt.id, thisOpt.checked);
-                } else {
-                    Fisma.Chart.setGlobalSetting(thisOpt.id, thisOpt.value);
-                }
+        $('#' + chartUniqueId + 'GlobSettings input').each(function() {
+            if (this.type === 'checkbox') {
+                Fisma.Chart.setGlobalSetting(this.id, this.checked);
+            } else {
+                Fisma.Chart.setGlobalSetting(this.id, this.value);
             }
-        }
+        });
 
         Fisma.Chart.redrawAllCharts();
     },

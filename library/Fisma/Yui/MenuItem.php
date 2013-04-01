@@ -57,6 +57,8 @@ class Fisma_Yui_MenuItem
      */
     public $target;
 
+    public $pull;
+
     /**
      * Performs initialization as default constructor
      *
@@ -66,11 +68,12 @@ class Fisma_Yui_MenuItem
      * @param string $target The target attribute of link.
      * @return void
      */
-    function __construct($itemTitle, $itemUrl, Fisma_Yui_MenuItem_OnClick $onclick = null, $target = null)
+    function __construct($itemTitle, $itemUrl, Fisma_Yui_MenuItem_OnClick $onclick = null, $target = null, $pull = null)
     {
         $this->text = $itemTitle;
         $this->url = $itemUrl;
         $this->onclick = $onclick;
         $this->target = $target;
+        $this->pull = $pull;
     }
 }

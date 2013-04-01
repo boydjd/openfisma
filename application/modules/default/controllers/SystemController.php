@@ -222,8 +222,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         if ($countSystemDoc > 0) {
             $msg = "Cannot convert this system to an organization because it has documents attached to it.";
 
-            $type = "warning";
-            $this->view->priorityMessenger($msg, 'warning');
+            $this->view->priorityMessenger($msg, 'error');
             $this->_redirect("/system/view/id/$systemId");
         }
 
@@ -233,7 +232,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 $form->getElement('orgType')->getValue()
             );
 
-            $this->view->priorityMessenger('Converted to organization successfully', 'notice');
+            $this->view->priorityMessenger('Converted to organization successfully', 'success');
             $this->_redirect("/organization/view/id/" . $organization->id);
         }
     }
@@ -487,7 +486,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                     $organization->save();
                 } else {
                     $msg = "Error while trying to save: <br />" . $organization->getErrorStackAsString();
-                    $type = "warning";
+                    $type = "error";
                 }
 
                 $system = $organization->System;
@@ -497,16 +496,16 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                     $system->save();
                 } else {
                     $msg = "Error while trying to save: <br />" . $system->getErrorStackAsString();
-                    $type = "warning";
+                    $type = "error";
                 }
             } catch (Doctrine_Exception $e) {
                 $msg = "Error while trying to save: " . $e->getMessage();
-                $type = "warning";
+                $type = "error";
             }
 
             if (empty($msg)) {
                 $msg = "System updated successfully.";
-                $type = "notice";
+                $type = "success";
             }
 
             $this->view->priorityMessenger($msg, $type);
@@ -673,7 +672,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->response = json_encode($response);
 
         if ($response->success) {
-            $this->view->priorityMessenger('Artifact uploaded successfully', 'notice');
+            $this->view->priorityMessenger('Artifact uploaded successfully', 'success');
         }
     }
 

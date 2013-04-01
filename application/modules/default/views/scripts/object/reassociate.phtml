@@ -1,7 +1,7 @@
 <?php if (!isset($this->error)): ?>
-    <div class='messageBox info'>The application has found <?php echo $this->escape($this->objects->count()); ?>
+    <div class='messageBox well text-info'>The application has found <?php echo $this->escape($this->objects->count()); ?>
     associated <?php echo $this->escape($this->associatedPlural); ?>.<br/>Please select a new destination.</div>
     <?php echo $this->escape($this->form, 'none'); ?>
 <?php else: ?>
-    <div class='messageBox warn'><?php echo $this->escape($this->error, 'none'); ?></div>
+    <div class='messageBox well text-error'><?php echo $this->escape($this->error, 'none'); ?></div>
 <?php endif; ?>

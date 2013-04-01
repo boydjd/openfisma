@@ -333,11 +333,12 @@ Fisma.Finding = {
                 $('#' + id).appendTo('#findingAnalystRight');
             });
         }
-        $(".column33, .column66")
+        $(".findingAnalystLeft, .findingAnalystRight")
             .sortable({
                 placeholder : 'ui-sortable-proxy',
                 update: function(event, ui) {
                     storage.set(event.target.id, $(event.target).sortable("toArray").join());
+
                 },
                 cancel: 'div.section'
             })
@@ -348,7 +349,7 @@ Fisma.Finding = {
 
         //collapsible
         $(".sectionHeader").filter(function(index){
-            return ($('span.ui-icon', this).length < 1);
+            return ($('span.ui-icon, img.chartGear', this).length < 1);
         })
             .prepend("<span class='ui-icon ui-icon-minusthick'></span>")
             .dblclick(function() {
@@ -370,43 +371,6 @@ Fisma.Finding = {
                     }
                 })
         ;
-
-        //layout switch
-        $('#toolbarRight').prepend($('#changeLayout'));
-        $('#menuLayoutSelect').buttonset();
-        $("#layoutLeft").click(function() {
-            $(".column33").removeClass('right').addClass('left');
-            $(".column66").removeClass('left').addClass('right');
-            storage.set('analystLayout', 'layoutLeft');
-        }).focus(function(e) {
-            $(this).parents('#changeLayout').addClass('active');
-        }).blur(function(e) {
-            $(this).parents('#changeLayout').removeClass('active');
-        });
-        $("#layoutRight").click(function() {
-            $(".column33").removeClass('left').addClass('right');
-            $(".column66").removeClass('right').addClass('left');
-            storage.set('analystLayout', 'layoutRight');
-        }).focus(function(e) {
-            $(this).parents('#changeLayout').addClass('active');
-        }).blur(function(e) {
-            $(this).parents('#changeLayout').removeClass('active');
-        });
-        var layout = storage.get('analystLayout');
-        if (layout) {
-            $('#' + layout).click();
-        }
-
-        //hide layout if not in Analyst view
-        if (Fisma.tabView) {
-            Fisma.tabView.subscribe('activeIndexChange', function(args) {
-                if (args.newValue === 0) {
-                    $('#changeLayout').show();
-                } else {
-                    $('#changeLayout').hide();
-                }
-            });
-        }
     },
 
     /**

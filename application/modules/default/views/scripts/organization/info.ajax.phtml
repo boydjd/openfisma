@@ -1,5 +1,5 @@
 <?php if ($organization = $this->organization): ?>
-    <table class="keyValues" style="background-color: white; width: 100%;">
+    <table class="keyValues table-hover" style="background-color: white; width: 100%;">
         <tr>
             <td>Type</td>
             <td>
@@ -47,7 +47,7 @@
     <?php if ($organization->description): echo $this->escape($organization->description, 'none'); endif; ?>
 <?php elseif ($system = $this->system): ?>
     <?php $organization = $system->Organization; ?>
-    <table class="keyValues" style="background-color: white; width: 100%;">
+    <table class="keyValues table-hover" style="background-color: white; width: 100%;">
         <tr>
             <td>Type</td>
             <td>
