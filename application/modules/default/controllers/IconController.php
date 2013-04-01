@@ -298,9 +298,9 @@ class IconController extends Fisma_Zend_Controller_Action_Object
                 Doctrine_Manager::connection()->rollback();
                 throw $e;
             }
-            $this->view->priorityMessenger("Icon deleted successfully");
+            $this->view->priorityMessenger("Icon deleted successfully", 'success');
         } else {
-            $this->view->priorityMessenger("There must be at least 1 icon.", "warning");
+            $this->view->priorityMessenger("There must be at least 1 icon.", "error");
         }
 
         $this->_redirect('/icon/manage');
@@ -355,12 +355,12 @@ class IconController extends Fisma_Zend_Controller_Action_Object
                     $icon->save();
                 }
 
-                $this->view->priorityMessenger("Icon created successfully");
+                $this->view->priorityMessenger("Icon created successfully", 'success');
             } catch (Exception $e) {
                 if ($e instanceof ImagickException) {
-                    $this->view->priorityMessenger("Uploading failed: the file format is not supported.", 'warning');
+                    $this->view->priorityMessenger("Uploading failed: the file format is not supported.", 'error');
                 } else if ($e instanceof Fisma_Zend_Exception_User) {
-                    $this->view->priorityMessenger($e->getMessage(), 'warning');
+                    $this->view->priorityMessenger($e->getMessage(), 'error');
                 }
             }
         }

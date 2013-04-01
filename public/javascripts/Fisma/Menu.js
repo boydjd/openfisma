@@ -48,13 +48,13 @@
                 "ID",
                 {
                     'continue': function(ev, obj) {
-                        YAHOO.util.Event.stopEvent(ev);
+                        ev.preventDefault();
                         var input = Number(obj.textField.value.trim());
                         if (isFinite(input) && input > 0) {
-                            obj.errorDiv.innerHTML = "Navigating to ID " + input + "...";
+                            $(obj.errorDiv).addClass('text-info').text("Navigating to ID " + input + "...");
                             window.location = param.controller + "/view/id/" + input;
                         } else { // input NaN
-                            obj.errorDiv.innerHTML = "Please enter a single, positive ID number.";
+                            $(obj.errorDiv).text("Please enter a single, positive ID number.");
                         }
                     },
                     'cancel': function(ev, obj) {

@@ -26,7 +26,7 @@
  */
 
 tinyMCE.init({
-    editor_deselector: "plaintext",
+    editor_deselector: /(plaintext|ckeditor)/,
     theme : "advanced",
     mode : "textareas",
     element_format : "html",

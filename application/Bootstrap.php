@@ -202,7 +202,7 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         $view->addHelperPath(Fisma::getPath('viewHelper'), 'View_Helper_');
         $view->addScriptPath(Fisma::getPath('application') . '/modules/default/views/scripts');
         $view->setEncoding('UTF-8');
-        $view->doctype('HTML4_STRICT');
+        $view->doctype('HTML5');
         // Make sure that we don't double encode
         $view->setEscape(array('Fisma', 'htmlentities'));
         $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');

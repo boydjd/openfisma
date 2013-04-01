@@ -116,7 +116,7 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
                 "Please associate them with other system types, or click " .
                 "<a href='#' onclick='Fisma.Util.triggerButton(\"toolbarReassociateButton\");return false;'>here</a> " .
                 "to quickly migrate all of them to another system type and try again.",
-                "warning"
+                "error"
             );
 
             $fromSearchParams = $this->_getFromSearchParams($this->_request);
@@ -125,7 +125,7 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
             $this->_redirect($this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl);
         } else {
             $systemType->delete();
-            $this->view->priorityMessenger("System Type deleted successfully");
+            $this->view->priorityMessenger("System Type deleted successfully", 'success');
 
             $this->_redirect($this->getBaseUrl() . '/list');
         }

@@ -1,9 +1,10 @@
 <?php $this->table = $this->organization->getTable(); ?>
-<div class="column66 left">
+<div class='row-fluid'>
+<div class='span8'>
 <?php
 Fisma_Format_Section::startSection('Summary');
 ?>
-<table class="keyValues">
+<table class="keyValues table-hover">
     <tr>
         <th scope='row'><?php $this->column('name'); ?>:</th>
         <td>
@@ -138,9 +139,9 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
 <?php Fisma_Format_Section::stopSection(); ?>
 </div>
 
-<div class="column33 right">
+<div class='span4'>
     <?php Fisma_Format_Section::startSection('Dates'); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
             <tr>
                 <th scope='row'><?php $this->column('createdTs'); ?>:</th>
                 <td>
@@ -172,7 +173,7 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             ), 'none'); ?>
         </div>
         <?php endif; ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
             <tr>
                 <th scope='row'><?php echo $this->escape(new Fisma_Yui_Tooltip(
                     'defaultPOC',
@@ -244,7 +245,7 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php Fisma_Format_Section::startSection('Unresolved Issues'); ?>
-        <table class='keyValues'>
+        <table class='keyValues table-hover'>
             <tr>
                 <th scope='row'>Findings:</th>
                 <td><a href='/finding/remediation/list?q=/isResolved/booleanNo/organization/textExactMatch/<?php
@@ -264,4 +265,5 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
                 ?>'><?php echo $this->escape($this->vulnerabilityCount); ?></a></td>
             </tr>
     <?php Fisma_Format_Section::stopSection(); ?>
+</div>
 </div>

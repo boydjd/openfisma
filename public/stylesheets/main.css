@@ -64,10 +64,15 @@ ul li {
     text-align: left;
 }
 
+.nav li {
+    list-style: none;
+    margin-left: 0px;
+}
+
 ol li {
     display: list-item;
     list-style: decimal outside;
-   margin-left: 35px;
+    margin-left: 35px;
     text-align: left;
 }
 
@@ -101,7 +106,7 @@ body {
     margin: 0;
 }
 
-div#mainmenu ul li a span {
+div#mainmenu ul li a span, div#mainmenu a.brand span {
     padding-left: 20px;
     line-height: 16px;
     background-size: contain;
@@ -162,21 +167,6 @@ div#mainmenu span.whatsnew {
     background-image: url('/images/whatsnew.png');
 }
 
-div#mainmenu  > div > ul > li:first-child > a {
-    padding-right: 0px;
-}
-
-div#mainmenu li.currentModule {
-    background-color: #B3D4FF;
-}
-
-/* Styling for the menubar. The min-height reserves the space required for the menubar while it loads. */
-div#menubar {
-    clear: both;
-    font-weight: bold;
-    background-color: #d3d3d3;
-}
-
 a[target=_blank] {
     padding-right: 20px;
     background-image: url('/images/external_link.png');
@@ -218,21 +208,28 @@ div.externalMediaMarking {
 
 /* The content area is the middle of the page in between the header and the footer */
 div#content {
-    margin: 8px;
+    margin: 0px 8px 8px 8px;
 }
 
 /* Sections are used to divide long pages up into separate and distinct content blocks. */
 div.sectionHeader {
     margin-top: 10px;
     padding: 3px 8px;
-    background-color: #416ed7;
-    background-image: none !important;
-    text-shadow: none !important;
-    color: #fff;
     border: 1px solid #416ed7;
     border-bottom: none;
-    font-weight: bold;
     text-align: left;
+    font-weight: bold;
+    text-decoration: none !important;
+    text-shadow: none !important;
+    color: #ffffff;
+    background-color: #0081c2;
+    background-image: -moz-linear-gradient(top, #0088cc, #0077b3);
+    background-image: -webkit-gradient(linear, 0 0, 0 100%, from(#0088cc), to(#0077b3));
+    background-image: -webkit-linear-gradient(top, #0088cc, #0077b3);
+    background-image: -o-linear-gradient(top, #0088cc, #0077b3);
+    background-image: linear-gradient(to bottom, #0088cc, #0077b3);
+    background-repeat: repeat-x;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#ff0088cc', endColorstr='#ff0077b3', GradientType=0);
 }
 
 div.sectionHeader table {
@@ -469,14 +466,14 @@ table.fisma_crud td .longdesc {
 This class indicates that the item should have a tooltip associated with it.
 The tooltip itself is added with YUI.
 */
-span.tooltip {
+span.tooltipContainer {
     padding: 0px 2px 2px 22px;
     background: url(/images/tooltip.png) no-repeat;
     cursor: help;
     display: inline-block;
 }
 
-.noQuestionMark span.tooltip {
+span.tooltipContainer.noQuestionMark {
     padding: 0px 2px 2px 2px;
     background: none;
 }
@@ -654,8 +651,13 @@ form dl.zend_form dt, form dl.zend_form dd {
 }
 
 /* Style for displaying search from*/
-form .searchForm {
+form#searchForm {
     display: inline;
+    margin-bottom: 0px;
+}
+
+#searchForm input {
+    margin-bottom: 0px;
 }
 
 /* Date inputs have a calendar icon rendered on them */
@@ -901,6 +903,7 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
 
 .rowsPerPageInputBoxLabel {
     margin-left: 4px;
+    display: inline;
 }
 
 fieldset.uploadFileList {
@@ -939,9 +942,17 @@ fieldset.uploadFileList input {
     color: #444444;
 }
 
+.facetBox h1 {
+    font-size: 16px;
+}
+
+.facetBox h2 {
+    font-size: 14px;
+}
+
 .facetBox h1, .facetBox h2 {
     margin-bottom:4px;
-    color: #333333;
+    line-height: inherit;
 }
 
 .facetBox h1:first-child, .facetBox h1 + h2 {
@@ -1057,8 +1068,8 @@ table.custom-widget.no-border td {
 .ui-sortable-placeholder * { visibility: hidden; }
 .ui-sortable-proxy { margin-top:10px; height: 1.5em; line-height: 1.2em; background: #FFEB9C; }
 
-.searchBox img, .ui-button-text img {
-    vertical-align: middle;
+.searchBox img, .ui-button-text img, .btn img {
+    vertical-align: text-top;
 }
 
 .searchBox label {
@@ -1167,4 +1178,18 @@ div.workflowStep th[scope=row] {
 input[type=radio], input[type=checkbox] {
     margin-left: 4px;
     margin-right: 2px;
+}
+
+#header {
+    padding-top: 40px;
+}
+
+#header .navbar-fixed-top .navbar-inner {
+    padding-left: 20px;
+}
+
+.no-border, table.no-border th, table.no-border td {
+    border-right: none;
+    border-left: none;
+    border-bottom: none;
 }

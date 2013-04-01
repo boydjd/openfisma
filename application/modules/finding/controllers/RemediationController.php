@@ -479,18 +479,18 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 if ($ecd->isEarlier($date)) {
                     $error = 'Expected completion date has been set before the current date.'
                            . ' Make sure that this is correct.';
-                    $this->view->priorityMessenger($error, 'notice');
+                    $this->view->priorityMessenger($error, 'warning');
                 }
             } else {
                 $error = 'Expected completion date provided is not a valid date. Unable to update finding.';
-                $this->view->priorityMessenger($error, 'warning');
+                $this->view->priorityMessenger($error, 'error');
                 return;
             }
         }
 
         if (isset($findingData['threatLevel']) && $findingData['threatLevel'] === '') {
             $error = 'Threat Level is a required field.';
-            $this->view->priorityMessenger($error, 'warning');
+            $this->view->priorityMessenger($error, 'error');
             return;
         }
 
@@ -499,7 +499,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             $findingData['countermeasuresEffectiveness'] === ''
         ) {
             $error = 'Countermeasures Effectiveness is a required field.';
-            $this->view->priorityMessenger($error, 'warning');
+            $this->view->priorityMessenger($error, 'error');
             return;
         }
 
@@ -520,15 +520,14 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
             $this->_redirect("/finding/remediation/view/id/$id$fromSearchUrl");
         } catch (Fisma_Zend_Exception_User $e) {
-            $this->view->priorityMessenger($e->getMessage(), 'warning');
+            $this->view->priorityMessenger($e->getMessage(), 'error');
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollback();
             $message = "Error: Unable to update finding. ";
             if (Fisma::debug()) {
                 $message .= $e->getMessage();
             }
-            $model = 'warning';
-            $this->view->priorityMessenger($message, $model);
+            $this->view->priorityMessenger($message, 'error');
         }
     }
 
@@ -611,7 +610,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 throw new Fisma_Zend_Exception_User($errorMessages);
             }
         } catch (Fisma_Zend_Exception_User $e) {
-            $this->view->priorityMessenger($e->getMessage(), 'warning');
+            $this->view->priorityMessenger($e->getMessage(), 'error');
         }
 
         $this->_redirect("/finding/remediation/view/id/$id$fromSearchUrl");
@@ -717,7 +716,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             if ($e instanceof Fisma_Zend_Exception) {
                 $message = $e->getMessage();
             }
-            $this->view->priorityMessenger($message, 'warning');
+            $this->view->priorityMessenger($message, 'error');
             $this->_forward('view', null, null, array('id' => $id));
             return;
         }
@@ -1156,7 +1155,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         if (0 === $systemCount) {
             $message = "There are no organizations or systems to create findings for. "
                      . "Please create an organization or system first.";
-            $this->view->priorityMessenger($message, 'warning');
+            $this->view->priorityMessenger($message, 'error');
         }
     }
 

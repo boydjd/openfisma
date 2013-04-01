@@ -218,7 +218,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                     $parentOrg = Doctrine::getTable('Organization')->find($orgValues['parent']);
                     if ($parentOrg->getNode()->isDescendantOf($organization)) {
                         $msg = "Unable to save: " . $parentOrg->nickname . " can't be parent organization";
-                        $this->view->priorityMessenger($msg, 'warning');
+                        $this->view->priorityMessenger($msg, 'error');
 
                         return $objectId;
                     } else {
@@ -231,7 +231,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
 
-            $this->view->priorityMessenger("Unable to save: $errorString", 'warning');
+            $this->view->priorityMessenger("Unable to save: $errorString", 'error');
         }
 
         return $organization;
@@ -399,10 +399,10 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                     if ($organization->isValid(true)) {
                         $organization->save();
                         $msg  = 'The organization updated successfully';
-                        $type = 'notice';
+                        $type = 'success';
                     } else {
                         $msg  = "Error while trying to save: <br />" . $organization->getErrorStackAsString();
-                        $type = "warning";
+                        $type = "error";
                     }
 
                     $parent = $organization->getNode()->getParent();
@@ -414,16 +414,16 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                             $organization->getNode()->moveAsLastChildOf($newParent);
                         } else {
                             $msg  = "Error while trying to save: cannot move an organization into itself.";
-                            $type = 'warning';
+                            $type = 'error';
                         }
                     }
                 } catch (Doctrine_Exception $e) {
                     $msg  = "Error while trying to save: ";
                     $msg .= $e->getMessage();
-                    $type = 'warning';
+                    $type = 'error';
                 } catch (Fisma_Zend_Exception_User $e) {
                     $msg  = "Error while trying to save: " . $e->getMessage();
-                    $type = 'warning';
+                    $type = 'error';
                 }
 
                 $this->view->priorityMessenger($msg, $type);
@@ -720,7 +720,7 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                        . $plural
                        . ' associated with this organization.';
 
-                $this->view->priorityMessenger($msg, 'warning');
+                $this->view->priorityMessenger($msg, 'error');
                 $this->_redirect('/organization/view/id/' . $id);
             }
 
@@ -732,11 +732,11 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
                 $form->getElement('availability')->getValue()
             );
 
-            $this->view->priorityMessenger('Converted to system successfully', 'notice');
+            $this->view->priorityMessenger('Converted to system successfully', 'success');
             $this->_redirect('/system/view/oid/' . $id);
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-            $this->view->priorityMessenger("Unable to convert Organization to System:<br>$errorString", 'warning');
+            $this->view->priorityMessenger("Unable to convert Organization to System:<br>$errorString", 'error');
             $this->_redirect('/organization/view/id/' . $id);
         }
     }

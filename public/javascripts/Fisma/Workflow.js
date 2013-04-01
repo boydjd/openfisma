@@ -264,7 +264,7 @@ Fisma.Workflow = {
             {
                 'csrf': $('input[name=csrf]').val(),
                 'id': args.objectId,
-                'comment': $('textarea[name=stepComment]').val(),
+                'comment': CKEDITOR.instances.comment.getData(),
                 'expirationDate': $('input[name=stepExpirationDate]').val(),
                 'transitionName': args.transitionName
             },
@@ -294,7 +294,7 @@ Fisma.Workflow = {
                             '30' //default
                         );
                     } else {
-                        Fisma.Util.showAlertDialog(data.err);
+                        Fisma.Util.message(data.err, 'error');
                     }
                 } else {
                     $('#workflowTabContent').replaceWith(data);
@@ -324,7 +324,7 @@ Fisma.Workflow = {
             function(data) {
                 if (data.err) {
                     $(that).next('img').remove();
-                    Fisma.Util.showAlertDialog(data.err);
+                    Fisma.Util.message(data.err, 'error');
                 } else {
                     $('#workflowTabContent').replaceWith(data);
                 }
@@ -353,7 +353,7 @@ Fisma.Workflow = {
             function(data) {
                 if (data.err) {
                     $(that).next('img').remove();
-                    Fisma.Util.showAlertDialog(data.err);
+                    Fisma.Util.message(data.err, 'error');
                 } else {
                     $('#workflowTabContent').replaceWith(data);
                 }

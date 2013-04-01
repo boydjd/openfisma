@@ -1,5 +1,6 @@
 <button
 	id = '<?php echo $this->escape($this->id); ?>'
+	class = 'btn'
 	<?php if ($this->disabled): ?>disabled<?php endif; ?>
 >
 	<?php if ($this->imageUrl): ?><img src='<?php echo $this->escape($this->imageUrl); ?>' alt='' /><?php endif; ?>
@@ -8,7 +9,6 @@
 <script type='text/javascript'>
 $(function() {
 	$('#<?php echo $this->escape($this->id); ?>')
-		.button()
 	<?php if ($this->function): ?>
 		.click(function(e) {
 			e.preventDefault();

@@ -13,10 +13,10 @@
     <target name="-js.concat">
         <echo message="Concatenating JavaScript..."/>
         <concat destfile="${location.js}/combined.js" force="no">
-            <filelist dir="${location.js}" files="php.js,jstz.js,tiny_mce_config.js,moment.js,Fisma.js,jquery-min.js,jquery-ui-min.js,jquery-tinysort-min.js,jquery-timeentry-min.js,groupeddatatable.js,jstz-min.js,jquery-json-min.js"/>
-            <filelist dir="${location.js}" files="Fisma/Storage.js,Fisma/TreeTable.js"/>
-            <fileset dir="${location.js}/Fisma" includes="**/*.js" excludes="Storage.js,TreeTable.js"/>
+            <filelist dir="${location.js}" files="php.js,jstz.js,tiny_mce_config.js,groupeddatatable.js,jquery.js,jquery-ui.js,bootstrap.js,jquery-tinysort.js,jquery-timeentry.js,jquery-json.js,jquery-datatables.js,bootstrap-datatables.js,moment.js,Fisma.js"/>
             <fileset dir="${location.js}/jqPlot" includes="**/*.js"/>
+            <filelist dir="${location.js}/Fisma" files="Storage.js,PersistentStorage.js,Editable.js,TreeTable.js"/>
+            <fileset dir="${location.js}/Fisma" includes="**/*.js" excludes="Storage.js,PersistentStorage.js,Editable.js,TreeTable.js"/>
         </concat>
         <echo message="JavaScript concatenated."/>
     </target>
@@ -24,7 +24,7 @@
     <target name="-css.concat">
         <echo message="Concatenating stylesheets..."/>
         <concat destfile="${location.css}/combined.css" force="no">
-            <fileset dir="${location.css}" includes="**/*.css" excludes="**/*-min.css,ie6hacks.css,ie7hacks.css,ie8hacks.css,ie9hacks.css,install.css,login.css,print.css,combined.css,whatsNew.css"/>
+            <fileset dir="${location.css}" includes="**/*.css" excludes="**/*-min.css,bootstrap.css,ie6hacks.css,ie7hacks.css,ie8hacks.css,ie9hacks.css,install.css,login.css,print.css,combined.css,whatsNew.css,tinymce.css"/>
         </concat>
         <echo message="Stylesheets concatenated."/>
     </target>
@@ -46,7 +46,7 @@
     <target name="-css.minify" depends="-css.concat">
         <echo message="Minifying stylesheets..."/>
         <apply executable="java" parallel="false">
-            <fileset dir="${location.css}" includes="combined.css,login.css,print.css,*hacks.css"/>
+            <fileset dir="${location.css}" includes="combined.css,login.css,print.css,bootstrap.css,*hacks.css"/>
             <arg line="-jar"/>
             <arg path="bin/yuicompressor.jar"/>
             <arg line="--line-break 0"/>
@@ -61,7 +61,7 @@
     <target name="-js.clean">
         <echo message="Removing minified scripts..."/>
         <delete>
-            <fileset dir="${location.js}" includes="**/*-min.js" excludes="jquery*-min.js,jstz-min.js"/>
+            <fileset dir="${location.js}" includes="**/*-min.js"/>
         </delete>
         <delete>
             <filelist dir="${location.js}" files="combined.js"/>

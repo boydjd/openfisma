@@ -84,11 +84,10 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->byWorkflow = $byWorkflowQuery->execute();
 
         $byWorkflowStepQuery = Doctrine_Query::create()
-            ->select(
-                'COUNT(v.id) as count, IFNULL(ws.name, "Unassigned") as criteria, ' .
-                'CONCAT("<b>", IFNULL(w.name, "No "), " - ", ws.name, "</b><br/><br/>", ws.description) as tooltip, ' .
-                'v.currentStepId, w.id, ws.id'
-            )->from('Vulnerability v')
+            ->select('COUNT(v.id) as count, IFNULL(ws.name, "Unassigned") as criteria, ' .
+                     'CONCAT("<b>", ws.name, "</b><p>", ws.description, "</p>") as tooltip, ' .
+                     'f.currentStepId, w.id, ws.id')
+            ->from('Vulnerability v')
             ->leftJoin('v.CurrentStep ws')
             ->leftJoin('ws.Workflow w')
             ->groupBy('criteria')

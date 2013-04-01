@@ -87,38 +87,41 @@
                         <div
                             id="<?php echo $this->escape($this->chartId, 'none');?>GlobSettings"
                             style="text-align: left; ">
-                        <input type="checkbox" id="pointLabels" />
-                            <label for="pointLabels">
+                        <label for="pointLabels" class='checkbox'>
+                            <input type="checkbox" id="pointLabels" />
                                 Show data labels
-                            </label><br/>
-                        <input type="checkbox" id="pointLabelsOutline" class="hideFromIE" />
-                            <label for="pointLabelsOutline" class="hideFromIE">
+                        </label>
+                        <label for="pointLabelsOutline" class="hideFromIE checkbox">
+                            <input type="checkbox" id="pointLabelsOutline" class="hideFromIE" />
                                 Outline data labels
-                            </label class="hideFromIE"><br class="hideFromIE" />
-                        <input type="checkbox" id="barShadows" />
-                            <label for="barShadows">
+                        </label>
+                        <label for="barShadows" class='checkbox'>
+                            <input type="checkbox" id="barShadows" />
                                 Draw shadows behind bars
-                            </label><br/>
-                        <input type="textbox" id="barShadowDepth" value="3" style="width:10px" />
-                            <label for="barShadowDepth">
-                                Depth of shadows behind bars (in pixels)
-                            </label><br/>
-                        <input type="checkbox" id="dropShadows" />
-                            <label for="dropShadows">
+                        </label>
+                        <div class="input-prepend input-append">
+                            <label class="add-on" for="barShadowDepth" class='inline'>
+                                Depth of shadows behind bars:
+                            </label>
+                            <input type="textbox" id="barShadowDepth" value="3" class="span1" />
+                            <span class="add-on">px</span>
+                        </div>
+                        <label for="dropShadows" class='checkbox'>
+                            <input type="checkbox" id="dropShadows" />
                                 Draw shadows behind charts
-                            </label><br/>
-                        <input type="checkbox" id="gridLines"/>
-                            <label for="gridLines">
+                        </label>
+                        <label for="gridLines" class='checkbox'>
+                            <input type="checkbox" id="gridLines"/>
                                 Draw grid-lines
-                            </label><br/>
-                        <input type="checkbox" id="fadingEnabled" class="hideFromIE"/>
-                            <label for="fadingEnabled" class="hideFromIE">
+                        </label>
+                        <label for="fadingEnabled" class="hideFromIE checkbox">
+                            <input type="checkbox" id="fadingEnabled" class="hideFromIE"/>
                                 Enable fading effects
-                            </label><br class="hideFromIE" />
-                        <input type="checkbox" id="showDataTable"/>
-                            <label for="showDataTable">
+                        </label>
+                        <label for="showDataTable" class='checkbox'>
+                            <input type="checkbox" id="showDataTable"/>
                                 Show data table
-                            </label><br/>
+                        </label>
                         </div>
 
                         <div>
@@ -145,7 +148,7 @@
             </div>
         </div>
     </div>
-    <div class='clear'></div>    
+    <div class='clear'></div>
     <script type="text/javascript">
         var thisChartObjData = <?php echo $this->escape($this->chartParamArr, 'json'); ?>;
         Fisma.Chart.createJQChart(thisChartObjData);

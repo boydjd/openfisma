@@ -2,7 +2,10 @@ Finding:
     listeners: [IndexListener, NotificationListener]
 
     columns:
-        createdTs: timestamp
+        createdTs:
+            type: timestamp
+            extra:
+                logicalName: Created Date
 
         discoveredDate:
             type: date

@@ -112,7 +112,7 @@ div.findingAnalystLeft .yui-dt-col-displayTotal {
     width: 5%;
     text-align: center !important;
 }
-div#findingAnalystLeft div.section > a {
+div.findingAnalystLeft div.section > a {
     margin-top: 8px;
     display: block;
 }
@@ -124,4 +124,8 @@ div#changeLayout {
 div#changeLayout.active {
     line-height: 28px;
     border-color: orange;
+}
+
+div.findingAnalystRight td:first-child {
+    width:35%;
 }

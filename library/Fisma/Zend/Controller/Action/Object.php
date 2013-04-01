@@ -524,7 +524,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                         $jsonResponse->succeed($object->id, $object->toArray());
                     } else {
                         $msg   = $this->getSingularModelName() . ' created successfully';
-                        $type = 'notice';
+                        $type = 'success';
                         $this->view->priorityMessenger($msg, $type);
                         $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/{$object->id}");
                     }
@@ -535,8 +535,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                         $jsonResponse->fail($e->getMessage());
                     } else {
                         $msg   = $e->getMessage();
-                        $model = 'warning';
-                        $this->view->priorityMessenger($msg, $model);
+                        $this->view->priorityMessenger($msg, 'error');
                     }
                 }
             } else {
@@ -546,7 +545,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     $jsonResponse->fail($errorString);
                 } else {
                     $message = 'Unable to create a ' . $this->getSingularModelName();
-                    $this->view->priorityMessenger("$message:<br>$errorString", 'warning');
+                    $this->view->priorityMessenger("$message:<br>$errorString", 'error');
                 }
             }
         }
@@ -599,7 +598,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             (!$this->_acl->hasPrivilegeForObject('read', $subject) &&
              !$this->_acl->hasPrivilegeForObject('update', $subject))) {
 
-               $this->view->priorityMessenger("Don't have permission to read/update this object.", 'warning');
+               $this->view->priorityMessenger("Don't have permission to read/update this object.", 'error');
                $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/list");
         }
 
@@ -625,7 +624,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 try {
                     $this->saveValue($form, $subject);
                     $msg  = $this->getSingularModelName() . ' updated successfully';
-                    $type = 'notice';
+                    $type = 'success';
 
                     // Refresh the form, in case the changes to the model affect the form
                     $form = $this->getForm();
@@ -633,17 +632,17 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     //Doctrine_Manager::connection()->rollback();
                     $msg  = "Error while trying to save: ";
                         $msg .= $e->getMessage();
-                    $type = 'warning';
+                    $type = 'error';
                 } catch (Fisma_Zend_Exception_User $e) {
                     $msg  = "Error while trying to save: " . $e->getMessage();
-                    $type = 'warning';
+                    $type = 'error';
                 }
                 $this->view->priorityMessenger($msg, $type);
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 $message = 'Error while trying to save the ' . $this->getSingularModelName();
                 $error = "$message:<br>$errorString";
-                $this->view->priorityMessenger($error, 'warning');
+                $this->view->priorityMessenger($error, 'error');
             }
             $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/view/id/$id$fromSearchUrl");
         }
@@ -683,24 +682,24 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
         if (!$subject) {
             $msg   = 'Invalid ' . $this->getSingularModelName() . ' ID';
-            $type = 'warning';
+            $type = 'error';
         } else {
             try {
                 Doctrine_Manager::connection()->beginTransaction();
                 $subject->delete();
                 Doctrine_Manager::connection()->commit();
                 $msg   = $this->getSingularModelName() . ' deleted successfully';
-                $type = 'notice';
+                $type = 'success';
             } catch (Fisma_Zend_Exception_User $e) {
                 Doctrine_Manager::connection()->rollback();
                 $msg  = $e->getMessage();
-                $type = 'warning';
+                $type = 'success';
             } catch (Doctrine_Exception $e) {
                 Doctrine_Manager::connection()->rollback();
                 if (Fisma::debug()) {
                     $msg .= $e->getMessage();
                 }
-                $type = 'warning';
+                $type = 'error';
             }
         }
         $this->view->priorityMessenger($msg, $type);
@@ -1295,7 +1294,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
                 }
                 $this->view->priorityMessenger($associatedObjects->count() . " " . $this->_associatedPlural
-                                                . " reassigned successfully.");
+                                                . " reassigned successfully.", 'success');
                 $this->_redirect($this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl);
             } catch (Doctrine_Exception $e) {
                 // We cannot access the view script from here (for priority messenger), so rethrow after roll-back

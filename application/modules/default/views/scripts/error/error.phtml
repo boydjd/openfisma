@@ -3,8 +3,8 @@
     if (Fisma::debug()) {
 ?>
     <p><i>Application is currently in debugging mode:</i></p>
-    <p class="stacktrace"><?php echo $this->escape($this->content, 'none') ?></p>
-<?php    
+    <p class="stacktrace well"><?php echo $this->escape($this->content, 'none') ?></p>
+<?php
     }
 
     echo $this->escape($this->message, 'none');

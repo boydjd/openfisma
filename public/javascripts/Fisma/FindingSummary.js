@@ -282,7 +282,7 @@
         _renderCell: function (container, nodeData, columnNumber, nodeState) {
             if (columnNumber === 0) {
                 container.style.minWidth = "15em";
-                container.style.height = "2.5em";
+                container.style.height = "3em";
                 container.style.overflow = "hidden";
 
                 // The node icon is a graphical representation of what type of node this is: agency, bureau, etc.

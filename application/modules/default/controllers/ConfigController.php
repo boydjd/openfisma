@@ -317,13 +317,13 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 $ldap->save();
 
                 $msg = 'Configuration updated successfully';
-                $this->view->priorityMessenger($msg, 'notice');
+                $this->view->priorityMessenger($msg, 'success');
                 $this->_redirect('/config/list-ldap');
                 return;
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 // Error message
-                $this->view->priorityMessenger("Unable to save Ldap Configurations:<br>$errorString", 'warning');
+                $this->view->priorityMessenger("Unable to save Ldap Configurations:<br>$errorString", 'error');
             }
         }
 
@@ -353,7 +353,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         Doctrine::getTable('LdapConfig')->find($id)->delete();
 
         $msg = "Ldap Server deleted successfully.";
-        $this->view->priorityMessenger($msg, 'notice');
+        $this->view->priorityMessenger($msg, 'success');
         $this->_redirect('/config/list-ldap');
     }
 
@@ -529,10 +529,10 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                 );
             }
 
-            $this->view->priorityMessenger('Configuration updated successfully', 'notice');
+            $this->view->priorityMessenger('Configuration updated successfully', 'success');
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-            $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'warning');
+            $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'error');
         }
     }
 

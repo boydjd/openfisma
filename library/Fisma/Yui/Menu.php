@@ -68,15 +68,18 @@ class Fisma_Yui_Menu
      */
     public $submenu = array();
 
+    public $pull;
+
     /**
      * To perform initialization as a default constructor
      *
      * @param string $title The specified menu title
      * @return void
      */
-    function __construct($title)
+    function __construct($title, $pull = null)
     {
         $this->text = $title;
+        $this->pull = $pull;
 
         $this->submenu['id'] = uniqid();
 

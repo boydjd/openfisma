@@ -7,12 +7,14 @@
 ?>' method='post' class='accordion'>
 <?php Fisma_Format_Section::startSection('Details'); ?>
 <i>Provide metadata that helps users understand what they need to do in order to complete this step.</i>
-<table class='keyValues'>
+<table class='keyValues table-hover'>
     <tr>
         <th scope='row'>Name</th>
         <td><input type='text' name='step[name]' id='stepName' autofocus value='<?php
             if ($this->step): echo $this->escape($this->step->name); endif;
         ?>' /></td>
+    </tr>
+    <tr>
         <th scope='row'>Label</th>
         <td><input type='text' name='step[label]' id='stepLabel' value='<?php
             if ($this->step): echo $this->escape($this->step->label); endif;
@@ -20,12 +22,12 @@
     </tr>
     <tr>
         <th scope='row'>Resolved</th>
-        <td colspan='3'><input type='checkbox' name='step[isResolved]' <?php
+        <td><input type='checkbox' name='step[isResolved]' <?php
             if ($this->step && $this->step->isResolved): echo $this->escape('checked'); endif;
         ?>/> Mark the entity as resolved and the workflow as completed.</td>
     </tr><tr>
         <th scope='row'>Instruction(s)</th>
-        <td colspan='3'><textarea name='step[description]' id='stepDescription' cols='60' rows='3'><?php
+        <td><textarea name='step[description]' id='stepDescription' cols='60' rows='3'><?php
             if ($this->step): echo $this->escape($this->step->description, 'none'); endif;
         ?></textarea></td>
     </tr>
@@ -34,7 +36,7 @@
 
 <?php Fisma_Format_Section::startSection('Time Frame'); ?>
 <i>Define the allotted time period in which users should complete this step.</i>
-<table class='keyValues'>
+<table class='keyValues table-hover'>
     <tr>
         <th scope='row'>Allotted Time</th>
         <td>
@@ -89,7 +91,7 @@
 
 <?php Fisma_Format_Section::startSection('Field Prerequisites and Restrictions'); ?>
 <i>Specify any custom prerequisites or restrictions you wish to apply to this workflow step.</i>
-<table class='keyValues'>
+<table class='keyValues table-hover'>
     <tr>
         <th scope='row'>Attachments</th>
         <td>

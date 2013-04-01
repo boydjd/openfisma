@@ -386,19 +386,19 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     $user->save();
                     Doctrine_Manager::connection()->commit();
                     $message = "Profile updated successfully";
-                    $model   = 'notice';
+                    $model   = 'success';
                     if (CurrentUser::getInstance()->id === $user->id) {
                         CurrentUser::getInstance()->refresh();
                     }
                 } catch (Doctrine_Exception $e) {
                     Doctrine_Manager::connection()->rollback();
                     $message = $e->getMessage();
-                    $model   = 'warning';
+                    $model   = 'error';
                 }
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 $message     = "Unable to update profile:<br>" . $errorString;
-                $model       = 'warning';
+                $model       = 'error';
             }
             $this->view->priorityMessenger($message, $model);
             $this->_redirect('/user/profile');
@@ -442,7 +442,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     $user->merge($post);
                     $user->save();
                     $message = "Password updated successfully.";
-                    $model   = 'notice';
+                    $model   = 'success';
                     if ($this->_helper->ForcedAction->hasForcedAction($user->id, 'mustResetPassword')) {
 
                         // Remove the forced action of mustResetPassword from session, and send users to
@@ -460,12 +460,12 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     }
                 } catch (Doctrine_Exception $e) {
                     $message = $e->getMessage();
-                    $model   = 'warning';
+                    $model   = 'error';
                 }
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
                 $message     = "Unable to change password:<br>" . $errorString;
-                $model       = 'warning';
+                $model       = 'error';
             }
             $this->view->priorityMessenger($message, $model);
             $this->_redirect('/user/password');
@@ -498,11 +498,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 Doctrine_Manager::connection()->commit();
 
                 $message = "Notification events modified successfully";
-                $model   = 'notice';
+                $model   = 'success';
             } catch (Doctrine_Exception $e) {
                 Doctrine_Manager::connection()->rollback();
                 $message = $e->getMessage();
-                $model   = 'warning';
+                $model   = 'error';
             }
             $this->view->priorityMessenger($message, $model);
             $this->_redirect('/user/notification');
@@ -1723,17 +1723,17 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $this->view->priorityMessenger(
                     "User deleted successfully.<br/>" .
                     "Please note that this user is still appointed to: " . implode(', ', $messages),
-                    'notice'
+                    'warning'
                 );
             } else {
-                $this->view->priorityMessenger('User deleted successfully.', 'info');
+                $this->view->priorityMessenger('User deleted successfully.', 'success');
             }
             Notification::notify('USER_DELETED', $subject, CurrentUser::getInstance());
 
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollback();
             $error = "User cannot be deleted due to an error: {$e->getMessage()}";
-            $type  = 'warning';
+            $type  = 'error';
             $this->view->priorityMessenger($error, $type);
             $this->_redirect('/user/view/id/' . $id . $fromSearchUrl);
         }
@@ -1761,7 +1761,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     $user->homeUrl = $newUrl;
                     $currentHomeUrl = $newUrl;
                 } else {
-                    $this->view->priorityMessenger('Invalid URL submitted.', 'warning');
+                    $this->view->priorityMessenger('Invalid URL submitted.', 'error');
                 }
             }
             if ($timezoneAuto = $this->getRequest()->getPost('timezoneAuto')) {

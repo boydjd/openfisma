@@ -4,7 +4,7 @@
 Fisma_Format_Section::startSection($this->cacheType . ' Cache Summary');
 ?>
 
-    <table class="keyValues">
+    <table class="keyValues table-hover">
         <?php
         foreach ($this->cacheSummary as $key => $value):
         ?>
@@ -31,7 +31,7 @@ Fisma_Format_Section::startSection($this->cacheType . ' Cache Items');
 
 if (isset($this->cacheItems)):
 ?>
-    <table class="keyValues">
+    <table class="keyValues table-hover">
         <tr>
             <?php
             foreach ($this->cacheItemHeaders as $header):

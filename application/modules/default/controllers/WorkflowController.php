@@ -85,7 +85,7 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
             if (empty($workflowArray['name'])) {
                 $this->view->priorityMessenger(
                     'You cannot create a workflow with an empty name.',
-                    'warning'
+                    'error'
                 );
             } else {
                 $workflow = new Workflow();
@@ -141,7 +141,7 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
             if (empty($stepArray['name'])) {
                 $this->view->priorityMessenger(
                     'You cannot create a workflow step with an empty name.',
-                    'warning'
+                    'error'
                 );
             } else {
                 if ($id) {
@@ -269,7 +269,7 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
             } else {
                 $this->view->priorityMessenger(
                     'Please set another workflow as default before deleting ' . $workflow->name .'.',
-                    'warning'
+                    'error'
                 );
             }
 
@@ -293,7 +293,7 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
             if ($workflow->isDefault && $step->cardinality == 1) {
                 $this->view->priorityMessenger(
                     'Cannot delete the first step of the default workflow.',
-                    'warning'
+                    'error'
                 );
             } else {
                 $defaultStep = $workflow->getTable()->findDefaultByModule($workflow->module)->getFirstStep();
