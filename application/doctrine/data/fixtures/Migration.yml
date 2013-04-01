@@ -219,3 +219,9 @@ Migration:
         minorVersion: 2
         tagNumber: 0
         name: OrganizationRole
+
+    030300_Asset:
+        majorVersion: 3
+        minorVersion: 3
+        tagNumber: 0
+        name: Asset

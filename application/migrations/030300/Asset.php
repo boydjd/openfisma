@@ -40,9 +40,10 @@ class Application_Migration_030300_Asset extends Fisma_Migration_Abstract
         $this->getHelper()->addForeignKey('asset_service', 'productid', 'product', 'id');
 
         $this->getHelper()->exec(
-            'INSERT INTO asset_service (addressport, assetid) ' .
-            'SELECT addressport, id ' .
-            'FROM asset'
+            'INSERT INTO asset_service (addressport, assetid, productid) ' .
+            'SELECT addressport, id, productid ' .
+            'FROM asset ' .
+            'WHERE addressport IS NOT NULL'
         );
 
         $this->getHelper()->dropColumn('asset', 'addressport');
