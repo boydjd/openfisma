@@ -14,7 +14,7 @@ elementFilters.trim = "StringTrim"
 elementFilters.tags = "StripTags"
 
 elements.name.type = "text"
-elements.name.options.label = "Product Name"
+elements.name.options.label = "Name"
 elements.name.options.validators.alnum.validator = "NotEmpty"
 elements.name.options.required = true
 displayGroups.product.elements.name = "name"

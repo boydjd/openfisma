@@ -56,29 +56,26 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'legacyFindingKey' => array(
                 'initiallyVisible' => false,
-                'label' => 'Legacy Finding Key',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'discoveredDate' => array(
                 'initiallyVisible' => true,
-                'label' => 'Discovered',
                 'sortable' => true,
                 'type' => 'date',
                 'formatter' => 'date'
             ),
             'auditYear' => array(
                 'initiallyVisible' => false,
-                'label' => 'Audit Year',
                 'sortable' => true,
                 'type' => 'integer'
             ),
             'createdTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Created',
                 'sortable' => true,
                 'type' => 'datetime',
-                'formatter' => 'date'
+                'formatter' => 'date',
+                'label' => 'Created Date'
             ),
             'createdByUser' => array(
                 'initiallyVisible' => false,
@@ -95,7 +92,6 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'enumValues' => $this->getEnumValues('residualRisk'),
                 'initiallyVisible' =>
                     Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? true : false,
-                'label' => 'Risk',
                 'sortable' => true,
                 'type' => 'enum',
                 'hidden' => Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? false : true
@@ -104,13 +100,11 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'enumValues' => $this->getEnumValues('threatLevel'),
                 'initiallyVisible' =>
                     Fisma::configuration()->getConfig('threat_type') == 'threat_level' ? true : false,
-                'label' => 'Threat',
                 'sortable' => true,
                 'type' => 'enum'
             ),
             'threat' => array(
                 'initiallyVisible' => false,
-                'label' => 'Threat Description',
                 'sortable' => true,
                 'type' => 'text'
             ),
@@ -222,46 +216,40 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'description' => array(
                 'initiallyVisible' => true,
-                'label' => 'Description',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'recommendation' => array(
                 'initiallyVisible' => false,
-                'label' => 'Recommendation',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'jsonComments' => array(
                 'initiallyVisible' => true,
-                'label' => 'Comments',
                 'sortable' => false,
                 'type' => 'text',
+                'label' => 'Comments',
                 'formatter' => 'Fisma.TableFormat.formatComments'
             ),
             'mitigationStrategy' => array(
                 'initiallyVisible' => true,
-                'label' => 'Mitigation Strategy',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'originalEcd' => array(
                 'initiallyVisible' => false,
-                'label' => 'Original ECD',
                 'sortable' => true,
                 'type' => 'date',
                 'formatter' => 'date'
             ),
             'currentEcd' => array(
                 'initiallyVisible' => true,
-                'label' => 'Current ECD',
                 'sortable' => true,
                 'type' => 'date',
                 'formatter' => 'Fisma.TableFormat.formatDuedate'
             ),
             'nextDueDate' => array(
                 'initiallyVisible' => true,
-                'label' => 'Workflow Due Date',
                 'sortable' => true,
                 'type' => 'date',
                 'formatter' => 'Fisma.TableFormat.formatDuedate'
@@ -269,14 +257,12 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             'countermeasuresEffectiveness' => array(
                 'enumValues' => $this->getEnumValues('countermeasuresEffectiveness'),
                 'initiallyVisible' => false,
-                'label' => 'Countermeasures Effectiveness',
                 'sortable' => true,
                 'type' => 'enum',
                 'hidden' => Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? false : true
             ),
             'countermeasures' => array(
                 'initiallyVisible' => false,
-                'label' => 'Countermeasures Description',
                 'sortable' => true,
                 'type' => 'text',
                 'hidden' => Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? false : true
@@ -312,7 +298,6 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'closedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Resolved',
                 'sortable' => true,
                 'type' => 'datetime',
                 'formatter' => 'date'
@@ -336,7 +321,6 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'uploadid' => array(
                 'initiallyVisible' => false,
-                'label' => 'Upload ID',
                 'sortable' => true,
                 'type' => 'integer'
             )

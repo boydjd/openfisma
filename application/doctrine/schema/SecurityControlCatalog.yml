@@ -1,11 +1,18 @@
 SecurityControlCatalog:
     listeners: [IndexListener]
     columns:
-        name: 
+        name:
             type: string
             fixed: true
-        description: string
+            extra:
+                logicalName: Name
+        description:
+            type: string
+            extra:
+                logicalName: Description
         published:
             type: boolean
             notnull: true
             default: false
+            extra:
+                logicalName: Published?

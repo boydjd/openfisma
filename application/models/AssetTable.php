@@ -35,7 +35,6 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
         return array (
             'name' => array(
                 'initiallyVisible' => true,
-                'label' => 'Name',
                 'sortable' => true,
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.recordLink',
@@ -45,25 +44,23 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
             ),
             'source' => array(
                 'initiallyVisible' => true,
-                'label' => 'Source',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'createdTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Creation Date',
+                'label' => 'Created Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Modification Date',
+                'label' => 'Last Modified Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
             'addressIp' => array(
                 'initiallyVisible' => true,
-                'label' => 'IP Address',
                 'sortable' => true,
                 'type' => 'text'
             ),
@@ -86,7 +83,6 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
             ),
             'serviceTag' => array(
                 'initiallyVisible' => true,
-                'label' => 'Environment',
                 'sortable' => true,
                 'type' => 'text'
             ),

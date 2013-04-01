@@ -163,13 +163,6 @@ Vulnerability:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: Product
-                Resolutions:
-                    label: Resolutions
-                    link: /vm/vulnerability-resolution/list
-                    privilege:
-                        func: hasPrivilegeForClass
-                        param1: read
-                        param2: VulnerabilityResolution
                 Vulnerability_Workflow:
                     label: Workflows
                     link: /workflow/manage#1

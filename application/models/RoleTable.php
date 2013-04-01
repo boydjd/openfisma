@@ -27,6 +27,11 @@
  */
 class RoleTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable, Fisma_Search_Facetable
 {
+    protected $_customLogicalNames = array(
+        'createdTs' => 'Created Date',
+        'modifiedTs' => 'Last Modified Date'
+    );
+
     /**
      * Implement the interface for Searchable
      */
@@ -35,13 +40,11 @@ class RoleTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
         return array (
             'name' => array(
                 'initiallyVisible' => true,
-                'label' => 'Name',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'nickname' => array(
                 'initiallyVisible' => true,
-                'label' => 'Nickname',
                 'sortable' => true,
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.recordLink',
@@ -51,7 +54,6 @@ class RoleTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
             ),
             'type' => array(
                 'initiallyVisible' => true,
-                'label' => $this->getLogicalName('type'),
                 'type' => 'enum',
                 'enumValues' => $this->getEnumValues('type'),
                 'sortable' => true
@@ -59,19 +61,16 @@ class RoleTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
             ),
             'createdTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Creation Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Modified Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
             'description' => array(
                 'initiallyVisible' => true,
-                'label' => 'Description',
                 'sortable' => false,
                 'type' => 'text'
             )

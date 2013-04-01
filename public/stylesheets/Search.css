@@ -96,3 +96,7 @@ div.yui-dt.yui-dt-scrollable {
     border-color: #808080;
     margin: 2px;
 }
+
+div.listDatatableContainer {
+    padding-left: 240px;
+}

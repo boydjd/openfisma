@@ -70,15 +70,13 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             ),
             'incidentDate' => array(
                 'initiallyVisible' => true,
-                'label' => 'Occured',
-                'sortable' => true,
+               ' sortable' => true,
                 'type' => 'date',
                 'formatter' => 'date',
                 'timezoneAbbrField' => 'incidentTimezone'
             ),
             'reportTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Reported',
                 'sortable' => true,
                 'type' => 'datetime',
                 'formatter' => 'datetime',
@@ -98,7 +96,6 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             'status' => array(
                 'enumValues' => $this->getEnumValues('status'),
                 'initiallyVisible' => true,
-                'label' => 'Status',
                 'sortable' => true,
                 'type' => 'enum'
             ),
@@ -137,37 +134,21 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             ),
             'additionalInfo' => array(
                 'initiallyVisible' => true,
-                'label' => 'Description',
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'locationBuilding' => array(
-                'initiallyVisible' => false,
-                'label' => 'Building',
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'locationRoom' => array(
-                'initiallyVisible' => false,
-                'label' => 'Room',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'source' => array(
                 'initiallyVisible' => false,
-                'label' => 'Source',
                 'type' => 'text',
                 'sortable' => true
             ),
             'severityLevel' => array(
                 'initiallyVisible' => false,
-                'label' => 'Severity',
                 'type' => 'text',
                 'sortable' => true
             ),
             'impact' => array(
                 'initiallyVisible' => true,
-                'label' => 'Impact',
                 'sortable' => true,
                 'type' => 'text'
             ),
@@ -217,7 +198,7 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Updated',
+                'label' => 'Last Modified Date',
                 'sortable' => true,
                 'type' => 'datetime',
                 'formatter' => 'datetime'
@@ -225,134 +206,88 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             'piiInvolved' => array(
                 'enumValues' => $this->getEnumValues('piiInvolved'),
                 'initiallyVisible' => true,
-                'label' => 'PII Involved?',
                 'sortable' => true,
                 'type' => 'enum'
             ),
             'piiAdditional' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Additional Information',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'piiMobileMedia' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Mobile Media Involed?',
                 'sortable' => true,
                 'enumValues' => $this->getEnumValues('piiMobileMedia'),
                 'type' => 'enum'
             ),
             'piiMobileMediaType' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Mobile Media Type',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'piiEncrypted' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Encrypted?',
                 'sortable' => true,
                 'enumValues' => $this->getEnumValues('piiEncrypted'),
                 'type' => 'enum'
             ),
             'piiAuthoritiesContacted' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Authorities Contacted?',
                 'sortable' => true,
                 'enumValues' => $this->getEnumValues('piiAuthoritiesContacted'),
                 'type' => 'enum'
             ),
             'piiPoliceReport' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Police Report?',
                 'sortable' => true,
                 'enumValues' => $this->getEnumValues('piiPoliceReport'),
                 'type' => 'enum'
             ),
             'piiIndividualsCount' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Individuals Count',
                 'type' => 'integer'
             ),
             'piiIndividualsNotified' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Individuals Notified?',
                 'sortable' => true,
                 'enumValues' => $this->getEnumValues('piiIndividualsNotified'),
                 'type' => 'enum'
             ),
             'piiShipment' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Shipment Involved?',
                 'sortable' => true,
                 'enumValues' => $this->getEnumValues('piiShipment'),
                 'type' => 'enum'
             ),
             'piiShipmentSenderContacted' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Shipment Sender Contacted?',
                 'sortable' => true,
                 'enumValues' => $this->getEnumValues('piiShipmentSenderContacted'),
                 'type' => 'enum'
             ),
             'piiShipmentSenderCompany' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Shipment Sender Company',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'piiShipmentTimeline' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Shipment Timeline',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'piiShipmentTrackingNumbers' => array(
                 'initiallyVisible' => false,
-                'label' => 'PII Shipment Tracking Numbers',
                 'sortable' => true,
                 'type' => 'text'
-            ),
-            'hostIp' => array(
-                'initiallyVisible' => false,
-                'label' => 'Host IP',
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'hostName' => array(
-                'initiallyVisible' => false,
-                'label' => 'Host Name',
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'hostOs' => array(
-                'enumValues' => $this->getEnumValues('hostOs'),
-                'initiallyVisible' => false,
-                'label' => 'Host OS',
-                'sortable' => true,
-                'type' => 'enum'
             ),
             'hostAdditional' => array(
                 'initiallyVisible' => false,
-                'label' => 'Host Additional Information',
-                'sortable' => false,
-                'type' => 'text'
-            ),
-            'sourceIp' => array(
-                'initiallyVisible' => false,
-                'label' => 'Attacker IP',
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'sourceAdditional' => array(
-                'initiallyVisible' => false,
-                'label' => 'Attacker Additional Information',
+                'label' => 'Asset Description',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'actionsTaken' => array(
                 'initiallyVisible' => false,
-                'label' => 'Actions Taken',
                 'sortable' => false,
                 'type' => 'text'
             ),
@@ -365,7 +300,6 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             ),
             'closedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Resolved',
                 'sortable' => true,
                 'type' => 'datetime',
                 'formatter' => 'datetime'

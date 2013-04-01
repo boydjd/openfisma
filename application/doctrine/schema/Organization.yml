@@ -6,14 +6,14 @@ Organization:
         modifiedTs: timestamp
         name:
             extra:
-                logicalName: Full name
+                logicalName: Name
                 notify: true
             type: string(255)
             notblank: true
             notnull: true
         nickname:
             extra:
-                logicalName: Nick name
+                logicalName: Nickname
                 notify: true
             type: string(255)
             unique: true
@@ -22,7 +22,7 @@ Organization:
             unique: true
         orgTypeId:
             extra:
-                logicalName: Organization Type
+                logicalName: Type
                 notify: true
                 class: OrganizationType
                 field: name

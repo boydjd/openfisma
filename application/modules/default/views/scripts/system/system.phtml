@@ -1,10 +1,11 @@
+<?php $this->table = $this->organization->getTable(); ?>
 <div class="column66 left">
 <?php
 Fisma_Format_Section::startSection('Summary');
 ?>
 <table class="keyValues">
     <tr>
-        <td>System Name: </td>
+        <th scope='row'><?php $this->column('name'); ?>:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -24,7 +25,7 @@ Fisma_Format_Section::startSection('Summary');
         </td>
     </tr>
     <tr>
-        <td>System Nickname: </td>
+        <th scope='row'><?php $this->column('nickname'); ?>:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -44,7 +45,7 @@ Fisma_Format_Section::startSection('Summary');
         </td>
     </tr>
     <tr>
-        <td>System Type: </td>
+        <th scope='row'><?php $this->column('systemTypeId', $this, $this->organization->System->getTable()); ?>:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -69,7 +70,7 @@ Fisma_Format_Section::startSection('Summary');
         </td>
     </tr>
     <tr>
-        <td>SDLC Phase: </td>
+        <th scope='row'><?php $this->column('sdlcPhase', $this, $this->organization->System->getTable()); ?>:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -95,7 +96,7 @@ Fisma_Format_Section::startSection('Summary');
         </td>
     </tr>
     <tr>
-        <td>Parent: </td>
+        <th scope='row'><?php $this->column('parentNickname'); ?>:</th>
         <td>
         <?php
             $parentOrganization = $this->organization->getNode()->getParent();
@@ -126,9 +127,9 @@ Fisma_Format_Section::startSection('Summary');
 Fisma_Format_Section::stopSection();
 
 if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
-    Fisma_Format_Section::startSection('System Description', 'system_description');
+    Fisma_Format_Section::startSection($this->getColumn('description'), 'system_description');
 } else {
-    Fisma_Format_Section::startSection('System Description');
+    Fisma_Format_Section::startSection($this->getColumn('description'));
 }
 ?>
 <div name="description" id="system_description" type="textarea" rows="3" cols="120">
@@ -141,13 +142,13 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
     <?php Fisma_Format_Section::startSection('Dates'); ?>
         <table class="keyValues">
             <tr>
-                <td>Created:</td>
+                <th scope='row'><?php $this->column('createdTs'); ?>:</th>
                 <td>
                     <?php echo $this->escape($this->createdDate)?>
                 </td>
             </tr>
             <tr>
-                <td>Updated:</td>
+                <th scope='row'><?php $this->column('modifiedTs'); ?>:</th>
                 <td>
                     <?php echo $this->escape($this->updatedDate)?>
                 </td>
@@ -173,13 +174,13 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
         <?php endif; ?>
         <table class="keyValues">
             <tr>
-                <td><?php echo $this->escape(new Fisma_Yui_Tooltip(
+                <th scope='row'><?php echo $this->escape(new Fisma_Yui_Tooltip(
                     'defaultPOC',
-                    $this->escape($this->translate('Organization_Point_of_Contact')),
+                    $this->getColumn('pocId') . ':',
                     '<b>' . $this->escape($this->translate('Organization_Point_of_Contact')) . '</b><p>The default ' .
                     'person assigned responsibility for findings associated with this system. The assignee may be ' .
                     'changed when editing individual findings.</p>'
-                ), 'none'); ?>:</td>
+                ), 'none'); ?></th>
                 <td class="autocomplete-width"><span id="pointOfContact"
                     type="autocomplete"
                     xhr="/user/autocomplete/format/json"

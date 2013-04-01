@@ -13,7 +13,7 @@
             $eventTitle = "User account created by {$user->displayName}";
             break;
         case 'USER_UPDATED':
-            $eventTitle = "User account modified by {$user->displayName}";
+            $eventTitle = "User account modified" . ($user) ? " by {$user->displayName}" : "";
             break;
         case 'ACCOUNT_LOCKED':
             $eventTitle = "User account locked by {$systemName}";

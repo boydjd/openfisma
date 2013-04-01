@@ -1,10 +1,9 @@
+<?php $this->table = $this->organization->getTable(); ?>
 <div class="column66 left">
-<?php
-Fisma_Format_Section::startSection('Summary');
-?>
+<?php Fisma_Format_Section::startSection('Summary'); ?>
 <table class="keyValues">
     <tr>
-        <td>Organization Name: </td>
+        <th scope='row'><?php $this->column('name'); ?>:</th>
         <td>
             <?php
             if ($this->editable) {
@@ -24,7 +23,7 @@ Fisma_Format_Section::startSection('Summary');
         </td>
     </tr>
     <tr>
-        <td>Organization Nickname: </td>
+        <th scope='row'><?php $this->column('nickname'); ?>:</th>
         <td>
             <?php
             if ($this->editable) {
@@ -44,7 +43,7 @@ Fisma_Format_Section::startSection('Summary');
         </td>
     </tr>
     <tr>
-        <td>Organization Type: </td>
+        <th scope='row'><?php $this->column('orgTypeId'); ?>:</th>
         <td>
             <span id="organizationType"
                   type="select"
@@ -57,7 +56,7 @@ Fisma_Format_Section::startSection('Summary');
         </td>
     </tr>
     <tr>
-       <td>Parent Organization/System: </td>
+        <th scope='row'><?php $this->column('parentNickname'); ?>:</th>
         <td>
             <span id="organization"
                   type="select"
@@ -94,9 +93,9 @@ Fisma_Format_Section::startSection('Summary');
 Fisma_Format_Section::stopSection();
 
 if ($this->editable) {
-    Fisma_Format_Section::startSection('Organization Description', 'organization_description');
+    Fisma_Format_Section::startSection($this->getColumn('description'), 'organization_description');
 } else {
-    Fisma_Format_Section::startSection('Organization Description');
+    Fisma_Format_Section::startSection($this->getColumn('description'));
 }
 ?>
 <div name="description" id="organization_description" type="textarea" rows="3" cols="120">
@@ -109,13 +108,13 @@ if ($this->editable) {
     <?php Fisma_Format_Section::startSection('Dates'); ?>
         <table class="keyValues">
             <tr>
-                <td>Created:</td>
+                <th scope='row'><?php $this->column('createdTs'); ?>:</th>
                 <td>
                     <?php echo $this->escape($this->createdDate)?>
                 </td>
             </tr>
             <tr>
-                <td>Updated:</td>
+                <th scope='row'><?php $this->column('modifiedTs'); ?>:</th>
                 <td>
                     <?php echo $this->escape($this->updatedDate)?>
                 </td>
@@ -141,13 +140,13 @@ if ($this->editable) {
         <?php endif; ?>
         <table class="keyValues">
             <tr>
-                <td><?php echo $this->escape(new Fisma_Yui_Tooltip(
+                <th scope='row'><?php echo $this->escape(new Fisma_Yui_Tooltip(
                     'defaultPOC',
-                    $this->escape($this->translate('Organization_Point_of_Contact') . ':'),
+                    $this->getColumn('pocId') . ':',
                     '<b>' . $this->escape($this->translate('Organization_Point_of_Contact')) . '</b><p>The default ' .
                     'person assigned responsibility for findings associated with this system. The assignee may be ' .
                     'changed when editing individual findings.</p>'
-                ), 'none'); ?></td>
+                ), 'none'); ?></th>
                 <td  class="autocomplete-width"><span id="pointOfContact"
                     type="autocomplete"
                     xhr="/user/autocomplete/format/json"
@@ -194,11 +193,10 @@ if ($this->editable) {
                         <?php echo $this->escape($this->userInfo($ur->User->displayName, $ur->User->id), 'none'); ?>
                         <?php if ($this->editable): ?>
                         <span onclick='Fisma.Organization.removePoc(<?php
-                                    echo $this->escape($this->organization->id); ?>, <?php
-                                    echo $this->escape($ur->roleId); ?>, <?php
-                                    echo $this->escape($ur->User->id);
-                                ?>, "organization");'
-                        ><img
+                            echo $this->escape($this->organization->id); ?>, <?php
+                            echo $this->escape($ur->roleId); ?>, <?php
+                            echo $this->escape($ur->User->id);
+                        ?>, "organization");'><img
                             src='/images/trash_recyclebin_empty_closed.png'
                             alt='remove this POC'
                         /></span>

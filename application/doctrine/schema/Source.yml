@@ -5,12 +5,12 @@ Source:
         name:
             type: string(255)
             extra:
-                logicalName: Source Name
+                logicalName: Name
         nickname:
             type: string(255)
             unique: true
             extra:
-                logicalName: Source Nickname
+                logicalName: Nickname
         description:
             type: string
             extra:

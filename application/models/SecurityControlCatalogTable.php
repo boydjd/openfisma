@@ -64,7 +64,6 @@ class SecurityControlCatalogTable extends Fisma_Doctrine_Table implements Fisma_
         return array (
             'name' => array(
                 'initiallyVisible' => true,
-                'label' => 'Name',
                 'sortable' => true,
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.recordLink',
@@ -74,13 +73,11 @@ class SecurityControlCatalogTable extends Fisma_Doctrine_Table implements Fisma_
             ),
             'published' => array(
                 'initiallyVisible' => true,
-                'label' => 'Published',
                 'sortable' => true,
                 'type' => 'boolean'
             ),
             'description' => array(
                 'initiallyVisible' => true,
-                'label' => 'Description',
                 'sortable' => false,
                 'type' => 'text'
             )

@@ -9,17 +9,24 @@ SystemType:
             type: string(255)
             notblank: true
             notnull: true
+            extra:
+                logicalName: Name
         nickname:
             type: string(255)
             unique: true
             notblank: true
             notnull: true
+            extra:
+                logicalName: Nickname
         iconId:
             type: integer
+            extra:
+                logicalName: Icon
         description:
             type: string
             extra:
                 purify: html
+                logicalName: Description
     actAs:
         Timestampable:
             created:

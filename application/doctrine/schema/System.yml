@@ -13,61 +13,58 @@ System:
             comment: System Development Life Cycle Phase
         confidentiality:
             extra:
-                logicalName: Confidentiality Risk Level
+                logicalName: Confidentiality Level
                 notify: true
             type: enum
             values: [NA, LOW, MODERATE, HIGH]
             comment: The FIPS-199 confidentiality impact
         aggregateSystemId: integer
         systemTypeId:
+            type: integer
             extra:
-                logicalName: System Type
+                logicalName: Type
                 notify: true
                 class: SystemType
                 field: name
-            type: integer
         confidentialityDescription:
-            extra:
-                logicalName: Confidentiality Risk Description
-                notify: true
             type: string
             extra:
+                logicalName: Confidentiality Description
+                notify: true
                 purify: html
         integrity:
             extra:
-                logicalName: Integrity Risk Level
+                logicalName: Integrity Level
                 notify: true
             type: enum
             values: [LOW, MODERATE, HIGH]
             comment: The FIPS-199 integrity impact
         integrityDescription:
-            extra:
-                logicalName: Integrity Risk Description
-                notify: true
             type: string
             extra:
+                logicalName: Integrity Description
+                notify: true
                 purify: html
         availability:
             extra:
-                logicalName: Availability Risk Level
+                logicalName: Availability Level
                 notify: true
             type: enum
             values: [LOW, MODERATE, HIGH]
             comment: The FIPS-199 availability impact
         availabilityDescription:
-            extra:
-                logicalName: Availability Risk Description
-                notify: true
             type: string
             extra:
+                logicalName: Availability Description
+                notify: true
                 purify: html
         fipsCategory:
-            extra:
-                logicalName: FIPS Categorization
-                notify: true
             type: enum
             values: [LOW, MODERATE, HIGH]
             comment: The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above
+            extra:
+                logicalName: FIPS 199 Category
+                notify: true
 
         # FISMA Report Criteria:
         fismaReportable:
@@ -79,7 +76,7 @@ System:
             comment: Is the system reportable in FISMA standards?
         nextSecurityAuthorizationDt:
             extra:
-                logicalName: Security Authorization Expiration
+                logicalName: Security Authorization Expiration Date
                 notify: true
             type: date
             comment: The due date for the next required Security Authorization.
@@ -110,42 +107,42 @@ System:
             comment: The last time the security controls were tested for this system
         hasFiif:
             extra:
-                logicalName: Contains Federal Information in Identifiable Form
+                logicalName: Contains FIIF?
                 notify: true
             type: enum
             values: ["YES", "NO"] # YAML converts YES to a boolean unless its quoted
             comment: Whether the system contains any Federal Information in Identifiable Form
         hasPii:
             extra:
-                logicalName: Contains Personally Identifiable Information
+                logicalName: Contains PII?
                 notify: true
             type: enum
             values: ["YES", "NO"]
             comment: Whether the system contains any Personally Identifiable Information
         piaRequired:
             extra:
-                logicalName: Privacy Impact Analysis required
+                logicalName: PIA Required?
                 notify: true
             type: enum
             values: ["YES", "NO"]
             comment: Whether this system requires a Privacy Impact Analysis
         piaUrl:
             extra:
-                logicalName: URL for the PIA
+                logicalName: PIA URL
                 notify: true
             type: string(255)
             Fisma_Doctrine_Validator_Url: true
             comment: A URL pointing to the Privacy Impact Analysis
         sornRequired:
             extra:
-                logicalName: System Of Record Notice required
+                logicalName: SORN Required?
                 notify: true
             type: enum
             values: ["YES", "NO"]
             comment: Whether a System Of Record Notice is required
         sornUrl:
             extra:
-                logicalName: URL for the SORN
+                logicalName: SORN URL
                 notify: true
             type: string(255)
             Fisma_Doctrine_Validator_Url: true
