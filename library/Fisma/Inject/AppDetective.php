@@ -96,7 +96,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         while ($oXml->read()) {
 
             // The elements of the XML that we care about don't occur until we reach a depth of 2
-            if ($oXml->depth >= 2 && $oXml->nodeType == XMLReader::ELEMENT) {
+            if ($oXml->depth >= 1 && $oXml->nodeType == XMLReader::ELEMENT) {
                 if ($oXml->name == 'testDate') {
 
                     // Parse the discovered date/time out of the testDate field
@@ -175,7 +175,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
 
                 }
             } elseif ($oXml->nodeType == XMLReader::END_ELEMENT) {
-                if ($oXml->name == 'data') {
+                if ($oXml->name == 'data' || $oXml->name == 'vulnerability') {
                     $itemCounter++;
                     $detailCounter = 0;
                 } elseif ($oXml->name =='details') {

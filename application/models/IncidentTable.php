@@ -185,17 +185,12 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => true,
                 'type' => 'text'
             ),
-            'workflow' => array(
+            'currentWorkflowName' => array(
                 'initiallyVisible' => false,
                 'label' => 'Workflow',
-                'join' => array(
-                    'model' => 'IrIncidentWorkflow',
-                    'relation' => 'CurrentWorkflowStep',
-                    'field' => 'name'
-                ),
                 'sortable' => true,
                 'type' => 'text'
-                ),
+            ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
                 'label' => 'Last Modified Date',
