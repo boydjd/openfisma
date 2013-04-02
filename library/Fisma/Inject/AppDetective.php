@@ -161,7 +161,8 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                         // to throw an exception.
                         $cpe = new Fisma_Cpe($oXml->getAttribute('name'));
                         $asset['AssetServices'][0]['Product'] = array('cpeName' => $cpe->cpeName);
-                    } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {}
+                    } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
+                    }
                 } elseif ($oXml->name == 'risk') {
                     $findings[$itemCounter]['risk']=$oXml->readString();
                 } elseif ($oXml->name == 'description') {

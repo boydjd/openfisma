@@ -183,14 +183,16 @@ class Fisma_Inject_Filter_Nmap
                         if (empty($port['version'])) {
                             $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['name'] = $port['name'];
                         } else {
-                            $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['name'] = $port['name'] . ' ' . $port['version'];
+                            $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['name'] =
+                                $port['name'] . ' ' . $port['version'];
                         }
                     }
                 } else {
                     if (empty($port['version'])) {
                         $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['name'] = $port['product'];
                     } else {
-                        $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['name'] = $port['product'] . ' ' . $port['version'];
+                        $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['name'] =
+                            $port['product'] . ' ' . $port['version'];
                     }
                 }
 

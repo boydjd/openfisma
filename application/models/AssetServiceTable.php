@@ -26,7 +26,7 @@
  * @author Andrew Reeves <andrew.reeves@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class AssetServiceTable extends Doctrine_Table
+class AssetServiceTable extends Fisma_Doctrine_Table
 {
 
 }

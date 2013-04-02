@@ -354,7 +354,7 @@
                     $("<option/>")
                         .attr("value", record[valueField])
                         .text($P.sprintf.apply({}, params))
-                        .attr("selected", record[valueField] == val ? "selected" : null)
+                        .attr("selected", record[valueField] === val ? "selected" : null)
                         .appendTo(select);
                 });
             });
