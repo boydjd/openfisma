@@ -252,6 +252,16 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             }
         }
 
+        if ($incident->organizationId) {
+            $org = Doctrine::getTable('Organization')->find($incident->organizationId);
+            if (!empty($org->pocId)) {
+                $incident->pocId = $org->pocId;
+
+                $message = "Responsible people have been notified of this incident.";
+                $this->view->priorityMessenger($message, 'notice');
+            }
+        }
+
         $incident->save();
 
         // Set the reporting user
@@ -265,17 +275,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         }
 
         $conn->commit();
-
-        if ($incident->organizationId) {
-            $org = Doctrine::getTable('Organization')->find($incident->organizationId);
-            if (!empty($org->pocId)) {
-                $incident->pocId = $org->pocId;
-                $incident->save();
-
-                $message = "Responsible people have been notified of this incident.";
-                $this->view->priorityMessenger($message, 'notice');
-            }
-        }
 
         // Clear out serialized incident object
         unset($session->irDraft);
@@ -861,6 +860,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                       ->leftJoin('iw.User user')
                       ->leftJoin('iw.Role role')
                       ->where('iw.incidentId = ?', $id)
+                      ->orderBy('iw.cardinality')
                       ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
 
         $steps = $stepsQuery->execute();
@@ -880,9 +880,6 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     {
         try {
             $comment = $this->getRequest()->getParam('comment');
-
-            // Get reference to current step before marking it complete
-            $currentStep = $incident->CurrentWorkflowStep;
 
             $incident->completeStep($comment);
             Notification::notify(
@@ -1872,6 +1869,10 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         if (is_null($subject)) {
             $subject = new Incident();
             $subject->reportingUserId = CurrentUser::getAttribute('id');
+            $orgId = $form->getValue('organizationId');
+            if (!empty($orgId)) {
+                $subject->pocId = Doctrine::getTable('Organization')->find($orgId)->pocId;
+            }
         }
         return parent::saveValue($form, $subject);
     }

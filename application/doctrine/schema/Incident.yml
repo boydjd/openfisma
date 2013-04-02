@@ -413,9 +413,9 @@ Incident:
                 auditLog: true
                 logicalName: Resolution
 
-        currentWorkflowStepId:
-            type: integer
-            comment: Foreign key to the workflow for this incident
+        # denormalized field for indexing
+        currentWorkflowName:
+            type: string
         reportingUserId:
             type: integer
             comment: Foreign key to the user who reported this incident
@@ -481,10 +481,6 @@ Incident:
                 logicalName: Response Strategies
 
     relations:
-        CurrentWorkflowStep:
-            class: IrIncidentWorkflow
-            local: currentWorkflowStepId
-            foreign: id
         ReportingUser:
             class: User
             local: reportingUserId
