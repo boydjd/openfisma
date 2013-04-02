@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * A scan result injection plugin for injecting QualysGuard XML output directly into OpenFISMA.
- * 
+ *
  * @author     Ben Zheng <ben.zheng@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -30,7 +30,7 @@ class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
     /**
      * Implements the required function in the Inject_Abstract interface.
      * This parses the report and commits all data to the database.
-     * 
+     *
      * @param string $uploadId The id of upload QualysGuard xml file
      */
     protected function _parse($uploadId)
@@ -90,7 +90,7 @@ class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
                     $severity = $oXml->getAttribute('severity');
 
                     switch($severity) {
-                        case "3": 
+                        case "3":
                             $severity = 'LOW';
                             break;
                         case "4":
@@ -160,7 +160,9 @@ class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
                             $asset['name'] = (!empty($cats['port'])) ? $host['ip'] . ':' . $cats['port'] : $host['ip'];
                             $asset['networkId'] = (int) $this->_networkId;
                             $asset['addressIp'] = $host['ip'];
-                            $asset['addressPort'] = (!empty($cats['port'])) ? (int) $cats['port'] : NULL;
+                            if (!empty($cats['port'])) {
+                                $asset['AssetServices'][]['addressPort'] = (int) $cats['port'];
+                            }
                             $asset['source'] = 'scan';
 
                             // Prepare finding
@@ -170,21 +172,21 @@ class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
                                 strtotime($parsedData['discoveredDate']),
                                 Zend_Date::TIMESTAMP
                             );
-                            $findingInstance['discoveredDate'] = (!empty($discoveredDate)) ? 
+                            $findingInstance['discoveredDate'] = (!empty($discoveredDate)) ?
                                 $discoveredDate->toString(Fisma_Date::FORMAT_DATE) : NULL;
 
                             $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                             $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
-                            $findingInstance['description'] = (!empty($finding['description'])) ? 
+                            $findingInstance['description'] = (!empty($finding['description'])) ?
                                 $finding['description'] : NULL;
 
-                            $findingInstance['threat'] = (!empty($finding['consequence'])) ? 
+                            $findingInstance['threat'] = (!empty($finding['consequence'])) ?
                                 $finding['consequence'] : NULL;
 
-                            $findingInstance['recommendation'] = (!empty($finding['solution'])) ? 
+                            $findingInstance['recommendation'] = (!empty($finding['solution'])) ?
                                 $finding['solution'] : NULL;
 
-                            $findingInstance['threatLevel'] = (!empty($finding['severity'])) ? $finding['severity'] 
+                            $findingInstance['threatLevel'] = (!empty($finding['severity'])) ? $finding['severity']
                                 : NULL;
 
                             if (!empty($finding['cve'])) {

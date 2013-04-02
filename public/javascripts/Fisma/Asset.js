@@ -210,7 +210,7 @@ Fisma.Asset = {
                     error: complete
                 });
             });
-        }
+        };
         panel = Fisma.UrlPanel.showPanel(
             'Edit Service',
             "/asset/edit-service/id/" + record.assetId + "/format/html",
