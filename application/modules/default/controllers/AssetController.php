@@ -55,9 +55,148 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->ajaxContext()
              ->addActionContext('add-service-tag', 'json')
              ->addActionContext('rename-service-tag', 'json')
+             ->addActionContext('add-service', 'html')
+             ->addActionContext('edit-service', 'html')
+             ->addActionContext('delete-service', 'html')
+             ->addActionContext('add-service', 'json')
+             ->addActionContext('edit-service', 'json')
+             ->addActionContext('remove-service', 'json')
              ->initContext();
 
         parent::init();
+    }
+
+    /**
+     * viewAction
+     *
+     * @return void
+     *
+     * @GETAllowed
+     */
+    public function viewAction()
+    {
+        $id = $this->_request->getParam('id');
+
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        if ($fromSearchUrl) {
+            $this->view->fromSearchUrl = $fromSearchUrl;
+        }
+
+        $asset = Doctrine::getTable('Asset')->find($id);
+
+        if (!$asset) {
+             $msg = '%s (%d) not found. Make sure a valid ID is specified.';
+             throw new Fisma_Zend_Exception_User(sprintf($msg, $this->_modelName, $id));
+        }
+
+        $this->view->asset = $asset;
+
+        $this->_acl->requirePrivilegeForObject('read', $asset);
+        $this->view->canUpdate = $this->_acl->hasPrivilegeForObject('update', $asset);
+        $this->view->canUpdateSystem = $this->_acl->hasPrivilegeForObject('unaffiliated', $asset);
+
+        $this->view->toolbarButtons = $this->getToolbarButtons($asset);
+        $this->view->searchButtons = $this->getSearchButtons($asset, $fromSearchParams);
+
+        $this->view->serviceTable = new Fisma_Yui_DataTable_Local();
+        $this->view->serviceTable
+             ->addColumn(new Fisma_Yui_DataTable_HiddenColumn('id'))
+             ->addColumn(new Fisma_Yui_DataTable_HiddenColumn('assetId'))
+             ->addColumn(new Fisma_Yui_DataTable_Column('Port', true, null, null, 'addressPort'))
+             ->addColumn(new Fisma_Yui_DataTable_Column('Protocol', true, null, null, 'protocol'))
+             ->addColumn(new Fisma_Yui_DataTable_Column('Service', true, null, null, 'service'))
+             ->addColumn(new Fisma_Yui_DataTable_Column('Product', true, null, null, 'product'));
+        if ($this->_acl->hasPrivilegeForObject('update', $asset)) {
+            $this->view->serviceTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'Actions',
+                    false,
+                    'Fisma.TableFormat.formatActions',
+                    array(
+                        array(
+                            'label' => 'edit',
+                            'icon' => '/images/edit.png',
+                            'handler' => 'Fisma.Asset.editService'
+                        ),
+                        array(
+                            'label' => 'delete',
+                            'icon' => '/images/trash_recyclebin_empty_open.png',
+                            'handler' => 'Fisma.Asset.deleteService'
+                        )
+                    ),
+                    'actions'
+                )
+            );
+        }
+        $services = array();
+        foreach ($asset->AssetServices as $service) {
+            $product = '';
+            if (!empty($service->productId)) {
+                $product = $service->Product->name;
+            }
+            $services[] = array(
+                'id' => $service->id,
+                'assetId' => $id,
+                'addressPort' => $service->addressPort,
+                'protocol' => empty($service->protocol) ? '' : $service->protocol,
+                'service' => empty($service->service) ? '' : $service->service,
+                'product' => $product,
+            );
+        }
+        $this->view->serviceTable
+             ->setData($services)
+             ->setRespectOrder(false)
+             ->setRegistryName('assetServiceTable');
+
+        $addServiceUrl = $this->getHelper('url')
+                              ->simple('add-service', null, null, array('id' => $id, 'format' => 'html'));
+        if ($this->_acl->hasPrivilegeForObject('update', $asset)) {
+            $this->view->addServiceButton = new Fisma_Yui_Form_Button(
+                'addService',
+                array(
+                    'label' => 'Add Service',
+                    'onClickFunction' => 'Fisma.Asset.addService',
+                    'onClickArgument' => array('url' => $addServiceUrl),
+                    'imageSrc' => '/images/create.png'
+                )
+            );
+        } else {
+            $this->view->addServiceButton = '';
+        }
+    }
+
+    /**
+     * updateAction
+     *
+     * @return void
+     */
+    public function updateAction()
+    {
+        $id = $this->_request->getParam('id');
+        $asset = Doctrine::getTable('Asset')->find($id);
+        if (!$asset) {
+            throw new Fisma_Zend_Exception_User("Invalid Asset ID");
+        }
+        $newValues = $this->getRequest()->getPost();
+        $this->_acl->requirePrivilegeForObject('update', $asset);
+        if (isset($newValues['orgSystemId'])) {
+            $this->_acl->requirePrivilegeForObject('unaffiliated', $asset);
+        }
+
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+        try {
+            if (!empty($newValues)) {
+                $asset->merge($newValues);
+                $asset->save();
+            }
+        } catch (Doctrine_Validator_Exception $e) {
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
+        }
+
+        $this->_redirect("/asset/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -394,6 +533,100 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             } else {
                 throw new Fisma_Zend_Exception_User('Tag not found.');
             }
+        }
+    }
+
+    /**
+     * addServiceAction
+     *
+     * @return void
+     *
+     * @GETAllowed
+     */
+    public function addServiceAction()
+    {
+        $id = $this->getRequest()->getParam("id");
+        $asset = Doctrine::getTable('Asset')->find($id);
+        $this->_acl->requirePrivilegeForObject('update', $asset);
+        $form = $this->getForm('asset_service');
+        $form->setAction($this->getHelper('url')->simple('add-service', null, null, array('id' => $id)));
+
+        $this->view->form = $form;
+
+        if ($this->getRequest()->isPost()) {
+            $this->view->post = $this->getRequest()->getPost();
+            if ($form->isValid($this->getRequest()->getPost())) {
+                $assetService = new AssetService();
+                $assetService->assetId = $id;
+                $assetService->merge($form->getValues());
+                $assetService->save();
+                $serviceArray = $assetService->toArray();
+                if (!empty($assetService->productId)) {
+                    $serviceArray['product'] = $assetService->Product->name;
+                }
+                $this->view->newService = $serviceArray;
+            } else {
+                $this->view->errors = Fisma_Zend_Form_Manager::getErrors($form);
+            }
+        }
+    }
+
+    /**
+     * editServiceAction
+     *
+     * @return void
+     *
+     * @GETAllowed
+     */
+    public function editServiceAction()
+    {
+        $id = $this->getRequest()->getParam("id");
+        $form = $this->getForm('asset_service');
+        $form->setAction($this->getHelper('url')->simple('edit-service', null, null, array('id' => $id)));
+        $service = Doctrine::getTable('AssetService')->find($id);
+        $this->_acl->requirePrivilegeForObject('update', $service->Asset);
+        $serviceArray = $service->toArray();
+        if (!empty($service->productId)) {
+            $serviceArray['product'] = $service->Product->name;
+        }
+        $form->setDefaults($serviceArray);
+
+        $this->view->form = $form;
+
+        if ($this->getRequest()->isPost()) {
+            $this->view->post = $this->getRequest()->getPost();
+            if ($form->isValid($this->getRequest()->getPost())) {
+                $service->merge($form->getValues());
+                $service->save();
+                $serviceArray = $service->toArray();
+                if (!empty($service->productId)) {
+                    $serviceArray['product'] = $service->Product->name;
+                }
+                $this->view->service = $serviceArray;
+            } else {
+                $this->view->errors = Fisma_Zend_Form_Manager::getErrors($form);
+            }
+        }
+    }
+
+    /**
+     * removeServiceAction
+     *
+     * @return void
+     */
+    public function removeServiceAction()
+    {
+        $id = $this->getRequest()->getParam("id");
+        $service = Doctrine::getTable('AssetService')->find($id);
+        $this->_acl->requirePrivilegeForObject('update', $service->Asset);
+        try {
+            if (!empty($service)) {
+                $service->delete();
+            } else {
+                $this->view->errors = "Service does not exist.";
+            }
+        } catch(Exception $e) {
+            $this->view->errors = 'Error deleting service.';
         }
     }
 }

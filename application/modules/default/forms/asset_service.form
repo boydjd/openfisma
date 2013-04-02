@@ -1,0 +1,33 @@
+; Author    Andrew Reeves <andrew.reeves@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2013 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[asset_service]
+elements.addressPort.type = "text"
+elements.addressPort.options.label = "Port"
+elements.addressPort.options.required = true
+displayGroups.assetService.elements.addressPort = "addressPort"
+
+elements.protocol.type = "text"
+elements.protocol.options.label = "Protocol"
+displayGroups.assetService.elements.protocol = "protocol"
+
+elements.service.type = "text"
+elements.service.options.label = "Service"
+displayGroups.assetService.elements.service = "service"
+
+elements.product.type = "Form_AutoComplete"
+elements.product.options.label = "Product"
+elements.product.options.style = "width:400px;"
+elements.product.options.attribs.resultsList = "products"
+elements.product.options.attribs.fields = "name"
+elements.product.options.attribs.xhr = "/vm/product/autocomplete/format/json"
+elements.product.options.attribs.hiddenField = "productId"
+elements.product.options.attribs.queryPrepend = "/keyword/"
+elements.product.options.attribs.containerId = "product_ac_container"
+displayGroups.assetService.elements.product = "product"
+elements.productId.type = "hidden"
+elements.productId.options.id = "productId"
+elements.productId.options.filters.stringtrim.filter = "StringTrim"
+elements.productId.options.filters.null.filter = "Null"
+displayGroups.assetService.elements.productId = "productId"

@@ -754,19 +754,25 @@ Fisma.TableFormat = {
     },
 
     formatActions: function(elCell, oRecord, oColumn, oData) {
+        var i, actions;
         try {
-            oData = YAHOO.lang.JSON.parse(oData);
-            var i;
+            // parsing of column data is retained for backward compatibility
+            actions = oColumn.formatterParameters || YAHOO.lang.JSON.parse(oData);
             $(elCell).empty();
-            for (i in oData) {
-                var button = oData[i];
+            for (i in actions) {
+                var button = actions[i],
+                    args = button.args || {};
                 $(elCell).append(
                     $('<button/>')
-                        .data('record', oRecord._oData)
+                        .data({
+                            record: oRecord.getData(),
+                            recordId: oRecord.getId(),
+                            dataTable: this
+                        })
                         .attr('title', button.label)
                         .append($('<img/>').attr({'alt': button.label, 'src': button.icon}))
                         .button()
-                        .click(Fisma.Util.getObjectFromName(button.handler))
+                        .click(args, Fisma.Util.getObjectFromName(button.handler))
                 );
             }
         } catch (e) {

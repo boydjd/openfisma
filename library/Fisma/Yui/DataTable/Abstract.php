@@ -185,9 +185,12 @@ abstract class Fisma_Yui_DataTable_Abstract
      * Set the respectOrder
      *
      * @param boolean $value
+     * @return Fisma_Yui_DataTable_Abstract
      */
     public function setRespectOrder($value)
     {
         $this->_respectOrder = $value;
+
+        return $this;
     }
 }

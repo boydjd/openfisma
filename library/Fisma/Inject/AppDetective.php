@@ -72,6 +72,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
             $this->_persist($report, $uploadId);
         } catch (Exception $e) {
             $report->close();
+            $this->_log->err($e);
             throw new Fisma_Zend_Exception_InvalidFileFormat('An error occured while processing the XML file.', 0, $e);
         }
 
@@ -90,7 +91,6 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
         $detailCounter = 0;
 
         $asset = array();
-        $product = array();
         $findings = array();
 
         while ($oXml->read()) {
@@ -146,7 +146,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                         );
                     }
 
-                    $asset['addressPort'] = $port[1]; // match the parenthesized part of the regex
+                    $asset['AssetServices'][0]['addressPort'] = $port[1]; // match the parenthesized part of the regex
                     $asset['source'] = 'scan';
                 } elseif ($oXml->name == 'cpe-item') {
 
@@ -160,11 +160,8 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                         // It creates a CPE called "cpe:no-match", which is not valid and will cause the Cpe class
                         // to throw an exception.
                         $cpe = new Fisma_Cpe($oXml->getAttribute('name'));
-                        $product['cpeName'] = $cpe->cpeName;
-                    } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
-                        // If the CPE is not valid, then return NULL for the product object
-                        $product = null;
-                    }
+                        $asset['AssetServices'][0]['Product'] = array('cpeName' => $cpe->cpeName);
+                    } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {}
                 } elseif ($oXml->name == 'risk') {
                     $findings[$itemCounter]['risk']=$oXml->readString();
                 } elseif ($oXml->name == 'description') {
@@ -187,7 +184,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
             }
         }
 
-        $this->_saveData($uploadId, $findings, $asset, $product);
+        $this->_saveData($uploadId, $findings, $asset);
     }
 
     /**
@@ -196,9 +193,8 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
      * @param int $uploadId The specific scanner file id
      * @param array findings info
      * @param array asset info
-     * @param array product info
      */
-    private function _saveData($uploadId, $findings, $asset, $product)
+    private function _saveData($uploadId, $findings, $asset)
     {
         foreach ($findings as $finding) {
 
@@ -255,8 +251,8 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 }
                 $findingInstance['description'] =  Fisma_String::textToHtml($findingData);
 
-                // Save finding, asset and product
-                $this->_save($findingInstance, $asset, $product);
+                // Save finding, asset
+                $this->_save($findingInstance, $asset);
             }
         }
         $this->_commit();

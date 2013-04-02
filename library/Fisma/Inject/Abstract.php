@@ -110,6 +110,13 @@ abstract class Fisma_Inject_Abstract
     protected $_numSuppressed = 0;
 
     /**
+     * _log
+     *
+     * @var Zend_Log
+     */
+    protected $_log;
+
+    /**
      * Parse all the data from the specified file, and save it to the instance of the object by calling _save(), and
      * then _commit() to commit to database.
      *
@@ -149,6 +156,7 @@ abstract class Fisma_Inject_Abstract
         $this->_file        = $file;
         $this->_networkId   = $networkId;
         $this->_orgSystemId = $orgSystemId;
+        $this->_log = Zend_Registry::get('Zend_Log');
     }
 
     /**
@@ -182,7 +190,9 @@ abstract class Fisma_Inject_Abstract
         // Add data to provided assetData
         if (!empty($assetData)) {
             $assetData['networkId'] = $this->_networkId;
-            $assetData['orgSystemId'] = $this->_orgSystemId;
+            if (!empty($this->_orgSystemId)) {
+                $assetData['orgSystemId'] = (int)$this->_orgSystemId;
+            }
             $assetData['id'] = $this->_prepareAsset($assetData);
             $findingData['assetId'] = $assetData['id'];
         }
@@ -370,11 +380,6 @@ abstract class Fisma_Inject_Abstract
             $assetQuery->andWhere('a.addressIp IS NULL');
         } else {
             $assetQuery->andWhere('a.addressIp = ?', $assetData['addressIp']);
-        }
-        if (empty($assetData['addressPort'])) {
-            $assetQuery->andWhere('a.addressPort IS NULL');
-        } else {
-            $assetQuery->andWhere('a.addressPort = ?', $assetData['addressPort']);
         }
         $assetRecord = $assetQuery->orWhere('a.deleted_at IS NOT NULL')
                                   ->setHydrationMode(Doctrine::HYDRATE_ARRAY)

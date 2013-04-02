@@ -1,0 +1,149 @@
+<form editable="true"
+      action="/asset/update/id/<?php echo $this->escape($this->asset->id . $this->fromSearchUrl)?>"
+      method="post"
+      id="asset_detail">
+<?php
+    echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
+?>
+    <?php Fisma_Format_Section::startSection("Summary"); ?>
+        <table class="keyValues">
+            <tr>
+                <td>Name:</td>
+                <td>
+                <?php if ($this->canUpdate): ?>
+                    <span class="editable" type="text" name="name" id="asset-name">
+                <?php endif; ?>
+                        <?php echo $this->escape($this->asset->name); ?>
+                <?php if ($this->canUpdate): ?>
+                    </span>
+                <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>IP Address:</td>
+                <td>
+                <?php if ($this->canUpdate): ?>
+                    <span class="editable" type="text" name="addressIp" id="asset-address-ip">
+                <?php endif; ?>
+                        <?php echo $this->escape($this->asset->addressIp); ?>
+                <?php if ($this->canUpdate): ?>
+                    </span>
+                <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>MAC Address:</td>
+                <td>
+                <?php if ($this->canUpdate): ?>
+                    <span class="editable" type="text" name="addressMac" id="asset-address-mac">
+                <?php endif; ?>
+                        <?php echo $this->escape($this->asset->addressMac); ?>&nbsp;
+                <?php if ($this->canUpdate): ?>
+                    </span>
+                <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Product</td>
+                <td>
+                <?php if ($this->canUpdate): ?>
+                    <span
+                        id="asset-product"
+                        type="autocomplete"
+                        xhr="/vm/product/autocomplete/format/json"
+                        queryPrepend="/keyword/"
+                        schemaObject="products"
+                        schemaField="name"
+                        name="productId"
+                        value="<?php echo $this->escape($this->asset->productId); ?>"
+                        defaultValue="<?php echo $this->escape($this->asset->Product->name); ?>">
+                <?php endif; ?>
+                        <?php
+                            if (!empty($this->asset->productId)) {
+                                echo $this->escape($this->asset->Product->name, 'none');
+                            }
+                        ?>
+                <?php if ($this->canUpdate): ?>
+                    </span>
+                    <span class="editable" target="asset-product">&nbsp;</span>
+                <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>System:</td>
+                <td>
+                <?php if ($this->canUpdateSystem): ?>
+                    <span id="asset-system"
+                          type="select"
+                          name="orgSystemId"
+                          href="/metainfo/list/o/system/format/html/"
+                          value="<?php echo $this->escape($this->asset->orgSystemId); ?>">
+                <?php endif; ?>
+                        <?php if (!empty($this->asset->orgSystemId)): ?>
+                            <?php
+                                echo $this->escape(
+                                    $this->organizationInfo(
+                                        $this->asset->Organization->nickname
+                                            . " - "
+                                            . $this->asset->Organization->name,
+                                        $this->asset->Organization->id
+                                    ),
+                                    'none'
+                                );
+                            ?>
+                        <?php else: ?>
+                            (Unassigned)
+                        <?php endif; ?>
+                <?php if ($this->canUpdateSystem): ?>
+                    </span>
+                    <span class="editable" target="asset-system">&nbsp;</span>
+                <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Network:</td>
+                <td>
+                <?php if ($this->canUpdate): ?>
+                    <span id="asset-network"
+                          type="select"
+                          name="networkId"
+                          json="/network/search"
+                          jsonLabelFields="name"
+                          value="<?php echo $this->escape($this->asset->networkId); ?>">
+                <?php endif; ?>
+                        <?php if (!empty($this->asset->networkId)): ?>
+                            <?php echo $this->escape($this->asset->Network->name, 'none'); ?>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
+                <?php if ($this->canUpdate): ?>
+                    </span>
+                    <span class="editable" target="asset-network">&nbsp;</span>
+                <?php endif; ?>
+                </td>
+            </tr>
+            <tr>
+                <td>Environment:</td>
+                <td>
+                <?php if ($this->canUpdate): ?>
+                    <span class="editable" type="text" name="serviceTag" id="asset-service-tag">
+                <?php endif; ?>
+                        <?php echo $this->escape($this->asset->serviceTag); ?>&nbsp;
+                <?php if ($this->canUpdate): ?>
+                    </span>
+                <?php endif; ?>
+                </td>
+            </tr>
+        </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection("Services"); ?>
+        <?php echo $this->escape($this->addServiceButton, 'none'); ?>
+        <?php echo $this->escape($this->serviceTable, 'none'); ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
+</form>
+<script type="text/javascript">
+    $(function() {
+        Fisma.Editable.setupEditFields();
+    });
+</script>

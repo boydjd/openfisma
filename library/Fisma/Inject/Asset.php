@@ -4,48 +4,48 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
- * Imports assets and their related products 
- * 
+ * Imports assets and their related products
+ *
  * @package Fisma
  * @subpackage Import
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Fisma_Inject_Asset extends Fisma_Inject_Abstract
 {
 
     /**
-     * Array of assets 
-     * 
+     * Array of assets
+     *
      * @var array
      */
     private $_assets = array();
 
     /**
-     * Array of products 
-     * 
+     * Array of products
+     *
      * @var array
      */
     private $_products = array();
 
     /**
-     * Parse assets out of the imported file 
-     * 
-     * @return boolean 
+     * Parse assets out of the imported file
+     *
+     * @return boolean
      */
     protected function _parse($uploadId)
     {
@@ -87,7 +87,7 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
             $this->_setMessage(array('warning' => 'Unable to commit assets.'));
             return FALSE;
         } else {
-            
+
             if ($this->_numImported > 0) {
                 $this->_setMessage(array('notice' => $this->_numImported . ' asset(s) were imported successfully.'));
             }
@@ -101,8 +101,8 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
     }
 
     /**
-     * Create and commit new products 
-     * 
+     * Create and commit new products
+     *
      * @return boolean
      */
     protected function _saveProducts()
@@ -128,13 +128,13 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
             return TRUE;
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollBack();
-            return FALSE;
+            throw $e;
         }
     }
 
     /**
-     * Create new assets and save in $this->_assets for commit 
-     * 
+     * Create new assets and save in $this->_assets for commit
+     *
      * @return boolean
      */
     protected function _save($findingData = NULL, $assetData = NULL, $productData = NULL)
@@ -144,6 +144,7 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
                 if (!$asset['duplicate']) {
                     $assetObj = new Asset();
                     $assetObj->merge($asset);
+                    $assetObj->save();
                     $asset = $assetObj;
                 } else {
                     $this->_numSuppressed++;
@@ -151,19 +152,19 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
             }
             return TRUE;
         } catch (Exception $e) {
-            return FALSE;
+            throw $e;
         }
     }
 
     /**
      * Commit new assets
-     * 
-     * @return boolean 
+     *
+     * @return boolean
      */
     protected function _commit()
     {
         Doctrine_Manager::connection()->beginTransaction();
-         
+
         try {
             foreach ($this->_assets as &$asset) {
                 if (!is_array($asset)) {
@@ -183,8 +184,8 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
 
     /**
      * Search for pre-existing product
-     * 
-     * @param mixed $product 
+     *
+     * @param mixed $product
      * @return int
      */
     private function _getDuplicateProduct($product)
@@ -200,7 +201,7 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
         } else {
             $q->andWhere('p.version = ?', $product['version']);
         }
-            
+
         $result = $q->execute();
 
         if ($result) {
@@ -212,9 +213,9 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
 
     /**
      * Search for pre-existing asset
-     * 
-     * @param mixed $asset 
-     * @return boolean 
+     *
+     * @param mixed $asset
+     * @return boolean
      */
     private function _getDuplicateAsset($asset)
     {
@@ -224,12 +225,6 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
             ->where('addressIp = ?', $asset['addressIp'])
             ->andWhere('networkId = ?', $this->_networkId)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
-
-        if (empty($asset['addressPort'])) {
-            $duplicateAssets->andWhere('addressPort IS NULL');
-        } else {
-            $duplicateAssets->andWhere('addressPort = ?', $asset['addressPort']);
-        }
 
         if (empty($asset['orgSystemId'])) {
             $duplicateAssets->andWhere('orgSystemId IS NULL');
@@ -243,10 +238,10 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
     }
 
     /**
-     * Attempt to detect the type of the file uploaded 
-     * 
-     * @param string $filename 
-     * @return string|boolean 
+     * Attempt to detect the type of the file uploaded
+     *
+     * @param string $filename
+     * @return string|boolean
      */
     private static function _detectFilterType($filename)
     {
