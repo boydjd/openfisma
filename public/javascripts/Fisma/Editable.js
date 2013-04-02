@@ -358,7 +358,7 @@
                         .appendTo(select);
                 });
             });
-        } else if (json) { // pull from a json data source such as search
+        } else if (href) {
             select.load(href);
         }
         if (!Fisma.Editable.editMode) {
