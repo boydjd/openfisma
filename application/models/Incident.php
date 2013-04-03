@@ -44,6 +44,26 @@ class Incident extends BaseIncident
 
             $this->reportTs = Fisma::now();
             $this->reportTz = Zend_Date::now()->getTimezone();
+
+            try {
+                $workflow = Doctrine::getTable('Workflow')->findDefaultByModule('incident');
+                if ($workflow) {
+                    $this->CurrentStep = $workflow->getFirstStep();
+                    switch ($this->CurrentStep->allottedTime) {
+                        case 'days':
+                            $this->nextDueDate = Zend_Date::now()
+                                ->addDay($this->CurrentStep->allottedDays)
+                                ->toString(Fisma_Date::FORMAT_DATE);
+                            break;
+                        case 'custom':
+                        case 'unlimited':
+                        case 'ecd':
+                        default:
+                            $this->nextDueDate = null;
+                    }
+                }
+            } catch (Exception $e) {
+            }
         }
     }
 
@@ -130,72 +150,22 @@ class Incident extends BaseIncident
 
         $this->_set('categoryId', $categoryId);
 
-        if ('new' == $this->status) {
-            $this->status = 'open';
-        }
-        $this->currentWorkflowName = null;
-        $completedCount = 0;
-        foreach ($this->Workflow as $key => $step) {
-            if ($step->status === 'completed') {
-                $completedCount++;
-            } else {
-                $this->Workflow->remove($key);
-            }
-        }
         $category = null;
         if (!empty($categoryId)) {
             $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
         }
 
-        $changedWorkflowName = "Change Workflows";
-
         if (!empty($category)) {
-            $changedWorkflowMessage = "<p>The category has been changed to \"{$category->name}\" and the workflow"
-                                    . " has been modified accordingly.</p>";
-        } else {
-            $changedWorkflowMessage = "<p>The category has been removed and the workflow has been closed.</p>";
-        }
+            $destinationStep = $category->Workflow->getFirstStep();
 
-        if ($completedCount > 0) {
-            $completedCount++;
-            $iw = new IrIncidentWorkflow();
-            $iw->name = $changedWorkflowName;
-            $iw->description = $changedWorkflowMessage;
-            $iw->cardinality = $completedCount;
-            $iw->completeStep();
-            $this->Workflow[] = $iw;
-        }
-
-        if (!empty($category)) {
-            /*
-             * Create a copy of the workflow and assign it to this incident. This is like a SQL
-             * 'INSERT INTO <table> SELECT...' statement, except Doctrine doesn't support that kind of query.
-             */
-            $workflowQuery = Doctrine_Query::create()
-                             ->select('s.id, s.roleId, s.cardinality, s.name, s.description')
-                             ->from('IrStep s')
-                             ->where('s.workflowid = ?', $category->workflowId)
-                             ->orderby('s.cardinality');
-
-            $workflowSteps = $workflowQuery->execute();
-
-            $firstLoop = true;
-
-            foreach ($workflowSteps as $step) {
-                $iw = new IrIncidentWorkflow();
-                $iw->Role = $step->Role;
-                $iw->name = $step->name;
-                $iw->description = $step->description;
-                $iw->cardinality = $step->cardinality + $completedCount;
-                $iw->Incident = $this;
-                $this->Workflow[] = $iw;
-
-                if ($firstLoop) {
-                    $firstLoop = false;
-                    $iw->status = 'current';
-                    $this->currentWorkflowName = $iw->name;
-                }
-            }
+            WorkflowStep::completeOnObject(
+                $this,
+                'Migrating',
+                'The incident category was updated.',
+                CurrentUser::getAttribute('id'),
+                '0',
+                $destinationStep->id
+            );
 
             $this->getAuditLog()->write('Changed Category: ' .  $category->name);
         } else {
@@ -233,73 +203,6 @@ class Incident extends BaseIncident
         }
 
         $this->_set('denormalizedParentOrganizationId', $parentOrganizationId);
-    }
-
-    /**
-     * Complete the current workflow step for this incident and advance to the next step
-     *
-     * @param string $comment The user's comment associated with completing this workflow step
-     */
-    public function completeStep($comment)
-    {
-        // Validate that comment is not empty
-        if ('' == trim($comment)) {
-            throw new Fisma_Zend_Exception_User('You must provide a comment');
-        }
-
-        // Update the completed step first
-        $completedStep = null;
-        foreach ($this->Workflow as $step) {
-            if ($step->status == 'current') {
-                $completedStep = $step;
-                break;
-            }
-        }
-        $completedStep->completeStep($comment);
-        $completedStep->save();
-
-        // Log the completed step
-        $logMessage = 'Completed workflow step #'
-                    . $completedStep->cardinality
-                    . ': '
-                    . $completedStep->name;
-        $this->getAuditLog()->write($logMessage);
-
-        /*
-         * The next step can be identified by its cardinality, which is always one more than the cardinality of the
-         * current step. If no such step exists, then the current step is the last step.
-         */
-        $nextStepQuery = Doctrine_Query::create()
-                         ->from('IrIncidentWorkflow iw')
-                         ->where('iw.incidentId = ?', $this->id)
-                         ->andWhere('iw.cardinality = ?', $completedStep->cardinality + 1);
-
-        $nextStepResult = $nextStepQuery->execute();
-
-        if (0 == count($nextStepResult)) {
-            // There is no next step, so close this incident
-            $this->currentWorkflowName = null;
-            $this->status = 'closed';
-            $this->closedTs = Zend_Date::now()->get(Zend_Date::ISO_8601);
-            $this->resolution = 'resolved';
-            $this->save();
-
-            // Log the closure of the incident
-            $this->getAuditLog()->write('Incident Resolved and Closed');
-        } elseif (1 == count($nextStepResult)) {
-            // The next step will change status to 'current'
-            $nextStep = $nextStepResult[0];
-            $nextStep->status = 'current';
-            $nextStep->save();
-
-            // Update this record's workflow pointer
-            $this->currentWorkflowName = $nextStep->name;
-            $this->save();
-        } else {
-            $message = "The workflow for this incident ($this->id) appears to be corrupted. There are two steps"
-                     . " with the same id.";
-            throw new Fisma_Zend_Exception($message);
-        }
     }
 
     /**

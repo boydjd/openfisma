@@ -504,3 +504,1026 @@ Workflow:
                         destination: 'custom'
                         roles: '[]'
                         customDestination: 5
+
+    incident_acceptance:
+        name: 'New'
+        description: 'Default bucket for new incidents'
+        isDefault: true
+        module: 'incident'
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 20
+                cardinality: 1
+                name: 'Categorize'
+                label: 'CAT'
+                description: 'Please assign a category for the incident. It will automatically be transitioned to the corresponding workflow.'
+
+    unauthorized_access_wkflw:
+        name: Workflow for handling unauthorized access incidents
+        module: 'incident'
+        Creator: root
+        WorkflowSteps:
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 21
+                cardinality: 1
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected
+                    resources</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 22
+                cardinality: 2
+                name: Report the incident to the appropriate internal personnel and external organizations
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 23
+                cardinality: 3
+                name: Perform an initial containment of the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 24
+                cardinality: 4
+                name: Acquire, preserve, secure, and document evidence
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 25
+                cardinality: 5
+                name: Confirm the containment of the incident
+                description: >
+                    <ol><li>Further analyze the incident and determine if containment was sufficient</li><li>Implement
+                    additional containment measures if necessary</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 26
+                cardinality: 6
+                name: Eradicate the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 27
+                cardinality: 7
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional
+                    monitoring to look for future related activity.</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 28
+                cardinality: 8
+                name: Create a follow-up report
+            -
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 29
+                cardinality: 9
+                name: Hold a lessons learned meeting
+    denial_of_service_wkflw:
+        name: Workflow for handling DoS attack
+        module: 'incident'
+        Creator: root
+        WorkflowSteps:
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 30
+                cardinality: 1
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected
+                    resources</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 31
+                cardinality: 2
+                name: Report the incident to the appropriate internal personnel and external organizations
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 32
+                cardinality: 3
+                name: Acquire, preserve, secure, and document evidence
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 33
+                cardinality: 4
+                name: Contain the incident – halt the DoS if it has not already been stopped
+                description: >
+                    <ol><li>Identify and mitigate all vulnerabilities that were used</li><li>If not yet contained,
+                    implement filtering based on the characteristics of the attack</li><li>If not yet contained,
+                    contact ISP or assistance in filtering attack</li><li>If not yet contained, relocate the
+                    target</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 34
+                cardinality: 5
+                name: >
+                    Eradicate the incident; if previous step was not performed, identify and mitigate all
+                    vulnerabilities that were used.
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 35
+                cardinality: 6
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional
+                    monitoring to look for future related activity.</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 36
+                cardinality: 7
+                name: Create a follow-up report
+            -
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 37
+                cardinality: 8
+                name: Hold a lessons learned meeting
+
+    malicious_code_wkflw:
+        name: Workflow for handling malicious code incident
+        module: 'incident'
+        Creator: root
+        WorkflowSteps:
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 38
+                cardinality: 1
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected
+                    resources</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 39
+                cardinality: 2
+                name: Report the incident to the appropriate internal personnel and external organizations
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 40
+                cardinality: 3
+                name: Contain the incident
+                description: >
+                    <ol><li>Identify infected systems</li><li>Disconnect infected systems from the
+                    network</li><li>Mitigate vulnerabilities that were exploited by the malicious code</li><li>If
+                    necessary, block the transmission mechanisms for the malicious code</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 41
+                cardinality: 4
+                name: Eradicate the incident
+                description: >
+                    <ol><li>Disinfect, quarantine, delete, and replace infected files</li><li>Mitigate the exploited
+                    vulnerabilities for other hosts within the organization</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 42
+                cardinality: 5
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready statei</li><li>Confirm that the affected
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional
+                    monitoring to look for future related activity.</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 43
+                cardinality: 6
+                name: Create a follow-up report
+            -
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 44
+                cardinality: 7
+                name: Hold a lessons learned meeting
+
+    improper_usage_wkflw:
+        name: Workflow for handling improper usage incidents
+        module: 'incident'
+        Creator: root
+        WorkflowSteps:
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 45
+                cardinality: 1
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected
+                    resources</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 46
+                cardinality: 2
+                name: Report the incident to the appropriate internal personnel and external organizations
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 47
+                cardinality: 3
+                name: Acquire, preserve, secure, and document evidence
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 48
+                cardinality: 4
+                name: If necessary, contain and eradicate the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 49
+                cardinality: 5
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional
+                    monitoring to look for future related activity.</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 50
+                cardinality: 6
+                name: Create a follow-up report
+            -
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 51
+                cardinality: 7
+                name: Hold a lessons learned meeting
+
+    scan_probe_wkflw:
+        name: Workflow for handling scan / probe / attempted access incident
+        module: 'incident'
+        Creator: root
+        WorkflowSteps:
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 52
+                cardinality: 1
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected
+                    resources</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 53
+                cardinality: 2
+                name: Report the incident to the appropriate internal personnel and external organizations
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 54
+                cardinality: 3
+                name: Acquire, preserve, secure, and document evidence
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 55
+                cardinality: 4
+                name: Contain the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 56
+                cardinality: 5
+                name: Eradicate the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 57
+                cardinality: 6
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional
+                    monitoring to look for future related activity.</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 58
+                cardinality: 7
+                name: Create a follow-up report
+            -
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 59
+                cardinality: 8
+                name: Hold a lessons learned meeting
+
+    defacement_wkflw:
+        name: Workflow for handling web site defacement incident
+        module: 'incident'
+        Creator: root
+        WorkflowSteps:
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 60
+                cardinality: 1
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected
+                    resources</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 61
+                cardinality: 2
+                name: Report the incident to the appropriate internal personnel and external organizations
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 62
+                cardinality: 3
+                name: Acquire, preserve, secure, and document evidence
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 63
+                cardinality: 4
+                name: Contain the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 64
+                cardinality: 5
+                name: Eradicate the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 65
+                cardinality: 6
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional
+                    monitoring to look for future related activity.</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 66
+                cardinality: 7
+                name: Create a follow-up report
+            -
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 67
+                cardinality: 8
+                name: Hold a lessons learned meeting
+
+    social_engineering_wkflw:
+        name: Workflow for handling social engineering incident
+        module: 'incident'
+        Creator: root
+        WorkflowSteps:
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 68
+                cardinality: 1
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected
+                    resources</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 69
+                cardinality: 2
+                name: Report the incident to the appropriate internal personnel and external organizations
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 70
+                cardinality: 3
+                name: Acquire, preserve, secure, and document evidence
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 71
+                cardinality: 4
+                name: Contain the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 72
+                cardinality: 5
+                name: Eradicate the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 73
+                cardinality: 6
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional
+                    monitoring to look for future related activity.</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 74
+                cardinality: 7
+                name: Create a follow-up report
+            -
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 75
+                cardinality: 8
+                name: Hold a lessons learned meeting
+
+    pii_compromise_wkflw:
+        name: Workflow for handling compromise of PII
+        module: 'incident'
+        Creator: root
+        WorkflowSteps:
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 76
+                cardinality: 1
+                name: Prioritize handling the incident based on the business impact
+                description: >
+                    <ol><li>Identify which resources have been affected and forecast which resources will be
+                    affected</li><li>Estimate the current and potential technical effect of the incident</li><li>Find
+                    the appropriate cell(s) in the prioritization matrix based on the technical effect and affected
+                    resources</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 77
+                cardinality: 2
+                name: Report the incident to the appropriate internal personnel and external organizations
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 78
+                cardinality: 3
+                name: Acquire, preserve, secure, and document evidence
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 79
+                cardinality: 4
+                name: Contain the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 80
+                cardinality: 5
+                name: Eradicate the incident
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 81
+                cardinality: 6
+                name: Recover from the incident
+                description: >
+                    <ol><li>Return affected systems to an operationally ready state</li><li>Confirm that the affected
+                    systems are functioning normally</li><li>If necessary and feasible, implement additional
+                    monitoring to look for future related activity.</li></ol>
+            -
+                transitions:
+                    -
+                        name: 'Complete Step'
+                        destination: 'next'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 82
+                cardinality: 7
+                name: Create a follow-up report
+            -
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Go Back'
+                        destination: 'back'
+                        customDestination: 'undefined'
+                        roles: '[]'
+                id: 83
+                cardinality: 8
+                name: Hold a lessons learned meeting

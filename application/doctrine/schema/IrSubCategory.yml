@@ -27,7 +27,7 @@ IrSubCategory:
             foreign: id
             foreignAlias: SubCategories
         Workflow:
-            class: IrWorkflowDef
+            class: Workflow
             local: workflowId
             foreign: id
             foreignAlias: SubCategories

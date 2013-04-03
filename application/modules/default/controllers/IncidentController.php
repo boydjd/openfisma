@@ -342,7 +342,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
         $tabView = new Fisma_Yui_TabView('SystemView', $id);
 
         $tabView->addTab("Incident $id", "/incident/incident/id/$id");
-        $tabView->addTab('Workflow', "/incident/workflow/id/$id");
+        $tabView->addTab("Workflow", "/workflow/workflow/format/html/model/incident/id/$id");
         $tabView->addTab('Actors & Observers', "/incident/users/id/$id");
         $tabView->addTab("Comments ($commentCount)", "/incident/comments/id/$id");
         $tabView->addTab(

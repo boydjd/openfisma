@@ -175,7 +175,7 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
 
                 $i->pocId = $this->_getRandomUser()->id;
 
-                // Auto approve 80% of the incidents, reject 10%, and leave 10% alone
+                /*// Auto approve 80% of the incidents, reject 10%, and leave 10% alone
                 $action = rand(1, 100);
                 if ($action <= 80) {
                     $i->categoryId = $this->_getRandomSubCategoryId();
@@ -188,7 +188,7 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
                 } elseif ($action <= 90) {
                     $i->reject('Automatically rejected by generate-incidents.php script.');
                     $i->save();
-                }
+                }*/
 
                 $i->free();
                 unset($i);

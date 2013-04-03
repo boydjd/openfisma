@@ -190,12 +190,6 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => true,
                 'type' => 'text'
             ),
-            'currentWorkflowName' => array(
-                'initiallyVisible' => false,
-                'label' => 'Workflow',
-                'sortable' => true,
-                'type' => 'text'
-            ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
                 'sortable' => true,
@@ -296,6 +290,34 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => false,
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.formatComments'
+            ),
+            'workflow' => array(
+                'initiallyVisible' => true,
+                'label' => 'Workflow',
+                'sortable' => true,
+                'type' => 'text',
+                'join' => array(
+                    'model' => 'Workflow',
+                    'relation' => 'CurrentStep.Workflow',
+                    'field' => 'name'
+                )
+            ),
+            'workflowStep' => array(
+                'initiallyVisible' => true,
+                'label' => 'Workflow Step',
+                'sortable' => true,
+                'type' => 'text',
+                'join' => array(
+                    'model' => 'WorkflowStep',
+                    'relation' => 'CurrentStep',
+                    'field' => 'name'
+                )
+            ),
+            'nextDueDate' => array(
+                'initiallyVisible' => true,
+                'sortable' => true,
+                'type' => 'date',
+                'formatter' => 'Fisma.TableFormat.formatDuedate'
             ),
             'closedTs' => array(
                 'initiallyVisible' => false,

@@ -7,6 +7,15 @@ Incident:
             type: timestamp
             extra:
                 logicalName: Resolved
+        isResolved:
+            type: boolean
+            default: false
+            notnull: true
+            extra:
+                auditLog: true
+                logicalName: Vulnerability_Status
+                searchIndex: unstored
+            comment: The current status.
 
         reporterTitle:
             type: string(255)
@@ -412,10 +421,23 @@ Incident:
             extra:
                 auditLog: true
                 logicalName: Resolution
+        completedSteps: array
+        currentStepId:
+            type: integer
+            extra:
+                auditLog: true
+                logicalName: Current Workflow Step
+                class: WorkflowStep
+                field: name
+            comment: Foreign key to the current workflow step
+        nextDueDate:
+            type: date
+            comment: The deadline date for the next action that needs to be taken on this finding. After this date, the finding is considered to be overdue.
+            extra:
+                logicalName: Workflow Due Date
+
 
         # denormalized field for indexing
-        currentWorkflowName:
-            type: string
         reportingUserId:
             type: integer
             comment: Foreign key to the user who reported this incident
@@ -511,6 +533,11 @@ Incident:
             foreign: userId
             refClass: IrIncidentUser
             foreignAlias: Incidents
+        CurrentStep:
+            class: WorkflowStep
+            local: currentStepId
+            foreign: id
+            foreignAlias: IncidentCollection
 
     actAs:
         SoftDelete:

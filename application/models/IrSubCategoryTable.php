@@ -68,7 +68,7 @@ class IrSubCategoryTable extends Fisma_Doctrine_Table implements Fisma_Search_Se
                 'initiallyVisible' => true,
                 'label' => 'Workflow',
                 'join' => array(
-                    'model' => 'IrWorkflowDef',
+                    'model' => 'Workflow',
                     'relation' => 'Workflow',
                     'field' => 'name'
                 ),

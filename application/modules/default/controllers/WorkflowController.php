@@ -65,7 +65,7 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
         $this->view->tabView = new Fisma_Yui_TabView('WorkflowManage');
         $this->view->tabView->addTab("Finding", '/workflow/list/format/html/type/finding');
         $this->view->tabView->addTab("Vulnerability", '/workflow/list/format/html/type/vulnerability');
-        //$this->view->tabView->addTab("Incident", '/workflow/list/format/html/type/incident');
+        $this->view->tabView->addTab("Incident", '/workflow/list/format/html/type/incident');
         $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
@@ -311,6 +311,7 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
                         );
                     }
                 }
+                $step->moveLast();
                 $step->delete();
             }
             $this->_redirect('/workflow/view/id/' . $this->view->workflow->id);
