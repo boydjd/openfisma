@@ -179,9 +179,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->updateIncidentPrivilege):
-        Fisma_Format_Section::startSection($this->getColumn('additionalInfo'), 'additionalInfo');
+        Fisma_Format_Section::startSection($this->column('additionalInfo', null, false), 'additionalInfo');
     else:
-        Fisma_Format_Section::startSection($this->getColumn('additionalInfo'));
+        Fisma_Format_Section::startSection($this->column('additionalInfo', null, false));
     endif;
     ?>
         <div name="incident[additionalInfo]" id="additionalInfo" type="textarea">
@@ -190,9 +190,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->updateIncidentPrivilege):
-        Fisma_Format_Section::startSection($this->getColumn('actionsTaken'), 'actionsTaken');
+        Fisma_Format_Section::startSection($this->column('actionsTaken', null, false), 'actionsTaken');
     else:
-        Fisma_Format_Section::startSection($this->getColumn('actionsTaken'));
+        Fisma_Format_Section::startSection($this->column('actionsTaken', null, false));
     endif;
     ?>
         <div name="incident[actionsTaken]" id="actionsTaken" type="textarea">

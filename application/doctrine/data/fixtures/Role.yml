@@ -31,10 +31,7 @@ Role:
             - vulnerability_update
             - vulnerability_delete
             - vulnerability_comment
-            - asset_create
-            - asset_read
-            - asset_update
-            - asset_delete
+            - asset_manage
             - asset_unaffiliated
             - asset_manage_service_tags
             - user_create
@@ -139,10 +136,7 @@ Role:
             - vulnerability_update
             - vulnerability_delete
             - vulnerability_comment
-            - asset_create
-            - asset_read
-            - asset_update
-            - asset_delete
+            - asset_manage
             - asset_manage_service_tags
             - user_read
             - organization_read
@@ -219,7 +213,6 @@ Role:
             - findings_comment
             - vulnerability_read
             - vulnerability_comment
-            - asset_read
             - user_read
             - organization_read
             - product_read

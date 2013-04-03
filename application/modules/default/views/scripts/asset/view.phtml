@@ -3,12 +3,13 @@
       method="post"
       id="asset_detail">
 <?php
+    $this->table = $this->asset->getTable();
     echo $this->escape($this->searchBox($this->toolbarButtons, $this->searchForm, $this->searchButtons), 'none');
 ?>
     <?php Fisma_Format_Section::startSection("Summary"); ?>
         <table class="keyValues">
             <tr>
-                <td>Name:</td>
+                <th scope='row'><?php $this->column('name'); ?>:</th>
                 <td>
                 <?php if ($this->canUpdate): ?>
                     <span class="editable" type="text" name="name" id="asset-name">
@@ -20,7 +21,7 @@
                 </td>
             </tr>
             <tr>
-                <td>IP Address:</td>
+                <th scope='row'><?php $this->column('addressIp'); ?>:</th>
                 <td>
                 <?php if ($this->canUpdate): ?>
                     <span class="editable" type="text" name="addressIp" id="asset-address-ip">
@@ -32,7 +33,7 @@
                 </td>
             </tr>
             <tr>
-                <td>MAC Address:</td>
+                <th scope='row'><?php $this->column('addressMac'); ?>:</th>
                 <td>
                 <?php if ($this->canUpdate): ?>
                     <span class="editable" type="text" name="addressMac" id="asset-address-mac">
@@ -44,7 +45,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Product</td>
+                <th scope='row'><?php $this->column('productId'); ?>:</th>
                 <td>
                 <?php if ($this->canUpdate): ?>
                     <span
@@ -70,7 +71,7 @@
                 </td>
             </tr>
             <tr>
-                <td>System:</td>
+                <th scope='row'><?php $this->column('orgSystemId'); ?>:</th>
                 <td>
                 <?php if ($this->canUpdateSystem): ?>
                     <span id="asset-system"
@@ -101,7 +102,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Network:</td>
+                <th scope='row'><?php $this->column('networkId'); ?>:</th>
                 <td>
                 <?php if ($this->canUpdate): ?>
                     <span id="asset-network"
@@ -123,7 +124,7 @@
                 </td>
             </tr>
             <tr>
-                <td>Environment:</td>
+                <th scope='row'><?php $this->column('serviceTag'); ?>:</th>
                 <td>
                 <?php if ($this->canUpdate): ?>
                     <span class="editable" type="text" name="serviceTag" id="asset-service-tag">

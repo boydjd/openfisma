@@ -26,11 +26,20 @@
  */
 class View_Helper_Column extends Zend_View_Helper_Abstract
 {
-    function column($columnName, $view = null, $table = null)
+    public function column($columnName, $table = null, $echo = true)
     {
-        $view = ($view) ? $view : Zend_Layout::getMvcInstance()->getView();
-        if ($view) {
-            echo $view->getColumn($columnName, $view, $table);
+        $view = $this->view;
+        $table = ($table) ? $table : (isset($view->table) ? $view->table : null);
+
+        $column = $columnName;
+        if ($table) {
+            $column = $view->translate($table->getLogicalName($columnName)));
         }
+
+        if ($echo) {
+            echo $column;
+        }
+
+        return $view->escape($columnName);
     }
 }

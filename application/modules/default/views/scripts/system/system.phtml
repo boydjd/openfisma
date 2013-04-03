@@ -45,7 +45,7 @@ Fisma_Format_Section::startSection('Summary');
         </td>
     </tr>
     <tr>
-        <th scope='row'><?php $this->column('systemTypeId', $this, $this->organization->System->getTable()); ?>:</th>
+        <th scope='row'><?php $this->column('systemTypeId', $this->organization->System->getTable()); ?>:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -70,7 +70,7 @@ Fisma_Format_Section::startSection('Summary');
         </td>
     </tr>
     <tr>
-        <th scope='row'><?php $this->column('sdlcPhase', $this, $this->organization->System->getTable()); ?>:</th>
+        <th scope='row'><?php $this->column('sdlcPhase', $this->organization->System->getTable()); ?>:</th>
         <td>
             <?php
             if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
@@ -127,9 +127,9 @@ Fisma_Format_Section::startSection('Summary');
 Fisma_Format_Section::stopSection();
 
 if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
-    Fisma_Format_Section::startSection($this->getColumn('description'), 'system_description');
+    Fisma_Format_Section::startSection($this->column('description', null, false), 'system_description');
 } else {
-    Fisma_Format_Section::startSection($this->getColumn('description'));
+    Fisma_Format_Section::startSection($this->column('description', null, false));
 }
 ?>
 <div name="description" id="system_description" type="textarea" rows="3" cols="120">
@@ -176,7 +176,7 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             <tr>
                 <th scope='row'><?php echo $this->escape(new Fisma_Yui_Tooltip(
                     'defaultPOC',
-                    $this->getColumn('pocId') . ':',
+                    $this->column('pocId', null, false) . ':',
                     '<b>' . $this->escape($this->translate('Organization_Point_of_Contact')) . '</b><p>The default ' .
                     'person assigned responsibility for findings associated with this system. The assignee may be ' .
                     'changed when editing individual findings.</p>'
@@ -241,5 +241,27 @@ if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
             </tr>
         <?php endforeach; ?>
         </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Unresolved Issues'); ?>
+        <table class='keyValues'>
+            <tr>
+                <th scope='row'>Findings:</th>
+                <td><a href='/finding/remediation/list?q=/isResolved/booleanNo/organization/textExactMatch/<?php
+                    echo $this->escape($this->organization->nickname, 'url');
+                ?>'><?php echo $this->escape($this->findingCount); ?></a></td>
+            </tr>
+            <tr>
+                <th scope='row'>Incidents:</th>
+                <td><a href='/incident/list?q=/status/enumIsNot/closed/organization/textExactMatch/<?php
+                    echo $this->escape($this->organization->nickname, 'url');
+                ?>'><?php echo $this->escape($this->incidentCount); ?></a></td>
+            </tr>
+            <tr>
+                <th scope='row'>Vulnerabilities:</th>
+                <td><a href='/vm/vulnerability/list?q=/isResolved/booleanNo/organization/textExactMatch/<?php
+                    echo $this->escape($this->organization->nickname, 'url');
+                ?>'><?php echo $this->escape($this->vulnerabilityCount); ?></a></td>
+            </tr>
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>

@@ -49,23 +49,6 @@ class Asset extends BaseAsset implements Fisma_Zend_Acl_OrganizationDependency
     }
 
     /**
-     * preDelete
-     *
-     * @param Doctrine_Event $event
-     * @access public
-     * @return void
-     */
-    public function preDelete($event)
-    {
-        if (count($this->Vulnerabilities) > 0) {
-            throw new Fisma_Zend_Exception_User(
-                'This asset cannot be deleted because it has vulnerabilities against it'
-            );
-        }
-
-    }
-
-    /**
      * setOrgSystemId
      *
      * @param mixed $value

@@ -41,7 +41,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $this->_acl->requireArea('vulnerability');
         $this->_visibleOrgs = $this->_me
-            ->getOrganizationsByPrivilegeQuery('finding', 'read')
+            ->getOrganizationsByPrivilegeQuery('vulnerability', 'read')
             ->select('o.id')
             ->execute()
             ->toKeyValueArray('id', 'id');
@@ -73,7 +73,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $byWorkflowQuery = Doctrine_Query::create()
             ->select('COUNT(v.id) as count, IFNULL(w.name, "Unassigned") as criteria, ' .
-                     'IFNULL(w.description, "") as tooltip, f.currentStepId, ws.id, w.id')
+                     'IFNULL(w.description, "") as tooltip, v.currentStepId, ws.id, w.id')
             ->from('Vulnerability v')
             ->leftJoin('v.CurrentStep ws')
             ->leftJoin('ws.Workflow w')
@@ -84,9 +84,11 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->byWorkflow = $byWorkflowQuery->execute();
 
         $byWorkflowStepQuery = Doctrine_Query::create()
-            ->select('COUNT(v.id) as count, IFNULL(ws.name, "Unassigned") as criteria, ' .
-                     'CONCAT(IFNULL(w.name, "No "), " Workflow") as tooltip, f.currentStepId, w.id, ws.id')
-            ->from('Vulnerability v')
+            ->select(
+                'COUNT(v.id) as count, IFNULL(ws.name, "Unassigned") as criteria, ' .
+                'CONCAT("<b>", IFNULL(w.name, "No "), " - ", ws.name, "</b><br/><br/>", ws.description) as tooltip, ' .
+                'v.currentStepId, w.id, ws.id'
+            )->from('Vulnerability v')
             ->leftJoin('v.CurrentStep ws')
             ->leftJoin('ws.Workflow w')
             ->groupBy('criteria')
@@ -266,71 +268,78 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                 'COUNT(v.id) as count, o.nickname as criteria, v.threatlevel, o.id, o.lft, o.rgt, o.level, ' .
                 'a.orgSystemId, ot.iconId as icon, ot.nickname as type'
             )
-            ->from('Organization o')
+            ->from('Asset a')
+            ->leftJoin('a.Organization o')
             ->leftJoin('o.OrganizationType ot')
-            ->leftJoin('o.Assets a')
             ->leftJoin('a.Vulnerabilities v')
             ->groupBy('o.id, v.threatlevel')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         //manually handle ACL conditions due to this query's unique join path (Organization => Asset => Vulnerabilities)
         $myOrgSystemIds = $this->_visibleOrgs;
         $viewUser = ($this->_me->viewAs()) ? $this->_me->viewAs() : $this->_me;
-        $bySystemQuery
-            ->where('v.deleted_at is NULL AND v.isResolved <> ?', true)
-            ->andWhereIn('o.id', $myOrgSystemIds)
-            ->orWhere('v.deleted_at is NULL AND v.isResolved <> ?', true)
-            ->andWhere('v.pocId = ?', $viewUser->id);
+        $bySystemQuery->where('v.deleted_at is NULL AND v.isResolved <> ?', true);
+
+        if (!$this->_acl->hasPrivilegeForClass('unaffiliated', 'asset')) {
+            $query
+                ->andWhereIn('a.orgSystemId', $myOrgSystemIds)
+                ->orWhere('v.deleted_at is NULL AND v.isResolved <> ?', true)
+                ->andWhere('v.pocId = ?', $viewUser->id);
+        }
+
         $this->view->bySystem = $bySystemQuery->execute();
         $bySystem = array();
         foreach ($this->view->bySystem as &$statistic) {
             $count = 0;
-            foreach ($statistic['Assets'] as &$asset) {
-                foreach ($asset['Vulnerabilities'] as &$finding) {
-                    $threatLevel = $finding['threatLevel'];
-                    if (!isset($statistic[$threatLevel])) {
-                        $statistic[$threatLevel] = 0;
-                    }
-                    $statistic[$threatLevel] += $finding['count'];
-                    $count += $finding['count'];
+            foreach ($statistic['Vulnerabilities'] as &$finding) {
+                $threatLevel = $finding['threatLevel'];
+                if (!isset($statistic[$threatLevel])) {
+                    $statistic[$threatLevel] = 0;
                 }
+                $statistic[$threatLevel] += $finding['count'];
+                $count += $finding['count'];
             }
             $statistic['LOW'] = (empty($statistic['LOW'])) ? 0 : $statistic['LOW'];
             $statistic['MODERATE'] = (empty($statistic['MODERATE'])) ? 0 : $statistic['MODERATE'];
             $statistic['HIGH'] = (empty($statistic['HIGH'])) ? 0 : $statistic['HIGH'];
             $statistic['count'] = $count;
 
-            $statistic['parent'] = Doctrine_Query::create()
-                ->select('o.id, o.nickname, i.id as icon, ot.nickname as type')
-                ->from('Organization o')
-                ->leftJoin('o.OrganizationType ot')
-                ->leftJoin('ot.Icon i')
-                ->where('o.lft < ?', $statistic['lft'])
-                ->andWhere('o.rgt > ?', $statistic['rgt'])
-                ->andWhere('o.level = ?', $statistic['level'] - 1)
-                ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-                ->fetchOne();
-            if (empty($statistic['icon'])) { // the OrganizationType "system" doesn't have an icon
-                $statistic['icon'] = Doctrine_Query::create()
-                    ->select('o.id, s.id, st.iconId as icon')
+            if (empty($statistic['criteria'])) {
+                $statistic['criteria'] = 'Unassigned';
+            } else {
+                if (empty($statistic['icon'])) { // the OrganizationType "system" doesn't have an icon
+                    $statistic['icon'] = Doctrine_Query::create()
+                        ->select('o.id, s.id, st.iconId as icon')
+                        ->from('Organization o')
+                        ->leftJoin('o.System s')
+                        ->leftJoin('s.SystemType st')
+                        ->where('o.id = ?', $statistic['Organization']['id'])
+                        ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                        ->fetchOne();
+                    //die(print_r($statistic));
+                    $statistic['icon'] = $statistic['icon']['icon'];
+                }
+                $statistic['parent'] = Doctrine_Query::create()
+                    ->select('o.id, o.nickname, i.id as icon, ot.nickname as type')
                     ->from('Organization o')
-                    ->leftJoin('o.System s')
-                    ->leftJoin('s.SystemType st')
-                    ->where('o.id = ?', $statistic['id'])
+                    ->leftJoin('o.OrganizationType ot')
+                    ->leftJoin('ot.Icon i')
+                    ->where('o.lft < ?', $statistic['Organization']['lft'])
+                    ->andWhere('o.rgt > ?', $statistic['Organization']['rgt'])
+                    ->andWhere('o.level = ?', $statistic['Organization']['level'] - 1)
                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                     ->fetchOne();
-                $statistic['icon'] = $statistic['icon']['icon'];
-            }
-            if (empty($statistic['parent']['icon'])) { // the OrganizationType "system" doesn't have an icon
-                $statistic['parent']['icon'] = Doctrine_Query::create()
-                    ->select('o.id, s.id, st.iconId as icon, st.nickname as type')
-                    ->from('Organization o')
-                    ->leftJoin('o.System s')
-                    ->leftJoin('s.SystemType st')
-                    ->where('o.id = ?', $statistic['parent']['id'])
-                    ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-                    ->fetchOne();
-                $statistic['parent']['type'] = $statistic['parent']['icon']['type'];
-                $statistic['parent']['icon'] = $statistic['parent']['icon']['icon'];
+                if (empty($statistic['parent']['icon'])) { // the OrganizationType "system" doesn't have an icon
+                    $statistic['parent']['icon'] = Doctrine_Query::create()
+                        ->select('o.id, s.id, st.iconId as icon, st.nickname as type')
+                        ->from('Organization o')
+                        ->leftJoin('o.System s')
+                        ->leftJoin('s.SystemType st')
+                        ->where('o.id = ?', $statistic['parent']['id'])
+                        ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+                        ->fetchOne();
+                    $statistic['parent']['type'] = $statistic['parent']['icon']['type'];
+                    $statistic['parent']['icon'] = $statistic['parent']['icon']['icon'];
+                }
             }
             if (empty($statistic['parent']['nickname'])) {
                 $statistic['parent']['nickname'] = "(top level)";
@@ -345,7 +354,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'iconId' => $statistic['icon'],
                     'iconSize' => 'small',
                     'displayName' => $statistic['criteria'],
-                    'orgId' => $statistic['id'],
+                    'orgId' => $statistic['Organization']['id'],
                     'iconAlt' => $statistic['type']
                 )),
                 'parentOrganization' => $statistic['parent']['nickname'],
@@ -465,11 +474,14 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         $query
             ->leftJoin('v.Asset a')
             ->addSelect('v.threatlevel, a.id')
-            ->where('v.deleted_at is NULL AND v.isResolved <> ?', true)
-            ->andWhereIn('a.orgSystemId', $myOrgSystemIds)
-            ->orWhere('v.deleted_at is NULL AND v.isResolved <> ?', true)
-            ->andWhere('v.pocId = ?', $viewUser->id)
-        ;
+            ->where('v.deleted_at is NULL AND v.isResolved <> ?', true);
+
+        if (!$this->_acl->hasPrivilegeForClass('unaffiliated', 'asset')) {
+            $query
+                ->andWhereIn('a.orgSystemId', $myOrgSystemIds)
+                ->orWhere('v.deleted_at is NULL AND v.isResolved <> ?', true)
+                ->andWhere('v.pocId = ?', $viewUser->id);
+        }
     }
 
     public function getToolbarButtons()

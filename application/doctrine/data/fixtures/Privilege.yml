@@ -113,22 +113,10 @@ Privilege:
         description: Comment on Vulnerability
 
     # Assets CRUD
-    asset_create:
+    asset_manage:
         resource: asset
-        action: create
-        description: Create Assets
-    asset_read:
-        resource: asset
-        action: read
-        description: View Assets
-    asset_update:
-        resource: asset
-        action: update
-        description: Edit Assets
-    asset_delete:
-        resource: asset
-        action: delete
-        description: Delete Assets
+        action: manage
+        description: Manage System Assets
     # Asset ACL is based on systems, but not all assets will be connected to systems. This privilege is a special
     # privilege that is orthogonal to the CRUD above; it adds the capability to use the CRUD privileges above on
     # unaffiliated assets. E.g. if you have asset_read AND asset_unaffiliated, then you can view unaffiliated assets,
@@ -136,7 +124,7 @@ Privilege:
     asset_unaffiliated:
         resource: asset
         action: unaffiliated
-        description: Unaffiliated Assets
+        description: Manage Unassigned Assets
     asset_manage_service_tags:
         resource: asset
         action: manage_service_tags

@@ -4,12 +4,24 @@ AssetService:
             type: integer
             unsigned: true
             extra:
-                logicalName: IP Port Number
+                logicalName: IP Port
                 notify: true
-        protocol: string
-        service: string
-        assetId: integer
-        productId: integer
+        protocol:
+            type: string
+            extra:
+                logicalName: Protocol
+        service:
+            type: string
+            extra:
+                logicalName: Service
+        assetId:
+            type: integer
+            extra:
+                logicalName: Asset
+        productId:
+            type: integer
+            extra:
+                logicalName: Product
     relations:
         Asset:
             local: assetId

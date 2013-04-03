@@ -43,6 +43,9 @@ class Notification extends BaseNotification
         }
 
         $event = Doctrine::getTable('Event')->findOneByName($eventName);
+        if (!$event) {
+            return;
+        }
 
         // Figure out which users are listening for this event
         $eventsQuery = Doctrine_Query::create()

@@ -50,13 +50,14 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         parent::init();
 
         $this->_helper->ajaxContext()
-                      ->addActionContext('convert-to-organization-form', 'html')
-                      ->initContext();
+            ->addActionContext('convert-to-organization-form', 'html')
+            ->addActionContext('assets', 'html')
+            ->initContext();
 
         $this->_helper->contextSwitch()
-             ->addActionContext('aggregation-data', 'json')
-             ->addActionContext('move-node', 'json')
-             ->initContext();
+            ->addActionContext('aggregation-data', 'json')
+            ->addActionContext('move-node', 'json')
+            ->initContext();
     }
 
     /**
@@ -96,6 +97,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("FIPS-199", "/system/fips/id/$id");
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab($this->view->escape($this->view->translate('System_Attachments')), "/system/artifacts/id/$id");
+        $tabView->addTab("Assets", "/system/assets/id/$id/format/html");
         $tabView->addTab("Users", "/system/user/id/$id");
 
         $findingSearchUrl = '/finding/remediation/list?q=/organization/textExactMatch/'
@@ -178,6 +180,25 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->editable = $editable;
+        $this->view->findingCount = Doctrine_Query::create()
+            ->select('f.id')
+            ->from('Finding f')
+            ->where('f.responsibleOrganizationId = ?', $organization->id)
+            ->andWhere('f.isResolved <> ?', true)
+            ->count();
+        $this->view->incidentCount = Doctrine_Query::create()
+            ->select('i.id')
+            ->from('Incident i')
+            ->where('i.organizationId = ?', $organization->id)
+            ->andWhere('i.status <> ?', 'closed')
+            ->count();
+        $this->view->vulnerabilityCount = Doctrine_Query::create()
+            ->select('v.id')
+            ->from('Vulnerability v')
+            ->leftJoin('v.Asset a')
+            ->where('a.orgSystemId = ?', $organization->id)
+            ->andWhere('v.isResolved <> ?', true)
+            ->count();
 
         $this->render();
     }
@@ -1155,5 +1176,89 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }
 
         return $form;
+    }
+
+    /**
+     * List all associated assets as requested in OFJ-1958
+     *
+     * @GETAllowed
+     */
+    public function assetsAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        if (empty($id)) {
+            throw new Fisma_Zend_Exception_User('System ID required.');
+        }
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
+        if (!$organization) {
+            throw new Fisma_Zend_Exception_User('Invalid ID provided: ' . $id);
+        }
+
+        $this->_acl->requirePrivilegeForObject('read', $organization);
+
+        $assets = $organization->Assets;
+        $assets->loadRelated('Product');
+
+        $assetRows = array();
+        foreach ($assets as $asset) {
+            $assetRows[] = array(
+                'name' => "<a href='/asset/view/id/{$asset->id}'>{$asset->name}</a>",
+                'addressIp' => $asset->addressIp,
+                'serviceTag' => ($asset->serviceTag) ? $asset->serviceTag : '',
+                'network' => $asset->Network->displayName,
+                'product' => ($asset->productId) ? $asset->Product->name : ''
+            );
+        }
+        $assetTable = Doctrine::getTable('Asset');
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $assetTable->getLogicalName('name'),
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'name'
+            )
+        );
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $assetTable->getLogicalName('addressIp'),
+                false,
+                null,
+                null,
+                'addressIp'
+            )
+        );
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $assetTable->getLogicalName('serviceTag'),
+                false,
+                null,
+                null,
+                'serviceTag'
+            )
+        );
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $assetTable->getLogicalName('networkId'),
+                false,
+                null,
+                null,
+                'network'
+            )
+        );
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $assetTable->getLogicalName('productId'),
+                false,
+                null,
+                null,
+                'product'
+            )
+        );
+
+        $dataTable->setData($assetRows);
+        $this->view->dataTable = $dataTable;
     }
 }
