@@ -41,18 +41,20 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             $this->countermeasures = 'N/A';
             try {
                 $workflow = Doctrine::getTable('Workflow')->findDefaultByModule('finding');
-                $this->CurrentStep = $workflow->getFirstStep();
-                switch ($this->CurrentStep->allottedTime) {
-                    case 'days':
-                        $this->nextDueDate = Zend_Date::now()
-                            ->addDay($this->CurrentStep->allottedDays)
-                            ->toString(Fisma_Date::FORMAT_DATE);
-                        break;
-                    case 'custom':
-                    case 'unlimited':
-                    case 'ecd':
-                    default:
-                        $this->nextDueDate = null;
+                if ($workflow) {
+                    $this->CurrentStep = $workflow->getFirstStep();
+                    switch ($this->CurrentStep->allottedTime) {
+                        case 'days':
+                            $this->nextDueDate = Zend_Date::now()
+                                ->addDay($this->CurrentStep->allottedDays)
+                                ->toString(Fisma_Date::FORMAT_DATE);
+                            break;
+                        case 'custom':
+                        case 'unlimited':
+                        case 'ecd':
+                        default:
+                            $this->nextDueDate = null;
+                    }
                 }
             } catch (Exception $e) {
             }

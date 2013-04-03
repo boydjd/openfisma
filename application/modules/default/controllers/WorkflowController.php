@@ -261,6 +261,7 @@ class WorkflowController extends Fisma_Zend_Controller_Action_Security
                                 );
                             }
                         }
+                        $step->moveLast();
                         $step->delete();
                     }
                 }
