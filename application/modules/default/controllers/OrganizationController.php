@@ -336,21 +336,17 @@ class OrganizationController extends Fisma_Zend_Controller_Action_Object
         $updatedDate->setTimezone(CurrentUser::getAttribute('timezone'));
         $this->view->updatedDate = $updatedDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
 
-
         $this->view->findingCount = Doctrine_Query::create()
-            ->select('f.id')
             ->from('Finding f')
             ->where('f.responsibleOrganizationId = ?', $organization->id)
             ->andWhere('f.isResolved <> ?', true)
             ->count();
         $this->view->incidentCount = Doctrine_Query::create()
-            ->select('i.id')
             ->from('Incident i')
             ->where('i.organizationId = ?', $organization->id)
             ->andWhere('i.status <> ?', 'closed')
             ->count();
         $this->view->vulnerabilityCount = Doctrine_Query::create()
-            ->select('v.id')
             ->from('Vulnerability v')
             ->leftJoin('v.Asset a')
             ->where('a.orgSystemId = ?', $organization->id)

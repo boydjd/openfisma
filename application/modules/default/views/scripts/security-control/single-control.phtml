@@ -3,7 +3,7 @@
     <tr>
         <th scope='row' width="200">
             <div>
-                <?php $this->column('code', $this); ?>:
+                <?php $this->column('code'); ?>:
             </div>
         </th>
         <td>
@@ -11,19 +11,19 @@
         </td>
     </tr>
     <tr>
-        <th scope='row'><?php $this->column('catalogId', $this); ?>:</th>
+        <th scope='row'><?php $this->column('catalogId'); ?>:</th>
         <td><?php echo $this->escape($this->securityControl->Catalog->name)?></td>
     </tr>
     <tr>
-        <th scope='row'><?php $this->column('family', $this); ?>:</th>
+        <th scope='row'><?php $this->column('family'); ?>:</th>
         <td><?php echo $this->escape($this->securityControl->family)?></td>
     </tr>
     <tr>
-        <th scope='row'><?php $this->column('name', $this); ?>:</th>
+        <th scope='row'><?php $this->column('name'); ?>:</th>
         <td><?php echo $this->escape($this->securityControl->name)?></td>
     </tr>
     <tr>
-        <th scope='row'><?php $this->column('control', $this); ?>:</th>
+        <th scope='row'><?php $this->column('control'); ?>:</th>
         <td><?php echo $this->escape($this->securityControl->control, 'none')?></td>
     </tr>
     <?php if (!empty($this->securityControl->Enhancements)): ?>
@@ -40,7 +40,7 @@
     <?php endif; ?>
     <?php if (!empty($this->securityControl->supplementalGuidance)): ?>
     <tr>
-        <th scope='row'><?php $this->column('supplementalGuidance', $this); ?>:</th>
+        <th scope='row'><?php $this->column('supplementalGuidance'); ?>:</th>
         <td>
             <?php echo $this->escape($this->securityControl->supplementalGuidance, 'none'); ?>
         </td>
@@ -48,7 +48,7 @@
     <?php endif; ?>
     <?php if (!empty($this->securityControl->externalReferences)): ?>
     <tr>
-        <th scope='row'><?php $this->column('externalReferences', $this); ?>:</th>
+        <th scope='row'><?php $this->column('externalReferences'); ?>:</th>
         <td>
             <?php echo $this->escape($this->securityControl->externalReferences); ?>
         </td>
@@ -56,7 +56,7 @@
     <?php endif; ?>
     <?php if (!empty($this->securityControl->priorityCode)): ?>
     <tr>
-        <th scope='row'><?php $this->column('priorityCode', $this); ?>:</th>
+        <th scope='row'><?php $this->column('priorityCode'); ?>:</th>
         <td>
             <?php echo $this->escape($this->securityControl->priorityCode); ?>
         </td>

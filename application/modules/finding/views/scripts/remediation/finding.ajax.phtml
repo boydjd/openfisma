@@ -184,9 +184,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->isDescriptionEditable):
-        Fisma_Format_Section::startSection($this->getColumn('description'), 'finding_description');
+        Fisma_Format_Section::startSection($this->column('description', null, false), 'finding_description');
     else:
-        Fisma_Format_Section::startSection($this->getColumn('description'));
+        Fisma_Format_Section::startSection($this->column('description', null, false));
     endif; ?>
         <div name="finding[description]" id="finding_description" type="textarea" rows="3" cols="160">
             <?php echo $this->escape($finding->description, 'none'); ?>
@@ -194,9 +194,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->isRecommendationEditable):
-        Fisma_Format_Section::startSection($this->getColumn('recommendation'), 'recommendation');
+        Fisma_Format_Section::startSection($this->column('recommendation', null, false), 'recommendation');
     else:
-        Fisma_Format_Section::startSection($this->getColumn('recommendation'));
+        Fisma_Format_Section::startSection($this->column('recommendation', null, false));
     endif; ?>
         <div name="finding[recommendation]" id="recommendation" type="textarea" rows="3" cols="160">
             <?php echo $this->escape($finding->recommendation, 'none'); ?>

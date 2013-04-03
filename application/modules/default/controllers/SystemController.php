@@ -1186,7 +1186,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     public function assetsAction()
     {
         $id = $this->getRequest()->getParam('id');
-        if (!$id) {
+        if (empty($id)) {
             throw new Fisma_Zend_Exception_User('System ID required.');
         }
         $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
@@ -1197,6 +1197,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('read', $organization);
 
         $assets = $organization->Assets;
+        $assets->loadRelated('Product');
+
         $assetRows = array();
         foreach ($assets as $asset) {
             $assetRows[] = array(

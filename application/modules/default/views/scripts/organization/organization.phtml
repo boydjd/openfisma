@@ -93,9 +93,9 @@
 Fisma_Format_Section::stopSection();
 
 if ($this->editable) {
-    Fisma_Format_Section::startSection($this->getColumn('description'), 'organization_description');
+    Fisma_Format_Section::startSection($this->column('description', null, false), 'organization_description');
 } else {
-    Fisma_Format_Section::startSection($this->getColumn('description'));
+    Fisma_Format_Section::startSection($this->column('description', null, false));
 }
 ?>
 <div name="description" id="organization_description" type="textarea" rows="3" cols="120">
@@ -142,7 +142,7 @@ if ($this->editable) {
             <tr>
                 <th scope='row'><?php echo $this->escape(new Fisma_Yui_Tooltip(
                     'defaultPOC',
-                    $this->getColumn('pocId') . ':',
+                    $this->column('pocId', null, false) . ':',
                     '<b>' . $this->escape($this->translate('Organization_Point_of_Contact')) . '</b><p>The default ' .
                     'person assigned responsibility for findings associated with this system. The assignee may be ' .
                     'changed when editing individual findings.</p>'

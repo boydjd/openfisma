@@ -301,6 +301,16 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             unset($buttons['create']);
         }
 
+        if ($record && isset($buttons['delete'])) {
+            $vulnerabilities = Doctrine::getTable('Vulnerability')->findByAssetId($record->id);
+            if ($vulnerabilities->count() > 0) {
+                $onClickArgument = $buttons['delete']->getAttrib('onClickArgument');
+                $onClickArgument['text'] = "WARNING: All {$vulnerabilities->count()} vulnerabilities associated with " .
+                                           "this asset will also be deleted. Do you want to continue?";
+                $buttons['delete']->setAttrib('onClickArgument', $onClickArgument);
+            }
+        }
+
         return $buttons;
     }
 
@@ -389,11 +399,6 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger($msgs);
         }
     }
-
-    /*protected function _isDeletable()
-    {
-        return false;
-    }*/
 
     /**
      * Manage service tags
