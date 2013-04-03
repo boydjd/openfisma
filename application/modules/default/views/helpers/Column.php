@@ -33,7 +33,7 @@ class View_Helper_Column extends Zend_View_Helper_Abstract
 
         $column = $columnName;
         if ($table) {
-            $column = $view->translate($table->getLogicalName($columnName)));
+            $column = $view->translate($table->getLogicalName($columnName));
         }
 
         if ($echo) {
