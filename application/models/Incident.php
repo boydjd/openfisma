@@ -386,7 +386,7 @@ class Incident extends BaseIncident
             // Make sure the POC is an actor
             $found = false;
             foreach ($this->IrIncidentUsers as $iiu) {
-                if ($iiu->userId === $pocId && $iiu->accessType === 'ACTOR') {
+                if (((int)$iiu->userId) === $pocId && $iiu->accessType === 'ACTOR') {
                     $found = true;
                     break;
                 }
