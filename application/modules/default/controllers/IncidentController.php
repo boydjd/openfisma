@@ -1868,7 +1868,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
     {
         if (is_null($subject)) {
             $subject = new Incident();
-            $subject->reportingUserId = CurrentUser::getAttribute('id');
+            $subject->ReportingUser = CurrentUser::getInstance();
             $orgId = $form->getValue('organizationId');
             if (!empty($orgId)) {
                 $subject->pocId = Doctrine::getTable('Organization')->find($orgId)->pocId;

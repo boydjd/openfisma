@@ -61,7 +61,7 @@ class Incident extends BaseIncident
         $this->hasMutator('organizationId', 'setOrganizationId');
         $this->hasMutator('pocId', 'setPocId');
         $this->hasMutator('reporterEmail', 'setReporterEmail');
-        $this->hasMutator('ReportingUser', 'setReportingUser');
+        $this->hasMutator('reportingUserId', 'setReportingUserId');
         $this->hasMutator('sourceIp', 'setSourceIp');
         $this->hasMutator('responseStrategies', 'setResponseStrategies');
         $this->hasMutator('incidentDateTime', 'setIncidentDateTime');
@@ -349,23 +349,24 @@ class Incident extends BaseIncident
      *
      * @param User $user
      */
-    public function setReportingUser($user)
+    public function setReportingUserId($userId)
     {
-        // Since we're overridding the setter, we have to manipulate the ids directly
-        $this->reportingUserId = $user->id;
+        $this->_set('reportingUserId', $userId);
 
-        $this->reporterTitle = null;
-        $this->reporterFirstName = null;
-        $this->reporterLastName = null;
-        $this->reporterOrganization = null;
-        $this->reporterAddress1 = null;
-        $this->reporterAddress2 = null;
-        $this->reporterCity = null;
-        $this->reporterState = null;
-        $this->reporterZip = null;
-        $this->reporterPhone = null;
-        $this->reporterFax = null;
-        $this->reporterEmail = null;
+        // Make sure the POC is an actor or observer
+        $found = false;
+        foreach ($this->IrIncidentUsers as $iiu) {
+            if (((int)$iiu->userId) === ((int)$userId)) {
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $iiu = new IrIncidentUser;
+            $iiu->accessType = 'OBSERVER';
+            $iiu->userId = $userId;
+            $this->IrIncidentUsers[] = $iiu;
+        }
     }
 
     /**
