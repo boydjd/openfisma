@@ -353,6 +353,10 @@ class Incident extends BaseIncident
     {
         $this->_set('reportingUserId', $userId);
 
+        if (empty($userId)) {
+            return;
+        }
+
         // Make sure the POC is an actor or observer
         $found = false;
         foreach ($this->IrIncidentUsers as $iiu) {
@@ -381,13 +385,16 @@ class Incident extends BaseIncident
 
         if (empty($pocId)) {
             $this->_set('pocId', null);
+            return;
         } else {
             $this->_set('pocId', $pocId);
 
             // Make sure the POC is an actor
             $found = false;
             foreach ($this->IrIncidentUsers as $iiu) {
-                if (((int)$iiu->userId) === $pocId && $iiu->accessType === 'ACTOR') {
+                if (((int)$iiu->userId) === $pocId) {
+                    // if observer, promote to actor
+                    $iiu->accessType = 'ACTOR';
                     $found = true;
                     break;
                 }
