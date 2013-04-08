@@ -57,20 +57,9 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         $request = $this->getRequest();
         $this->_paging['startIndex'] = $request->getParam('startIndex', 0);
         if ('modify' == $request->getActionName()) {
-            // If this is a mitigation, evidence approval, or evidence upload, then redirect to the
-            // corresponding controller action
-            if (isset($_POST['submit_msa'])) {
-                $request->setParam('sub', null);
-                $this->_forward('msa');
-            } elseif (isset($_POST['submit_ea'])) {
-                $request->setParam('sub', null);
-                $this->_forward('evidence');
-            } elseif (isset($_POST['upload_evidence'])) {
+            if (isset($_POST['upload_evidence'])) {
                 $request->setParam('sub', null);
                 $this->_forward('upload-evidence');
-            } elseif (isset($_POST['reject_evidence'])) {
-                $request->setParam('sub', null);
-                $this->_forward('evidence');
             }
         }
     }
@@ -539,26 +528,6 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Check if the mitigation strategy can be submitted via AJAX / JSON
-     *
-     * @GETAllowed
-     */
-    public function canSubmitMitigationStrategyAction()
-    {
-        $this->view->result = new Fisma_AsyncResponse;
-
-        $id = $this->_request->getParam('id');
-        $finding  = $this->_getSubject($id);
-
-        $fields = $finding->getMissingMSFields();
-        if (count($fields) > 0) {
-            $this->view->result->fail('Some required information is empty.', $fields);
-        } else {
-            $this->view->result->succeed('MS can be submited.');
-        }
-    }
-
-    /**
      * Upload evidence
      *
      * @return void
@@ -580,7 +549,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
             throw new Fisma_Zend_Exception_User($message);
         }
 
-        $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
+        $this->_acl->requirePrivilegeForObject('update', $finding);
 
         $fromSearchParams = $this->_getFromSearchParams($this->_request);
         $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
@@ -697,7 +666,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         }
 
         // There is no ACL defined for evidence objects, access is only based on the associated finding:
-        $this->_acl->requirePrivilegeForObject('upload_evidence', $finding);
+        $this->_acl->requirePrivilegeForObject('update', $finding);
 
         $message = "Evidence deleted: {$finding->Attachments[0]->fileName} (#{$finding->Attachments[0]->id})";
         $finding->Attachments->remove(0);
@@ -977,7 +946,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
         );
 
         if (
-            $this->_acl->hasPrivilegeForObject('upload_evidence', $this->view->finding) &&
+            $this->_acl->hasPrivilegeForObject('update', $this->view->finding) &&
             !$this->view->finding->isDeleted() &&
             (!$this->view->finding->CurrentStep || $this->view->finding->CurrentStep->attachmentEditable)
         ) {
