@@ -1,5 +1,10 @@
 System:
     OF_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: MODERATE
         integrity: MODERATE
         availability: LOW
@@ -16,6 +21,11 @@ System:
         SystemType: minor
 
     OSC_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -32,6 +42,11 @@ System:
         SystemType: minor
 
     IAD_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: MODERATE
         integrity: MODERATE
         availability: LOW
@@ -50,6 +65,11 @@ System:
         SystemType: minor
 
     CIT_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: HIGH
         integrity: HIGH
         availability: MODERATE
@@ -67,6 +87,11 @@ System:
         SystemType: major
 
     SCMS_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: MODERATE
         availability: MODERATE
@@ -82,6 +107,11 @@ System:
         SystemType: major
 
     CRMS_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: MODERATE
         integrity: LOW
         availability: LOW
@@ -99,6 +129,11 @@ System:
         SystemType: minor
 
     HAZMAT_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: MODERATE
         integrity: MODERATE
         availability: LOW
@@ -116,6 +151,11 @@ System:
 
 
     RCD_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -132,6 +172,11 @@ System:
         SystemType: major
 
     GREEN_NRG_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -148,6 +193,11 @@ System:
         SystemType: minor
 
     WIND_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -164,6 +214,11 @@ System:
         SystemType: minor
 
     RESTON_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: MODERATE
         availability: MODERATE
@@ -181,6 +236,11 @@ System:
         SystemType: gss
 
     LINUX_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -197,6 +257,11 @@ System:
         SystemType: minor
 
     MAINFRAME_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -213,6 +278,11 @@ System:
         SystemType: minor
 
     ORACLE_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -229,6 +299,11 @@ System:
         SystemType: minor
 
     HERNDON_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: MODERATE
         integrity: HIGH
         availability: HIGH
@@ -245,6 +320,11 @@ System:
         SystemType: gss
 
     RMTRP_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: MODERATE
         availability: LOW
@@ -261,6 +341,11 @@ System:
         SystemType: major
 
     ROCP_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: MODERATE
         availability: LOW
@@ -277,6 +362,11 @@ System:
         SystemType: major
 
     H20_RIGHTS_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -293,6 +383,11 @@ System:
         SystemType: minor
 
     WILDLIFE_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: MODERATE
@@ -310,6 +405,11 @@ System:
 
     # This one intentionally does not have a C&A date
     TPP_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: MODERATE
         availability: LOW
@@ -325,6 +425,11 @@ System:
 
     # This system is by default not assigned to any users, so it should be "hidden" from most views unless you're logged in as root.
     HIDDEN_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: LOW
@@ -345,6 +450,11 @@ System:
     # should be easily to see which screens filter out disposed systems or treat disposed systems differently.
     # The sample user should have access to this system record.
     DISPOSAL_SYS:
+        Documents:
+            -
+                DocumentType: cmp
+                Upload: openfisma_logo_file
+                description: draft version
         confidentiality: LOW
         integrity: LOW
         availability: LOW
