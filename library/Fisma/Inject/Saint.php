@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * A scan result injection plugin for injecting Saint XML output directly into OpenFISMA.
- * 
+ *
  * @author     Mark Ma <mark.ma@reyosoft.com>
  * @copyright  (c) Endeavor Systems, Inc. 2011 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -30,13 +30,13 @@ class Fisma_Inject_Saint extends Fisma_Inject_Abstract
     /**
      * Implements the required function in the Inject_Abstract interface.
      * This parses the report and commits all data to the database.
-     * 
+     *
      * @param string $uploadId The id of upload Saint xml file
      */
     protected function _parse($uploadId)
     {
         $report  = new XMLReader();
-        
+
         if (!$report->open($this->_file, NULL, LIBXML_PARSEHUGE)) {
             throw new Fisma_Zend_Exception_InvalidFileFormat('Cannot open the XML file.');
         }
@@ -45,6 +45,7 @@ class Fisma_Inject_Saint extends Fisma_Inject_Abstract
             $this->_persist($report, $uploadId);
         } catch (Exception $e) {
             $report->close();
+            $this->_log->err($e);
             throw new Fisma_Zend_Exception_InvalidFileFormat('An error occured while processing the XML file.', 0, $e);
         }
 
@@ -88,7 +89,7 @@ class Fisma_Inject_Saint extends Fisma_Inject_Abstract
                 } elseif ($oXml->name == 'severity') {
                     $severity = $oXml->readString();
                     switch($severity) {
-                        case "Potential Problem": 
+                        case "Potential Problem":
                             $severity = 'LOW';
                             break;
                         case "Area of Concern":
@@ -105,8 +106,8 @@ class Fisma_Inject_Saint extends Fisma_Inject_Abstract
                     $parsedData[$hostCounter]['findings'][$itemCounter]['severity'] = $severity;
                 } elseif ($oXml->name == 'cve') {
                     $parsedData[$hostCounter]['findings'][$itemCounter]['cve'][] = $oXml->readString();
-                }   
-              
+                }
+
             } elseif ($oXml->nodeType == XMLReader::END_ELEMENT) {
                 if ($oXml->name == 'host_info') {
                     $hostCounter++;
@@ -139,13 +140,13 @@ class Fisma_Inject_Saint extends Fisma_Inject_Abstract
                             $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                             $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
 
-                            $findingInstance['description'] = Fisma_String::textToHtml($finding['description']) 
+                            $findingInstance['description'] = Fisma_String::textToHtml($finding['description'])
                                                               . Fisma_String::textToHtml($finding['vuln_details']);
-                            $findingInstance['threat'] = (!empty($finding['impact'])) ? 
+                            $findingInstance['threat'] = (!empty($finding['impact'])) ?
                                                          Fisma_String::textToHtml($finding['impact']) : NULL;
-                            $findingInstance['recommendation'] = (!empty($finding['resolution'])) ? 
+                            $findingInstance['recommendation'] = (!empty($finding['resolution'])) ?
                                                                 Fisma_String::textToHtml($finding['resolution']) : NULL;
-                            $findingInstance['threatLevel'] = (!empty($finding['severity'])) ? 
+                            $findingInstance['threatLevel'] = (!empty($finding['severity'])) ?
                                                               $finding['severity'] : NULL;
 
                             if (!empty($finding['cve'])) {

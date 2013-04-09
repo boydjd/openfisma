@@ -371,9 +371,9 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
     }
 
     /**
-     * Return the query to fetch one attachment (if any) from a finding
+     * Return the query to fetch one attachment (if any) from an incident
      *
-     * @param int $incidentId THe id of the Finding to get
+     * @param int $incidentId The id of the Incident to get
      * @param int $attachmentId The id of the Attachment to get
      *
      * @return Doctrine_Query

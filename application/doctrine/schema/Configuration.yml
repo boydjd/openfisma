@@ -226,3 +226,5 @@ Configuration:
         asset_service_tags:
             type: string(65535)
             default: "development,testing,pre-production,staging,production"
+        vm_reopen_destination:
+            type: integer
