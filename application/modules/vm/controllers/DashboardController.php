@@ -279,7 +279,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         $viewUser = ($this->_me->viewAs()) ? $this->_me->viewAs() : $this->_me;
         $bySystemQuery->where('v.deleted_at is NULL AND v.isResolved <> ?', true);
 
-        if (!$this->_acl->hasPrivilegeForClass('unaffiliated', 'asset')) {
+        if (!$this->_acl->hasPrivilegeForClass('unaffiliated', 'Asset')) {
             $query
                 ->andWhereIn('a.orgSystemId', $myOrgSystemIds)
                 ->orWhere('v.deleted_at is NULL AND v.isResolved <> ?', true)
@@ -476,7 +476,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->addSelect('v.threatlevel, a.id')
             ->where('v.deleted_at is NULL AND v.isResolved <> ?', true);
 
-        if (!$this->_acl->hasPrivilegeForClass('unaffiliated', 'asset')) {
+        if (!$this->_acl->hasPrivilegeForClass('unaffiliated', 'Asset')) {
             $query
                 ->andWhereIn('a.orgSystemId', $myOrgSystemIds)
                 ->orWhere('v.deleted_at is NULL AND v.isResolved <> ?', true)
