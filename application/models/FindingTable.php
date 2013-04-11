@@ -59,7 +59,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text'
             ),
             'discoveredDate' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Discovered',
                 'sortable' => true,
                 'type' => 'date',
@@ -72,7 +72,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'integer'
             ),
             'createdTs' => array(
-                'initiallyVisible' => false,
+                'initiallyVisible' => true,
                 'label' => 'Created',
                 'sortable' => true,
                 'type' => 'datetime',
@@ -174,13 +174,6 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                         'label' => 'Managed Under',
                         'renderer' => 'text',
                         'query' => 'oneInput',
-                    ),
-                    'systemAggregationSubtree' => array(
-                        'idField' => 'responsibleOrganizationId',
-                        'idProvider' => 'OrganizationTable::getSystemAggregationSubtreeIds',
-                        'label' => 'System',
-                        'renderer' => 'text',
-                        'query' => 'oneInput',
                     )
                 ),
                 'label' => 'Organization/System',
@@ -193,7 +186,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text'
             ),
             'source' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Source',
                 'join' => array(
                     'model' => 'Source',
@@ -215,7 +208,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text'
             ),
             'description' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Description',
                 'sortable' => false,
                 'type' => 'text'
@@ -227,7 +220,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text'
             ),
             'jsonComments' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Comments',
                 'sortable' => false,
                 'type' => 'text',
@@ -241,7 +234,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'enum'
             ),
             'mitigationStrategy' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Mitigation Strategy',
                 'sortable' => false,
                 'type' => 'text'
