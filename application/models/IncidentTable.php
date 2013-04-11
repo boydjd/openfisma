@@ -74,21 +74,21 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 )
             ),
             'incidentDate' => array(
-                'initiallyVisible' => true,
-               ' sortable' => true,
+                'initiallyVisible' => false,
+                'sortable' => true,
                 'type' => 'date',
                 'formatter' => 'date',
                 'timezoneAbbrField' => 'incidentTimezone'
             ),
             'reportTs' => array(
-                'initiallyVisible' => false,
+                'initiallyVisible' => true,
                 'sortable' => true,
                 'type' => 'datetime',
                 'formatter' => 'datetime',
                 'timezoneAbbrField' => 'reportTz'
             ),
             'reporter' => array(
-                'initiallyVisible' => false,
+                'initiallyVisible' => true,
                 'label' => 'Reporter',
                 'join' => array(
                     'model' => 'User',
@@ -100,12 +100,12 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             ),
             'status' => array(
                 'enumValues' => $this->getEnumValues('status'),
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'sortable' => true,
                 'type' => 'enum'
             ),
             'pocUser' => array(
-                'initiallyVisible' => false,
+                'initiallyVisible' => true,
                 'label' => 'Incident_Point_of_Contact',
                 'join' => array(
                     'model' => 'User',
@@ -127,7 +127,7 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'type' => 'text'
             ),
             'parentOrganization' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Parent Organization/System',
                 'join' => array(
                     'model' => 'Organization',
@@ -138,7 +138,7 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'type' => 'text'
             ),
             'additionalInfo' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'sortable' => true,
                 'type' => 'text'
             ),
@@ -148,12 +148,12 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'sortable' => true
             ),
             'severityLevel' => array(
-                'initiallyVisible' => false,
+                'initiallyVisible' => true,
                 'type' => 'text',
                 'sortable' => true
             ),
             'impact' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'sortable' => true,
                 'type' => 'text'
             ),
@@ -291,7 +291,7 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'type' => 'text'
             ),
             'jsonComments' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Comments',
                 'sortable' => false,
                 'type' => 'text',

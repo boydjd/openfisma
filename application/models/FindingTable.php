@@ -64,7 +64,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text'
             ),
             'discoveredDate' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'sortable' => true,
                 'type' => 'date',
                 'formatter' => 'date'
@@ -75,7 +75,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'integer'
             ),
             'createdTs' => array(
-                'initiallyVisible' => false,
+                'initiallyVisible' => true,
                 'sortable' => true,
                 'type' => 'datetime',
                 'formatter' => 'date'
@@ -166,13 +166,6 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                         'label' => 'Managed Under',
                         'renderer' => 'text',
                         'query' => 'oneInput',
-                    ),
-                    'systemAggregationSubtree' => array(
-                        'idField' => 'responsibleOrganizationId',
-                        'idProvider' => 'OrganizationTable::getSystemAggregationSubtreeIds',
-                        'label' => 'System',
-                        'renderer' => 'text',
-                        'query' => 'oneInput',
                     )
                 ),
                 'label' => 'Organization/System',
@@ -185,7 +178,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text'
             ),
             'parentOrganization' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Parent Organization',
                 'join' => array(
                     'model' => 'Organization',
@@ -196,7 +189,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text'
             ),
             'source' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Source',
                 'join' => array(
                     'model' => 'Source',
@@ -218,7 +211,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text'
             ),
             'description' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'sortable' => false,
                 'type' => 'text'
             ),
@@ -228,14 +221,14 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'type' => 'text'
             ),
             'jsonComments' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'sortable' => false,
                 'type' => 'text',
                 'label' => 'Comments',
                 'formatter' => 'Fisma.TableFormat.formatComments'
             ),
             'mitigationStrategy' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'sortable' => false,
                 'type' => 'text'
             ),
@@ -272,7 +265,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
 
             'workflow' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Workflow',
                 'sortable' => true,
                 'type' => 'text',
@@ -294,7 +287,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 )
             ),
             'isResolved' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'Finding_Status',
                 'sortable' => true,
                 'type' => 'boolean'
