@@ -212,7 +212,7 @@
                 <td><?php echo $this->escape($this->discoveredDate)?></td>
             </tr>
             <tr>
-                <th scope='row'>Created Date:</th>
+                <th scope='row'><?php $this->column('createdTs'); ?>:</th>
                 <td><?php echo $this->escape($this->createdTs)?></td>
             </tr>
             <?php if (!is_null($finding->closedTs)): ?><tr>

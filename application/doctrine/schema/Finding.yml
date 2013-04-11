@@ -9,7 +9,7 @@ Finding:
             comment: The date when the finding was discovered. This is self-reported by users
             extra:
                 auditLog: true
-                logicalName: Discovered Date
+                logicalName: Discovered
         auditYear:
             type: string(4)
             comment: The latest audit year of the finding
@@ -22,7 +22,7 @@ Finding:
             type: timestamp
             comment: The timestamp when this finding was closed
             extra:
-                logicalName: Resolved Date
+                logicalName: Resolved
         nextDueDate:
             type: date
             comment: The deadline date for the next action that needs to be taken on this finding. After this date, the finding is considered to be overdue.
@@ -166,7 +166,7 @@ Finding:
             comment: Column for soft-delete
             extra:
                 auditLog: true
-                logicalName: Date Deleted
+                logicalName: Deleted
 
         duplicateFindingId:
             type: integer

@@ -6,7 +6,7 @@ Incident:
         closedTs:
             type: timestamp
             extra:
-                logicalName: Resolved Date
+                logicalName: Resolved
 
         reporterTitle:
             type: string(255)
@@ -104,7 +104,7 @@ Incident:
             type: date
             extra:
                 auditLog: true
-                logicalName: Occurred Date
+                logicalName: Occurred
             comment: The date on which the incident was known or believed to have occurred
         incidentTime:
             type: time
@@ -172,7 +172,7 @@ Incident:
         reportTs:
             type: timestamp
             extra:
-                logicalName: Reported Time
+                logicalName: Reported
             comment: The time at which the incident was reported
         reportTz:
             type: enum

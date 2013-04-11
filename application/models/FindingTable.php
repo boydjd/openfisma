@@ -28,6 +28,10 @@
 class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
                                                            Fisma_Search_CustomChunkSize_Interface
 {
+    protected $_customLogicalNames = array(
+        'createdTs' => 'Created',
+        'modifiedTs' => 'Updated'
+    );
     protected $_viewUrl = '/finding/remediation/view/id/';
 
     /**
@@ -74,8 +78,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'initiallyVisible' => false,
                 'sortable' => true,
                 'type' => 'datetime',
-                'formatter' => 'date',
-                'label' => 'Created Date'
+                'formatter' => 'date'
             ),
             'createdByUser' => array(
                 'initiallyVisible' => false,

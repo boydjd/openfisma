@@ -27,6 +27,11 @@
  */
 class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
 {
+    protected $_customLogicalNames = array(
+        'createdTs' => 'Created',
+        'modifiedTs' => 'Updated'
+    );
+
     /**
      * Returns a query which matches all of the current user's viewable incidents
      *
@@ -193,7 +198,6 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
             ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Last Modified Date',
                 'sortable' => true,
                 'type' => 'datetime',
                 'formatter' => 'datetime'
