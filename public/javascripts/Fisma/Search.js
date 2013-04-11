@@ -875,6 +875,7 @@ Fisma.Search = (function() {
                         if (data.error) {
                             Fisma.Util.showAlertDialog(data.error);
                         } else {
+                            $('ul#reportList li:has(img[value=' + queryId + ']) a').attr('href', url);
                             $('ul#reportList li:has(img[value=' + queryId + '])').fadeOut().fadeIn();
                         }
                     }

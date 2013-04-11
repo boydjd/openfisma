@@ -262,17 +262,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
             }
         }
 
-        $incident->save();
-
-        // Set the reporting user
         if ($this->_me) {
-            // Add the user as an actor
-            $iiu = new IrIncidentUser();
-            $iiu->userId = $this->_me->id;
-            $iiu->incidentId = $incident->id;
-            $iiu->accessType = 'OBSERVER';
-            $iiu->save();
+            $incident->reportingUserId = $this->_me->id;
         }
+
+        $incident->save();
 
         $conn->commit();
 
