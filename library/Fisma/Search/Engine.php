@@ -338,7 +338,7 @@ class Fisma_Search_Engine
                 case 'dateBefore':
                     try  {
                         $beforeDate = $this->_convertToSolrDate($operands[0]);
-                        $searchTerms[] = "$fieldName:[* TO $beforeDate/DAY-1DAY]";
+                        $searchTerms[] = "$fieldName:[* TO $beforeDate/DAY]";
                     } catch (Zend_Date_Exception $e) {
                         // The input date is invalid, return an empty set.
                         return new Fisma_Search_Result(0, 0, array());
