@@ -202,6 +202,18 @@ abstract class Fisma_Inject_Abstract
             $assetData['productId'] = $this->_prepareProduct($productData);
         }
 
+        if (!empty($assetData['AssetServices'])) {
+            foreach ($assetData['AssetServices'] as &$service) {
+                if (!empty($service['Product'])) {
+                    if (!$productId = $this->_prepareProduct($service['Product'])) {
+                        $productId = $this->_saveProduct($service['Product']);
+                    }
+                    $service['productId'] = $productId;
+                    unset($service['Product']);
+                }
+            }
+        }
+
         // Prepare finding
         $finding = new Vulnerability();
         $finding->merge($findingData);
@@ -257,7 +269,7 @@ abstract class Fisma_Inject_Abstract
             // commit the new vulnerabilities
             foreach ($this->_findings as &$findingData) {
                 set_time_limit(180);
-                if (@!$findingData['asset']['productId'] && !empty($findingData['product'])) {
+                if (empty($findingData['asset']['productId']) && !empty($findingData['product'])) {
                     $findingData['asset']['productId'] = $this->_saveProduct($findingData['product']);
                 }
 
