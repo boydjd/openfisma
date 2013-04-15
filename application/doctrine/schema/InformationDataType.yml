@@ -1,0 +1,66 @@
+InformationDataType:
+    listeners: [IndexListener]
+
+    columns:
+        category:
+            type: string(255)
+            extra:
+                logicalName: Category
+        subcategory:
+            type: string(255)
+            extra:
+                logicalName: Sub-Category
+        catalogId:
+            type: integer
+            extra:
+                logicalName: Catalog
+        confidentiality:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            extra:
+                logicalName: Confidentiality
+        defaultConfidentiality:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            extra:
+                logicalName: Recommended Confidentiality Impact Level
+        integrity:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            extra:
+                logicalName: Integrity
+        defaultIntegrity:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            extra:
+                logicalName: Recommended Integrity Impact Level
+        availability:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            extra:
+                logicalName: Availability
+        defaultAvailability:
+            type: enum
+            values: [LOW, MODERATE, HIGH]
+            extra:
+                logicalName: Recommended Availability Impact Level
+        description:
+            type: string
+            extra:
+                purify: html
+                logicalName: Description
+
+    indexes:
+        category_index:
+            fields:
+                category: []
+                subcategory: []
+                catalogId: []
+            type: unique
+
+    relations:
+        Catalog:
+            class: InformationDataTypeCatalog
+            local: catalogId
+            foreign: id
+            foreignAlias: InformationDataTypes

@@ -169,8 +169,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $updatedDate->setTimezone(CurrentUser::getAttribute('timezone'));
         $this->view->updatedDate = $updatedDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
 
-        $editable = false;
-        if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
+        $editable = !($this->getRequest()->getParam('readonly'));
+        if ($editable && $this->_acl->hasPrivilegeForObject('update', $organization)) {
             $editable = true;
         }
 

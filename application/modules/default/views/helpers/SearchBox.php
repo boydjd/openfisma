@@ -41,7 +41,7 @@ class View_Helper_SearchBox extends Zend_View_Helper_Abstract
             'backButton',
             array(
                 'label' => 'Back',
-                'imageSrc' => '/images/back.png',
+                'icon' => 'arrow-left',
                 'onClickFunction' => 'Fisma.Util.goBack'
             )
         );

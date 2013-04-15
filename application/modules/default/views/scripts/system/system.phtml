@@ -9,7 +9,7 @@ Fisma_Format_Section::startSection('Summary');
         <th scope='row'><?php $this->column('name'); ?>:</th>
         <td>
             <?php
-            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->editable) {
             ?>
             <span id="name" class="editable" target="name" name="name" type="text">
                 <?php echo $this->escape($this->organization->name); ?>
@@ -29,7 +29,7 @@ Fisma_Format_Section::startSection('Summary');
         <th scope='row'><?php $this->column('nickname'); ?>:</th>
         <td>
             <?php
-            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->editable) {
             ?>
             <span id="nickname" class="editable" target="nickname" name="nickname" type="text">
                 <?php echo $this->escape($this->organization->nickname); ?>
@@ -49,7 +49,7 @@ Fisma_Format_Section::startSection('Summary');
         <th scope='row'><?php $this->column('systemTypeId', $this->organization->System->getTable()); ?>:</th>
         <td>
             <?php
-            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->editable) {
             ?>
                 <span id="type"
                       class="editable"
@@ -74,7 +74,7 @@ Fisma_Format_Section::startSection('Summary');
         <th scope='row'><?php $this->column('sdlcPhase', $this->organization->System->getTable()); ?>:</th>
         <td>
             <?php
-            if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
+            if ($this->editable) {
             ?>
                 <span id="sdlcPhase"
                       class="editable"
@@ -127,7 +127,7 @@ Fisma_Format_Section::startSection('Summary');
 <?php
 Fisma_Format_Section::stopSection();
 
-if ($this->acl()->hasPrivilegeForObject('update', $this->organization)) {
+if ($this->editable) {
     Fisma_Format_Section::startSection($this->column('description', null, false), 'system_description');
 } else {
     Fisma_Format_Section::startSection($this->column('description', null, false));

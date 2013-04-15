@@ -32,7 +32,7 @@ class Application_Migration_030300_VmWorkflow extends Fisma_Migration_Abstract
         $helper = $this->getHelper();
 
         $this->message('Add new configuration items');
-        $helper->addColumn('configuration', 'vm_reopen_destination', 'BIGINT(20) DEFAULT NULL', 'asset_service_tags');
+        $helper->addColumn('configuration', 'vm_reopen_destination', 'BIGINT(20) DEFAULT NULL', 'user_editable_profiles');
 
         $this->message('Add HasAttachments behavior to Vulnerability model');
         $helper->createTable(
