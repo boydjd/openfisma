@@ -29,3 +29,11 @@ Tag:
             - Compromised
             - Inconclusive
             - Protection In Place
+    assetEnvironment:
+        tagId: asset-environment
+        labels:
+            - development
+            - testing
+            - pre-production
+            - staging
+            - production

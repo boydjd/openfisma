@@ -33,7 +33,7 @@ Role:
             - vulnerability_comment
             - asset_manage
             - asset_unaffiliated
-            - asset_manage_service_tags
+            - asset_manage_environments
             - user_create
             - user_read
             - user_update
@@ -137,7 +137,7 @@ Role:
             - vulnerability_delete
             - vulnerability_comment
             - asset_manage
-            - asset_manage_service_tags
+            - asset_manage_environments
             - user_read
             - organization_read
             - product_create

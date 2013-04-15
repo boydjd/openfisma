@@ -316,12 +316,12 @@ System:
                 func: hasArea
                 param: system_inventory_admin
             submenu:
-                AssetServiceTags:
+                AssetEnvironments:
                     label: Asset Environments
-                    link: /asset/service-tags
+                    link: /asset-environment/list
                     privilege:
                         func: hasPrivilegeForClass
-                        param1: manage_service_tags
+                        param1: manage_environments
                         param2: Asset
                 ControlCatalogs:
                     label: Control Catalogs
