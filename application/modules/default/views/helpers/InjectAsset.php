@@ -94,6 +94,7 @@ class View_Helper_InjectAsset
                                       '/javascripts/Fisma/Remediation.js',
                                       '/javascripts/Fisma/Role.js',
                                       '/javascripts/Fisma/RowsPerPageInputBox.js',
+                                      '/javascripts/Fisma/Sa.js',
                                       '/javascripts/Fisma/Search.js',
                                       '/javascripts/Fisma/Search/Criteria.js',
                                       '/javascripts/Fisma/Search/CriteriaDefinition.js',

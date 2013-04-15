@@ -28,6 +28,19 @@
 class Fisma_Zend_Acl extends Zend_Acl
 {
     /**
+     * Models with the combined "manage" privilege in place of normal CRUDs
+     *
+     * @var array
+     */
+    private static $_managedModels = array(
+        'Asset',
+        'Icon',
+        'InformationDataType',
+        'InformationDataTypeCatalog',
+        'Workflow'
+    );
+
+    /**
      * to hold the username of the user creating $this
      *
      * @var string
@@ -96,7 +109,7 @@ class Fisma_Zend_Acl extends Zend_Acl
 
         if (!$this->_privilegeContainsWildcard($privilege)) {
             if (in_array($privilege, array('create', 'read', 'update', 'delete')) &&
-                in_array(get_class($object), array('Asset', 'Icon', 'Workflow'))) {
+                in_array(get_class($object), self::$_managedModels)) {
                 $privilege = 'manage';
             }
 
@@ -187,7 +200,7 @@ class Fisma_Zend_Acl extends Zend_Acl
         }
         if (!$this->_privilegeContainsWildcard($privilege)) {
             if (in_array($privilege, array('create', 'read', 'update', 'delete')) &&
-                in_array($className, array('Asset', 'Icon', 'Workflow'))) {
+                in_array($className, self::$_managedModels)) {
                 $privilege = 'manage';
             }
 

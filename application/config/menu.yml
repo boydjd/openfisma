@@ -293,9 +293,6 @@ System:
                 func: hasPrivilegeForClass
                 param1: read
                 param2: Asset
-        Controls:
-            label: Controls
-            link: /security-control/list?f=filter_published_booleanYes
         Documentation:
             label: Documentation
             link: /system-document/list
@@ -323,9 +320,6 @@ System:
                         func: hasPrivilegeForClass
                         param1: manage_environments
                         param2: Asset
-                ControlCatalogs:
-                    label: Control Catalogs
-                    link: /security-control-catalog/list
                 DocumentType:
                     label: Document Types
                     link: /document-type/list
@@ -379,6 +373,36 @@ System:
                 SecurityAuthorizations:
                     label: Security Authorizations
                     link: /organization-report/security-authorization/format/html
+
+SecurityAuthorization:
+    label: Compliance
+    privilege:
+        func: hasArea
+        param: sa
+    submenu:
+        Summary:
+            label: Summary
+            link: /sa/summary
+        Separator:
+            label: Separator
+        Dashboard:
+            label: Dashboard
+            link: /sa/dashboard
+        Administration:
+            label: Administration
+            submenu:
+                Controls:
+                    label: Security Controls
+                    link: /security-control/list?f=filter_published_booleanYes
+                ControlCatalogs:
+                    label: Security Control Catalogs
+                    link: /security-control-catalog/list
+                InformationDataType:
+                    label: Information Data Types
+                    link: /sa/information-data-type/list?f=filter_published_booleanYes
+                InformationDataTypeCatalog:
+                    label: Information Data Type Catalogs
+                    link: /sa/information-data-type-catalog/list
 
 Administration:
     label: Administration

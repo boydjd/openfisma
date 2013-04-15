@@ -1,0 +1,21 @@
+SystemInformationDataType:
+    columns:
+        createdTs: timestamp
+        modifiedTs: timestamp
+        systemId:
+            type: integer
+            primary: true
+        informationDataTypeId:
+            type: integer
+            primary: true
+        denormalizedDataType: array
+
+    actAs:
+        Timestampable:
+            created:
+                name: createdTs
+                type: timestamp
+            updated:
+                name: modifiedTs
+                type: timestamp
+

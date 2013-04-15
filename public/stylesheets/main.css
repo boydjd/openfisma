@@ -449,9 +449,8 @@ table.fisma_crud td:first-child {
     padding-top: 8px;
 }
 table.fisma_crud tr td, table.fisma_crud tr td input, table.fisma_crud tr td textarea.plaintext {
-    font-family: 'Verdana', 'Arial', 'Helvetica';
-    font-weight: bold;
-    font-size: 12px;
+    font-family: 'Arial', 'sans-serif';
+    font-size: 13px;
     padding: 3px 5px;
 }
 

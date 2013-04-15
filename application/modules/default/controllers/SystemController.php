@@ -174,8 +174,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $updatedDate->setTimezone(CurrentUser::getAttribute('timezone'));
         $this->view->updatedDate = $updatedDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
 
-        $editable = false;
-        if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
+        $editable = !($this->getRequest()->getParam('readonly'));
+        if ($editable && $this->_acl->hasPrivilegeForObject('update', $organization)) {
             $editable = true;
         }
 
@@ -1062,6 +1062,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     {
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
         $isList = $this->getRequest()->getActionName() === 'list';
+        $isView = $this->getRequest()->getActionName() === 'view';
         $resourceName = $this->getAclResourceName();
         $hasReadPrivilege = $this->_acl->hasPrivilegeForClass('read', $resourceName);
 
@@ -1075,6 +1076,18 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 )
             );
             array_unshift($buttons, $treeViewButton);
+        }
+
+        if ($isView && $record->System && $this->_acl->hasPrivilegeForObject('sa', $record)) {
+            $saButton = new Fisma_Yui_Form_Button_Link(
+                'saButton',
+                array(
+                    'value' => 'Security Authorization',
+                    'icon' => 'lock',
+                    'href' => "/sa/security-authorization/view/id/{$record->System->id}"
+                )
+            );
+            $buttons['saButton'] = $saButton;
         }
 
         return $buttons;

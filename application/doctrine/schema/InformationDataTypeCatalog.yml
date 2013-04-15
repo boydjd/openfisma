@@ -1,0 +1,18 @@
+InformationDataTypeCatalog:
+    listeners: [IndexListener]
+    columns:
+        name:
+            type: string
+            fixed: true
+            extra:
+                logicalName: Name
+        description:
+            type: string
+            extra:
+                logicalName: Description
+        published:
+            type: boolean
+            notnull: true
+            default: false
+            extra:
+                logicalName: Visible?

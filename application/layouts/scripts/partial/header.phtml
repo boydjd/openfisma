@@ -145,6 +145,11 @@ $(function() {
         module = 'Administration';
     } else if (document.URL.match('/user')) {
         module = 'nothing';
+    } else if (
+        document.URL.match('/sa/') ||
+        document.URL.match('/security-control')
+    ) {
+        module = 'Compliance';
     } else {
         module = 'System Inventory';
     }

@@ -166,3 +166,10 @@ System:
             local: systemTypeId
             foreign: id
             foreignAlias: Systems
+
+        SystemInformationDataTypes:
+            class: InformationDataType
+            local: systemId
+            foreign: informationDataTypeId
+            refClass: SystemInformationDataType
+            foreignAlias: Systems
