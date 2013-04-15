@@ -64,7 +64,7 @@ abstract class Fisma_Inject_Abstract
      *
      * @var array
      */
-    private $_totals = array('reopened' => 0, 'created' => 0, 'deleted' => 0, 'reviewed' => 0);
+    private $_totals = array('created' => 0, 'workflows' => array());
 
     /**
      * collection of findings to be created
@@ -94,20 +94,6 @@ abstract class Fisma_Inject_Abstract
      */
 
     protected $_messages = array();
-
-    /**
-     * Number of items imported
-     *
-     * @var int
-     */
-    protected $_numImported = 0;
-
-    /**
-     * Number of items suppressed
-     *
-     * @var int
-     */
-    protected $_numSuppressed = 0;
 
     /**
      * _log
@@ -303,16 +289,32 @@ abstract class Fisma_Inject_Abstract
                     continue; //skip to avoid a vulnerability from being reopened twice
                 }
                 $vuln->getAuditLog()->write($mesg);
-                if ($action == 'REOPEN') {
-                    $this->_totals['reopened']++;
-                    $vuln->isResolved = false;
-                    $vuln->save();
-                } else {
-                    if (!isset($this->_totals['suppressed'])) {
-                        $this->_totals['suppressed'] = 0;
-                    }
-                    $this->_totals['suppressed']++;
+
+                if ($vuln->currentStepId) {
+                    $step = $vuln->CurrentStep;
                 }
+
+                if ($action == 'REOPEN') {
+                    $destinationId  = (Fisma::configuration()->getConfig('vm_reopen_destination'))
+                                    ? Fisma::configuration()->getConfig('vm_reopen_destination')
+                                    : Doctrine::getTable('Workflow')
+                                        ->findDefaultByModule('vulnerability')->getFirstStep()->id;
+
+                    WorkflowStep::completeOnObject(
+                        $vuln,
+                        'Re-open Vulnerability',
+                        'Vulnerability detected in recent scan data',
+                        CurrentUser::getAttribute('id'),
+                        0,
+                        $destinationId
+                    );
+                }
+
+                $workflowName = $step->Workflow->name;
+                if (!isset($this->_totals['workflows'][$workflowName])) {
+                    $this->_totals['workflows'][$workflowName] = 0;
+                }
+                $this->_totals['workflows'][$workflowName]++;
 
                 $vUpload = new VulnerabilityUpload();
                 $vUpload->vulnerabilityId = $vuln->id;
@@ -329,19 +331,23 @@ abstract class Fisma_Inject_Abstract
             set_time_limit(180);
             Doctrine_Manager::connection()->commit();
 
-            $createdWord    = $this->created > 1 ? ' vulnerabilities were' : ' vulnerability was';
-            $reopenedWord   = $this->reopened > 1 ? ' vulnerabilities were' : ' vulnerability was';
-            $suppressedWord = $this->suppressed > 1 ? ' vulnerabilities were' : ' vulnerability was';
+            $createdWord    = $this->created > 1 ? ' vulnerabilities' : ' vulnerability';
 
-            $message = 'Your scan report was successfully uploaded.<br>'
-                . $this->created . $createdWord . ' created.<br>'
-                . $this->reopened . $reopenedWord . ' reopened.<br>'
-                . $this->suppressed . $suppressedWord . ' suppressed.';
+            $message = 'Your scan report was successfully uploaded.'
+                     . "<br/><a href='/vm/vulnerability/list?q=/uploadIds/textExactMatch/{$this->_uploadId}"
+                     . "' target='_blank'>" . $this->created . '</a> new' . $createdWord . ' created.';
+            foreach ((array)($this->workflows) as $name => $count) {
+                $count = "<a href='/vm/vulnerability/list?q=/uploadIds/textContains/{$this->_uploadId}"
+                       . "/uploadIds/textNotExactMatch/{$this->_uploadId}"
+                       . "/workflow/textExactMatch/{$name}' target='_blank'>"
+                       . "{$count}</a>";
+                $message .= "<br/>{$count} mapped to existing vulnerabilities in {$name} workflow.";
+            }
 
            $this->_setMessage(array('notice' => $message));
 
         } catch (Exception $e) {
-            Doctrine_Manager::connection()->rollBack();
+            Doctrine_Manager::connection()->rollback();
             throw $e;
         }
     }

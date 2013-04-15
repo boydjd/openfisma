@@ -210,7 +210,7 @@ Fisma.TableFormat = {
     deleteControl : function (elCell, oRecord, oColumn, oData) {
         if (oData) {
             var icon = document.createElement('img');
-            icon.src = '/images/del.png';
+            icon.src = '/images/trash_recyclebin_empty_closed.png';
 
             while (elCell.hasChildNodes()) {
                 elCell.removeChild(elCell.firstChild);

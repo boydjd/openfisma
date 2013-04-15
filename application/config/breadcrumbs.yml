@@ -114,6 +114,10 @@ VulnerabilityUpload:
     url: /vm/vulnerability/plugin
     labels: [Vulnerabilities, Upload Scan Results]
     links: [no-link, no-link]
+VulnerabilityAdminGeneral:
+    url: /vm/config/general
+    labels: [Vulnerabilities, Administration, General]
+    links: [no-link, no-link, no-link]
 VulnerabilityAdminProductsView:
     url: /vm/product/view
     labels: [Vulnerabilities, Administration, Products, View]

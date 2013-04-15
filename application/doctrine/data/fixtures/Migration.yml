@@ -230,3 +230,8 @@ Migration:
         minorVersion: 3
         tagNumber: 0
         name: SystemAsset
+    030300_VmWorkflow:
+        majorVersion: 3
+        minorVersion: 3
+        tagNumber: 0
+        name: VmWorkflow

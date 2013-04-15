@@ -504,4 +504,3 @@ Workflow:
                         destination: 'custom'
                         roles: '[]'
                         customDestination: 5
-

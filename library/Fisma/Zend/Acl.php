@@ -102,9 +102,12 @@ class Fisma_Zend_Acl extends Zend_Acl
 
             // Handle objects with organization ACL dependency
             if ($object instanceof Fisma_Zend_Acl_OrganizationDependency &&
-                // As a POC to a finding outside my systems, I should have the same privileges like other findings
-                !($object instanceOf Finding &&
-                    !is_null($object->pocId) && $object->PointOfContact->username === $username)
+                // Grant access to POC's
+                !(($object instanceof Finding || $object instanceof Vulnerability) &&
+                    !empty($object->pocId) && $object->PointOfContact->username === $username) &&
+                // Grant access to uploader
+                !(($object instanceof Vulnerability) &&
+                    !empty($object->createdByUserId) && $object->CreatedBy->username === $username)
             ) {
                 $orgId = $object->getOrganizationDependencyId();
                 if (empty($orgId)) {
