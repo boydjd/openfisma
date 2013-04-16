@@ -49,13 +49,13 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
             ),
             'createdTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Created Date',
+                'label' => 'Created',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Last Modified Date',
+                'label' => 'Updated',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
@@ -66,7 +66,6 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
             ),
             'addressMac' => array(
                 'initiallyVisible' => false,
-                'label' => 'MAC Address',
                 'sortable' => true,
                 'type' => 'text'
             ),
