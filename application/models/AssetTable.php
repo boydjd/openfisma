@@ -65,7 +65,7 @@ class AssetTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                 'type' => 'text'
             ),
             'addressMac' => array(
-                'initiallyVisible' => true,
+                'initiallyVisible' => false,
                 'label' => 'MAC Address',
                 'sortable' => true,
                 'type' => 'text'
