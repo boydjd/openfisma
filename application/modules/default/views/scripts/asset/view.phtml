@@ -139,7 +139,7 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php Fisma_Format_Section::startSection("Services"); ?>
-        <?php echo $this->escape($this->addServiceButton, 'none'); ?>
+        <div class="buttonBar"><?php echo $this->escape($this->addServiceButton, 'none'); ?></div>
         <?php echo $this->escape($this->serviceTable, 'none'); ?>
     <?php Fisma_Format_Section::stopSection(); ?>
 </form>

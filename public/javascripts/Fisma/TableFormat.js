@@ -736,7 +736,7 @@ Fisma.TableFormat = {
             prefix = params.prefix,
             jqAnchor = $("<a/>");
         jqAnchor.text(oData);
-        jqAnchor.attr("href", prefix + oRecord.getData('id'));
+        jqAnchor.attr("href", prefix + oRecord.getData('id') + '/fromSearch/1');
         $(elCell).html(jqAnchor);
     },
 
