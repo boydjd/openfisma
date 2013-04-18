@@ -125,9 +125,9 @@ Privilege:
         resource: asset
         action: unaffiliated
         description: Manage Unassigned Assets
-    asset_manage_service_tags:
+    asset_manage_environments:
         resource: asset
-        action: manage_service_tags
+        action: manage_environments
         description: Manage Asset Environments
 
     # Users CRUD

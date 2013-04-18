@@ -127,7 +127,12 @@
                 <th scope='row'><?php $this->column('serviceTag'); ?>:</th>
                 <td>
                 <?php if ($this->canUpdate): ?>
-                    <span class="editable" type="text" name="serviceTag" id="asset-service-tag">
+                    <span id="serviceTag"
+                          name="serviceTag"
+                          type="select"
+                          href="/asset-environment/options/format/html/"
+                          target="serviceTag"
+                          class="editable">
                 <?php endif; ?>
                         <?php echo $this->escape($this->asset->serviceTag); ?>&nbsp;
                 <?php if ($this->canUpdate): ?>
