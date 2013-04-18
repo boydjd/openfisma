@@ -61,7 +61,9 @@ class Fisma_Search_Engine
             throw new Fisma_Search_Exception("The Solr extension is not installed.");
         }
 
-        $this->_client = new SolrClient($clientConfig);
+        //$this->_client = new SolrClient($clientConfig);
+        $this->_client = new Apache_Solr_Service($hostname, $port, $path);
+
     }
 
     /**
@@ -556,7 +558,7 @@ class Fisma_Search_Engine
         }
 
         try {
-            $response = $this->_client->query($query)->getResponse();
+            $response = $this->_client->search($query);
         } catch (SolrClientException $e) {
             return new Fisma_Search_Result(0, 0, array());
         }
