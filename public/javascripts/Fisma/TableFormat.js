@@ -210,7 +210,7 @@ Fisma.TableFormat = {
     deleteControl : function (elCell, oRecord, oColumn, oData) {
         if (oData) {
             var icon = document.createElement('img');
-            icon.src = '/images/del.png';
+            icon.src = '/images/trash_recyclebin_empty_closed.png';
 
             while (elCell.hasChildNodes()) {
                 elCell.removeChild(elCell.firstChild);
@@ -736,7 +736,7 @@ Fisma.TableFormat = {
             prefix = params.prefix,
             jqAnchor = $("<a/>");
         jqAnchor.text(oData);
-        jqAnchor.attr("href", prefix + oRecord.getData('id'));
+        jqAnchor.attr("href", prefix + oRecord.getData('id') + '/fromSearch/1');
         $(elCell).html(jqAnchor);
     },
 

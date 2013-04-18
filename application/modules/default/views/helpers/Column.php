@@ -40,6 +40,6 @@ class View_Helper_Column extends Zend_View_Helper_Abstract
             echo $column;
         }
 
-        return $view->escape($columnName);
+        return $view->escape($column);
     }
 }
