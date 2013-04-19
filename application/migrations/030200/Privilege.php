@@ -182,6 +182,10 @@ class Application_Migration_030200_Privilege extends Fisma_Migration_Abstract
         $this->_updateRoles();
         $this->_assignPrivileges();
 
-        $this->getHelper()->update('privilege', array('action' => 'manage_environments'), array('resource' => 'asset', 'action' => 'manage_service_tags'));
+        $this->getHelper()->update(
+            'privilege',
+            array('action' => 'manage_environments'),
+            array('resource' => 'asset', 'action' => 'manage_service_tags')
+        );
     }
 }

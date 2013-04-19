@@ -545,7 +545,6 @@ class Fisma_Search_Engine
             $query = $queryString;
         }
 
-
         try {
             $params['fl'] = implode(',', $params['fl']);
             $params['hl.fl'] = implode(',', $params['hl.fl']);
