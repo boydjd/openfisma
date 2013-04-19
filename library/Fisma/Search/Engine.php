@@ -17,7 +17,7 @@
  */
 
 /**
- * Search engine backend based on the PECL solr extension
+ * Search engine backend based on Solr PHP client (http://code.google.com/p/solr-php-client/)
  *
  * @author     Mark E. Haase <mhaase@endeavorystems.com>
  * @copyright  (c) Endeavor Systems, Inc. 2010 {@link http://www.endeavorsystems.com}
@@ -35,7 +35,7 @@ class Fisma_Search_Engine
     /**
      * Client object is used for communicating with Solr server
      *
-     * @var SolrClient
+     * @var Apache_Solr_Service
      */
     private $_client;
 
@@ -51,17 +51,12 @@ class Fisma_Search_Engine
      */
     public function __construct($hostname, $port, $path)
     {
-        $clientConfig = array(
-            'hostname' => $hostname,
-            'port' => $port,
-            'path' => $path
-        );
-
-        if (!class_exists('SolrClient')) {
-            throw new Fisma_Search_Exception("The Solr extension is not installed.");
+        if (!class_exists('Apache_Solr_Service')) {
+            throw new Fisma_Search_Exception("Solr PHP Client library is not installed.");
         }
 
-        $this->_client = new SolrClient($clientConfig);
+        $this->_client = new Apache_Solr_Service($hostname, $port, $path);
+
     }
 
     /**
@@ -214,7 +209,7 @@ class Fisma_Search_Engine
     public function search($type, $keyword, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection,
                                      $start, $rows, $deleted, $highlightCriteria = false)
     {
-        $query = new SolrQuery;
+        $params = array();
 
         $table = Doctrine::getTable($type);
         $searchableFields = $this->_getSearchableFields($type);
@@ -234,17 +229,11 @@ class Fisma_Search_Engine
             $sortColumnParam = $this->escape($sortColumn) . '_' . $sortColumnDefinition['type'];
         }
 
-        $sortDirectionParam = $sortDirection ? SolrQuery::ORDER_ASC : SolrQuery::ORDER_DESC;
+        $sortDirectionParam = $sortDirection ? 'asc' : 'desc';
 
         // Add required fields to query. The rest of the fields are added below.
-        $query->addField('id')
-              ->addField('luceneDocumentId')
-              ->addSortField($sortColumnParam, $sortDirectionParam);
-
-        if (isset($rows) && isset($start)) {
-            $query->setStart($start)
-                  ->setRows($rows);
-        }
+        $params['fl'] = array('id', 'luceneDocumentId');
+        $params['sort'] = $sortColumnParam . ' ' . $sortDirectionParam;
 
         $trimmedKeyword = trim($keyword);
 
@@ -261,7 +250,7 @@ class Fisma_Search_Engine
 
         // Handle soft delete
         if ($table->hasColumn('deleted_at')) {
-            $query->addField('deleted_at_datetime');
+            $params['fl'][] = 'deleted_at_datetime';
 
             if (!$deleted) {
                 $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
@@ -270,16 +259,17 @@ class Fisma_Search_Engine
 
         // Enable highlighting
         if ($this->getHighlightingEnabled()) {
-
-            $query->setHighlight(true)
-                  ->setHighlightFragsize(0)
-                  ->setHighlightSimplePre('***')
-                  ->setHighlightSimplePost('***')
-                  ->setHighlightRequireFieldMatch(true);
+            $params['hl'] = 'true';
+            $params['hl.fragsize'] = 0;
+            $params['hl.simple.pre'] = '***';
+            $params['hl.simple.post'] = '***';
+            $params['hl.simple.pre'] = '***';
+            $params['hl.requireFieldMatch'] = 'true';
+            $params['hl.fl'] = array();
         }
 
         // The filter query is used for efficiency (parts of the query that don't change can be cached separately)
-        $query->addFilterQuery($filterQuery);
+        $params['fq'] = $filterQuery;
 
         // Add the fields which should be returned in the result set and indicate which should be highlighted
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
@@ -287,7 +277,7 @@ class Fisma_Search_Engine
             // Some twiddling to convert Doctrine's field names to Solr's field names
             $documentFieldName = $fieldName . '_' . $fieldDefinition['type'];
 
-            $query->addField($documentFieldName);
+            $params['fl'][] = $documentFieldName;
 
             // Highlighting doesn't work for date, integer, or float fields in Solr 4.1
             if ('date' != $fieldDefinition['type'] &&
@@ -295,7 +285,7 @@ class Fisma_Search_Engine
                 'integer' != $fieldDefinition['type'] &&
                 'float' != $fieldDefinition['type']) {
 
-                $query->addHighlightField($documentFieldName);
+                $params['hl.fl'][] = $documentFieldName;
             }
         }
 
@@ -527,7 +517,7 @@ class Fisma_Search_Engine
 
                     // Solr can't highlight sortable integer fields
                     if ('integer' != $fieldDefinition['type'] && 'float' != $fieldDefinition['type']) {
-                        $query->addHighlightField($documentFieldName);
+                        $params['hl.fl'][] = $documentFieldName;
                     }
 
                     foreach ($keywordTokens as $keywordToken) {
@@ -544,20 +534,23 @@ class Fisma_Search_Engine
             $keywordQueryString = implode(' OR ', $searchTerms);
         }
 
-        if (!empty($trimmedKeyword)) {
-            $query->addFilterQuery($queryString);
-            $query->setQuery($keywordQueryString);
-        } else {
-            $query->setQuery($queryString);
+        if ($noCriteria) {
+            $params['hl'] = 'false';
         }
 
-        if ($noCriteria) {
-            $query->setHighlight(false);
+        if (!empty($trimmedKeyword)) {
+            $params['fq'] .= ' AND ' . $queryString;
+            $query = $keywordQueryString;
+        } else {
+            $query = $queryString;
         }
+
 
         try {
-            $response = $this->_client->query($query)->getResponse();
-        } catch (SolrClientException $e) {
+            $params['fl'] = implode(',', $params['fl']);
+            $params['hl.fl'] = implode(',', $params['hl.fl']);
+            $response = $this->_client->search($query, $start, $rows, $params);
+        } catch (Exception $e) {
             return new Fisma_Search_Result(0, 0, array());
         }
 
@@ -656,7 +649,7 @@ class Fisma_Search_Engine
      * Convert an array of objects into an array of indexable Solr documents
      *
      * @param array $collection
-     * @return array Array of SolrInputDocument
+     * @return array Array of Apache_Solr_Document
      */
     private function _convertCollectionToDocumentArray($type, $collection)
     {
@@ -676,11 +669,11 @@ class Fisma_Search_Engine
      *
      * @param string $type The class of the object
      * @param array $object
-     * @return SolrInputDocument
+     * @return Apache_Solr_Document
      */
     private function _convertObjectToDocument($type, $object)
     {
-        $document = new SolrInputDocument;
+        $document = new Apache_Solr_Document;
         $table = Doctrine::getTable($type);
 
         // All documents have the following three fields
@@ -764,10 +757,10 @@ class Fisma_Search_Engine
      * each variable will help to sort through the structure for debugging purposes.
      *
      * @param string $type
-     * @param SolrObject $solrResult
+     * @param Apache_Solr_Response $solrResult
      * @return Fisma_Search_Result
      */
-    public function _convertSolrResultToStandardResult($type, SolrObject $solrResult)
+    public function _convertSolrResultToStandardResult($type, Apache_Solr_Response $solrResult)
     {
         $numberFound = count($solrResult->response->docs);
         $numberReturned = $solrResult->response->numFound;
