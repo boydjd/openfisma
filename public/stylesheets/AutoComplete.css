@@ -5,9 +5,10 @@
  * autocomplete.css styles.
  */
 
-.yui-ac-input {
-    position: static ! important;
-    width: 85% ! important;
+/* overrides ".yui-skin-sam .yui-ac-input", must have higher precedence */
+.yui-skin-sam .yui-ac .yui-ac-input {
+    position: static;
+    width: 80%;
 }
 
 .yui-ac-container {
