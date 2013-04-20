@@ -47,7 +47,7 @@ class DebugController extends Zend_Controller_Action
             'mbstring', 'mysql',
             'openssl',
             'PDO',
-            'solr', 'SQLite',
+            'SQLite',
             'tokenizer',
             'xmlreader', 'xmlwriter',
             'zip', 'zlib'
