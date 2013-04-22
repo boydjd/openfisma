@@ -763,15 +763,13 @@ Fisma.TableFormat = {
                 var button = actions[i],
                     args = button.args || {};
                 $(elCell).append(
-                    $('<button/>')
+                    $('<button/>', {'class': 'btn', 'title': button.label})
                         .data({
                             record: oRecord.getData(),
                             recordId: oRecord.getId(),
                             dataTable: this
                         })
-                        .attr('title', button.label)
                         .append($('<img/>').attr({'alt': button.label, 'src': button.icon}))
-                        .button()
                         .click(args, Fisma.Util.getObjectFromName(button.handler))
                 );
             }

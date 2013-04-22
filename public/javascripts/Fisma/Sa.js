@@ -58,7 +58,6 @@ Fisma.Sa = {
                     $('#addTypeSection').fadeOut();
                 }
             ));
-            //.hide();
         $('#addType').on('click', 'tbody > tr', null, function(event) {
             var currentRow  = this,
                 dataTypeId  = $(currentRow).attr('data-type-id'),
