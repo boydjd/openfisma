@@ -61,7 +61,14 @@ class Fisma_Zend_Form_Default extends Fisma_Zend_Form
         $this->setElementDecorators(array(new Fisma_Zend_Form_Decorator()));
 
         foreach ($this->getElements() as $element) {
+            // Set label to getLogicalName();
             $element->setLabel($this->_table->getLogicalName($element->getName()));
+
+            // Set tooltip to getComment();
+            $tooltip = $this->_table->getComment($element->getName());
+            if (!empty($tooltip)) {
+                $element->setAttrib('tooltip', $tooltip);
+            }
 
             // By default, all input is trimmed of extraneous white space
             if (!$element->getFilter('StringTrim') && !$element->getFilter('Null')) {
