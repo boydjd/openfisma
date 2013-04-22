@@ -1192,3 +1192,7 @@ input[type=radio], input[type=checkbox] {
     border-left: none;
     border-bottom: none;
 }
+
+fieldset dt[id$=-label] label {
+    display: inline;
+}

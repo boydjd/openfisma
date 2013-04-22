@@ -176,6 +176,9 @@ class Fisma_Zend_Acl extends Zend_Acl
         $hasPrivilege = false;
         if ($useClassNameAsResourceName) {
             $resourceName = $className;
+            $className = explode('/', $resourceName);
+            $className = array_pop($className);
+            $className = Doctrine_Inflector::classify($className);
         } else {
             // Safety check: make sure that $className is an actual class
             if (!class_exists($className)) {
