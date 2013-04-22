@@ -119,7 +119,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
             if (!$this->view->system) {
                 $message = 'Invalid System ID provided.';
             } else {
-                if (!$this->_acl->hasPrivilegeForObject('sa', $this->view->system)) {
+                if (!$this->_acl->hasPrivilegeForObject('sa', $this->view->system->Organization)) {
                     $message = "User does not have privilege 'sa' for this object.";
                 } else {
                     $this->view->toolbarButtons = $this->getToolbarButtons($this->view->system);
