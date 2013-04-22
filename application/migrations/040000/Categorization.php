@@ -50,7 +50,7 @@ class Application_Migration_040000_Categorization extends Fisma_Migration_Abstra
         $saPrivilege = $helper->insert(
             'privilege',
             array(
-                'resource' => 'system',
+                'resource' => 'organization',
                 'action' => 'sa',
                 'description' => 'Performance Security Authorizations on Systems'
             )

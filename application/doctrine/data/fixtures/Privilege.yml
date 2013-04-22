@@ -173,8 +173,8 @@ Privilege:
         resource: organization
         action: oversee
         description: Oversee Organizations/Systems
-    system_sa:
-        resource: system
+    organization_sa:
+        resource: organization
         action: sa
         description: Performance Security Authorizations on Systems
 

@@ -44,7 +44,7 @@ Role:
             - organization_update
             - organization_delete
             - organization_oversee
-            - system_sa
+            - organization_sa
             - product_create
             - product_read
             - product_update
@@ -145,7 +145,7 @@ Role:
             - asset_manage_environments
             - user_read
             - organization_read
-            - system_sa
+            - organization_sa
             - product_create
             - product_read
             - product_update
