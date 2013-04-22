@@ -137,14 +137,7 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
                    ? ($checkbox['label'])
                    : ($checkbox['nickname'] . ' - ' . $checkbox['fullname']);
 
-            $render .= "<input type='checkbox'"
-                     . ' id="' . $groupName . '[' . $group . '][' . $name . ']"'
-                     . ' name="' . $groupName . '[' . $group . '][]"'
-                     . ' value="' . $name . '"'
-                     . ' onclick="Fisma.CheckboxTree.handleClick(this, event);"'
-                     . ' nestedLevel="' . $checkbox['level'] . '"'
-                     . $class . $checked . $disabled . '>&nbsp;'
-                     . '<label for="' . $groupName . '[' . $group . '][' . $name . ']" '
+            $render .= '<label class="checkbox inline" for="' . $groupName . '[' . $group . '][' . $name . ']" '
                      . 'treePos="' . $count . '" '
                      . ((isset($checkbox['nickname']))
                         ? ('nickname="' . $view->escape($checkbox['nickname']) . '" ')
@@ -156,6 +149,13 @@ class Fisma_Zend_Form_Element_CheckboxTree extends Zend_Form_Element
                         ? ('type="' . $view->escape($checkbox['type']) . '"')
                         : '')
                      . '>'
+                     . "<input type='checkbox'"
+                     . ' id="' . $groupName . '[' . $group . '][' . $name . ']"'
+                     . ' name="' . $groupName . '[' . $group . '][]"'
+                     . ' value="' . $name . '"'
+                     . ' onclick="Fisma.CheckboxTree.handleClick(this, event);"'
+                     . ' nestedLevel="' . $checkbox['level'] . '"'
+                     . $class . $checked . $disabled . '/>'
                      . $view->escape($label)
                      . '</label>&nbsp;</li>';
             } catch(Exception $e) {

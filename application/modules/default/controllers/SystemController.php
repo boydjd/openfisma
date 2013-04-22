@@ -171,7 +171,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         $this->view->editable = (
             (!($this->getRequest()->getParam('readonly'))) &&
-            ($this->_acl->hasPrivilegeForObject('update', $organization)))
+            ($this->_acl->hasPrivilegeForObject('update', $organization))
         );
 
         $this->view->findingCount = Doctrine_Query::create()
