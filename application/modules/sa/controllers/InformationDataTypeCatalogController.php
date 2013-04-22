@@ -26,12 +26,28 @@
  */
 class Sa_InformationDataTypeCatalogController extends Fisma_Zend_Controller_Action_Object
 {
+    /**
+     * Specify model name
+     *
+     * @var string
+     */
     protected $_modelName = 'InformationDataTypeCatalog';
+
+    /**
+     * Return user-friendly name for the model
+     *
+     * @return string
+     */
     public function getSingularModelName()
     {
         return 'Information Data Type Catalog';
     }
 
+    /**
+     * Return the form for the CRUD controller
+     *
+     * @return Fisma_Zend_Form_Default
+     */
     public function getForm($formName = null)
     {
         return new Sa_InformationDataTypeCatalogForm();

@@ -26,6 +26,9 @@
  */
 class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Security
 {
+    /**
+     * Set up AJAX actions
+     */
     public function init()
     {
         $this->_helper->ajaxContext()
@@ -134,7 +137,12 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
         }
     }
 
-    public function getToolbarButtons($subject)
+    /**
+     * Add more buttons to the toolbar
+     *
+     * @param Fisma_Doctrine_Record $subject Optional. The object currently loaded for the view.
+     */
+    public function getToolbarButtons($subject = null)
     {
         $action = $this->getRequest()->getActionName();
         $buttons = array();
