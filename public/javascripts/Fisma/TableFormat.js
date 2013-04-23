@@ -272,7 +272,7 @@ Fisma.TableFormat = {
 
         if (status) {
             status = PHP_JS().html_entity_decode(status);
-            overdueFindingSearchUrl += "/denormalizedStatus/enumIs/" + encodeURIComponent(status);
+            overdueFindingSearchUrl += "/workflowStep/textExactMatch/" + encodeURIComponent(status);
         }
 
         // Handle source field
