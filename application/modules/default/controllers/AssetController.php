@@ -236,7 +236,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
         if (!isset($formName)) {
             $options = array('' => '');
-            $tags = Doctrine::getTable('Tag')->findOneByTagId('asset-environments')->labels;
+            $tags = Doctrine::getTable('Tag')->findOneByTagId('asset-environment')->labels;
             foreach ($tags as $tag) {
                 $options[$tag] = $tag;
             }
