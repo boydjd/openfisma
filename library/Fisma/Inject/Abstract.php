@@ -440,8 +440,13 @@ abstract class Fisma_Inject_Abstract
         // Check to see if any of the pending assets are duplicates, if so, update the finding to point to the correct
         // asset id
         foreach ($this->_findings as &$findingData) {
-            if (empty($findingData['finding']->Asset) && $findingData['asset'] == $assetData) {
-                $findingData['asset']['id'] = $id;
+            if (empty($findingData['finding']->Asset)) {
+                if (
+                    $findingData['asset']['networkId'] === $asset->networkId
+                    && $findingData['asset']['addressIp'] === $asset->addressIp
+                ) {
+                    $findingData['asset']['id'] = $id;
+                }
             }
         }
         // Free object
