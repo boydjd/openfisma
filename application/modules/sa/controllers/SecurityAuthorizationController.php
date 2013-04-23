@@ -108,6 +108,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
     protected function _prepare()
     {
         $format = $this->getRequest()->getParam('format');
+        $this->view->editable = !($this->getRequest()->getParam('readonly'));
         $this->view->isJson = ($format === 'json');
         $message = '';
 
@@ -182,6 +183,9 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
                     $sidt->informationDataTypeId = $dataType->id;
                     $sidt->denormalizedDataType = $dataType->toArray();
                     $sidt->save();
+
+                    $this->view->system->refreshFips();
+                    $this->view->fipsCategory = $this->view->system->fipsCategory;
                 } catch (Exception $e) {
                     $message = $e->getMessage();
                     $stackTrace = $e->getTraceAsString();
@@ -222,11 +226,16 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
             } else {
                 try {
                     $sidt = Doctrine_Query::create()
-                        ->delete()
                         ->from('SystemInformationDataType')
                         ->where('systemId = ?', $this->view->system->id)
                         ->andWhere('informationDataTypeId = ?', $dataType->id)
-                        ->execute();
+                        ->fetchOne();
+                    if ($sidt) {
+                        $this->view->dataType = $sidt->denormalizedDataType;
+                        $sidt->delete();
+                        $this->view->system->refreshFips();
+                        $this->view->fipsCategory = $this->view->system->fipsCategory;
+                    }
                 } catch (Exception $e) {
                     $message = $e->getMessage();
                     $stackTrace = $e->getTraceAsString();
@@ -270,11 +279,13 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
                         ->from('SystemInformationDataType')
                         ->where('systemId = ?', $this->view->system->id)
                         ->andWhere('informationDataTypeId = ?', $dataType->id)
-                        ->execute();
+                        ->fetchOne();
                     if ($sidt) {
                         $sidt->denormalizedDataType = $dataType->toArray();
-                        //$sidt->save();
+                        $sidt->save();
                         $this->view->dataType = $sidt->denormalizedDataType;
+                        $this->view->system->refreshFips();
+                        $this->view->fipsCategory = $this->view->system->fipsCategory;
                     }
                 } catch (Exception $e) {
                     $message = $e->getMessage();
@@ -313,6 +324,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
             ->where('systemId = ?', $this->view->system->id)
             ->execute();
 
+        $this->view->system->refreshFips();
         $this->view->priorityMessenger('All information data types removed successfully.', 'success');
         $this->_redirect("/sa/security-authorization/view/id/{$this->view->system->id}");
     }
@@ -335,6 +347,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
         }
 
         $assignedTypes->save();
+        $this->view->system->refreshFips();
 
         $this->view->priorityMessenger('All information data types refreshed successfully.', 'success');
         $this->_redirect("/sa/security-authorization/view/id/{$this->view->system->id}");

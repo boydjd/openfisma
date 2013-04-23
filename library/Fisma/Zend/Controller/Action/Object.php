@@ -887,6 +887,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
 
             $formatter = 'YAHOO.widget.DataTable.formatText';
+            $columnDef = $table->getColumnDefinition($table->getColumnName($fieldName));
+            if (isset($columnDef['extra']['purify']) && $columnDef['extra']['purify'] === 'html') {
+                $formatter = 'Fisma.TableFormat.formatHtml';
+            }
+
             $formatterParameters = null;
             if ($searchParams['type'] === 'boolean') {
                 $formatter = 'Fisma.TableFormat.formatBoolean';

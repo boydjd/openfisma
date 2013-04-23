@@ -94,7 +94,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $firstTab = $this->view->escape($organization->name)
                   . ' (' . $this->view->escape($organization->nickname) . ')';
         $tabView->addTab($firstTab, "/system/system/id/$id");
-        $tabView->addTab("FIPS-199", "/system/fips/id/$id");
+        $tabView->addTab("FIPS-199", "/sa/security-authorization/cat/id/$id/format/html/readonly/true");
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab($this->view->escape($this->view->translate('System_Attachments')), "/system/artifacts/id/$id");
         $tabView->addTab("Assets", "/system/assets/id/$id/format/html");
@@ -239,25 +239,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $this->view->priorityMessenger('Converted to organization successfully', 'success');
             $this->_redirect("/organization/view/id/" . $organization->id);
         }
-    }
-
-    /**
-     * Display CIA criteria and FIPS-199 categorization
-     *
-     * @GETAllowed
-     * @return void
-     */
-    public function fipsAction()
-    {
-        $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
-        $this->_acl->requirePrivilegeForObject('read', $organization);
-        $this->_helper->layout()->disableLayout();
-
-        $this->view->organization = $organization;
-        $this->view->system = $this->view->organization->System;
-
-        $this->render();
     }
 
     /**

@@ -26,74 +26,80 @@ Fisma.Sa = {
         '<a href="#" onclick="Fisma.Sa.removeDataType(event, this)"><i class="icon-remove"></i> Remove</a><br/>' +
         '<a href="#" onclick="Fisma.Sa.refreshDataType(event, this)"><i class="icon-refresh"></i> Refresh</a>',
 
-    initCat: function() {
+    initCat: function(editable) {
+        var sixColDefs = [
+            {"sWidth": "10%", "aTargets": [ 0 ] },
+            {"sWidth": "16%", "aTargets": [ 1 ] },
+            {"sWidth": "50%", "aTargets": [ 2 ] },
+            {"sWidth": "8%", "aTargets": [ 3 ] },
+            {"sWidth": "8%", "aTargets": [ 4 ] },
+            {"sWidth": "8%", "aTargets": [ 5 ] }
+        ];
+        var sevenColDefs = [
+            {"sWidth": "10%", "aTargets": [ 0 ] },
+            {"sWidth": "16%", "aTargets": [ 1 ] },
+            {"sWidth": "50%", "aTargets": [ 2 ] },
+            {"sWidth": "6%", "aTargets": [ 3 ] },
+            {"sWidth": "6%", "aTargets": [ 4 ] },
+            {"sWidth": "6%", "aTargets": [ 5 ] },
+            {"sWidth": "6%", "aTargets": [ 6 ] }
+        ];
+
         Fisma.Sa.assignedTable = $('#assignedTypes').dataTable({
-            "aoColumnDefs": [
-                {"sWidth": "10%", "aTargets": [ 0 ] },
-                {"sWidth": "16%", "aTargets": [ 1 ] },
-                {"sWidth": "50%", "aTargets": [ 2 ] },
-                {"sWidth": "6%", "aTargets": [ 3 ] },
-                {"sWidth": "6%", "aTargets": [ 4 ] },
-                {"sWidth": "6%", "aTargets": [ 5 ] },
-                {"sWidth": "6%", "aTargets": [ 6 ] }
-            ]
+            "aoColumnDefs": ((editable) ? sevenColDefs : sixColDefs)
         });
 
-        Fisma.Sa.addTable = $('#addType').dataTable({
-            "aoColumnDefs": [
-                {"sWidth": "10%", "aTargets": [ 0 ] },
-                {"sWidth": "16%", "aTargets": [ 1 ] },
-                {"sWidth": "50%", "aTargets": [ 2 ] },
-                {"sWidth": "8%", "aTargets": [ 3 ] },
-                {"sWidth": "8%", "aTargets": [ 4 ] },
-                {"sWidth": "8%", "aTargets": [ 5 ] }
-            ]
-        });
-        $('#addTypeSection').hide();
-        $('#addTypeSection div.sectionHeader')
-            .append($('<button/>', {'class': 'close pull-right'})
-                .html('&times;')
-                .click(function(event) {
-                    event.preventDefault();
-                    $('#addTypeSection').fadeOut();
-                }
-            ));
-        $('#addType').on('click', 'tbody > tr', null, function(event) {
-            var currentRow  = this,
-                dataTypeId  = $(currentRow).attr('data-type-id'),
-                systemId    = $('input#systemId').val(),
-                csrf        = $('input[name=csrf]').val(),
-                localData   = Fisma.Sa.addTable.fnGetData(currentRow);
-
-            localData.push(Fisma.Sa.ASSIGNED_TYPES_ACTIONS);
-            $('#addTypeSection').fadeOut();
-
-            //AJAX manipulating
-            $.post(
-                '/sa/security-authorization/add-type/',
-                {
-                    'id': systemId,
-                    'dataTypeId': dataTypeId,
-                    'csrf': csrf,
-                    'format': 'json'
-                },
-                function(data) {
-                    if (data.err) {
-                        Fisma.Util.message('<p>Error occurred: ' + data.err + '</p>', 'error', true);
-                        if (data.errStackTrace) {
-                            Fisma.Util.message('<pre>' + data.errStackTrace + '</pre>', 'error');
-                        }
-                    } else if (data.success) {
-                        Fisma.Sa.assignedTable.fnAddData(localData);
-                        $('#assignedTypes tr:not([data-type-id])').attr('data-type-id', dataTypeId);
-                        Fisma.Sa.addTable.fnDeleteRow(currentRow);
-                        Fisma.Util.message('<p>New Information Data Type assigned successfully.</p>', 'success');
-                    } else {
-                        Fisma.Util.message('<p>Unexpected error occurred.</p>', 'error', true);
+        if (editable) {
+            Fisma.Sa.addTable = $('#addType').dataTable({
+                "aoColumnDefs": sixColDefs
+            });
+            $('#addTypeSection').hide();
+            $('#addTypeSection div.sectionHeader')
+                .append($('<button/>', {'class': 'close pull-right'})
+                    .html('&times;')
+                    .click(function(event) {
+                        event.preventDefault();
+                        $('#addTypeSection').fadeOut();
                     }
-                }
-            );
-        });
+                ));
+            $('#addType').on('click', 'tbody > tr', null, function(event) {
+                var currentRow  = this,
+                    dataTypeId  = $(currentRow).attr('data-type-id'),
+                    systemId    = $('input#systemId').val(),
+                    csrf        = $('input[name=csrf]').val(),
+                    localData   = Fisma.Sa.addTable.fnGetData(currentRow);
+
+                localData.push(Fisma.Sa.ASSIGNED_TYPES_ACTIONS);
+                $('#addTypeSection').fadeOut();
+
+                //AJAX manipulating
+                $.post(
+                    '/sa/security-authorization/add-type/',
+                    {
+                        'id': systemId,
+                        'dataTypeId': dataTypeId,
+                        'csrf': csrf,
+                        'format': 'json'
+                    },
+                    function(data) {
+                        if (data.err) {
+                            Fisma.Util.message('<p>Error occurred: ' + data.err + '</p>', 'error', true);
+                            if (data.errStackTrace) {
+                                Fisma.Util.message('<pre>' + data.errStackTrace + '</pre>', 'error');
+                            }
+                        } else if (data.success) {
+                            $('#fipsCategory').text(data.fipsCategory);
+                            Fisma.Sa.assignedTable.fnAddData(localData);
+                            $('#assignedTypes tr:not([data-type-id])').attr('data-type-id', dataTypeId);
+                            Fisma.Sa.addTable.fnDeleteRow(currentRow);
+                            Fisma.Util.message('<p>New Information Data Type assigned successfully.</p>', 'success');
+                        } else {
+                            Fisma.Util.message('<p>Unexpected error occurred.</p>', 'error', true);
+                        }
+                    }
+                );
+            });
+        }
     },
 
     addDataType: function(event, args) {
@@ -122,6 +128,17 @@ Fisma.Sa = {
                         Fisma.Util.message('<pre>' + data.errStackTrace + '</pre>', 'error');
                     }
                 } else if (data.success) {
+                    $('#fipsCategory').text(data.fipsCategory);
+                    var localData = [
+                        data.dataType.category,
+                        data.dataType.subcategory,
+                        data.dataType.description,
+                        data.dataType.confidentiality,
+                        data.dataType.integrity,
+                        data.dataType.availability
+                    ];
+                    Fisma.Sa.addTable.fnAddData(localData);
+                    $('#addType tr:not([data-type-id])').attr('data-type-id', dataTypeId);
                     Fisma.Sa.assignedTable.fnDeleteRow(currentRow);
                     Fisma.Util.message('<p>Information Data Type removed successfully.</p>', 'success');
                 } else {
@@ -147,12 +164,14 @@ Fisma.Sa = {
                 'format': 'json'
             },
             function(data) {
+                console.log(data);
                 if (data.err) {
                     Fisma.Util.message('<p>Error occurred: ' + data.err + '</p>', 'error', true);
                     if (data.errStackTrace) {
                         Fisma.Util.message('<pre>' + data.errStackTrace + '</pre>', 'error');
                     }
                 } else if (data.success) {
+                    $('#fipsCategory').text(data.fipsCategory);
                     var updatedData = [
                         data.dataType.category,
                         data.dataType.subcategory,
