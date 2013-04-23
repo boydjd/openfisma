@@ -1,4 +1,5 @@
 <?php $this->table = Doctrine::getTable('InformationDataType'); ?>
+<?php if ($this->editable): ?>
 <div class="buttonBar">
     <?php foreach ($this->toolbarButtons as $button):
         echo $this->escape($button, 'none');
@@ -29,6 +30,17 @@
     <?php endforeach; ?></tbody>
 </table>
 <?php Fisma_Format_Section::stopSection(); ?>
+<?php endif; ?>
+
+<?php Fisma_Format_Section::startSection('Overview'); ?>
+<table class="keyValues table-hover">
+    <tr>
+        <th scope="row">FIPS-199 Categorizaiton</th>
+        <td id="fipsCategory"><?php echo $this->system->fipsCategory; ?></td>
+    </tr>
+</table>
+</table>
+<?php Fisma_Format_Section::stopSection(); ?>
 
 <?php Fisma_Format_Section::startSection('Assigned Information Data Types'); ?>
 <table id="assignedTypes" class="table table-striped table-bordered">
@@ -40,7 +52,7 @@
             <th scope="col"><?php $this->column('confidentiality'); ?></th>
             <th scope="col"><?php $this->column('integrity'); ?></th>
             <th scope="col"><?php $this->column('availability'); ?></th>
-            <th scope="col">Action</th>
+            <?php if ($this->editable): ?><th scope="col">Action</th><?php endif; ?>
         </tr>
     </thead>
     <tbody><?php foreach ($this->assignedTypes as $dataTypeAssignment):
@@ -52,14 +64,16 @@
             <td><?php echo $this->escape($dataType['confidentiality']); ?></td>
             <td><?php echo $this->escape($dataType['integrity']); ?></td>
             <td><?php echo $this->escape($dataType['availability']); ?></td>
-            <td>
+            <?php if ($this->editable): ?><td>
                 <a href="#" onclick="Fisma.Sa.removeDataType(event, this)"><i class="icon-remove"></i> Remove</a><br/>
                 <a href="#" onclick="Fisma.Sa.refreshDataType(event, this)"><i class="icon-refresh"></i> Refresh</a>
-            </td>
+            </td><?php endif; ?>
         </tr>
     <?php endforeach; ?></tbody>
 </table>
 <?php Fisma_Format_Section::stopSection(); ?>
 <script>
-    $(Fisma.Sa.initCat);
+    $(function() {
+        Fisma.Sa.initCat(<?php echo $this->escape(($this->editable) ? 'true' : 'false'); ?>);
+    });
 </script>

@@ -102,39 +102,6 @@ class SystemTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchabl
                 'sortable' => true,
                 'type' => 'enum'
             ),
-            'confidentiality' => array(
-                'enumValues' => $this->getEnumValues('confidentiality'),
-                'initiallyVisible' => true,
-                'sortable' => true,
-                'type' => 'enum'
-            ),
-            'confidentialityDescription' => array(
-                'initiallyVisible' => false,
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'integrity' => array(
-                'enumValues' => $this->getEnumValues('integrity'),
-                'initiallyVisible' => true,
-                'sortable' => true,
-                'type' => 'enum'
-            ),
-            'integrityDescription' => array(
-                'initiallyVisible' => false,
-                'sortable' => true,
-                'type' => 'text'
-            ),
-            'availability' => array(
-                'enumValues' => $this->getEnumValues('availability'),
-                'initiallyVisible' => true,
-                'sortable' => true,
-                'type' => 'enum'
-            ),
-            'availabilityDescription' => array(
-                'initiallyVisible' => false,
-                'sortable' => true,
-                'type' => 'text'
-            ),
             'fipsCategory' => array(
                 'enumValues' => $this->getEnumValues('fipsCategory'),
                 'initiallyVisible' => true,
