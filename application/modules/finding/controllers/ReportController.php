@@ -254,7 +254,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
 
         $overdueQuery = Doctrine_Query::create()
                         ->addSelect("o.nickname a")
-                        ->addSelect('f.denormalizedStatus b')
+                        ->addSelect('cs.name b')
                         ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 0 AND 29, 1, 0)) c')
                         ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 30 AND 59, 1, 0)) d')
                         ->addSelect('SUM(IF(DATEDIFF(NOW(), f.nextduedate) BETWEEN 60 AND 89, 1, 0)) e')
@@ -265,8 +265,9 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
                         ->addSelect('IFNULL(MAX(DATEDIFF(NOW(), f.nextduedate)), 0) k')
                         ->from('Finding f')
                         ->leftJoin('f.Organization o')
+                        ->leftJoin('f.CurrentStep cs')
                         ->where('DATEDIFF(NOW(), f.nextduedate) > 0')
-                        ->groupBy('o.id, f.denormalizedStatus')
+                        ->groupBy('o.id, cs.name')
                         ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
         // If the user selects one organization then display that one only. Otherwise display all of this users systems.
