@@ -4,15 +4,20 @@ SecurityControlEnhancement:
             type: enum
             values: [LOW, MODERATE, HIGH]
             comment: Indicates the lowest baseline that includes this enhancement.
+            extra:
+                logicalName: Level
         description:
             type: string
             extra:
                 purify: html
-                
+                logicalName: Description
+
         securityControlId:
             type: integer
             comment: Foreign key
-    
+            extra:
+                logicalName: Security Control
+
     relations:
         Control:
             class: SecurityControl

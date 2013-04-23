@@ -17,19 +17,15 @@
  */
 
 /**
- * InformationDataType
+ * SystemSecurityControlTable
  *
+ * @uses Fisma_Doctrine_Table
  * @package Model
  * @copyright (c) Endeavor Systems, Inc. 2013 {@link http://www.endeavorsystems.com}
  * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class InformationDataType extends BaseInformationDataType
+class SystemSecurityControlTable extends Fisma_Doctrine_Table
 {
-    /**
-     * This model uses a combined "manage" privilege in place of usual CRUD
-     *
-     * @var bool
-     */
-    const IS_MANAGED = true;
+
 }

@@ -35,10 +35,9 @@
 <?php Fisma_Format_Section::startSection('Overview'); ?>
 <table class="keyValues table-hover">
     <tr>
-        <th scope="row">FIPS-199 Categorizaiton</th>
-        <td id="fipsCategory"><?php echo $this->system->fipsCategory; ?></td>
+        <th scope="row"><?php $this->column('fipsCategory', Doctrine::getTable('System')); ?></th>
+        <td id="fipsCategory"><?php echo $this->escape($this->system->fipsCategory); ?></td>
     </tr>
-</table>
 </table>
 <?php Fisma_Format_Section::stopSection(); ?>
 
@@ -65,7 +64,7 @@
             <td><?php echo $this->escape($dataType['integrity']); ?></td>
             <td><?php echo $this->escape($dataType['availability']); ?></td>
             <?php if ($this->editable): ?><td>
-                <a href="#" onclick="Fisma.Sa.removeDataType(event, this)"><i class="icon-remove"></i> Remove</a><br/>
+                <a href="#" onclick="Fisma.Sa.removeDataType(event, this)"><i class="icon-trash"></i> Remove</a><br/>
                 <a href="#" onclick="Fisma.Sa.refreshDataType(event, this)"><i class="icon-refresh"></i> Refresh</a>
             </td><?php endif; ?>
         </tr>

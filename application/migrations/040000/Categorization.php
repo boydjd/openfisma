@@ -121,7 +121,8 @@ class Application_Migration_040000_Categorization extends Fisma_Migration_Abstra
             array(
                 'id' => '1',
                 'name' => 'NIST SP 800-60',
-                'description' => 'Guide for Mapping Types of Information and Information Systems to Security Categories',
+                'description' =>
+                    'Guide for Mapping Types of Information and Information Systems to Security Categories',
                 'published' => '1'
             )
         );
@@ -133,8 +134,6 @@ class Application_Migration_040000_Categorization extends Fisma_Migration_Abstra
         $helper->createTable(
             'system_information_data_type',
             array(
-                'createdts' => "datetime NOT NULL",
-                'modifiedts' => "datetime NOT NULL",
                 'systemid' => "bigint(20) NOT NULL DEFAULT '0'",
                 'informationdatatypeid' => "bigint(20) NOT NULL DEFAULT '0'",
                 'denormalizeddatatype' => "text"

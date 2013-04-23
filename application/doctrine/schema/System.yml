@@ -63,7 +63,7 @@ System:
             values: [LOW, MODERATE, HIGH]
             comment: The FIPS-199 security categorization. Automatically updated by OpenFISMA based on the CIA above
             extra:
-                logicalName: FIPS 199 Category
+                logicalName: FIPS-199 Categorization
                 notify: true
 
         # FISMA Report Criteria:
@@ -167,9 +167,16 @@ System:
             foreign: id
             foreignAlias: Systems
 
-        SystemInformationDataTypes:
+        InformationDataTypes:
             class: InformationDataType
             local: systemId
             foreign: informationDataTypeId
             refClass: SystemInformationDataType
+            foreignAlias: Systems
+
+        SecurityControls:
+            class: SecurityControl
+            local: systemId
+            foreign: securityControlId
+            refClass: SystemSecurityControl
             foreignAlias: Systems
