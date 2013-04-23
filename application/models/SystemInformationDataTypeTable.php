@@ -25,7 +25,7 @@
  * @author Duy K. Bui <duy.bui@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class SystemInformationDataTypeTable extends Doctrine_Table
+class SystemInformationDataTypeTable extends Fisma_Doctrine_Table
 {
 
 }

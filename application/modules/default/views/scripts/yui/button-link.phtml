@@ -2,6 +2,7 @@
 	id = '<?php echo $this->escape($this->id); ?>'
 	href = '<?php echo $this->escape($this->href); ?>'
 	class = 'btn'
+	<?php if ($this->tooltip): ?>title = '<?php echo $this->escape($this->tooltip, 'none'); ?>'<?php endif; ?>
 	<?php if ($this->disabled): ?>disabled<?php endif; ?>
 >
     <?php if ($this->icon): ?><i class='icon-<?php echo $this->escape($this->icon); ?>'></i><?php endif; ?>

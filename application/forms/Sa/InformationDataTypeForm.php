@@ -67,14 +67,12 @@ class Sa_InformationDataTypeForm extends Fisma_Zend_Form_Default
         ));
         $this->_inputs['confidentiality']->addMultiOptions($threatArrays);
 
-
         $this->_inputs['defaultIntegrity'] = new Fisma_Zend_Form_Element_ConstantText('defaultIntegrity');
         $this->_inputs['integrity'] = new Zend_Form_Element_Select('integrity');
         $this->_inputs['integrity']->setOptions(array(
             'required' => true
         ));
         $this->_inputs['integrity']->addMultiOptions($threatArrays);
-
 
         $this->_inputs['defaultAvailability'] = new Fisma_Zend_Form_Element_ConstantText('defaultAvailability');
         $this->_inputs['availability'] = new Zend_Form_Element_Select('availability');
