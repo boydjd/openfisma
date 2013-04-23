@@ -404,6 +404,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                                   . $commentTs->toString(Fisma_Date::FORMAT_AM_PM_TIME);
             $commentRows[] = array(
                 'timestamp' => Zend_Json::encode(array("local" => $commentDateTimeLocal, "utc" => $commentDateTime)),
+                'unixtimestamp' => $commentTs->getTimestamp(),
                 'username' => $this->view->userInfo($comment['User']['displayName'], $comment['User']['id']),
                 'comment' =>  $this->view->textToHtml($this->view->escape($comment['comment'])),
                 'delete' => (($comment['User']['id'] === CurrentUser::getAttribute('id'))
@@ -421,7 +422,11 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 true,
                 'Fisma.TableFormat.formatDateTimeLocal',
                 null,
-                'timestamp'
+                'timestamp',
+                false,
+                'string',
+                'unixtimestamp'
+
             )
         );
 
