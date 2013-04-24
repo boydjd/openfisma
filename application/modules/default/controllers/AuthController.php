@@ -208,6 +208,44 @@ class AuthController extends Zend_Controller_Action
 
             }
 
+            //  ***determine if the user is using a supported web browser***
+             
+            // format $support_browsers[browser_name] = array('min_version' => minium version, 'max_version' => maximum version);
+            $supported_browsers = array();
+            $supported_browsers['Chrome'] = array('min_version' => 20, 'max_version' => 26);
+            $supported_browsers['Firefox'] = array('min_version' => 5, 'max_version' => 20);
+            $supported_browsers['Internet Explorer'] = array('min_version' => 8, 'max_version' => 9);
+            
+            $UserAgent = new Zend_Http_UserAgent();
+            $UserBrowser =  $UserAgent->getDevice()->getBrowser();
+            $UserBrowserVersion = $UserAgent->getDevice()->getBrowserVersion();
+            $UserBrowserVersion_major = strstr($UserBrowserVersion, '.',true);
+            
+            if ( array_key_exists($UserBrowser, $supported_browsers ) )
+            { 
+                    if ($UserBrowserVersion_major < $supported_browsers[$UserBrowser]['min_version'] && $UserBrowserVersion_major >= $supported_browsers[$UserBrowser]['max_version']) {
+
+                    $unsupported_browser_message = "Warning: You are using an unsupported web browser. <br />";
+
+                    if ($UserBrowser == 'Internet Explorer' && $UserBrowserVersion == 7 && !$UserAgent->getDevice()->hasFlashSupport()) {
+                        $unsupported_browser_message .= "Even though Internet Explorer 7 is not supported, it is required that you have Flash installed. <br />";
+                    }
+
+                    $unsupported_browser_message .= "Browser info: $UserBrowser $UserBrowserVersion";
+                }
+            } else {
+                $unsupported_browser_message = "Warning: You are using an unsupported web browser. <br />";
+                $unsupported_browser_message .= "Browser info: $UserBrowser $UserBrowserVersion";
+            }
+            
+            // display warning message for an unsupported browser
+             if ( isset($unsupported_browser_message) && !empty($unsupported_browser_message) )
+            {
+                //$message = $unsupported_browser_message;
+                $this->view->priorityMessenger($unsupported_browser_message,'warning');
+                
+            }          
+            
             // Finally, if the user has passed through all of this,
             // send them to their original requested page or dashboard otherwise
             $session = Fisma::getSession();
