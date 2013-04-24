@@ -211,23 +211,23 @@ class AuthController extends Zend_Controller_Action
             //  ***determine if the user is using a supported web browser***
              
             // format $support_browsers[browser_name] = array('min_version' => minium version, 'max_version' => maximum version);
+            // max_version: latest dev
+            // min_version: latest stable
             $supported_browsers = array();
-            $supported_browsers['Chrome'] = array('min_version' => 20, 'max_version' => 26);
-            $supported_browsers['Firefox'] = array('min_version' => 5, 'max_version' => 20);
-            $supported_browsers['Internet Explorer'] = array('min_version' => 8, 'max_version' => 9);
-            
+            $supported_browsers['Chrome'] = array('min_version' => "26.0.0.0", 'max_version' =>  "28.0.1485.1");
+            $supported_browsers['Firefox'] = array('min_version' => "20.0", 'max_version' => "22.0");
+            $supported_browsers['Internet Explorer'] = array('min_version' => "8.0", 'max_version' => "11.0");
             $UserAgent = new Zend_Http_UserAgent();
             $UserBrowser =  $UserAgent->getDevice()->getBrowser();
             $UserBrowserVersion = $UserAgent->getDevice()->getBrowserVersion();
-            $UserBrowserVersion_major = strstr($UserBrowserVersion, '.',true);
             
             if ( array_key_exists($UserBrowser, $supported_browsers ) )
             { 
-                    if ($UserBrowserVersion_major < $supported_browsers[$UserBrowser]['min_version'] && $UserBrowserVersion_major >= $supported_browsers[$UserBrowser]['max_version']) {
+                    if (version_compare($supported_browsers[$UserBrowser]['min_version'], $UserBrowserVersion, '<') && version_compare($UserBrowserVersion, $supported_browsers[$UserBrowser]['max_version'], '>=') ) {
 
                     $unsupported_browser_message = "Warning: You are using an unsupported web browser. <br />";
 
-                    if ($UserBrowser == 'Internet Explorer' && $UserBrowserVersion == 7 && !$UserAgent->getDevice()->hasFlashSupport()) {
+                    if ($UserBrowser == 'Internet Explorer' && (version_compare("7.0", $UserBrowserVersion) == 0) && !$UserAgent->getDevice()->hasFlashSupport()) {
                         $unsupported_browser_message .= "Even though Internet Explorer 7 is not supported, it is required that you have Flash installed. <br />";
                     }
 
