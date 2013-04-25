@@ -21,7 +21,9 @@
         $(document).tooltip({
             'open': function(event, ui) {
                 $(ui.tooltip).attr('aria-live', 'rude');
-            }
+            },
+            // tooltips on iframes don't seem to work right in IE
+            "items": "[title]:not(iframe,[disabled])"
         });
         if ($('div[id$=TabViewContainer]').length === 0) {
             Fisma.Editable.turnAllOn();
