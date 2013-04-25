@@ -489,47 +489,54 @@ class AuthController extends Zend_Controller_Action
     private function _getBrowserUnsupportedMessage()
     {
 
-        /** contains the supported browsers, including version numbers  */
-        $supported_browsers = array();
-        
-        // format $support_browsers[browser_name] = array('min_version' => minium version, 'max_version' => maximum version);
-        // max_version: latest dev
-        // min_version: latest stable
-        $supported_browsers['Chrome'] = array('min_version' => "26.0.0.0", 'max_version' => "28.0.1485.1");
-        $supported_browsers['Firefox'] = array('min_version' => "20.0", 'max_version' => "22.0");
-        $supported_browsers['Internet Explorer'] = array('min_version' => "8.0",
-            'max_version' => "11.0");
-        
+        /** contains the supported browsers, including version numbers 
+         *  
+         * format $support_browsers[browser_name] = array('min_version' => minium version, 'max_version' => maximum version);
+         * max_version: latest dev
+         * min_version: latest stable
+         */
+        $supported_browsers = array(
+            'Chrome' => array(
+                'min_version' => "26.0.0.0",
+                'max_version' => "28.0.1485.1"
+            ),
+            'Firefox' => array(
+                'min_version' => "20.0",
+                'max_version' => "22.0"
+            ),
+            'Internet Explorer' => array(
+                'min_version' => "8.0",
+                'max_version' => "11.0"
+            )
+        );
+
         /** @see Zend_Http_UserAgent */
         $UserAgent = new Zend_Http_UserAgent();
-        
+
         /** Name of web browser */
         $UserBrowser = $UserAgent->getDevice()->getBrowser();
-        
+
         /** Version of web browser */
         $UserBrowserVersion = $UserAgent->getDevice()->getBrowserVersion();
-        
+
         /** Message to display when web browser is not supported */
         $unsupported_browser_message = "";
 
         // determines whether or not a web browser is supported
         if (array_key_exists($UserBrowser, $supported_browsers)) {
-            if ( version_compare($supported_browsers[$UserBrowser]['min_version'], $UserBrowserVersion, '<') 
-                && version_compare($UserBrowserVersion, $supported_browsers[$UserBrowser]['max_version'], '>=')) {
+            if (version_compare($supported_browsers[$UserBrowser]['min_version'], $UserBrowserVersion, '<') && version_compare($UserBrowserVersion, $supported_browsers[$UserBrowser]['max_version'], '>=')) {
 
-                $unsupported_browser_message = "Warning: You are using an unsupported web browser. <br />";
+                $unsupported_browser_message = "Warning: You are using an unsupported web browser.";
 
-                if ($UserBrowser == 'Internet Explorer' 
-                    && (version_compare("7.0", $UserBrowserVersion) == 0) 
-                    && !$UserAgent->getDevice()->hasFlashSupport()) {
-                    $unsupported_browser_message .= "Even though Internet Explorer 7 is not supported, it is required that you have Flash installed. <br />";
+                if ($UserBrowser == 'Internet Explorer' && (version_compare("7.0", $UserBrowserVersion) == 0) && !$UserAgent->getDevice()->hasFlashSupport()) {
+                    $unsupported_browser_message .= "<br />Even though Internet Explorer 7 is not supported, it is required that you have Flash installed. ";
                 }
 
-                $unsupported_browser_message .= "Browser info: $UserBrowser $UserBrowserVersion";
+                $unsupported_browser_message .= "<br />Browser info: $UserBrowser $UserBrowserVersion";
             }
         } else {
-            $unsupported_browser_message = "Warning: You are using an unsupported web browser. <br />";
-            $unsupported_browser_message .= "Browser info: $UserBrowser $UserBrowserVersion";
+            $unsupported_browser_message = "Warning: You are using an unsupported web browser.";
+            $unsupported_browser_message .= "<br />Browser info: $UserBrowser $UserBrowserVersion";
         }
 
         return $unsupported_browser_message;
