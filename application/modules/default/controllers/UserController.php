@@ -319,6 +319,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         foreach ($logs as $log) {
             $logRows[] = array(
                 'timestamp' => $log['o_createdTs'],
+                'unixtimestamp' => $commentTs->getTimestamp(),
                 'user' => $log['u_id'] ? $this->view->userInfo($log['u_displayName'], $log['u_id']) : '',
                 'message' =>  $this->view->textToHtml($this->view->escape($log['o_message']))
             );
@@ -332,7 +333,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 true,
                 null,
                 null,
-                'timestamp'
+                'timestamp',
+                false,
+                'string',
+                'unixtimestamp'
+
             )
         );
 
