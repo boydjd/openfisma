@@ -441,12 +441,12 @@ abstract class Fisma_Inject_Abstract
         // asset id
         foreach ($this->_findings as &$findingData) {
             if (empty($findingData['finding']->Asset)) {
-                if (
-                    $findingData['asset']['networkId'] === $asset->networkId
-                    && $findingData['asset']['addressIp'] === $asset->addressIp
-                ) {
+                $ip1 = empty($findingData['asset']['addressIp']) ? '' : $findingData['asset']['addressIp'];
+                $ip2 = empty($asset->addressIp) ? '' : $asset->addressIp;
+                if ($findingData['asset']['networkId'] === $asset->networkId &&  $ip1 === $ip2) {
                     $findingData['asset']['id'] = $id;
                 }
+                unset($ip1, $ip2);
             }
         }
         // Free object
