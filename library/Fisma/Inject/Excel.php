@@ -205,6 +205,9 @@ class Fisma_Inject_Excel
                     $column = (int)$cellAttributes['Index'];
                 }
                 $cellChildren = $cell->children('urn:schemas-microsoft-com:office:spreadsheet');
+                if (!isset($this->_excelTemplateColumns[$column])) {
+                    break;
+                }
                 $finding[$this->_excelTemplateColumns[$column]] = $cellChildren->Data->asXml();
                 $column++;
             }

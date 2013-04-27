@@ -183,16 +183,14 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
         $this->view->namespace = $storageNamespace;
         $this->view->url = "/organization-report/security-authorization/format/html";
 
-        $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
+        $systemQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read');
 
+        $systemQuery->select('o.nickname AS name');
         if ('none' != $orgTypeId) {
-            $systemQuery = $baseQuery->select('bureau.nickname AS name')
-                            ->addSelect('o.nickname AS name');
-        } else {
-            $systemQuery = $baseQuery->select('o.nickname AS name');
+            $systemQuery->addSelect('\'\' AS parent');
         }
-        $systemQuery
-                    ->addSelect('IFNULL(systemData.fipsCategory, \'NONE\') AS fips_category')
+
+        $systemQuery->addSelect('IFNULL(systemData.fipsCategory, \'NONE\') AS fips_category')
                     ->addSelect('IFNULL(systemData.controlledBy, \'N/A\') AS operated_by')
                     ->addSelect('IFNULL(systemData.securityAuthorizationDt, \'N/A\') AS security_auth_dt')
                     ->addSelect('IFNULL(systemData.controlAssessmentDt, \'N/A\') AS self_assessment_dt')
@@ -200,30 +198,41 @@ class OrganizationReportController extends Fisma_Zend_Controller_Action_Security
                     ->addSelect("IF(systemData.fismaReportable,'Yes','No') AS fisma_reportable")
                     ->innerJoin('o.System systemData')
                     ->innerJoin('o.OrganizationType orgType')
-                    ->leftJoin('Organization bureau')
-                    ->leftJoin('bureau.OrganizationType bureauType')
                     ->andWhere('orgType.nickname = ?', array('system'))
                     ->andWhere('systemData.sdlcPhase <> ?', 'disposal')
-                    ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
-                    ->orderBy('bureau.nickname, o.nickname')
+                    ->orderBy('o.nickname')
                     ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
 
-        if ('none' != $orgTypeId) {
-            $systemQuery->andWhere('bureau.orgTypeId = ?', $orgTypeId);
-        }
-
         $systems = $systemQuery->execute();
+
+        if ('none' != $orgTypeId) {
+            $baseQuery = CurrentUser::getInstance()->getOrganizationsByPrivilegeQuery('organization', 'read')
+                ->select('o.nickname as id, bureau.nickname as name')
+                ->leftJoin('Organization bureau')
+                ->andWhere('o.lft BETWEEN bureau.lft and bureau.rgt')
+                ->andWhere('bureau.orgTypeId = ?', $orgTypeId)
+                ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
+            $parents = $baseQuery->execute();
+            foreach ($parents as $key => $value) {
+                $parents[$value['o_id']] = $value['bureau_name'];
+                unset($parents[$key]);
+            }
+
+            foreach ($systems as &$system) {
+                if (isset($parents[$system['o_name']])) {
+                    $system['o_parent'] = $parents[$system['o_name']];
+                }
+            }
+        }
 
         $report = new Fisma_Report();
 
         $report->setTitle('Security Authorizations Report');
         $orgType = Doctrine::getTable('OrganizationType')->find($orgTypeId);
 
+        $report->addColumn(new Fisma_Report_Column('System', true));
         if ('none' != $orgTypeId) {
-            $report->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true))
-                   ->addColumn(new Fisma_Report_Column('System', true));
-        } else {
-            $report->addColumn(new Fisma_Report_Column('System', true));
+            $report->addColumn(new Fisma_Report_Column(ucwords($orgType->nickname), true));
         }
 
         $report->addColumn(new Fisma_Report_Column('FIPS 199', true))
