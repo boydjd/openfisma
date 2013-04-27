@@ -302,6 +302,9 @@ System:
         Documentation:
             label: Documentation
             link: /system-document/list
+        OrganizationTree:
+            label: Organization Hierarchy
+            link: /organization/tree
         Organizations:
             label: Organizations
             link: /organization/list

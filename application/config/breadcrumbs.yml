@@ -260,7 +260,7 @@ SystemOrganization:
     links: [no-link, no-link]
 SystemOrganizationTree:
     url: /organization/tree
-    labels: [System Inventory, Organizations]
+    labels: [System Inventory, Organization Hierarchy]
     links: [no-link, no-link]
 SystemInventoryView:
     url: /system/view
@@ -272,10 +272,6 @@ SystemInventoryCreate:
     links: [no-link, /system/list, no-link]
 SystemInventory:
     url: /system/list
-    labels: [System Inventory, Systems]
-    links: [no-link, no-link]
-SystemInventoryList:
-    url: /system/aggregation
     labels: [System Inventory, Systems]
     links: [no-link, no-link]
 SystemInventoryDashboard:
