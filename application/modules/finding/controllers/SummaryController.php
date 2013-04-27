@@ -326,11 +326,12 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         }
 
         // Get list of point of contacts
+        $pocLabel = $this->view->column('pocId', Doctrine::getTable('Finding'), false);
         $pointOfContactQuery = Doctrine_Query::create()
                                ->from('User u')
                                ->addSelect('u.id, u.reportingOrganizationId, "poc" AS type')
                                ->addSelect("CONCAT(u.nameFirst, ' ', u.nameLast) AS label")
-                               ->addSelect("CONCAT('Point\ Of\ Contact') AS typeLabel")
+                               ->addSelect("'$pocLabel' AS typeLabel")
                                ->addSelect("'poc' AS icon, u.username AS rowLabel")
                                ->addSelect("'pocUser' AS searchKey")
                                ->where('u.reportingOrganizationId IS NOT NULL')
