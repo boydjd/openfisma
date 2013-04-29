@@ -204,6 +204,10 @@ abstract class Fisma_Inject_Abstract
         $finding = new Vulnerability();
         $finding->merge($findingData);
         $finding->createdByUserId = CurrentUser::getAttribute('id');
+        $organization = Doctrine::getTable('Organization')->find($this->_orgSystemId);
+        if ($organization->pocId) {
+            $finding->pocId = $organization->pocId;
+        }
 
         // Handle related objects, since merge doesn't
         if (!empty($findingData['cve'])) {
