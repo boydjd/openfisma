@@ -50,96 +50,14 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
     }
 
     /**
-     * Default view page
-     *
-     * @GETAllowed
-     */
-    public function viewAction()
-    {
-        $this->_prepare();
-        $system = $this->view->system;
-        $id = $this->view->system->id;
-
-        $tabView = new Fisma_Yui_TabView('SecurityAuthorization', $id);
-
-        $tabView->addTab("{$system->name} ($system->nickname)", "/system/system/id/$id/readonly/true");
-        $tabView->addTab("1. Categorization", "/sa/security-authorization/cat/id/$id/format/html");
-        $tabView->addTab("2. Security Controls", "/sa/security-authorization/sel/id/$id/format/html");
-
-        $this->view->tabView = $tabView;
-    }
-
-    /**
-     * Step 1. Categorization
-     *
-     * @GETAllowed
-     */
-    public function catAction()
-    {
-        $this->_prepare();
-        $this->view->assignedTypes = Doctrine_Query::create()
-            ->from('SystemInformationDataType')
-            ->where('systemId = ?', $this->view->system->id)
-            ->execute();
-
-        $availableQuery = Doctrine_Query::create()
-            ->from('InformationDataType idt')
-            ->leftJoin('idt.Catalog idtc')
-            ->where('idtc.published = ?', true);
-
-        if ($this->view->assignedTypes->count() > 0) {
-            $availableQuery->andWhereNotIn('idt.id',
-                array_keys($this->view->assignedTypes->toKeyValueArray('informationDataTypeId', 'systemId')));
-        }
-
-        $this->view->availableTypes = $availableQuery->execute();
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-    }
-
-    /**
-     * Step 2. Selection
-     *
-     * @GETAllowed
-     */
-    public function selAction()
-    {
-        $this->_prepare();
-        $this->view->selectedControls = Doctrine_Query::create()
-            ->from('SystemSecurityControl')
-            ->where('systemId = ?', $this->view->system->id)
-            ->andWhere('imported <> ?', true)
-            ->execute();
-
-        $this->view->importedControls = Doctrine_Query::create()
-            ->from('SystemSecurityControl')
-            ->where('systemId = ?', $this->view->system->id)
-            ->andWhere('imported = ?', true)
-            ->execute();
-
-        $availableQuery = Doctrine_Query::create()
-            ->from('SecurityControl sc')
-            ->leftJoin('sc.Catalog scc')
-            ->where('scc.published = ?', true);
-
-        if ($this->view->selectedControls->count() > 0) {
-            $availableQuery->andWhereNotIn('sc.id',
-                array_keys($this->view->selectedControls->toKeyValueArray('securityControlId', 'systemId')));
-        }
-
-        if ($this->view->importedControls->count() > 0) {
-            $availableQuery->andWhereNotIn('sc.id',
-                array_keys($this->view->importedControls->toKeyValueArray('securityControlId', 'systemId')));
-        }
-
-        $this->view->availableControls = $availableQuery->execute();
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-    }
-
-    /**
      * Validate $id and fetch $this->view->system
+     *
+     * @return void
      */
-    protected function _prepare()
+    public function preDispatch()
     {
+        parent::preDispatch();
+
         $format = $this->getRequest()->getParam('format');
         $this->view->editable = !($this->getRequest()->getParam('readonly'));
         $this->view->isJson = ($format === 'json');
@@ -168,6 +86,51 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
                 throw new Fisma_Zend_Exception_User($message);
             }
         }
+    }
+
+    /**
+     * Default view page
+     *
+     * @GETAllowed
+     */
+    public function viewAction()
+    {
+        $system = $this->view->system;
+        $id = $this->view->system->id;
+
+        $tabView = new Fisma_Yui_TabView('SecurityAuthorization', $id);
+
+        $tabView->addTab("{$system->name} ($system->nickname)", "/system/system/id/$id/readonly/true");
+        $tabView->addTab("1. Categorization", "/sa/security-authorization/cat/id/$id/format/html");
+        $tabView->addTab("2. Security Controls", "/sa/security-authorization/sel/id/$id/format/html");
+
+        $this->view->tabView = $tabView;
+    }
+
+    /**
+     * Step 1. Categorization
+     *
+     * @GETAllowed
+     */
+    public function catAction()
+    {
+        $this->view->assignedTypes = Doctrine_Query::create()
+            ->from('SystemInformationDataType')
+            ->where('systemId = ?', $this->view->system->id)
+            ->execute();
+
+        $availableQuery = Doctrine_Query::create()
+            ->from('InformationDataType idt')
+            ->leftJoin('idt.Catalog idtc')
+            ->where('idtc.published = ?', true);
+
+        if ($this->view->assignedTypes->count() > 0) {
+            $availableQuery->andWhereNotIn('idt.id',
+                array_keys($this->view->assignedTypes->toKeyValueArray('informationDataTypeId', 'systemId')));
+        }
+
+        $this->view->availableTypes = $availableQuery->execute();
+        $this->view->toolbarButtons = $this->getToolbarButtons();
     }
 
     /**
@@ -245,7 +208,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function addTypeAction()
     {
-        $this->_prepare();
         $dataTypeId = $this->getRequest()->getParam('dataTypeId');
         if (!$dataTypeId) {
             $message = 'Please provide Information Data Type ID.';
@@ -291,7 +253,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function removeTypeAction()
     {
-        $this->_prepare();
         $dataTypeId = $this->getRequest()->getParam('dataTypeId');
         if (!$dataTypeId) {
             $message = 'Please provide Information Data Type ID.';
@@ -340,7 +301,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function refreshTypeAction()
     {
-        $this->_prepare();
         $dataTypeId = $this->getRequest()->getParam('dataTypeId');
         if (!$dataTypeId) {
             $message = 'Please provide Information Data Type ID.';
@@ -390,8 +350,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function removeAllTypeAction()
     {
-        $this->_prepare();
-
         Doctrine_Query::create()
             ->delete()
             ->from('SystemInformationDataType')
@@ -408,8 +366,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function refreshAllTypeAction()
     {
-        $this->_prepare();
-
         $assignedTypes = Doctrine_Query::create()
             ->from('SystemInformationDataType')
             ->where('systemId = ?', $this->view->system->id)
@@ -428,16 +384,53 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
     }
 
     /**
+     * Step 2. Selection
+     *
+     * @GETAllowed
+     */
+    public function selAction()
+    {
+        $this->view->selectedControls = Doctrine_Query::create()
+            ->from('SystemSecurityControl')
+            ->where('systemId = ?', $this->view->system->id)
+            ->andWhere('imported <> ?', true)
+            ->execute();
+
+        $this->view->importedControls = Doctrine_Query::create()
+            ->from('SystemSecurityControl')
+            ->where('systemId = ?', $this->view->system->id)
+            ->andWhere('imported = ?', true)
+            ->execute();
+
+        $availableQuery = Doctrine_Query::create()
+            ->from('SecurityControl sc')
+            ->leftJoin('sc.Catalog scc')
+            ->where('scc.published = ?', true);
+
+        if ($this->view->selectedControls->count() > 0) {
+            $availableQuery->andWhereNotIn('sc.id',
+                array_keys($this->view->selectedControls->toKeyValueArray('securityControlId', 'systemId')));
+        }
+
+        if ($this->view->importedControls->count() > 0) {
+            $availableQuery->andWhereNotIn('sc.id',
+                array_keys($this->view->importedControls->toKeyValueArray('securityControlId', 'systemId')));
+        }
+
+        $this->view->availableControls = $availableQuery->execute();
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+    }
+
+    /**
      * Select a security control for a system via AJAX
      */
     public function addControlAction()
     {
-        $this->_prepare();
-        $dataTypeId = $this->getRequest()->getParam('dataTypeId');
-        if (!$dataTypeId) {
+        $controlId = $this->getRequest()->getParam('dataTypeId');
+        if (!$controlId) {
             $message = 'Please provide Security Control ID.';
         } else {
-            $securityControl = Doctrine::getTable('SecurityControl')->find($dataTypeId);
+            $securityControl = Doctrine::getTable('SecurityControl')->find($controlId);
             if (!$securityControl) {
                 $message = 'Invalid Security Control ID provided.';
             } else {
@@ -474,12 +467,11 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function removeControlAction()
     {
-        $this->_prepare();
-        $dataTypeId = $this->getRequest()->getParam('dataTypeId');
-        if (!$dataTypeId) {
+        $controlId = $this->getRequest()->getParam('dataTypeId');
+        if (!$controlId) {
             $message = 'Please provide Security Control ID.';
         } else {
-            $securityControl = Doctrine::getTable('SecurityControl')->find($dataTypeId);
+            $securityControl = Doctrine::getTable('SecurityControl')->find($controlId);
             if (!$securityControl) {
                 $message = 'Invalid Security Control ID provided.';
             } else {
@@ -521,8 +513,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function removeAllControlAction()
     {
-        $this->_prepare();
-
         Doctrine_Query::create()
             ->delete()
             ->from('SystemSecurityControl')
@@ -538,20 +528,19 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function setCommonControlAction()
     {
-        $this->_prepare();
-        $dataTypeId = $this->getRequest()->getParam('dataTypeId');
-        if (!$dataTypeId) {
+        $controlId = $this->getRequest()->getParam('dataTypeId');
+        if (!$controlId) {
             $message = 'Please provide Security Control ID.';
         } else {
-            $dataType = Doctrine::getTable('SecurityControl')->find($dataTypeId);
-            if (!$dataType) {
+            $securityControl = Doctrine::getTable('SecurityControl')->find($controlId);
+            if (!$securityControl) {
                 $message = 'Invalid Security Control ID provided.';
             } else {
                 try {
                     $ssc = Doctrine_Query::create()
                         ->from('SystemSecurityControl')
                         ->where('systemId = ?', $this->view->system->id)
-                        ->andWhere('securityControlId = ?', $dataType->id)
+                        ->andWhere('securityControlId = ?', $securityControl->id)
                         ->fetchOne();
                     if ($ssc) {
 
@@ -589,8 +578,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function importBaselineControlAction()
     {
-        $this->_prepare();
-
         try {
             Doctrine_Manager::connection()->beginTransaction();
 
@@ -647,13 +634,11 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function getControlEnhancementsAction()
     {
-        $this->_prepare();
-
-        $dataTypeId = $this->getRequest()->getParam('dataTypeId');
-        if (!$dataTypeId) {
+        $controlId = $this->getRequest()->getParam('dataTypeId');
+        if (!$controlId) {
             $message = 'Please provide Security Control ID.';
         } else {
-            $securityControl = Doctrine::getTable('SecurityControl')->find($dataTypeId);
+            $securityControl = Doctrine::getTable('SecurityControl')->find($controlId);
             if (!$securityControl) {
                 $message = 'Invalid Security Control ID provided.';
             } else {
@@ -679,20 +664,19 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function saveControlEnhancementsAction()
     {
-        $this->_prepare();
-        $dataTypeId = $this->getRequest()->getParam('dataTypeId');
-        if (!$dataTypeId) {
+        $controlId = $this->getRequest()->getParam('dataTypeId');
+        if (!$controlId) {
             $message = 'Please provide Security Control ID.';
         } else {
-            $dataType = Doctrine::getTable('SecurityControl')->find($dataTypeId);
-            if (!$dataType) {
+            $securityControl = Doctrine::getTable('SecurityControl')->find($controlId);
+            if (!$securityControl) {
                 $message = 'Invalid Security Control ID provided.';
             } else {
                 try {
                     $ssc = Doctrine_Query::create()
                         ->from('SystemSecurityControl')
                         ->where('systemId = ?', $this->view->system->id)
-                        ->andWhere('securityControlId = ?', $dataType->id)
+                        ->andWhere('securityControlId = ?', $securityControl->id)
                         ->fetchOne();
                     if ($ssc) {
                         $ssc->enhancements = Zend_Json::decode($this->getRequest()->getParam('selectedEnhancements'));
@@ -730,8 +714,6 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function getCommonControlsAction()
     {
-        $this->_prepare();
-
         $ssc = Doctrine_Query::create()
             ->select('systemId as id, COUNT(securityControlId) as controls')
             ->from('SystemSecurityControl')
@@ -761,13 +743,12 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
      */
     public function importCommonControlAction()
     {
-        $this->_prepare();
-        $dataTypeId = $this->getRequest()->getParam('dataTypeId');
-        if (!$dataTypeId) {
+        $destinationId = $this->getRequest()->getParam('dataTypeId');
+        if (!$destinationId) {
             $message = 'Please provide Source System ID.';
         } else {
-            $dataType = Doctrine::getTable('System')->find($dataTypeId);
-            if (!$dataType) {
+            $securityControl = Doctrine::getTable('System')->find($destinationId);
+            if (!$securityControl) {
                 $message = 'Invalid Source System ID provided.';
             } else {
                 try {
@@ -779,7 +760,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
 
                     $controlQuery = Doctrine_Query::create()
                         ->from('SystemSecurityControl')
-                        ->where('systemId = ?', $dataTypeId)
+                        ->where('systemId = ?', $destinationId)
                         ->andWhere('common = ?', true);
 
                     if ($selectedControls->count() > 0) {
