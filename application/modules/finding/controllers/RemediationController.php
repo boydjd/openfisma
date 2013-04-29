@@ -436,7 +436,7 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
                 false,
                 null,
                 null,
-                'timestamp',
+                'unixtimestamp',
                 true
             )
         );
