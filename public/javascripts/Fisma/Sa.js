@@ -304,7 +304,6 @@ Fisma.Sa = {
                 $('#enhancementModal div.modal-body tr.row_selected td.enhancemendId').each(function() {
                     localData.push($(this).text());
                 });
-                console.log(localData);
                 $('#enhancementModal').modal('hide');
                 //AJAX manipulating
                 $.post(

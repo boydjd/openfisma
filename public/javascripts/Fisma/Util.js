@@ -394,8 +394,6 @@ Fisma.Util = {
                 case 'success':
                     messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.SUCCESS);
                     break;
-                case 'info':
-                case 'notice':
                 default:
                     messageBox.setErrorLevel(Fisma.MessageBox.ERROR_LEVEL.INFO);
                     break;
@@ -661,6 +659,10 @@ Fisma.Util = {
                             .append(textField)
                             .append(okButton),
             errorDiv    = $('<div/>', {'class': 'text-error'}),
+            panel       = $('<div/>',
+                            {'class': 'modal hide fade', 'tabindex': '-1', 'role':'dialog', 'aria-hidden':'true'})
+                            .append($('<div/>', {'class': 'modal-header'}).append(closeButton).append(header))
+                            .on('shown', function() { textField.focus(); }),
             form        = $('<form/>')
                             .append(fieldGroup)
                             .submit(function(event) {
@@ -680,12 +682,8 @@ Fisma.Util = {
                                     event.preventDefault();
                                     panel.modal('hide');
                                 }
-                            }),
-            panel       = $('<div/>',
-                            {'class': 'modal hide fade', 'tabindex': '-1', 'role':'dialog', 'aria-hidden':'true'})
-                            .append($('<div/>', {'class': 'modal-header'}).append(closeButton).append(header))
-                            .append($('<div/>', {'class': 'modal-body'}).append(errorDiv).append(form))
-                            .on('shown', function() { textField.focus(); });
+                            });
+        panel.append($('<div/>', {'class': 'modal-body'}).append(errorDiv).append(form));
 
         if (callbacks.cancel) {
             panel.on('hidden', callbacks.cancel);
