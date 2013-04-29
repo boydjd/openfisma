@@ -224,6 +224,11 @@ Migration:
         minorVersion: 2
         tagNumber: 0
         name: Asset
+    030200_Vulnerability:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: Vulnerability
 
     030300_Asset:
         majorVersion: 3
