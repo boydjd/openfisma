@@ -483,6 +483,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     public function createAction()
     {
+        $this->_preCreateHook();
         $this->_createObject();
 
         $this->renderScript('object/create.phtml');
@@ -518,6 +519,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 try {
                     Doctrine_Manager::connection()->beginTransaction();
                     $object = $this->saveValue($form);
+                    $this->_postCreateHook();
                     Doctrine_Manager::connection()->commit();
 
                     if ($format == 'json') {
@@ -572,6 +574,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     public function viewAction()
     {
+        $this->_preViewHook();
         $this->_viewObject();
         $this->renderScript('object/view.phtml');
     }
@@ -605,7 +608,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->subject = $subject;
 
         $form = $this->getForm();
-        if ($this->_acl->hasPrivilegeForObject('update', $subject)) {
+        if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForObject('update', $subject)) {
             $form->setAction($this->getRequest()->getRequestUri());
         } else {
             $form->setReadOnly(true);
@@ -624,6 +627,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 try {
                     $this->saveValue($form, $subject);
                     $msg  = $this->getSingularModelName() . ' updated successfully';
+                    $this->_postUpdateHook();
                     $type = 'success';
 
                     // Refresh the form, in case the changes to the model affect the form
@@ -669,6 +673,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
      */
     public function deleteAction()
     {
+        $this->_preDeleteHook();
         $id = $this->_request->getParam('id');
         $subject = $this->_getSubject($id);
 
@@ -687,23 +692,78 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             try {
                 Doctrine_Manager::connection()->beginTransaction();
                 $subject->delete();
+                $this->_postDeleteHook();
                 Doctrine_Manager::connection()->commit();
-                $msg   = $this->getSingularModelName() . ' deleted successfully';
+                $msg = $this->getSingularModelName() . ' deleted successfully';
                 $type = 'success';
             } catch (Fisma_Zend_Exception_User $e) {
                 Doctrine_Manager::connection()->rollback();
-                $msg  = $e->getMessage();
+                $msg = $e->getMessage();
                 $type = 'success';
             } catch (Doctrine_Exception $e) {
                 Doctrine_Manager::connection()->rollback();
                 if (Fisma::debug()) {
-                    $msg .= $e->getMessage();
+                    $msg = $e->getMessage();
                 }
                 $type = 'error';
             }
         }
         $this->view->priorityMessenger($msg, $type);
         $this->_redirect("{$this->_moduleName}/{$this->_controllerName}/list");
+    }
+
+    /**
+     * Custom PostDelete hook.
+     *
+     * To be overriden by children controllers
+     */
+    protected function _postDeleteHook()
+    {
+    }
+
+    /**
+     * Custom PostCreate hook.
+     *
+     * To be overriden by children controllers
+     */
+    protected function _postCreateHook()
+    {
+    }
+
+    /**
+     * Custom PostUpdate hook.
+     *
+     * To be overriden by children controllers
+     */
+    protected function _postUpdateHook()
+    {
+    }
+
+    /**
+     * Custom PreDelete hook.
+     *
+     * To be overriden by children controllers
+     */
+    protected function _preDeleteHook()
+    {
+    }
+
+    /**
+     * Custom PreCreate hook.
+     *
+     * To be overriden by children controllers
+     */
+    protected function _preCreateHook()
+    {
+    }
+
+    /**
+     * Custom PreView hook.
+     *
+     * To be overriden by children controllers
+     */
+    protected function _preViewHook()
+    {
     }
 
     /**

@@ -67,7 +67,17 @@ class Application_Migration_040000_Categorization extends Fisma_Migration_Abstra
             )
         );
         $helper->insert('role_privilege', array('roleid' => $adminId, 'privilegeid' => $dtPrivilege));
-        $helper->insert('role_privilege', array('roleid' => $userId, 'privilegeid' => $dtPrivilege));
+
+        $cdtPrivilege = $helper->insert(
+            'privilege',
+            array(
+                'resource' => 'information_data_type',
+                'action' => 'custom',
+                'description' => 'Create Custom Information Data Types'
+            )
+        );
+        $helper->insert('role_privilege', array('roleid' => $adminId, 'privilegeid' => $cdtPrivilege));
+        $helper->insert('role_privilege', array('roleid' => $userId, 'privilegeid' => $cdtPrivilege));
 
         $dtcPrivilege = $helper->insert(
             'privilege',
@@ -78,7 +88,6 @@ class Application_Migration_040000_Categorization extends Fisma_Migration_Abstra
             )
         );
         $helper->insert('role_privilege', array('roleid' => $adminId, 'privilegeid' => $dtcPrivilege));
-        $helper->insert('role_privilege', array('roleid' => $userId, 'privilegeid' => $dtcPrivilege));
 
         $this->message('Create 2 new tables');
         $helper->createTable(
@@ -87,7 +96,8 @@ class Application_Migration_040000_Categorization extends Fisma_Migration_Abstra
                 'id' => "bigint(20) NOT NULL AUTO_INCREMENT",
                 'name' => "char(255) DEFAULT NULL",
                 'description' => "text",
-                'published' => "tinyint(1) NOT NULL DEFAULT '0'"
+                'denormalizedpublishedcount' => "bigint(20) DEFAULT NULL",
+                'denormalizedtotalcount' => "bigint(20) DEFAULT NULL"
             ),
             'id'
         );
@@ -104,7 +114,9 @@ class Application_Migration_040000_Categorization extends Fisma_Migration_Abstra
                 'defaultintegrity' => "enum('LOW','MODERATE','HIGH') DEFAULT NULL",
                 'availability' => "enum('LOW','MODERATE','HIGH') DEFAULT NULL",
                 'defaultavailability' => "enum('LOW','MODERATE','HIGH') DEFAULT NULL",
-                'description' => "text"
+                'description' => "text",
+                'published' => "tinyint(1) NOT NULL DEFAULT '0'",
+                'creatorid' => "bigint(20) DEFAULT NULL"
             ),
             'id'
         );
@@ -113,17 +125,30 @@ class Application_Migration_040000_Categorization extends Fisma_Migration_Abstra
             array('category', 'subcategory', 'catalogid'),
             'category_index_idx'
         );
-        $helper->addForeignKey('information_data_type', 'catalogid', 'information_data_type_catalog', 'id');
+        $helper->addForeignKey(
+            'information_data_type', 'catalogid', 'information_data_type_catalog', 'id', null, 'ON DELETE CASCADE');
+        $helper->addForeignKey('information_data_type', 'creatorid', 'user', 'id');
 
         $this->message('Insert fixtures');
         $helper->insert(
             'information_data_type_catalog',
             array(
                 'id' => '1',
-                'name' => 'NIST SP 800-60',
+                'name' => 'Custom',
+                'description' => 'User-defined Information Data Types',
+                'denormalizedpublishedcount' => '0',
+                'denormalizedtotalcount' => '171'
+            )
+        );
+        $helper->insert(
+            'information_data_type_catalog',
+            array(
+                'id' => '2',
+                'name' => 'NIST SP 800-60 Rev 1.',
                 'description' =>
                     'Guide for Mapping Types of Information and Information Systems to Security Categories',
-                'published' => '1'
+                'denormalizedpublishedcount' => '0',
+                'denormalizedtotalcount' => '171'
             )
         );
         foreach ($this->_getInformationDataTypeArray() as $dataType) {
@@ -149,6 +174,8 @@ class Application_Migration_040000_Categorization extends Fisma_Migration_Abstra
 
     private function _getInformationDataTypeArray()
     {
+        $rootId = $this->getHelper()->query("SELECT id from user where username = 'root'");
+        $rootId = $rootId[0]->id;
         $informationDataType = array();
         include(realpath(dirname(__FILE__) . '/information_data_type.inc'));
         return $informationDataType;

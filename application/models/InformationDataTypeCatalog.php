@@ -32,4 +32,19 @@ class InformationDataTypeCatalog extends BaseInformationDataTypeCatalog
      * @var bool
      */
     const IS_MANAGED = true;
+
+    /**
+     * Update denormalized counters
+     */
+    public function updateDenormalizedCounters()
+    {
+        $this->loadReference('InformationDataTypes');
+        $this->denormalizedTotalCount = $this->InformationDataTypes->count();
+        $this->denormalizedPublishedCount = count(array_filter(
+            $this->InformationDataTypes->toKeyValueArray('id', 'published'),
+            function($value) {
+                return $value;
+            }
+        ));
+    }
 }

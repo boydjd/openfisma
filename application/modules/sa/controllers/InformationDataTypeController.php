@@ -34,6 +34,13 @@ class Sa_InformationDataTypeController extends Fisma_Zend_Controller_Action_Obje
     protected $_modelName = 'InformationDataType';
 
     /**
+     * Store catalogId to update counters after deleting an information data type
+     *
+     * @var int
+     */
+    protected $_catalogId = null;
+
+    /**
      * Return user-friendly name for the model
      *
      * @return string
@@ -50,6 +57,96 @@ class Sa_InformationDataTypeController extends Fisma_Zend_Controller_Action_Obje
      */
     public function getForm($formName = null)
     {
-        return new Sa_InformationDataTypeForm();
+        $custom = $this->getRequest()->getParam('custom');
+        return new Sa_InformationDataTypeForm($custom);
+    }
+
+    /**
+     * Override PreCreate hook to handle "custom" catalog
+     *
+     * @GETAllowed
+     * @return void
+     */
+    public function _preCreateHook()
+    {
+        $custom = $this->getRequest()->getParam('custom');
+        if ($custom) {
+            $this->_acl->requirePrivilegeForClass('custom', 'InformationDataType');
+            $this->_enforceAcl = false;
+        }
+    }
+
+    /**
+     * Override PreView hook to handle "custom" catalog
+     *
+     * @GETAllowed
+     * @return void
+     */
+    public function _preViewHook()
+    {
+        $id = $this->_request->getParam('id');
+        $subject = $this->_getSubject($id);
+        $custom = $subject->Catalog->name === 'Custom';
+        $this->_request->setParam('custom', $custom);
+        if (
+            $custom &&
+            $this->_acl->hasPrivilegeForClass('custom', 'InformationDataType') &&
+            $subject->creatorId === CurrentUser::getAttribute('id')
+        ) {
+            $this->_enforceAcl = false;
+        }
+    }
+
+    /**
+     * Override PreDelete hook to handle "custom" catalog
+     *
+     * @return void
+     */
+    public function _preDeleteHook()
+    {
+        $id = $this->_request->getParam('id');
+        $subject = $this->_getSubject($id);
+        $custom = $subject->Catalog->name === 'Custom';
+        $this->_request->setParam('custom', $custom);
+        if (
+            $custom &&
+            $this->_acl->hasPrivilegeForClass('custom', 'InformationDataType') &&
+            $subject->creatorId === CurrentUser::getAttribute('id')
+        ) {
+            $this->_enforceAcl = false;
+        }
+        $this->_catalogId = $subject->Catalog->id;
+    }
+
+    /**
+     * Override PostDelete hook to update counters
+     */
+    protected function _postDeleteHook()
+    {
+        $catalog = Doctrine::getTable('InformationDataTypeCatalog')->find($this->_catalogId);
+        $catalog->updateDenormalizedCounters();
+        $catalog->save();
+    }
+
+    /**
+     * Override saveValue hook to update catalog counters
+     *
+     * @param Zend_Form $form The specified form
+     * @param Doctrine_Record|null $subject The specified subject model
+     * @return Fisma_Doctrine_Record The saved object.
+     * @throws Fisma_Zend_Exception if the subject is not instance of Doctrine_Record
+     */
+    protected function saveValue($form, $subject = null)
+    {
+        $subject = parent::saveValue($form, $subject);
+        if (!$subject->creatorId) {
+            $subject->creatorId = CurrentUser::getAttribute('id');
+            $subject->save();
+        }
+        $subject->loadReference('Catalog');
+        $subject->Catalog->updateDenormalizedCounters();
+        $subject->Catalog->save();
+
+        return $subject;
     }
 }

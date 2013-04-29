@@ -101,7 +101,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
         $tabView = new Fisma_Yui_TabView('SecurityAuthorization', $id);
 
         $tabView->addTab("{$system->name} ($system->nickname)", "/system/system/id/$id/readonly/true");
-        $tabView->addTab("1. Categorization", "/sa/security-authorization/cat/id/$id/format/html");
+        $tabView->addTab("1. Information Data Types", "/sa/security-authorization/cat/id/$id/format/html");
         $tabView->addTab("2. Security Controls", "/sa/security-authorization/sel/id/$id/format/html");
 
         $this->view->tabView = $tabView;
@@ -121,8 +121,7 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
 
         $availableQuery = Doctrine_Query::create()
             ->from('InformationDataType idt')
-            ->leftJoin('idt.Catalog idtc')
-            ->where('idtc.published = ?', true);
+            ->where('idt.published = ?', true);
 
         if ($this->view->assignedTypes->count() > 0) {
             $availableQuery->andWhereNotIn('idt.id',
@@ -220,7 +219,9 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
                     $sidt = new SystemInformationDataType();
                     $sidt->systemId = $this->view->system->id;
                     $sidt->informationDataTypeId = $dataType->id;
-                    $sidt->denormalizedDataType = $dataType->toArray();
+                    $denormalizedDataType = $dataType->toArray();
+                    $denormalizedDataType['catalog'] = $dataType->Catalog->name;
+                    $sidt->denormalizedDataType = $denormalizedDataType;
                     $sidt->save();
 
                     $this->view->system->refreshFips();
@@ -316,7 +317,9 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
                         ->andWhere('informationDataTypeId = ?', $dataType->id)
                         ->fetchOne();
                     if ($sidt) {
-                        $sidt->denormalizedDataType = $dataType->toArray();
+                        $denormalizedDataType = $dataType->toArray();
+                        $denormalizedDataType['catalog'] = $dataType->Catalog->name;
+                        $sidt->denormalizedDataType = $denormalizedDataType;
                         $sidt->save();
                         $this->view->dataType = $sidt->denormalizedDataType;
                         $this->view->system->refreshFips();
@@ -371,9 +374,11 @@ class Sa_SecurityAuthorizationController extends Fisma_Zend_Controller_Action_Se
             ->where('systemId = ?', $this->view->system->id)
             ->execute();
 
-        foreach ($assignedTypes as &$sdit) {
-            $dataType = Doctrine::getTable('InformationDataType')->find($sdit->informationDataTypeId);
-            $sdit->denormalizedDataType = $dataType->toArray();
+        foreach ($assignedTypes as &$sidt) {
+            $dataType = Doctrine::getTable('InformationDataType')->find($sidt->informationDataTypeId);
+            $denormalizedDataType = $dataType->toArray();
+            $denormalizedDataType['catalog'] = $dataType->Catalog->name;
+            $sidt->denormalizedDataType = $denormalizedDataType;
         }
 
         $assignedTypes->save();

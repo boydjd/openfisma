@@ -10,10 +10,11 @@ InformationDataTypeCatalog:
             type: string
             extra:
                 logicalName: Description
-        published:
-            type: boolean
-            notnull: true
-            default: false
-            comment: Published catalogs are viewable by general users and can be assigned to findings. If a catalog is unpublished it will not be available to general users.
+        denormalizedPublishedCount:
+            type: integer
             extra:
-                logicalName: Visible?
+                logicalName: Published Information Data Types
+        denormalizedTotalCount:
+            type: integer
+            extra:
+                logicalName: Total Information Data Types
