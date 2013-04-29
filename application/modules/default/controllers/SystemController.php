@@ -121,6 +121,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             );
         }
 
+        if ($this->_acl->hasPrivilegeForObject('sa', $organization)) {
+            $buttons['convertToOrgButton'] = new Fisma_Yui_Form_Button_Link(
+                'sa',
+                array(
+                    'label' => 'Security Authorization',
+                    'icon' => 'lock',
+                    'href' => '/sa/security-authorization/view/id/' . $id
+                )
+            );
+        }
+
         if ($this->_acl->hasPrivilegeForClass('read', 'Finding')) {
             $buttons['showFindings'] = new Fisma_Yui_Form_Button_Link(
                 'showFindings',
