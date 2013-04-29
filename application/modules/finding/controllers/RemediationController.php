@@ -432,6 +432,17 @@ class Finding_RemediationController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable->addColumn(
             new Fisma_Yui_DataTable_Column(
+                'unixtimestamp',
+                false,
+                null,
+                null,
+                'unixtimestamp',
+                true
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
                 'User',
                 true,
                 'Fisma.TableFormat.formatHtml',

@@ -51,6 +51,7 @@ Fisma.Incident = {
 
         var commentRow = {
             'timestamp' : comment.createdTs,
+            'unixtimestamp': new Date().getTime(),
             'username' : comment.username,
             'comment' : comment.comment,
             'delete' :

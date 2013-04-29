@@ -1193,7 +1193,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 'timestamp' => Zend_Json::encode(array("local" => $commentDateTimeLocal, "utc" => $commentDateTime)),
                 'unixtimestamp' => $commentTs->getTimestamp(),
                 'username' => $this->view->userInfo($comment['User']['displayName'], $comment['User']['id']),
-                'Comment' =>  $this->view->textToHtml($this->view->escape($comment['comment'])),
+                'comment' =>  $this->view->textToHtml($this->view->escape($comment['comment'])),
                 'delete' => (($comment['User']['id'] === CurrentUser::getAttribute('id'))
                     ? '/comment/remove/format/json/id/' . $id . '/type/Incident/commentId/' . $comment['id']
                     : ''
@@ -1213,6 +1213,17 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                 false,
                 'string',
                 'unixtimestamp'
+            )
+        );
+
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'unixtimestamp',
+                false,
+                null,
+                null,
+                'unixtimestamp',
+                true
             )
         );
 
