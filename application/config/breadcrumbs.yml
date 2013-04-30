@@ -186,18 +186,6 @@ IncidentAdminCategories:
     url: /ir-category/list
     labels: [Incidents, Administration, Categories]
     links: [no-link, no-link, no-link]
-IncidentAdminWorkflowsView:
-    url: /ir-workflow/view
-    labels: [Incidents, Administration, Workflows, View]
-    links: [no-link, no-link, /ir-workflow/list, no-link]
-IncidentAdminWorkflowsCreate:
-    url: /ir-workflow/create
-    labels: [Incidents, Administration, Workflows, Create]
-    links: [no-link, no-link, /ir-workflow/list, no-link]
-IncidentAdminWorkflows:
-    url: /ir-workflow/list
-    labels: [Incidents, Administration, Workflows]
-    links: [no-link, no-link, no-link]
 IncidentReportOrganizations:
     url: /incident-report/organization
     labels: [Incidents, Reports, Incident Organizations]

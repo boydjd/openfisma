@@ -260,13 +260,13 @@ Incident:
                         func: hasPrivilegeForClass
                         param1: manage_sources
                         param2: Incident
-                IrWorkflowDef:
+                Incident_Workflow:
                     label: Workflows
-                    link: /ir-workflow/list
+                    link: /workflow/manage#2
                     privilege:
                         func: hasPrivilegeForClass
                         param1: read
-                        param2: IrWorkflowDef
+                        param2: Workflow
         Reports:
             label: Reports
             privilege:

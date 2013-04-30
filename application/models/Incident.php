@@ -102,7 +102,7 @@ class Incident extends BaseIncident
         }
 
         // Create a workflow step for rejecting then mark it as closed
-        $rejectStep = new IrIncidentWorkflow();
+        $rejectStep = new WorkflowStep();
 
         $rejectStep->Incident = $this;
         $rejectStep->name = 'Reject Incident';

@@ -33,7 +33,7 @@ class IRWorkflowController extends Fisma_Zend_Controller_Action_Object
      *
      * @var string
      */
-    protected $_modelName = 'IrWorkflowDef';
+    protected $_modelName = 'Workflow';
 
     /**
      * Invoked before each Action
