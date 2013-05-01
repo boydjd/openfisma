@@ -33,6 +33,13 @@
 abstract class Fisma_Doctrine_Record extends Doctrine_Record
 {
     /**
+     * Whether the model uses a combined "manage" privilege in place of usual CRUD
+     *
+     * @var bool
+     */
+    const IS_MANAGED = false;
+
+    /**
      * Store the original values of this record.
      *
      * @var array
@@ -292,5 +299,4 @@ abstract class Fisma_Doctrine_Record extends Doctrine_Record
         $oldValues = $this->getModified(true);
         return !empty($this['deleted_at']) && !array_key_exists('deleted_at', $oldValues);
     }
-
 }

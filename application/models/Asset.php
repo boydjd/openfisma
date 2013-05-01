@@ -27,6 +27,13 @@
 class Asset extends BaseAsset implements Fisma_Zend_Acl_OrganizationDependency
 {
     /**
+     * This model uses a combined "manage" privilege in place of usual CRUD
+     *
+     * @var bool
+     */
+    const IS_MANAGED = true;
+
+    /**
      * Set custom mutators
      *
      * @return void

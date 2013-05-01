@@ -68,7 +68,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->uploadForm = $uploadForm;
     }
-    
+
     /**
      * Handle upload of a spreadsheet template file
      */
@@ -77,11 +77,11 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
         $file = $_FILES['excelFile'];
 
         if (!is_array($file)) {
-            $this->view->priorityMessenger("The file upload failed.", 'warning');
+            $this->view->priorityMessenger("The file upload failed.", 'error');
             return;
         } elseif (Fisma_FileManager::getUploadFileError($file)) {
             $error = Fisma_FileManager::getUploadFileError($file);
-            $this->view->priorityMessenger($error, 'warning');
+            $this->view->priorityMessenger($error, 'error');
         } else {
             // Load the findings from the spreadsheet upload. Return a user error if the parser fails.
             try {
@@ -100,8 +100,8 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
 
                 Doctrine_Manager::connection()->commit();
                 $error = "$rowsProcessed findings were created.";
-                $type  = 'notice';
-                     
+                $type  = 'success';
+
                 // Create finding injection notification
                 $url = "?q=/uploadid/integerEquals/" . $upload->id;
                 Notification::notify("FINDING_IMPORTED",
@@ -110,11 +110,11 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
                                      array('appUrl' => $url,
                                            'rowsProcessed' => $rowsProcessed)
                                     );
-                
+
             } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
                 Doctrine_Manager::connection()->rollback();
                 $error = "The file cannot be processed due to an error: {$e->getMessage()}";
-                $type  = 'warning';
+                $type  = 'error';
             }
             $this->view->priorityMessenger($error, $type);
         }
@@ -192,7 +192,7 @@ class Finding_IndexController extends Fisma_Zend_Controller_Action_Security
             $this->getResponse()->clearAllHeaders();
             $this->_helper->viewRenderer->setViewSuffix('phtml');
             Zend_Layout::getMvcInstance()->enableLayout();
-            $this->view->priorityMessenger($fe->getMessage(), 'warning');
+            $this->view->priorityMessenger($fe->getMessage(), 'error');
             $this->_forward('injection', 'index', 'finding');
         }
     }

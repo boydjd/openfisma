@@ -26,5 +26,10 @@
  */
 class Icon extends BaseIcon
 {
-
+    /**
+     * This model uses a combined "manage" privilege in place of usual CRUD
+     *
+     * @var bool
+     */
+    const IS_MANAGED = true;
 }

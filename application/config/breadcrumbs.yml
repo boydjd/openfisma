@@ -230,14 +230,6 @@ SystemAssetImport:
     url: /asset/import
     labels: [System Inventory, Assets, Import]
     links: [no-link, /asset/list, no-link]
-SystemControl:
-    url: /security-control/list
-    labels: [System Inventory, Controls]
-    links: [no-link, no-link]
-SystemControlView:
-    url: /security-control/view
-    labels: [System Inventory, Controls, View]
-    links: [no-link, /security-control/list, no-link]
 SystemDocument:
     url: /system-document/list
     labels: [System Inventory, Documentation]
@@ -282,14 +274,6 @@ SystemAdminAssetServiceTags:
     url: /asset/service-tags
     labels: [System Inventory, Administration, Asset Environments]
     links: [no-link, no-link, no-link]
-SystemAdminControlCatalog:
-    url: /security-control-catalog/list
-    labels: [System Inventory, Administration, Control Catalogs]
-    links: [no-link, no-link, no-link]
-SystemAdminControlCatalogView:
-    url: /security-control-catalog/view
-    labels: [System Inventory, Administration, Control Catalogs, View]
-    links: [no-link, no-link, /security-control-catalog/list, no-link]
 SystemAdminDocumentTypeView:
     url: /document-type/view
     labels: [System Inventory, Administration, Document Types, View]
@@ -490,3 +474,47 @@ UserPreferencesHomeURL:
     url: /user/preferences
     labels: [User Preferences, Preferences]
     links: [no-link, no-link]
+
+#
+# Security Authorizations
+#
+SASecurityControl:
+    url: /security-control/list
+    labels: [Compliance, Administration, Security Controls]
+    links: [no-link, no-link, no-link]
+SASecurityControllView:
+    url: /security-control/view
+    labels: [Compliance, Administration, Security Controls, View]
+    links: [no-link, no-link, /security-control/list, no-link]
+SASecurityControlCatalog:
+    url: /security-control-catalog/list
+    labels: [Compliance, Administration, Security Control Catalogs]
+    links: [no-link, no-link, no-link]
+SASecurityControlCatalogView:
+    url: /security-control-catalog/view
+    labels: [Compliance, Administration, Security Control Catalogs, View]
+    links: [no-link, no-link, /security-control-catalog/list, no-link]
+SAInfoDataTypeList:
+    url: /sa/information-data-type/list
+    labels: [Compliance, Information Data Types]
+    links: [no-link, no-link]
+SAInfoDataTypeView:
+    url: /sa/information-data-type/view/
+    labels: [Compliance, Information Data Types, View]
+    links: [no-link, /sa/information-data-type/list, no-link]
+SAInfoDataTypeCreate:
+    url: /sa/information-data-type/create
+    labels: [Compliance, Information Data Types, Create]
+    links: [no-link, /sa/information-data-type/list, no-link]
+SAInfoDataTypeCatalogList:
+    url: /sa/information-data-type-catalog/list
+    labels: [Compliance, Information Data Type Catalogs]
+    links: [no-link, no-link]
+SAInfoDataTypeCatalogView:
+    url: /sa/information-data-type-catalog/view/
+    labels: [Compliance, Information Data Type Catalogs, View]
+    links: [no-link, /sa/information-data-type-catalog/list, no-link]
+SAInfoDataTypeCatalogCreate:
+    url: /sa/information-data-type-catalog/create
+    labels: [Compliance, Information Data Type Catalogs, Create]
+    links: [no-link, /sa/information-data-type-catalog/list, no-link]

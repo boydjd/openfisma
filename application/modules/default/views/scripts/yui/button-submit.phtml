@@ -2,15 +2,17 @@
     id = '<?php echo $this->escape($this->id); ?>'
     name = '<?php echo $this->escape($this->value); ?>'
     type = 'submit'
+    class = 'btn'
+    <?php if ($this->tooltip): ?>title = '<?php echo $this->escape($this->tooltip, 'none'); ?>'<?php endif; ?>
     <?php if ($this->disabled): ?>disabled<?php endif; ?>
 >
+    <?php if ($this->icon): ?><i class='icon-<?php echo $this->escape($this->icon); ?>'></i><?php endif; ?>
     <?php if ($this->imageUrl): ?><img src='<?php echo $this->escape($this->imageUrl); ?>' alt='' /><?php endif; ?>
     <?php echo $this->escape($this->label); ?>
 </button>
 <script type='text/javascript'>
 $(function() {
     $('#<?php echo $this->escape($this->id); ?>')
-        .button()
     <?php if ($this->function): ?>
         .click(function(e) {
             <?php echo $this->escape($this->function, 'javascript'); ?>.apply(

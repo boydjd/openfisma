@@ -89,7 +89,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $firstTab = $this->view->escape($organization->name)
                   . ' (' . $this->view->escape($organization->nickname) . ')';
         $tabView->addTab($firstTab, "/system/system/id/$id");
-        $tabView->addTab("FIPS-199", "/system/fips/id/$id");
+        $tabView->addTab("FIPS-199", "/sa/security-authorization/cat/id/$id/format/html/readonly/true");
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab($this->view->escape($this->view->translate('System_Attachments')), "/system/artifacts/id/$id");
         $tabView->addTab("Assets", "/system/assets/id/$id/format/html");
@@ -117,6 +117,17 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                         'func' => 'Fisma.System.askForSysToOrgInput'
                     ),
                     'imageSrc' => '/images/convert.png'
+                )
+            );
+        }
+
+        if ($this->_acl->hasPrivilegeForObject('sa', $organization)) {
+            $buttons['sa'] = new Fisma_Yui_Form_Button_Link(
+                'sa',
+                array(
+                    'label' => 'Security Authorization',
+                    'icon' => 'lock',
+                    'href' => '/sa/security-authorization/view/id/' . $id
                 )
             );
         }
@@ -169,12 +180,11 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $updatedDate->setTimezone(CurrentUser::getAttribute('timezone'));
         $this->view->updatedDate = $updatedDate->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR);
 
-        $editable = false;
-        if ($this->_acl->hasPrivilegeForObject('update', $organization)) {
-            $editable = true;
-        }
+        $this->view->editable = (
+            (!($this->getRequest()->getParam('readonly'))) &&
+            ($this->_acl->hasPrivilegeForObject('update', $organization))
+        );
 
-        $this->view->editable = $editable;
         $this->view->findingCount = Doctrine_Query::create()
             ->select('f.id')
             ->from('Finding f')
@@ -222,8 +232,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         if ($countSystemDoc > 0) {
             $msg = "Cannot convert this system to an organization because it has documents attached to it.";
 
-            $type = "warning";
-            $this->view->priorityMessenger($msg, 'warning');
+            $this->view->priorityMessenger($msg, 'error');
             $this->_redirect("/system/view/id/$systemId");
         }
 
@@ -233,28 +242,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                 $form->getElement('orgType')->getValue()
             );
 
-            $this->view->priorityMessenger('Converted to organization successfully', 'notice');
+            $this->view->priorityMessenger('Converted to organization successfully', 'success');
             $this->_redirect("/organization/view/id/" . $organization->id);
         }
-    }
-
-    /**
-     * Display CIA criteria and FIPS-199 categorization
-     *
-     * @GETAllowed
-     * @return void
-     */
-    public function fipsAction()
-    {
-        $id = $this->getRequest()->getParam('id');
-        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
-        $this->_acl->requirePrivilegeForObject('read', $organization);
-        $this->_helper->layout()->disableLayout();
-
-        $this->view->organization = $organization;
-        $this->view->system = $this->view->organization->System;
-
-        $this->render();
     }
 
     /**
@@ -487,7 +477,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                     $organization->save();
                 } else {
                     $msg = "Error while trying to save: <br />" . $organization->getErrorStackAsString();
-                    $type = "warning";
+                    $type = "error";
                 }
 
                 $system = $organization->System;
@@ -497,16 +487,16 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
                     $system->save();
                 } else {
                     $msg = "Error while trying to save: <br />" . $system->getErrorStackAsString();
-                    $type = "warning";
+                    $type = "error";
                 }
             } catch (Doctrine_Exception $e) {
                 $msg = "Error while trying to save: " . $e->getMessage();
-                $type = "warning";
+                $type = "error";
             }
 
             if (empty($msg)) {
                 $msg = "System updated successfully.";
-                $type = "notice";
+                $type = "success";
             }
 
             $this->view->priorityMessenger($msg, $type);
@@ -673,7 +663,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->view->response = json_encode($response);
 
         if ($response->success) {
-            $this->view->priorityMessenger('Artifact uploaded successfully', 'notice');
+            $this->view->priorityMessenger('Artifact uploaded successfully', 'success');
         }
     }
 

@@ -240,3 +240,14 @@ Migration:
         minorVersion: 3
         tagNumber: 0
         name: VmWorkflow
+
+    040000_Categorization:
+        majorVersion: 4
+        minorVersion: 0
+        tagNumber: 0
+        name: Categorization
+    040000_Selection:
+        majorVersion: 4
+        minorVersion: 0
+        tagNumber: 0
+        name: Selection

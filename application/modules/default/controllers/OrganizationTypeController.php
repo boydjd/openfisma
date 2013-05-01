@@ -127,7 +127,7 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
                 "Please associate them with other organization types, or click " .
                 "<a href='#' onclick='Fisma.Util.triggerButton(\"toolbarReassociateButton\");return false;'>here</a> " .
                 "to quickly migrate all of them to another organization type and try again.",
-                "warning"
+                "error"
             );
 
             $fromSearchParams = $this->_getFromSearchParams($this->_request);
@@ -137,7 +137,7 @@ class OrganizationTypeController extends Fisma_Zend_Controller_Action_Object
         } else {
             $organizationType->delete();
 
-            $this->view->priorityMessenger("Organization Type deleted successfully");
+            $this->view->priorityMessenger("Organization Type deleted successfully", 'success');
 
             $this->_redirect($this->getBaseUrl() . '/list');
         }

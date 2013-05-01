@@ -1,0 +1,5 @@
+<?php echo $this->escape($this->searchBox($this->toolbarButtons), 'none'); ?>
+<form>
+    <input id="systemId" type="hidden" value="<?php echo $this->escape($this->system->id); ?>" name="id"/>
+    <?php echo $this->escape($this->tabView, 'none'); ?>
+</form>

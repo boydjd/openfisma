@@ -1,0 +1,9 @@
+SystemInformationDataType:
+    columns:
+        systemId:
+            type: integer
+            primary: true
+        informationDataTypeId:
+            type: integer
+            primary: true
+        denormalizedDataType: array

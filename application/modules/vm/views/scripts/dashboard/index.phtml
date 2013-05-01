@@ -4,17 +4,8 @@
 <?php if ($this->message): ?>
 <div class='message'><?php echo $this->escape($this->message); ?></div>
 <?php else: ?>
-<div id='changeLayout'>
-    Sidebar position:
-    <span id="menuLayoutSelect">
-        <input type="radio" id="layoutLeft" name="layoutSelect" title="Left"/>
-        <label for="layoutLeft">Left</label>
-        <input type="radio" id="layoutRight" name="layoutSelect" checked="checked" title="Right" />
-        <label for="layoutRight">Right</label>
-    </span>
-</div>
-
-<div class='column66 left findingAnalystLeft'>
+<div class='row-fluid'>
+<div class='span7 findingAnalystLeft' id='vmAnalystLeft'>
     <?php Fisma_Format_Section::startSection(
         'Unresolved: By ' . $this->escape($this->translate('Vulnerability_Point_of_Contact')),
         null,
@@ -46,9 +37,9 @@
     <?php endif; ?>
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>
-<div class='column33 right findingAnalystRight'>
+<div class='span5 findingAnalystRight' id='vmAnalystRight'>
     <?php Fisma_Format_Section::startSection('Unresolved: By Threat', null, null, 'byThreat'); ?>
-    <table class='custom-widget no-border'>
+    <table class='table table-striped no-border'>
     <?php foreach($this->byThreat as $statistic): ?>
         <tr>
             <td class='criteria'><?php echo $this->escape($statistic['criteria']); ?></td>
@@ -74,7 +65,7 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php Fisma_Format_Section::startSection('Unresolved: By Workflow', null, null, 'byWorkflow'); ?>
-    <table class='custom-widget no-border'>
+    <table class='table table-striped no-border'>
     <?php foreach($this->byWorkflow as $statistic):
         $criteria = new Fisma_Yui_Tooltip('workflow_' . uniqid(), $statistic['criteria'], $statistic['tooltip']);
     ?>
@@ -101,7 +92,7 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php Fisma_Format_Section::startSection('Unresolved: By Workflow Step', null, null, 'byWorkflowStep'); ?>
-    <table class='custom-widget no-border'>
+    <table class='table table-striped no-border'>
     <?php foreach($this->byWorkflowStep as $statistic):
         $criteria = new Fisma_Yui_Tooltip('workflow_step_' . uniqid(), $statistic['criteria'], $statistic['tooltip']);
     ?>
@@ -128,7 +119,7 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php Fisma_Format_Section::startSection('Unresolved: By Network', null, null, 'byNetwork'); ?>
-    <table class='custom-widget no-border'>
+    <table class='table table-striped no-border'>
     <?php foreach($this->byNetwork as $statistic):
         $criteria = new Fisma_Yui_Tooltip('source_' . uniqid(), $statistic['criteria'], $statistic['tooltip']);
     ?>

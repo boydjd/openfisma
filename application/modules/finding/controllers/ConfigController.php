@@ -96,10 +96,10 @@ class Finding_ConfigController extends Fisma_Zend_Controller_Action_Security
                     Fisma::configuration()->setConfig($item, $value);
                 }
 
-                $this->view->priorityMessenger('Configuration updated successfully', 'notice');
+                $this->view->priorityMessenger('Configuration updated successfully', 'success');
             } else {
                 $errorString = Fisma_Zend_Form_Manager::getErrors($form);
-                $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'warning');
+                $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'error');
             }
         }
 

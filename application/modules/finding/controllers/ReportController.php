@@ -508,7 +508,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
 
         if (empty($myOrganizations)) {
             $msg = "The report could not be created because this user does not have access to any organizations.";
-            $this->view->priorityMessenger($msg, 'warning');
+            $this->view->priorityMessenger($msg, 'error');
             $this->_redirect('/finding/report/plugin');
             return;
         }
@@ -556,7 +556,7 @@ class Finding_ReportController extends Fisma_Zend_Controller_Action_Security
             $columns = array_keys($reportData[0]);
         } else {
             $msg = "The report could not be created because the report query did not return any data.";
-            $this->view->priorityMessenger($msg, 'warning');
+            $this->view->priorityMessenger($msg, 'error');
             $this->_redirect('/finding/report/plugin');
             return;
         }

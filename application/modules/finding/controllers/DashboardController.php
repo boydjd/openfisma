@@ -166,7 +166,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->byStatus = Doctrine_Query::create()
             ->select(
                 'COUNT(f.id) as count, IFNULL(ws.name, "Unassigned") as criteria, ' .
-                'CONCAT("<b>", IFNULL(w.name, "No "), " - ", ws.name, "</b><br/><br/>", ws.description) as tooltip, ' .
+                'CONCAT("<b>", ws.name, "</b><p>", ws.description, "</p>") as tooltip, ' .
                 'f.currentStepId, w.id, ws.id'
             )
             ->from('Finding f')

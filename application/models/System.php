@@ -476,4 +476,78 @@ class System extends BaseSystem implements Fisma_Zend_Acl_OrganizationDependency
 
         return $result;
     }
+
+    public function refreshFips()
+    {
+        $assignedTypes = Doctrine_Query::create()
+            ->from('SystemInformationDataType')
+            ->where('systemId = ?', $this->id)
+            ->execute();
+
+        $count = 0;
+        $confidentiality = 0;
+        $availability = 0;
+        $integrity = 0;
+
+        foreach ($assignedTypes as $sdit) {
+            $dataType = $sdit->denormalizedDataType; //as an array
+            $count++;
+            $confidentiality += self::levelToInt($dataType['confidentiality']);
+            $availability += self::levelToInt($dataType['availability']);
+            $integrity += self::levelToInt($dataType['integrity']);
+        }
+
+        if ($count > 0) {
+            $confidentiality = $confidentiality / $count;
+        }
+        if ($confidentiality >= 5) {
+            $this->confidentiality = self::CIA_HIGH;
+        } else if ($confidentiality >= 3) {
+            $this->confidentiality = self::CIA_MODERATE;
+        } else {
+            $this->confidentiality = self::CIA_LOW;
+        }
+
+        if ($count > 0) {
+            $availability = $availability / $count;
+        }
+        if ($availability >= 5) {
+            $this->availability = self::CIA_HIGH;
+        } else if ($availability >= 3) {
+            $this->availability = self::CIA_MODERATE;
+        } else {
+            $this->availability = self::CIA_LOW;
+        }
+
+        if ($count > 0) {
+            $integrity = $integrity / $count;
+        }
+        if ($integrity >= 5) {
+            $this->integrity = self::CIA_HIGH;
+        } else if ($integrity >= 3) {
+            $this->integrity = self::CIA_MODERATE;
+        } else {
+            $this->integrity = self::CIA_LOW;
+        }
+
+        $this->save();
+    }
+
+    /**
+     * Convert LOW (or N/A), MODERATE, HIGH into 1, 4, 7
+     *
+     * @param string $level
+     * @return int
+     */
+    public static function levelToInt($level)
+    {
+
+        switch ($level) {
+            case self::CIA_HIGH:
+                return 7;
+            case self::CIA_MODERATE:
+                return 4;
+        }
+        return 1;
+    }
 }

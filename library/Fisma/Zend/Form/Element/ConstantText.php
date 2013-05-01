@@ -40,7 +40,7 @@ class Fisma_Zend_Form_Element_ConstantText extends Zend_Form_Element
         if (empty($label)) {
             $render .= '<td colspan="2" style="font-size: inherit; text-align: left; font-weight: normal;">';
         } else {
-            $render .= "<td>$label:</td><td>";
+            $render .= "<td>$label:</td><td style='padding-top: 8px'>";
         }
         $render .= $this->getValue()
                 . '</td></tr>';

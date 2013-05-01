@@ -27,9 +27,6 @@
 #
 ########################################################################################################################
 
-Home:
-    label: <span class=home>&nbsp;</span>
-    link: /index/home
 Finding:
     label: Findings
     privilege:
@@ -296,9 +293,6 @@ System:
                 func: hasPrivilegeForClass
                 param1: read
                 param2: Asset
-        Controls:
-            label: Controls
-            link: /security-control/list?f=filter_published_booleanYes
         Documentation:
             label: Documentation
             link: /system-document/list
@@ -329,9 +323,6 @@ System:
                         func: hasPrivilegeForClass
                         param1: manage_environments
                         param2: Asset
-                ControlCatalogs:
-                    label: Control Catalogs
-                    link: /security-control-catalog/list
                 DocumentType:
                     label: Document Types
                     link: /document-type/list
@@ -385,6 +376,36 @@ System:
                 SecurityAuthorizations:
                     label: Security Authorizations
                     link: /organization-report/security-authorization/format/html
+
+SecurityAuthorization:
+    label: Compliance
+    privilege:
+        func: hasArea
+        param: sa
+    submenu:
+        Summary:
+            label: Summary
+            link: /sa/summary
+        Separator:
+            label: Separator
+        Dashboard:
+            label: Dashboard
+            link: /sa/dashboard
+        Administration:
+            label: Administration
+            submenu:
+                Controls:
+                    label: Security Controls
+                    link: /security-control/list?f=filter_published_booleanYes
+                ControlCatalogs:
+                    label: Security Control Catalogs
+                    link: /security-control-catalog/list
+                InformationDataType:
+                    label: Information Data Types
+                    link: /sa/information-data-type/list?f=filter_published_booleanYes
+                InformationDataTypeCatalog:
+                    label: Information Data Type Catalogs
+                    link: /sa/information-data-type-catalog/list
 
 Administration:
     label: Administration
@@ -477,36 +498,39 @@ Administration:
                         func: hasPrivilegeForClass
                         param1: assignPrivileges
                         param2: Role
+        Separator1:
+            label: Separator
         Workflow:
             label: Workflow Management
             link: /workflow
 UserPreferences:
-    label: <span class=currentUser>$currentUser</span>
+    label: <i class=icon-user></i> $currentUser
+    pull: right
     submenu:
         Logout:
-            label: <span class=logout>Log Out</span>
+            label: <i class=icon-off></i> Log Out
             link: /auth/logout
         ViewAs:
-            label: <span class=viewas>View As...</span>
+            label: <i class=icon-eye-open></i> View As...
             onclick:
                 fn: Fisma.ViewAs.selectUserForm
         Separator1:
             label: Separator
         ChangePassword:
-            label: <span class=password>Change Password</span>
+            label: <i class=icon-cog></i> Change Password
             link: /user/password
             condition: return ('database' == Fisma::configuration()->getConfig('auth_type') || 'root' == $user->username);
         Notifications:
-            label: <span class=emailPreferences>E-mail Notifications</span>
+            label: <i class=icon-bell></i> E-mail Notifications
             link: /user/notification
         Profile:
-            label: <span class=profile>My Profile</span>
+            label: <i class=icon-th-list></i> My Profile
             link: /user/profile
         Preferences:
-            label: <span class=preferences>Preferences</span>
+            label: <i class=icon-wrench></i> Preferences</span>
             link: /user/preferences
         Whatsnew:
-            label: <span class=whatsnew>What\u2019s New</span>
+            label: <i class=icon-certificate></i> What\u2019s New
             link: ""
             onClick: Fisma.Util.showWhatsNewDialog
             condition: return Fisma_WhatsNew::checkContents();
@@ -517,21 +541,22 @@ UserPreferences:
             link: http://openfisma.org/
             target: _blank
         Contact:
-            label: <span class=contact>Contact Administrator</span>
+            label: <i class=icon-envelope></i> Contact Administrator
             link: $mailToAdmin
             target: _blank
         Privacy:
-            label: <span class=privacy>Privacy Policy</span>
+            label: <i class=icon-lock></i> Privacy Policy
             link: /auth/privacy/
         Manual:
-            label: <span class=help>Online Help</span>
+            label: <i class=icon-question-sign></i> Online Help
             link: http://manual.openfisma.org/
             target: _blank
         ROB:
-            label: <span class=rob>Rules of Behavior</span>
+            label: <i class=icon-info-sign></i> Rules of Behavior
             link: /auth/rob/
 Notifications:
     label: $notificationCount
     link: ""
     onClick: Fisma.User.showNotifications
     condition: return (CurrentUser::getAttribute('Notifications')->count() > 0);
+    pull: right

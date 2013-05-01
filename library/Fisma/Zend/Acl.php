@@ -95,8 +95,7 @@ class Fisma_Zend_Acl extends Zend_Acl
         $hasPrivilege = false;
 
         if (!$this->_privilegeContainsWildcard($privilege)) {
-            if (in_array($privilege, array('create', 'read', 'update', 'delete')) &&
-                in_array(get_class($object), array('Asset', 'Icon', 'Workflow'))) {
+            if (in_array($privilege, array('create', 'read', 'update', 'delete')) && $object::IS_MANAGED) {
                 $privilege = 'manage';
             }
 
@@ -177,6 +176,9 @@ class Fisma_Zend_Acl extends Zend_Acl
         $hasPrivilege = false;
         if ($useClassNameAsResourceName) {
             $resourceName = $className;
+            $className = explode('/', $resourceName);
+            $className = array_pop($className);
+            $className = Doctrine_Inflector::classify($className);
         } else {
             // Safety check: make sure that $className is an actual class
             if (!class_exists($className)) {
@@ -186,8 +188,7 @@ class Fisma_Zend_Acl extends Zend_Acl
             $resourceName = Doctrine_Inflector::tableize($className);
         }
         if (!$this->_privilegeContainsWildcard($privilege)) {
-            if (in_array($privilege, array('create', 'read', 'update', 'delete')) &&
-                in_array($className, array('Asset', 'Icon', 'Workflow'))) {
+            if (in_array($privilege, array('create', 'read', 'update', 'delete')) && $className::IS_MANAGED) {
                 $privilege = 'manage';
             }
 

@@ -20,6 +20,10 @@ Privilege:
         resource: area
         action: finding_report
         description: Finding Module Reports
+    areas_sa:
+        resource: area
+        action: sa
+        description: View Security Authorizations Menu
 
     vulnerability_area:
         resource: area
@@ -169,6 +173,10 @@ Privilege:
         resource: organization
         action: oversee
         description: Oversee Organizations/Systems
+    organization_sa:
+        resource: organization
+        action: sa
+        description: Performance Security Authorizations on Systems
 
     # Products CRUD
     product_create:
@@ -439,3 +447,13 @@ Privilege:
         resource: workflow
         action: manage
         description: Manage Workflows
+
+    information_data_type_manage:
+        resource: information_data_type
+        action: manage
+        description: Manage Information Data Types
+
+    information_data_type_catalog_manage:
+        resource: information_data_type_catalog
+        action: manage
+        description: Manage Information Data Type Catalogs

@@ -1,5 +1,5 @@
 <?php $this->table = $this->securityControl->getTable(); ?>
-<table class="keyValues">
+<table class="keyValues table-hover">
     <tr>
         <th scope='row' width="200">
             <div>
@@ -11,7 +11,7 @@
         </td>
     </tr>
     <tr>
-        <th scope='row'><?php $this->column('catalogId'); ?>:</th>
+        <th scope='row'><?php $this->column('securityControlCatalogId'); ?>:</th>
         <td><?php echo $this->escape($this->securityControl->Catalog->name)?></td>
     </tr>
     <tr>

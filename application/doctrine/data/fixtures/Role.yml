@@ -7,6 +7,7 @@ Role:
         Privileges:
             - areas_dashboard
             - areas_admin
+            - areas_sa
             - finding_area
             - finding_admin_area
             - finding_report_area
@@ -43,6 +44,7 @@ Role:
             - organization_update
             - organization_delete
             - organization_oversee
+            - organization_sa
             - product_create
             - product_read
             - product_update
@@ -104,6 +106,8 @@ Role:
             - security_control_catalog_update
             - security_control_catalog_delete
             - workflows_manage
+            - information_data_type_manage
+            - information_data_type_catalog_manage
 
     user_role:
         name: User
@@ -112,6 +116,7 @@ Role:
         description: <p>The general users who can create, read, update, and delete findings, incidents, vulnerabilities, and related metadata.</p>
         Privileges:
             - areas_dashboard
+            - areas_sa
             - finding_area
             - finding_admin_area
             - finding_report_area
@@ -140,6 +145,7 @@ Role:
             - asset_manage_environments
             - user_read
             - organization_read
+            - organization_sa
             - product_create
             - product_read
             - product_update
@@ -193,6 +199,8 @@ Role:
             - security_control_catalog_read
             - security_control_catalog_update
             - security_control_catalog_delete
+            - information_data_type_manage
+            - information_data_type_catalog_manage
 
     viewer_role:
         name: Viewer

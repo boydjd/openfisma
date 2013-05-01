@@ -163,7 +163,7 @@ class AuthController extends Zend_Controller_Action
                 // Check if the user's mustResetPassword flag is set
                 if ($user->mustResetPassword) {
                     $message = ' You will need to change your password.';
-                    $this->view->priorityMessenger($message, 'warning');
+                    $this->view->priorityMessenger($message, 'error');
 
                     // reset default layout and forward to password change action
                     $this->_helper->layout->setLayout('layout');
@@ -199,7 +199,7 @@ class AuthController extends Zend_Controller_Action
                 if (Fisma::configuration()->getConfig('hash_type') != $user->hashType) {
                     $message = 'This version of the application uses an improved password storage scheme.'
                              . ' You will need to change your password in order to upgrade your account.';
-                    $this->view->priorityMessenger($message, 'warning');
+                    $this->view->priorityMessenger($message, 'error');
                     // reset default layout
                     $this->_helper->layout->setLayout('layout');
                     $this->_redirect('/user/password');

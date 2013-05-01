@@ -1,7 +1,8 @@
 <?php $this->table = Doctrine::getTable('Incident'); ?>
-<div class="column66 left">
+<div class='row-fluid'>
+<div class='span8'>
     <?php Fisma_Format_Section::startSection('Summary'); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
             <tr>
                 <th scope='row'><?php $this->column('status'); ?>:</th>
                 <td><?php echo $this->escape($this->incident['status']); ?></td>
@@ -201,7 +202,7 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php Fisma_Format_Section::startSection('Attacker Details'); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
             <tr>
                 <th scope='row'><?php $this->column('sourceIp'); ?></th>
                 <td>
@@ -242,7 +243,7 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php Fisma_Format_Section::startSection('Personally Identifiable Information'); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
         <?php if ('YES' != $this->incident['piiInvolved']): ?>
             <tr><td colspan="2">No PII reported in this incident.</td></tr>
         <?php else: ?>
@@ -493,9 +494,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>
 
-<div class="column33 right">
+<div class='span4'>
     <?php Fisma_Format_Section::startSection('Dates'); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
             <tr>
                 <th scope='row'><?php $this->column('incidentDate'); ?>:</th>
                 <td title='UTC: <?php echo $this->escape($this->incidentDateTime); ?>'>
@@ -533,7 +534,7 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php Fisma_Format_Section::startSection('People'); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
             <tr>
                 <th scope='row'>Reporter:</th>
                 <td><span id="reportingUser"
@@ -602,7 +603,7 @@
         isset($this->incident['reporterEmail'])
     ):
         Fisma_Format_Section::startSection('Reported By'); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
             <tr>
                 <th scope='row'>First Name:</th>
                 <td>
@@ -677,7 +678,7 @@
     <?php Fisma_Format_Section::stopSection(); endif; ?>
 
     <?php Fisma_Format_Section::startSection('Location'); ?>
-        <table class="keyValues">
+        <table class="keyValues table-hover">
             <tr>
                 <th scope='row'>Building:</th>
                 <td>
@@ -790,5 +791,4 @@
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>
-
-<div class="clear"></div>
+</div>

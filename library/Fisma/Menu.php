@@ -59,12 +59,12 @@ class Fisma_Menu
      * @param string $target  The target of the link.
      * @param Fisma_Yui_Menu $root The menu holds the menu items.
      */
-    private static function addMenuItem($type, $label, $link, $onClick, $target, $root)
+    private static function addMenuItem($type, $label, $link, $onClick, $target, $root, $pull)
     {
         if (!is_null($onClick)) {
             $onClick = new Fisma_Yui_MenuItem_OnClick($onClick);
         }
-        $menuItem = new $type($label, $link, $onClick, $target);
+        $menuItem = new $type($label, $link, $onClick, $target, $pull);
         $root->add($menuItem);
     }
 
@@ -82,7 +82,7 @@ class Fisma_Menu
             if (self::_hideItem($value, $user)) {
                 continue;
             }
-
+            $pull = isset($value['pull']) ? 'pull-' . $value['pull'] : '';
             $label = isset($value['label']) ? $value['label'] : $key;
             // Handle dynamic values
             // Replace $systemName with information from Fisma::configuration in label
@@ -106,7 +106,7 @@ class Fisma_Menu
             }
 
             if (isset($value['submenu'])) {
-                $menu = new Fisma_Yui_Menu($label);
+                $menu = new Fisma_Yui_Menu($label, $pull);
                 self::buildMenu($user, $value['submenu'], $menu);
                 $menu->removeEmptyGroups();
                 if (!$menu->isEmpty()) {
@@ -121,7 +121,8 @@ class Fisma_Menu
                     isset($value['link']) ? $value['link'] : null,
                     isset($value['onclick']) ? $value['onclick'] : null,
                     isset($value['target']) ? $value['target'] : null,
-                    $root
+                    $root,
+                    $pull
                 );
             }
         }

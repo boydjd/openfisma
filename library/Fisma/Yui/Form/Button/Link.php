@@ -41,6 +41,8 @@ class Fisma_Yui_Form_Button_Link extends Fisma_Yui_Form_Button
             'id'        => $this->getName(),
             'label'     => $this->getValue() ? $this->getValue() : $this->getLabel(),
             'imageUrl'  => $this->getAttrib('imageSrc'),
+            'icon'      => $this->getAttrib('icon'),
+            'tooltip'   => $this->getAttrib('tooltip'),
             'function'  => $this->getAttrib('onClickFunction'),
             'arguments' => $this->getAttrib('onClickArgument'),
             'disabled'  => $this->readOnly,

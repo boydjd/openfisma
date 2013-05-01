@@ -11,7 +11,7 @@
 </p>
 
 <input id="csrfToken" type="hidden" value="<?php echo $this->escape($this->csrfToken); ?>">
-<table class="keyValues">
+<table class="keyValues table-hover">
     <?php foreach ($this->parameters as $key => $value): ?>
         <tr>
             <td><?php echo $this->escape($key); ?></td>

@@ -283,7 +283,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
                 Doctrine_Manager::connection()->commit();
             } catch (Exception $e) {
                 Doctrine_Manager::connection()->rollBack();
-                $this->view->priorityMessenger('An error occurred while saving privileges', 'warning');
+                $this->view->priorityMessenger('An error occurred while saving privileges', 'error');
                 $this->_redirect('/role/view-matrix');
             }
 

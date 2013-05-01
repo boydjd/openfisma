@@ -42,6 +42,8 @@ class Fisma_Yui_Form_Button_Submit extends Fisma_Yui_Form_Button
             'label'     => $this->getLabel(),
             'value'     => ($this->getValue()) ? $this->getValue() : $this->getName(),
             'imageUrl'  => $this->getAttrib('imageSrc'),
+            'icon'      => $this->getAttrib('icon'),
+            'tooltip'   => $this->getAttrib('tooltip'),
             'function'  => $this->getAttrib('onClickFunction'),
             'arguments' => $this->getAttrib('onClickArgument'),
             'disabled'  => $this->readOnly

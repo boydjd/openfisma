@@ -18,6 +18,12 @@
         Fisma.Util.showWhatsNewDialog(<?php echo $this->escape("'" . $version . "'", 'none'); ?>);
 <?php endif; ?>
         Fisma.ViewAs.provideVisualCues();
+        var bootstrapButton = $.fn.button.noConflict();
+        $.fn.bootstrapBtn = bootstrapButton;
+
+        var bootstrapTooltip = $.fn.tooltip.noConflict();
+        $.fn.bootstrapTlp = bootstrapTooltip;
+
         $(document).tooltip({
             'open': function(event, ui) {
                 $(ui.tooltip).attr('aria-live', 'rude');

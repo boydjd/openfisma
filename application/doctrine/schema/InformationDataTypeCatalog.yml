@@ -1,0 +1,19 @@
+InformationDataTypeCatalog:
+    listeners: [IndexListener]
+    columns:
+        name:
+            type: string
+            fixed: true
+            extra:
+                logicalName: Name
+        description:
+            type: string
+            extra:
+                logicalName: Description
+        published:
+            type: boolean
+            notnull: true
+            default: false
+            comment: Published catalogs are viewable by general users and can be assigned to findings. If a catalog is unpublished it will not be available to general users.
+            extra:
+                logicalName: Visible?

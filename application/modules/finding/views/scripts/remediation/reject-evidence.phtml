@@ -1,0 +1,39 @@
+<form
+    id="finding_detail_reject_evidence"
+    name="finding_detail_reject_evidence"
+    method="post"
+    enctype="multipart/form-data"
+    onsubmit="return Fisma.Remediation.rejectEvidenceValidate();"
+>
+    <div class="messageBox well text-warning">
+        WARNING: You are about to deny the evidence package. This action cannot be undone.
+    </div>
+    <p><b>Which status do you want to send this finding to?</b></p>
+    <p>
+        <input type="radio" name="target_status" value="0" checked> Evidence Needed (EN)<br/>
+    <?php
+        foreach ($this->previousEvaluations as $evaluation) {
+            $id = $evaluation->id;
+    ?>
+        <input type='radio'
+            name='target_status'
+            value='<?php echo $this->escape($id); ?>'
+            id='target_status_<?php echo $this->escape($id); ?>'/>
+        <label for='target_status_<?php echo $this->escape($id); ?>'>
+            <?php echo $this->escape($evaluation->name . " " . $evaluation->nickname); ?>
+        </label>
+        <br/>
+    <?php
+        }
+    ?>
+    </p>
+    <p>
+        <label for="finding_detail_reject_evidence_comment"><b>Comments (REQUIRED):</b></label><br/>
+        <textarea id="finding_detail_reject_evidence_comment" name="comment" rows=5 cols=60></textarea>
+    </p>
+    <div class="buttonBar">
+        <input type="hidden" name="decision" value="REJECTED"/>
+        <button type="submit" name="reject_evidence">Confirm</button>
+        <button id="dialog_close">Cancel</button>
+    </div>
+</form>

@@ -1,34 +1,131 @@
-<div id="menubar"><!-- YUI renders the menubar here --></div>
+<?php $systemName = Fisma::configuration()->getConfig('system_name'); ?>
+<div id="mainmenu" class="navbar navbar-fixed-top">
+    <div class="navbar-inner">
+        <a class="brand" href="/">
+            <i class="icon-home" style='margin-bottom:-1px;vertical-align:baseline;'></i>
+            <?php echo $this->escape($systemName); ?>
+        </a>
+        <ul class="nav">
+        <?php foreach(Fisma_Menu::getMainMenu(CurrentUser::getInstance())->getMenus() as $menu): ?>
+            <?php if ($menu->pull): ?></ul><ul class='nav <?php echo $this->escape($menu->pull); ?>'><?php endif; ?>
+            <?php if (isset($menu->url)): ?>
+            <li>
+                <a href='<?php echo $this->escape($menu->url); ?>'>
+                    <?php echo $this->escape($menu->text, 'none'); ?>
+                </a>
+            </li>
+            <?php elseif (isset($menu->submenu)): ?>
+            <li class='dropdown'>
+                <a href='#' class="dropdown-toggle" data-toggle="dropdown">
+                    <?php echo $this->escape($menu->text, 'none'); ?>
+                    <b class="caret"></b>
+                </a>
+                <ul class="dropdown-menu">
+                <?php foreach($menu->submenu['itemdata'] as $index => $group): ?>
+                <?php foreach($group as $submenu): ?>
+                <?php if (isset($submenu->url)): ?>
+                    <li>
+                        <a
+                            href="<?php echo $this->escape($submenu->url); ?>"
+                            target="<?php echo $this->escape($submenu->target); ?>"
+                            ><?php echo $this->escape($submenu->text, 'none'); ?>
+                        </a>
+                    </li>
+                <?php elseif (isset($submenu->onclick)): $id = uniqid(); ?>
+                    <li>
+                        <a id="<?php echo $this->escape($id); ?>" href="#">
+                            <?php echo $this->escape($submenu->text, 'none'); ?>
+                        </a>
+                        <script>
+                            $(function() {
+                                $('#<?php echo $this->escape($id); ?>').click($.proxy(
+                                    <?php echo $this->escape($submenu->onclick->fn); ?>,
+                                    this,
+                                    null,
+                                    null,
+                                    <?php echo $this->escape($submenu->onclick->obj, 'json'); ?>
+                                ));
+                            });
+                        </script>
+                    </li>
+                <?php else: ?>
+                    <li class='dropdown-submenu'>
+                        <a href='#' class="dropdown-toggle" data-toggle="dropdown">
+                            <?php echo $this->escape($submenu->text, 'none'); ?>
+                        </a>
+                        <ul class="dropdown-menu">
+                    <?php foreach($submenu->submenu['itemdata'] as $index2 => $group2): ?>
+                        <?php foreach($group2 as $submenu2): ?>
+                            <?php if (isset($submenu2->url)): ?>
+                                <li>
+                                    <a
+                                        href="<?php echo $this->escape($submenu2->url); ?>"
+                                        target="<?php echo $this->escape($submenu2->target); ?>"
+                                        ><?php echo $this->escape($submenu2->text, 'none'); ?>
+                                    </a>
+                                </li>
+                            <?php elseif (isset($submenu2->onclick)): $id = uniqid(); ?>
+                                <li>
+                                    <a id="<?php echo $this->escape($id); ?>" href="#">
+                                        <?php echo $this->escape($submenu2->text, 'none'); ?>
+                                    </a>
+                                    <script>
+                                        $(function() {
+                                            $('#<?php echo $this->escape($id); ?>').click($.proxy(
+                                                <?php echo $this->escape($submenu2->onclick->fn); ?>,
+                                                this,
+                                                null,
+                                                null,
+                                                <?php echo $this->escape($submenu2->onclick->obj, 'json'); ?>
+                                            ));
+                                        });
+                                    </script>
+                                </li>
+                            <?php else: ?>
+                                <!-- only support 2 levels -->
+                            <?php endif; ?>
+                        <?php endforeach; ?>
+                        <?php if ($index2 < count($submenu->submenu['itemdata']) - 1): ?>
+                            <li class="divider"></li>
+                        <?php endif; ?>
+                    <?php endforeach; ?>
+                        </ul>
+                    </li>
+                <?php endif; ?>
+                <?php endforeach; ?>
+                <?php if ($index < count($menu->submenu['itemdata']) - 1): ?>
+                    <li class="divider"></li>
+                <?php endif; ?>
+                <?php endforeach; ?>
+                </ul>
+            </li>
+            <?php else: $id = uniqid(); ?>
+            <li>
+                <a id="<?php echo $this->escape($id); ?>" href='#'>
+                    <?php echo $this->escape($menu->text, 'none'); ?>
+                </a>
+                <script>
+                    $(function() {
+                        $('#<?php echo $this->escape($id); ?>').click($.proxy(
+                            <?php echo $this->escape($menu->onclick->fn); ?>,
+                            this,
+                            null,
+                            null,
+                            <?php echo $this->escape($menu->onclick->obj, 'json'); ?>
+                        ));
+                    });
+                </script>
+            </li>
+            <?php endif; ?>
+            <?php if ($menu->pull): ?></ul><ul class='nav'><?php endif; ?>
+        <?php endforeach; ?>
+        </ul>
+    </div>
+</div>
+
 <script type="text/javascript">
-$(Fisma.Util.registerJSON);
-YAHOO.util.Event.onDOMReady(function () {
-    //Constructs the YUI menu bar for OpenFISMA
-    var menuData = <?php
-        echo $this->escape(Fisma_Menu::getMainMenu(CurrentUser::getInstance())->getMenus(), 'json')
-    ?>;
-    for (var i in menuData) {
-        Fisma.Menu.resolveOnClickObjects(menuData[i]);
-    }
-    var menuBar = new YAHOO.widget.MenuBar("mainmenu", {autosubmenudisplay: true});
-    YAHOO.util.Dom.addClass(menuBar.element, "yuimenubarnav");
-
-    // Improve the behavior cited in OFJ-1316 by keeping menus open when the menu heading is clicked
-    menuBar.subscribe('click', function (event, args) {
-        var submenu = args[1].cfg.getProperty("submenu");
-
-        if (submenu && !submenu.cfg.getProperty("visible")) {
-            submenu.show();
-        }
-    });
-
-    menuBar.addItems(menuData);
-    menuBar.render('menubar');
-
-    $('div#mainmenu > div > ul > li:last-child').addClass('right');
-<?php if (CurrentUser::getAttribute('Notifications')->count() > 0): ?>
-    $('div#mainmenu > div > ul > li:last-child').addClass('notification');
-    $('div#mainmenu > div > ul > li').filter(':not(.right)').last().addClass('right');
-<?php endif; ?>
+$(function() {
+    Fisma.Util.registerJSON;
 
     if (document.URL.match('/finding')) {
         module = 'Findings';
@@ -48,9 +145,14 @@ YAHOO.util.Event.onDOMReady(function () {
         module = 'Administration';
     } else if (document.URL.match('/user')) {
         module = 'nothing';
+    } else if (
+        document.URL.match('/sa/') ||
+        document.URL.match('/security-control')
+    ) {
+        module = 'Compliance';
     } else {
         module = 'System Inventory';
     }
-    $('div#mainmenu > div > ul > li > a:contains("' + module + '")').parents('li').addClass('currentModule');
+    $('div#mainmenu > div > ul > li > a:contains("' + module + '")').parents('li').addClass('active');
 });
 </script>

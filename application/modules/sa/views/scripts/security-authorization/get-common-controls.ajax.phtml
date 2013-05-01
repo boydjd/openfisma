@@ -1,0 +1,25 @@
+<?php $this->table = Doctrine::getTable('Organization'); ?>
+<p>Please select a system from the list to import its common controls:</p>
+<table id="systemTable" class="table table-hover table-striped table-bordered">
+    <thead>
+        <tr>
+            <th scope="col">ID</th>
+            <th scope="col"><?php $this->column('nickname'); ?></th>
+            <th scope="col"><?php $this->column('name'); ?></th>
+            <th scope="col"><?php $this->column('fipsCategory', Doctrine::getTable('System')); ?></th>
+            <th scope="col">Common Controls</th>
+        </tr>
+    </thead>
+    <tbody><?php foreach ($this->systems as $system): ?>
+        <tr>
+            <td class="systemId"><?php echo $this->escape($system['id']); ?></td>
+            <td><?php echo $this->escape($system['nickname']); ?></td>
+            <td><?php echo $this->escape($system['name']); ?></td>
+            <td><?php echo $this->escape($system['fipsCategory']); ?></td>
+            <td><?php echo $this->escape($system['controls']); ?></td>
+        </tr>
+    <?php endforeach; ?></tbody>
+</table>
+<script>
+$(Fisma.Sa.initGetCommonControls);
+</script>

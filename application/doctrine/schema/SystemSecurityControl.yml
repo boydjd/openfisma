@@ -1,0 +1,21 @@
+SystemSecurityControl:
+    columns:
+        systemId:
+            type: integer
+            primary: true
+        securityControlId:
+            type: integer
+            primary: true
+        common:
+            type: boolean
+            default: 0
+            comment: Only controls marked as common can be imported into other systems
+            extra:
+                logicalName: Common?
+        imported:
+            type: boolean
+            default: 0
+            comment: Controls imported from another system do not required implementation
+            extra:
+                logicalName: Imported?
+        enhancements: array

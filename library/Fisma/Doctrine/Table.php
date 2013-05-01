@@ -36,7 +36,7 @@ abstract class Fisma_Doctrine_Table extends Doctrine_Table
     protected $_viewUrl;
 
     /**
-     * Return logicalName from columns from hard-coded array or YML column definition
+     * Return logicalName for a column from hard-coded array or YML column definition
      *
      * @return String
      */
@@ -52,6 +52,21 @@ abstract class Fisma_Doctrine_Table extends Doctrine_Table
         }
 
         return $this->getColumnName($fieldName);
+    }
+
+    /**
+     * Return comment/tooltip for a column from YML column definition
+     *
+     * @return String
+     */
+    public function getComment($fieldName)
+    {
+        $columnDef = $this->getColumnDefinition($this->getColumnName($fieldName));
+        if (isset($columnDef['comment'])) {
+            return $columnDef['comment'];
+        }
+
+        return '';
     }
 
     /**

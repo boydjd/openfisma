@@ -198,7 +198,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                 $asset->save();
             }
         } catch (Doctrine_Validator_Exception $e) {
-            $this->view->priorityMessenger($e->getMessage(), 'warning');
+            $this->view->priorityMessenger($e->getMessage(), 'error');
         }
 
         $this->_redirect("/asset/view/id/$id$fromSearchUrl");
@@ -395,7 +395,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                 }
 
                 if (!$msgs) {
-                    $msgs[] = array('notice' => 'An unrecoverable error has occured.');
+                    $msgs[] = array('error' => 'An unrecoverable error has occured.');
                 }
             }
 

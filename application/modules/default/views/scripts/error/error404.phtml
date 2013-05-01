@@ -5,8 +5,8 @@
     if (Fisma::debug()) {
 ?>
     <p><i>Application is currently in debugging mode:</i></p>
-    <p class="stacktrace"><?php echo $this->escape($this->content, 'none') ?></p>
-<?php    
+    <pre class='well'><?php echo $this->escape($this->content, 'none') ?></pre>
+<?php
     }
 
     $contactEmail = Fisma::configuration()->getConfig('contact_email');

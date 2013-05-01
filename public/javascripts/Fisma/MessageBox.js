@@ -49,18 +49,16 @@
         this.hide();
 
         // Add a control to allow a user to dismiss the message
-        var closeCharacter = "✗";
-        if (YAHOO.env.ua.ie === 7) {
-            // IE7 has bad font rendering. Use a simpler character.
-            closeCharacter = "x";
-        }
+        var closeCharacter = "×";
 
         this._closeContainer = document.createElement('div');
         this._closeContainer.className = "closeControl";
-        this._closeContainer.appendChild(document.createTextNode(closeCharacter));
-        this._container.appendChild(this._closeContainer);
 
-        YAHOO.util.Event.addListener(this._closeContainer, "click", function () {this.hide();}, this, true);
+        var box = this;
+        this._closeContainer.appendChild($('<button/>', {'class': 'close'}).html('&times').click(function() {
+            box.hide();
+        }).get(0));
+        this._container.appendChild(this._closeContainer);
 
         // Add the subcontainer
         this._subcontainer = document.createElement('div');
@@ -74,7 +72,9 @@
      */
     MB.ERROR_LEVEL = {
         WARN: 0,
-        INFO: 1
+        INFO: 1,
+        ERROR: -1,
+        SUCCESS: 2
     };
 
     MB.prototype = {
@@ -137,10 +137,16 @@
         setErrorLevel: function (level) {
             switch (level) {
                 case MB.ERROR_LEVEL.WARN:
-                    this._container.className = "messageBox warn";
+                    this._container.className = "messageBox well text-warning";
+                    break;
+                case MB.ERROR_LEVEL.ERROR:
+                    this._container.className = "messageBox well text-error";
+                    break;
+                case MB.ERROR_LEVEL.SUCCESS:
+                    this._container.className = "messageBox well text-success";
                     break;
                 case MB.ERROR_LEVEL.INFO:
-                    this._container.className = "messageBox info";
+                    this._container.className = "messageBox well text-info";
                     break;
                 default:
                     throw "Invalid error level specified (" + level + ").";
