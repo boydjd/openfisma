@@ -57,7 +57,8 @@ Fisma.Asset = {
                                             'Tag': input,
                                             'Assets': {
                                                 displayText: jcell.siblings().eq(0).find('div a').text(),
-                                                url: '/asset/list?q=/serviceTag/textExactMatch/' + encodeURIComponent(input)
+                                                url: '/asset/list?q=/serviceTag/textExactMatch/'
+                                                    + encodeURIComponent(input)
                                             },
                                             'Edit': {func: Fisma.Asset.renameTag, param: input},
                                             'Delete': '/asset/remove-service-tag/tag/' + encodeURIComponent(input)
@@ -113,7 +114,8 @@ Fisma.Asset = {
                                             'Tag': input,
                                             'Assets': {
                                                 displayText: '0',
-                                                url: '/asset/list?q=/serviceTag/textExactMatch/' + encodeURIComponent(input)},
+                                                url: '/asset/list?q=/serviceTag/textExactMatch/'
+                                                    + encodeURIComponent(input)},
                                             'Edit': {func: Fisma.Asset.renameTag, param: input},
                                             'Delete': '/asset/remove-service-tag/tag/' + encodeURIComponent(input)
                                         });
@@ -182,10 +184,9 @@ Fisma.Asset = {
             var body = $(panel.body),
                 form = body.find("form");
             body.find("script").appendTo(document.body);
-            $("<input>").attr({
-                type: "submit",
-                value: "Submit"
-            }).button()
+            $("<button/>", {type: "submit"})
+                .html("Submit")
+                .button()
                 .css("float", "right")
                 .appendTo(form.find(".subform"));
             form.submit(function(ev) {
