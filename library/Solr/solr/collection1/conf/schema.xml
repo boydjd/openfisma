@@ -80,7 +80,6 @@ See http://manual.openfisma.org/display/ADMIN/Administrator+Manual
             </analyzer>
         </fieldType>
     </types>
-
     <fields>
         <!--
         The Document ID is a globally unique ID formed by merging the type and the primary key together, e.g.
@@ -99,7 +98,7 @@ See http://manual.openfisma.org/display/ADMIN/Administrator+Manual
         Each document also requires the primary key to be stored in the id field.
         -->
         <field name="id" type="string" indexed="true" stored="true" required="true"/>
-        <field name="text" type="text" indexed="true" stored="true" />
+        <field name="text" type="text" indexed="true" multiValued="true" stored="false" required="true"/>
 
         <!--
         Dynamic types are formed by naming a field with a suffix. Each suffix corresponds to one of the types defined
@@ -120,4 +119,7 @@ See http://manual.openfisma.org/display/ADMIN/Administrator+Manual
     <uniqueKey>luceneDocumentId</uniqueKey>
     <defaultSearchField>id</defaultSearchField>
     <solrQueryParser defaultOperator="OR"/>
+    <copyField source="*_text" dest="text"/>
+    <copyField source="*_textsort" dest="text"/>
+    <copyField source="*_enum" dest="text"/>
 </schema>
