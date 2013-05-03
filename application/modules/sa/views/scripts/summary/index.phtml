@@ -1,0 +1,28 @@
+<?php echo $this->escape($this->searchBox($this->toolbarButtons)); ?>
+<?php Fisma_Format_Section::startSection('Compliance Summary'); ?>
+<table id="saSummary" class="table table-striped table-bordered table-hover">
+    <thead>
+        <tr>
+            <th scope="col" width="25%">System</th>
+            <th scope="col">Step 1</th>
+            <th scope="col">Step 2</th>
+            <th scope="col">Step 3</th>
+            <th scope="col">Step 4</th>
+            <th scope="col">Step 5</th>
+            <th scope="col">Step 6</th>
+        </tr>
+    </thead>
+    <tbody>
+        <?php foreach ($this->systems as $system): ?>
+        <tr>
+            <th scope="row"><?php echo $this->escape("{$system['nickname']} - {$system['name']}"); ?></th>
+            <td colspan="6"><div class="progress">
+                <div class="bar" style="width: <?php echo $this->escape($system['progress']); ?>%;">
+                    <?php echo $this->escape($system['progress']); ?>%
+                </div>
+            </div></td>
+        </tr>
+        <?php endforeach; ?>
+    </tbody>
+</table>
+<?php Fisma_Format_Section::stopSection(); ?>

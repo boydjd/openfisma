@@ -478,6 +478,14 @@ UserPreferencesHomeURL:
 #
 # Security Authorizations
 #
+SASummary:
+    url: /sa/summary
+    labels: [Compliance, Summary]
+    links: [no-link, no-link]
+SADashboard:
+    url: /sa/dashboard
+    labels: [Compliance, Dashboard]
+    links: [no-link, no-link]
 SASecurityControl:
     url: /security-control/list
     labels: [Compliance, Administration, Security Controls]
