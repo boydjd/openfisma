@@ -1,0 +1,18 @@
+PhpSession:
+    columns:
+        savePath:
+            type: string
+            length: 255
+            primary: true
+        name:
+            type: string
+            length: 255
+            primary: true
+        id:
+            type: string
+            length: 255
+            primary: true
+        lifetime: string
+        modified: string
+        data: clob
+
