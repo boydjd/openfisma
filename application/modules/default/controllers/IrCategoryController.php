@@ -80,7 +80,8 @@ class IrCategoryController extends Fisma_Zend_Controller_Action_Object
             // Populate workflows select
             $workflowQuery = Doctrine_Query::create()
                              ->from('Workflow')
-                             ->select('id', 'name');
+                             ->select('id', 'name')
+                             ->andWhere('module = ?', 'incident');
             $workflows = $workflowQuery->execute()->toKeyValueArray('id', 'name');
 
             $form->getElement('workflowId')->setMultiOptions($workflows);

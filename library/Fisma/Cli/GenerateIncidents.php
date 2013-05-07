@@ -134,7 +134,9 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
 
             $incident['sourceIp'] = $this->_getRandomIpAddress();
             $incident['sourceAdditional'] = Fisma_String::loremIpsum(rand(40, 50), 'html');
-
+            $incident['status'] = $status[array_rand($status)];
+            $incident['isresolved'] = rand(0,1);
+ 
             // Mischief. Randomly unset two fields. (Incident reports don't have required fields.)
             $nulls = array_rand($incident, 2);
             unset($incident[$nulls[0]]);
@@ -181,12 +183,14 @@ class Fisma_Cli_GenerateIncidents extends Fisma_Cli_AbstractGenerator
                     $i->categoryId = $this->_getRandomSubCategoryId();
 
                     // Complete a random number of steps on this incident
-                    $stepsToComplete = rand(0, $i->Category->Workflow->Steps->count());
-                    while ($stepsToComplete--) {
-                        $i->completeStep("Step completed automatically by generate-incidents.php script.");
-                    }
+                    $i->currentStepId  = rand(0, $i->CurrentStep->count());
+                    $logMessage = 'Completed workflow step #' .
+                    $i->CurrentStep->cardinality
+                    . ': '
+                    . $i->CurrentStep->name;
+                    $i->getAuditLog()->write($logMessage);
                 } elseif ($action <= 90) {
-                    $i->reject('Automatically rejected by generate-incidents.php script.');
+                    $i->reject();
                     $i->save();
                 }*/
 

@@ -101,17 +101,6 @@ class Incident extends BaseIncident
             throw new Fisma_Zend_Exception('Cannot reject an incident unless it is in "new" status');
         }
 
-        // Create a workflow step for rejecting then mark it as closed
-        $rejectStep = new WorkflowStep();
-
-        $rejectStep->Incident = $this;
-        $rejectStep->name = 'Reject Incident';
-        $rejectStep->cardinality = 1;
-
-        $rejectStep->completeStep($comment);
-        $rejectStep->save();
-
-        $this->status = 'closed';
         $this->closedTs = Zend_Date::now()->get(Zend_Date::ISO_8601);
         $this->resolution = 'rejected';
         Notification::notify('INCIDENT_REJECTED', $this, CurrentUser::getInstance());
