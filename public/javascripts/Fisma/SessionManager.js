@@ -223,7 +223,7 @@
          */
         onActivityEvent: function() {
             // disable activity listening when the inactivity panel is being displayed to the user
-            if (YAHOO.lang.isObject(Manager._inactivityPanel) && Manager._inactivityPanel.getProperty("visible")) {
+            if (YAHOO.lang.isObject(Manager._inactivityPanel) && Manager._inactivityPanel.cfg.getProperty("visible")) {
                 return;
             }
             if (Manager._recentSessionRefresh) {
