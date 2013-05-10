@@ -250,7 +250,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                     }
                     $findingData .= '</ul>';
                 }
-                $findingInstance['description'] =  Fisma_String::textToHtml($findingData);
+                $findingInstance['summary'] =  Fisma_String::textToHtml($findingData);
 
                 // Save finding, asset
                 $this->_save($findingInstance, $asset);

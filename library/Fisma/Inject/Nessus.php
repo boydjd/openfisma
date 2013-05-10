@@ -114,7 +114,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                 } elseif ($oXml->name == 'solution') {
                     $parsedData[$hostCounter]['findings'][$itemCounter]['solution'] = $oXml->readString();
                 } elseif ($oXml->name == 'description') {
-                    $parsedData[$hostCounter]['findings'][$itemCounter]['description'] = $oXml->readString();
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['summary'] = $oXml->readString();
                 } elseif ($oXml->name == 'cve') {
                     $parsedData[$hostCounter]['findings'][$itemCounter]['cve'][] = $oXml->readString();
                 } elseif ($oXml->name == 'bid') {
@@ -177,9 +177,8 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                                 $discoveredDate->toString(Fisma_Date::FORMAT_DATE) : NULL;
                             $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                             $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
-                            $findingInstance['description'] = Fisma_String::textToHtml(
-                                $finding['description'] . $finding['plugin_output']
-                            );
+                            $findingInstance['summary'] = Fisma_String::textToHtml($finding['description']);
+                            $findingInstance['description'] = Fisma_String::textToHtml($finding['plugin_output']);
                             $findingInstance['threat'] = (!empty($finding['synopsis'])) ?
                                 Fisma_String::textToHtml($finding['synopsis']) : NULL;
                             $findingInstance['recommendation'] = (!empty($finding['solution'])) ?
