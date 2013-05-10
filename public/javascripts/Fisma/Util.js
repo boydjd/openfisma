@@ -606,6 +606,7 @@ Fisma.Util = {
      * Submit the first form on the page
      */
     submitFirstForm : function(event, config) {
+        $(this).html('<img src="/images/loading_bar.gif"/>').attr('disabled', true);
         var form = $('form').not(function() { return $(this).parents('div#toolbarForm').length > 0; }).eq(0);
         var buttons = $('.yui-menu-button', form).get();
         var i, button;

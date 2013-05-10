@@ -42,15 +42,18 @@ class InformationDataTypeCatalogTable extends Fisma_Doctrine_Table implements Fi
                     'prefix' => '/sa/information-data-type-catalog/view/id/'
                 )
             ),
-            'published' => array(
-                'type' => 'boolean',
-                'initiallyVisible' => true,
-                'sortable' => true
-            ),
             'description' => array(
                 'initiallyVisible' => true,
                 'type' => 'text',
                 'sortable' => false
+            ),
+            'denormalizedPublishedCount' => array(
+                'initiallyVisible' => true,
+                'type' => 'integer'
+            ),
+            'denormalizedTotalCount' => array(
+                'initiallyVisible' => true,
+                'type' => 'integer'
             )
         );
     }

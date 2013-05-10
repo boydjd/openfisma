@@ -453,6 +453,11 @@ Privilege:
         action: manage
         description: Manage Information Data Types
 
+    information_data_type_custom:
+        resource: information_data_type
+        action: custom
+        description: Create Custom Information Data Types
+
     information_data_type_catalog_manage:
         resource: information_data_type_catalog
         action: manage

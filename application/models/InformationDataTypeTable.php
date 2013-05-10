@@ -100,15 +100,9 @@ class InformationDataTypeTable extends Fisma_Doctrine_Table implements Fisma_Sea
                 )
             ),
             'published' => array(
-                'label' => 'Visible?',
                 'type' => 'boolean',
                 'initiallyVisible' => true,
-                'sortable' => true,
-                'join' => array(
-                    'model' => 'InformationDataTypeCatalog',
-                    'relation' => 'Catalog',
-                    'field' => 'published'
-                )
+                'sortable' => true
             )
         );
     }

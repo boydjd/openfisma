@@ -63,15 +63,34 @@ Fisma.Sa = {
         {"sWidth": "8%", "aTargets": [ 5 ] },
         {"sWidth": "12%", "aTargets": [ 6 ] }
     ],
+    sevenColDefs: [
+        {"sWidth": "10%", "aTargets": [ 0 ] },
+        {"sWidth": "10%", "aTargets": [ 1 ] },
+        {"sWidth": "48%", "aTargets": [ 2 ] },
+        {"sWidth": "8%", "aTargets": [ 3 ] },
+        {"sWidth": "8%", "aTargets": [ 4 ] },
+        {"sWidth": "8%", "aTargets": [ 5 ] },
+        {"sWidth": "8%", "aTargets": [ 6 ] }
+    ],
+    eightActionColDefs: [
+        {"sWidth": "10%", "aTargets": [ 0 ] },
+        {"sWidth": "10%", "aTargets": [ 1 ] },
+        {"sWidth": "36%", "aTargets": [ 2 ] },
+        {"sWidth": "8%", "aTargets": [ 3 ] },
+        {"sWidth": "8%", "aTargets": [ 4 ] },
+        {"sWidth": "8%", "aTargets": [ 5 ] },
+        {"sWidth": "8%", "aTargets": [ 6 ] },
+        {"sWidth": "12%", "aTargets": [ 7 ] }
+    ],
 
     initCat: function(editable) {
         Fisma.Sa.assignedTypesTable = $('#assignedTypes').dataTable({
-            "aoColumnDefs": ((editable) ? Fisma.Sa.sevenActionColDefs : Fisma.Sa.sixColDefs)
+            "aoColumnDefs": ((editable) ? Fisma.Sa.eightActionColDefs : Fisma.Sa.sevenColDefs)
         });
 
         if (editable) {
             Fisma.Sa.addTypeTable = $('#addType').dataTable({
-                "aoColumnDefs": Fisma.Sa.sixColDefs
+                "aoColumnDefs": Fisma.Sa.sevenColDefs
             });
             $('#addTypeSection').hide();
             $('#addTypeSection div.sectionHeader')
@@ -154,6 +173,7 @@ Fisma.Sa = {
                         data.dataType.category,
                         data.dataType.subcategory,
                         data.dataType.description,
+                        data.dataType.catalog,
                         data.dataType.confidentiality,
                         data.dataType.integrity,
                         data.dataType.availability
@@ -196,6 +216,7 @@ Fisma.Sa = {
                         data.dataType.category,
                         data.dataType.subcategory,
                         data.dataType.description,
+                        data.dataType.catalog,
                         data.dataType.confidentiality,
                         data.dataType.integrity,
                         data.dataType.availability,
@@ -219,6 +240,16 @@ Fisma.Sa = {
     refreshAllDataType: function() {
         var systemId    = $('input#systemId').val();
         Fisma.Util.formPostAction(null, '/sa/security-authorization/refresh-all-type/', systemId);
+        $(this).html('<img src="/images/loading_bar.gif" />').attr('disabled', true);
+    },
+
+    publishCatalog: function(event, args) {
+        Fisma.Util.formPostAction(null, '/sa/information-data-type-catalog/publish' + args.fromSearchUrl, args.id);
+        $(this).html('<img src="/images/loading_bar.gif" />').attr('disabled', true);
+    },
+
+    unpublishCatalog: function(event, args) {
+        Fisma.Util.formPostAction(null, '/sa/information-data-type-catalog/unpublish' + args.fromSearchUrl, args.id);
         $(this).html('<img src="/images/loading_bar.gif" />').attr('disabled', true);
     },
 

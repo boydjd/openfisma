@@ -1,8 +1,14 @@
 InformationDataTypeCatalog:
+    Custom:
+        name: Custom
+        description: User-defined Information Data Types
+        denormalizedPublishedCount: 0
+        denormalizedTotalCount: 0
     NIST SP 800-60 Rev. 1:
-        name: NIST SP 800-60
+        name: NIST SP 800-60 Rev. 1
         description: Guide for Mapping Types of Information and Information Systems to Security Categories
-        published: true
+        denormalizedPublishedCount: 0
+        denormalizedTotalCount: 171
         InformationDataTypes:
             coca:
                 category: Controls and Oversight

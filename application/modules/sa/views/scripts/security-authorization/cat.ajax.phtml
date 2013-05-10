@@ -13,6 +13,7 @@
             <th scope="col"><?php $this->column('category'); ?></th>
             <th scope="col"><?php $this->column('subcategory'); ?></th>
             <th scope="col"><?php $this->column('description'); ?></th>
+            <th scope="col"><?php $this->column('catalogId'); ?></th>
             <th scope="col"><?php $this->column('confidentiality'); ?></th>
             <th scope="col"><?php $this->column('integrity'); ?></th>
             <th scope="col"><?php $this->column('availability'); ?></th>
@@ -23,6 +24,7 @@
             <td><?php echo $this->escape($dataType->category); ?></td>
             <td><?php echo $this->escape($dataType->subcategory); ?></td>
             <td><?php echo $this->escape($dataType->description, 'none'); ?></td>
+            <td><?php echo $this->escape($dataType->Catalog->name); ?></td>
             <td><?php echo $this->escape($dataType->confidentiality); ?></td>
             <td><?php echo $this->escape($dataType->integrity); ?></td>
             <td><?php echo $this->escape($dataType->availability); ?></td>
@@ -48,6 +50,7 @@
             <th scope="col"><?php $this->column('category'); ?></th>
             <th scope="col"><?php $this->column('subcategory'); ?></th>
             <th scope="col"><?php $this->column('description'); ?></th>
+            <th scope="col"><?php $this->column('catalogId'); ?></th>
             <th scope="col"><?php $this->column('confidentiality'); ?></th>
             <th scope="col"><?php $this->column('integrity'); ?></th>
             <th scope="col"><?php $this->column('availability'); ?></th>
@@ -60,6 +63,7 @@
             <td><?php echo $this->escape($dataType['category']); ?></td>
             <td><?php echo $this->escape($dataType['subcategory']); ?></td>
             <td><?php echo $this->escape($dataType['description'], 'none'); ?></td>
+            <td><?php echo $this->escape($dataType['catalog']); ?></td>
             <td><?php echo $this->escape($dataType['confidentiality']); ?></td>
             <td><?php echo $this->escape($dataType['integrity']); ?></td>
             <td><?php echo $this->escape($dataType['availability']); ?></td>

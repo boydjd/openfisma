@@ -17,31 +17,37 @@ InformationDataType:
         confidentiality:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            default: LOW
             extra:
                 logicalName: Confidentiality
         defaultConfidentiality:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            default: LOW
             extra:
                 logicalName: Recommended Confidentiality Impact Level
         integrity:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            default: LOW
             extra:
                 logicalName: Integrity
         defaultIntegrity:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            default: LOW
             extra:
                 logicalName: Recommended Integrity Impact Level
         availability:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            default: LOW
             extra:
                 logicalName: Availability
         defaultAvailability:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            default: LOW
             extra:
                 logicalName: Recommended Availability Impact Level
         description:
@@ -49,6 +55,17 @@ InformationDataType:
             extra:
                 purify: html
                 logicalName: Description
+        published:
+            type: boolean
+            notnull: true
+            default: false
+            comment: Published information data types are viewable by general users and can be assigned to systems.
+            extra:
+                logicalName: Published?
+        creatorId:
+            type: integer
+            extra:
+                logicalName:: Creator
 
     indexes:
         category_index:
@@ -64,3 +81,8 @@ InformationDataType:
             local: catalogId
             foreign: id
             foreignAlias: InformationDataTypes
+            onDelete: CASCADE
+        User:
+            local: creatorId
+            foreign: id
+            foreignAlias: CustomInformationDataTypes

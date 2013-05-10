@@ -107,6 +107,7 @@ Role:
             - security_control_catalog_delete
             - workflows_manage
             - information_data_type_manage
+            - information_data_type_custom
             - information_data_type_catalog_manage
 
     user_role:
@@ -199,8 +200,7 @@ Role:
             - security_control_catalog_read
             - security_control_catalog_update
             - security_control_catalog_delete
-            - information_data_type_manage
-            - information_data_type_catalog_manage
+            - information_data_type_custom
 
     viewer_role:
         name: Viewer

@@ -45,10 +45,5 @@ class Sa_InformationDataTypeCatalogForm extends Fisma_Zend_Form_Default
                 'class' => 'ckeditor'
             )
         ));
-
-        $this->_inputs['published'] = new Zend_Form_Element_Checkbox('published');
-        $this->_inputs['published']->setOptions(array(
-            'required' => true
-        ));
     }
 }
