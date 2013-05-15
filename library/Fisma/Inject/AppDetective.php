@@ -234,11 +234,14 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 // WARNING: Because duplicate matching is perfomed on this field, modifications to the markup used in
                 // this mapping rule must be approved by a project manager.
                 $findingData = $finding['findingData'];
+		$findingInstance['summary'] = $findingData;
+                $findingData = Fisma_String::textToHtml($findingData);
                 if (is_array($finding['findingDetail']) && !empty($finding['findingDetail'])) {
                     $findingData .= '<ul>';
                     $vulnDetails = 0;
 
                     foreach ($finding['findingDetail'] as $vulnerability) {
+                        $vulnerability = Fisma_String::textToHtml($vulnerability);
                         $findingData .= "<li>$vulnerability";
                         $vulnDetails++;
                         if ($vulnDetails > self::MAX_VULN_DETAILS_PER_FINDING) {
@@ -250,7 +253,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                     }
                     $findingData .= '</ul>';
                 }
-                $findingInstance['summary'] =  Fisma_String::textToHtml($findingData);
+                $findingInstance['description'] =  $findingData;
 
                 // Save finding, asset
                 $this->_save($findingInstance, $asset);

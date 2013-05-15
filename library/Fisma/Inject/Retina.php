@@ -131,6 +131,7 @@ class Fisma_Inject_Retina extends Fisma_Inject_Abstract
                                                      $discoveredDate->toString(Fisma_Date::FORMAT_DATE) : NULL;
                 $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                 $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
+                $findingInstance['summary'] = $finding['name'];
                 $findingInstance['description'] = Fisma_String::textToHtml($finding['name']);
                 $findingInstance['threat'] = (!empty($finding['description'])) ?
                                              Fisma_String::textToHtml($finding['description']) : NULL;

@@ -267,6 +267,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->select('COUNT(v.id) as count, v.threatlevel, v.summary ')
             ->from('Vulnerability v')
             ->groupBy('v.summary, v.threatlevel')
+            ->orderBy('v.threatlevel DESC')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $this->_addAclConditions($bySummaryQuery);
         $this->view->bySummary = $bySummaryQuery->execute();
