@@ -326,8 +326,7 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                     $categorySelect = $formPart->getElement('categoryId');
 
                     $categorySelect->addMultiOption(0, "I don't know");
-                    $categorySelect->addMultiOption(1, "Test");
-                    #$categorySelect->addMultiOptions(IrCategoryTable::getCategoriesForSelect());
+                    $categorySelect->addMultiOptions(IrCategoryTable::getCategoriesForSelect());
                 } else {
                     $formPart->removeElement('organizationId');
                     $formPart->removeElement('categoryId');
