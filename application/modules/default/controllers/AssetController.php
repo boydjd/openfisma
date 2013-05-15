@@ -68,7 +68,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
     /**
      * viewAction
-     *
+     * 
      * @return void
      *
      * @GETAllowed
@@ -169,6 +169,36 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         } else {
             $this->view->addServiceButton = '';
         }
+
+        $vulns = Doctrine_Query::create()
+            ->select('v.id AS id, v.summary AS summary, v.createdTs AS createdTs, v.threatLevel AS threatLevel, v.nextDueDate AS nextDueDate, u.displayName AS assignee, cs.name AS workflowStep')
+            ->from('Vulnerability v, v.PointOfContact u, v.CurrentStep cs')
+            ->where('v.assetId = ?', $id)
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->execute();
+        foreach ($vulns as &$vuln) {
+            if (empty($vuln['assignee'])) {
+                $vuln['assignee'] = '';
+            }
+            unset($vuln['PointOfContact'], $vuln['CurrentStep']);
+        }
+
+        $this->view->vulnerabilitiesTable = new Fisma_Yui_DataTable_Local();
+        $vulnTable = Doctrine::getTable('Vulnerability');
+        $this->view->vulnerabilitiesTable
+             ->addColumn(new Fisma_Yui_DataTable_Column('ID', true, null, null, 'id'))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                $vulnTable->getLogicalName('summary'), true, null, null, 'summary'))
+             ->addColumn(new Fisma_Yui_DataTable_Column('Created', true, null, null, 'createdTs'))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                $vulnTable->getLogicalName('threatLevel'), true, null, null, 'threatLevel'))
+             ->addColumn(new Fisma_Yui_DataTable_Column('Assignee', true, null, null, 'assignee'))
+             ->addColumn(new Fisma_Yui_DataTable_Column('Workflow Step', true, null, null, 'workflowStep'))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                $vulnTable->getLogicalName('nextDueDate'), true, null, null, 'nextDueDate'))
+             ->setData($vulns)
+             ->setRespectOrder(false)
+             ->setRegistryName('assetVulnerabilitiesTable');
     }
 
     /**
