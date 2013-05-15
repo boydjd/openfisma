@@ -563,6 +563,13 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $session = Fisma::getSession();
 
+        $incident = unserialize($session->irDraft);
+        $incident->delete();
+        
+        if ( isset($incident) ) {
+            unset($incident);
+        }
+        
         if (isset($session->irDraft)) {
             unset($session->irDraft);
         }
