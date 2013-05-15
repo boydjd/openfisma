@@ -326,7 +326,8 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
                     $categorySelect = $formPart->getElement('categoryId');
 
                     $categorySelect->addMultiOption(0, "I don't know");
-                    $categorySelect->addMultiOptions(IrCategoryTable::getCategoriesForSelect());
+                    $categorySelect->addMultiOption(1, "Test");
+                    #$categorySelect->addMultiOptions(IrCategoryTable::getCategoriesForSelect());
                 } else {
                     $formPart->removeElement('organizationId');
                     $formPart->removeElement('categoryId');
@@ -563,7 +564,11 @@ class IncidentController extends Fisma_Zend_Controller_Action_Object
 
         $session = Fisma::getSession();
 
+        $incident = unserialize($session->irDraft);
+        $incident->delete();
+        
         if (isset($session->irDraft)) {
+            unset($incident);
             unset($session->irDraft);
         }
     }
