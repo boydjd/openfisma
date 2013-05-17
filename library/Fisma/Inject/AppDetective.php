@@ -163,6 +163,8 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                         $asset['AssetServices'][0]['Product'] = array('cpeName' => $cpe->cpeName);
                     } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
                     }
+                } elseif ($oXml->name == 'checkname') {
+                    $findings[$itemCounter]['checkname']=$oXml->readString();
                 } elseif ($oXml->name == 'risk') {
                     $findings[$itemCounter]['risk']=$oXml->readString();
                 } elseif ($oXml->name == 'description') {
@@ -233,9 +235,8 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 // The mapping for finding_data is a little more complicated
                 // WARNING: Because duplicate matching is perfomed on this field, modifications to the markup used in
                 // this mapping rule must be approved by a project manager.
-                $findingData = $finding['findingData'];
-		$findingInstance['summary'] = $findingData;
-                $findingData = Fisma_String::textToHtml($findingData);
+		$findingInstance['summary'] = $finding['checkname'];
+                $findingData = Fisma_String::textToHtml($finding['findingData']);
                 if (is_array($finding['findingDetail']) && !empty($finding['findingDetail'])) {
                     $findingData .= '<ul>';
                     $vulnDetails = 0;
