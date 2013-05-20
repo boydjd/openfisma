@@ -534,6 +534,8 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             )
         );
         $this->view->bySystemTable->setData($bySystem);
+
+        $this->view->byAssetTable = $this->_getVulnerabilitiesByAssetTable();
     }
 
     protected function _addAclConditions(&$query)
@@ -559,5 +561,136 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         $buttons = array();
 
         return $buttons;
+    }
+
+    protected function _getVulnerabilitiesByAssetTable()
+    {
+        $byAssetQuery = Doctrine_Query::create()
+            ->select(
+                'a.id AS assetId, a.name AS assetName, ' .
+                'o.id AS orgId, o.nickname AS orgNickname, ' .
+                'IF(s.id IS NULL, ot.iconId, st.iconId) AS icon, ' .
+                'IF(s.id IS NULL, ot.nickname, st.nickname) AS type, ' .
+                "SUM(IF(v.threatLevel = 'LOW', 1, 0)) AS low, " .
+                "SUM(IF(v.threatLevel = 'MODERATE', 1, 0)) AS moderate, " .
+                "SUM(IF(v.threatLevel = 'HIGH', 1, 0)) AS high, " .
+                'COUNT(v.id) AS count'
+            )
+            ->from('Asset a, a.Organization o, o.OrganizationType ot, o.System s, s.SystemType st, a.Vulnerabilities v')
+            ->groupBy('a.id')
+            ->where('v.deleted_at is NULL AND v.isResolved <> ?', true)
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        //manually handle ACL conditions due to this query's unique join path (Organization => Asset => Vulnerabilities)
+        $myOrgSystemIds = $this->_visibleOrgs;
+        $viewUser = ($this->_me->viewAs()) ? $this->_me->viewAs() : $this->_me;
+        if (!$this->_acl->hasPrivilegeForClass('unaffiliated', 'Asset')) {
+            $byAssetQuery
+                ->andWhereIn('o.id', $myOrgSystemIds)
+                ->orWhere('v.deleted_at is NULL AND v.isResolved <> ?', true)
+                ->andWhere('v.pocId = ?', $viewUser->id);
+        }
+
+        $byAsset = $byAssetQuery->execute();
+        $rows = array();
+        foreach ($byAsset as $record) {
+            $rows[] = array(
+                'assetName' => $record['assetName'],
+                'organization' => $record['orgNickname'],
+                'displayOrganization' => json_encode(array(
+                    'iconId' => $record['icon'],
+                    'iconSize' => 'small',
+                    'displayName' => $record['orgNickname'],
+                    'orgId' => $record['orgId'],
+                    'iconAlt' => $record['type']
+                )),
+                'threatLevel' => json_encode(array(
+                    'LOW' => $record['low'],
+                    'MODERATE' => $record['moderate'],
+                    'HIGH' => $record['high'],
+                    'criteriaQuery' => '/threatLevel/enumIs/',
+                    /* @TODO : Needs to be total of totals */
+                    'total' => $record['count']
+                )),
+                'total' => $record['count'],
+                'displayTotal' => json_encode(array(
+                    'url' => '/vm/vulnerability/list?q=isResolved/booleanNo/'
+                           . 'asset/textContains/'
+                           . $this->view->escape($record['assetName'], 'url'),
+                    'displayText' => $record['count']
+                ))
+            );
+        }
+        $table = new Fisma_Yui_DataTable_Local();
+        $table->setRegistryName('Vulnerability.Dashboard.Analyst.byAssetTable');
+        $table->addEventListener('renderEvent', 'Fisma.Finding.restrictTableLength');
+        $table->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Asset',
+                true,
+                null,
+                null,
+                'assetName'
+            )
+        );
+        $table->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'System',
+                false,
+                null,
+                null,
+                'organization',
+                true
+            )
+        );
+        $table->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'System',
+                true,
+                'Fisma.TableFormat.formatOrganization',
+                null,
+                'displayOrganization',
+                false,
+                'string',
+                'organization'
+            )
+        );
+        $table->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Threat Level',
+                true,
+                'Fisma.TableFormat.formatThreatBar',
+                null,
+                'threatLevel',
+                false,
+                'string',
+                'total'
+            )
+        );
+        $table->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Total',
+                false,
+                null,
+                null,
+                'total',
+                true,
+                'number'
+            )
+        );
+        $table->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Total',
+                true,
+                'Fisma.TableFormat.formatLink',
+                null,
+                'displayTotal',
+                false,
+                'string',
+                'total'
+            )
+        );
+        $table->setData($rows);
+
+        return $table;
     }
 }
