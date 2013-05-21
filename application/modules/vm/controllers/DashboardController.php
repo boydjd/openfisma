@@ -579,7 +579,8 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->from('Asset a, a.Organization o, o.OrganizationType ot, o.System s, s.SystemType st, a.Vulnerabilities v')
             ->groupBy('a.id')
             ->where('v.deleted_at is NULL AND v.isResolved <> ?', true)
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+            /* Using SCALAR instead of ARRAy because of issues with the ARRAY hydrator */
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR);
         //manually handle ACL conditions due to this query's unique join path (Organization => Asset => Vulnerabilities)
         $myOrgSystemIds = $this->_visibleOrgs;
         $viewUser = ($this->_me->viewAs()) ? $this->_me->viewAs() : $this->_me;
@@ -591,32 +592,35 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
 
         $byAsset = $byAssetQuery->execute();
+        $total = 0;
+        foreach ($byAsset as $record) {
+            $total += $record['v_count'];
+        }
         $rows = array();
         foreach ($byAsset as $record) {
             $rows[] = array(
-                'assetName' => $record['assetName'],
-                'organization' => $record['orgNickname'],
+                'assetName' => $record['a_assetName'],
+                'organization' => $record['o_orgNickname'],
                 'displayOrganization' => json_encode(array(
-                    'iconId' => $record['icon'],
+                    'iconId' => $record['s_icon'],
                     'iconSize' => 'small',
-                    'displayName' => $record['orgNickname'],
-                    'orgId' => $record['orgId'],
-                    'iconAlt' => $record['type']
+                    'displayName' => $record['o_orgNickname'],
+                    'orgId' => $record['o_orgId'],
+                    'iconAlt' => $record['s_type']
                 )),
                 'threatLevel' => json_encode(array(
-                    'LOW' => $record['low'],
-                    'MODERATE' => $record['moderate'],
-                    'HIGH' => $record['high'],
+                    'LOW' => $record['v_low'],
+                    'MODERATE' => $record['v_moderate'],
+                    'HIGH' => $record['v_high'],
                     'criteriaQuery' => '/threatLevel/enumIs/',
-                    /* @TODO : Needs to be total of totals */
-                    'total' => $record['count']
+                    'total' => $total
                 )),
-                'total' => $record['count'],
+                'total' => $record['v_count'],
                 'displayTotal' => json_encode(array(
                     'url' => '/vm/vulnerability/list?q=isResolved/booleanNo/'
                            . 'asset/textContains/'
-                           . $this->view->escape($record['assetName'], 'url'),
-                    'displayText' => $record['count']
+                           . $this->view->escape($record['a_assetName'], 'url'),
+                    'displayText' => $record['v_count']
                 ))
             );
         }
