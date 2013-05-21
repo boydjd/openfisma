@@ -209,6 +209,10 @@ abstract class Fisma_Inject_Abstract
             $finding->pocId = $organization->pocId;
         }
 
+        // Set source property
+        $parts = explode('_', get_class($this));
+        $finding->source = end($parts);
+
         // Handle related objects, since merge doesn't
         if (!empty($findingData['cve'])) {
             foreach ($findingData['cve'] as $cve) {
