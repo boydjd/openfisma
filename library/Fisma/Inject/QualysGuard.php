@@ -115,6 +115,8 @@ class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
                     $parent = $oXml->expand();
                     $bid = $parent->getElementsByTagName('ID')->item(0)->nodeValue;
                     $parsedData[$hostCount][$catCount]['findings'][$itemCount]['bid'][] = $bid;
+                } elseif ($oXml->name == 'TITLE') {
+                    $parsedData[$hostCount][$catCount]['findings'][$itemCount]['summary'] = $oXml->readString();
                 } elseif ($oXml->name == 'DIAGNOSIS') {
                     $parsedData[$hostCount][$catCount]['findings'][$itemCount]['description'] = $oXml->readString();
                 } elseif ($oXml->name == 'CONSEQUENCE') {
@@ -179,6 +181,7 @@ class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
 
                             $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                             $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
+                            $findingInstance['summary'] = $finding['summary'];
                             $findingInstance['description'] = (!empty($finding['description'])) ?
                                 $finding['description'] : NULL;
 

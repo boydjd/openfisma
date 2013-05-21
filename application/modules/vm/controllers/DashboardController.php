@@ -263,6 +263,76 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->byPocTable->setData($byPoc);
 
+        $bySummaryQuery = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, v.threatlevel, v.summary ')
+            ->from('Vulnerability v')
+            ->groupBy('v.summary, v.threatlevel')
+            ->orderBy('v.threatlevel DESC')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $this->_addAclConditions($bySummaryQuery);
+        $this->view->bySummary = $bySummaryQuery->execute();
+
+        $bySummary = array();
+        foreach ($this->view->bySummary as $statistic) {
+            $bySummary[] = array(
+                'summary' => $statistic['summary'],
+                'threatLevel' => $statistic['threatLevel'],
+                'total' => $statistic['count'],
+                'displayTotal' => json_encode(array(
+                    'url' => '/vm/vulnerability/list?q=isResolved/booleanNo/'
+                           . 'summary/textContains/'
+                           . $this->view->escape($statistic['summary'], 'url'),
+                    'displayText' => $statistic['count']
+                ))
+            );
+        }
+        $this->view->bySummaryTable = new Fisma_Yui_DataTable_Local();
+        $this->view->bySummaryTable->setRegistryName('Vulnerability.Dashboard.Analyst.bySummaryTable');
+        $this->view->bySummaryTable->addEventListener('renderEvent', 'Fisma.Finding.restrictTableLength');
+        $this->view->bySummaryTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $this->view->translate('Summary'),
+                true,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'summary'
+            )
+        );
+        $this->view->bySummaryTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Threat Level',
+                true,
+                null,
+                null,
+                'threatLevel'
+            )
+        );
+        $this->view->bySummaryTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Total',
+                false,
+                null,
+                null,
+                'total',
+                true,
+                'number'
+            )
+        );
+        $this->view->bySummaryTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                'Total',
+                true,
+                'Fisma.TableFormat.formatLink',
+                null,
+                'displayTotal',
+                false,
+                'string',
+                'total'
+            )
+        );
+        $this->view->bySummaryTable->setData($bySummary);
+
+
         $bySystemQuery = Doctrine_Query::create()
             ->select(
                 'COUNT(v.id) as count, o.nickname as criteria, v.threatlevel, o.id, o.lft, o.rgt, o.level, ' .

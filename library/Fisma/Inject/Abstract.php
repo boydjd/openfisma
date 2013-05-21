@@ -205,7 +205,7 @@ abstract class Fisma_Inject_Abstract
         $finding->merge($findingData);
         $finding->createdByUserId = CurrentUser::getAttribute('id');
         $organization = Doctrine::getTable('Organization')->find($this->_orgSystemId);
-        if ($organization->pocId) {
+        if ($organization && $organization->pocId) {
             $finding->pocId = $organization->pocId;
         }
 
@@ -374,11 +374,13 @@ abstract class Fisma_Inject_Abstract
          * purification that the Xss Listener applies
          */
         $xssListener = new XssListener();
+        $cleanSummary = $xssListener->getPurifier()->purify($finding->summary);
         $cleanDescription = $xssListener->getPurifier()->purify($finding->description);
 
         $duplicateFindings = Doctrine_Query::create()
             ->from('Vulnerability v')
-            ->where('v.description LIKE ?', $cleanDescription)
+            ->where('v.summary LIKE ?', $cleanSummary)
+            ->andWhere('v.description LIKE ?', $cleanDescription)
             ->andWhere('v.assetId = ?', $finding->assetId)
             ->execute();
 
