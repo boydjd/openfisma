@@ -332,7 +332,6 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->bySummaryTable->setData($bySummary);
 
-
         $bySystemQuery = Doctrine_Query::create()
             ->select(
                 'COUNT(v.id) as count, o.nickname as criteria, v.threatlevel, o.id, o.lft, o.rgt, o.level, ' .

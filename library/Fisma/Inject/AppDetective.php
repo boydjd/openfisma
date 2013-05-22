@@ -235,7 +235,7 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
                 // The mapping for finding_data is a little more complicated
                 // WARNING: Because duplicate matching is perfomed on this field, modifications to the markup used in
                 // this mapping rule must be approved by a project manager.
-		$findingInstance['summary'] = $finding['checkname'];
+                $findingInstance['summary'] = $finding['checkname'];
                 $findingData = Fisma_String::textToHtml($finding['findingData']);
                 if (is_array($finding['findingDetail']) && !empty($finding['findingDetail'])) {
                     $findingData .= '<ul>';

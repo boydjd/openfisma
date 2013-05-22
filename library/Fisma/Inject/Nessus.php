@@ -86,7 +86,8 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
                 } elseif ($oXml->name == 'ReportItem') {
                     $parsedData[$hostCounter]['findings'][$itemCounter] = array();
                     $parsedData[$hostCounter]['findings'][$itemCounter]['port'] = $oXml->getAttribute('port');
-                    $parsedData[$hostCounter]['findings'][$itemCounter]['pluginName'] = $oXml->getAttribute('pluginName');
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['pluginName'] =
+                        $oXml->getAttribute('pluginName');
                 } elseif ($oXml->name == 'risk_factor') {
                     $riskFactor = $oXml->readString();
 

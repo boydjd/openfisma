@@ -171,7 +171,10 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         }
 
         $vulns = Doctrine_Query::create()
-            ->select('v.id AS id, v.summary AS summary, v.createdTs AS createdTs, v.threatLevel AS threatLevel, v.nextDueDate AS nextDueDate, u.displayName AS assignee, cs.name AS workflowStep')
+            ->select(
+                'v.id AS id, v.summary AS summary, v.createdTs AS createdTs, v.threatLevel AS threatLevel, ' .
+                'v.nextDueDate AS nextDueDate, u.displayName AS assignee, cs.name AS workflowStep'
+            )
             ->from('Vulnerability v, v.PointOfContact u, v.CurrentStep cs')
             ->where('v.assetId = ?', $id)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
