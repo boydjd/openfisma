@@ -36,6 +36,45 @@
         ?>")'>Show first 8 records only</a>
     <?php endif; ?>
     <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection(
+        'Unresolved: By ' . $this->escape($this->translate('Summary')),
+        null,
+        null,
+        'bySummary'
+    ); ?>
+    <?php echo $this->escape($this->bySummaryTable, 'none'); ?>
+    <?php if ($this->bySummaryTable->countData() > 8): ?>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 0, "<?php
+            echo $this->escape($this->bySummaryTable->getRegistryName());
+        ?>")'>Show all
+            <?php echo $this->escape($this->bySummaryTable->countData()); ?> records</a>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 8, "<?php
+            echo $this->escape($this->bySummaryTable->getRegistryName());
+        ?>")'>Show first 8 records only</a>
+    <?php endif; ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection(
+        'Unresolved: By ' . $this->escape($this->translate('Asset')),
+        null,
+        null,
+        'byAsset'
+    ); ?>
+    <?php echo $this->escape($this->byAssetTable, 'none'); ?>
+    <?php if ($this->byAssetTable->countData() > 8): ?>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 0, "<?php
+            echo $this->escape($this->byAssetTable->getRegistryName());
+        ?>")'>Show all
+            <?php echo $this->escape($this->byAssetTable->countData()); ?> records</a>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 8, "<?php
+            echo $this->escape($this->byAssetTable->getRegistryName());
+        ?>")'>Show first 8 records only</a>
+    <?php endif; ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+
+
 </div>
 <div class='span5 findingAnalystRight' id='vmAnalystRight'>
     <?php Fisma_Format_Section::startSection('Unresolved: By Threat', null, null, 'byThreat'); ?>

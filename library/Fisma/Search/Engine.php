@@ -253,7 +253,7 @@ class Fisma_Search_Engine
             $params['fl'][] = 'deleted_at_datetime';
 
             if (!$deleted) {
-                $filterQuery .= ' AND -deleted_at_datetime:[* TO *]';
+                $filterQuery .= ' AND -deleted_at_datetime:/.*/';
             }
         }
 
@@ -264,7 +264,7 @@ class Fisma_Search_Engine
             $params['hl.simple.pre'] = '***';
             $params['hl.simple.post'] = '***';
             $params['hl.simple.pre'] = '***';
-            $params['hl.requireFieldMatch'] = 'true';
+            $params['hl.requireFieldMatch'] = 'false';
             $params['hl.fl'] = array();
         }
 
@@ -458,7 +458,7 @@ class Fisma_Search_Engine
                     break;
 
                 case 'unspecified':
-                    $searchTerms[] = "(*:* AND -$fieldName:[* TO *])";
+                    $searchTerms[] = "(*:* AND -$fieldName:/.*/)";
                     break;
 
                 default:
@@ -491,7 +491,7 @@ class Fisma_Search_Engine
 
         $noCriteria = true;
         if (empty($queryString)) {
-            $queryString = "id:[* TO *]";
+            $queryString = "id:/.*/";
         } else {
             $noCriteria = false;
         }
@@ -520,14 +520,18 @@ class Fisma_Search_Engine
                         $params['hl.fl'][] = $documentFieldName;
                     }
 
+                    $searchValues = array();
                     foreach ($keywordTokens as $keywordToken) {
                         // Don't search for strings in integer fields (Solr emits an error)
                         $isNumberField = ('integer' == $fieldDefinition['type'] || 'float' == $fieldDefinition['type']);
                         $canSearch = (is_numeric($keywordToken) || !$isNumberField);
 
                         if ($canSearch) {
-                            $searchTerms[] = $documentFieldName . ':"' . $keywordToken . '"';
+                            $searchValues[] = '"' . $keywordToken . '"';
                         }
+                    }
+                    if (count($searchValues) > 0) {
+                        $searchTerms[] = 'text:(' . implode(" OR ", $searchValues) . ')';
                     }
                 }
             }
@@ -739,7 +743,7 @@ class Fisma_Search_Engine
         if (
             $table->hasColumn('deleted_at')
             && !empty($object['deleted_at'])
-            && !$document->fieldExists('deleted_at_datetime')
+            && $document->getField('deleted_at_datetime') === false
         ) {
             $deletedAt = $this->_convertToSolrDate($object['deleted_at']);
 
@@ -930,7 +934,7 @@ class Fisma_Search_Engine
 
             $aclFieldType = $searchableFields[$fieldName]['type'];
 
-            $ids[] = "{$fieldName}_{$aclFieldType}:" . $this->escape($fieldValue);
+            $ids[] = "{$fieldName}_{$aclFieldType}:$fieldValue";
         }
 
         if (count($ids)) {
@@ -1042,11 +1046,12 @@ class Fisma_Search_Engine
             }
 
             foreach ($aclIds as &$aclId) {
-                $ids[] = array(
-                    'field' => $aclFieldName,
-                    'value' => $this->escape($aclId)
-                );
+                $aclId = $this->escape($aclId);
             }
+            $ids[] = array(
+                'field' => $aclFieldName,
+                'value' => "(" . implode(' OR ', $aclIds) . ")"
+            );
         }
 
         return $ids;

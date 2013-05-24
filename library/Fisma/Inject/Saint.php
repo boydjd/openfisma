@@ -140,6 +140,7 @@ class Fisma_Inject_Saint extends Fisma_Inject_Abstract
                             $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                             $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
 
+                            $findingInstance['summary'] = $finding['description'];
                             $findingInstance['description'] = Fisma_String::textToHtml($finding['description'])
                                                               . Fisma_String::textToHtml($finding['vuln_details']);
                             $findingInstance['threat'] = (!empty($finding['impact'])) ?

@@ -1271,9 +1271,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 // For visible columns, display the column in the report and add data from the
                 // raw result for that column
                 if ($visible) {
-                    $report->addColumn(
-                        new Fisma_Report_Column($searchableField['label']), $searchableField['sortable']
-                    );
+                    $table = Doctrine::getTable($this->_modelName);
+                    $label = (isset($searchableField['label']))
+                           ? $this->view->translate($searchableField['label'])
+                           : $this->view->translate($table->getLogicalName($fieldName));
+                    $report->addColumn(new Fisma_Report_Column($label), $searchableField['sortable']);
 
                     foreach ($rawSearchData as $index => $datum) {
                         if (isset($rawSearchData[$index][$fieldName])) {

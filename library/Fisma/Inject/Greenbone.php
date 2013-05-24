@@ -108,7 +108,7 @@ class Fisma_Inject_Greenbone extends Fisma_Inject_Abstract
                 } elseif ($oXml->name == 'bid') {
                     $parsedData[$hostCounter]['bid'] = $oXml->readString();
                 } elseif ($oXml->name == 'description') {
-                    $parsedData[$hostCounter]['description'] = $oXml->readString();
+                    $parsedData[$hostCounter]['summary'] = $oXml->readString();
                 }
             } elseif ($oXml->nodeType == XMLReader::END_ELEMENT) {
                 if ($oXml->name == 'result') {
@@ -142,8 +142,8 @@ class Fisma_Inject_Greenbone extends Fisma_Inject_Abstract
 
                 $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                 $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
-                $findingInstance['description'] = (!empty($host['description'])) ?
-                    Fisma_String::textToHtml($host['description']) : NULL;
+                $findingInstance['summary'] = (!empty($host['summary'])) ?
+                    Fisma_String::textToHtml($host['summary']) : NULL;
 
                 $findingInstance['threatLevel'] = (!empty($host['severity'])) ? $host['severity']
                     : NULL;
