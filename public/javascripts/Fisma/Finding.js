@@ -348,7 +348,10 @@ Fisma.Finding = {
 
         //collapsible
         $(".sectionHeader").filter(function(index){
-            return ($('span.ui-icon', this).length < 1);
+            return (
+                $('span.ui-icon', this).length < 1 &&
+                $('table', this).length < 1
+            );
         })
             .prepend("<span class='ui-icon ui-icon-minusthick'></span>")
             .dblclick(function() {

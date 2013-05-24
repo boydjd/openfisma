@@ -177,4 +177,28 @@ abstract class Fisma_Cli_AbstractGenerator extends Fisma_Cli_Abstract
         $values = array_values($arr);
         return $values[$this->_randomLog(0, count($values) - 1)];
     }
+
+    /**
+     * Return a random CVSS2 Vector
+     *
+     * @return Fisma_Vulnerability_Cvss
+     */
+    protected function _randomCvssVector()
+    {
+        $av = array('L', 'A', 'N');
+        $ac = array('H', 'M', 'L');
+        $au = array('M', 'S', 'N');
+        $impact = array('N', 'P', 'C');
+
+        $vector = new Fisma_Vulnerability_Cvss();
+        $vector->setAV($this->_randomLogElement($av));
+        $vector->setAC($this->_randomLogElement($ac));
+        $vector->setAu($this->_randomLogElement($au));
+        $vector->setC($this->_randomLogElement($impact));
+        $vector->setI($this->_randomLogElement($impact));
+        $vector->setA($this->_randomLogElement($impact));
+        $vector->calculate();
+
+        return $vector;
+    }
 }
