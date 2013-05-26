@@ -64,7 +64,9 @@ class Vm_ConfigController extends Fisma_Zend_Controller_Action_Security
 
         $selectValues = array(
             'vm_reopen_destination' =>
-                Doctrine::getTable('Workflow')->listArray('vulnerability')->toKeyValueArray('id', 'name')
+                Doctrine::getTable('Workflow')->listArray('vulnerability')->toKeyValueArray('id', 'name'),
+            'vm_reopen_source' =>
+                Doctrine::getTable('Workflow')->listResolvedSteps('vulnerability')->toKeyValueArray('id', 'name')
         );
 
         // Populate default values for non-submit button elements
@@ -76,7 +78,8 @@ class Vm_ConfigController extends Fisma_Zend_Controller_Action_Security
             $name = $element->getName();
 
             if ($element instanceof Zend_Form_Element_Select) {
-                array_unshift($selectValues[$name], '');
+                $selectValues[$name][0] = '';
+                asort($selectValues[$name]);
                 $element->setMultiOptions($selectValues[$name])
                         ->setRegisterInArrayValidator(false);
             }

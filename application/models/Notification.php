@@ -122,6 +122,9 @@ class Notification extends BaseNotification
         if (!empty($extra['completedStep'])) {
             $view->completedStep = $extra['completedStep'];
         }
+        if (!empty($extra['suppDetail'])) {
+            $view->suppDetail = $extra['suppDetail'];
+        }
         $view->detail = Fisma::configuration()->getConfig('email_detail');
         $title = $view->render('title.phtml');
         $content = $view->render('content.phtml');

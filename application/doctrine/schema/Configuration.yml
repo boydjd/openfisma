@@ -225,3 +225,11 @@ Configuration:
             default: true
         vm_reopen_destination:
             type: integer
+        vm_reopen_source:
+            type: integer
+        vm_aggregation:
+            type: boolean
+            default: false
+            extra:
+                logicalName: Aggregate Vulnerabilities
+            comment: With aggregation enabled, the application will attempt to intelligently aggregate similar vulnerabilities.

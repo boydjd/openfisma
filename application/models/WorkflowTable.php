@@ -44,6 +44,25 @@ class WorkflowTable extends Fisma_Doctrine_Table
     }
 
     /**
+     * List all workflows (optionally with a specific module)
+     *
+     * @param string $module Optional. The module to filter by.
+     * @return Doctrine_Collection
+     */
+    public function listResolvedSteps($module = null)
+    {
+        $query = Doctrine_Query::create()
+            ->from('WorkflowStep ws')
+            ->leftJoin('ws.Workflow w')
+            ->where('ws.isResolved = ?', true);
+        if ($module) {
+            $query->andWhere('w.module = ?', $module);
+        }
+
+        return $query->execute();
+    }
+
+    /**
      * Get the default workflow for a module
      *
      * @param string $module The module to filter by.
