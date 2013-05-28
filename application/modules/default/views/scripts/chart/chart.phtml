@@ -6,6 +6,7 @@
                 <td align="left">
                     <?php echo $this->escape($this->chartParamArr['title'], 'html'); ?>
                 </td>
+                <?php if (!$this->hideGear): ?>
                 <td align=right>
                     <img
                         src="/images/gear.png"
@@ -16,6 +17,7 @@
                         class="chartGear"
                     />
                 </td>
+                <?php endif; ?>
             </tr>
         </table>
     </div>
@@ -145,7 +147,7 @@
             </div>
         </div>
     </div>
-    <div class='clear'></div>    
+    <div class='clear'></div>
     <script type="text/javascript">
         var thisChartObjData = <?php echo $this->escape($this->chartParamArr, 'json'); ?>;
         Fisma.Chart.createJQChart(thisChartObjData);

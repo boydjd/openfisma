@@ -63,6 +63,114 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             return;
         }
 
+        $this->view->byCvssAv = array(
+            'A' => 0,
+            'L' => 0,
+            'N' => 0
+        );
+        $byCvssAv = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, SUBSTRING(v.cvssvector, 4, 1) as criteria')
+            ->from('Vulnerability v')
+            ->groupBy('criteria')
+            ->orderBy('criteria')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $this->_addAclConditions($byCvssAv);
+        foreach ($byCvssAv->execute() as $statistic) {
+            $criteria = $statistic['criteria'];
+            $count = $statistic['count'];
+            $this->view->byCvssAv[$criteria] = $count;
+        }
+
+        $this->view->byCvssAc = array(
+            'H' => 0,
+            'L' => 0,
+            'M' => 0
+        );
+        $byCvssAc = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, SUBSTRING(v.cvssvector, 9, 1) as criteria')
+            ->from('Vulnerability v')
+            ->groupBy('criteria')
+            ->orderBy('criteria')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $this->_addAclConditions($byCvssAc);
+        foreach ($byCvssAc->execute() as $statistic) {
+            $criteria = $statistic['criteria'];
+            $count = $statistic['count'];
+            $this->view->byCvssAc[$criteria] = $count;
+        }
+
+        $this->view->byCvssAu = array(
+            'M' => 0,
+            'N' => 0,
+            'S' => 0
+        );
+        $byCvssAu = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, SUBSTRING(v.cvssvector, 14, 1) as criteria')
+            ->from('Vulnerability v')
+            ->groupBy('criteria')
+            ->orderBy('criteria')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $this->_addAclConditions($byCvssAu);
+        foreach ($byCvssAu->execute() as $statistic) {
+            $criteria = $statistic['criteria'];
+            $count = $statistic['count'];
+            $this->view->byCvssAu[$criteria] = $count;
+        }
+
+        $this->view->byCvssC = array(
+            'H' => 0,
+            'L' => 0,
+            'M' => 0
+        );
+        $byCvssC = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, SUBSTRING(v.cvssvector, 18, 1) as criteria')
+            ->from('Vulnerability v')
+            ->groupBy('criteria')
+            ->orderBy('criteria')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $this->_addAclConditions($byCvssC);
+        foreach ($byCvssC->execute() as $statistic) {
+            $criteria = $statistic['criteria'];
+            $count = $statistic['count'];
+            $this->view->byCvssC[$criteria] = $count;
+        }
+
+        $this->view->byCvssI = array(
+            'H' => 0,
+            'L' => 0,
+            'M' => 0
+        );
+        $byCvssI = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, SUBSTRING(v.cvssvector, 22, 1) as criteria')
+            ->from('Vulnerability v')
+            ->groupBy('criteria')
+            ->orderBy('criteria')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $this->_addAclConditions($byCvssI);
+        foreach ($byCvssI->execute() as $statistic) {
+            $criteria = $statistic['criteria'];
+            $count = $statistic['count'];
+            $this->view->byCvssI[$criteria] = $count;
+        }
+
+        $this->view->byCvssA = array(
+            'H' => 0,
+            'L' => 0,
+            'M' => 0
+        );
+        $byCvssA = Doctrine_Query::create()
+            ->select('COUNT(v.id) as count, SUBSTRING(v.cvssvector, 26, 1) as criteria')
+            ->from('Vulnerability v')
+            ->groupBy('criteria')
+            ->orderBy('criteria')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
+        $this->_addAclConditions($byCvssA);
+        foreach ($byCvssA->execute() as $statistic) {
+            $criteria = $statistic['criteria'];
+            $count = $statistic['count'];
+            $this->view->byCvssA[$criteria] = $count;
+        }
+
         $byThreatQuery = Doctrine_Query::create()
             ->select('COUNT(v.id) as count, v.threatlevel as criteria')
             ->from('Vulnerability v')
