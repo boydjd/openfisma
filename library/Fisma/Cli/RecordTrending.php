@@ -34,19 +34,22 @@ class Fisma_Cli_RecordTrending extends Fisma_Cli_Abstract
         $records = Doctrine_Query::create()
             ->select(
                 'o.id AS organizationId, ' .
-                'SUM(IF(v.isResolved, 1, 0)) AS open, ' .
-                'SUM(IF(v.isResolved, 0, 1)) AS closed, ' .
+                'SUM(IF(v.isResolved, 0, 1)) AS open, ' .
+                'SUM(IF(v.isResolved, 1, 0)) AS closed, ' .
                 'SUM(IF(v.isResolved, v.cvssBaseScore, 0)) AS openCvss'
             )
             ->from('Organization o, o.Assets a, a.Vulnerabilities v')
             ->where('v.id IS NOT NULL')
             ->groupBy('o.id')
-            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
             ->execute();
         foreach ($records as $record) {
             $obj = new VulnerabilityTrending();
             $obj->period = $today;
-            $obj->merge($record);
+            $obj->organizationId = $record['o_organizationId'];
+            $obj->open = $record['v_open'];
+            $obj->closed = $record['v_closed'];
+            $obj->openCvss = $record['v_openCvss'];
             $obj->save();
             $obj->free();
         }
