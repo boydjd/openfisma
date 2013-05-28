@@ -349,7 +349,7 @@ Fisma.Finding = {
 
         //collapsible
         $(".sectionHeader").filter(function(index){
-            return ($('span.ui-icon, img.chartGear', this).length < 1);
+            return ($('span.ui-icon, img.chartGear, table', this).length < 1);
         })
             .prepend("<span class='ui-icon ui-icon-minusthick'></span>")
             .dblclick(function() {

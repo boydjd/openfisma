@@ -4,6 +4,93 @@
 <?php if ($this->message): ?>
 <div class='message'><?php echo $this->escape($this->message); ?></div>
 <?php else: ?>
+
+<div class="row-fluid">
+    <div class="span2"><?php
+        $chartAv = new Fisma_Chart();
+        $chartAv->setStandardLegendVisibility(false)->setTitle('Access Vector')->setChartType('pie');
+        foreach ($this->byCvssAv as $criteria => $count):
+            $chartAv->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('AV', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/AV:' . $criteria
+            );
+        endforeach;
+        $chartAv->setColors(array(Fisma_Chart::COLOR_MODERATE, Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_HIGH));
+        echo $this->escape($chartAv->export('html', false, true), 'none');
+    ?></div>
+
+    <div class="span2"><?php
+        $chartAc = new Fisma_Chart();
+        $chartAc->setStandardLegendVisibility(false)->setTitle('Access Complexity')->setChartType('pie');
+        foreach ($this->byCvssAc as $criteria => $count):
+            $chartAc->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('AC', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/AC:' . $criteria
+            );
+        endforeach;
+        $chartAc->setColors(array(Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_MODERATE));
+        echo $this->escape($chartAc->export('html', false, true), 'none');
+    ?></div>
+
+    <div class="span2"><?php
+        $chartAu = new Fisma_Chart();
+        $chartAu->setStandardLegendVisibility(false)->setTitle('Authentication')->setChartType('pie');
+        foreach ($this->byCvssAu as $criteria => $count):
+            $chartAu->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('Au', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/Au:' . $criteria
+            );
+        endforeach;
+        $chartAu->setColors(array(Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_MODERATE));
+        echo $this->escape($chartAu->export('html', false, true), 'none');
+    ?></div>
+
+    <div class="span2"><?php
+        $chartC = new Fisma_Chart();
+        $chartC->setStandardLegendVisibility(false)->setTitle('Confidentiality Impact')->setChartType('pie');
+        foreach ($this->byCvssC as $criteria => $count):
+            $chartC->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('C', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/C:' . $criteria
+            );
+        endforeach;
+        $chartC->setColors(array(Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_MODERATE));
+        echo $this->escape($chartC->export('html', false, true), 'none');
+    ?></div>
+
+    <div class="span2"><?php
+        $chartI = new Fisma_Chart();
+        $chartI->setStandardLegendVisibility(false)->setTitle('Integrity Impact')->setChartType('pie');
+        foreach ($this->byCvssI as $criteria => $count):
+            $chartI->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('I', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/I:' . $criteria
+            );
+        endforeach;
+        $chartI->setColors(array(Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_MODERATE));
+        echo $this->escape($chartI->export('html', false, true), 'none');
+    ?></div>
+
+    <div class="span2"><?php
+        $chartA = new Fisma_Chart();
+        $chartA->setStandardLegendVisibility(false)->setTitle('Availability Impact')->setChartType('pie');
+        foreach ($this->byCvssA as $criteria => $count):
+            $chartA->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('A', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/A:' . $criteria
+            );
+        endforeach;
+        $chartA->setColors(array(Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_MODERATE));
+        echo $this->escape($chartA->export('html', false, true), 'none');
+    ?></div>
+</div>
+
 <div class='row-fluid'>
 <div class='span7 findingAnalystLeft' id='vmAnalystLeft'>
     <?php Fisma_Format_Section::startSection(

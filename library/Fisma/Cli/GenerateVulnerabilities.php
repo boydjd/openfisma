@@ -79,6 +79,9 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
             $entry['threat'] = Fisma_String::loremIpsum(rand(90, 100));
             $zdDescDate = new Zend_Date($discoveredDate);
             $entry['discoveredDate'] = $zdDescDate->toString('yyyy-MM-dd');
+            $cvss = $this->_randomCvssVector();
+            $entry['cvssVector'] = $cvss->getBaseVector();
+            $entry['cvssBaseScore'] = $cvss->getBaseScore();
             $entries[] = $entry;
             unset($entry);
 
