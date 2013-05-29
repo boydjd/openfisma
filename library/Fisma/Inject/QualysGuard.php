@@ -28,37 +28,12 @@
 class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
 {
     /**
-     * Implements the required function in the Inject_Abstract interface.
-     * This parses the report and commits all data to the database.
-     *
-     * @param string $uploadId The id of upload QualysGuard xml file
-     */
-    protected function _parse($uploadId)
-    {
-        $report  = new XMLReader();
-
-        if (!$report->open($this->_file, NULL, LIBXML_PARSEHUGE)) {
-            throw new Fisma_Zend_Exception_InvalidFileFormat('Cannot open the XML file.');
-        }
-
-        try {
-            $this->_persist($report, $uploadId);
-        } catch (Exception $e) {
-            $report->close();
-            $this->_log->err($e);
-            throw new Fisma_Zend_Exception('An error occured while processing the XML file.', 0, $e);
-        }
-
-        $report->close();
-    }
-
-    /**
      * Save assets and findings which are recorded in the report.
      *
      * @param XMLReader $oXml The full QualysGuard report
      * @param int $uploadId The specific scanner file id
      */
-    private function _persist(XMLReader $oXml, $uploadId)
+    protected function _persist(XMLReader $oXml, $uploadId)
     {
         $parsedData = array();
 
@@ -92,13 +67,16 @@ class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
                     $severity = $oXml->getAttribute('severity');
 
                     switch($severity) {
-                        case "3":
+                        case "1":
+                        case "2":
                             $severity = 'LOW';
                             break;
+                        case "3":
                         case "4":
                             $severity = 'MODERATE';
                             break;
                         case "5":
+                        case "6":
                             $severity = 'HIGH';
                             break;
                         default:
@@ -115,6 +93,8 @@ class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
                     $parent = $oXml->expand();
                     $bid = $parent->getElementsByTagName('ID')->item(0)->nodeValue;
                     $parsedData[$hostCount][$catCount]['findings'][$itemCount]['bid'][] = $bid;
+                } elseif ($oXml->name == 'CVSS_BASE') {
+                    $parsedData[$hostCount][$catCount]['findings'][$itemCount]['cvssBaseScore'] = $oXml->readString();
                 } elseif ($oXml->name == 'TITLE') {
                     $parsedData[$hostCount][$catCount]['findings'][$itemCount]['summary'] = $oXml->readString();
                 } elseif ($oXml->name == 'DIAGNOSIS') {
@@ -182,6 +162,8 @@ class Fisma_Inject_QualysGuard extends Fisma_Inject_Abstract
                             $findingInstance['sourceId'] = (int) $this->_findingSourceId;
                             $findingInstance['responsibleOrganizationId'] = (int) $this->_orgSystemId;
                             $findingInstance['summary'] = $finding['summary'];
+                            $findingInstance['cvssBaseScore'] = (!empty($finding['cvssBaseScore'])) ?
+                                $finding['cvssBaseScore'] : NULL;
                             $findingInstance['description'] = (!empty($finding['description'])) ?
                                 $finding['description'] : NULL;
 

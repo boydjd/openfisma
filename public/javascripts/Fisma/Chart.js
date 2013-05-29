@@ -393,22 +393,14 @@ Fisma.Chart = {
                     lineLabels: true,
                     lineLabelsLineColor: '#777',
                     diameter: chartParamsObj.height * 0.55,
-                    dataLabelFormatString: "%d%"
-                }
-            },
-            legend: {
-                location: 's',
-                show: true,
-                rendererOptions: {
-                    numberRows: 2
+                    dataLabelFormatString: "%d%",
+                    startAngle: -90
                 }
             },
             highlighter: {
                 show: false
             }
         };
-
-        jPlotParamObj.seriesDefaults.renderer.prototype.startAngle = 0;
 
         // bug killer (for IE7) - state the height for the container div for emulated excanvas
         $("[id="+chartParamsObj.uniqueid+"]").css('height', chartParamsObj.height);

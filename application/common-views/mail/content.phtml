@@ -151,6 +151,28 @@
 </div>
 <?php endif; ?>
 
+<?php if (isset($this->suppDetail) && !$paranoid): $suppDetail = $this->suppDetail; ?>
+<div style="
+    margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+">Details</div>
+<div style="
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    margin-bottom: 0px;
+">
+    <?php echo $this->escape($suppDetail, 'none'); ?>
+</div>
+<?php endif; ?>
+
 <?php
     try {
         $mailTemplate = Zend_Registry::get('mail_template');
