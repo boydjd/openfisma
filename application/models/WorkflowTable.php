@@ -44,7 +44,7 @@ class WorkflowTable extends Fisma_Doctrine_Table
     }
 
     /**
-     * List all workflows (optionally with a specific module)
+     * List resolved steps in all workflows (optionally with a specific module)
      *
      * @param string $module Optional. The module to filter by.
      * @return Doctrine_Collection
