@@ -82,7 +82,8 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
         for ($i = 1; $i <= $numSystems; $i++) {
             $system = array();
             $system['name'] = trim(Fisma_String::loremIpsum(1));
-            do { // awful, brute force approach
+            // awful, brute force approach
+            do {
                 $system['nickname'] = trim(strtoupper(Fisma_String::loremIpsum(1))) . $i;
             } while(isset($nicknames[$system['nickname']]));
             $nicknames[$system['nickname']] = $system['nickname'];
