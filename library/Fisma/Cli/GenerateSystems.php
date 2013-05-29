@@ -61,6 +61,12 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
             return;
         }
 
+        $nicknames = Doctrine_Query::create()
+                     ->select('o.nickname')
+                     ->from('Organization o')
+                     ->execute()
+                     ->toKeyValueArray('nickname', 'nickname');
+
         $systems = array();
 
         // Some enumerations to randomly pick values from
@@ -76,7 +82,10 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
         for ($i = 1; $i <= $numSystems; $i++) {
             $system = array();
             $system['name'] = trim(Fisma_String::loremIpsum(1));
-            $system['nickname'] = trim(strtoupper(Fisma_String::loremIpsum(1))) . $i;
+            do { // awful, brute force approach
+                $system['nickname'] = trim(strtoupper(Fisma_String::loremIpsum(1))) . $i;
+            } while(isset($nicknames[$system['nickname']]));
+            $nicknames[$system['nickname']] = $system['nickname'];
             $system['sdlcphase'] = $this->_randomLogElement($phase);
             $system['description'] = Fisma_String::loremIpsum(rand(100, 500));
             $system['confidentiality'] = $this->_randomLogElement($confidentiality);
@@ -108,6 +117,9 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
             Doctrine_Manager::connection()->beginTransaction();
 
             foreach ($systems as $system) {
+                // get parent first so we don't try and insert into ourselves later
+                $parent = Doctrine_Query::create()->from('Organization')->orderBy('rand()')->fetchOne();
+
                 $s = new System();
                 $s->merge($system);
 
@@ -120,7 +132,7 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
                 $s->Organization->merge($system);
                 $s->save();
 
-                $s->Organization->getNode()->insertAsLastChildOf($this->_getRandomOrganization());
+                $s->Organization->getNode()->insertAsLastChildOf($parent);
                 $s->Organization->save();
 
                 $this->_setRoleOrganization($s->Organization->id);
@@ -145,18 +157,13 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
      */
     private function _setRoleOrganization($organizationId)
     {
-        $adminRole = Doctrine::getTable('Role')->findOneByNickName('ADMIN', Doctrine::HYDRATE_ARRAY);
-        $userRole =  Doctrine::getTable('UserRole')->findOneByRoleId($adminRole['id'], Doctrine::HYDRATE_ARRAY);
-        if (empty($adminRole) || empty($userRole)) {
-            return;
+        $org = Doctrine::getTable('Organization')->find($organizationId);
+        $parent = $org->getNode()->getParent();
+        $urs = $parent->UserRole;
+        foreach ($parent->UserRole as $ur) {
+            $org->UserRole[] = $ur;
         }
-
-        $userRoleOrganization = New UserRoleOrganization();
-        $userRoleOrganization->userRoleId = $userRole['userRoleId'];
-        $userRoleOrganization->organizationId = $organizationId;
-
-        $userRoleOrganization->Save();
-        $userRoleOrganization->free();
-        unset($userRoleOrganization);
+        $org->save();
+        $org->free();
     }
 }
