@@ -5,13 +5,13 @@ Network:
         name:
             type: string(255)
             extra:
-                logicalName: Network Name
+                logicalName: Name
                 notify: true
         nickname:
             type: string(255)
             unique: true
             extra:
-                logicalName: Network Nickname
+                logicalName: Nickname
                 notify: true
         description:
             type: string

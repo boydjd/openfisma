@@ -42,6 +42,11 @@ class Fisma_Zend_Form_Manager_Asset extends Fisma_Zend_Form_Manager_Abstract
             ->where('ot.nickname = ?', 'system')
             ->execute();
         $selectArray = $this->_view->systemSelect($systems);
+        // Add an option to add Network on the fly
+        $form->getElement('orgSystemId')->addMultiOption('', '');
+        $form->getElement('orgSystemId')->addMultiOptions(array('new' => '-- Add New System --'));
+        $form->getElement('orgSystemId')
+            ->setOptions(array('onChange' => 'Fisma.Vulnerability.displayCreatePanel(this)'));
         $form->getElement('orgSystemId')->addMultiOptions($selectArray);
 
         $networks = Doctrine_Query::create()
@@ -53,6 +58,11 @@ class Fisma_Zend_Form_Manager_Asset extends Fisma_Zend_Form_Manager_Abstract
         foreach ($networks as $network) {
             $networkList[$network['id']] = $network['nickname'].'-'.$network['name'];
         }
+        // Add an option to add Network on the fly
+        $form->getElement('networkId')->addMultiOption('', '');
+        $form->getElement('networkId')->addMultiOptions(array('new' => '-- Add New Network --'));
+        $form->getElement('networkId')->setOptions(array('onChange' => 'Fisma.Vulnerability.displayCreatePanel(this)'));
+
         $form->getElement('networkId')->addMultiOptions($networkList);
 
         $this->setForm($form);

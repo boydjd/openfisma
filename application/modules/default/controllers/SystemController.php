@@ -52,6 +52,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->ajaxContext()
             ->addActionContext('convert-to-organization-form', 'html')
             ->addActionContext('assets', 'html')
+            ->addActionContext('form', 'html')
             ->initContext();
     }
 
@@ -1064,5 +1065,33 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         $dataTable->setData($assetRows);
         $this->view->dataTable = $dataTable;
+    }
+
+    /**
+     * Display the create form without any layout
+     *
+     * @GETAllowed
+     */
+    public function formAction()
+    {
+        $this->view->form = $this->getForm();
+        $this->view->toolbarButtons = array(
+            new Fisma_Yui_Form_Button(
+                'submitPanel',
+                array(
+                    'label' => 'Submit',
+                    'onClickFunction' => 'Fisma.Vulnerability.submitPanel',
+                    'imageSrc' => '/images/ok.png'
+                )
+            ),
+            new Fisma_Yui_Form_Button(
+                'closePanel',
+                array(
+                    'label' => 'Cancel',
+                    'onClickFunction' => 'Fisma.Vulnerability.closePanel',
+                    'imageSrc' => '/images/no_entry.png'
+                )
+            )
+        );
     }
 }
