@@ -85,7 +85,7 @@ class Fisma_Cli_GenerateSystems extends Fisma_Cli_AbstractGenerator
             // awful, brute force approach
             do {
                 $system['nickname'] = trim(strtoupper(Fisma_String::loremIpsum(1))) . $i;
-            } while(isset($nicknames[$system['nickname']]));
+            } while (isset($nicknames[$system['nickname']]));
             $nicknames[$system['nickname']] = $system['nickname'];
             $system['sdlcphase'] = $this->_randomLogElement($phase);
             $system['description'] = Fisma_String::loremIpsum(rand(100, 500));
