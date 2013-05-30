@@ -84,8 +84,8 @@
 <?php endif; ?>
 
 <?php  
-if ( isset($this->searchFacetForm) ) {
-    echo $this->escape($this->searchFacetForm, 'none');
+if ( isset($this->multifacet_page) ) {
+    echo $this->partial($this->multifacet_page );
 }
 ?>
 </div>

@@ -951,18 +951,12 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
             if (isset($facetFields['type'])) {
                 if ($facetFields['type'] == 'multi') {
-                    
-                    //$searchFacetForm = $this->getSearchFacetForm($facetFields['criteria']);
-                    //$searchFacetForm->getElement('modelName')->setValue($this->_modelName);
-                    //$searchFacetForm->getElement('type')->setValue('advanced');
-                    //$this->view->facet = $facetFields;
-                    
-                    
+                    $this->view->multifacet_page = $this->_getParam('controller') . '/search_multifacet.php';
                 }
             } else {
                 $this->view->facet = $facetFields;
             }
-            
+
             $searchForm->removeElement('advanced');
         }
 
@@ -1438,11 +1432,13 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         
         $searchFacetForm->setElementDecorators(array('ViewHelper', 'RenderSelf'));
         
+        d($searchFacetForm);
         // @todo modify and/or move this foreach statement
-                    foreach ($this->facet as $field)
+                    foreach ($criteria as $field)
                     {
-                        echo new Fisma_Criterion($field);
+                         //echo new Fisma_Criterion($field);
                     }
+        return $searchFacetForm;
     }
     
     /**
