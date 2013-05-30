@@ -883,6 +883,14 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             'defaultUnit' => 'day',
             'defaultTime' => '03:00:00'
         ),
+        'recordTrending' => array(
+            'name' => 'record-trending.php',
+            'description' => 'Record VM trending',
+            'defaultEnabled' => true,
+            'defaultNumber' => 1,
+            'defaultUnit' => 'day',
+            'defaultTime' => '01:00:00'
+        ),
         'workflowTransition' => array(
             'name' => 'workflow-transition.php',
             'description' => 'Facilitate workflow auto-transition feature',

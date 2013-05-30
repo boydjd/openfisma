@@ -245,3 +245,8 @@ Migration:
         minorVersion: 3
         tagNumber: 0
         name: VmWorkflow
+    030300_VmTrending:
+        majorVersion: 3
+        minorVersion: 3
+        tagNumber: 0
+        name: VmTrending
