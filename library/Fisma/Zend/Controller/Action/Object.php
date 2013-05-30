@@ -947,7 +947,22 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->searchPreferences = $this->_getSearchPreferences();
 
         if ($table instanceof Fisma_Search_Facetable) {
-            $this->view->facet = $table->getFacetedFields();
+            $facetFields = $table->getFacetedFields();
+
+            if (isset($facetFields['type'])) {
+                if ($facetFields['type'] == 'multi') {
+                    
+                    //$searchFacetForm = $this->getSearchFacetForm($facetFields['criteria']);
+                    //$searchFacetForm->getElement('modelName')->setValue($this->_modelName);
+                    //$searchFacetForm->getElement('type')->setValue('advanced');
+                    //$this->view->facet = $facetFields;
+                    
+                    
+                }
+            } else {
+                $this->view->facet = $facetFields;
+            }
+            
             $searchForm->removeElement('advanced');
         }
 
@@ -1410,6 +1425,26 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         return $searchForm;
     }
 
+    /**
+     * Get the facet form
+     * 
+     * right now, only multifaceted search is supported
+     * 
+     * @return Zend_Form
+     */
+    public function getSearchFacetForm(array $criteria)
+    {
+        $searchFacetForm = Fisma_Zend_Form_Manager::loadForm('search_multifacet');
+        
+        $searchFacetForm->setElementDecorators(array('ViewHelper', 'RenderSelf'));
+        
+        // @todo modify and/or move this foreach statement
+                    foreach ($this->facet as $field)
+                    {
+                        echo new Fisma_Criterion($field);
+                    }
+    }
+    
     /**
      * Get the "more search options" form and decorate it
      *
