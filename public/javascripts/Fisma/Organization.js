@@ -139,13 +139,7 @@
          * Capture parent select onChange and update copyUserAccess
          */
         parentChanged: function (selectElement) {
-            var parentButton = YAHOO.widget.Button.getButton(selectElement.id + '-button');
-            var copyUserAccessButton =
-                YAHOO.widget.Button.getButton('copyOrganizationId-button') ||
-                YAHOO.widget.Button.getButton('cloneOrganizationId-button')
-            ;
-            copyUserAccessButton.set('label', parentButton.get('label'));
-            copyUserAccessButton.set('selectedMenuItem', parentButton.get('selectedMenuItem'));
+            $('#cloneOrganizationId, #copyOrganizationId').val(selectElement.value);
         },
 
         addPoc: function(event, args) {
