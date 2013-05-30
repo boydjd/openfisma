@@ -1,0 +1,21 @@
+; This form displays the template for the multifacet search form
+;
+; Author    Yusef Pogue <yusef.pogue@endeavorsystems.com>
+; Copyright (c) Endeavor Systems, Inc. 2010 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/content/license
+
+[search_multifacet]
+
+attribs.onsubmit = "Fisma.Search.handleSearchEvent(this); return false;"
+attribs.id = facetForm
+
+elements.searchType.type = "hidden"
+elements.searchType.options.value = "advanced"
+
+elements.modelName.type = "hidden"
+; The value of model name is filled in by the controller
+
+elements.search.type = "Form_Button_Submit"
+elements.search.options.label = "Filter"
+; @todo search for a filter image
+; elements.search.options.imageSrc = "/images/find.png"
