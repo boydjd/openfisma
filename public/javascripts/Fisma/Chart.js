@@ -747,8 +747,8 @@ Fisma.Chart = {
         for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
             thisSum = 0;
 
-            for (y = 0; y < chartParamsObj['chartData'].length; y++) {
-                thisSum += chartParamsObj['chartData'][y][x];
+            for (y = 0; y < chartParamsObj.chartData.length; y++) {
+                thisSum += chartParamsObj.chartData[y][x];
             }
 
             chartParamsObj.chartDataText[x] += ' (' + thisSum  + ')';
