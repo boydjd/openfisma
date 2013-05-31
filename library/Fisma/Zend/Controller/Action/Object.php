@@ -950,8 +950,34 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $facetFields = $table->getFacetedFields();
 
             if (isset($facetFields['type'])) {
+                
+                // generates a multi-faceted search
                 if ($facetFields['type'] == 'multi') {
                     $this->view->multifacet_page = $this->_getParam('controller') . '/search_multifacet.php';
+                    $this->view->multifacet_model = $this->_modelName;
+                    
+                    // lists needed for some of the search fields
+                    $this->view->severity_list = Doctrine::getTable('vulnerability')->getEnumValues('threatlevel');
+                    $source_list = Doctrine::getTable('Vulnerability');
+                    $source_list->setAttribute(Doctrine::ATTR_COLL_KEY, 'source');
+                    $this->view->source_list = array_keys($source_list->findAll()->toArray());
+                    $workflow_steps = Doctrine::getTable('WorkflowStep');
+                    $workflow_steps->setAttribute(Doctrine::ATTR_COLL_KEY, 'name');
+                    $this->view->workflow_steps = array_keys($workflow_steps->findAll()->toArray());
+                    $networks = Doctrine::getTable('Network');
+                    $networks->setAttribute(Doctrine::ATTR_COLL_KEY, 'nickname');
+                    $this->view->networks = array_keys($networks->findAll()->toArray());
+                    
+                    // calculating the dates
+                    $days_old = array();
+                    $temp_date = new DateTime();
+                    $temp_date->sub(new DateInterval('P30D'));
+                    $days_old['days30'] = $temp_date->format('Y-m-d');
+                    $temp_date->sub(new DateInterval('P30D'));
+                    $days_old['days60'] = $temp_date->format('Y-m-d');
+                    $temp_date->sub(new DateInterval('P30D'));
+                    $days_old['days90'] = $temp_date->format('Y-m-d');
+                    $this->view->days_old = $days_old;
                 }
             } else {
                 $this->view->facet = $facetFields;

@@ -85,7 +85,15 @@
 
 <?php  
 if ( isset($this->multifacet_page) ) {
-    echo $this->partial($this->multifacet_page );
+    
+    echo $this->partial($this->multifacet_page, 
+        array(
+            'workflow_steps' => $this->workflow_steps,
+            'severity_list' => $this->severity_list,
+            'networks' => $this->networks,
+            'source_list' => $this->source_list,
+            'days_old' => $this->days_old
+        ) );
 }
 ?>
 </div>

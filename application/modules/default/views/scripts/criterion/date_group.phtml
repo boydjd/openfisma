@@ -1,0 +1,12 @@
+<span id='days_old'>
+    <input type="radio" id="days_old_30" name="<?php echo $this->escape($this->name) ?>" value='<?php echo $this->escape($this->value['days30']) ?>' />
+    <label for="days_old_30">30 days</label>
+    <input type="radio" id="days_old_60" name="<?php echo $this->escape($this->name) ?>" value='<?php echo $this->escape($this->value['days60']) ?>' />
+    <label for="days_old_60">60 days</label>
+    <input type="radio" id="days_old_90" name="<?php echo $this->escape($this->name) ?>" value='<?php echo $this->escape($this->value['days90']) ?>' />
+    <label for="days_old_90">90 days</label>
+    </span>
+
+<script>
+$('#days_old').buttonset();
+</script>
