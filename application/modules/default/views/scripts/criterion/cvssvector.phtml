@@ -1,0 +1,74 @@
+<span id="<?php echo $this->escape($this->name) ?>_list">
+    <span id='access_vector'>
+        <u>Access Vector</u><br /> 
+    <input type="radio" id="av_local" name="AV" value='L' />
+    <label for="av_local">Local</label>
+    <input type="radio" id="av_adjacentNetwork" name="AV" value='A' />
+    <label for="av_adjacentNetwork">Adjacent Network</label>
+    <input type="radio" id="av_network" name="AV" value='N' />
+    <label for="av_network">Network</label>
+    </span>
+    
+    <br />
+    <span id='access_complexity'>
+        <u>Access Complexity</u><br /> 
+    <input type="radio" id="ac_low" name="AC" value='L' />
+    <label for="ac_low">Low</label>
+    <input type="radio" id="ac_moderate" name="AC" value='M' />
+    <label for="ac_moderate">Moderate</label>
+    <input type="radio" id="ac_high" name="AC" value='H' />
+    <label for="ac_high">High</label>
+    </span>
+    
+    <br />
+    <span id='authentication'>
+        <u>Authentication</u><br /> 
+    <input type="radio" id="au_multiple" name="Au" value='M' />
+    <label for="au_multiple">Multiple</label>
+    <input type="radio" id="au_single" name="Au" value='S' />
+    <label for="au_single">Single</label>
+    <input type="radio" id="au_none" name="Au" value='N' />
+    <label for="au_none">None</label>
+    </span>
+    
+    <br />
+    <span id='confidentiality_impact'>
+        <u>Confidentiality Impact</u><br /> 
+    <input type="radio" id="c_complete" name="C" value ='C'/>
+    <label for="c_complete">Complete</label>
+    <input type="radio" id="c_partial" name="C" value='P' />
+    <label for="c_partial">Partial</label>
+    <input type="radio" id="c_none" name="C" value='N' />
+    <label for="c_none">None</label>
+    </span>
+    
+    <br />
+    <span id='integrity_impact'>
+        <u>Integrity Impact</u><br /> 
+   <input type="radio" id="i_complete" name="I" value ='C'/>
+    <label for="i_complete">Complete</label>
+    <input type="radio" id="i_partial" name="I" value='P' />
+    <label for="i_partial">Partial</label>
+    <input type="radio" id="i_none" name="I" value='N' />
+    <label for="i_none">None</label>
+    </span>
+    
+    <br />
+    <span id='availability_impact'>
+        <u>Availability Impact</u><br /> 
+    <input type="radio" id="a_complete" name="A" value ='C'/>
+    <label for="a_complete">Complete</label>
+    <input type="radio" id="a_partial" name="A" value='P' />
+    <label for="a_partial">Partial</label>
+    <input type="radio" id="a_none" name="A" value='N' />
+    <label for="a_none">None</label>
+    </span>
+</span>
+<script>
+$('#access_vector').buttonset();
+$('#access_complexity').buttonset();
+$('#authentication').buttonset();
+$('#confidentiality_impact').buttonset();
+$('#integrity_impact').buttonset();
+$('#availability_impact').buttonset();
+</script>
