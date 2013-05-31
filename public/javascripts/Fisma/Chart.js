@@ -389,16 +389,12 @@ Fisma.Chart = {
                     sliceMargin: 0,
                     showDataLabels: true,
                     shadowAlpha: 0.15,
-                    shadowOffset: 0,
                     lineLabels: true,
                     lineLabelsLineColor: '#777',
                     diameter: chartParamsObj.height * 0.55,
                     dataLabelFormatString: "%d%",
                     startAngle: -90
                 }
-            },
-            highlighter: {
-                show: false
             }
         };
 
@@ -751,25 +747,15 @@ Fisma.Chart = {
         for (x = 0; x < chartParamsObj.chartDataText.length; x++) {
             thisSum = 0;
 
-            for (y = 0; y < ['chartData'].length; y++) {
-                thisSum += ['chartData'][y][x];
+            for (y = 0; y < chartParamsObj['chartData'].length; y++) {
+                thisSum += chartParamsObj['chartData'][y][x];
             }
 
             chartParamsObj.chartDataText[x] += ' (' + thisSum  + ')';
         }
 
         var plot1 = $.jqplot(chartParamsObj.uniqueid, chartParamsObj.chartData, {
-            seriesColors: ["#F4FA58", "#FAAC58","#FA5858"],
-            series: [
-                {label: 'Open Findings', lineWidth: 4, markerOptions: {style:'square'}},
-                {label: 'Closed Findings',lineWidth: 4,markerOptions: {style:'square'}},
-                {lineWidth: 4, markerOptions: {style:'square'}}
-            ],
-            seriesDefaults: {
-                fill:false,
-                showMarker: true,
-                showLine: true
-            },
+            seriesColors: chartParamsObj.colors,
             axes: {
                 xaxis: {
                     renderer:$.jqplot.CategoryAxisRenderer,
@@ -778,15 +764,7 @@ Fisma.Chart = {
                 yaxis: {
                     min: 0
                 }
-            },
-            highlighter: { show: false },
-            legend: {
-                        show: true,
-                        rendererOptions: {
-                            numberRows: 2
-                        },
-                        location: 'nw'
-                    }
+            }
         });
 
         return Fisma.Chart.CHART_CREATE_SUCCESS;
