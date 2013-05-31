@@ -191,8 +191,8 @@ Configuration:
             type: enum
             notnull: true
             values: [threat_level, residual_risk]
-            comment: The default threat metrics to use for finding risk analysis.
             default: threat_level
+            comment: The default threat metrics to use for finding risk analysis.
         default_bureau_id:
             type: integer(20)
             notblank: true
@@ -217,8 +217,8 @@ Configuration:
             type: string(6)
             notnull: true
             notblank: true
-            comment: The maximum size of files that users can upload to the application, this setting applies to all modules.
             default: 20M
+            comment: The maximum size of files that users can upload to the application, this setting applies to all modules.
         user_editable_profiles:
             type: boolean
             notnull: true

@@ -128,6 +128,8 @@ Finding:
         threatLevel:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            notnull: true
+            default: LOW
             extra:
                 auditLog: true
                 notify: true
@@ -145,8 +147,9 @@ Finding:
             comment: The countermeasures in place against the threat source
         countermeasuresEffectiveness:
             type: enum
-            values: [LOW, MODERATE, HIGH]
             notnull: true
+            values: [LOW, MODERATE, HIGH]
+            default: HIGH
             extra:
                 auditLog: true
                 notify: true
@@ -156,6 +159,8 @@ Finding:
         residualRisk:
             type: enum
             values: [LOW, MODERATE, HIGH]
+            notnull: true
+            default: LOW
             extra:
                 auditLog: true
                 notify: true
