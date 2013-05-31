@@ -101,6 +101,13 @@ class Fisma_Inject_Asset extends Fisma_Inject_Abstract
     }
 
     /**
+     * Doesn't use XMLReader
+     */
+    protected function _persist(XMLReader $oXml, $uploadId)
+    {
+    }
+
+    /**
      * Create and commit new products
      *
      * @return boolean

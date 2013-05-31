@@ -28,40 +28,12 @@
 class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
 {
     /**
-     * Implements the required function in the Inject_Abstract interface.
-     * This parses the report and commits all data to the database.
-     *
-     * @param string $uploadId The id of upload Nessus xml file
-     */
-    protected function _parse($uploadId)
-    {
-        $report  = new XMLReader();
-
-        // The third parameter is the constant LIBXML_PARSEHUGE from libxml, which is not exposed to XMLReader.
-        // This is fixed in SVN of PHP as of 12/1/09, but until it hits a release version this hack will stay.
-        // @TODO Change 1<<19 to LIBXML_PARSEHUGE once it is visible
-        if (!$report->open($this->_file, NULL, 1<<19)) {
-            throw new Fisma_Zend_Exception_InvalidFileFormat('Cannot open the XML file.');
-        }
-
-        try {
-            $this->_persist($report, $uploadId);
-        } catch (Exception $e) {
-            $report->close();
-            $this->_log->err($e);
-            throw new Fisma_Zend_Exception('An error occured while processing the XML file.', 0, $e);
-        }
-
-        $report->close();
-    }
-
-    /**
      * Save assets and findings which are recorded in the report.
      *
      * @param XMLReader $oXml The full Nessus report
      * @param int $uploadId The specific scanner file id
      */
-    private function _persist(XMLReader $oXml, $uploadId)
+    protected function _persist(XMLReader $oXml, $uploadId)
     {
         $parsedData = array();
 

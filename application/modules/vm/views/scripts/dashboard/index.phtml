@@ -270,6 +270,22 @@
     <?php endforeach; ?>
     </table>
     <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php
+        $chartOpenVuln = new Fisma_Chart();
+        $chartOpenVuln->setStandardLegendVisibility(false)
+                      ->setTitle('Open Vulnerabvilities (Last 30 Days)')
+                      ->setChartType('line');
+        $chartOpenVulnLabels = array();
+        $chartOpenVulnData = array();
+        foreach ($this->vulnTrending as $record) {
+            $chartOpenVulnLabels[] = $record['vt_period'];
+            $chartOpenVulnData[] = $record['vt_totalOpen'];
+        }
+        $chartOpenVuln->addLine($chartOpenVulnData, $chartOpenVulnLabels);
+        $chartOpenVuln->setColors(array(Fisma_Chart::COLOR_BLUE));
+        echo $this->escape($chartOpenVuln->export('html', false, true), 'none');
+    ?>
 </div>
 <div class='clear'></div>
 <script>

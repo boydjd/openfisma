@@ -45,48 +45,17 @@ class Fisma_Inject_AppDetective extends Fisma_Inject_Abstract
     const REMOVE_PHRASE = "/As part of a complete .* level of database security./";
 
     /**
-     * Implements the required function in the Inject_Abstract interface. This parses the report and commits
-     * all data to the database.
-     *
-     * @param string $uploadId The specified id of upload file to be parsed
-     * @return void
-     * @throws Fisma_Zend_Exception_InvalidFileFormat if the file is not an App Detective report
-     */
-    protected function _parse($uploadId)
-    {
-        // Parse the XML file
-        $report  = new XMLReader();
-
-        // Bug 2596247 - "App Detective plug-in does not work with recent vrsn. of AD"
-        // Make sure that this is an AppDetective report, not a Crystal report. (App Detective can generate both
-        // kinds of report.)
-        if ($report->lookupNamespace('urn:crystal-reports:schemas')) {
-            throw new Fisma_Zend_Exception_InvalidFileFormat('This is a Crystal Report, not an App Detective report.');
-        }
-
-        if (!$report->open($this->_file, NULL, LIBXML_PARSEHUGE)) {
-            throw new Fisma_Zend_Exception_InvalidFileFormat('Cannot open the XML file.');
-        }
-
-        try {
-            $this->_persist($report, $uploadId);
-        } catch (Exception $e) {
-            $report->close();
-            $this->_log->err($e);
-            throw new Fisma_Zend_Exception_InvalidFileFormat('An error occured while processing the XML file.', 0, $e);
-        }
-
-        $report->close();
-    }
-
-    /**
      * Get and save findings, assets and products info are recorded in the report.
      *
      * @param XMLReader $oXml The full AppDetective report
      * @param int $uploadId The specific scanner file id
      */
-    private function _persist(XMLReader $oXml, $uploadId)
+    protected function _persist(XMLReader $oXml, $uploadId)
     {
+        if ($oXml->lookupNamespace('urn:crystal-reports:schemas')) {
+            throw new Fisma_Zend_Exception_InvalidFileFormat('This is a Crystal Report, not an App Detective report.');
+        }
+
         $itemCounter = 0;
         $detailCounter = 0;
 

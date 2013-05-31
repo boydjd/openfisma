@@ -28,37 +28,12 @@
 class Fisma_Inject_Greenbone extends Fisma_Inject_Abstract
 {
     /**
-     * Implements the required function in the Inject_Abstract interface.
-     * This parses the report and commits all data to the database.
-     *
-     * @param string $uploadId The id of upload QualysGuard xml file
-     */
-    protected function _parse($uploadId)
-    {
-        $report  = new XMLReader();
-
-        if (!$report->open($this->_file, NULL, LIBXML_PARSEHUGE)) {
-            throw new Fisma_Zend_Exception_InvalidFileFormat('Cannot open the XML file.');
-        }
-
-        try {
-            $this->_persist($report, $uploadId);
-        } catch (Exception $e) {
-            $report->close();
-            $this->_log->err($e);
-            throw new Fisma_Zend_Exception('An error occured while processing the XML file.', 0, $e);
-        }
-
-        $report->close();
-    }
-
-    /**
      * Save assets and findings which are recorded in the report.
      *
      * @param XMLReader $oXml The full Greenbone Security report
      * @param int $uploadId The specific scanner file id
      */
-    private function _persist(XMLReader $oXml, $uploadId)
+    protected function _persist(XMLReader $oXml, $uploadId)
     {
         $parsedData = array();
 

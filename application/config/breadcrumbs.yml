@@ -116,7 +116,7 @@ VulnerabilityUpload:
     links: [no-link, no-link]
 VulnerabilityAdminGeneral:
     url: /vm/config/general
-    labels: [Vulnerabilities, Administration, General]
+    labels: [Vulnerabilities, Administration, Upload Configuration]
     links: [no-link, no-link, no-link]
 VulnerabilityAdminProductsView:
     url: /vm/product/view

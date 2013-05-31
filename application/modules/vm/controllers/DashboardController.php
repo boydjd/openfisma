@@ -642,6 +642,17 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->bySystemTable->setData($bySystem);
 
         $this->view->byAssetTable = $this->_getVulnerabilitiesByAssetTable();
+
+        // Open Vulnerability Trending
+        $this->view->vulnTrending = Doctrine_Query::create()
+            ->select('period, SUM(open) AS totalOpen')
+            ->from('VulnerabilityTrending vt')
+            ->whereIn('organizationId', $this->_visibleOrgs)
+            ->groupBy('period')
+            ->orderBy('period DESC')
+            ->limit(30)
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+            ->execute();
     }
 
     protected function _addAclConditions(&$query)

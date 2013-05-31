@@ -153,9 +153,6 @@ Vulnerability:
                 func: hasArea
                 param: vulnerability_admin
             submenu:
-                General:
-                    label: General
-                    link: /vm/config/general
                 Products:
                     label: Products
                     link: /vm/product/list
@@ -163,6 +160,9 @@ Vulnerability:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: Product
+                General:
+                    label: Upload Configuration
+                    link: /vm/config/general
                 Vulnerability_Workflow:
                     label: Workflows
                     link: /workflow/manage#1

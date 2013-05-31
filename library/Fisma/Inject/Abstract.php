@@ -128,7 +128,35 @@ abstract class Fisma_Inject_Abstract
      * @param string $uploadId The primary key for the upload object associated with this file
      * @throws Fisma_Inject_Exception
      */
-    abstract protected function _parse($uploadId);
+    protected function _parse($uploadId)
+    {
+        $report = new XMLReader();
+
+        if (!$report->open($this->_file, NULL, LIBXML_PARSEHUGE)) {
+            throw new Fisma_Zend_Exception_InvalidFileFormat('Cannot open the XML file.');
+        }
+
+        try {
+            $this->_persist($report, $uploadId);
+        } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
+            throw $e;
+        } catch (Exception $e) {
+            $report->close();
+            $this->_log->err($e);
+            throw new Fisma_Zend_Exception("An unexpected error has occurred while processing the uploaded scan result."
+                                         . "<br/>This error has been logged for administrator review.", 0, $e);
+        }
+
+        $report->close();
+    }
+
+    /**
+     * Save vulnerabilities and assets which are recorded in the report.
+     *
+     * @param XMLReader $oXml The full Retina report
+     * @param int $uploadId The specific scanner file id
+     */
+    abstract protected function _persist(XMLReader $oXml, $uploadId);
 
     /**
      * Create and initialize a new plug-in instance for the specified file
@@ -173,16 +201,6 @@ abstract class Fisma_Inject_Abstract
             throw new Fisma_Inject_Exception('Save cannot be called without finding data!');
         }
 
-        // Add data to provided assetData
-        if (!empty($assetData)) {
-            $assetData['networkId'] = $this->_networkId;
-            if (!empty($this->_orgSystemId)) {
-                $assetData['orgSystemId'] = (int)$this->_orgSystemId;
-            }
-            $assetData['id'] = $this->_prepareAsset($assetData);
-            $findingData['assetId'] = $assetData['id'];
-        }
-
         // Add data to provided productData
         if (!empty($productData)) {
             $assetData['productId'] = $this->_prepareProduct($productData);
@@ -198,6 +216,16 @@ abstract class Fisma_Inject_Abstract
                     unset($service['Product']);
                 }
             }
+        }
+
+        // Add data to provided assetData
+        if (!empty($assetData)) {
+            $assetData['networkId'] = $this->_networkId;
+            if (!empty($this->_orgSystemId)) {
+                $assetData['orgSystemId'] = (int)$this->_orgSystemId;
+            }
+            $assetData['id'] = $this->_prepareAsset($assetData);
+            $findingData['assetId'] = $assetData['id'];
         }
 
         // Prepare finding
@@ -232,22 +260,7 @@ abstract class Fisma_Inject_Abstract
             }
         }
 
-        // Handle duplicated findings
-        $duplicateFinding = $this->_getDuplicateFinding($finding);
-        if ($duplicateFinding) {
-            $this->_duplicates[] = array(
-                'vulnerability' => $duplicateFinding,
-                'action' => $duplicateFinding->isResolved ? 'REOPEN' : 'SUPPRESS',
-                'message' => 'This vulnerability was discovered again during a subsequent scan.'
-            );
-            // Deleted findings are not saved, so we exit the _save routine
-            $finding->free();
-            unset($finding);
-            return;
-        } else {
-            // Store data in instance to be committed later
-            $this->_findings[] = array('finding' => $finding, 'asset' => $assetData, 'product' => $productData);
-        }
+        $this->_findings[] = array('finding' => $finding, 'asset' => $assetData, 'product' => $productData);
     }
 
     /**
@@ -260,14 +273,48 @@ abstract class Fisma_Inject_Abstract
         Doctrine_Manager::connection()->beginTransaction();
 
         try {
+            // aggregation
+            if (Fisma::configuration()->getConfig('vm_aggregation')) {
+                for ($i = 0; $i < count($this->_findings) - 1; $i++) {
+                    for ($j = $i + 1; $j < count($this->_findings); $j++) {
+                        if (isset($this->_findings[$i]['finding']) && isset($this->_findings[$j]['finding'])) {
+                            if (
+                                $this->_findings[$i]['finding']->summary === $this->_findings[$j]['finding']->summary &&
+                                $this->_findings[$i]['asset'] === $this->_findings[$j]['asset']
+                            ) {
+                                $this->_findings[$i]['finding']->description .= "<p>(aggregating...)</p>" .
+                                    $this->_findings[$j]['finding']->description;
+                                unset($this->_findings[$j]['finding']);
+                            }
+                        }
+                    }
+                }
+            }
+
             // commit the new vulnerabilities
             foreach ($this->_findings as &$findingData) {
                 set_time_limit(180);
+                if (empty($findingData['finding'])) {
+                    continue;
+                }
+
+                // Detect duplicated findings
+                $duplicateFinding = $this->_getDuplicateFinding($findingData['finding']);
+                $reopenStepId = Fisma::configuration()->getConfig('vm_reopen_source');
+                if ($duplicateFinding) {
+                    $this->_duplicates[] = array(
+                        'vulnerability' => $duplicateFinding,
+                        'action' => ($duplicateFinding->currentStepId == $reopenStepId) ? 'REOPEN' : 'SUPPRESS',
+                        'message' => 'This vulnerability was discovered again during a subsequent scan.'
+                    );
+                    continue;
+                }
+
                 if (empty($findingData['asset']['productId']) && !empty($findingData['product'])) {
                     $findingData['asset']['productId'] = $this->_saveProduct($findingData['product']);
                 }
 
-                if (!$findingData['asset']['id']) {
+                if (empty($findingData['asset']['id']) && !empty($findingData['asset'])) {
                     $findingData['asset']['id'] = $this->_saveAsset($findingData['asset']);
                 }
 
@@ -287,7 +334,7 @@ abstract class Fisma_Inject_Abstract
                 unset($findingData['finding']);
             }
 
-            // append audit log messages
+            // Handle duplicated findings
             foreach ($this->_duplicates as $duplicate) {
                 set_time_limit(180);
                 $vuln = $duplicate['vulnerability'];
@@ -304,7 +351,9 @@ abstract class Fisma_Inject_Abstract
 
                 if ($action == 'REOPEN') {
                     $destinationId  = (Fisma::configuration()->getConfig('vm_reopen_destination'))
-                                    ? Fisma::configuration()->getConfig('vm_reopen_destination')
+                                    ? Doctrine::getTable('Workflow')->find(
+                                        Fisma::configuration()->getConfig('vm_reopen_destination')
+                                    )->getFirstStep()->id
                                     : Doctrine::getTable('Workflow')
                                         ->findDefaultByModule('vulnerability')->getFirstStep()->id;
 
@@ -339,17 +388,21 @@ abstract class Fisma_Inject_Abstract
             set_time_limit(180);
             Doctrine_Manager::connection()->commit();
 
-            $createdWord    = $this->created > 1 ? ' vulnerabilities' : ' vulnerability';
+            $createdWord = $this->created != 1 ? ' vulnerabilities' : ' vulnerability';
+            $baseUrl = rtrim(Fisma_Url::baseUrl(), '/');
 
-            $message = 'Your scan report was successfully uploaded.'
-                     . "<br/><a href='/vm/vulnerability/list?q=/uploadIds/textExactMatch/{$this->_uploadId}"
-                     . "' target='_blank'>" . $this->created . '</a> new' . $createdWord . ' created.';
+            $message = 'Your scan report was successfully uploaded.<br/>'
+                     . "<a target='_blank' href='" . Fisma_Url::customUrl(
+                            "/vm/vulnerability/list?q=/uploadIds/textExactMatch/{$this->_uploadId}"
+                    ). "'>" . $this->created . '</a> new' . $createdWord . ' created.';
             foreach ((array)($this->workflows) as $name => $count) {
-                $count = "<a href='/vm/vulnerability/list?q=/uploadIds/textContains/{$this->_uploadId}"
-                       . "/uploadIds/textNotExactMatch/{$this->_uploadId}"
-                       . "/workflow/textExactMatch/{$name}' target='_blank'>"
-                       . "{$count}</a>";
-                $message .= "<br/>{$count} mapped to existing vulnerabilities in {$name} workflow.";
+                $countWord = $count != 1 ? ' vulnerabilities' : ' vulnerability';
+                $count = "<a target='_blank' href='" . Fisma_Url::customUrl(
+                            "/vm/vulnerability/list?q=/uploadIds/textContains/{$this->_uploadId}" .
+                            "/uploadIds/textNotExactMatch/{$this->_uploadId}" .
+                            "/workflow/textExactMatch/{$name}"
+                      ). "'>{$count}</a>";
+                $message .= "<br/>{$count} mapped to existing {$countWord} in {$name} workflow.";
             }
 
            $this->_setMessage(array('notice' => $message));
@@ -386,6 +439,7 @@ abstract class Fisma_Inject_Abstract
             ->where('v.summary LIKE ?', $cleanSummary)
             ->andWhere('v.description LIKE ?', $cleanDescription)
             ->andWhere('v.assetId = ?', $finding->assetId)
+            ->andWhere('v.deleted_at is NULL')
             ->execute();
 
         return $duplicateFindings->count() > 0 ? $duplicateFindings->getFirst() : FALSE;
@@ -405,25 +459,27 @@ abstract class Fisma_Inject_Abstract
                       ->from('Asset a')
                       ->where('a.networkId = ?', $assetData['networkId']);
         if (empty($assetData['addressIp'])) {
-            $assetQuery->andWhere('a.addressIp IS NULL');
+            $assetQuery->andWhere('a.addressIp IS NULL')
+                       ->andWhere('a.name = ?', $assetData['name']);
         } else {
             $assetQuery->andWhere('a.addressIp = ?', $assetData['addressIp']);
         }
-        $assetRecord = $assetQuery->orWhere('a.deleted_at IS NOT NULL')
-                                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
-                                  ->execute();
+        $assetRecord = $assetQuery->execute()->getFirst();
 
-        //  If the vulnerability references to the existing and soft delete'd asset, then active asset.
-        $deletedAt = ($assetRecord) ? $assetRecord[0]['deleted_at'] : FALSE;
-        if ($deletedAt) {
-            $query = Doctrine_Query::create()
-                     ->update('Asset a')
-                     ->set('a.deleted_at', 'NULL')
-                     ->where('a.id = ?', $assetRecord[0]['id'])
-                     ->execute();
+        // If asset exists, verify whether service exists
+        if ($assetRecord && isset($assetData['AssetServices'])) {
+            $existingServices = $assetRecord->AssetServices->toKeyValueArray('addressPort', 'service');
+            foreach ($assetData['AssetServices'] as $service) {
+                if (!array_key_exists($service['addressPort'], $existingServices)) {
+                    $assetService = new AssetService();
+                    $assetService->merge($service);
+                    $assetRecord->AssetServices[] = $assetService;
+                }
+            }
+            $assetRecord->save();
         }
 
-        return ($assetRecord) ? $assetRecord[0]['id'] : null;
+        return ($assetRecord) ? $assetRecord->id : null;
     }
 
     /**

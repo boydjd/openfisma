@@ -41,4 +41,46 @@ class NetworkController extends Fisma_Zend_Controller_Action_Object
      */
     protected $_associatedModel = 'Asset';
     protected $_associatedPlural = 'Assets';
+
+    /**
+     * Create contexts for AJAX views.
+     *
+     * @return void
+     */
+    public function init()
+    {
+        $this->_helper->ajaxContext()
+            ->addActionContext('form', 'html')
+            ->initContext();
+
+        parent::init();
+    }
+
+    /**
+     * Display the create form without any layout
+     *
+     * @GETAllowed
+     */
+    public function formAction()
+    {
+        $this->view->form = $this->getForm();
+        $this->view->toolbarButtons = array(
+            new Fisma_Yui_Form_Button(
+                'submitPanel',
+                array(
+                    'label' => 'Submit',
+                    'onClickFunction' => 'Fisma.Vulnerability.submitPanel',
+                    'imageSrc' => '/images/ok.png'
+                )
+            ),
+            new Fisma_Yui_Form_Button(
+                'closePanel',
+                array(
+                    'label' => 'Cancel',
+                    'onClickFunction' => 'Fisma.Vulnerability.closePanel',
+                    'imageSrc' => '/images/no_entry.png'
+                )
+            )
+        );
+    }
 }
