@@ -391,7 +391,7 @@ Fisma.Chart = {
                     shadowAlpha: 0.15,
                     lineLabels: true,
                     lineLabelsLineColor: '#777',
-                    diameter: chartParamsObj.height * 0.55,
+                    diameter: Math.min(chartParamsObj.height, chartParamsObj.width),
                     dataLabelFormatString: "%d%",
                     startAngle: -90
                 }
