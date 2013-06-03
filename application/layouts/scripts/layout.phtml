@@ -25,7 +25,9 @@
 
                 xmlhttp.onreadystatechange = function() {
                     if (xmlhttp.readyState === 4){
-                        console.log('An error has been logged.');
+                        if (console) {
+                            console.log('An error has been logged.');
+                        }
                     }
                 };
 

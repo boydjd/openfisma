@@ -349,6 +349,12 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
             }
         }
 
+        if (isset($buttons['deleteSelected'])) {
+            $args = $buttons['deleteSelected']->getAttrib('onClickArgument');
+            $args['text'] = "WARNING: All vulnerabilities associated with these assets will also be deleted. ";
+            $buttons['deleteSelected']->setAttrib('onClickArgument', $args);
+        }
+
         return $buttons;
     }
 

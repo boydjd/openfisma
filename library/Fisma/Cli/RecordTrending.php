@@ -49,7 +49,7 @@ class Fisma_Cli_RecordTrending extends Fisma_Cli_Abstract
             $obj->organizationId = $record['o_organizationId'];
             $obj->open = $record['v_open'];
             $obj->closed = $record['v_closed'];
-            $obj->openCvss = $record['v_openCvss'];
+            $obj->openCvss = (double)$record['v_openCvss'];
             $obj->save();
             $obj->free();
         }

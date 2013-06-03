@@ -118,9 +118,9 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->byCvssC = array(
-            'H' => 0,
-            'L' => 0,
-            'M' => 0
+            'C' => 0,
+            'N' => 0,
+            'P' => 0
         );
         $byCvssC = Doctrine_Query::create()
             ->select('COUNT(v.id) as count, SUBSTRING(v.cvssvector, 18, 1) as criteria')
@@ -136,9 +136,9 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->byCvssI = array(
-            'H' => 0,
-            'L' => 0,
-            'M' => 0
+            'C' => 0,
+            'N' => 0,
+            'P' => 0
         );
         $byCvssI = Doctrine_Query::create()
             ->select('COUNT(v.id) as count, SUBSTRING(v.cvssvector, 22, 1) as criteria')
@@ -154,9 +154,9 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->byCvssA = array(
-            'H' => 0,
-            'L' => 0,
-            'M' => 0
+            'C' => 0,
+            'N' => 0,
+            'P' => 0
         );
         $byCvssA = Doctrine_Query::create()
             ->select('COUNT(v.id) as count, SUBSTRING(v.cvssvector, 26, 1) as criteria')
@@ -169,6 +169,44 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             $criteria = $statistic['criteria'];
             $count = $statistic['count'];
             $this->view->byCvssA[$criteria] = $count;
+        }
+
+        // Open Vulnerability Trending
+        $this->view->vulnCvssTrending = Doctrine_Query::create()
+            ->select('period, SUM(openCvss) AS score')
+            ->from('VulnerabilityTrending vt')
+            ->whereIn('organizationId', $this->_visibleOrgs)
+            ->groupBy('period')
+            ->orderBy('period DESC')
+            ->limit(30)
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+            ->execute();
+
+        $this->view->vulnTrending = Doctrine_Query::create()
+            ->select('period, SUM(open) AS totalOpen')
+            ->from('VulnerabilityTrending vt')
+            ->whereIn('organizationId', $this->_visibleOrgs)
+            ->groupBy('period')
+            ->orderBy('period DESC')
+            ->limit(30)
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+            ->execute();
+    }
+
+    /**
+     * @GETAllowed
+     */
+    public function analystAction()
+    {
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+
+        $totalQuery = Doctrine_Query::create()
+            ->from('Vulnerability v');
+        $this->_addAclConditions($totalQuery);
+        $this->view->total = $totalQuery->count();
+        if ($this->view->total < 1) {
+            $this->view->message = "There are no unresolved vulnerabilities under your responsibility.";
+            return;
         }
 
         $byThreatQuery = Doctrine_Query::create()
@@ -444,8 +482,8 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                 'COUNT(v.id) as count, o.nickname as criteria, v.threatlevel, o.id, o.lft, o.rgt, o.level, ' .
                 'a.orgSystemId, ot.iconId as icon, ot.nickname as type'
             )
-            ->from('Asset a')
-            ->leftJoin('a.Organization o')
+            ->from('Organization o')
+            ->leftJoin('o.Assets a')
             ->leftJoin('o.OrganizationType ot')
             ->leftJoin('a.Vulnerabilities v')
             ->groupBy('o.id, v.threatlevel')
@@ -466,13 +504,15 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         $bySystem = array();
         foreach ($this->view->bySystem as &$statistic) {
             $count = 0;
-            foreach ($statistic['Vulnerabilities'] as &$finding) {
-                $threatLevel = $finding['threatLevel'];
-                if (!isset($statistic[$threatLevel])) {
-                    $statistic[$threatLevel] = 0;
+            foreach ($statistic['Assets'] as $asset) {
+                foreach ($asset['Vulnerabilities'] as $finding) {
+                    $threatLevel = $finding['threatLevel'];
+                    if (!isset($statistic[$threatLevel])) {
+                        $statistic[$threatLevel] = 0;
+                    }
+                    $statistic[$threatLevel] += $finding['count'];
+                    $count += $finding['count'];
                 }
-                $statistic[$threatLevel] += $finding['count'];
-                $count += $finding['count'];
             }
             $statistic['LOW'] = (empty($statistic['LOW'])) ? 0 : $statistic['LOW'];
             $statistic['MODERATE'] = (empty($statistic['MODERATE'])) ? 0 : $statistic['MODERATE'];
@@ -488,10 +528,9 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                         ->from('Organization o')
                         ->leftJoin('o.System s')
                         ->leftJoin('s.SystemType st')
-                        ->where('o.id = ?', $statistic['Organization']['id'])
+                        ->where('o.id = ?', $statistic['id'])
                         ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                         ->fetchOne();
-                    //die(print_r($statistic));
                     $statistic['icon'] = $statistic['icon']['icon'];
                 }
                 $statistic['parent'] = Doctrine_Query::create()
@@ -499,9 +538,9 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                     ->from('Organization o')
                     ->leftJoin('o.OrganizationType ot')
                     ->leftJoin('ot.Icon i')
-                    ->where('o.lft < ?', $statistic['Organization']['lft'])
-                    ->andWhere('o.rgt > ?', $statistic['Organization']['rgt'])
-                    ->andWhere('o.level = ?', $statistic['Organization']['level'] - 1)
+                    ->where('o.lft < ?', $statistic['lft'])
+                    ->andWhere('o.rgt > ?', $statistic['rgt'])
+                    ->andWhere('o.level = ?', $statistic['level'] - 1)
                     ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                     ->fetchOne();
                 if (empty($statistic['parent']['icon'])) { // the OrganizationType "system" doesn't have an icon
@@ -530,7 +569,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'iconId' => $statistic['icon'],
                     'iconSize' => 'small',
                     'displayName' => $statistic['criteria'],
-                    'orgId' => $statistic['Organization']['id'],
+                    'orgId' => $statistic['id'],
                     'iconAlt' => $statistic['type']
                 )),
                 'parentOrganization' => $statistic['parent']['nickname'],
@@ -642,17 +681,6 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         $this->view->bySystemTable->setData($bySystem);
 
         $this->view->byAssetTable = $this->_getVulnerabilitiesByAssetTable();
-
-        // Open Vulnerability Trending
-        $this->view->vulnTrending = Doctrine_Query::create()
-            ->select('period, SUM(open) AS totalOpen')
-            ->from('VulnerabilityTrending vt')
-            ->whereIn('organizationId', $this->_visibleOrgs)
-            ->groupBy('period')
-            ->orderBy('period DESC')
-            ->limit(30)
-            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
-            ->execute();
     }
 
     protected function _addAclConditions(&$query)
@@ -676,6 +704,26 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
     public function getToolbarButtons()
     {
         $buttons = array();
+        switch($this->getRequest()->getActionName()) {
+            case 'index':
+                $buttons[] = new Fisma_Yui_Form_Button_Link(
+                    'analystView',
+                    array(
+                        'label' => 'Analyst View',
+                        'href' => '/vm/dashboard/analyst'
+                    )
+                );
+                break;
+            case 'analyst':
+                $buttons[] = new Fisma_Yui_Form_Button_Link(
+                    'overview',
+                    array(
+                        'label' => 'Overview',
+                        'href' => '/vm/dashboard/index'
+                    )
+                );
+                break;
+        }
 
         return $buttons;
     }
