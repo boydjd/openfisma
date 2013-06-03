@@ -138,8 +138,14 @@ class Fisma_Menu
             $module = null;
             if (strstr($item['module'], 'Vulnerability')) {
                 $module = Doctrine::getTable('Module')->findOneByName('Vulnerability Management');
+            } else if (strstr($item['module'], 'Finding')) {
+                $module = Doctrine::getTable('Module')->findOneByName('Findings');
             } else if (strstr($item['module'], 'Incident')) {
                 $module = Doctrine::getTable('Module')->findOneByName('Incident Reporting');
+            } else if (strstr($item['module'], 'Compliance')) {
+                $module = Doctrine::getTable('Module')->findOneByName('Compliance');
+            } else if (strstr($item['module'], 'System')) {
+                $module = Doctrine::getTable('Module')->findOneByName('System Inventory');
             }
 
             // Skip the module if the module is not enable

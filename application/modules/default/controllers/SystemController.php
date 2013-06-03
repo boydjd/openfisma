@@ -122,7 +122,8 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             );
         }
 
-        if ($this->_acl->hasPrivilegeForObject('sa', $organization)) {
+        $module = Doctrine::getTable('Module')->findOneByName('Compliance');
+        if ($module && $module->enabled && $this->_acl->hasPrivilegeForObject('sa', $organization)) {
             $buttons['sa'] = new Fisma_Yui_Form_Button_Link(
                 'sa',
                 array(

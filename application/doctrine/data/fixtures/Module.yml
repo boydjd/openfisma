@@ -18,3 +18,8 @@ Module:
         name: System Inventory
         canBeDisabled: NO
         enabled: YES
+
+    saModule:
+        name: Compliance
+        canBeDisabled: YES
+        enabled: NO

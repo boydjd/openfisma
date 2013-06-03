@@ -29,6 +29,7 @@
 
 Finding:
     label: Findings
+    module: Finding
     privilege:
         func: hasArea
         param: finding
@@ -282,6 +283,7 @@ Incident:
 
 System:
     label: System Inventory
+    module: System Inventory
     privilege:
         func: hasArea
         param: system_inventory
@@ -379,6 +381,7 @@ System:
 
 SecurityAuthorization:
     label: Compliance
+    module: Compliance
     privilege:
         func: hasArea
         param: sa

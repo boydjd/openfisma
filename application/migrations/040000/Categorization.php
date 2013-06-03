@@ -31,6 +31,16 @@ class Application_Migration_040000_Categorization extends Fisma_Migration_Abstra
     {
         $helper = $this->getHelper();
 
+        $this->message('Add new module');
+        $helper->insert(
+            'module',
+            array(
+                'name' => 'Compliance',
+                'enabled' => 0,
+                'canbedisabled' => 1
+            )
+        );
+
         $this->message('Update privileges');
         $roleIds = $helper->query('SELECT id from role where name in ("Administrator", "User") order by name');
         $adminId = $roleIds[0]->id;
