@@ -1002,7 +1002,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $this->_acl->requirePrivilegeForObject('read', $organization);
 
         $assets = $organization->Assets;
-        $assets->loadRelated('Product');
 
         $assetRows = array();
         foreach ($assets as $asset) {
