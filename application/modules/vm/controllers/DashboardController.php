@@ -298,6 +298,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             $statistic['LOW'] = (empty($statistic['LOW'])) ? 0 : $statistic['LOW'];
             $statistic['MODERATE'] = (empty($statistic['MODERATE'])) ? 0 : $statistic['MODERATE'];
             $statistic['HIGH'] = (empty($statistic['HIGH'])) ? 0 : $statistic['HIGH'];
+            $statistic['CRITICAL'] = (empty($statistic['CRITICAL'])) ? 0 : $statistic['CRITICAL'];
             $byPoc[] = array(
                 'poc' => $statistic['PointOfContact']['displayName'],
                 'displayPoc' => $statistic['criteria'],
@@ -313,6 +314,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'LOW' => $statistic['LOW'],
                     'MODERATE' => $statistic['MODERATE'],
                     'HIGH' => $statistic['HIGH'],
+                    'CRITICAL' => $statistic['CRITICAL'],
                     'criteriaQuery' => '/threatLevel/enumIs/',
                     'total' => $this->view->total
                 )),
@@ -518,6 +520,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             $statistic['LOW'] = (empty($statistic['LOW'])) ? 0 : $statistic['LOW'];
             $statistic['MODERATE'] = (empty($statistic['MODERATE'])) ? 0 : $statistic['MODERATE'];
             $statistic['HIGH'] = (empty($statistic['HIGH'])) ? 0 : $statistic['HIGH'];
+            $statistic['CRITICAL'] = (empty($statistic['CRITICAL'])) ? 0 : $statistic['CRITICAL'];
             $statistic['count'] = $count;
 
             if (empty($statistic['criteria'])) {
@@ -585,6 +588,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'LOW' => $statistic['LOW'],
                     'MODERATE' => $statistic['MODERATE'],
                     'HIGH' => $statistic['HIGH'],
+                    'CRITICAL' => $statistic['CRITICAL'],
                     'criteriaQuery' => '/threatLevel/enumIs/',
                     'total' => $this->view->total
                 )),
@@ -740,6 +744,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                 "SUM(IF(v.threatLevel = 'LOW', 1, 0)) AS low, " .
                 "SUM(IF(v.threatLevel = 'MODERATE', 1, 0)) AS moderate, " .
                 "SUM(IF(v.threatLevel = 'HIGH', 1, 0)) AS high, " .
+                "SUM(IF(v.threatLevel = 'CRITICAL', 1, 0)) AS critical, " .
                 'COUNT(v.id) AS count'
             )
             ->from('Asset a, a.Organization o, o.OrganizationType ot, o.System s, s.SystemType st, a.Vulnerabilities v')
@@ -778,6 +783,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'LOW' => $record['v_low'],
                     'MODERATE' => $record['v_moderate'],
                     'HIGH' => $record['v_high'],
+                    'CRITICAL' => $record['v_critical'],
                     'criteriaQuery' => '/threatLevel/enumIs/',
                     'total' => $total
                 )),
