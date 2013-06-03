@@ -411,6 +411,13 @@ Fisma.Finding = {
                 }
             });
         }
+
+        setTimeout(function() {
+            if (Fisma.Registry.isRegistered('Vulnerability.Dashboard.Analyst.bySummaryTable')) {
+                var summaryTable = Fisma.Registry.get('Vulnerability.Dashboard.Analyst.bySummaryTable');
+                summaryTable.sortColumn(summaryTable.getColumn('displayTotal'), YAHOO.widget.DataTable.CLASS_DESC);
+            }
+        }, 0);
     },
 
     /**
