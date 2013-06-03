@@ -130,8 +130,7 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
 
                             // Prepare asset
                             $asset = array();
-                            $asset['name'] = (!empty($finding['port'])) ? $host['ip'] . ':' . $finding['port'] :
-                                $host['ip'];
+                            $asset['name'] = $host['ip'];
                             $asset['networkId'] = (int) $this->_networkId;
                             $asset['addressIp'] = $host['ip'];
                             if (!empty($finding['port'])) {
