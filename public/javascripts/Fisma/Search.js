@@ -635,7 +635,7 @@ Fisma.Search = (function() {
         /**
          * Delete the records selected in the YUI data table
          */
-        deleteSelectedRecords : function () {
+        deleteSelectedRecords : function (event, args) {
             var checkedRecords = [];
             var dataTable = Fisma.Search.yuiDataTable;
             var selectedRows = dataTable.getSelectedRows();
@@ -659,11 +659,11 @@ Fisma.Search = (function() {
             var deleteRecords = [];
             deleteRecords.push(YAHOO.lang.JSON.stringify(checkedRecords));
 
-            var warningMessage = '';
+            var warningMessage = args.text;
             if (1 === checkedRecords.length) {
-                warningMessage = 'Delete 1 record?';
+                warningMessage += 'Are you sure you want to delete 1 record?';
             } else {
-                warningMessage = "Delete " + checkedRecords.length + " records?";
+                warningMessage += "Are you sure you want to delete " + checkedRecords.length + " records?";
             }
             var config = {text : warningMessage,
                           func : 'Fisma.Search.doDelete',
