@@ -63,6 +63,44 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             return;
         }
 
+        // Open Vulnerability Trending
+        $this->view->vulnCvssTrending = Doctrine_Query::create()
+            ->select('period, SUM(openCvss) AS score')
+            ->from('VulnerabilityTrending vt')
+            ->whereIn('organizationId', $this->_visibleOrgs)
+            ->groupBy('period')
+            ->orderBy('period DESC')
+            ->limit(30)
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+            ->execute();
+
+        $this->view->vulnTrending = Doctrine_Query::create()
+            ->select('period, SUM(open) AS totalOpen')
+            ->from('VulnerabilityTrending vt')
+            ->whereIn('organizationId', $this->_visibleOrgs)
+            ->groupBy('period')
+            ->orderBy('period DESC')
+            ->limit(30)
+            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
+            ->execute();
+    }
+
+    /**
+     * @GETAllowed
+     */
+    public function analystAction()
+    {
+        $this->view->toolbarButtons = $this->getToolbarButtons();
+
+        $totalQuery = Doctrine_Query::create()
+            ->from('Vulnerability v');
+        $this->_addAclConditions($totalQuery);
+        $this->view->total = $totalQuery->count();
+        if ($this->view->total < 1) {
+            $this->view->message = "There are no unresolved vulnerabilities under your responsibility.";
+            return;
+        }
+
         $this->view->byCvssAv = array(
             'A' => 0,
             'L' => 0,
@@ -169,44 +207,6 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             $criteria = $statistic['criteria'];
             $count = $statistic['count'];
             $this->view->byCvssA[$criteria] = $count;
-        }
-
-        // Open Vulnerability Trending
-        $this->view->vulnCvssTrending = Doctrine_Query::create()
-            ->select('period, SUM(openCvss) AS score')
-            ->from('VulnerabilityTrending vt')
-            ->whereIn('organizationId', $this->_visibleOrgs)
-            ->groupBy('period')
-            ->orderBy('period DESC')
-            ->limit(30)
-            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
-            ->execute();
-
-        $this->view->vulnTrending = Doctrine_Query::create()
-            ->select('period, SUM(open) AS totalOpen')
-            ->from('VulnerabilityTrending vt')
-            ->whereIn('organizationId', $this->_visibleOrgs)
-            ->groupBy('period')
-            ->orderBy('period DESC')
-            ->limit(30)
-            ->setHydrationMode(Doctrine::HYDRATE_SCALAR)
-            ->execute();
-    }
-
-    /**
-     * @GETAllowed
-     */
-    public function analystAction()
-    {
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-
-        $totalQuery = Doctrine_Query::create()
-            ->from('Vulnerability v');
-        $this->_addAclConditions($totalQuery);
-        $this->view->total = $totalQuery->count();
-        if ($this->view->total < 1) {
-            $this->view->message = "There are no unresolved vulnerabilities under your responsibility.";
-            return;
         }
 
         $byThreatQuery = Doctrine_Query::create()
@@ -723,7 +723,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                 $buttons[] = new Fisma_Yui_Form_Button_Link(
                     'overview',
                     array(
-                        'label' => 'Overview',
+                        'label' => 'Performance View',
                         'href' => '/vm/dashboard/index'
                     )
                 );
