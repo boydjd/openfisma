@@ -639,25 +639,25 @@ Fisma.TableFormat = {
         var html = "";
         if (oData.LOW) {
             html += "<a href='" + linkData.url + oData.criteriaQuery + "LOW' ";
-            html += "title='" + oData.LOW + " low threat findings'>";
+            html += "title='" + oData.LOW + " low severity findings'>";
             html += "<span class='bar LOW' style='width:" + oData.LOW / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
         if (oData.MODERATE) {
             html += "<a href='" + linkData.url + oData.criteriaQuery + "MODERATE' ";
-            html += "title='" + oData.MODERATE + " moderate threat findings'>";
+            html += "title='" + oData.MODERATE + " moderate severity findings'>";
             html += "<span class='bar MODERATE' style='width:" + oData.MODERATE / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
         if (oData.HIGH) {
             html += "<a href='" + linkData.url + oData.criteriaQuery + "HIGH' ";
-            html += "title='" + oData.HIGH + " high threat findings'>";
+            html += "title='" + oData.HIGH + " high severity findings'>";
             html += "<span class='bar HIGH' style='width:" + oData.HIGH / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
         if (oData.CRITICAL) {
             html += "<a href='" + linkData.url + oData.criteriaQuery + "CRITICAL' ";
-            html += "title='" + oData.CRITICAL + " critical threat findings'>";
+            html += "title='" + oData.CRITICAL + " critical severity findings'>";
             html += "<span class='bar CRITICAL' style='width:" + oData.CRITICAL / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }

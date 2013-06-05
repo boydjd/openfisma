@@ -147,7 +147,7 @@ Vulnerability:
             label: Separator
         Dashboard:
             label: Dashboard
-            link: /vm/dashboard
+            link: /vm/dashboard/analyst
         Administration:
             label: Administration
             privilege:
