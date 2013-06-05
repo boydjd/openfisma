@@ -772,7 +772,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
             $rows[] = array(
                 'assetName' => $record['a_assetName'],
                 'organization' => $record['o_orgNickname'],
-                'displayOrganization' => json_encode(array(
+                'displayParentOrganization' => json_encode(array(
                     'iconId' => $record['s_icon'],
                     'iconSize' => 'small',
                     'displayName' => $record['o_orgNickname'],
@@ -824,7 +824,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
                 true,
                 'Fisma.TableFormat.formatOrganization',
                 null,
-                'displayOrganization',
+                'displayParentOrganization',
                 false,
                 'string',
                 'organization'
