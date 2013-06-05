@@ -376,7 +376,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->byPocTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Threat Level',
+                'Severity',
                 true,
                 'Fisma.TableFormat.formatThreatBar',
                 null,
@@ -448,7 +448,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->bySummaryTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Threat Level',
+                'Severity',
                 true,
                 null,
                 null,
@@ -650,7 +650,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $this->view->bySystemTable->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Threat Level',
+                'Severity',
                 true,
                 'Fisma.TableFormat.formatThreatBar',
                 null,
@@ -832,7 +832,7 @@ class Vm_DashboardController extends Fisma_Zend_Controller_Action_Security
         );
         $table->addColumn(
             new Fisma_Yui_DataTable_Column(
-                'Threat Level',
+                'Severity',
                 true,
                 'Fisma.TableFormat.formatThreatBar',
                 null,
