@@ -71,7 +71,6 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
 
             $entry = array();
 
-            $entry['threatLevel'] = $threat[$this->_randomLog(0, $threatCount)];
             $entry['assetId'] = $assetIds[$this->_randomLog(0, $assetIdsCount)][0];
             $entry['summary'] = Fisma_String::loremIpsum(rand(10, 20));
             $entry['description'] = Fisma_String::loremIpsum(rand(90, 100));
