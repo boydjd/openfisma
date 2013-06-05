@@ -528,12 +528,12 @@ Fisma.TableFormat = {
             if (!oRecord._oData.isResolved) {
                 elCell.innerHTML =  "<font color='" + ((isLate) ? 'red' : ((isToday) ? 'orange' : 'green')) + "'>"
                                  +  elCell.innerHTML
-                                 +  "</font>"
+                                 +  "</font> "
                                  +  ((isLate)
-                                        ? (' (' + parseInt((now - date)/(1000*60*60*24), 10) + ' day(s) late)')
+                                        ? ('(' + parseInt((now - date)/(1000*60*60*24), 10) + ' day(s) late)')
                                         : ((isToday)
                                             ? '(due today)'
-                                            : (' (' + parseInt((date - now)/(1000*60*60*24), 10) + ' day(s) until due)')
+                                            : ('(' + parseInt((date - now)/(1000*60*60*24), 10) + ' day(s) until due)')
                                         )
                                     );
             }
@@ -637,23 +637,36 @@ Fisma.TableFormat = {
         oData = YAHOO.lang.JSON.parse(oData);
         var linkData = YAHOO.lang.JSON.parse(oRecord.getData('displayTotal'));
         var html = "";
+        console.log(oData);
         if (oData.LOW) {
-            html += "<a href='" + linkData.url + oData.criteriaQuery + "LOW' title='" + oData.LOW + " low threat findings'>";
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "LOW' "
+            html += "title='" + oData.LOW + " low threat findings'>";
             html += "<span class='bar LOW' style='width:" + oData.LOW / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
         if (oData.MODERATE) {
-            html += "<a href='" + linkData.url + oData.criteriaQuery + "MODERATE' title='" + oData.MODERATE + " moderate threat findings'>";
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "MODERATE' "
+            html += "title='" + oData.MODERATE + " moderate threat findings'>";
             html += "<span class='bar MODERATE' style='width:" + oData.MODERATE / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
         if (oData.HIGH) {
-            html += "<a href='" + linkData.url + oData.criteriaQuery + "HIGH' title='" + oData.HIGH + " high threat findings'>";
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "HIGH' "
+            html += "title='" + oData.HIGH + " high threat findings'>";
             html += "<span class='bar HIGH' style='width:" + oData.HIGH / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
+        if (oData.CRITICAL) {
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "CRITICAL' "
+            html += "title='" + oData.CRITICAL + " critical threat findings'>";
+            html += "<span class='bar CRITICAL' style='width:" + oData.CRITICAL / oData.total * 80 + "%;'></span>";
+            html += "</a>";
+        }
         var percentage = 100 * (
-            parseInt(oData.LOW, 10) + parseInt(oData.MODERATE, 10) + parseInt(oData.HIGH, 10)
+            parseInt(oData.LOW, 10) +
+            parseInt(oData.MODERATE, 10) +
+            parseInt(oData.HIGH, 10) +
+            ((oData.CRITICAL) ? parseInt(oData.CRITICAL, 10) : 0)
         ) / oData.total;
         if (percentage > 0 && percentage < 1) {
             html += '&nbsp;less than 1%';

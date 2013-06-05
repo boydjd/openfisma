@@ -250,6 +250,11 @@ Migration:
         minorVersion: 3
         tagNumber: 0
         name: VmTrending
+    030300_VmDashboard:
+        majorVersion: 3
+        minorVersion: 3
+        tagNumber: 0
+        name: VmDashboard
 
     040000_Categorization:
         majorVersion: 4
