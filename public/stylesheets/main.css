@@ -469,7 +469,6 @@ span.tooltipContainer {
     padding: 0px 2px 2px 22px;
     background: url(/images/tooltip.png) no-repeat;
     cursor: help;
-    display: inline-block;
 }
 
 span.tooltipContainer.noQuestionMark {
