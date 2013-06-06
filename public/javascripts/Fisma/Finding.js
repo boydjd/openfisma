@@ -375,8 +375,23 @@ Fisma.Finding = {
 
         setTimeout(function() {
             if (Fisma.Registry.isRegistered('Vulnerability.Dashboard.Analyst.bySummaryTable')) {
-                var summaryTable = Fisma.Registry.get('Vulnerability.Dashboard.Analyst.bySummaryTable');
-                summaryTable.sortColumn(summaryTable.getColumn('displayTotal'), YAHOO.widget.DataTable.CLASS_DESC);
+                var bySummaryTable = Fisma.Registry.get('Vulnerability.Dashboard.Analyst.bySummaryTable');
+                bySummaryTable.sortColumn(bySummaryTable.getColumn('displayTotal'), YAHOO.widget.DataTable.CLASS_DESC);
+            }
+
+            if (Fisma.Registry.isRegistered('Vulnerability.Dashboard.Analyst.byAssetTable')) {
+                var byAssetTable = Fisma.Registry.get('Vulnerability.Dashboard.Analyst.byAssetTable');
+                byAssetTable.sortColumn(byAssetTable.getColumn('displayTotal'), YAHOO.widget.DataTable.CLASS_DESC);
+            }
+
+            if (Fisma.Registry.isRegistered('Vulnerability.Dashboard.Analyst.bySystemTable')) {
+                var bySystemTable = Fisma.Registry.get('Vulnerability.Dashboard.Analyst.bySystemTable');
+                bySystemTable.sortColumn(bySystemTable.getColumn('displayTotal'), YAHOO.widget.DataTable.CLASS_DESC);
+            }
+
+            if (Fisma.Registry.isRegistered('Vulnerability.Dashboard.Analyst.byPocTable')) {
+                var byPocTable = Fisma.Registry.get('Vulnerability.Dashboard.Analyst.byPocTable');
+                byPocTable.sortColumn(byPocTable.getColumn('displayTotal'), YAHOO.widget.DataTable.CLASS_DESC);
             }
         }, 0);
     },
