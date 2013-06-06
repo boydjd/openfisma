@@ -981,9 +981,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 }
             } else {
                 $this->view->facet = $facetFields;
+                $searchForm->removeElement('advanced');
             }
 
-            $searchForm->removeElement('advanced');
+            
         }
 
         $this->view->filters = Doctrine::getTable('Query')->findByModelAndUser(
