@@ -184,6 +184,12 @@ Migration:
         tagNumber: 4
         name: Commentable
 
+    030107_ActionsTaken:
+        majorVersion: 3
+        minorVersion: 1
+        tagNumber: 7
+        name: ActionsTaken
+
     030200_ParentOrganization:
         majorVersion: 3
         minorVersion: 2
