@@ -1847,12 +1847,13 @@ Fisma.Chart = {
             }
 
         } else {
-
             document.getElementById(chartParamsObj.uniqueid + 'loader').style.width = '100%';
-            document.getElementById(chartParamsObj.uniqueid + 'holder').style.width = chartParamsObj.width + 'px';
-            document.getElementById(chartParamsObj.uniqueid + 'holder').style.overflow = '';
-            document.getElementById(chartParamsObj.uniqueid).style.width = chartParamsObj.width + 'px';
-            document.getElementById(chartParamsObj.uniqueid + 'toplegend').width = chartParamsObj.width + 'px';
+            if (chartParamsObj.width) {
+                document.getElementById(chartParamsObj.uniqueid + 'holder').style.width = chartParamsObj.width + 'px';
+                document.getElementById(chartParamsObj.uniqueid + 'holder').style.overflow = '';
+                document.getElementById(chartParamsObj.uniqueid).style.width = chartParamsObj.width + 'px';
+                document.getElementById(chartParamsObj.uniqueid + 'toplegend').width = chartParamsObj.width + 'px';
+            }
         }
 
     },
