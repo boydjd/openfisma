@@ -88,6 +88,7 @@ if ( isset($this->multifacet_page) ) {
     
     echo $this->partial($this->multifacet_page, 
         array(
+            'model' => $this->multifacet_model,
             'workflow_steps' => $this->workflow_steps,
             'severity_list' => $this->severity_list,
             'networks' => $this->networks,
@@ -117,10 +118,30 @@ if ( isset($this->multifacet_page) ) {
                 var searchPanel = new Fisma.Search.Panel(advancedSearchOptions);
                 Fisma.Search.advancedSearchPanel = searchPanel;
 
-                searchPanel.render(document.getElementById('advancedSearchCriteria'));
+                searchPanel.render(document.getElementById('advancedSearchCriteria')); 
+                
+                 // do not show the advanced button
+                YAHOO.util.Event.onContentReady("hideSearch", function() {
+                    var Dom = YAHOO.util.Dom;
+                    if ( Dom.get('hideSearch').value === 'true' && Dom.get('advanced').style.display !== 'none' )
+                    {
+                        var panel_container = Fisma.Search.advancedSearchPanel.container;
+                        Dom.get('advanced').style.display = 'none';
+                        YAHOO.util.Event.onContentReady("advancedSearch", function() { Dom.get('advancedSearch').style.display = 'none'; });
+                        
+                        while ( $(panel_container).children().length > 0 )
+                        {
+                            Fisma.Search.advancedSearchPanel.removeCriteria($(panel_container).children().last()[0]);
+                        }
+                       
+                    }
+                });
+                
             });
         }
     );
+    
+   
     
     // When the data table container is loaded
     YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
