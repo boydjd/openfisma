@@ -368,7 +368,7 @@ Incident:
             comment: Additional description of the source or origin of the incident
 
         actionsTaken:
-            type: string
+            type: clob
             extra:
                 auditLog: true
                 purify: html
