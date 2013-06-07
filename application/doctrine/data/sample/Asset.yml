@@ -9,6 +9,7 @@ Asset:
         AssetServices:
             -
                 addressPort: 443
+                service: HTTPS
     dctest01:
         name: dc-test-01
         source: manual
@@ -19,6 +20,7 @@ Asset:
         AssetServices:
             -
                 addressPort: 80
+                service: HTTP
     dcdevl01:
         name: dc-devl-01
         source: manual
@@ -29,3 +31,4 @@ Asset:
         AssetServices:
             -
                 addressPort: 80
+                service: HTTP
