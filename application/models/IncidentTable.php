@@ -77,7 +77,14 @@ class IncidentTable extends Fisma_Doctrine_Table implements Fisma_Search_Searcha
                 'initiallyVisible' => false,
                 'sortable' => true,
                 'type' => 'date',
-                'formatter' => 'date',
+                'formatter' => 'Fisma.TableFormat.formatDate',
+                'timezoneAbbrField' => 'incidentTimezone'
+            ),
+            'incidentTime' => array(
+                'initiallyVisible' => false,
+                'sortable' => true,
+                'type' => 'datetime',
+                'formatter' => 'Fisma.TableFormat.formatTime',
                 'timezoneAbbrField' => 'incidentTimezone'
             ),
             'reportTs' => array(
