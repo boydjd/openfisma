@@ -475,6 +475,10 @@ span.tooltip {
     cursor: help;
 }
 
+span.tooltip > * {
+    display: inline-block;
+}
+
 .noQuestionMark span.tooltip {
     padding: 0px 2px 2px 2px;
     background: none;
