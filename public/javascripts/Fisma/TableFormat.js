@@ -486,19 +486,12 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     formatDate : function (elCell, oRecord, oColumn, oData) {
+        var m;
         if (oData) {
-            var month = parseInt(oData.substr(5, 2), 10) - 1;
-
-            var date = new Date();
-            date.setFullYear(oData.substr(0,4));
-            date.setMonth(month);
-            date.setDate(oData.substr(8, 2));
-
-            elCell.innerHTML = Fisma.TableFormat.month[date.getMonth()]
-                              + ' '
-                              + date.getDate()
-                              + ', '
-                              + date.getFullYear();
+            m = moment(oData);
+            elCell.innerHTML = m.format("MMM D, YYYY");
+        } else {
+            elCell.innerHTML = "";
         }
     },
 
@@ -512,19 +505,12 @@ Fisma.TableFormat = {
      */
     formatDuedate : function (elCell, oRecord, oColumn, oData) {
         if (oData) {
-            var date = new Date(oData.substr(0,4), parseInt(oData.substr(5, 2), 10) - 1, oData.substr(8, 2));
-            date.setHours(23, 59, 59, 999);
-
-            var now = new Date();
-            now.setHours(23, 59, 59, 999);
+            var date = moment(oData).endOf('day');
+            var now = moment().endOf('day');
             var isLate = (date < now);
             var isToday = ((date - now) === 0);
 
-            elCell.innerHTML =  Fisma.TableFormat.month[date.getMonth()]
-                             +  ' '
-                             +  date.getDate()
-                             +  ', '
-                             +  date.getFullYear();
+            elCell.innerHTML =  date.format("MMM D, YYYY");
             if (!oRecord._oData.isResolved) {
                 elCell.innerHTML =  "<font color='" + ((isLate) ? 'red' : ((isToday) ? 'orange' : 'green')) + "'>"
                                  +  elCell.innerHTML
@@ -537,6 +523,8 @@ Fisma.TableFormat = {
                                         )
                                     );
             }
+        } else {
+            elCell.innerHTML = "";
         }
     },
 
@@ -552,7 +540,25 @@ Fisma.TableFormat = {
         var m;
         if (oData) {
             m = moment(oData);
-            elCell.innerHTML = m.format("MMM DD, YYYY") + " at " + m.format("HH:mm A");
+            elCell.innerHTML = m.format("MMM D, YYYY") + " at " + m.format("h:mm A");
+        } else {
+            elCell.innerHTML = "";
+        }
+    },
+
+    /**
+     * A formatter which displays time as 2:24 AM
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatTime : function (elCell, oRecord, oColumn, oData) {
+        var m;
+        if (oData) {
+            m = moment(oData);
+            elCell.innerHTML = m.format("h:mm A");
         } else {
             elCell.innerHTML = "";
         }
