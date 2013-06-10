@@ -16,7 +16,7 @@
  *
  * Helper functions for rendering criteria
  *
- * @author    Duy K. Bui <duy.bui@endeavorsystems.com>
+ * @author    Yusef Pogue <yusef.pogue@endeavorsystems.com>
  * @copyright (c) Endeavor Systems, Inc. 2012 (http://www.endeavorsystems.com)
  * @license   http://www.openfisma.org/content/license
  */
@@ -59,16 +59,20 @@ FSC = {
             $content
                     .addClass('ui-accordion-content-active');
 
-            //---- add criteria
+            if (criterion_field !== 'organization')
+            {
+                //---- add criteria
 
-            panel.addCriteria(panel_children.eq(new_index));
+                panel.addCriteria(panel_children.eq(new_index));
 
-            // holds the  first criterion HTML element
-            var criterion_container = $(panel.container).children().last();
+                // holds the  first criterion HTML element
+                var criterion_container = $(panel.container).children().last();
 
-            criterion_container.attr('id', facet_id);
-            criterion_container.children().eq(1).find("select").val(criterion_field).change();
-            criterion_container.children().eq(2).find("select").val(criterion_type).change();
+                criterion_container.attr('id', facet_id);
+                criterion_container.children().eq(1).find("select").val(criterion_field).change();
+                criterion_container.children().eq(1).find("select").val(criterion_field).change();
+                criterion_container.children().eq(2).find("select").val(criterion_type).change();
+            }
 
         } else {
             $header
@@ -106,6 +110,10 @@ FSC = {
             // holds the criterion HTML element
             var criterion_container_operands = $(facet_id).children().eq(3).find("input,select");
 
+            for (operands = 0; operands < criterion_container_operands.length; operands++)
+            {
+                criterion_container_operands.eq(operands).val('');
+            }
 
             // insert values from the filters
             switch (facet_container.attr('type'))
@@ -136,42 +144,67 @@ FSC = {
                     break;
 
                 case 'cvssvector':
+                    var vectors = facet_container.find('span#' + criterion_field + '_list input:checked');
+
+                    for (vinputs = 0; vinputs < vectors.length; vinputs++)
+                    {
+                        if (vectors.eq(vinputs).val() !== "")
+                        {
+                            criterion_container_operands.eq(0).val(criterion_container_operands.eq(0).val() + '"' + vectors.eq(vinputs).attr('name') + ':' + vectors.eq(vinputs).val() + '"' + ',');
+                        }
+
+                    }
+
+                    if (criterion_container_operands.eq(0).val().length > 0)
+                    {
+                        criterion_container_operands.eq(0).val(criterion_container_operands.eq(0).val().slice(0, -1));
+                    }
+
                     break;
                 case 'date_group':
                     criterion_container_operands.eq(0).val(facet_container.find('input[name="' + criterion_field + '"]:checked').val());
                     break;
                 case 'organization':
 
-                    if (facet_container.find('input[name="' + criterion_field + '_exact"]:checked').length === 1)
-                    {
+                    var panel_children = $(panel.container).children();
+                    var new_index = panel_children.length - 1;
 
-                        switch (facet_container.find('input[name="' + criterion_field + '_children"]').first().val())
-                        {
-                            case 'immediate':
-                                break;
-                            case 'all':
-                                break;
-                            case 'none':
-                            default:
-                                $(facet_id).children().eq(2).find("select").val('textContains').change();
-                        }
+                    if (new_index < 0) {
+                        new_index = 0;
                     }
-                    else {
-                        switch (facet_container.find('input[name="' + criterion_field + '_children"]:checked').val())
-                        {
-                            case 'immediate':
-                                // @todo: verify
-                                $(facet_id).children().eq(2).find("select").val('organizationChildren').change();
-                                break;
-                            case 'all':
-                                // @todo: verify
-                                $(facet_id).children().eq(2).find("select").val('organizationSubtree').change();
-                                break;
-                            case 'none':
-                            default:
-                                panel.removeCriteria($(facet_id)[0]);
-                        }
+
+                    // type of criterion
+                    var criterion_type = facet_container.attr('criterion_type');
+
+                    //---- add criteria
+
+                    panel.addCriteria(panel_children.eq(new_index));
+
+                    // holds the  first criterion HTML element
+                    var criterion_container = $(panel.container).children().last();
+
+                    criterion_container.attr('id', facet_id);
+                    criterion_container.children().eq(1).find("select").val(criterion_field).change();
+                    criterion_container.children().eq(2).find("select").val(criterion_type).change();
+
+                    switch (facet_container.find('input[name="' + criterion_field + '_children"]:checked').val())
+                    {
+                        case 'immediate':
+                            // @todo: verify
+                            criterion_container.children().eq(2).find("select").val('organizationChildren').change();
+                            criterion_container.children().eq(3).find("select").val(facet_container.find('input[name="' + criterion_field + '"]').val());
+
+                            break;
+                        case 'all':
+                            // @todo: verify
+                            criterion_container.children().eq(2).find("select").val('organizationSubtree').change();
+                            criterion_container.children().eq(3).find("select").val(facet_container.find('input[name="' + criterion_field + '"]').val());
+                            break;
+                        case 'none':
+                        default:
+                            panel.removeCriteria($(facet_id)[0]);
                     }
+
                     break;
                 case 'id':
                     if (facet_container.find('input[name="' + criterion_field + '_exact"]:checked').length === 1)
@@ -195,15 +228,100 @@ FSC = {
 
         });
     },
-    orgExactHandler: function (inputElement) {
+    orgExactHandler: function(inputElement) {
 
-            if ( $(inputElement).attr('checked') === "checked" )
+        //---- add criteria
+
+        // holds the facet HTML element
+        var facet_container = $(inputElement).parent().parent();
+
+        // name of the field
+        var criterion_field = facet_container.attr('field');
+
+        // advanced search panel
+        var panel = Fisma.Search.advancedSearchPanel;
+
+        var panel_children = $(panel.container).children();
+        var new_index = panel_children.length - 1;
+
+        // id attribute for the search row associated with this facet
+        var facet_id = criterion_field + '_' + $(inputElement).index();
+
+
+        if ($(inputElement).attr('checked') === "checked")
+        {
+            panel.addCriteria(panel_children.eq(new_index));
+
+            // holds the  first criterion HTML element
+            var criterion_container = $(panel.container).children().last();
+
+            criterion_container.attr('id', facet_id);
+            criterion_container.children().eq(1).find("select").val(criterion_field).change();
+            criterion_container.children().eq(2).find("select").val('textContains').change();
+            $(inputElement).next().next().next().removeAttr('style').next().removeAttr('style');
+
+        }
+        else {
+            $(inputElement).next().next().next().css('display', 'none').next().css('display', 'none');
+            panel.removeCriteria($('#' + facet_id)[0]);
+        }
+        
+        console.info('Organization - facet_id', facet_id );
+    },
+    orgChildrenHandler: function(inputElement) {
+
+        //---- add criteria
+
+        // holds the facet HTML element
+        var facet_container = $(inputElement).parent().parent();
+
+        // name of the field
+        var criterion_field = facet_container.attr('field');
+        
+        // criterion type
+        var criterion_type = facet_container.attr('criterion_type');
+
+        // advanced search panel
+        var panel = Fisma.Search.advancedSearchPanel;
+
+        var panel_children = $(panel.container).children();
+        var new_index = panel_children.length - 1;
+        
+        if (new_index < 0) {
+            new_index = 0;
+        }
+
+        // id attribute for the search row associated with this facet
+        var facet_id = criterion_field + '_' + $(inputElement).index();
+
+        console.info('Organization Children - Facet id', facet_id);
+        console.info('Criterion field ', criterion_field);
+
+        if ($(inputElement).attr('checked') === "checked")
+        {
+            // holds the  first criterion HTML element
+            var criterion_container = panel_children.last();
+
+            if (($(inputElement).val() === 'immediate' || $(inputElement).val() === 'all') && criterion_container.length === 0)
+            {
+                panel.addCriteria(panel_children.eq(new_index));
+
+                criterion_container = $(panel.container).children().last();
+
+                criterion_container.attr('id', facet_id); 
+                criterion_container.eq(1).find("select").val(criterion_field).change();
+                criterion_container.eq(2).find("select").val(criterion_type).change();
+                console.info("Criterion container", criterion_container);
+                console.info( 'Panel children', panel_children);
+            }
+            else {
+                if ( $('#' + facet_id).length > 0 )
                 {
-                    $(inputElement).next().next().next().removeAttr('style').next().removeAttr('style');
+                    panel.removeCriteria($('#' + facet_id)[0]);
                 }
-                else {
-                    $(inputElement).next().next().next().css('display', 'none').next().css('display', 'none');
-                }
+            }
+        }
+
     }
 };
 Fisma.Search.Criterion = FSC;
