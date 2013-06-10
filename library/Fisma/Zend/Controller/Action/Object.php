@@ -953,7 +953,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 
                 // generates a multi-faceted search
                 if ($facetFields['type'] == 'multi') {
-                    $this->view->multifacet_page = $this->_getParam('controller') . '/search_multifacet.php';
+                    $this->view->multifacet_page = $this->_getParam('controller') . '/search_multifacet.phtml';
                     $this->view->multifacet_model = $this->_modelName;
                     
                     // lists needed for some of the search fields
