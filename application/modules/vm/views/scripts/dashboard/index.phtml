@@ -14,8 +14,8 @@
         $chartOpenVulnLabels = array();
         $chartOpenVulnData = array();
         foreach ($this->vulnCvssTrending as $record) {
-            $chartOpenVulnLabels[] = $record['vt_period'];
-            $chartOpenVulnData[] = $record['vt_score'];
+            array_unshift($chartOpenVulnLabels, $record['vt_period']);
+            array_unshift($chartOpenVulnData, $record['vt_score']);
         }
         $chartOpenVuln->addLine($chartOpenVulnData, $chartOpenVulnLabels);
         $chartOpenVuln->setColors(array(Fisma_Chart::COLOR_BLUE));
@@ -32,8 +32,8 @@
         $chartOpenVulnLabels = array();
         $chartOpenVulnData = array();
         foreach ($this->vulnTrending as $record) {
-            $chartOpenVulnLabels[] = $record['vt_period'];
-            $chartOpenVulnData[] = $record['vt_totalOpen'];
+            array_unshift($chartOpenVulnLabels, $record['vt_period']);
+            array_unshift($chartOpenVulnData, $record['vt_totalOpen']);
         }
         $chartOpenVuln->addLine($chartOpenVulnData, $chartOpenVulnLabels);
         $chartOpenVuln->setColors(array(Fisma_Chart::COLOR_BLUE));

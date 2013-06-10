@@ -30,10 +30,11 @@
  */
 class Fisma_Chart
 {
-    const COLOR_HIGH = "#F8696B";
-    const COLOR_MODERATE = "#FFBE34";
-    const COLOR_LOW = "#63BE7B";
-    const COLOR_BLUE = "#C8E1FA";
+    const COLOR_CRITICAL = "#993300";
+    const COLOR_HIGH = "#FF3300";
+    const COLOR_MODERATE = "#FF6600";
+    const COLOR_LOW = "#FFCC00";
+    const COLOR_BLUE = "#3366CC";
 
     /**
      * An array that holds information defining how the chart will be constructed and what it will plot
