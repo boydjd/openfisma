@@ -168,7 +168,7 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
 
         $ids = array();
 
-        foreach ($idResult as $row) {
+        foreach ((array)$idResult as $row) {
             foreach ($row as $column => $value) {
                 $ids[] = $value;
             }
@@ -199,7 +199,7 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
 
         $orgSystems = $organization->getNode()->getChildren();
         $myOrgSystemIds = array($organization->id);
-        foreach ($orgSystems as $orgSystem) {
+        foreach ((array)$orgSystems as $orgSystem) {
             $myOrgSystemIds[] = $orgSystem['id'];
         }
         return $myOrgSystemIds;
