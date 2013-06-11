@@ -60,14 +60,14 @@
         inputBox        : null,
         rowHeightControl: null,
 
-        construct : function () {
+        construct: function() {
 
             // When rowsPerPerPage changes, update the UI
             this.paginator.subscribe('rowsPerPageChange', this.update, this, true);
 
             // When myPaginator.destroy() is called, destroy this instance  UI
             this.paginator.subscribe('beforeDestroy', this.destroy, this, true);
-	    },
+        },
 
         /**
          * Generate the label and input nodes and returns the label node.
@@ -166,9 +166,9 @@
          * Sync the changed value to storage.
          */
         syncToStorage : function () {
-            var rows = parseInt(this.inputBox.value,10),
-                compact = $(this.rowHeightControl).is('input:checked'),
-                storage = new Fisma.PersistentStorage('Fisma.RowsPerPage');
+            var rows = parseInt(this.inputBox.value, 10),
+                    compact = $(this.rowHeightControl).is('input:checked'),
+                    storage = new Fisma.PersistentStorage('Fisma.RowsPerPage');
 
             if (!isNaN(rows) && rows !== this.paginator.get('rowsPerPage')) {
                 this.paginator.setRowsPerPage(rows);
@@ -190,7 +190,7 @@
             YAHOO.util.Event.purgeElement(this.inputBox, true);
             if (this.inputBox && this.inputBox.parentNode) {
                 this.inputBox.parentNode.removeChild(this.inputBox);
-	        }
+            }
             this.inputBox = null;
         }
     };

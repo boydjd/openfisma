@@ -978,6 +978,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     $temp_date->sub(new DateInterval('P30D'));
                     $days_old['days90'] = $temp_date->format('Y-m-d');
                     $this->view->days_old = $days_old;
+
                 }
             } else {
                 $this->view->facet = $facetFields;
