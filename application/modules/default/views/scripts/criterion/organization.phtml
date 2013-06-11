@@ -27,8 +27,6 @@ including:
     id='<?php echo $this->escape($this->name); ?>_children_none'
     name='<?php echo $this->escape($this->name); ?>_children'
     value='none'
-    onclick='Fisma.Search.Criterion.orgChildrenHandler(this);'
-    onchange='Fisma.Search.Criterion.orgChildrenHandler(this);'
     <?php if ($this->value && $this->value['self']): ?>checked
     <?php else: ?>
     style='display: none;'
@@ -44,8 +42,6 @@ including:
     id='<?php echo $this->escape($this->name); ?>_children_immediate'
     name='<?php echo $this->escape($this->name); ?>_children'
     value='immediate'
-    onclick='Fisma.Search.Criterion.orgChildrenHandler(this);'
-    onchange='Fisma.Search.Criterion.orgChildrenHandler(this);'
     <?php if ($this->value && isset($this->value['children']) && $this->value['children'] === 'immediate'): ?>checked<?php endif; ?>
 />
 <label for='<?php echo $this->escape($this->name); ?>_children_immediate'>
@@ -57,8 +53,6 @@ including:
     id='<?php echo $this->escape($this->name); ?>_children_all'
     name='<?php echo $this->escape($this->name); ?>_children'
     value='all'
-    onclick='Fisma.Search.Criterion.orgChildrenHandler(this);'
-    onchange='Fisma.Search.Criterion.orgChildrenHandler(this);'
     <?php if ($this->value && isset($this->value['children']) && $this->value['children'] === 'all'): ?>checked<?php endif; ?>
 />
 <label for='<?php echo $this->escape($this->name); ?>_children_all'>

@@ -32,24 +32,27 @@ FSC = {
         //advanced search panel 
         var panel = Fisma.Search.advancedSearchPanel;
 
-        var panel_children = $(panel.container).children();
-        var new_index = panel_children.length - 1;
+        var panelChildren = $(panel.container).children();
+        var newIndex = panelChildren.length - 1;
 
-        if (new_index < 0) {
-            new_index = 0;
+        if (newIndex < 0) {
+            newIndex = 0;
         }
 
         // holds the facet HTML element
-        var facet_container = $(inputElement).parent().parent();
+        var facetContainer = $(inputElement).parent().parent();
 
         // name of the field
-        var criterion_field = facet_container.attr('field');
+        var criterionField = facetContainer.attr('field');
 
         // type of criterion
-        var criterion_type = facet_container.attr('criterion_type');
+        var criterionType = facetContainer.attr('criterion_type');
+        
+        // type of facet
+        var facetType = facetContainer.attr('type');
 
         // id attribute for the search row associated with this facet
-        var facet_id = criterion_field + '_' + $(inputElement).index();
+        var facetId = criterionField + '_' + $(inputElement).index();
 
         if (checked) {
             $header
@@ -59,19 +62,30 @@ FSC = {
             $content
                     .addClass('ui-accordion-content-active');
 
-            if (criterion_field !== 'organization')
+
+            //---- add criteria
+
+            panel.addCriteria(panelChildren.eq(newIndex));
+
+            // holds the last criterion HTML element
+            var criterionContainer = $(panel.container).children().last();
+
+            criterionContainer.attr('id', facetId);
+            criterionContainer.children().eq(1).find("select").val(criterionField).change();
+            criterionContainer.children().eq(2).find("select").val(criterionType).change();
+
+            if ( facetType === 'organization')
             {
-                //---- add criteria
+                //---- add another criteria for the organization itself
 
-                panel.addCriteria(panel_children.eq(new_index));
+                panel.addCriteria(panelChildren.eq(newIndex+1));
 
-                // holds the  first criterion HTML element
-                var criterion_container = $(panel.container).children().last();
+                // holds the last criterion HTML element
+                var criterionContainer = $(panel.container).children().last();
 
-                criterion_container.attr('id', facet_id);
-                criterion_container.children().eq(1).find("select").val(criterion_field).change();
-                criterion_container.children().eq(1).find("select").val(criterion_field).change();
-                criterion_container.children().eq(2).find("select").val(criterion_type).change();
+                criterionContainer.attr('id', 'organization_exact_criterion');
+                criterionContainer.children().eq(1).find("select").val(criterionField).change();
+                criterionContainer.children().eq(2).find("select").val('textExactMatch').change();
             }
 
         } else {
@@ -86,10 +100,14 @@ FSC = {
 
             if ($(panel.container).children().length > 0)
             {
-                // holds the  first criterion HTML element
-                var remove_criterion_container = $('#' + facet_id)[0];
-                panel.removeCriteria(remove_criterion_container);
+                panel.removeCriteria($('#' + facetId)[0]);
+
+                if (facetType === 'organization')
+                {
+                    panel.removeCriteria($('#organization_exact_criterion')[0]);
+                }
             }
+
         }
 
         // add count to view, dependent upon type of criterion
@@ -102,224 +120,147 @@ FSC = {
             var panel = Fisma.Search.advancedSearchPanel;
 
             // holds the facet HTML element
-            var facet_container = $(this).parent().parent();
+            var facetContainer = $(this).parent().parent();
             // name of the field
-            var criterion_field = facet_container.attr('field');
+            var criterionField = facetContainer.attr('field');
             // id attribute for the search row associated with this facet
-            var facet_id = '#' + criterion_field + '_' + $(this).index();
+            var facetId = '#' + criterionField + '_' + $(this).index();
             // holds the criterion HTML element
-            var criterion_container_operands = $(facet_id).children().eq(3).find("input,select");
+            var criterionContainerOperands = $(facetId).children().eq(3).find("input,select");
 
-            for (operands = 0; operands < criterion_container_operands.length; operands++)
+            for (operands = 0; operands < criterionContainerOperands.length; operands++)
             {
-                criterion_container_operands.eq(operands).val('');
+                criterionContainerOperands.eq(operands).val('');
             }
 
             // insert values from the filters
-            switch (facet_container.attr('type'))
+            switch (facetContainer.attr('type'))
             {
                 case 'range' :
-                    criterion_container_operands.eq(0).val(facet_container.find('input[name="' + criterion_field + '_from"]').first().val());
-                    criterion_container_operands.eq(1).val(facet_container.find('input[name="' + criterion_field + '_to"]').first().val());
+                    criterionContainerOperands.eq(0).val(facetContainer.find('input[name="' + criterionField + '_from"]').first().val());
+                    criterionContainerOperands.eq(1).val(facetContainer.find('input[name="' + criterionField + '_to"]').first().val());
                     break;
                 case 'enum' :
                     // holds the number of selected enum values from the facet
-                    var enum_vals = facet_container.find("span.value input:checked");
-                    console.info("Enum values", enum_vals);
+                    var enum_vals = facetContainer.find("span.value input:checked");
+
                     if (enum_vals.length === 0) {
-                        panel.removeCriteria($(facet_id)[0]);
+                        panel.removeCriteria($(facetId)[0]);
                     }
                     else {
-                        if (enum_vals.length > 1) {
-                            criterion_container_operands = $(facet_id).children().eq(3).find("input");
-
-                            for (new_value = 0; new_value < enum_vals.length; new_value++)
+                        if (enum_vals.length >= 1) {
+                            criterionContainerOperands = $(facetId).children().eq(3).find("input");
+                            
+                            for (newValue = 0; newValue < enum_vals.length; newValue++)
                             {
-                                criterion_container_operands.eq(0).val(criterion_container_operands.eq(0).val() + enum_vals.eq(new_value).val() + ',');
-
+                                criterionContainerOperands.eq(0).val(criterionContainerOperands.eq(0).val() + enum_vals.eq(newValue).val() + ',');
                             }
-                            criterion_container_operands.eq(0).val(criterion_container_operands.eq(0).val().slice(0, -1));
+
+                            criterionContainerOperands.eq(0).val(criterionContainerOperands.eq(0).val().slice(0, -1));
                         }
                     }
                     break;
 
                 case 'cvssvector':
-                    var vectors = facet_container.find('span#' + criterion_field + '_list input:checked');
+                    var vectors = facetContainer.find('span#' + criterionField + '_list input:checked');
 
                     for (vinputs = 0; vinputs < vectors.length; vinputs++)
                     {
                         if (vectors.eq(vinputs).val() !== "")
                         {
-                            criterion_container_operands.eq(0).val(criterion_container_operands.eq(0).val() + '"' + vectors.eq(vinputs).attr('name') + ':' + vectors.eq(vinputs).val() + '"' + ',');
+                            criterionContainerOperands.eq(0).val(criterionContainerOperands.eq(0).val() + '"'
+                                    + vectors.eq(vinputs).attr('name') + ':' + vectors.eq(vinputs).val() + '"' + ',');
                         }
 
                     }
 
-                    if (criterion_container_operands.eq(0).val().length > 0)
+                    if (criterionContainerOperands.eq(0).val().length > 0)
                     {
-                        criterion_container_operands.eq(0).val(criterion_container_operands.eq(0).val().slice(0, -1));
+                        criterionContainerOperands.eq(0).val(criterionContainerOperands.eq(0).val().slice(0, -1));
                     }
 
                     break;
                 case 'date_group':
-                    criterion_container_operands.eq(0).val(facet_container.find('input[name="' + criterion_field + '"]:checked').val());
+                    criterionContainerOperands.eq(0).val(facetContainer.find('input[name="' + criterionField + '"]:checked').val());
                     break;
                 case 'organization':
 
-                    var panel_children = $(panel.container).children();
-                    var new_index = panel_children.length - 1;
-
-                    if (new_index < 0) {
-                        new_index = 0;
-                    }
-
-                    // type of criterion
-                    var criterion_type = facet_container.attr('criterion_type');
-
-                    //---- add criteria
-
-                    panel.addCriteria(panel_children.eq(new_index));
-
                     // holds the  first criterion HTML element
-                    var criterion_container = $(panel.container).children().last();
+                    var criterionContainer = $(panel.container).children().first();
 
-                    criterion_container.attr('id', facet_id);
-                    criterion_container.children().eq(1).find("select").val(criterion_field).change();
-                    criterion_container.children().eq(2).find("select").val(criterion_type).change();
+                   // determines whether or not to include the organization in the results
+                   var orgExact = $('#organization_exact').attr('checked');
 
-                    switch (facet_container.find('input[name="' + criterion_field + '_children"]:checked').val())
+                    switch (facetContainer.find('input[name="' + criterionField + '_children"]:checked').val())
                     {
                         case 'immediate':
-                            // @todo: verify
-                            criterion_container.children().eq(2).find("select").val('organizationChildren').change();
-                            criterion_container.children().eq(3).find("select").val(facet_container.find('input[name="' + criterion_field + '"]').val());
+
+                            if ( orgExact !== 'checked' )
+                            {
+                                 $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
+                            }
+                            
+                            $('#organization_exact_criterion').children().eq(3).find("input").val( facetContainer.find('input[name="' + criterionField + '"]').val() );
+                            criterionContainer.children().eq(2).find("select").val('organizationChildren').change();
+                            criterionContainer.children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
 
                             break;
                         case 'all':
-                            // @todo: verify
-                            criterion_container.children().eq(2).find("select").val('organizationSubtree').change();
-                            criterion_container.children().eq(3).find("select").val(facet_container.find('input[name="' + criterion_field + '"]').val());
+                            
+                             if ( orgExact !== 'checked' )
+                            {
+                                 $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
+                            }
+                            
+                            $('#organization_exact_criterion').children().eq(3).find("input").val( facetContainer.find('input[name="' + criterionField + '"]').val() );
+                            criterionContainer.children().eq(2).find("select").val('organizationSubtree').change();
+                            criterionContainer.children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
+
                             break;
                         case 'none':
                         default:
-                            panel.removeCriteria($(facet_id)[0]);
+                            if (orgExact === 'checked')
+                            {
+                                $('#organization_exact_criterion').children().eq(2).find("select").val('textExactMatch').change();
+                                $('#organization_exact_criterion').children().eq(3).find("input").val( facetContainer.find('input[name="' + criterionField + '"]').val() );
+                            }
+                            else {
+                                //panel.removeCriteria($('#organization_exact_criterion')[0]);
+                                $('#organization_exact_criterion').children().eq(3).find("input").val('');
+                            }
                     }
 
                     break;
                 case 'id':
-                    if (facet_container.find('input[name="' + criterion_field + '_exact"]:checked').length === 1)
+                    if (facetContainer.find('input[name="' + criterionField + '_exact"]:checked').length === 1)
                     {
-                        $(facet_id).children().eq(2).find("select").val('integerEquals').change();
+                        $(facetId).children().eq(2).find("select").val('integerEquals').change();
                     }
-                    criterion_container_operands.eq(0).val(facet_container.find('input[name="' + criterion_field + '"]').first().val());
+                    criterionContainerOperands.eq(0).val(facetContainer.find('input[name="' + criterionField + '"]').first().val());
                     break;
                 case 'text':
                 default:
-                    if (facet_container.find('input[name="' + criterion_field + '_exact"]:checked').length === 1)
+                    if (facetContainer.find('input[name="' + criterionField + '_exact"]:checked').length === 1)
                     {
-                        $(facet_id).children().eq(2).find("select").val('textExactMatch').change();
+                        $(facetId).children().eq(2).find("select").val('textExactMatch').change();
                     }
-                    criterion_container_operands.eq(0).val(facet_container.find('input[name="' + criterion_field + '"]').first().val());
+                    
+                    criterionContainerOperands.eq(0).val(facetContainer.find('input[name="' + criterionField + '"]').first().val());
 
             }
-
-            console.info(null, "Criterion Container Operands: ", criterion_container_operands);
-            console.info(null, "Facet Container: ", facet_container);
 
         });
     },
     orgExactHandler: function(inputElement) {
 
-        //---- add criteria
-
-        // holds the facet HTML element
-        var facet_container = $(inputElement).parent().parent();
-
-        // name of the field
-        var criterion_field = facet_container.attr('field');
-
-        // advanced search panel
-        var panel = Fisma.Search.advancedSearchPanel;
-
-        var panel_children = $(panel.container).children();
-        var new_index = panel_children.length - 1;
-
-        // id attribute for the search row associated with this facet
-        var facet_id = criterion_field + '_' + $(inputElement).index();
-
-
-        if ($(inputElement).attr('checked') === "checked")
+         if ($(inputElement).attr('checked') === "checked")
         {
-            panel.addCriteria(panel_children.eq(new_index));
-
-            // holds the  first criterion HTML element
-            var criterion_container = $(panel.container).children().last();
-
-            criterion_container.attr('id', facet_id);
-            criterion_container.children().eq(1).find("select").val(criterion_field).change();
-            criterion_container.children().eq(2).find("select").val('textContains').change();
             $(inputElement).next().next().next().removeAttr('style').next().removeAttr('style');
 
         }
         else {
-            $(inputElement).next().next().next().css('display', 'none').next().css('display', 'none');
-            panel.removeCriteria($('#' + facet_id)[0]);
-        }
-        
-        console.info('Organization - facet_id', facet_id );
-    },
-    orgChildrenHandler: function(inputElement) {
-
-        //---- add criteria
-
-        // holds the facet HTML element
-        var facet_container = $(inputElement).parent().parent();
-
-        // name of the field
-        var criterion_field = facet_container.attr('field');
-        
-        // criterion type
-        var criterion_type = facet_container.attr('criterion_type');
-
-        // advanced search panel
-        var panel = Fisma.Search.advancedSearchPanel;
-
-        var panel_children = $(panel.container).children();
-        var new_index = panel_children.length - 1;
-        
-        if (new_index < 0) {
-            new_index = 0;
-        }
-
-        // id attribute for the search row associated with this facet
-        var facet_id = criterion_field + '_' + $(inputElement).index();
-
-        console.info('Organization Children - Facet id', facet_id);
-        console.info('Criterion field ', criterion_field);
-
-        if ($(inputElement).attr('checked') === "checked")
-        {
-            // holds the  first criterion HTML element
-            var criterion_container = panel_children.last();
-
-            if (($(inputElement).val() === 'immediate' || $(inputElement).val() === 'all') && criterion_container.length === 0)
-            {
-                panel.addCriteria(panel_children.eq(new_index));
-
-                criterion_container = $(panel.container).children().last();
-
-                criterion_container.attr('id', facet_id); 
-                criterion_container.eq(1).find("select").val(criterion_field).change();
-                criterion_container.eq(2).find("select").val(criterion_type).change();
-                console.info("Criterion container", criterion_container);
-                console.info( 'Panel children', panel_children);
-            }
-            else {
-                if ( $('#' + facet_id).length > 0 )
-                {
-                    panel.removeCriteria($('#' + facet_id)[0]);
-                }
-            }
+            $(inputElement).next().next().next().removeAttr('checked').css('display', 'none').next().css('display', 'none');
+            
         }
 
     }
