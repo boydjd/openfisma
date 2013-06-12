@@ -21,6 +21,8 @@
  * @license   http://www.openfisma.org/content/license
  */
 
+FSC = new Object();
+
 FSC = {
     legendHandler: function(inputElement) {
         var $input = $(inputElement),
@@ -52,8 +54,8 @@ FSC = {
         var facetType = facetContainer.attr('type');
 
         // id attribute for the search row associated with this facet
-        var facetId = criterionField + '_' + $(inputElement).index();
-
+        var facetId = criterionField + '_criterion';
+            
         if (checked) {
             $header
                     .addClass('ui-accordion-header-active')
@@ -63,25 +65,25 @@ FSC = {
                     .addClass('ui-accordion-content-active');
 
 
-            //---- add criteria
+            //add criterion
 
             panel.addCriteria(panelChildren.eq(newIndex));
 
             // holds the last criterion HTML element
             var criterionContainer = $(panel.container).children().last();
-
+            
             criterionContainer.attr('id', facetId);
             criterionContainer.children().eq(1).find("select").val(criterionField).change();
             criterionContainer.children().eq(2).find("select").val(criterionType).change();
 
             if ( facetType === 'organization')
             {
-                //---- add another criteria for the organization itself
+                //add another criteria for the organization itself
 
                 panel.addCriteria(panelChildren.eq(newIndex+1));
 
                 // holds the last criterion HTML element
-                var criterionContainer = $(panel.container).children().last();
+                criterionContainer = $(panel.container).children().last();
 
                 criterionContainer.attr('id', 'organization_exact_criterion');
                 criterionContainer.children().eq(1).find("select").val(criterionField).change();
@@ -96,7 +98,7 @@ FSC = {
             $content
                     .removeClass('ui-accordion-content-active');
 
-            // ---remove criteria
+            // remove criterion
 
             if ($(panel.container).children().length > 0)
             {
@@ -104,13 +106,14 @@ FSC = {
 
                 if (facetType === 'organization')
                 {
+                    // remove the criterion for the organizaiton itself
                     panel.removeCriteria($('#organization_exact_criterion')[0]);
                 }
             }
 
         }
 
-        // add count to view, dependent upon type of criterion
+        // @todo: add count to view, dependent upon type of criterion
     },
     facetHandler: function() {
 
@@ -124,16 +127,16 @@ FSC = {
             // name of the field
             var criterionField = facetContainer.attr('field');
             // id attribute for the search row associated with this facet
-            var facetId = '#' + criterionField + '_' + $(this).index();
+            var facetId = '#' + criterionField + '_criterion';
             // holds the criterion HTML element
             var criterionContainerOperands = $(facetId).children().eq(3).find("input,select");
 
-            for (operands = 0; operands < criterionContainerOperands.length; operands++)
+            for (var operands = 0; operands < criterionContainerOperands.length; operands++)
             {
                 criterionContainerOperands.eq(operands).val('');
             }
 
-            // insert values from the filters
+            // insert values from the facets
             switch (facetContainer.attr('type'))
             {
                 case 'range' :
@@ -151,7 +154,7 @@ FSC = {
                         if (enum_vals.length >= 1) {
                             criterionContainerOperands = $(facetId).children().eq(3).find("input");
                             
-                            for (newValue = 0; newValue < enum_vals.length; newValue++)
+                            for (var newValue = 0; newValue < enum_vals.length; newValue++)
                             {
                                 criterionContainerOperands.eq(0).val(criterionContainerOperands.eq(0).val() + enum_vals.eq(newValue).val() + ',');
                             }
@@ -164,7 +167,7 @@ FSC = {
                 case 'cvssvector':
                     var vectors = facetContainer.find('span#' + criterionField + '_list input:checked');
 
-                    for (vinputs = 0; vinputs < vectors.length; vinputs++)
+                    for (var vinputs = 0; vinputs < vectors.length; vinputs++)
                     {
                         if (vectors.eq(vinputs).val() !== "")
                         {
@@ -218,14 +221,12 @@ FSC = {
 
                             break;
                         case 'none':
-                        default:
                             if (orgExact === 'checked')
                             {
                                 $('#organization_exact_criterion').children().eq(2).find("select").val('textExactMatch').change();
                                 $('#organization_exact_criterion').children().eq(3).find("input").val( facetContainer.find('input[name="' + criterionField + '"]').val() );
                             }
                             else {
-                                //panel.removeCriteria($('#organization_exact_criterion')[0]);
                                 $('#organization_exact_criterion').children().eq(3).find("input").val('');
                             }
                     }
@@ -239,7 +240,6 @@ FSC = {
                     criterionContainerOperands.eq(0).val(facetContainer.find('input[name="' + criterionField + '"]').first().val());
                     break;
                 case 'text':
-                default:
                     if (facetContainer.find('input[name="' + criterionField + '_exact"]:checked').length === 1)
                     {
                         $(facetId).children().eq(2).find("select").val('textExactMatch').change();
@@ -251,6 +251,7 @@ FSC = {
 
         });
     },
+    // toggles the display of 'itself' input element
     orgExactHandler: function(inputElement) {
 
          if ($(inputElement).attr('checked') === "checked")

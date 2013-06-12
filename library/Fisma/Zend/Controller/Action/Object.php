@@ -953,17 +953,17 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 
                 // generates a multi-faceted search
                 if ($facetFields['type'] == 'multi') {
-                    $this->view->multifacet_page = $this->_getParam('controller') . '/search_multifacet.phtml';
-                    $this->view->multifacet_model = $this->_modelName;
+                    $this->view->multifacetPage = $this->_getParam('controller') . '/search_multifacet.phtml';
+                    $this->view->multifacetModel = $this->_modelName;
                     
                     // lists needed for some of the search fields
-                    $this->view->severity_list = Doctrine::getTable('vulnerability')->getEnumValues('threatlevel');
+                    $this->view->severityList = Doctrine::getTable('vulnerability')->getEnumValues('threatlevel');
                     $source_list = Doctrine::getTable('Vulnerability');
                     $source_list->setAttribute(Doctrine::ATTR_COLL_KEY, 'source');
-                    $this->view->source_list = array_keys($source_list->findAll()->toArray());
+                    $this->view->sourceList = array_keys($source_list->findAll()->toArray());
                     $workflow_steps = Doctrine::getTable('WorkflowStep');
                     $workflow_steps->setAttribute(Doctrine::ATTR_COLL_KEY, 'name');
-                    $this->view->workflow_steps = array_keys($workflow_steps->findAll()->toArray());
+                    $this->view->workflowSteps = array_keys($workflow_steps->findAll()->toArray());
                     $networks = Doctrine::getTable('Network');
                     $networks->setAttribute(Doctrine::ATTR_COLL_KEY, 'nickname');
                     $this->view->networks = array_keys($networks->findAll()->toArray());
@@ -977,7 +977,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                     $days_old['days60'] = $temp_date->format('Y-m-d');
                     $temp_date->sub(new DateInterval('P30D'));
                     $days_old['days90'] = $temp_date->format('Y-m-d');
-                    $this->view->days_old = $days_old;
+                    $this->view->daysOld = $days_old;
 
                 }
             } else {
