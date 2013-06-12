@@ -53,11 +53,17 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
 
                 } elseif ($oXml->name == 'tag' && $oXml->getAttribute('name') == 'host-ip') {
                     $parsedData[$hostCounter]['ip'] = $oXml->readString();
+                } elseif ($oXml->name == 'tag' && $oXml->getAttribute('name') == 'netbios-name') {
+                    $parsedData[$hostCounter]['displayName'] = $oXml->readString();
+                } elseif ($oXml->name == 'tag' && $oXml->getAttribute('name') == 'mac-address') {
+                    $parsedData[$hostCounter]['mac'] = $oXml->readString();
                 } elseif ($oXml->name == 'tag' && $oXml->getAttribute('name') == 'HOST_END') {
                     $parsedData[$hostCounter]['startTime'] = $oXml->readString();
                 } elseif ($oXml->name == 'ReportItem') {
                     $parsedData[$hostCounter]['findings'][$itemCounter] = array();
                     $parsedData[$hostCounter]['findings'][$itemCounter]['port'] = $oXml->getAttribute('port');
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['service'] = $oXml->getAttribute('svc_name');
+                    $parsedData[$hostCounter]['findings'][$itemCounter]['protocol'] = $oXml->getAttribute('protocol');
                     $parsedData[$hostCounter]['findings'][$itemCounter]['pluginName'] =
                         $oXml->getAttribute('pluginName');
                 } elseif ($oXml->name == 'risk_factor') {
@@ -130,11 +136,18 @@ class Fisma_Inject_Nessus extends Fisma_Inject_Abstract
 
                             // Prepare asset
                             $asset = array();
-                            $asset['name'] = $host['ip'];
+                            $asset['name'] = (isset($host['displayName']) ? $host['displayName'] : $host['name']);
                             $asset['networkId'] = (int) $this->_networkId;
                             $asset['addressIp'] = $host['ip'];
+                            if (!empty($host['mac'])) {
+                                $asset['addressMac'] = $host['mac'];
+                            }
                             if (!empty($finding['port'])) {
-                                $asset['AssetServices'][]['addressPort'] = (int) $finding['port'];
+                                $asset['AssetServices'][] = array(
+                                    'addressPort' => (int) $finding['port'],
+                                    'service' => $finding['service'],
+                                    'protocol' => $finding['protocol']
+                                );
                             }
                             $asset['source'] = 'scan';
 
