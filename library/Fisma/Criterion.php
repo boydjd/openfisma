@@ -32,7 +32,8 @@ class Fisma_Criterion
      */
     protected $_config;
 
-    public function __construct($config) {
+    public function __construct($config)
+    {
         $this->_config = $config;
     }
 

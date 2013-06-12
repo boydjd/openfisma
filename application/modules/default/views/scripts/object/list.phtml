@@ -83,10 +83,10 @@
     <?php endforeach; ?>
 <?php endif; ?>
 
-<?php  
+<?php
 if ( isset($this->multifacetPage) ) {
-    
-    echo $this->partial($this->multifacetPage, 
+
+    echo $this->partial($this->multifacetPage,
         array(
             'model' => $this->multifacetModel,
             'workflowSteps' => $this->workflowSteps,
@@ -118,8 +118,8 @@ if ( isset($this->multifacetPage) ) {
                 var searchPanel = new Fisma.Search.Panel(advancedSearchOptions);
                 Fisma.Search.advancedSearchPanel = searchPanel;
 
-                searchPanel.render(document.getElementById('advancedSearchCriteria')); 
-                
+                searchPanel.render(document.getElementById('advancedSearchCriteria'));
+
                  // do not show the advanced button
                 YAHOO.util.Event.onContentReady("hideSearch", function() {
                     var Dom = YAHOO.util.Dom;
@@ -127,57 +127,55 @@ if ( isset($this->multifacetPage) ) {
                     {
                         var panelContainer = Fisma.Search.advancedSearchPanel.container;
                         Dom.get('advanced').style.display = 'none';
-                        YAHOO.util.Event.onContentReady("advancedSearch", function() { Dom.get('advancedSearch').style.display = 'none'; });
-                        
-                         if ( $(panelContainer).children().length > 0 )
+                        YAHOO.util.Event.onContentReady("advancedSearch", function() {
+                            Dom.get('advancedSearch').style.display = 'none';
+                        });
+
+                        if ( $(panelContainer).children().length > 0 )
                         {
                             $(panelContainer).children().each( function(index, inputElement) {
-                                
+
                                 var facetField = $(inputElement).find('select').eq(0).val();
                                 var facet = $('div.facetBox fieldset[field="' + facetField +'"]');
                                 var criterionInputTotal = $(inputElement).find('span input').length;
-                                
+
                                 // id attribute for the search row associated with this facet
                                 var facetId = facetField + '_criterion';
-                                
+
                                 $(inputElement).attr('id', facetId);
-                                
+
                                 // transfer the data from the search panel to the facet box
-                                
+
                                 facet.find('legend.header input').attr('checked', 'checked');
                                 facet.find('legend.header').addClass('ui-accordion-header-active')
                                     .removeClass('ui-corner-all')
                                     .addClass('ui-corner-top');
                                 facet.find('div.content').addClass('ui-accordion-content-active');
-                                
+
                                 for( var inputFields = 0; inputFields < criterionInputTotal; inputFields++ )
                                 {
                                     var inputValue = $(inputElement).find('span input').eq(inputFields).val();
                                     if ( facet.attr('type') === 'enum' )
                                     {
                                         var enumInputs = inputValue.split(",");
-                                        for ( var facetInputs = 0; facetInputs < enumInputs.length; facetInputs++ ) {
-                                            facet.find('div.content input[value="' + enumInputs[facetInputs] +'"]').attr('checked', 'checked');
+                                        var facetInputs;
+                                        for (facetInputs = 0; facetInputs < enumInputs.length; facetInputs++ ) {
+                                            facet.find('div.content input[value="' + enumInputs[facetInputs] +'"]')
+                                                .attr('checked', 'checked');
                                         }
                                     }
                                     else {
-                                        
                                         facet.find('div.content input').eq(inputFields).val( inputValue  );
                                     }
                                 }
-                                
                             });
                         }
-                       
                     }
                 });
-                
             });
         }
     );
-    
-   
-    
+
     // When the data table container is loaded
     YAHOO.util.Event.onContentReady("<?php echo $this->escape($this->containerId, 'javascript'); ?>", function() {
         var Dom = YAHOO.util.Dom,

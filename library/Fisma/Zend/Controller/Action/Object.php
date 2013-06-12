@@ -950,42 +950,40 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $facetFields = $table->getFacetedFields();
 
             if (isset($facetFields['type'])) {
-                
+
                 // generates a multi-faceted search
                 if ($facetFields['type'] == 'multi') {
                     $this->view->multifacetPage = $this->_getParam('controller') . '/search_multifacet.phtml';
                     $this->view->multifacetModel = $this->_modelName;
-                    
+
                     // lists needed for some of the search fields
                     $this->view->severityList = Doctrine::getTable('vulnerability')->getEnumValues('threatlevel');
-                    $source_list = Doctrine::getTable('Vulnerability');
-                    $source_list->setAttribute(Doctrine::ATTR_COLL_KEY, 'source');
-                    $this->view->sourceList = array_keys($source_list->findAll()->toArray());
-                    $workflow_steps = Doctrine::getTable('WorkflowStep');
-                    $workflow_steps->setAttribute(Doctrine::ATTR_COLL_KEY, 'name');
-                    $this->view->workflowSteps = array_keys($workflow_steps->findAll()->toArray());
+                    $sourceList = Doctrine::getTable('Vulnerability');
+                    $sourceList->setAttribute(Doctrine::ATTR_COLL_KEY, 'source');
+                    $this->view->sourceList = array_keys($sourceList->findAll()->toArray());
+                    $workflowSteps = Doctrine::getTable('WorkflowStep');
+                    $workflowSteps->setAttribute(Doctrine::ATTR_COLL_KEY, 'name');
+                    $this->view->workflowSteps = array_keys($workflowSteps->findAll()->toArray());
                     $networks = Doctrine::getTable('Network');
                     $networks->setAttribute(Doctrine::ATTR_COLL_KEY, 'nickname');
                     $this->view->networks = array_keys($networks->findAll()->toArray());
-                    
+
                     // calculating the dates
-                    $days_old = array();
-                    $temp_date = new DateTime();
-                    $temp_date->sub(new DateInterval('P30D'));
-                    $days_old['days30'] = $temp_date->format('Y-m-d');
-                    $temp_date->sub(new DateInterval('P30D'));
-                    $days_old['days60'] = $temp_date->format('Y-m-d');
-                    $temp_date->sub(new DateInterval('P30D'));
-                    $days_old['days90'] = $temp_date->format('Y-m-d');
-                    $this->view->daysOld = $days_old;
+                    $daysOld = array();
+                    $tempDate = new DateTime();
+                    $tempDate->sub(new DateInterval('P30D'));
+                    $daysOld['days30'] = $tempDate->format('Y-m-d');
+                    $tempDate->sub(new DateInterval('P30D'));
+                    $daysOld['days60'] = $tempDate->format('Y-m-d');
+                    $tempDate->sub(new DateInterval('P30D'));
+                    $daysOld['days90'] = $tempDate->format('Y-m-d');
+                    $this->view->daysOld = $daysOld;
 
                 }
             } else {
                 $this->view->facet = $facetFields;
                 $searchForm->removeElement('advanced');
             }
-
-            
         }
 
         $this->view->filters = Doctrine::getTable('Query')->findByModelAndUser(
@@ -1447,28 +1445,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         return $searchForm;
     }
 
-    /**
-     * Get the facet form
-     * 
-     * right now, only multifaceted search is supported
-     * 
-     * @return Zend_Form
-     */
-    public function getSearchFacetForm(array $criteria)
-    {
-        $searchFacetForm = Fisma_Zend_Form_Manager::loadForm('search_multifacet');
-        
-        $searchFacetForm->setElementDecorators(array('ViewHelper', 'RenderSelf'));
-        
-        d($searchFacetForm);
-        // @todo modify and/or move this foreach statement
-                    foreach ($criteria as $field)
-                    {
-                         //echo new Fisma_Criterion($field);
-                    }
-        return $searchFacetForm;
-    }
-    
     /**
      * Get the "more search options" form and decorate it
      *
