@@ -431,12 +431,11 @@ abstract class Fisma_Inject_Abstract
          * purification that the Xss Listener applies
          */
         $xssListener = new XssListener();
-        $cleanSummary = $xssListener->getPurifier()->purify($finding->summary);
         $cleanDescription = $xssListener->getPurifier()->purify($finding->description);
 
         $duplicateFindings = Doctrine_Query::create()
             ->from('Vulnerability v')
-            ->where('SHA1(v.summary) = ?', sha1($cleanSummary))
+            ->where('SHA1(v.summary) = ?', sha1($finding->summary))
             ->andWhere('SHA1(v.description) = ?', sha1($cleanDescription))
             ->andWhere('v.assetId = ?', $finding->assetId)
             ->andWhere('v.deleted_at is NULL')
