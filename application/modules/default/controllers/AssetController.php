@@ -191,7 +191,15 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->view->vulnerabilitiesTable = new Fisma_Yui_DataTable_Local();
         $vulnTable = Doctrine::getTable('Vulnerability');
         $this->view->vulnerabilitiesTable
-             ->addColumn(new Fisma_Yui_DataTable_Column('ID', true, null, null, 'id'))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                'ID',
+                true,
+                'Fisma.TableFormat.recordLink',
+                array(
+                    'prefix' => '/vm/vulnerability/view/id/'
+                ),
+                'id'
+            ))
              ->addColumn(new Fisma_Yui_DataTable_Column(
                 $vulnTable->getLogicalName('summary'), true, null, null, 'summary'))
              ->addColumn(new Fisma_Yui_DataTable_Column('Created', true, null, null, 'createdTs'))
