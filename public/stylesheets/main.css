@@ -256,6 +256,7 @@ div.section {
     position: relative;
     height: 100%;
     margin-bottom: 0px;
+    overflow-x: auto;
 }
 
 /* Panels are a subdivision of the sections */
