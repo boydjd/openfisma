@@ -42,7 +42,9 @@ including:
     id='<?php echo $this->escape($this->name); ?>_children_immediate'
     name='<?php echo $this->escape($this->name); ?>_children'
     value='immediate'
-    <?php if ($this->value && isset($this->value['children']) && $this->value['children'] === 'immediate'): ?>checked<?php endif; ?>
+    <?php if ($this->value && 
+        isset($this->value['children']) && 
+        $this->value['children'] === 'immediate'): ?>checked<?php endif; ?>
 />
 <label for='<?php echo $this->escape($this->name); ?>_children_immediate'>
     immediate children only
@@ -53,7 +55,9 @@ including:
     id='<?php echo $this->escape($this->name); ?>_children_all'
     name='<?php echo $this->escape($this->name); ?>_children'
     value='all'
-    <?php if ($this->value && isset($this->value['children']) && $this->value['children'] === 'all'): ?>checked<?php endif; ?>
+    <?php if ($this->value && 
+        isset($this->value['children']) && 
+        $this->value['children'] === 'all'): ?>checked<?php endif; ?>
 />
 <label for='<?php echo $this->escape($this->name); ?>_children_all'>
     all nested children

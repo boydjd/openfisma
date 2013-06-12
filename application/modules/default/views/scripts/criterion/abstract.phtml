@@ -1,5 +1,8 @@
 <?php $active = (isset($this->config['checked'])); ?>
-<fieldset type="<?php echo $this->config['type'] ?>" field="<?php echo $this->config['name'] ?>" criterion_type="<?php echo $this->config['criterion_type'] ?>" class='criterion ui-accordion'>
+<fieldset type="<?php echo $this->escape( $this->config['type'] ) ?>" 
+          field="<?php echo $this->escape( $this->config['name'] ) ?>" 
+          criterion_type="<?php echo $this->escape( $this->config['criterion_type'] ) ?>" 
+          class='criterion ui-accordion'>
     <legend class='header ui-accordion-header ui-state-default
     <?php if ($active): ?>ui-corner-top ui-accordion-header-active<?php else: ?>ui-corner-all<?php endif; ?>
     '>
@@ -13,15 +16,16 @@
             <?php echo $this->escape($this->config['label']); ?>
         </label>
     </legend>
-    <div id="<?php echo $this->config['name'] ?>_content" class='content ui-accordion-content ui-corner-bottom ui-widget-content
-    <?php if ($active): ?>ui-accordion-content-active<?php endif; ?>
+    <div id="<?php echo $this->config['name'] ?>_content" 
+         class='content ui-accordion-content ui-corner-bottom ui-widget-content
+    <?php if ($active): ?>ui-accordion-content-active
+        <?php endif; ?>
     '>
-        <?php if( $this->config['type'] == 'enum' && empty($this->config['value'])  )
-        {
+        <?php if( $this->config['type'] == 'enum' && empty($this->config['value'])  ) {
             echo '(no values)';
         }
         else {
-            echo $this->partial($this->viewscript, $this->config); 
+            echo $this->escape( $this->partial($this->viewscript, $this->config), 'none' ); 
         }
             ?>
     </div>

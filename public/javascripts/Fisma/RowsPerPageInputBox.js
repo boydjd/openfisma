@@ -137,7 +137,6 @@
 
             var storage = new Fisma.PersistentStorage('Fisma.RowsPerPage'),
                 compact = (storage.get('rowHeight') === 'compact');
-            console.log(storage.get('rowHeight'));
             $('div.yui-dt').toggleClass('compact', compact);
             $(this.rowHeightControl).attr('checked', compact);
         },
