@@ -1,6 +1,9 @@
 <?php if ($this->message): ?>
 <div class='message'><?php echo $this->escape($this->message); ?></div>
-<?php else: ?>
+<?php else:
+$threatType = Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? 'residualRisk' : 'threatLevel';
+$this->table = Doctrine::getTable('Finding');
+?>
 <div id='changeLayout'>
     Sidebar position:
     <span id="menuLayoutSelect">
@@ -44,14 +47,17 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 </div>
 <div class='column33 right findingAnalystRight'>
-    <?php Fisma_Format_Section::startSection('Unresolved: By Threat', null, null, 'byThreat'); ?>
+    <?php Fisma_Format_Section::startSection(
+        'Unresolved: By ' . ($threatType == 'residualRisk' ? 'Residual Risk' : 'Threat Level'), null, null, 'byThreat'
+    ); ?>
     <table class='custom-widget no-border'>
     <?php foreach($this->byThreat as $statistic): ?>
         <tr>
             <td class='criteria'><?php echo $this->escape($statistic['criteria']); ?></td>
             <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
             <td width='55%'>
-                <a href='/finding/remediation/list?q=isResolved/booleanNo/threatLevel/enumIs/<?php
+                <a href='/finding/remediation/list?q=isResolved/booleanNo/<?php
+                    echo $this->escape($threatType); ?>/enumIs/<?php
                     echo $this->escape($statistic['criteria'], 'url');
                 ?>'><span
                 class='bar <?php echo $this->escape($statistic['criteria']); ?>'
