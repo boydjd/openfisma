@@ -114,7 +114,6 @@ var FSC = {
         // @todo: add count to view, dependent upon type of criterion
     },
     facetHandler: function() {
-
         $(".criterion legend input:checked").each(function(index) {
 
             // advanced search panel
@@ -250,13 +249,11 @@ var FSC = {
                     criterionContainerOperands.eq(0).val(facetContainer.find('input[name="' + criterionField + '"]').first().val());
                     break;
             }
-
         });
     },
     // toggles the display of 'itself' input element
     orgExactHandler: function(inputElement) {
-
-         if ($(inputElement).attr('checked') === "checked")
+        if ($(inputElement).attr('checked') === "checked")
         {
             $(inputElement).next().next().next().removeAttr('style').next().removeAttr('style');
 
@@ -265,7 +262,6 @@ var FSC = {
             $(inputElement).next().next().next().removeAttr('checked').css('display', 'none').next().css('display', 'none');
 
         }
-
     }
 };
 Fisma.Search.Criterion = FSC;

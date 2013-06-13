@@ -84,7 +84,7 @@
 <?php endif; ?>
 
 <?php
-if ( isset($this->multifacetPage) ) {
+if (isset($this->multifacetPage)) {
 
     echo $this->partial($this->multifacetPage,
         array(
@@ -94,7 +94,7 @@ if ( isset($this->multifacetPage) ) {
             'networks' => $this->networks,
             'sourceList' => $this->sourceList,
             'daysOld' => $this->daysOld
-        ) );
+        ));
 }
 ?>
 </div>
@@ -123,7 +123,7 @@ if ( isset($this->multifacetPage) ) {
                  // do not show the advanced button
                 YAHOO.util.Event.onContentReady("hideSearch", function() {
                     var Dom = YAHOO.util.Dom;
-                    if ( Dom.get('hideSearch').value === 'true' && Dom.get('advanced').style.display !== 'none' )
+                    if (Dom.get('hideSearch').value === 'true' && Dom.get('advanced').style.display !== 'none')
                     {
                         var panelContainer = Fisma.Search.advancedSearchPanel.container;
                         Dom.get('advanced').style.display = 'none';
@@ -131,9 +131,9 @@ if ( isset($this->multifacetPage) ) {
                             Dom.get('advancedSearch').style.display = 'none';
                         });
 
-                        if ( $(panelContainer).children().length > 0 )
+                        if ($(panelContainer).children().length > 0)
                         {
-                            $(panelContainer).children().each( function(index, inputElement) {
+                            $(panelContainer).children().each(function(index, inputElement) {
 
                                 var facetField = $(inputElement).find('select').eq(0).val();
                                 var facet = $('div.facetBox fieldset[field="' + facetField +'"]');
@@ -152,20 +152,20 @@ if ( isset($this->multifacetPage) ) {
                                     .addClass('ui-corner-top');
                                 facet.find('div.content').addClass('ui-accordion-content-active');
 
-                                for( var inputFields = 0; inputFields < criterionInputTotal; inputFields++ )
+                                for(var inputFields = 0; inputFields < criterionInputTotal; inputFields++)
                                 {
                                     var inputValue = $(inputElement).find('span input').eq(inputFields).val();
-                                    if ( facet.attr('type') === 'enum' )
+                                    if (facet.attr('type') === 'enum')
                                     {
                                         var enumInputs = inputValue.split(",");
                                         var facetInputs;
-                                        for (facetInputs = 0; facetInputs < enumInputs.length; facetInputs++ ) {
+                                        for (facetInputs = 0; facetInputs < enumInputs.length; facetInputs++) {
                                             facet.find('div.content input[value="' + enumInputs[facetInputs] +'"]')
                                                 .attr('checked', 'checked');
                                         }
                                     }
                                     else {
-                                        facet.find('div.content input').eq(inputFields).val( inputValue  );
+                                        facet.find('div.content input').eq(inputFields).val(inputValue);
                                     }
                                 }
                             });

@@ -1446,28 +1446,6 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
-     * Get the facet form
-     * 
-     * right now, only multifaceted search is supported
-     * 
-     * @return Zend_Form
-     */
-    public function getSearchFacetForm(array $criteria)
-    {
-        $searchFacetForm = Fisma_Zend_Form_Manager::loadForm('search_multifacet');
-        
-        $searchFacetForm->setElementDecorators(array('ViewHelper', 'RenderSelf'));
-        
-        d($searchFacetForm);
-        // @todo modify and/or move this foreach statement
-                    foreach ($criteria as $field)
-                    {
-                         //echo new Fisma_Criterion($field);
-                    }
-        return $searchFacetForm;
-    }
-    
-    /**
      * Get the "more search options" form and decorate it
      *
      * @return Zend_Form
