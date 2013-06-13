@@ -45,6 +45,12 @@
                 </td>
             </tr>
         <?php endif; ?>
+        <?php if ($finding->residualRisk): ?>
+            <tr>
+                <th scope='row'><?php $this->column('residualRisk'); ?>:</th>
+                <td><?php echo $this->escape($finding->residualRisk); ?></td>
+            </tr>
+        <?php endif; ?>
             <tr>
                 <th scope='row'><?php $this->column('sourceId'); ?>:</th>
                 <td>
