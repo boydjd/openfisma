@@ -47,7 +47,7 @@
         <?php endif; ?>
         <?php if ($finding->residualRisk): ?>
             <tr>
-                <td>Residual Risk:</td>
+                <th scope='row'><?php $this->column('residualRisk'); ?>:</th>
                 <td><?php echo $this->escape($finding->residualRisk); ?></td>
             </tr>
         <?php endif; ?>
