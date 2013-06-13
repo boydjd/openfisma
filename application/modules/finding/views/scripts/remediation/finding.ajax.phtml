@@ -44,6 +44,12 @@
                 </td>
             </tr>
         <?php endif; ?>
+        <?php if ($finding->residualRisk): ?>
+            <tr>
+                <td>Residual Risk:</td>
+                <td><?php echo $this->escape($finding->residualRisk); ?></td>
+            </tr>
+        <?php endif; ?>
             <tr>
                 <td>Source:</td>
                 <td>

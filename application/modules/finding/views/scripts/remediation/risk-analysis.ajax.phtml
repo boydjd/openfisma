@@ -124,3 +124,10 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
     <?php echo $this->escape($finding->countermeasures, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
+
+<?php if ($finding->residualRisk): Fisma_Format_Section::startSection('Residual Risk'); ?>
+<p>
+    <b>Residual Risk:</b>
+    <?php echo $this->escape($finding->residualRisk); ?>
+</p>
+<?php Fisma_Format_Section::stopSection(); endif; ?>
