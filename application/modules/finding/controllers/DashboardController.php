@@ -124,6 +124,8 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
     {
         $myOrgSystemIds = $this->_visibleOrgs;
         $viewUser = ($this->_me->viewAs()) ? $this->_me->viewAs() : $this->_me;
+        $threatType =
+            Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? 'residualRisk' : 'threatLevel';
 
         $totalFindingsQuery = Doctrine_Query::create()
             ->from('Finding f')
@@ -138,9 +140,9 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->view->byThreat = Doctrine_Query::create()
-            ->select('COUNT(id) as count, threatlevel as criteria')
+            ->select('COUNT(id) as count, f.' . $threatType . ' as criteria')
             ->from('Finding f')
-            ->groupBy('f.threatlevel')
+            ->groupBy('f.' . $threatType)
             ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
             ->orWhere('f.deleted_at is NULL AND f.isResolved <> ?', true)
@@ -196,7 +198,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->byPoc = Doctrine_Query::create()
             ->select(
-                'COUNT(f.id) as count, f.threatlevel, i.id as icon, o.id, o.nickname, ot.nickname as type, ' .
+                'COUNT(f.id) as count, f.' . $threatType . ', i.id as icon, o.id, o.nickname, ot.nickname as type, ' .
                 'f.pocid, u.id, u.displayName'
             )
             ->from('Finding f')
@@ -204,7 +206,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             ->leftJoin('u.ReportingOrganization o')
             ->leftJoin('o.OrganizationType ot')
             ->leftJoin('ot.Icon i')
-            ->groupBy('f.pocid, f.threatlevel')
+            ->groupBy('f.pocid, f.' . $threatType)
             ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('f.responsibleorganizationid', $myOrgSystemIds)
             ->orWhere('f.deleted_at is NULL AND f.isResolved <> ?', true)
@@ -224,7 +226,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
             }
 
             $pocid = $statistic['pocId'];
-            $threatlevel = $statistic['threatLevel'];
+            $threatlevel = $statistic[$threatType];
             if (!isset($criteria[$pocid])) {
                 $criteria[$pocid] = $index;
                 $this->view->byPoc[$index][$threatlevel] = $statistic['count'];
@@ -255,7 +257,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'LOW' => $statistic['LOW'],
                     'MODERATE' => $statistic['MODERATE'],
                     'HIGH' => $statistic['HIGH'],
-                    'criteriaQuery' => '/threatLevel/enumIs/',
+                    'criteriaQuery' => '/' . $threatType . '/enumIs/',
                     'total' => $this->view->total
                 )),
                 'total' => $statistic['count'],
@@ -353,13 +355,13 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $this->view->bySystem = Doctrine_Query::create()
             ->select(
-                'COUNT(f.id) as count, o.nickname as criteria, f.threatlevel, o.id, o.lft, o.rgt, o.level, ' .
+                'COUNT(f.id) as count, o.nickname as criteria, f.' . $threatType . ', o.id, o.lft, o.rgt, o.level, ' .
                 'f.responsibleorganizationid, ot.iconId as icon, ot.nickname as type'
             )
             ->from('Organization o')
             ->leftJoin('o.OrganizationType ot')
             ->leftJoin('o.Findings f')
-            ->groupBy('f.threatlevel, o.id')
+            ->groupBy('f.' . $threatType . ', o.id')
             ->where('f.deleted_at is NULL AND f.isResolved <> ?', true)
             ->andWhereIn('o.id', $myOrgSystemIds)
             ->orWhere('f.deleted_at is NULL AND f.isResolved <> ?', true)
@@ -370,7 +372,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
         foreach ($this->view->bySystem as &$statistic) {
             $count = 0;
             foreach ($statistic['Findings'] as &$finding) {
-                $threatLevel = $finding['threatLevel'];
+                $threatLevel = $finding[$threatType];
                 $statistic[$threatLevel] = $finding['count'];
                 $count += $finding['count'];
             }
@@ -440,7 +442,7 @@ class Finding_DashboardController extends Fisma_Zend_Controller_Action_Security
                     'LOW' => $statistic['LOW'],
                     'MODERATE' => $statistic['MODERATE'],
                     'HIGH' => $statistic['HIGH'],
-                    'criteriaQuery' => '/threatLevel/enumIs/',
+                    'criteriaQuery' => '/' . $threatType . '/enumIs/',
                     'total' => $this->view->total
                 )),
                 'total' => $statistic['count'],
