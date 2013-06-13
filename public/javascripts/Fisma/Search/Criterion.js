@@ -21,17 +21,15 @@
  * @license   http://www.openfisma.org/content/license
  */
 
-FSC = new Object();
-
-FSC = {
+var FSC = {
     legendHandler: function(inputElement) {
         var $input = $(inputElement),
-                $criterion = $(inputElement).parents('fieldset.criterion').first(),
-                $header = $criterion.find('legend.header'),
-                $content = $criterion.find('div.content'),
-                checked = $input.is('input:checked');
+            $criterion = $(inputElement).parents('fieldset.criterion').first(),
+            $header = $criterion.find('legend.header'),
+            $content = $criterion.find('div.content'),
+            checked = $input.is('input:checked');
 
-        //advanced search panel 
+        //advanced search panel
         var panel = Fisma.Search.advancedSearchPanel;
 
         var panelChildren = $(panel.container).children();
@@ -49,13 +47,13 @@ FSC = {
 
         // type of criterion
         var criterionType = facetContainer.attr('criterion_type');
-        
+
         // type of facet
         var facetType = facetContainer.attr('type');
 
         // id attribute for the search row associated with this facet
         var facetId = criterionField + '_criterion';
-            
+
         if (checked) {
             $header
                     .addClass('ui-accordion-header-active')
@@ -71,7 +69,7 @@ FSC = {
 
             // holds the last criterion HTML element
             var criterionContainer = $(panel.container).children().last();
-            
+
             criterionContainer.attr('id', facetId);
             criterionContainer.children().eq(1).find("select").val(criterionField).change();
             criterionContainer.children().eq(2).find("select").val(criterionType).change();
@@ -131,7 +129,8 @@ FSC = {
             // holds the criterion HTML element
             var criterionContainerOperands = $(facetId).children().eq(3).find("input,select");
 
-            for (var operands = 0; operands < criterionContainerOperands.length; operands++)
+            var operands;
+            for (operands = 0; operands < criterionContainerOperands.length; operands++)
             {
                 criterionContainerOperands.eq(operands).val('');
             }
@@ -153,8 +152,9 @@ FSC = {
                     else {
                         if (enum_vals.length >= 1) {
                             criterionContainerOperands = $(facetId).children().eq(3).find("input");
-                            
-                            for (var newValue = 0; newValue < enum_vals.length; newValue++)
+
+                            var newValue;
+                            for (newValue = 0; newValue < enum_vals.length; newValue++)
                             {
                                 criterionContainerOperands.eq(0).val(criterionContainerOperands.eq(0).val() + enum_vals.eq(newValue).val() + ',');
                             }
@@ -167,7 +167,8 @@ FSC = {
                 case 'cvssvector':
                     var vectors = facetContainer.find('span#' + criterionField + '_list input:checked');
 
-                    for (var vinputs = 0; vinputs < vectors.length; vinputs++)
+                    var vinputs;
+                    for (vinputs = 0; vinputs < vectors.length; vinputs++)
                     {
                         if (vectors.eq(vinputs).val() !== "")
                         {
@@ -202,19 +203,19 @@ FSC = {
                             {
                                  $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
                             }
-                            
+
                             $('#organization_exact_criterion').children().eq(3).find("input").val( facetContainer.find('input[name="' + criterionField + '"]').val() );
                             criterionContainer.children().eq(2).find("select").val('organizationChildren').change();
                             criterionContainer.children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
 
                             break;
                         case 'all':
-                            
-                             if ( orgExact !== 'checked' )
+
+                            if ( orgExact !== 'checked' )
                             {
                                  $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
                             }
-                            
+
                             $('#organization_exact_criterion').children().eq(3).find("input").val( facetContainer.find('input[name="' + criterionField + '"]').val() );
                             criterionContainer.children().eq(2).find("select").val('organizationSubtree').change();
                             criterionContainer.children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
@@ -229,6 +230,7 @@ FSC = {
                             else {
                                 $('#organization_exact_criterion').children().eq(3).find("input").val('');
                             }
+                            break;
                     }
 
                     break;
@@ -244,9 +246,9 @@ FSC = {
                     {
                         $(facetId).children().eq(2).find("select").val('textExactMatch').change();
                     }
-                    
-                    criterionContainerOperands.eq(0).val(facetContainer.find('input[name="' + criterionField + '"]').first().val());
 
+                    criterionContainerOperands.eq(0).val(facetContainer.find('input[name="' + criterionField + '"]').first().val());
+                    break;
             }
 
         });
@@ -261,7 +263,7 @@ FSC = {
         }
         else {
             $(inputElement).next().next().next().removeAttr('checked').css('display', 'none').next().css('display', 'none');
-            
+
         }
 
     }
