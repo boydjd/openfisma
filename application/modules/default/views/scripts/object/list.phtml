@@ -120,7 +120,7 @@ if (isset($this->multifacetPage)) {
 
                 searchPanel.render(document.getElementById('advancedSearchCriteria'));
 
-                 // do not show the advanced button
+                // do not show the advanced button
                 YAHOO.util.Event.onContentReady("hideSearch", function() {
                     var Dom = YAHOO.util.Dom;
                     if (Dom.get('hideSearch').value === 'true' && Dom.get('advanced').style.display !== 'none')
