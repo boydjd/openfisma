@@ -947,8 +947,43 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->searchPreferences = $this->_getSearchPreferences();
 
         if ($table instanceof Fisma_Search_Facetable) {
-            $this->view->facet = $table->getFacetedFields();
-            $searchForm->removeElement('advanced');
+            $facetFields = $table->getFacetedFields();
+
+            if (isset($facetFields['type'])) {
+
+                // generates a multi-faceted search
+                if ($facetFields['type'] == 'multi') {
+                    $this->view->multifacetPage = $this->_getParam('controller') . '/search_multifacet.phtml';
+                    $this->view->multifacetModel = $this->_modelName;
+
+                    // lists needed for some of the search fields
+                    $this->view->severityList = Doctrine::getTable('vulnerability')->getEnumValues('threatlevel');
+                    $sourceList = Doctrine::getTable('Vulnerability');
+                    $sourceList->setAttribute(Doctrine::ATTR_COLL_KEY, 'source');
+                    $this->view->sourceList = array_keys($sourceList->findAll()->toArray());
+                    $workflowSteps = Doctrine::getTable('WorkflowStep');
+                    $workflowSteps->setAttribute(Doctrine::ATTR_COLL_KEY, 'name');
+                    $this->view->workflowSteps = array_keys($workflowSteps->findAll()->toArray());
+                    $networks = Doctrine::getTable('Network');
+                    $networks->setAttribute(Doctrine::ATTR_COLL_KEY, 'nickname');
+                    $this->view->networks = array_keys($networks->findAll()->toArray());
+
+                    // calculating the dates
+                    $daysOld = array();
+                    $tempDate = new DateTime();
+                    $tempDate->sub(new DateInterval('P30D'));
+                    $daysOld['days30'] = $tempDate->format('Y-m-d');
+                    $tempDate->sub(new DateInterval('P30D'));
+                    $daysOld['days60'] = $tempDate->format('Y-m-d');
+                    $tempDate->sub(new DateInterval('P30D'));
+                    $daysOld['days90'] = $tempDate->format('Y-m-d');
+                    $this->view->daysOld = $daysOld;
+
+                }
+            } else {
+                $this->view->facet = $facetFields;
+                $searchForm->removeElement('advanced');
+            }
         }
 
         $this->view->filters = Doctrine::getTable('Query')->findByModelAndUser(
