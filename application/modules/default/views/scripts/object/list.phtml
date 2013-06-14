@@ -183,6 +183,15 @@ if (isset($this->multifacetPage)) {
                                                 $('#organization_children_none').attr('checked', true);
                                                 break;
                                         }
+                                    } else if (facet.attr('type') === 'cvssvector') {
+                                        var vectors = inputValue.replace(/"/g, '').split(',');
+                                        $(vectors).each(function(index) {
+                                            var parsedElements = this.split(':');
+                                            $('#cvssVector_content').find(
+                                                'input[type=radio][name=' + parsedElements[0] +
+                                                '][value=' + parsedElements[1] + ']'
+                                            ).attr('checked', true).change();
+                                        });
                                     } else {
                                         facet.find('div.content input').eq(inputFields).val(inputValue);
                                     }
