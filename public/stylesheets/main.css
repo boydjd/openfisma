@@ -259,6 +259,11 @@ div.section {
     overflow-x: auto;
 }
 
+div.section.chartSection {
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
 /* Panels are a subdivision of the sections */
 div.panel {
     border: 1px solid #d3d3d3;
