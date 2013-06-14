@@ -74,7 +74,7 @@ var FSC = {
             criterionContainer.children().eq(1).find("select").val(criterionField).change();
             criterionContainer.children().eq(2).find("select").val(criterionType).change();
 
-            if ( facetType === 'organization')
+            if (facetType === 'organization')
             {
                 //add another criteria for the organization itself
 
@@ -137,11 +137,11 @@ var FSC = {
             // insert values from the facets
             switch (facetContainer.attr('type'))
             {
-                case 'range' :
+                case 'range':
                     criterionContainerOperands.eq(0).val(facetContainer.find('input[name="' + criterionField + '_from"]').first().val());
                     criterionContainerOperands.eq(1).val(facetContainer.find('input[name="' + criterionField + '_to"]').first().val());
                     break;
-                case 'enum' :
+                case 'enum':
                     // holds the number of selected enum values from the facet
                     var enum_vals = facetContainer.find("span.value input:checked");
 
@@ -187,46 +187,43 @@ var FSC = {
                     criterionContainerOperands.eq(0).val(facetContainer.find('input[name="' + criterionField + '"]:checked').val());
                     break;
                 case 'organization':
-
                     // holds the  first criterion HTML element
-                    var criterionContainer = $(panel.container).children().first();
+                    var criterionContainer = $(facetId);
 
-                   // determines whether or not to include the organization in the results
-                   var orgExact = $('#organization_exact').attr('checked');
+                    // determines whether or not to include the organization in the results
+                    var orgExact = $('#organization_exact').attr('checked');
 
                     switch (facetContainer.find('input[name="' + criterionField + '_children"]:checked').val())
                     {
                         case 'immediate':
-
-                            if ( orgExact !== 'checked' )
-                            {
-                                 $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
+                            if (orgExact !== 'checked') {
+                                $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
+                            } else {
+                                $('#organization_exact_criterion').children().eq(2).find("select").val('textExactMatch').change();
                             }
 
-                            $('#organization_exact_criterion').children().eq(3).find("input").val( facetContainer.find('input[name="' + criterionField + '"]').val() );
+                            $('#organization_exact_criterion').children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val() );
                             criterionContainer.children().eq(2).find("select").val('organizationChildren').change();
                             criterionContainer.children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
 
                             break;
                         case 'all':
-
-                            if ( orgExact !== 'checked' )
-                            {
-                                 $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
+                            if (orgExact !== 'checked') {
+                                $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
+                            } else {
+                                $('#organization_exact_criterion').children().eq(2).find("select").val('textExactMatch').change();
                             }
 
-                            $('#organization_exact_criterion').children().eq(3).find("input").val( facetContainer.find('input[name="' + criterionField + '"]').val() );
+                            $('#organization_exact_criterion').children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val() );
                             criterionContainer.children().eq(2).find("select").val('organizationSubtree').change();
                             criterionContainer.children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
 
                             break;
                         case 'none':
-                            if (orgExact === 'checked')
-                            {
+                            if (orgExact === 'checked') {
                                 $('#organization_exact_criterion').children().eq(2).find("select").val('textExactMatch').change();
-                                $('#organization_exact_criterion').children().eq(3).find("input").val( facetContainer.find('input[name="' + criterionField + '"]').val() );
-                            }
-                            else {
+                                $('#organization_exact_criterion').children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val() );
+                            } else {
                                 $('#organization_exact_criterion').children().eq(3).find("input").val('');
                             }
                             break;
@@ -260,7 +257,6 @@ var FSC = {
         }
         else {
             $(inputElement).next().next().next().removeAttr('checked').css('display', 'none').next().css('display', 'none');
-
         }
     }
 };
