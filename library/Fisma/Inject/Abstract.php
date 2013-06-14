@@ -280,10 +280,15 @@ abstract class Fisma_Inject_Abstract
                         if (isset($this->_findings[$i]['finding']) && isset($this->_findings[$j]['finding'])) {
                             if (
                                 $this->_findings[$i]['finding']->summary === $this->_findings[$j]['finding']->summary &&
-                                $this->_findings[$i]['asset'] === $this->_findings[$j]['asset']
+                                $this->_findings[$i]['asset']['addressIp'] == $this->_findings[$j]['asset']['addressIp']
                             ) {
-                                $this->_findings[$i]['finding']->description .= "<p>(aggregating...)</p>" .
-                                    $this->_findings[$j]['finding']->description;
+                                if ($this->_findings[$i]['finding']->description
+                                    !== $this->_findings[$j]['finding']->description) {
+                                    $this->_findings[$i]['finding']->description .= "<p>(aggregating...)</p>" .
+                                        $this->_findings[$j]['finding']->description;
+                                }
+                                $this->_findings[$i]['asset'] =
+                                    array_merge($this->_findings[$i]['asset'], $this->_findings[$j]['asset']);
                                 unset($this->_findings[$j]['finding']);
                             }
                         }
