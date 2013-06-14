@@ -163,8 +163,27 @@ if (isset($this->multifacetPage)) {
                                             facet.find('div.content input[value="' + enumInputs[facetInputs] +'"]')
                                                 .attr('checked', 'checked');
                                         }
-                                    }
-                                    else {
+                                    } else if (facet.attr('type') === 'organization') {
+                                        var operator = $(inputElement).find('select').eq(1).val();
+                                        switch (operator) {
+                                            case 'textExactMatch':
+                                            case 'textNotExactMatch':
+                                                facet.find('div.content input').eq(inputFields).val(inputValue);
+                                                $('#organization_exact')
+                                                    .attr('checked', (operator == 'textExactMatch'))
+                                                    .change();
+                                                break;
+                                            case 'organizationSubtree':
+                                                $('#organization_children_all').attr('checked', true);
+                                                break;
+                                            case 'organizationChildren':
+                                                $('#organization_children_immediate').attr('checked', true);
+                                                break;
+                                            case 'textContains':
+                                                $('#organization_children_none').attr('checked', true);
+                                                break;
+                                        }
+                                    } else {
                                         facet.find('div.content input').eq(inputFields).val(inputValue);
                                     }
                                 }

@@ -193,41 +193,26 @@ var FSC = {
                     // determines whether or not to include the organization in the results
                     var orgExact = $('#organization_exact').attr('checked');
 
+                    if (orgExact !== 'checked') {
+                        $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
+                    } else {
+                        $('#organization_exact_criterion').children().eq(2).find("select").val('textExactMatch').change();
+                    }
+
+                    $('#organization_exact_criterion').children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
                     switch (facetContainer.find('input[name="' + criterionField + '_children"]:checked').val())
                     {
                         case 'immediate':
-                            if (orgExact !== 'checked') {
-                                $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
-                            } else {
-                                $('#organization_exact_criterion').children().eq(2).find("select").val('textExactMatch').change();
-                            }
-
-                            $('#organization_exact_criterion').children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val() );
                             criterionContainer.children().eq(2).find("select").val('organizationChildren').change();
-                            criterionContainer.children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
-
                             break;
                         case 'all':
-                            if (orgExact !== 'checked') {
-                                $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
-                            } else {
-                                $('#organization_exact_criterion').children().eq(2).find("select").val('textExactMatch').change();
-                            }
-
-                            $('#organization_exact_criterion').children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val() );
                             criterionContainer.children().eq(2).find("select").val('organizationSubtree').change();
-                            criterionContainer.children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
-
                             break;
                         case 'none':
-                            if (orgExact === 'checked') {
-                                $('#organization_exact_criterion').children().eq(2).find("select").val('textExactMatch').change();
-                                $('#organization_exact_criterion').children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val() );
-                            } else {
-                                $('#organization_exact_criterion').children().eq(3).find("input").val('');
-                            }
+                            criterionContainer.children().eq(2).find("select").val('textContains').change();
                             break;
                     }
+                    criterionContainer.children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
 
                     break;
                 case 'id':
