@@ -57,12 +57,14 @@ Fisma.Search.CriteriaDefinition = (function () {
 
         nonSortableText : {
             textContains : {label : "Contains Words", renderer : 'text', query : 'oneInput', isDefault : true},
+            textIn: {label : "Is In", renderer : 'text', query : 'csvInput', isDefault : true},
             textDoesNotContain : {label : "Does Not Contain Words", renderer : 'text', query : 'oneInput'},
             unspecified : {label : "Unspecified", renderer : 'none', query : 'noInputs'}
         },
 
         sortableText : {
             textContains : {label : "Contains Words", renderer : 'text', query : 'oneInput', isDefault : true},
+            textIn: {label : "Is In", renderer : 'text', query : 'csvInput', isDefault : true},
             textDoesNotContain : {label : "Does Not Contain Words", renderer : 'text', query : 'oneInput'},
             textExactMatch : {label : "Exact Match", renderer : 'text', query : 'oneInput'},
             textNotExactMatch : {label : "Not Exact Match", renderer : 'text', query : 'oneInput'},

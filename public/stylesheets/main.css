@@ -899,16 +899,6 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
     clear: both;
 }
 
-.rowsPerPageInputBox {
-    margin-left: 10px;
-    width: 30px;
-}
-
-.rowsPerPageInputBoxLabel {
-    margin-left: 4px;
-    display: inline;
-}
-
 fieldset.uploadFileList {
     border: 1px solid;
     padding-top: 8px;
@@ -1136,6 +1126,7 @@ div.yui-dt-liner a {
 a.ui-button {
     text-decoration: none;
 }
+
 select.ui-button {
     padding: 5px 4px 6px 4px;
     height: 2.4em;

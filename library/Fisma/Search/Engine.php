@@ -439,6 +439,8 @@ class Fisma_Search_Engine
                     $searchTerms[] = "-$fieldName:\"{$operands[0]}\"";
                     break;
 
+                // The following cases intentionally fall through
+                case 'textIn':
                 case 'enumIn':
                     $searchTerms[] = "$fieldName:(" . implode($operands, ' OR ') . ")";
                     break;

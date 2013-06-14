@@ -186,6 +186,22 @@ IncidentAdminCategories:
     url: /ir-category/list
     labels: [Incidents, Administration, Categories]
     links: [no-link, no-link, no-link]
+IncidentAdminImpacts:
+    url: /incident-impact
+    labels: [Incidents, Administration, Impacts]
+    links: [no-link, no-link, no-link]
+IncidentAdminResponseStrategies:
+    url: /incident-response-strategy
+    labels: [Incidents, Administration, Response Strategies]
+    links: [no-link, no-link, no-link]
+IncidentAdminSeverityLevels:
+    url: /incident-severity-level
+    labels: [Incidents, Administration, Severity Levels]
+    links: [no-link, no-link, no-link]
+IncidentAdminSources:
+    url: /incident-source
+    labels: [Incidents, Administration, Sources]
+    links: [no-link, no-link, no-link]
 IncidentAdminWorkflowsView:
     url: /ir-workflow/view
     labels: [Incidents, Administration, Workflows, View]
