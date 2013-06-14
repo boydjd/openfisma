@@ -1621,7 +1621,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($this->_me->id, 'Fisma.RowsPerPage')
                                                 ->fetchOne();
         $data = empty($storage) ? '' : $storage->data;
-        return empty($storage) ? $this->_paging['count'] : $data['row'];
+        return empty($storage) ? $this->_paging['count'] : (isset($data['row']) ? $data['row'] : 10);
     }
 
     /**
