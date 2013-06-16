@@ -22,6 +22,18 @@
  */
 
 var FSC = {
+    
+    /**
+     * criteria for all of the checked facets
+     * 
+     * @type Array
+     */
+    checkedFacetCriteria: [],
+    /**
+     * manipulates the search criteria
+     * @param jQuery_selector inputElement target HTML element
+     * @returns
+     */
     legendHandler: function(inputElement) {
         var $input = $(inputElement),
             $criterion = $(inputElement).parents('fieldset.criterion').first(),
@@ -87,7 +99,28 @@ var FSC = {
                 criterionContainer.children().eq(1).find("select").val(criterionField).change();
                 criterionContainer.children().eq(2).find("select").val('textExactMatch').change();
             }
-
+            
+            // show the count for the inputs, if it is of type enum, date_group, or cvssvector
+            if ( facetType === 'enum' )
+            {
+                 Fisma.Search.Criterion.facetCountCheckbox( 
+                     $(inputElement).parent().siblings('div.content').find('input').first() );
+            }
+            else if (  facetType === 'date_group'  )
+            {
+                Fisma.Search.Criterion.facetCountRadio( 
+                     $(inputElement).parent().siblings('div.content').find(':checked').first() );
+            }
+            else if ( facetType === 'cvssvector' )
+            {
+                  $(inputElement).parent().siblings('div.content').find('#' +criterionField + '_list').children('span').each(
+                      function(index, fInputElement) {
+                      Fisma.Search.Criterion.facetCountRadio( 
+                          $(fInputElement).find(':checked').first() );
+                          
+                      });
+            }
+            
         } else {
             $header
                     .removeClass('ui-accordion-header-active')
@@ -107,12 +140,26 @@ var FSC = {
                     // remove the criterion for the organizaiton itself
                     panel.removeCriteria($('#organization_exact_criterion')[0]);
                 }
+                
+                // uncheck all checked values
+                if ( facetContainer.attr('type') === 'enum' )
+                {
+                     facetContainer.find('div.content span.value input:checked').each( function(index, fInputElement) {
+                         $(fInputElement).attr('checked', false);
+                     });
+                }
             }
-
+            
         }
-
-        // @todo: add count to view, dependent upon type of criterion
+        
+        Fisma.Search.Criterion.facetCount();
+        
     },
+    /**
+     * copies the data from the facet to the search panel
+     * 
+     * @returns 
+     */
     facetHandler: function() {
         $(".criterion legend input:checked").each(function(index) {
 
@@ -233,7 +280,12 @@ var FSC = {
             }
         });
     },
-    // toggles the display of 'itself' input element
+    /** 
+     * toggles the display of 'itself' input element
+     * 
+     * @param jQuery_selector inputElement target HTML element
+     * @returns
+     */
     orgExactHandler: function(inputElement) {
         if ($(inputElement).attr('checked') === "checked")
         {
@@ -242,6 +294,374 @@ var FSC = {
         }
         else {
             $(inputElement).next().next().next().removeAttr('checked').css('display', 'none').next().css('display', 'none');
+        }
+    },
+    /** 
+     * adjusts the count for all facets
+     */
+    facetCount: function() {
+
+        $("div.facetBox fieldset").each(function(index, inputElement) {
+
+             // if the facet is checked, display the count at the input level
+            if ( $(inputElement).find('legend.header input:checked').length === 1 )
+            { 
+                // remove existing count
+                $(inputElement).find('span[id*="_count"]').remove();
+                return;
+            }
+
+            // contains the search criteria
+            var allCriteria = [];
+
+            // operand, query for the main criterion
+            var mainOperands = [];
+
+            // whether or not to show the count, default: false
+            var showCount = false;
+            
+            switch ($(inputElement).attr('type'))
+            {
+
+                case 'enum':
+
+                    // values for the enum field
+                    var enumVals = $(inputElement).find('span.value input');
+
+                    var enumValNum;
+                    for (enumValNum = 0; enumValNum < enumVals.length; enumValNum++)
+                    {
+                        mainOperands.push(enumVals.eq(enumValNum).val());
+                    }
+
+                    showCount = true;
+                    break;
+
+            }
+
+            var mainCriterion = {
+                field: $(inputElement).attr('field'),
+                operator: $(inputElement).attr('criterion_type'),
+                operands: mainOperands
+            };
+
+            // combine the checked facet criteria and the main criterion
+            var tempFSC = Fisma.Search.Criterion;
+            tempFSC.generateCheckedFacetCriteria();
+            allCriteria = tempFSC.checkedFacetCriteria;
+            allCriteria.push(mainCriterion);
+
+            if ($(inputElement).attr('type') === 'enum') {
+                console.info("all criteria", allCriteria);
+            }
+
+            if (showCount)
+            {
+                tempFSC.processCountCriteria(inputElement, 'header', allCriteria);
+            }
+
+        });
+
+    }, 
+    /**
+     * for type checkbox, adjusts the count for all facet inputs
+     * 
+     * @param jQuery_selector inputElement
+     * @returns {undefined}
+     */
+    facetCountCheckbox: function(inputElement) {
+        
+        var contentParentElement = $(inputElement).parents('div.content');
+        var fieldsetParentElement = $(inputElement).parents('fieldset');
+        
+            if (!$(inputElement).attr('checked') && contentParentElement.find(':checked').length === 0 )
+            {
+                console.info("facet count checkbox - entering");
+                contentParentElement.find('input').each(function(index, fInputElement) {
+
+                 console.info('fInputElement ', fInputElement);
+                    
+                    // criterion with the input's value as the operand
+                    var inputCriterion = {
+                        field: fieldsetParentElement.attr('field'),
+                        operator: fieldsetParentElement.attr('criterion_type'),
+                        operands: [$(fInputElement).val()]
+                    };
+                    
+                    var tempFSC = Fisma.Search.Criterion;
+                    tempFSC.generateCheckedFacetCriteria();
+                    var allCriteria = tempFSC.checkedFacetCriteria;
+                    allCriteria.push(inputCriterion);
+                    tempFSC.processCountCriteria(fInputElement,'input', allCriteria);
+                   
+                });
+                console.info("facet count checkbox - exit");
+            }
+            else {
+                contentParentElement.find('input').each( function(index, fInputElement) {
+                    $(fInputElement).remove('span[id*="_input_count"]');
+                });
+            }
+   
+    },
+    /**
+     * for radio type, displays the count for all non-null facet inputs
+     * 
+     * @param jQuery_selector inputElement
+     * @returns void
+     */
+    facetCountRadio: function(inputElement) {
+
+        var contentParentElement = $(inputElement).parents('div.content');
+        var fieldsetParentElement = $(inputElement).parents('fieldset');
+        
+            if ( $(inputElement).val() === ""  )
+            {
+                $(inputElement).siblings('input').each(function(index, fInputElement) {
+                    
+                    // criterion with the input's value as the operand
+                    var inputCriterion = {
+                        field: fieldsetParentElement.attr('field'),
+                        operator: fieldsetParentElement.attr('criterion_type'),
+                        operands: [$(fInputElement).attr('value')]
+                    };
+                    
+                    if ( fieldsetParentElement.attr('type') === 'cvssvector' )
+                    {
+                        inputCriterion.operands = [$(fInputElement).attr('name') + ':' +$(fInputElement).attr('value') ];
+                    }
+
+                    var tempFSC = Fisma.Search.Criterion;
+                    tempFSC.generateCheckedFacetCriteria();
+                    var allCriteria = tempFSC.checkedFacetCriteria;
+                    allCriteria.push(inputCriterion);
+                    tempFSC.processCountCriteria(fInputElement,'input', allCriteria);
+
+                });
+            }
+            else {
+                contentParentElement.children('input').each( function(index, fInputElement) {
+                    $(fInputElement).remove('span[id*="_input_count"]');
+                });
+            }
+        
+    },
+    /**
+     * 
+     * updates the vector counts for the other cvss vectors
+     * 
+     * @param jQuery_selector inputElement
+     * @returns void
+     */
+    updateCvssVectorCount: function(inputElement)
+    {
+        $(inputElement).parent().siblings().find(':checked').each( function(index, fInputElement) { 
+            Fisma.Search.Criterion.facetCountRadio( fInputElement );
+        });
+    },
+    /**
+     * processes the ajax Request and displays the count
+     * 
+     * @param jQuery_selector inputElement
+     * @param string displayLocation
+     * @param Array allCriteria
+     * @returns void
+     */
+    processCountCriteria: function(inputElement, displayLocation, allCriteria) {
+        // retrieve the search results table (YUI Data table)
+        var dataTable = Fisma.Search.yuiDataTable;
+
+        // retrieve the current state of the table
+        var tableState = dataTable.getState();
+
+        // generating the post data
+        var postData = {
+            sort: tableState.sortedBy.key,
+            dir: (tableState.sortedBy.dir === 'yui-dt-asc' ? 'asc' : 'desc'),
+            start: 0,
+            count: tableState.pagination.rowsPerPage,
+            csrf: $('#searchForm input[name="csrf"]').val(),
+            showDeleted: Fisma.Search.showDeletedRecords,
+            queryType: $('#searchType').val()
+        };
+
+        postData.queryOptions = YAHOO.lang.JSON.stringify(Fisma.Search.searchPreferences);
+        postData.query = YAHOO.lang.JSON.stringify(allCriteria);
+
+        // executes when there is an ajax error
+        var ajaxError = function(jqXHR, textStatus, errorThrown)
+        {
+            throw new Error( " [error] status: " + textStatus + " - error text: '" + errorThrown + "'");
+        };
+
+        // displays the count
+        var viewCount = function(data, textStatus, jqXHR)
+        {
+            //console.info("field: ", $(inputElement).attr('field'), " - data: ", data, " - status: ", textStatus, " - jqXHR: ", jqXHR);
+            
+            // location where the count will be displayed
+            var displayId = '';
+            var displayText = '';
+            
+            // element where the count will be appended to
+            var selElement = '';
+            
+            switch (displayLocation)
+            {
+                case 'header':
+                    displayId = $(inputElement).attr('field') + '_count';
+                    selElement = $(inputElement).find('legend.header label');
+                    break;
+                case 'input':
+                    displayId = $(inputElement).val() + '_input_count';
+                    var inputElementId = $(inputElement).attr('id');
+                    selElement = $(inputElement).siblings('label[for="' + inputElementId + '"]');
+                    break;
+                default:
+
+            }
+
+            displayText = '<span id="' + displayId + '">(' + data.totalRecords + ')</span>';
+            if ($(inputElement).find('span#' + displayId).length === 0)
+            {
+                selElement.html(selElement.html() + displayText );
+            }
+            else {
+                selElement.find('span#' + displayId).html( '(' + data.totalRecords + ')');
+            }
+            
+        };
+        
+        // send the request and retrieve the results
+        $.ajax({
+            type: 'POST',
+            url: 'search',
+            data: postData,
+            dataType: 'json',
+            error: ajaxError,
+            success: viewCount
+        });
+
+    },
+    /**
+     * generates the criteria from the checked facets
+     * 
+     * @returns void
+     */
+    generateCheckedFacetCriteria: function() {
+
+        if ( this.checkedFacetCriteria.length > 0 )
+        {
+             this.checkedFacetCriteria.length = 0;
+        }
+        
+        // all of the facets that are checked
+        var checkedFacets = $("div.facetBox fieldset").has("legend input:checked");
+        // generate the criteria based on those facets that are checked
+        var checkedFacetNum;
+        for (checkedFacetNum = 0; checkedFacetNum < checkedFacets.length; checkedFacetNum++)
+        {
+            var currFacet = checkedFacets.eq(checkedFacetNum);
+
+            // components of the query
+            var criterionType = currFacet.attr('criterion_type');
+            var criterionField = currFacet.attr('field');
+            var cfOperands = [];
+
+            switch (currFacet.attr('type'))
+            {
+                case 'range':
+                    var rangeFacetInput = currFacet.find('input[type="text"]');
+
+                    var rangeInputNum;
+                    for (rangeInputNum = 0; rangeInputNum < rangeFacetInput.length; rangeInputNum++)
+                    {
+                        cfOperands.push(rangeFacetInput.eq(rangeInputNum).val());
+                    }
+
+                    break;
+
+                case 'enum':
+
+                    var enumFacetInput = currFacet.find('.value input:checked');
+
+                    var enumInputNum;
+                    for (enumInputNum = 0; enumInputNum < enumFacetInput.length; enumInputNum++)
+                    {
+                        cfOperands.push(enumFacetInput.eq(enumInputNum).val());
+                    }
+
+                    break;
+                case 'cvssvector':
+                    var cvssFacetInput = currFacet.find('input:checked');
+
+                    var cvssInputNum;
+                    for (cvssInputNum = 1; cvssInputNum < cvssFacetInput.length; cvssInputNum++)
+                    {
+                        if (cvssFacetInput.eq(cvssInputNum).val() !== "")
+                        {
+                            cfOperands.push(cvssFacetInput.eq(cvssInputNum).attr('name') + ':' + cvssFacetInput.eq(cvssInputNum).val());
+                        }
+                    }
+
+                    break;
+                case 'date_group':
+                    var dateGroupValue = currFacet.find('input:checked').eq(1).val();
+                    if ( dateGroupValue !== "" )
+                    {
+                        cfOperands.push(dateGroupValue);
+                    }
+                    break;
+                case 'organization':
+                    //var orgExactInput = currFacet.find('input#organization_exact');
+                    var orgInput = currFacet.find('input:checked');
+
+                    var orgExactCriterionType = '';
+
+                    if (orgInput.find('#organization_exact').length > 1)
+                    {
+                        orgExactCriterionType = 'textExactMatch';
+                    }
+                    else {
+                        orgExactCriterionType = 'textNotExactMatch';
+                    }
+
+                    var orgQueryInput = orgInput.find('input[name="organization"]').eq(0).val();
+
+                    orgExactCriterion = {field: criterionField, operator: orgExactCriterionType, operands: orgQueryInput};
+
+                    this.checkedFacetCriteria.push(orgExactCriterion);
+
+                    switch (orgInput.find('[id*="children"]'))
+                    {
+                        case 'immediate':
+                            criterionType = 'organizationChildren';
+                            break;
+                        case 'all':
+                            criterionType = 'organizationSubtree';
+                            break;
+                        case 'none':
+                            criterionType = 'textContains';
+                    }
+
+                    break;
+                case 'id':
+                    break;
+                case 'text':
+                    cfOperands.push(currFacet.find('input').eq(0).val());
+                    break;
+                default:
+                    var none = null;
+            }
+
+            var newCriterion = {
+                field: criterionField,
+                operator: criterionType,
+                operands: cfOperands
+            };
+
+            if ( newCriterion.operands.length > 0 )
+            {  this.checkedFacetCriteria.push(newCriterion); }
         }
     }
 };
