@@ -50,6 +50,12 @@
             value : 'Results Per Page',
             validator : YAHOO.lang.isString
             });
+            
+        // Text label for the input box.
+        p.setAttributeConfig('rowHeightLabel', {
+            value : 'Rows Height  ',
+            validator : YAHOO.lang.isString
+            });
     };
 
     YAHOO.widget.Paginator.ui.RowsPerPageInputBox.prototype = {
@@ -58,7 +64,8 @@
          * input node
          */
         inputBox        : null,
-        rowHeightControl: null,
+        rowHeightControlCompact: null,
+        rowHeightControlFull: null,
 
         construct: function() {
 
@@ -81,10 +88,19 @@
                 .addClass('rowsPerPageInputBox')
                 .get(0);
 
-            this.rowHeightControl = $('<input/>')
-                .attr('type', 'checkbox')
+            this.rowHeightControlCompact = $('<input/>')
+                .attr('type', 'radio')
                 .attr('name', id_base + 'rowHeight')
                 .attr('id', id_base + 'rowHeightCompact')
+                .attr('value', 'compact')
+                .addClass('rowHeightCheckBox')
+                .get(0);
+            
+            this.rowHeightControlFull = $('<input/>')
+                .attr('type', 'radio')
+                .attr('name', id_base + 'rowHeight')
+                .attr('id', id_base + 'rowHeightFull')
+                .attr('value', 'full')
                 .addClass('rowHeightCheckBox')
                 .get(0);
 
@@ -100,15 +116,27 @@
                 )
                 .append(this.inputBox)
                 .append($('<span/>')
-                    .append(this.rowHeightControl)
+                    .attr('id', id_base + 'rowHeight')
+                    .addClass('rowsPerPageInputBoxLabel')
+                    .html(this.paginator.get('rowHeightLabel') )
+                    .append(this.rowHeightControlCompact)
                     .append(
                         $('<label/>')
                         .attr('for', id_base + 'rowHeightCompact')
                         .addClass('rowHeightCheckBoxLabel')
-                        .text('Compact Rows')
+                        .text('Compact')
                     )
+                   .append(this.rowHeightControlFull)
+                   .append(
+                        $('<label/>')
+                        .attr('for', id_base + 'rowHeightFull')
+                        .addClass('rowHeightCheckBoxLabel')
+                        .text('Full')
+                    )
+                    .buttonset()
                 )
                 .get(0);
+                
         },
 
         /**
@@ -116,7 +144,8 @@
          */
         initEvents : function() {
             YAHOO.util.Event.on(this.inputBox, 'change', this.onChange, this, true);
-            YAHOO.util.Event.on(this.rowHeightControl, 'change', this.onChange, this, true);
+            YAHOO.util.Event.on(this.rowHeightControlCompact, 'change', this.onChange, this, true);
+            YAHOO.util.Event.on(this.rowHeightControlFull, 'change', this.onChange, this, true);
 
             // IE does not handle [ENTER] keydown with onChange event, so, have to add onKeydown event.
             if (YAHOO.env.ua.ie) {
@@ -138,7 +167,9 @@
             var storage = new Fisma.PersistentStorage('Fisma.RowsPerPage'),
                 compact = (storage.get('rowHeight') === 'compact');
             $('div.yui-dt').toggleClass('compact', compact);
-            $(this.rowHeightControl).attr('checked', compact);
+            $(this.rowHeightControlCompact).attr('checked', compact);
+            $(this.rowHeightControlFull).attr('checked', !compact);
+            
         },
 
         /**
@@ -166,7 +197,7 @@
          */
         syncToStorage : function () {
             var rows = parseInt(this.inputBox.value, 10),
-                    compact = $(this.rowHeightControl).is('input:checked'),
+                    compact = $(this.rowHeightControlCompact).is('input:checked'),
                     storage = new Fisma.PersistentStorage('Fisma.RowsPerPage');
 
             if (!isNaN(rows) && rows !== this.paginator.get('rowsPerPage')) {
@@ -174,6 +205,7 @@
                 storage.set('row', rows);
             } else {
                 $('input[type=checkbox][id$=rowHeightCompact]').attr('checked', compact);
+                $('input[type=checkbox][id$=rowHeightFull]').attr('checked', !compact);
             }
 
             $('div.yui-dt').toggleClass('compact', compact);

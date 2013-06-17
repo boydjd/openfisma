@@ -24,7 +24,7 @@
 var FSC = {
     /**
      * criteria for all of the checked facets
-     * 
+     *
      * @type Array
      */
     checkedFacetCriteria: [],
@@ -164,8 +164,8 @@ var FSC = {
     },
     /**
      * copies the data from the facet to the search panel
-     * 
-     * @returns 
+     *
+     * @returns
      */
     facetHandler: function() {
         $(".criterion legend input:checked").each(function(index) {
@@ -272,21 +272,17 @@ var FSC = {
                     var orgExact = $('#organization_exact').attr('checked');
 
                     if (orgExact !== 'checked') {
-                        $('#organization_exact_criterion').children().eq(2)
-                            .find("select").val('textNotExactMatch').change();
+                        $('#organization_exact_criterion').children().eq(2).find("select")
+                            .val('textNotExactMatch').change();
+                        $('#organization_exact_criterion').children().eq(3).find("input")
+                            .val(facetContainer.find('input[name="' + criterionField + '"]').val());
                     } else {
-                        $('#organization_exact_criterion').children().eq(2)
-                            .find("select").val('textExactMatch').change();
+                        $('#organization_exact_criterion').children().eq(2).find("select")
+                            .val('textExactMatch').change();
+                        $('#organization_exact_criterion').children().eq(3).find("input").val('');
                     }
 
-                    $('#organization_exact_criterion').children().eq(3).find(
-                        "input").val(
-                        facetContainer.find(
-                        'input[name="' + criterionField + '"]').val()
-                        );
-                    switch (facetContainer.find(
-                        'input[name="' + criterionField + '_children"]:checked')
-                        .val())
+                    switch (facetContainer.find('input[name="' + criterionField + '_children"]:checked').val())
                     {
                         case 'immediate':
                             criterionContainer.children().eq(2).find("select")
@@ -297,8 +293,9 @@ var FSC = {
                                 .val('organizationSubtree').change();
                             break;
                         case 'none':
-                            criterionContainer.children().eq(2).find("select")
-                                .val('textContains').change();
+                            criterionContainer.children().eq(2).find("select").val('textContains').change();
+                            $('#organization_exact_criterion').children().eq(3).find("input")
+                                .val(facetContainer.find('input[name="' + criterionField + '"]').val());
                             break;
                     }
                     criterionContainer.children().eq(3).find("input").val(
@@ -335,9 +332,9 @@ var FSC = {
             }
         });
     },
-    /** 
+    /**
      * toggles the display of 'itself' input element
-     * 
+     *
      * @param jQuery_selector inputElement target HTML element
      * @returns
      */
@@ -353,7 +350,7 @@ var FSC = {
                 'display', 'none').next().css('display', 'none');
         }
     },
-    /** 
+    /**
      * adjusts the count for all facets
      */
     facetCount: function() {
@@ -420,7 +417,7 @@ var FSC = {
     },
     /**
      * for type checkbox, adjusts the count for all facet inputs
-     * 
+     *
      * @param jQuery_selector inputElement
      * @returns {undefined}
      */
@@ -461,7 +458,7 @@ var FSC = {
     },
     /**
      * for radio type, displays the count for all non-null facet inputs
-     * 
+     *
      * @param jQuery_selector inputElement
      * @returns void
      */
@@ -506,9 +503,9 @@ var FSC = {
 
     },
     /**
-     * 
+     *
      * updates the vector counts for the other cvss vectors
-     * 
+     *
      * @param jQuery_selector inputElement
      * @returns void
      */
@@ -521,7 +518,7 @@ var FSC = {
     },
     /**
      * processes the ajax Request and displays the count
-     * 
+     *
      * @param jQuery_selector inputElement
      * @param string displayLocation
      * @param Array allCriteria
@@ -601,7 +598,7 @@ var FSC = {
     },
     /**
      * generates the criteria from the checked facets
-     * 
+     *
      * @returns void
      */
     generateCheckedFacetCriteria: function() {
