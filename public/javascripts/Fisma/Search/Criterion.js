@@ -242,10 +242,10 @@ var FSC = {
                         if (vectors.eq(vinputs).val() !== "")
                         {
                             criterionContainerOperands.eq(0).val(
-                                criterionContainerOperands.eq(0).val() + '"'
+                                criterionContainerOperands.eq(0).val()
                                 + vectors.eq(vinputs).attr(
                                 'name') + ':' + vectors.eq(vinputs)
-                                .val() + '"' + ',');
+                                .val() + ',');
                         }
 
                     }

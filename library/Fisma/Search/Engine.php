@@ -439,12 +439,17 @@ class Fisma_Search_Engine
                     $searchTerms[] = "-$fieldName:\"{$operands[0]}\"";
                     break;
 
-                // The following cases intentionally fall through
                 case 'textIn':
                     foreach ($operands as &$operand) {
                         $operand = "{$doctrineFieldName}_textsort:\"{$operand}\"";
                     }
                     $searchTerms[] = '(' . implode($operands, ' OR ') . ')';
+                    break;
+
+                case 'textContainsAll':
+                    foreach ($operands as &$operand) {
+                        $searchTerms[] = "$fieldName:\"{$operand}\"";
+                    }
                     break;
 
                 case 'enumIn':
