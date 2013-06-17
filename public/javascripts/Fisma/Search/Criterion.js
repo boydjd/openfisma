@@ -243,9 +243,7 @@ var FSC = {
                         {
                             criterionContainerOperands.eq(0).val(
                                 criterionContainerOperands.eq(0).val()
-                                + vectors.eq(vinputs).attr(
-                                'name') + ':' + vectors.eq(vinputs)
-                                .val() + ',');
+                                + vectors.eq(vinputs).attr('name') + ':' + vectors.eq(vinputs).val() + ',');
                         }
 
                     }
@@ -253,8 +251,7 @@ var FSC = {
                     if (criterionContainerOperands.eq(0).val().length > 0)
                     {
                         criterionContainerOperands.eq(0).val(
-                            criterionContainerOperands.eq(0).val().slice(0,
-                            - 1));
+                            criterionContainerOperands.eq(0).val().slice(0, - 1));
                     }
 
                     break;
@@ -346,8 +343,8 @@ var FSC = {
 
         }
         else {
-            $(inputElement).next().next().next().removeAttr('checked').css(
-                'display', 'none').next().css('display', 'none');
+            $(inputElement).next().next().next()
+                .removeAttr('checked').css('display', 'none').next().css('display', 'none');
         }
     },
     /**
@@ -359,10 +356,14 @@ var FSC = {
 
             // if the facet is checked, display the count at the input level
             if ($(inputElement).find(
-                'legend.header input:checked').length === 1)
+                'legend.header input:checked').length !== 1)
             {
-                // remove existing count
-                $(inputElement).find('span[id*="_count"]').remove();
+                // remove existing count (at the input-level)
+                $(inputElement).find('span[id*="_input_count"]').remove();
+            }
+            else {
+                // remove existing count (at the facet header)
+                $(inputElement).find('span[id*="'+ $(inputElement).attr('field') + '_count"]').remove();
                 return;
             }
 
@@ -409,7 +410,7 @@ var FSC = {
             if (showCount)
             {
                 tempFSC.processCountCriteria(inputElement, 'header',
-                    allCriteria);
+                    allCriteria, false);
             }
 
         });
@@ -426,7 +427,7 @@ var FSC = {
         var contentParentElement = $(inputElement).parents('div.content');
         var fieldsetParentElement = $(inputElement).parents('fieldset');
 
-        if (! $(inputElement).attr('checked') && contentParentElement.find(
+        if ( !$(inputElement).attr('checked') && contentParentElement.find(
             ':checked').length === 0)
         {
             contentParentElement.find('input').each(function(index,
@@ -444,14 +445,13 @@ var FSC = {
                 var allCriteria = tempFSC.checkedFacetCriteria;
                 allCriteria.push(inputCriterion);
                 tempFSC.processCountCriteria(fInputElement, 'input',
-                    allCriteria);
+                    allCriteria, false);
 
             });
         }
         else {
-            contentParentElement.find('input').each(function(index,
-                fInputElement) {
-                $(fInputElement).remove('span[id*="_input_count"]');
+            contentParentElement.find('input').each(function() {
+                $(this).parent().find('span[id*="_input_count"]').remove();
             });
         }
 
@@ -490,14 +490,14 @@ var FSC = {
                 var allCriteria = tempFSC.checkedFacetCriteria;
                 allCriteria.push(inputCriterion);
                 tempFSC.processCountCriteria(fInputElement, 'input',
-                    allCriteria);
+                    allCriteria, true);
 
             });
         }
         else {
-            contentParentElement.children('input').each(function(index,
-                fInputElement) {
-                $(fInputElement).remove('span[id*="_input_count"]');
+            contentParentElement.find('span[id*="_input_count"]').remove();
+            contentParentElement.find('input[type="radio"]').each(function(index) {
+                $(this).parent().find('span[id*="_input_count"]').remove();
             });
         }
 
@@ -511,9 +511,12 @@ var FSC = {
      */
     updateCvssVectorCount: function(inputElement)
     {
-        $(inputElement).parent().siblings().find(':checked').each(function(
-            index, fInputElement) {
-            Fisma.Search.Criterion.facetCountRadio(fInputElement);
+        // clear the checked vector
+        //$(inputElement).parent().find('span[id*="_input_count"]').remove();
+        
+        $(inputElement).parent().siblings().find(':checked').each(function() {
+            $(this).parent().find('span[id*="_input_count"]').remove();
+            Fisma.Search.Criterion.facetCountRadio(this);
         });
     },
     /**
@@ -522,14 +525,16 @@ var FSC = {
      * @param jQuery_selector inputElement
      * @param string displayLocation
      * @param Array allCriteria
+     * @param bool ajaxAsync
      * @returns void
      */
     processCountCriteria: function(inputElement, displayLocation,
-        allCriteria) {
+        allCriteria, ajaxAsync) {
 
         // generating the post data
         var postData = {
             start: 0,
+            count: 0,
             csrf: $('#searchForm input[name="csrf"]').val(),
             showDeleted: Fisma.Search.showDeletedRecords,
             queryType: $('#searchType').val()
@@ -579,6 +584,7 @@ var FSC = {
                 selElement.html(selElement.html() + displayText);
             }
             else {
+                selElement.find('span#' + displayId).html('');
                 selElement.find('span#' + displayId).html(
                     '(' + data.totalRecords + ')');
             }
@@ -587,6 +593,7 @@ var FSC = {
 
         // send the request and retrieve the results
         $.ajax({
+            async: ajaxAsync,
             type: 'POST',
             url: 'search',
             data: postData,
@@ -594,7 +601,7 @@ var FSC = {
             error: ajaxError,
             success: viewCount
         });
-
+        
     },
     /**
      * generates the criteria from the checked facets
@@ -685,17 +692,19 @@ var FSC = {
                         orgExactCriterionType = 'textNotExactMatch';
                     }
 
-                    var orgQueryInput = orgInput.find(
-                        'input[name="organization"]').eq(0).val();
+                    var orgQueryInput = currFacet.find('input[name="organization"]').eq(0).val();
 
                     orgExactCriterion =
-                        {
+                    {
                             field: criterionField,
                             operator: orgExactCriterionType,
-                            operands: orgQueryInput
-                        };
+                            operands: [orgQueryInput]
+                    };
 
-                    this.checkedFacetCriteria.push(orgExactCriterion);
+                    if ( orgExactCriterion.operands.length > 0 )
+                    {
+                        this.checkedFacetCriteria.push(orgExactCriterion);
+                    }
 
                     switch (orgInput.find('[id*="children"]'))
                     {
@@ -713,7 +722,12 @@ var FSC = {
                 case 'id':
                     break;
                 case 'text':
-                    cfOperands.push(currFacet.find('input').eq(0).val());
+                    cfOperands.push(currFacet.find('input[type="text"]').eq(0).val());
+                    if ( $('#' + criterionField + '_exact').attr('checked') )
+                    {
+                        criterionType = 'textExactMatch';
+                        
+                    }
                     break;
                 default:
                     var none = null;
