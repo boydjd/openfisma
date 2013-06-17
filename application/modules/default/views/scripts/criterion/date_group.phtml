@@ -1,19 +1,23 @@
 <span id='days_old'>
     <input type="radio" id="days_old_30"
            name="<?php echo $this->escape($this->name) ?>"
-           value='<?php echo $this->escape($this->value['days30']) ?>' />
+           value='<?php echo $this->escape($this->value['days30']) ?>' 
+           onchange='Fisma.Search.Criterion.facetCountRadio(this); Fisma.Search.Criterion.facetCount();' />
     <label for="days_old_30">30 days</label>
     <input type="radio" id="days_old_60"
            name="<?php echo $this->escape($this->name) ?>"
-           value='<?php echo $this->escape($this->value['days60']) ?>' />
+           value='<?php echo $this->escape($this->value['days60']) ?>' 
+           onchange='Fisma.Search.Criterion.facetCountRadio(this); Fisma.Search.Criterion.facetCount();' />
     <label for="days_old_60">60 days</label>
     <input type="radio" id="days_old_90"
            name="<?php echo $this->escape($this->name) ?>"
-           value='<?php echo $this->escape($this->value['days90']) ?>' />
+           value='<?php echo $this->escape($this->value['days90']) ?>' 
+           onchange='Fisma.Search.Criterion.facetCountRadio(this); Fisma.Search.Criterion.facetCount();' />
     <label for="days_old_90">90 days</label>
     <input type="radio" id="days_old_unfiltered"
            name="<?php echo $this->escape($this->name) ?>"
-           value='' checked />
+           value='' checked 
+           onchange='Fisma.Search.Criterion.facetCountRadio(this); Fisma.Search.Criterion.facetCount();' />
     <label for="days_old_unfiltered">(no filtering)</label>
     </span>
 <script>
