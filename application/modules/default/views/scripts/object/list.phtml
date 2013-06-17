@@ -164,14 +164,17 @@ if (isset($this->multifacetPage)) {
                                                 .attr('checked', 'checked');
                                         }
                                     } else if (facet.attr('type') === 'organization') {
+                                        if (inputValue) {
+                                            facet.find('div.content input').eq(inputFields).val(inputValue);
+                                        }
                                         var operator = $(inputElement).find('select').eq(1).val();
                                         switch (operator) {
                                             case 'textExactMatch':
                                             case 'textNotExactMatch':
-                                                facet.find('div.content input').eq(inputFields).val(inputValue);
                                                 $('#organization_exact')
                                                     .attr('checked', (operator == 'textExactMatch'))
                                                     .change();
+                                                $(inputElement).attr('id', 'organization_exact_criterion');
                                                 break;
                                             case 'organizationSubtree':
                                                 $('#organization_children_all').attr('checked', true);

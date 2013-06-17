@@ -195,11 +195,12 @@ var FSC = {
 
                     if (orgExact !== 'checked') {
                         $('#organization_exact_criterion').children().eq(2).find("select").val('textNotExactMatch').change();
+                        $('#organization_exact_criterion').children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
                     } else {
                         $('#organization_exact_criterion').children().eq(2).find("select").val('textExactMatch').change();
+                        $('#organization_exact_criterion').children().eq(3).find("input").val('');
                     }
 
-                    $('#organization_exact_criterion').children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
                     switch (facetContainer.find('input[name="' + criterionField + '_children"]:checked').val())
                     {
                         case 'immediate':
@@ -210,6 +211,7 @@ var FSC = {
                             break;
                         case 'none':
                             criterionContainer.children().eq(2).find("select").val('textContains').change();
+                            $('#organization_exact_criterion').children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());
                             break;
                     }
                     criterionContainer.children().eq(3).find("input").val(facetContainer.find('input[name="' + criterionField + '"]').val());

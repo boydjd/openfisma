@@ -199,8 +199,10 @@ class OrganizationTable extends Fisma_Doctrine_Table implements Fisma_Search_Sea
 
         $orgSystems = $organization->getNode()->getChildren();
         $myOrgSystemIds = array($organization->id);
-        foreach ((array)$orgSystems as $orgSystem) {
-            $myOrgSystemIds[] = $orgSystem['id'];
+        if ($orgSystems) {
+            foreach ($orgSystems as $orgSystem) {
+                $myOrgSystemIds[] = $orgSystem['id'];
+            }
         }
         return $myOrgSystemIds;
     }
