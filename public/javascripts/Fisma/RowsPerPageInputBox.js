@@ -132,7 +132,6 @@
                         .attr('for', id_base + 'rowHeightFull')
                         .addClass('rowHeightCheckBoxLabel')
                         .text('Full')
-                        //.attr('checked', true)
                     )
                     .buttonset()
                 )
