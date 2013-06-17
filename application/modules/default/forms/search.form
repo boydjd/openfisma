@@ -7,7 +7,7 @@
 
 [search]
 
-attribs.onsubmit = " Fisma.Search.Criterion.facetHandler(); Fisma.Search.handleSearchEvent(this); return false;"
+attribs.onsubmit = " Fisma.Search.Criterion.facetHandler(); Fisma.Search.Criterion.facetCount(); Fisma.Search.Criterion.updateCvssVectorCount(); Fisma.Search.handleSearchEvent(this); return false;"
 attribs.id = searchForm
 
 elements.searchType.type = "hidden"

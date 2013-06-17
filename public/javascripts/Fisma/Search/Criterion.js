@@ -351,10 +351,6 @@ var FSC = {
             allCriteria = tempFSC.checkedFacetCriteria;
             allCriteria.push(mainCriterion);
 
-            if ($(inputElement).attr('type') === 'enum') {
-                console.info("all criteria", allCriteria);
-            }
-
             if (showCount)
             {
                 tempFSC.processCountCriteria(inputElement, 'header', allCriteria);
@@ -376,11 +372,8 @@ var FSC = {
         
             if (!$(inputElement).attr('checked') && contentParentElement.find(':checked').length === 0 )
             {
-                console.info("facet count checkbox - entering");
                 contentParentElement.find('input').each(function(index, fInputElement) {
 
-                 console.info('fInputElement ', fInputElement);
-                    
                     // criterion with the input's value as the operand
                     var inputCriterion = {
                         field: fieldsetParentElement.attr('field'),
@@ -395,7 +388,6 @@ var FSC = {
                     tempFSC.processCountCriteria(fInputElement,'input', allCriteria);
                    
                 });
-                console.info("facet count checkbox - exit");
             }
             else {
                 contentParentElement.find('input').each( function(index, fInputElement) {
@@ -497,7 +489,6 @@ var FSC = {
         // displays the count
         var viewCount = function(data, textStatus, jqXHR)
         {
-            //console.info("field: ", $(inputElement).attr('field'), " - data: ", data, " - status: ", textStatus, " - jqXHR: ", jqXHR);
             
             // location where the count will be displayed
             var displayId = '';
