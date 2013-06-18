@@ -204,8 +204,8 @@
                 this.paginator.setRowsPerPage(rows);
                 storage.set('row', rows);
             } else {
-                $('input[type=checkbox][id$=rowHeightCompact]').attr('checked', compact);
-                $('input[type=checkbox][id$=rowHeightFull]').attr('checked', !compact);
+                $('input[type=radio][id$=rowHeightCompact]').attr('checked', compact).change();
+                $('input[type=radio][id$=rowHeightFull]').attr('checked', !compact).change();
             }
 
             $('div.yui-dt').toggleClass('compact', compact);

@@ -128,7 +128,9 @@ if (isset($this->multifacetPage)) {
                         var panelContainer = Fisma.Search.advancedSearchPanel.container;
                         Dom.get('advanced').style.display = 'none';
                         YAHOO.util.Event.onContentReady("advancedSearch", function() {
+                            <?php if ( !Fisma::debug() ): ?>
                             Dom.get('advancedSearch').style.display = 'none';
+                            <?php    endif; ?>
                         });
 
                         if ($(panelContainer).children().length > 0)
