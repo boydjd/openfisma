@@ -1271,6 +1271,129 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
     }
 
     /**
+     * test
+     */
+    public function queryAction()
+    {
+        if ($this->_enforceAcl) {
+            $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
+        }
+
+        $format = $this->getRequest()->getParam('format');
+        $rowsPerPage = $this->_getRowsPerPage();
+
+        // Setup search parameters
+        $sortColumn = $this->getRequest()->getParam('sort');
+
+        $searchableFields = Doctrine::getTable($this->_modelName)->getSearchableFields();
+
+        if (empty($sortColumn)) {
+            // Pick the first searchable column as the default sort column
+            $fieldNames = array_keys($searchableFields);
+
+            $sortColumn = $fieldNames[0];
+        }
+
+        $sortDirection = $this->getRequest()->getParam('dir', 'asc');
+        $sortBoolean = ('asc' == $sortDirection);
+        $showDeletedRecords = ('true' == $this->getRequest()->getParam('showDeleted'));
+
+        if (empty($format)) {
+            // For HTML UI, add a limit/offset to query
+            $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
+            $rows = $this->getRequest()->getParam('count', $rowsPerPage);
+        } else {
+            // For PDF/XLS export, $rows is an arbitrarily high number (that won't DoS the system)
+            $start = 0;
+            $rows = self::MAX_EXPORT_RECORDS;
+        }
+
+        // Execute simple search (default) or advanced search (if explicitly requested)
+        $searchEngine = Zend_Registry::get('search_engine');
+
+        $queryType = $this->getRequest()->getParam('queryType');
+
+        if ('advanced' == $queryType) {
+
+            // Extract search criteria from URL query string
+            $searchCriteria = new Fisma_Search_Criteria;
+
+            $queryJson = $this->getRequest()->getParam('query');
+            $query = Zend_Json::decode($queryJson);
+
+            foreach ($query as $queryItem) {
+                $searchCriterion = new Fisma_Search_Criterion(
+                    $queryItem['field'],
+                    $queryItem['operator'],
+                    $queryItem['operands']
+                );
+
+                $searchCriteria->add($searchCriterion);
+            }
+
+            // Run advanced search
+            $result = $searchEngine->generateQuery(
+                $this->_modelName,
+                '',
+                $searchCriteria,
+                $sortColumn,
+                $sortBoolean,
+                $start,
+                $rows,
+                $showDeletedRecords
+            );
+        } else if ('faceted' == $queryType) {
+            // Extract keyword
+            $keywords = $this->getRequest()->getParam('keywords');
+
+            // Extract search criteria from URL query string
+            $searchCriteria = new Fisma_Search_Criteria;
+
+            $queryJson = $this->getRequest()->getParam('query');
+            $query = Zend_Json::decode($queryJson);
+
+            foreach ($query as $queryItem) {
+                $searchCriterion = new Fisma_Search_Criterion(
+                    $queryItem['field'],
+                    $queryItem['operator'],
+                    $queryItem['operands']
+                );
+
+                $searchCriteria->add($searchCriterion);
+            }
+
+            // Run facet search
+            $result = $searchEngine->generateQuery(
+                $this->_modelName,
+                $keywords,
+                $searchCriteria,
+                $sortColumn,
+                $sortBoolean,
+                $start,
+                $rows,
+                $showDeletedRecords
+            );
+        } else {
+            $keywords = $this->getRequest()->getParam('keywords');
+
+            // Run simple search
+            $result = $searchEngine->generateQuery(
+                $this->_modelName,
+                $keywords,
+                new Fisma_Search_Criteria,
+                $sortColumn,
+                $sortBoolean,
+                $start,
+                $rows,
+                $showDeletedRecords
+            );
+        }
+
+        // return JSON
+        return $this->_helper->json($result);
+    }
+
+    /**
      * Render the re-association form (should probably be loaded in a panel)
      *
      * @GETAllowed

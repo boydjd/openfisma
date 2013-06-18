@@ -193,7 +193,7 @@ class Fisma_Search_Engine
     }
 
     /**
-     * Search by an optional keyword and a list of specific field filters
+     * Generate query components
      *
      * @param string $type Name of model index to search
      * @param string $keyword
@@ -203,11 +203,11 @@ class Fisma_Search_Engine
      * @param int $start The offset within the result set to begin returning documents from
      * @param int $rows The number of documents to return
      * @param bool $deleted If true, include soft-deleted records in the results
-     * @param bool $highlightCriteria If true, matching from criteria will be highlighted (for advanced search)
      * @return Fisma_Search_Result Rectangular array of search results
      */
-    public function search($type, $keyword, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection,
-                                     $start, $rows, $deleted, $highlightCriteria = false)
+
+    public function generateQuery($type, $keyword, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection,
+                                     $start, $rows, $deleted)
     {
         $params = array();
 
@@ -562,9 +562,34 @@ class Fisma_Search_Engine
             $query = $queryString;
         }
 
+        $params['fl'] = implode(',', $params['fl']);
+        $params['hl.fl'] = implode(',', $params['hl.fl']);
+        $params['query'] = $query;
+
+        return $params;
+    }
+
+    /**
+     * Search by an optional keyword and a list of specific field filters
+     *
+     * @param string $type Name of model index to search
+     * @param string $keyword
+     * @param Fisma_Search_Criteria $criteria
+     * @param string $sortColumn Name of column to sort on
+     * @param boolean $sortDirection True for ascending sort, false for descending
+     * @param int $start The offset within the result set to begin returning documents from
+     * @param int $rows The number of documents to return
+     * @param bool $deleted If true, include soft-deleted records in the results
+     * @return Fisma_Search_Result Rectangular array of search results
+     */
+    public function search($type, $keyword, Fisma_Search_Criteria $criteria, $sortColumn, $sortDirection,
+                                     $start, $rows, $deleted)
+    {
+        $params = $this->generateQuery($type, $keyword, $criteria, $sortColumn, $sortDirection,
+                                     $start, $rows, $deleted);
+        $query = $params['query'];
+        unset($params['query']);
         try {
-            $params['fl'] = implode(',', $params['fl']);
-            $params['hl.fl'] = implode(',', $params['hl.fl']);
             $response = $this->_client->search($query, $start, $rows, $params);
         } catch (Exception $e) {
             return new Fisma_Search_Result(0, 0, array());
