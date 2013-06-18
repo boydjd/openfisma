@@ -61,6 +61,7 @@ class Fisma_Search_Criterion
         'systemAggregationSubtree',
         'textContains',
         'textDoesNotContain',
+        'textContainsAll',
         'textExactMatch',
         'textIn',
         'textNotExactMatch',

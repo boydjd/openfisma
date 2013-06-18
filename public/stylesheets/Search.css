@@ -136,7 +136,6 @@ div.yui-dt.compact tr.yui-dt-rec div.yui-dt-liner {
 }
 
 .facetBox span.value {
-    border: solid thin;
     display: inline-block;
     padding: 2px;
     margin: 2px;

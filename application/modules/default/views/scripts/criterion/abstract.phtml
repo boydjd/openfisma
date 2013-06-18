@@ -2,6 +2,9 @@
 <fieldset type="<?php echo $this->escape($this->config['type']) ?>"
           field="<?php echo $this->escape($this->config['name']) ?>"
           criterion_type="<?php echo $this->escape($this->config['criterion_type']) ?>"
+          <?php if (isset($this->config['solr_type'])): ?>
+          solr_type="<?php echo $this->escape($this->config['solr_type']) ?>"
+          <?php endif; ?>
           class='criterion ui-accordion'>
     <legend class='header ui-accordion-header ui-state-default
     <?php if ($active): ?>ui-corner-top ui-accordion-header-active<?php else: ?>ui-corner-all<?php endif; ?>
