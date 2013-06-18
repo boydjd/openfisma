@@ -415,15 +415,16 @@ var FSC = {
                             var i;
                             data = data.facet_counts.facet_fields[fieldsetParentElement.attr('field')
                                 + fieldsetParentElement.attr('solr_type')];
+                            var caseinsValueChecker = function() {
+                                return $(this).val().toUpperCase() === data[i].toUpperCase();
+                            };
                             for (i = 0; i < data.length; i += 2) {
-                                inputElement = contentParentElement.find('input').filter(function() {
-                                    return $(this).val().toUpperCase() == data[i].toUpperCase();
-                                });
-
-                                displayId = $(inputElement).val() + '_input_count';
-                                selElement = $(inputElement).siblings('label[for="' + $(inputElement).attr('id') + '"]');
-                                displayText = '<span id="' + displayId + '"> (' + data[i + 1] + ')</span>';
-                                if ($(inputElement).find('span#' + displayId).length === 0) {
+                                var finputElement = contentParentElement.find('input').filter(caseinsValueChecker);
+                                var displayId = $(finputElement).val() + '_input_count';
+                                var selElement = $(finputElement)
+                                    .siblings('label[for="' + $(finputElement).attr('id') + '"]');
+                                var displayText = '<span id="' + displayId + '"> (' + data[i + 1] + ')</span>';
+                                if ($(finputElement).find('span#' + displayId).length === 0) {
                                     selElement.html(selElement.html() + displayText);
                                 } else {
                                     selElement.find('span#' + displayId).html('');
@@ -468,7 +469,7 @@ var FSC = {
                 tempFSC.generateCheckedFacetCriteria();
                 var allCriteria = tempFSC.checkedFacetCriteria;
                 allCriteria.push(inputCriterion);
-                tempFSC.processCountCriteria(fInputElement, 'input', allCriteria, true)
+                tempFSC.processCountCriteria(fInputElement, 'input', allCriteria, true);
             });
         } else {
             contentParentElement.find('span[id*="_input_count"]').remove();
