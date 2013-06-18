@@ -694,7 +694,7 @@ var FSC = {
 
                     var orgQueryInput = currFacet.find('input[name="organization"]').eq(0).val();
 
-                    orgExactCriterion =
+                    var orgExactCriterion =
                     {
                             field: criterionField,
                             operator: orgExactCriterionType,
@@ -716,6 +716,7 @@ var FSC = {
                             break;
                         case 'none':
                             criterionType = 'textContains';
+                            break;
                     }
 
                     break;
