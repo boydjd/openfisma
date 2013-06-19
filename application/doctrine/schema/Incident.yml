@@ -1,9 +1,12 @@
 Incident:
-    listeners: [IndexListener]
+    listeners: [IndexListener, NotificationListener]
 
     columns:
         modifiedTs: timestamp
-        closedTs: timestamp
+        closedTs:
+            type: timestamp
+            extra:
+                logicalName: Resolved
 
         reporterTitle:
             type: string(255)
@@ -101,13 +104,13 @@ Incident:
             type: date
             extra:
                 auditLog: true
-                logicalName: Incident Date
+                logicalName: Occurred
             comment: The date on which the incident was known or believed to have occurred
         incidentTime:
             type: time
             extra:
                 auditLog: true
-                logicalName: Incident Time
+                logicalName: Occurred Time
             comment: The time at which the incident was known or believed to have occurred
         incidentTimezone:
             type: enum
@@ -163,13 +166,13 @@ Incident:
                 - Pacific/Auckland
             extra:
                 auditLog: true
-                logicalName: Incident Timezone
+                logicalName: Occurred Timezone
             comment: The timezone in which the incident timestamp belongs
 
         reportTs:
             type: timestamp
             extra:
-                logicalName: Report Date and Time
+                logicalName: Reported
             comment: The time at which the incident was reported
         reportTz:
             type: enum
@@ -224,155 +227,177 @@ Incident:
                 - Pacific/Fiji
                 - Pacific/Auckland
             extra:
-                logicalName: Report Timezone
+                logicalName: Reported Timezone
             comment: The timezone in which the report timestamp belongs
 
         additionalInfo:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
-                logicalName: Incident Description
+                logicalName: Description
 
         piiInvolved:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
-                logicalName: PII Involved
+                logicalName: PII Involved?
             comment: Indicates whether personally identifiable information was involved
         piiAdditional:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
-                logicalName: Additional PII Details
+                logicalName: PII Details
             comment: Additional space to explain the nature of PII involved
         piiMobileMedia:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
-                logicalName: PII Stored On Mobile Media
+                logicalName: PII Mobile Media Involed?
             comment: Was the PII stored on mobile media, such as a disc or removable drive?
         piiMobileMediaType:
             type: enum
             values: [laptop, disc, document, usb, tape, other]
             extra:
+                notify: true
                 auditLog: true
-                logicalName: PII Type Of Mobile Media
+                logicalName: PII Mobile Media Type
         piiEncrypted:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
-                logicalName: PII Encrypted
+                logicalName: PII Encrypted?
             comment: Was PII data encrypted on the lost media?
         piiAuthoritiesContacted:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
-                logicalName: Authorities Contacted For Loss Of PII
+                logicalName: PII Authorities Contacted?
             comment: Have the relevant authorities been contacted?
         piiPoliceReport:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
-                logicalName: Police Report Filed For Loss Of PII
+                logicalName: PII Police Report?
             comment: Has a police report been filed?
         piiIndividualsCount:
             type: integer(10)
             extra:
+                notify: true
                 auditLog: true
-                logicalName: Number Of Individuals Affected By Loss Of PII
+                logicalName: PII Individuals Count
             comment: "The number of individuals potentially compromised by this incident\'s loss of PII"
         piiIndividualsNotified:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
-                logicalName: Inviduals Affected By PII Have Been Notified
+                logicalName: PII Individuals Notified?
             comment: Have the affected individuals been contacted?
         piiShipment:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
-                logicalName: PII Lost During Shipment
+                logicalName: PII Shipment Involved?
             comment: Was the loss of PII due to a shipment?
         piiShipmentSenderContacted:
             type: enum
             values: ["YES", "NO"]
             extra:
+                notify: true
                 auditLog: true
-                logicalName: Shipping Company Contacted
+                logicalName: PII Shipping Company Contacted?
             comment: Contact information for the company responsible for shipping the PII
         piiShipmentSenderCompany:
             type: string(255)
             extra:
+                notify: true
                 auditLog: true
-                logicalName: Name Of Shipping Company
+                logicalName: PII Shipping Company
         piiShipmentTimeline:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
-                logicalName: Description Of Shipment Timeline
+                logicalName: PII Shipment Timeline
         piiShipmentTrackingNumbers:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
-                logicalName: Shipment Tracking Numbers
+                logicalName: PII Shipment Tracking Numbers
 
         hostIp:
             type: string(39)
             Fisma_Doctrine_Validator_Ip: true
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Host IP Address
             comment: The IP address of the affected host
         hostName:
             type: string(255)
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Host Name
         hostOs:
             type: enum
             values: [win7, vista, xp, macos, linux, unix]
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Host Operating System
         hostAdditional:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
-                logicalName: Additional Host Details
+                logicalName: Asset Description
 
         sourceIp:
             type: string(15)
             Fisma_Doctrine_Validator_Ip: true
             extra:
+                notify: true
                 auditLog: true
-                logicalName: Source IP Address
+                logicalName: Source IP
             comment: The IP address from which the incident is believed to have originated
         sourceAdditional:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 purify: html
-                logicalName: Additional Details About Incident Source
+                logicalName: Source Additional
             comment: Additional description of the source or origin of the incident
 
         actionsTaken:
-            type: string
+            type: clob
             extra:
+                notify: true
                 auditLog: true
                 purify: html
-                logicalName: Actions That Were Taken
+                logicalName: Timeline
             comment: What actions were taken to the incident?
 
         status:
@@ -388,24 +413,43 @@ Incident:
                 auditLog: true
                 logicalName: Resolution
 
-        currentWorkflowStepId:
-            type: integer
-            comment: Foreign key to the workflow for this incident
+        # denormalized field for indexing
+        currentWorkflowName:
+            type: string
         reportingUserId:
             type: integer
             comment: Foreign key to the user who reported this incident
         categoryId:
             type: integer
             comment: Foreign key to the IR sub category in which this incident belongs
+            extra:
+                notify: true
+                class: IrCategory
+                field: name
+                logicalName: Category
         organizationId:
             type: integer
             comment: Foreign key to the affected organization/system
             extra:
+                notify: true
+                class: Organization
+                field: name
                 auditLog: true
-                logicalName: Affected System/Organization
+                logicalName: Organization/System
+        denormalizedParentOrganizationId:
+            type: integer
+            extra:
+                notify: true
+                class: Organization
+                field: name
+                auditLog: true
+                logicalName: Parent Organization
         pocId:
             type: integer
             extra:
+                notify: true
+                class: User
+                field: displayName
                 auditLog: true
                 logicalName: Point Of Contact
                 requiredPrivilege: update_poc
@@ -413,24 +457,30 @@ Incident:
         severityLevel:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Severity Level
         source:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Source
         impact:
             type: string
             extra:
+                notify: true
                 auditLog: true
                 logicalName: Impact
+        responseStrategies: array
+        denormalizedResponseStrategies:
+            type: string
+            extra:
+                notify: true
+                auditLog: true
+                logicalName: Response Strategies
 
     relations:
-        CurrentWorkflowStep:
-            class: IrIncidentWorkflow
-            local: currentWorkflowStepId
-            foreign: id
         ReportingUser:
             class: User
             local: reportingUserId
@@ -445,6 +495,11 @@ Incident:
             local: organizationId
             foreign: id
             foreignAlias: Incidents
+        ParentOrganization:
+            class: Organization
+            local: denormalizedParentOrganizationId
+            foreign: id
+            foreignAlias: ChildIncidents
         PointOfContact:
             class: User
             local: pocId

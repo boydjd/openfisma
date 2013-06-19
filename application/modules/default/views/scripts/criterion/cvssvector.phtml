@@ -1,0 +1,158 @@
+<span id="<?php echo $this->escape($this->name) ?>_list">
+    <span id='access_vector'>
+        <u>Access Vector</u><br />
+        <input type="radio" id="av_local" name="AV" value='L'
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="av_local">Local</label>
+        <input type="radio" id="av_adjacentNetwork" name="AV" value='A' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="av_adjacentNetwork">Adjacent Network</label>
+        <input type="radio" id="av_network" name="AV" value='N' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="av_network">Network</label>
+        <input type="radio" id="av_unfiltered" name="AV" value="" checked 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="av_unfiltered">(no filtering)</label>
+    </span>
+
+    <br />
+    <span id='access_complexity'>
+        <u>Access Complexity</u><br />
+        <input type="radio" id="ac_low" name="AC" value='L' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="ac_low">Low</label>
+        <input type="radio" id="ac_moderate" name="AC" value='M' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="ac_moderate">Moderate</label>
+        <input type="radio" id="ac_high" name="AC" value='H' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="ac_high">High</label>
+        <input type="radio" id="ac_unfiltered" name="AC" value="" checked 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="ac_unfiltered">(no filtering)</label>
+    </span>
+
+    <br />
+    <span id='authentication'>
+        <u>Authentication</u><br />
+        <input type="radio" id="au_multiple" name="Au" value='M' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="au_multiple">Multiple</label>
+        <input type="radio" id="au_single" name="Au" value='S' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="au_single">Single</label>
+        <input type="radio" id="au_none" name="Au" value='N' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="au_none">None</label>
+        <input type="radio" id="au_unfiltered" name="Au" value="" checked 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="au_unfiltered">(no filtering)</label>
+    </span>
+
+    <br />
+    <span id='confidentiality_impact'>
+        <u>Confidentiality Impact</u><br />
+        <input type="radio" id="c_complete" name="C" value ='C'
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="c_complete">Complete</label>
+        <input type="radio" id="c_partial" name="C" value='P' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="c_partial">Partial</label>
+        <input type="radio" id="c_none" name="C" value='N' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="c_none">None</label>
+        <input type="radio" id="c_unfiltered" name="C" value="" checked 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="c_unfiltered">(no filtering)</label>
+    </span>
+
+    <br />
+    <span id='integrity_impact'>
+        <u>Integrity Impact</u><br />
+        <input type="radio" id="i_complete" name="I" value ='C'
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="i_complete">Complete</label>
+        <input type="radio" id="i_partial" name="I" value='P' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="i_partial">Partial</label>
+        <input type="radio" id="i_none" name="I" value='N' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="i_none">None</label>
+        <input type="radio" id="i_unfiltered" name="I" value="" checked 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="i_unfiltered">(no filtering)</label>
+    </span>
+
+    <br />
+    <span id='availability_impact'>
+        <u>Availability Impact</u><br />
+        <input type="radio" id="a_complete" name="A" value ='C'
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="a_complete">Complete</label>
+        <input type="radio" id="a_partial" name="A" value='P' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="a_partial">Partial</label>
+        <input type="radio" id="a_none" name="A" value='N' 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="a_none">None</label>
+        <input type="radio" id="a_unfiltered" name="A" value="" checked 
+               onchange='Fisma.Search.Criterion.facetCountRadio(this);
+                   Fisma.Search.Criterion.updateCvssVectorCount(this);
+                   Fisma.Search.Criterion.facetCount();' />
+        <label for="a_unfiltered">(no filtering)</label>
+    </span>
+</span>
+<script>
+    $('#access_vector').buttonset();
+    $('#access_complexity').buttonset();
+    $('#authentication').buttonset();
+    $('#confidentiality_impact').buttonset();
+    $('#integrity_impact').buttonset();
+    $('#availability_impact').buttonset();
+</script>

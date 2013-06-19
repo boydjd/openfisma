@@ -8,12 +8,12 @@ Role:
         name:
             type: string(255)
             extra:
-                logicalName: Role Name
+                logicalName: Name
         nickname:
             type: string(255)
             unique: true
             extra:
-                logicalName: Role Nickname
+                logicalName: Nickname
             unique: true;
         description:
             type: string
@@ -21,6 +21,12 @@ Role:
                 logicalName: Description
                 purify: html
             comment: Any extra information about this role, such as security clearances required to hold it, etc.
+        type:
+            type: enum
+            values: [ACCOUNT_TYPE, USER_GROUP]
+            extra:
+                logicalName: Type
+            comment: To distinguish between account types (with privileges) and user groups (only used for workflows)
 
     relations:
         # Users is a many-to-many relation

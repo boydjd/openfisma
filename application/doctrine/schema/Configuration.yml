@@ -50,6 +50,8 @@ Configuration:
             type: string(255)
             comment: Password for SMTP authentication
             default: ""
+            extra:
+                masked: true
         send_type:
             type: enum
             notblank: true
@@ -67,6 +69,10 @@ Configuration:
             notblank: true
             comment: Use Transport Layer Security (TLS)
             default: 0
+        email_detail:
+            type: boolean
+            default: 1
+            comment: Show details in email notifications
         unlock_enabled:
             type: boolean
             notblank: true
@@ -128,9 +134,6 @@ Configuration:
             notblank: true
             comment: System name
             default: ""
-        organization_poc_list:
-            type: string(65535)
-            default: "Business Owner,Information Security Officer,Authorizing Official"
         rob_duration:
             type: integer(2)
             notblank: true
@@ -188,8 +191,8 @@ Configuration:
             type: enum
             notnull: true
             values: [threat_level, residual_risk]
-            comment: The default threat metrics to use for finding risk analysis.
             default: threat_level
+            comment: The default threat metrics to use for finding risk analysis.
         default_bureau_id:
             type: integer(20)
             notblank: true
@@ -214,12 +217,19 @@ Configuration:
             type: string(6)
             notnull: true
             notblank: true
-            comment: The maximum size of files that users can upload to the application, this setting applies to all modules.
             default: 20M
+            comment: The maximum size of files that users can upload to the application, this setting applies to all modules.
         user_editable_profiles:
             type: boolean
             notnull: true
             default: true
-        asset_service_tags:
-            type: string(65535)
-            default: "development,testing,pre-production,staging,production"
+        vm_reopen_destination:
+            type: integer
+        vm_reopen_source:
+            type: integer
+        vm_aggregation:
+            type: boolean
+            default: false
+            extra:
+                logicalName: Aggregate Vulnerabilities
+            comment: With aggregation enabled, the application will attempt to intelligently aggregate similar vulnerabilities.

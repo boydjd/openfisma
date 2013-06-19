@@ -1,0 +1,50 @@
+<form>
+<table class='keyValues'>
+    <tr>
+        <td>Name</td>
+        <td><input type='text' name='name' id='transitionName' autofocus value='<?php
+            if ($this->step): echo $this->escape($this->step->name); endif;
+        ?>' /></td>
+    </tr>
+    <tr>
+        <td>Destination</td>
+        <td>
+            <input name='destination' value='next' type='radio' checked /> Next step in the workflow<br/>
+            <input name='destination' value='back' type='radio' /> Previous step in the workflow<br/>
+            <input name='destination' value='custom' type='radio' /> User Defined<br/>
+            <select name='customDestination'>
+                <option value='undefined'>Select a workflow step</option>
+                <?php foreach ($this->availableWorkflows as $destinationWorkflow): ?>
+                <optgroup label='<?php echo $this->escape($destinationWorkflow->name); ?>'>
+                    <?php foreach ($destinationWorkflow->WorkflowSteps as $destinationStep): ?>
+                    <option value='<?php echo $this->escape($destinationStep->id); ?>' <?php
+                        if ($this->step && $this->step->autoTransitionDestination === $destinationStep->id):
+                            echo $this->escape('selected');
+                        endif;
+                    ?>>
+                        <?php echo $this->escape($destinationStep->name); ?>
+                    </option>
+                    <?php endforeach; ?>
+                </optgroup>
+                <?php endforeach; ?>
+            </select>
+        </td>
+    </tr>
+    <tr>
+        <td>Organization Roles</td>
+        <td><?php
+            $roleSelect = new Fisma_Yui_Form_JsonMultiselect('roles');
+            $roleSelect->setMultiOptions(
+                Doctrine::getTable('Role')->findByType('USER_GROUP')->toKeyValueArray('id', 'name')
+            );
+            echo $this->escape($roleSelect, 'none');
+        ?></td>
+    </tr>
+</table>
+<p>
+    <?php echo $this->escape(new Fisma_Yui_Form_Button_Submit('submitTransition', array(
+        'label' => 'OK',
+        'imageSrc' => '/images/ok.png'
+    )), 'none'); ?>
+</p>
+</form>

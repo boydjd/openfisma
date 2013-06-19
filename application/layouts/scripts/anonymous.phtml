@@ -6,65 +6,56 @@
     <head>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
         <meta http-equiv="refresh" content="<?php echo $this->escape($inactivityPeriod, 'none'); ?>;url=/auth/logout">
+        <?php echo $this->escape($this->headTitle(), 'none'); ?>
 
-    <?php 
-    echo $this->partial('partial/title.phtml');
-
+<?php
     $yuiComponents = array('yahoo', 'dom', 'event', 'element', 'container', 'json', 'cookie', 'get', 'dragdrop',
                            'animation', 'menu', 'button', 'json', 'connection', 'logger', 'tabview', 'calendar',
                            'paginator', 'datasource', 'datatable', 'selector', 'treeview', 'uploader',
-                           'reset-fonts-grids', 'autocomplete');
-
+                           'reset-fonts-grids', 'autocomplete', 'progressbar', 'history', 'swf', 'storage', 'base');
     $yui = new Fisma_Loader();
     $yui->load($yuiComponents);
 
     $this->headScript()->appendFile('/javascripts/tiny_mce/tiny_mce.js');
+    $this->injectAsset('/javascripts/excanvas.js', 'js', false, 'screen', 'IE');
     $this->injectAsset('/javascripts/combined.js', 'js', true);
     $this->injectAsset('/stylesheets/combined.css', 'css', true);
     $this->injectAsset('/stylesheets/print.css', 'css', false, 'print');
+    $this->injectAsset('/stylesheets/ie9hacks.css', 'css', false, 'screen', 'IE 9');
+    $this->injectAsset('/stylesheets/ie8hacks.css', 'css', false, 'screen', 'IE 8');
     $this->injectAsset('/stylesheets/ie7hacks.css', 'css', false, 'screen', 'IE 7');
     $this->injectAsset('/stylesheets/ie6hacks.css', 'css', false, 'screen', 'IE 6');
-
     $this->headLink()->headLink(array('rel' => 'icon', 'href' => '/images/favicon.ico'));
 
-    echo $this->escape($yui, 'none');
-    echo $this->escape($this->headScript(), 'none');
+    echo $this->escape($yui->css(), 'none');
     echo $this->escape($this->headLink(), 'none');
-    ?>
-        <!--[if IE 7]>
-        <link rel="stylesheet" type="text/css" href="/stylesheets/ie7hacks.css">
-        <![endif]-->
-        
-        <!--[if IE 6]>
-        <link rel="stylesheet" type="text/css" href="/stylesheets/ie6hacks.css">
-        <![endif]-->
+    echo $this->escape($yui->script(), 'none');
+    echo $this->escape($this->headScript(), 'none');
+?>
     </head>
     <body class="yui-skin-sam">
-        <div id='header' >
-            <div id="logo">
-                <a href="/"><img alt="Logo" src="/images/logo.png"></a>
-            </div>
-            <div class="clear"> </div>
-            <div id="msgbar"><div id="closeMsg">☒</div>
-               <!-- Any user error messages are rendered into this div -->
-            </div>
+        <div id='header' style="padding-left: 20px;">
+            <h1><?php echo $this->escape(Fisma::configuration()->getConfig('system_name')); ?></h1>
         </div>
 
         <div class="externalMediaMarking">
-            WARNING: This document is for internal, official use only.  This document contains sensitive computer 
-            security related information. Public disclosure of this information would risk circumvention of the 
-            law. Recipients of this document must not, under any circumstances, show or release its contents for 
-            purposes other than official action. This document must be safeguarded to prevent improper disclosure. 
+            WARNING: This document is for internal, official use only.  This document contains sensitive computer
+            security related information. Public disclosure of this information would risk circumvention of the
+            law. Recipients of this document must not, under any circumstances, show or release its contents for
+            purposes other than official action. This document must be safeguarded to prevent improper disclosure.
             Staff reviewing this document must hold a minimum of Public Trust Level 5C clearance.
         </div>
-   
+
         <div class="clear"></div>
-             
+
         <a name="contentStart"></a>
         <div id='content'>
+            <div id="msgbar"><div id="closeMsg">☒</div>
+               <!-- Any user error messages are rendered into this div -->
+            </div>
                 <?php echo $this->escape($this->layout()->content, 'none'); ?>
         </div>
-        
+
         <div id='footer'>
              <div id="footerLinks">
                 <a href="mailto:openfisma@department.gov?Subject=OpenFISMA+Tech+Support">
@@ -76,6 +67,15 @@
                 <i>Powered by <a href="http://www.openfisma.org" target='_blank'>OpenFISMA</a></i>
             </div>
         </div>
+        <script type="text/javascript">
+            $(function() {
+                $(document).tooltip({
+                    'open': function(event, ui) {
+                        $(ui.tooltip).attr('aria-live', 'rude');
+                    }
+                });
+            });
+        </script>
     </body>
     <?php echo $this->partial('partial/priorityMessage.phtml', array('messages' => $this->priorityMessenger())); ?>
 </html>

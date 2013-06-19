@@ -226,6 +226,8 @@ div.sectionHeader {
     margin-top: 10px;
     padding: 3px 8px;
     background-color: #416ed7;
+    background-image: none !important;
+    text-shadow: none !important;
     color: #fff;
     border: 1px solid #416ed7;
     border-bottom: none;
@@ -254,6 +256,12 @@ div.section {
     position: relative;
     height: 100%;
     margin-bottom: 0px;
+    overflow-x: auto;
+}
+
+div.section.chartSection {
+    overflow-x: hidden;
+    overflow-y: hidden;
 }
 
 /* Panels are a subdivision of the sections */
@@ -332,18 +340,19 @@ table.keyValues td {
     padding: 5px;
     vertical-align: middle;
 }
-/* The first column in a keyValues table is bold text */
-table.keyValues td:first-child {
-    font-weight: bold;
-    text-align: right;
-    vertical-align: top;
-}
 
 table.keyValues th {
     text-align: center;
     font-weight: bold;
     font-style: normal;
     padding: 5px;
+}
+
+/* The first column in a keyValues table is bold text */
+table.keyValues td:nth-child(odd), table.keyValues th[scope=row] {
+    font-weight: bold !important;
+    text-align: right;
+    vertical-align: top;
 }
 
 div.buttonBar {
@@ -470,6 +479,9 @@ span.tooltip {
     padding: 0px 2px 2px 22px;
     background: url(/images/tooltip.png) no-repeat;
     cursor: help;
+}
+
+span.tooltip > * {
     display: inline-block;
 }
 
@@ -659,6 +671,9 @@ form .searchForm {
 input[type=text].date {
     background: url(/images/calendar.png) no-repeat 98%;
     background-color: white;
+    width: 10em;
+}
+input[type=text].hasTimeEntry {
     width: 10em;
 }
 
@@ -888,15 +903,6 @@ table.fisma_crud > tbody > tr > td, table.fisma_crud > tbody > tr > th {
     clear: both;
 }
 
-.rowsPerPageInputBox {
-    margin-left: 10px;
-    width: 30px;
-}
-
-.rowsPerPageInputBoxLabel {
-    margin-left: 4px;
-}
-
 fieldset.uploadFileList {
     border: 1px solid;
     padding-top: 8px;
@@ -933,13 +939,13 @@ fieldset.uploadFileList input {
     color: #444444;
 }
 
-.facetBox h1 {
-    margin-top:0px;
+.facetBox h1, .facetBox h2 {
+    margin-bottom:4px;
     color: #333333;
 }
 
-.facetBox h2 {
-    margin-bottom:0px;
+.facetBox h1:first-child, .facetBox h1 + h2 {
+    margin-top:0px;
 }
 
 .facetBox ul {
@@ -958,10 +964,7 @@ fieldset.uploadFileList input {
 }
 
 .criteria {
-    font-weight: bold;
-}
-.value {
-    text-align: right;
+    font-weight: bold !important;
 }
 
 span.bar {
@@ -975,32 +978,39 @@ span.bar {
     cursor: pointer;
 }
 span.bar.normal {
-    background: #C8E1FA; /* for non-css3 browsers */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C8E1FA', endColorstr='#3264C8'); /* for IE */
-    background: -webkit-gradient(linear, left top, left bottom, from(#C8E1FA), to(#3264C8)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #C8E1FA, #3264C8); /* for firefox 3.6+ */
-    background: linear-gradient(to bottom, #C8E1FA, #3264C8); /* for IE 10 */
+    background: #3366CC; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#3366CC', endColorstr='#1144AA'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#3366CC), to(#1144AA)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #3366CC, #1144AA); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #3366CC, #1144AA); /* for IE 10 */
 }
 span.bar.LOW, span.bar.On-Time {
-    background: #C6EFCE; /* for non-css3 browsers */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#C6EFCE', endColorstr='#63BE7B'); /* for IE */
-    background: -webkit-gradient(linear, left top, left bottom, from(#C6EFCE), to(#63BE7B)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #C6EFCE, #63BE7B); /* for firefox 3.6+ */
-    background: linear-gradient(to bottom, #C6EFCE, #63BE7B); /* for IE 10 */
+    background: #FFCC00; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFCC00', endColorstr='#DDAA00'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#FFCC00), to(#DDAA00)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #FFCC00, #DDAA00); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #FFCC00, #DDAA00); /* for IE 10 */
 }
 span.bar.MODERATE {
-    background: #FFEB9C; /* for non-css3 browsers */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFEB9C', endColorstr='#FFBE34'); /* for IE */
-    background: -webkit-gradient(linear, left top, left bottom, from(#FFEB9C), to(#FFBE34)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #FFEB9C, #FFBE34); /* for firefox 3.6+ */
-    background: linear-gradient(to bottom, #FFEB9C, #FFBE34); /* for IE 10 */
+    background: #FF6600; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF6600', endColorstr='#DD4400'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#FF6600), to(#DD4400)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #FF6600, #DD4400); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #FF6600, #DD4400); /* for IE 10 */
 }
 span.bar.HIGH, span.bar.Overdue {
-    background: #FFC7CE; /* for non-css3 browsers */
-    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FFC7CE', endColorstr='#F8696B'); /* for IE */
-    background: -webkit-gradient(linear, left top, left bottom, from(#FFC7CE), to(#F8696B)); /* for webkit browsers */
-    background: -moz-linear-gradient(top,  #FFC7CE, #F8696B); /* for firefox 3.6+ */
-    background: linear-gradient(to bottom, #FFC7CE, #F8696B); /* for IE 10 */
+    background: #FF3300; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#FF3300', endColorstr='#DD1100'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#FF3300), to(#DD1100)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #FF3300, #DD1100); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #FF3300, #DD1100); /* for IE 10 */
+}
+span.bar.CRITICAL, span.bar.Overdue {
+    background: #993300; /* for non-css3 browsers */
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#993300', endColorstr='#771100'); /* for IE */
+    background: -webkit-gradient(linear, left top, left bottom, from(#993300), to(#771100)); /* for webkit browsers */
+    background: -moz-linear-gradient(top,  #993300, #771100); /* for firefox 3.6+ */
+    background: linear-gradient(to bottom, #993300, #771100); /* for IE 10 */
 }
 
 table.custom-widget {
@@ -1047,23 +1057,16 @@ table.custom-widget.no-border td {
 }
 
 .sectionHeader .ui-icon { float: right; }
-.ui-icon { display: block; width: 16px; height: 16px; background-repeat: no-repeat; background-position: center; }
-.ui-icon-minusthick { background-image: url('/images/arrow-up.gif'); }
-.ui-icon-plusthick { background-image: url('/images/arrow-down.gif'); }
 .ui-sortable-placeholder { border: 1px dotted black; visibility: visible !important; height: 50px !important; }
 .ui-sortable-placeholder * { visibility: hidden; }
 .ui-sortable-proxy { margin-top:10px; height: 1.5em; line-height: 1.2em; background: #FFEB9C; }
 
-.searchBox img {
+.searchBox img, .ui-button-text img {
     vertical-align: middle;
 }
 
 .searchBox label {
     display: inline-block;
-}
-
-.yui-content .yui-button {
-    vertical-align: middle;
 }
 
 #breadcrumbs a {
@@ -1116,6 +1119,7 @@ div.yui-dt-liner a {
 a.ui-button {
     text-decoration: none;
 }
+
 select.ui-button {
     padding: 5px 4px 6px 4px;
     height: 2.4em;
@@ -1133,11 +1137,39 @@ span.longdesc {
     margin-top: 0px;
 }
 
-.left .section table.keyValues > tbody > tr > td:first-child {
+.left .section table.keyValues > tbody > tr > td:first-child, .left .section table.keyValues th[scope=row] {
     width: 200px;
 }
 
-.right .section table.keyValues > tbody > tr > td:first-child {
+.right .section table.keyValues > tbody > tr > td:first-child, .right .section table.keyValues th[scope=row] {
     width: 150px;
 }
 
+div.workflowStep {
+    margin: 10px;
+    padding: 10px 10px 10px 40px;
+    border: 2px solid gray;
+    background-color: #f0f0f0;
+}
+
+div.workflowStep.current {
+    border: 2px solid #416ed7;
+    background-color: #edf5ff;
+}
+
+div.workflowStep.current.resolved {
+    border: 2px solid green;
+    background-color: lightgreen;
+}
+
+div.workflowStep th[scope=row] {
+    vertical-align: top;
+    text-align: left;
+    width: 100px;
+}
+
+/* radio buttons and checkboxes need more spacing */
+input[type=radio], input[type=checkbox] {
+    margin-left: 4px;
+    margin-right: 2px;
+}

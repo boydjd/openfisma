@@ -89,43 +89,6 @@ class SystemTypeController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Customize the toolbar buttons
-     *
-     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not applicable
-     * @param array $fromSearchParams The array for "Previous" and "Next" button null if not
-     * @return array Array of Fisma_Yui_Form_Button
-     */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
-    {
-        $buttons = parent::getToolbarButtons($record, $fromSearchParams);
-
-        if (
-            $this->_acl->hasPrivilegeForClass('delete', 'SystemType') &&
-            $this->getRequest()->getActionName() == 'view'
-        ) {
-            $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
-            $args = array(null, $this->getBaseUrl() . '/delete' . $fromSearchUrl, $record['id']);
-
-            $buttons[] = new Fisma_Yui_Form_Button(
-                'deleteSystemTypeButton',
-                array(
-                    'label' => 'Delete',
-                    'onClickFunction' => 'Fisma.Util.showConfirmDialog',
-                    'onClickArgument' => array(
-                        'args' => $args,
-                        'text' => "WARNING: You are about to delete this system type. This action cannot be "
-                                . "undone. Do you want to continue?",
-                        'func' => 'Fisma.Util.formPostAction'
-                    ),
-                    'imageSrc' => '/images/trash_recyclebin_empty_closed.png'
-                )
-            );
-        }
-
-        return $buttons;
-    }
-
-    /**
      * Delete a system type
      *
      * @return void

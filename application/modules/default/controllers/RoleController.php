@@ -142,6 +142,7 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
         $rolesQuery = Doctrine_Query::create()
             ->select('r.nickname')
             ->from('Role r')
+            ->where('r.type = ?', 'ACCOUNT_TYPE')
             ->orderBy('r.nickname')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $roles = $rolesQuery->execute();
@@ -321,11 +322,21 @@ class RoleController extends Fisma_Zend_Controller_Action_Object
             }
         }
 
-        return $buttons;
-    }
+        if (
+            $this->getRequest()->getActionName() === 'view'
+            && $this->view->acl()->hasPrivilegeForObject('delete', $record)
+        ) {
+            $buttons['delete'] = new Fisma_Yui_Form_Button(
+                'delete',
+                array(
+                      'label' => 'Delete',
+                      'imageSrc' => '/images/trash_recyclebin_empty_closed.png',
+                      'onClickFunction' => 'Fisma.Util.formPostAction',
+                      'onClickArgument' => array('action' => '/role/delete', 'id' => $record->id)
+                )
+            );
+        }
 
-    protected function _isDeletable()
-    {
-        return false;
+        return $buttons;
     }
 }

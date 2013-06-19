@@ -1,0 +1,22 @@
+<?php
+    $systemName = $this->systemName;
+    $event = $this->event;
+    $title = $event->description;
+    try {
+        $titleOptions = Zend_Registry::get('mail_title');
+    } catch (Zend_Exception $e) {
+        global $application;
+        $titleOptions = $application->getOption('mail_title');
+    }
+
+    if ($titleOptions) {
+        foreach ($titleOptions as $eventName => $customTitle) {
+            if ($eventName === $event->name) {
+                $title = $customTitle;
+                break;
+            }
+        }
+    }
+
+    echo $this->escape("[{$systemName}] {$title}");
+?>

@@ -27,6 +27,11 @@
  */
 class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable, Fisma_Search_Facetable
 {
+    protected $_customLogicalNames = array(
+        'createdTs' => 'Created Date',
+        'modifiedTs' => 'Last Modified Date'
+    );
+
     /**
      * Implement the interface for Searchable
      */
@@ -35,7 +40,6 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
         return array (
             'username' => array(
                 'initiallyVisible' => true,
-                'label' => 'User Name',
                 'sortable' => true,
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.recordLink',
@@ -45,49 +49,41 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
             ),
             'title' => array(
                 'initiallyVisible' => false,
-                'label' => 'Title',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'nameFirst' => array(
                 'initiallyVisible' => true,
-                'label' => 'First Name',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'nameLast' => array(
                 'initiallyVisible' => true,
-                'label' => 'Last Name',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'email' => array(
                 'initiallyVisible' => true,
-                'label' => 'E-Mail Address',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'phoneOffice' => array(
                 'initiallyVisible' => true,
-                'label' => 'Office Phone',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'phoneMobile' => array(
                 'initiallyVisible' => false,
-                'label' => 'Mobile Phone',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'createdTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Created Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Modified Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
@@ -100,19 +96,16 @@ class UserTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
             'lockType' => array(
                 'enumValues' => $this->getEnumValues('lockType'),
                 'initiallyVisible' => false,
-                'label' => 'Account Lock',
                 'sortable' => true,
                 'type' => 'enum'
             ),
             'published' => array(
                 'type' => 'boolean',
-                'label' => 'Visible',
                 'initiallyVisible' => true,
                 'sortable' => true
             ),
             'lastLoginIp' => array(
                 'initiallyVisible' => false,
-                'label' => 'Last Login IP',
                 'sortable' => true,
                 'type' => 'text'
             )

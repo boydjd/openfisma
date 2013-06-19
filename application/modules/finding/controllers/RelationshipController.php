@@ -76,7 +76,7 @@ class Finding_RelationshipController extends Fisma_Zend_Controller_Action_Securi
     {
         $id = $this->getRequest()->getParam('thisFindingId');
         $finding = Doctrine::getTable('Finding')->find($id);
-        $this->_acl->requirePrivilegeForObject('update_relationship', $finding);
+        $this->_acl->requirePrivilegeForObject('update', $finding);
         $dir = $this->getRequest()->getParam('direction');
 
         $relationship = new FindingRelationship();
@@ -109,7 +109,7 @@ class Finding_RelationshipController extends Fisma_Zend_Controller_Action_Securi
         $id = $this->getRequest()->getParam('id');
         $findingId = $this->getRequest()->getParam('findingId');
         $finding = Doctrine::getTable('Finding')->find($findingId);
-        $this->_acl->requirePrivilegeForObject('update_relationship', $finding);
+        $this->_acl->requirePrivilegeForObject('update', $finding);
 
         Doctrine::getTable('FindingRelationship')->find($id)->delete();
 

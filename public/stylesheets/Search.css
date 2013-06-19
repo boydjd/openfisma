@@ -96,3 +96,57 @@ div.yui-dt.yui-dt-scrollable {
     border-color: #808080;
     margin: 2px;
 }
+
+div.listDatatableContainer {
+    padding-left: 240px;
+}
+
+.rowsPerPageInputBox {
+    width: 30px;
+}
+
+.rowHeightCheckBox {
+    margin-left: 10px;
+}
+
+.rowsPerPageInputBoxLabel, .rowHeightCheckBoxLabel {
+    margin-left: 4px;
+    margin-right: 10px;
+}
+
+div.yui-dt.compact tr.yui-dt-rec div.yui-dt-liner {
+    max-height: 3.5em;
+    overflow-y: auto;
+}
+
+.searchBox select {
+    border-color: gray;
+    height: 2.5em;
+    margin: 2px;
+}
+
+.facetBox input[type='checkbox'] {
+    vertical-align: middle;
+}
+
+.facetBox input[type='text'] {
+    width: 150px;
+}
+
+.facetBox span.value {
+    display: inline-block;
+    padding: 2px;
+    margin: 2px;
+}
+
+.facetBox legend.header {
+    display: block;
+    padding: 0.5em 0.5em 0.5em 0.7em;
+    width: 192px;
+}
+
+.facetBox div.ui-accordion-content {
+    padding: 4px;
+    top: auto;
+    margin-top: auto;
+}

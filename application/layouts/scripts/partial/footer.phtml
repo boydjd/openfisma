@@ -25,8 +25,8 @@
             // tooltips on iframes don't seem to work right in IE
             "items": "[title]:not(iframe,[disabled])"
         });
-        if ($('div[id$=TabViewContainer]').length === 0) {
-            Fisma.Editable.turnAllOn();
+        if ($('form[editable]').length <= 0) {
+            $(function(){Fisma.Editable.turnAllOn();});
         }
     });
 </script>

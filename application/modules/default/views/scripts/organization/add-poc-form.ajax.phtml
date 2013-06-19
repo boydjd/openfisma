@@ -1,0 +1,27 @@
+<table class='keyValues' width='100%'>
+    <tr>
+        <th scope='row'><label for='addPocAc'>User</label></th>
+        <td>
+            <?php echo $this->escape($this->userAc, 'none'); ?>
+            <input type='hidden' id='addPocId' name='addPocId' />
+        </td>
+    </tr>
+    <tr>
+        <th scope='row'><label for='addPocRole'>Role</label></th>
+        <td>
+            <select id='addPocRole' name='addPocRole'>
+            <?php foreach ($this->roles as $roleId => $role): ?>
+                <option value='<?php echo $this->escape($roleId); ?>'><?php echo $this->escape($role); ?></option>
+            <?php endforeach; ?>
+            </select>
+            <script>
+                $(function() {
+                    var select  = $('select#addPocRole'),
+                        html    = select.html();
+                    select.button().html(html);
+                });
+            </script>
+        </td>
+    </tr>
+</table>
+<?php echo $this->escape($this->submitButton, 'none'); ?>

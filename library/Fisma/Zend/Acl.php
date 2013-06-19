@@ -95,11 +95,19 @@ class Fisma_Zend_Acl extends Zend_Acl
         $hasPrivilege = false;
 
         if (!$this->_privilegeContainsWildcard($privilege)) {
+            if (in_array($privilege, array('create', 'read', 'update', 'delete')) &&
+                in_array(get_class($object), array('Asset', 'Icon', 'Workflow'))) {
+                $privilege = 'manage';
+            }
+
             // Handle objects with organization ACL dependency
             if ($object instanceof Fisma_Zend_Acl_OrganizationDependency &&
-                // As a POC to a finding outside my systems, I should have the same privileges like other findings
-                !($object instanceOf Finding &&
-                    !is_null($object->pocId) && $object->PointOfContact->username === $username)
+                // Grant access to POC's
+                !(($object instanceof Finding || $object instanceof Vulnerability) &&
+                    !empty($object->pocId) && $object->PointOfContact->username === $username) &&
+                // Grant access to uploader
+                !(($object instanceof Vulnerability) &&
+                    !empty($object->createdByUserId) && $object->CreatedBy->username === $username)
             ) {
                 $orgId = $object->getOrganizationDependencyId();
                 if (empty($orgId)) {
@@ -109,7 +117,9 @@ class Fisma_Zend_Acl extends Zend_Acl
                     $resourceName = self::getResourceNameForOrganizationDependency($resourceName, $orgId);
                 }
             }
+
             $hasPrivilege = $this->hasPrivilegeForClass($privilege, $resourceName, true);
+
         } else {
             // Loop over all matching privileges and check them one-by-one to see if the user has any of them
             $matchedPrivileges = $this->_getPrivilegesForWildcard($resourceName, $privilege);
@@ -176,6 +186,11 @@ class Fisma_Zend_Acl extends Zend_Acl
             $resourceName = Doctrine_Inflector::tableize($className);
         }
         if (!$this->_privilegeContainsWildcard($privilege)) {
+            if (in_array($privilege, array('create', 'read', 'update', 'delete')) &&
+                in_array($className, array('Asset', 'Icon', 'Workflow'))) {
+                $privilege = 'manage';
+            }
+
             $hasPrivilege = $this->isAllowed(null, $resourceName, $privilege);
         } else {
             // Loop over all matching privileges and check them one-by-one to see if the user has any of them

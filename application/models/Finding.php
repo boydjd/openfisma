@@ -28,13 +28,6 @@
 class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependency
 {
     /**
-     * Threshold of overdue for various status
-     *
-     * @var array
-     */
-    private $_overdue = array('NEW' => 30, 'DRAFT'=>30, 'EN'=>0);
-
-    /**
      * Override the Doctrine hook to initialize new finding objects
      *
      * @return void
@@ -44,9 +37,27 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         // Set default status for new objects (i.e. objects with transient state)
         $state = $this->state();
         if ($state == Doctrine_Record::STATE_TCLEAN || $state == Doctrine_Record::STATE_TDIRTY) {
-            $this->status = 'NEW';
             $this->countermeasuresEffectiveness = 'LOW';
             $this->countermeasures = 'N/A';
+            try {
+                $workflow = Doctrine::getTable('Workflow')->findDefaultByModule('finding');
+                if ($workflow) {
+                    $this->CurrentStep = $workflow->getFirstStep();
+                    switch ($this->CurrentStep->allottedTime) {
+                        case 'days':
+                            $this->nextDueDate = Zend_Date::now()
+                                ->addDay($this->CurrentStep->allottedDays)
+                                ->toString(Fisma_Date::FORMAT_DATE);
+                            break;
+                        case 'custom':
+                        case 'unlimited':
+                        case 'ecd':
+                        default:
+                            $this->nextDueDate = null;
+                    }
+                }
+            } catch (Exception $e) {
+            }
         }
     }
 
@@ -62,187 +73,11 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
         $this->hasMutator('countermeasuresEffectiveness', 'setCountermeasuresEffectiveness');
         $this->hasMutator('currentEcd', 'setCurrentEcd');
         $this->hasMutator('ecdChangeDescription', 'setEcdChangeDescription');
-        $this->hasMutator('nextDueDate', 'setNextDueDate');
         $this->hasMutator('discoveredDate', 'setDiscoveredDate');
         $this->hasMutator('originalEcd', 'setOriginalEcd');
         $this->hasMutator('pocId', 'setPocId');
-        $this->hasMutator('status', 'setStatus');
         $this->hasMutator('threatLevel', 'setThreatLevel');
-        $this->hasMutator('type', 'setType');
-    }
-
-    /**
-     * Returns an ordered list of all possible business statuses
-     *
-     * @return array The ordered list of all possible business statuses
-     */
-    public static function getAllStatuses()
-    {
-        $allStatuses = array('NEW', 'DRAFT');
-
-        $mitigationStatuses = Doctrine::getTable('Evaluation')->findByDql('approvalGroup = ?', array('action'));
-        foreach ($mitigationStatuses as $status) {
-            $allStatuses[] = $status->nickname;
-        }
-
-        $allStatuses[] = 'EN';
-
-        $evidenceStatus = Doctrine::getTable('Evaluation')->findByDql('approvalGroup = ?', array('evidence'));
-        foreach ($evidenceStatus as $status) {
-            $allStatuses[] = $status->nickname;
-        }
-
-        $allStatuses[] = 'CLOSED';
-
-        return $allStatuses;
-    }
-
-    /**
-     * Get the detailed status of a Finding
-     *
-     * @return string The detailed status of current finding
-     */
-    public function getStatus()
-    {
-        if (!in_array($this->status, array('MSA', 'EA'))) {
-            return $this->status;
-        } else {
-            return $this->CurrentEvaluation->nickname;
-        }
-    }
-
-    /**
-     * Check if the Mitigation Strategy can be submitted
-     *
-     * @return array
-     */
-    public function getMissingMSFields()
-    {
-        $array = array(
-            'Action Type' => array('value' => $this->type, 'tab' => 'Mitigation Strategy'),
-            'Action Plan' => array('value' => $this->mitigationStrategy, 'tab' => 'Mitigation Strategy'),
-            'Resources Required' => array('value' => $this->resourcesRequired, 'tab' => 'Mitigation Strategy'),
-            'Expected Completion Date' => array('value' => $this->currentEcd, 'tab' => 'Mitigation Strategy'),
-            'Security Control' => array('value' => $this->securityControlId, 'tab' => 'Security Control'),
-            'Threat Level' => array('value' => $this->threatLevel, 'tab' => 'Risk Analysis'),
-            'Threat Description' => array('value' => $this->threat, 'tab' => 'Risk Analysis'),
-            'Countermeasures Effectiveness'
-                => array('value' => $this->countermeasuresEffectiveness, 'tab' => 'Risk Analysis'),
-            'Description of Countermeasures' => array('value' => $this->countermeasures, 'tab' => 'Risk Analysis')
-        );
-        $results = array();
-        foreach ($array as $name => $row) {
-            $value = strip_tags($row['value']);
-            if ($value == '' || $value == 'NONE' || $value == '0000-00-00') {
-                $results[$name] = $row['tab'];
-            }
-        }
-        return $results;
-    }
-
-    /**
-     * Submit Mitigation Strategy
-     * Set the status as "MSA" and the currentEvaluationId as the first mitigation evaluation id
-     *
-     * @param User $user The specified user to submit the mitigation strategy
-     * @return void
-     * @throws Fisma_Zend_Exception if the mitigation strategy is submitted when the finding is not in NEW or DRAFT
-     * status
-     */
-    public function submitMitigation(User $user)
-    {
-        if (!('NEW' == $this->status || 'DRAFT' == $this->status)) {
-            throw new Fisma_Zend_Exception("Mitigation strategy can only be submitted in NEW or DRAFT status");
-        }
-        $this->status = 'MSA';
-        $evaluation = Doctrine::getTable('Evaluation')
-                      ->findByDql('approvalGroup = "action" AND precedence = 0');
-        $this->CurrentEvaluation = $evaluation[0];
-        $this->_updateNextDueDate();
-
-        $this->updateDenormalizedStatus();
-
-        $this->save();
-
-        $this->getAuditLog()->write('Submitted Mitigation Strategy');
-    }
-
-    /**
-     * Revise the Mitigation Strategy
-     * Set the status as "DRAFT" and the currentEvaluationId as null
-     *
-     * @param User $user The specified user to revise the mitigation strategy
-     * @return void
-     * @throws Fisma_Zend_Exception if the mitigation strategy is revised when the finding is not in EN status
-     */
-    public function reviseMitigation(User $user)
-    {
-        if ('EN' != $this->status) {
-            throw new Fisma_Zend_Exception("The mitigation strategy can only be revised in EN status");
-        }
-        $this->status = 'DRAFT';
-        $this->_updateNextDueDate();
-        $this->CurrentEvaluation = null;
-        $this->getAuditLog()->write('Revise mitigation strategy');
-
-        $this->save();
-    }
-
-    /**
-     * Approve the current evaluation,
-     * then update the status to either point to
-     * a new Evaluation or else to change the status to DRAFT, EN,
-     * or CLOSED as appropriate
-     *
-     * @param Object $user The specified user to approve the current evaluation
-     * @param string $comment The user comment why they accept the current evaluation
-     * @return void
-     * @throws Fisma_Zend_Exception if the findings is approved when the finding is not in MSA or EA status
-     */
-    public function approve(User $user, $comment)
-    {
-        if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
-            throw new Fisma_Zend_Exception("Findings can only be approved when in MSA or EA status");
-        }
-
-        $findingEvaluation = new FindingEvaluation();
-        $findingEvaluation->Finding    = $this;
-        $findingEvaluation->Evaluation = $this->CurrentEvaluation;
-        $findingEvaluation->decision   = 'APPROVED';
-        $findingEvaluation->User       = $user;
-        $findingEvaluation->comment      = $comment;
-        $this->FindingEvaluations[]    = $findingEvaluation;
-
-        $logMessage = 'Evidence package approved: '
-                    . $this->getStatus()
-                    . (preg_match('/^\s*$/', $comment) ? '' : "\n\nComment:\n" . $comment);
-
-        $this->getAuditLog()->write($logMessage);
-
-        switch ($this->status) {
-            case 'MSA':
-                if ($this->CurrentEvaluation->nextId == null) {
-                    $this->status = 'EN';
-                }
-                break;
-            case 'EA':
-                if ($this->CurrentEvaluation->nextId == null) {
-                    $this->status = 'CLOSED';
-                    $this->closedTs = Fisma::now();
-                }
-                break;
-        }
-
-        if ($this->CurrentEvaluation->nextId != null) {
-            $this->CurrentEvaluation = $this->CurrentEvaluation->NextEvaluation;
-        } else {
-            $this->CurrentEvaluation = null;
-        }
-        $this->_updateNextDueDate();
-
-        $this->updateDenormalizedStatus();
-
-        $this->save();
+        $this->hasMutator('responsibleOrganizationId', 'setResponsibleOrganizationId');
     }
 
     /**
@@ -297,192 +132,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     }
 
     /**
-     * Deny the current evaluation
-     *
-     * @param $user The specified user to deny the current evaluation
-     * @param string $comment The deny comment of user
-     * @return void
-     * @throws Fisma_Zend_Exception if the findings is denined
-     * when the finding is not in MSA or EA status or the deny comment missed
-     */
-    public function deny(User $user, $comment)
-    {
-        if (is_null($this->currentEvaluationId) || !in_array($this->status, array('MSA', 'EA'))) {
-            throw new Fisma_Zend_Exception_User("Findings can only be denined when in MSA or EA status");
-        }
-
-        if (is_null($comment) || preg_match('/^\s*$/', $comment)) {
-            throw new Fisma_Zend_Exception_User("Comments are required when denying an evaluation");
-        }
-
-        $findingEvaluation = new FindingEvaluation();
-        $findingEvaluation->Finding      = $this;
-        $findingEvaluation->Evaluation   = $this->CurrentEvaluation;
-        $findingEvaluation->decision     = 'DENIED';
-        $findingEvaluation->User         = $user;
-        $findingEvaluation->comment      = $comment;
-        $this->FindingEvaluations[]      = $findingEvaluation;
-
-        $this->getAuditLog()->write('Evidence package denied: ' . $this->getStatus() . "\n\nComment:\n" . $comment);
-
-        switch ($this->status) {
-            case 'MSA':
-                $this->status = 'DRAFT';
-                $this->CurrentEvaluation = null;
-                break;
-            case 'EA':
-                $this->status = 'EN';
-                $this->CurrentEvaluation = null;
-                break;
-        }
-        $this->_updateNextDueDate();
-
-        $this->updateDenormalizedStatus();
-
-        $this->save();
-    }
-
-    /**
-     * Reject the evaluation back to a specific stage
-     *
-     * @param User  $user         The user who commit the decision
-     * @param mixed $comment      The comment to put in
-     * @param mixed $targetStatus The id of the target Evaluation stage, 0 means no EN
-     *
-     * @return void
-     */
-    public function rejectTo(User $user, $comment, $targetStatus)
-    {
-        $currentStatus = $this->status;
-        $this->deny($user, $comment);
-        if ($targetStatus > 0) {
-            $this->CurrentEvaluation = Doctrine::getTable('Evaluation')->find($targetStatus);
-            $this->status = $currentStatus;
-            $this->getAuditLog()->write('Evidence package sent to ' . $this->CurrentEvaluation->nickname);
-        }
-        $this->_updateNextDueDate();
-        $this->updateDenormalizedStatus();
-
-        $this->save();
-    }
-
-    /**
-     * Set the status as 'EA' and the currentEvaluationId as the first Evidence Evaluation id
-     *
-     * @return void
-     */
-    public function submitEvidence()
-    {
-        if ('EN' != $this->status) {
-            throw new Fisma_Zend_Exception("Evidence can only be updated when the finding is in EN status");
-        }
-        $this->status = 'EA';
-        $this->ecdLocked = true;
-        $evaluation = Doctrine::getTable('Evaluation')
-                                        ->findByDql('approvalGroup = "evidence" AND precedence = 0 ');
-        $this->CurrentEvaluation = $evaluation[0];
-        $this->_updateNextDueDate();
-
-        $this->updateDenormalizedStatus();
-
-        $this->getAuditLog()->write('Evidence package submitted.');
-        $this->save();
-    }
-    /**
-     * Set the nextduedate when the status has changed except 'CLOSED'
-     *
-     * @return void
-     * @throws Fisma_Zend_Exception if cannot update the next due dates since of the an invalid finding status
-     * @todo why the 'Y-m-d' is a wrong date
-     */
-    private function _updateNextDueDate()
-    {
-        if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode() && Fisma::RUN_MODE_TEST != Fisma::mode()) {
-            $config = Fisma::configuration();
-            $this->_overdue['NEW'] = $config->getConfig('finding_new_due');
-            $this->_overdue['DRAFT'] = $config->getConfig('finding_draft_due');
-        }
-
-        if (in_array($this->status, array('PEND', 'CLOSED'))) {
-            $this->_set('nextDueDate', null);
-            return;
-        }
-
-        switch ($this->status) {
-            case 'NEW':
-            case 'DRAFT':
-                // If this is an unpersisted object, then it won't have a createdTs yet
-                if (isset($this->createdTs)) {
-                    $createdDt = new Zend_Date($this->createdTs, Zend_Date::ISO_8601);
-                    $startDate = $createdDt->toString(Fisma_Date::FORMAT_DATE);
-                } else {
-                    $startDate = Zend_Date::now()->toString(Fisma_Date::FORMAT_DATE);
-                }
-                break;
-            case 'MSA':
-            case 'EA':
-                $startDate = Fisma::now();
-                break;
-            case 'EN':
-                $startDate = $this->currentEcd;
-                break;
-            default:
-                throw new Fisma_Zend_Exception('Cannot update the next due date because the finding has an'
-                                        . " invalid status: '$this->status'");
-        }
-
-        $daysuntildue = $this->getDaysUntilDue();
-        $nextDueDate = new Zend_Date($startDate, Fisma_Date::FORMAT_DATE);
-        $nextDueDate->add($daysuntildue, Zend_Date::DAY);
-        $this->_set('nextDueDate', $nextDueDate->toString(Fisma_Date::FORMAT_DATE));
-    }
-
-    /**
-     * Get the number of allocated days to complete the current workflow step
-     *
-     * @return integer
-     */
-    public function getDaysUntilDue()
-    {
-        if (array_key_exists($this->status, $this->_overdue)) {
-            // This is a New, Draft, or EN status
-            if (Fisma::RUN_MODE_COMMAND_LINE != Fisma::mode() && Fisma::RUN_MODE_TEST != Fisma::mode()) {
-                $config = Fisma::configuration();
-                $this->_overdue['NEW'] = $config->getConfig('finding_new_due');
-                $this->_overdue['DRAFT'] = $config->getConfig('finding_draft_due');
-            }
-
-            $daysuntildue = $this->_overdue[$this->status];
-        } else {
-            // Get the daysUntilDue value for this workflow status on the Evaluation table
-            $daysuntildue = $this->CurrentEvaluation->daysUntilDue;
-        }
-        return $daysuntildue;
-    }
-
-    /**
-     * Get the finding evaluations by approval group
-     *
-     * @param string $approvalGroup The specified evaluation approval group to search
-     * @return array The matched finding evaluations in array
-     * @throws Fisma_Zend_Exception if the specified approval group for evaluations is neither 'action' nor 'evidence'
-     */
-    public function getFindingEvaluations($approvalGroup)
-    {
-        if (!in_array($approvalGroup, array('action', 'evidence'))) {
-            throw new Fisma_Zend_Exception("The approval group for evaluations must either be 'action' or 'evidence',
-                but was actually '$approvalGroup'");
-        }
-        $findingEvaluations = array();
-        foreach ($this->FindingEvaluations as $findingEvaluation) {
-            if ($approvalGroup == $findingEvaluation->Evaluation->approvalGroup) {
-                $findingEvaluations[] = $findingEvaluation;
-            }
-        }
-        return $findingEvaluations;
-    }
-
-    /**
      * Doctrine hook
      *
      * @param Doctrine_Event $event The listened doctrine event to be processed
@@ -499,48 +148,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                 $newValue = $this->$key;
 
                 switch ($key) {
-                    case 'status':
-                        if ('MSA' == $value && 'EN' == $newValue) {
-                            Notification::notify(
-                                'MITIGATION_APPROVED',
-                                $this,
-                                CurrentUser::getInstance()
-                            );
-                        } elseif ('MSA' == $value && 'DRAFT' == $newValue) {
-                            Notification::notify(
-                                'MITIGATION_REJECTED',
-                                $this,
-                                CurrentUser::getInstance()
-                            );
-                        } elseif ('EV' == $value && 'EN' == $newValue) {
-                            Notification::notify(
-                                'EVIDENCE_REJECTED',
-                                $this,
-                                CurrentUser::getInstance()
-                            );
-                        } elseif ('CLOSED' == $newValue) {
-                            Notification::notify(
-                                'FINDING_CLOSED',
-                                $this,
-                                CurrentUser::getInstance()
-                            );
-                            $this->getAuditLog()->write('Finding closed');
-                        }
-                        break;
-                    case 'currentEvaluationId':
-                        $event = isset($this->CurrentEvaluation->Event->name)
-                               ? $this->CurrentEvaluation->Event->name
-                               : null;
-                        // If the event is null, then that indicates this was the last evaluation within its approval
-                        // process. That condition is handled above.
-                        if (isset($event)) {
-                            Notification::notify(
-                                $event,
-                                $this,
-                                CurrentUser::getInstance()
-                            );
-                        }
-                        break;
                     case 'pocId':
                         if ($this->id) {
                             Notification::notify(
@@ -548,6 +155,15 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
                                 $this,
                                 CurrentUser::getInstance(),
                                 array('userId' => $newValue, 'url' => '/finding/remediation/view/id/')
+                            );
+                        }
+                        break;
+                    case 'isResolved':
+                        if ($this->id && $newValue === true) {
+                            Notification::notify(
+                                'FINDING_CLOSED',
+                                $this,
+                                CurrentUser::getInstance()
                             );
                         }
                         break;
@@ -575,29 +191,9 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
 
             $table = Doctrine::getTable('Finding');
             foreach ($modified as $key => $value) {
-                // Check whether the user has the privilege to update this column
-                if (Fisma::mode() != Fisma::RUN_MODE_COMMAND_LINE) {
-                    $fieldDefinition = $table->getDefinitionOf($key);
-
-                    if (isset($fieldDefinition['extra'])) {
-                        $requiredPrivilege = isset($fieldDefinition['extra']['requiredPrivilege']) ?
-                                            $fieldDefinition['extra']['requiredPrivilege'] : null;
-
-                        if (!is_null($requiredPrivilege)) {
-                            CurrentUser::getInstance()->acl()->requirePrivilegeForObject(
-                                $requiredPrivilege, $this
-                            );
-                        }
-
-                        $updateStatus = isset($fieldDefinition['extra']['requiredUpdateStatus']) ?
-                                        $fieldDefinition['extra']['requiredUpdateStatus'] : null;
-
-                        if (!is_null($updateStatus) && !in_array($this->status, $updateStatus)) {
-                            throw new Fisma_Zend_Exception_User(
-                                'The finding cannot be modified because its status is not in '
-                                . implode(", ", $updateStatus));
-                        }
-                    }
+                if (!$this->canEdit($key)) {
+                    $key = $this->getTable()->getLogicalName($key);
+                    throw new Fisma_Zend_Exception_User($key . ' cannot be editted in the current workflow step.');
                 }
             }
         }
@@ -651,17 +247,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     }
 
     /**
-     * Throws an exception if you try to set next due date directly
-     *
-     * @param string $value The specified valud of next due date to set
-     * @throws Fisma_Zend_Exception if the method is called
-     */
-    public function setNextDueDate($value)
-    {
-        throw new Fisma_Zend_Exception('Next due date cannot be set directly');
-    }
-
-    /**
      * Original ECD cannot be set directly
      *
      * @param string $value The specified value of original ECD to set
@@ -694,59 +279,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     }
 
     /**
-     * Mutator for status
-     *
-     * @param string $value The value of status to set
-     * @return void
-     */
-    public function setStatus($value)
-    {
-        // Business rules for status changes
-        switch ($value) {
-            case 'EN':
-                if (!$this->ecdLocked) {
-                    $this->ecdLocked = true;
-                }
-
-                if (!is_null($this->actualCompletionDate)) {
-                    $this->actualCompletionDate = null;
-                }
-
-                break;
-            case 'EA':
-                $this->actualCompletionDate = Fisma::now();
-                break;
-            case 'CLOSED':
-                $this->closedTs = Fisma::now();
-                break;
-        }
-
-        // Update the value
-        $this->_set('status', $value);
-
-        $this->updateDenormalizedStatus();
-
-        // Next due date is always affected by status changes
-        $this->_updateNextDueDate();
-    }
-
-    /**
-     * Mutator for type
-     *
-     * @param string $value The specified value of type to set
-     * @return void
-     */
-    public function setType($value)
-    {
-        // If this is a NEW finding and the type is being set, then move it to DRAFT status
-        if ('NEW' == $this->status && in_array($value, array('CAP', 'AR', 'FP'))) {
-            $this->status = 'DRAFT';
-        }
-
-        $this->_set('type', $value);
-    }
-
-    /**
      * Update the residual risk when threat level changes
      *
      * @param string $value
@@ -766,7 +298,7 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     public function isEcdEditable()
     {
         // The ECD is only editable in NEW or DRAFT state
-        if (!$this->isDeleted() && in_array($this->status, array('NEW', 'DRAFT'))) {
+        if (!$this->isDeleted() && $this->canEdit('currentEcd')) {
 
             // If the ECD is unlocked, then you need the update_ecd privilege
             if (!$this->ecdLocked && CurrentUser::getInstance()->acl()->hasPrivilegeForObject('update_ecd', $this)) {
@@ -815,57 +347,6 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
     }
 
     /**
-     * Check to see if the finding has been soft deleted or not. Only existing deletions are checked,
-     * and not pending deletes!
-     *
-     * @return boolean True if the finding is soft deleted, false if it is not.
-     */
-    public function isDeleted()
-    {
-        $oldValues = $this->getModified(true);
-        return ($this['deleted_at'] && !array_key_exists('deleted_at', $oldValues));
-    }
-
-    /**
-     * Update the denormalized status field, which is a string field that contains the logical value for the status
-     * as derived from the actual status field and the currentEvaluationId
-     */
-    public function updateDenormalizedStatus()
-    {
-        if ($this->status == 'MSA' || $this->status == 'EA') {
-            $this->denormalizedStatus = $this->CurrentEvaluation->nickname;
-        } else {
-            $this->denormalizedStatus = $this->status;
-        }
-    }
-
-    /**
-     * Return a user-friendly status
-     *
-     * @param String $status The acronym status, if called by static
-     * @return String
-     */
-    public function getLongStatus($status = null)
-    {
-        $activeEvaluation = (empty($status)) ? $this->CurrentEvaluation
-                                             : Doctrine::getTable('Evaluation')->findOneByNickname($status);
-        $status = (empty($status)) ? $this->denormalizedStatus : $status;
-
-        switch ($status) {
-            case 'NEW':
-                return "{$status}: Awaiting Mitigation Strategy";
-            case 'DRAFT':
-                return "{$status}: Awaiting Mitigation Strategy Submission";
-            case 'EN':
-                return "{$status}: Awaiting Evidence Package Submission";
-            case 'CLOSED':
-                return "{$status}: Finding Officially Closed";
-            default:
-                return "{$status}: Awaiting {$activeEvaluation->name}";
-        }
-    }
-
-    /**
      * Doctrine hook
      *
      * @param Doctrine_Event $event The listened doctrine event to be processed
@@ -896,5 +377,46 @@ class Finding extends BaseFinding implements Fisma_Zend_Acl_OrganizationDependen
             $discoveredDate = new Zend_Date($this->discoveredDate, Fisma_Date::FORMAT_DATE);
             $this->_set('auditYear', $discoveredDate->toString(Zend_Date::YEAR));
         }
+    }
+
+    /**
+     * setResponsibleOrganizationId
+     *
+     * @param mixed $value
+     * @param mixed $load
+     * @return void
+     */
+    public function setResponsibleOrganizationId($value, $load = true)
+    {
+        $this->_set('responsibleOrganizationId', $value);
+
+        // if $load is false, early out to avoid creating worthless objects
+        if (!$load) {
+            return;
+        }
+
+        // now deal with the parent organization
+        $parentOrganizationId = null;
+        if (!empty($value)) {
+            $this->refreshRelated('Organization');
+            $parent = $this->Organization->getNode()->getParent();
+            while (!empty($parent) && !empty($parent->systemId)) {
+                $parent = $parent->getNode()->getParent();
+            }
+            if (!empty($parent)) {
+                $parentOrganizationId = $parent->id;
+            }
+        }
+        $this->_set('denormalizedParentOrganizationId', $parentOrganizationId);
+    }
+
+    public function canEdit($field)
+    {
+        if ($this->CurrentStep && !empty($this->CurrentStep->restrictedFields)) {
+            if (in_array($field, $this->CurrentStep->restrictedFields)) {
+                return false;
+            }
+        }
+        return true;
     }
 }

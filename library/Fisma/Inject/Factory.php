@@ -61,6 +61,7 @@ class Fisma_Inject_Factory
         } catch (Fisma_Zend_Exception_InvalidFileFormat $e) {
             throw $e;
         } catch(Exception $e) {
+            Zend_Registry::get('Zend_Log')->err($e);
             $msg = $e->getMessage();
             throw new Fisma_Zend_Exception("An exception occured while instantiating a Fisma_Inject object: $msg");
         }
@@ -87,7 +88,7 @@ class Fisma_Inject_Factory
     public static function detectType($filename)
     {
         $handle = fopen($filename, "rb");
-        $contents = fread($handle, 128);
+        $contents = fread($handle, 512);
         fclose($handle);
 
         if (stristr($contents, 'NessusClientData_v2')) {
@@ -104,6 +105,8 @@ class Fisma_Inject_Factory
             return 'Asset';
         } elseif (stristr($contents, 'report') && stristr($contents, 'format_id')) {
             return 'Greenbone';
+        } elseif (stristr($contents, '<Issues')) { //not a 100% unique identifier, should be improved
+            return 'WebInspect';
         } else {
             return FALSE;
         }

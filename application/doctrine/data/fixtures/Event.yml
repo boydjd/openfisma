@@ -51,6 +51,7 @@ Event:
         name: USER_DELETED
         description: a user account is deleted
         Privilege: notification_admin
+        urlPath: /user/view/id/
         category: admin
 
     ACCOUNT_LOGIN_SUCCESS:
@@ -137,8 +138,17 @@ Event:
         urlPath: /vm/vulnerability/list
 
     VULNERABILITY_CLOSED:
+        defaultActive: true
         name: VULNERABILITY_CLOSED
         description: a vulnerability is resolved
+        Privilege: notification_vulnerability
+        category: vulnerability
+        urlPath: /vm/vulnerability/view/id
+
+    VULNERABILITY_UPDATED:
+        defaultActive: true
+        name: VULNERABILITY_UPDATED
+        description: a vulnerability is modified
         Privilege: notification_vulnerability
         category: vulnerability
         urlPath: /vm/vulnerability/view/id
@@ -158,6 +168,14 @@ Event:
         category: finding
         urlPath: /finding/remediation/view/id/
 
+    FINDING_UPDATED:
+        defaultActive: true
+        name: FINDING_UPDATED
+        description: a finding is modified
+        Privilege: notification_finding
+        category: finding
+        urlPath: /finding/remediation/view/id/
+
     FINDING_IMPORTED:
         defaultActive: true
         name: FINDING_IMPORTED
@@ -167,6 +185,7 @@ Event:
         urlPath: /finding/remediation/list
 
     FINDING_CLOSED:
+        defaultActive: true
         name: FINDING_CLOSED
         description: a finding is resolved
         Privilege: notification_finding
@@ -180,51 +199,71 @@ Event:
         Privilege: notification_finding
         category: finding
 
-    MITIGATION_APPROVED:
-        name: MITIGATION_APPROVED
-        description: a finding is awaiting Evidence Package submission
-        Privilege: notification_finding
-        category: finding
-        urlPath: /finding/remediation/view/id/
+    INCIDENT_CREATED:
+        defaultActive: true
+        name: INCIDENT_CREATED
+        description: an incident is reported
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
 
-    MITIGATION_REJECTED:
-        name: MITIGATION_REJECTED
-        description: a finding Mitigation Strategy is rejected
-        Privilege: notification_finding
-        category: finding
-        urlPath: /finding/remediation/view/id/
+    INCIDENT_UPDATED:
+        defaultActive: true
+        name: INCIDENT_UPDATED
+        description: an incident is modified
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
 
-    EVIDENCE_REJECTED:
-        name: EVIDENCE_REJECTED
-        description: a finding Evidence Package is rejected
-        Privilege: notification_finding
-        category: finding
-        urlPath: /finding/remediation/view/id/
+    INCIDENT_LOCKED:
+        defaultActive: true
+        name: INCIDENT_LOCKED
+        description: an incident is locked
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
 
-    MITIGATION_ISSO:
-        name: MITIGATION_ISSO
-        description: a finding is awaiting ISSO Approval of Mitigation Strategy
-        Privilege: notification_finding
-        category: evaluation
-        urlPath: /finding/remediation/view/id/
+    INCIDENT_UNLOCKED:
+        defaultActive: true
+        name: INCIDENT_UNLOCKED
+        description: an incident is unlocked
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
 
-    MITIGATION_IVV:
-        name: MITIGATION_IVV
-        description: a finding is awaiting IV&V Approval of Mitigation Strategy
-        Privilege: notification_finding
-        category: evaluation
-        urlPath: /finding/remediation/view/id/
+    INCIDENT_STEP:
+        defaultActive: true
+        name: INCIDENT_STEP
+        description: a workflow step is completed for my assigned incidents
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
 
-    EVIDENCE_ISSO:
-        name: EVIDENCE_ISSO
-        description: a finding is awaiting ISSO Approval of Evidence Package
-        Privilege: notification_finding
-        category: evaluation
-        urlPath: /finding/remediation/view/id/
+    INCIDENT_RESOLVED:
+        defaultActive: true
+        name: INCIDENT_RESOLVED
+        description: an incident is resolved
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
 
-    EVIDENCE_IVV:
-        name: EVIDENCE_IVV
-        description: a finding is awaiting IV&V Approval of Evidence Package
-        Privilege: notification_finding
-        category: evaluation
-        urlPath: /finding/remediation/view/id/
+    INCIDENT_REJECTED:
+        defaultActive: true
+        name: INCIDENT_REJECTED
+        description: an incident is rejected
+        Privilege: notification_incident
+        category: incident
+        urlPath: /incident/view/id/
+
+    INCIDENT_DELETED:
+        defaultActive: true
+        name: INCIDENT_DELETED
+        description: an incident is deleted
+        Privilege: notification_incident
+        category: incident
+
+    WORKFLOW_COMPLETED:
+        defaultActive: true
+        name: WORKFLOW_COMPLETED
+        description: new items arrive in a workflow step I watch
+        category: user

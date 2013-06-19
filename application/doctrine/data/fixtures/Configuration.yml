@@ -89,15 +89,28 @@ Configuration:
                 unit: day
                 time: 03:00:00
                 arguments:
-            rebuildIndex:
-                enabled: 1
+            refreshUser:
+                enabled:
                 number: 30
                 unit: day
-                time: 00:00:00
-                arguments: --all
+                time: 03:00:00
+                arguments:
+            workflowTransition:
+                enabled: 1
+                number: 1
+                unit: day
+                time: 02:00:00
+                arguments:
             optimizeIndex:
                 enabled: 1
                 number: 7
                 unit: day
                 time: 01:00:00
                 arguments:
+            recordTrending:
+                enabled: 1
+                number: 1
+                unit: day
+                time: 01:00:00
+                arguments:
+

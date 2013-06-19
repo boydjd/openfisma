@@ -30,7 +30,6 @@ IrIncidentWorkflow:
         Incident:
             local: incidentId
             foreign: id
-            foreignType: one
             foreignAlias: Workflow
         # One to Many:
         Role:

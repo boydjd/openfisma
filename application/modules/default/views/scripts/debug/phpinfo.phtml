@@ -4,9 +4,10 @@
         $installed = in_array($ext, $this->installedExtensions); ?>
         <div class='approvalStep'>
             <span class='<?php echo $this->escape((($installed) ? "approved" : "denied"), 'none'); ?>'>
-                <?php echo $this->escape($ext . " => " . (($installed)
-                                                        ? ((strlen(phpversion($ext)) > 0) ? phpversion($ext) : "installed")
-                                                        : "missing")); ?>
+                <?php echo $this->escape(
+                    $ext . " => " . (($installed)
+                                  ? ((strlen(phpversion($ext)) > 0) ? phpversion($ext) : "installed")
+                                  : "missing")); ?>
             </span>
         </div>
     <?php endforeach; ?>

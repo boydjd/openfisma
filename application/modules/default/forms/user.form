@@ -64,7 +64,7 @@ elements.mustResetPassword.options.tooltip = "The user will be forced to change 
 displayGroups.accountInfo.elements.mustResetPassword = "mustResetPassword"
 
 elements.published.type = "checkbox"
-elements.published.options.label = "Visible"
+elements.published.options.label = "Visible?"
 elements.published.options.value = 1
 elements.published.options.tooltip = "When a user is visible in the contact list, he or she can be assigned to objects in the application. If a user is not visible, he or she will not be available in the contact list and therefore cannot be assigned to items in the application."
 displayGroups.accountInfo.elements.published = "published"
@@ -94,7 +94,7 @@ elements.reportingOrganizationId.options.tooltip = "<p><b>Reporting Organization
 displayGroups.accountInfo.elements.reportingOrganizationId = "reportingOrganizationId"
 
 elements.email.type = "text"
-elements.email.options.label = "E-Mail"
+elements.email.options.label = "E-Mail Address"
 elements.email.options.required = true
 elements.email.options.attribs.size = 35
 elements.email.options.validators.email.validator = "EmailAddress"
@@ -112,11 +112,14 @@ displayGroups.accountInfo.elements.phoneMobile = "phoneMobile"
 
 ; The roles are populated dynamically in Fisma_Zend_Form_Manager_User since they can
 ; change at any time.
-elements.role.type = "multiselect"
-elements.role.options.label = "Role(s)"
+elements.role.type = "multiCheckbox"
+elements.role.options.label = "Account Types"
 elements.role.options.required = true
-elements.role.options.size = 10
 displayGroups.accountInfo.elements.roles = "role"
+
+elements.groups.type = "multiCheckbox"
+elements.groups.options.label = "User Groups"
+displayGroups.accountInfo.elements.groups = "groups"
 
 ; The values in the status menu are static so it is hardcoded here.
 ; (ie. "Active" and "Locked").
@@ -135,10 +138,5 @@ displayGroups.accountInfo.elements.lockReason = "lockReason"
 elements.lockTs.type = "Element_ConstantText"
 elements.lockTs.options.label = "Lock Timestamp"
 displayGroups.accountInfo.elements.lockTs = "lockTs"
-
-elements.comment.type = "hidden"
-elements.comment.options.hideLabel = true
-elements.comment.options.filters.stringtrim.filter = "StringTrim"
-displayGroups.accountInfo.elements.comment = "comment"
 
 ; The systems part of the account form is generated dynamically at runtime

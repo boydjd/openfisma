@@ -1,0 +1,285 @@
+<?php
+    $user = $this->user;
+    $event = $this->event;
+    $url = $this->url;
+    $time = $this->time;
+    $systemName = $this->systemName;
+    $paranoid = !($this->detail);
+
+    $record = $this->record;
+
+    switch ($event->name) {
+        case 'USER_CREATED':
+            $eventTitle = "User account created by {$user->displayName}";
+            break;
+        case 'USER_UPDATED':
+            $eventTitle = "User account modified" . ($user) ? " by {$user->displayName}" : "";
+            break;
+        case 'ACCOUNT_LOCKED':
+            $eventTitle = "User account locked by {$systemName}";
+            break;
+        case 'ACCOUNT_DISABLED':
+            $eventTitle = "User account disabled by {$user->displayName}";
+            break;
+        case 'USER_DELETED':
+            $eventTitle = "User account deleted by {$user->displayName}";
+            break;
+        case 'USER_POC':
+            $recordClass = get_class($record);
+            $assigner = ($user) ? $user->displayName : $systemName;
+            $eventTitle = "You're assigned to {$recordClass} {$record->id} by {$assigner}";
+            break;
+        case 'ACCOUNT_LOGIN_SUCCESS':
+            $eventTitle = "{$user->displayName} logged in successfully";
+            break;
+        case 'ACCOUNT_LOGIN_FAILURE':
+            $eventTitle = "Failed login detected with user {$user->displayName}";
+            break;
+        case 'CONFIGURATION_UPDATED':
+            $eventTitle = "Application configuration modified by {$user->displayName}";
+            break;
+        case 'FINDING_CREATED':
+            $eventTitle = "Finding {$record->id} created by {$user->displayName}";
+            break;
+        case 'FINDING_DELETED':
+            $eventTitle = "Finding {$record->id} deleted by {$user->displayName}";
+            break;
+        case 'FINDING_UPDATED':
+            $eventTitle = "Finding {$record->id} modified by {$user->displayName}";
+            break;
+        case 'FINDING_CLOSED':
+            $eventTitle = "Finding {$record->id} resolved by {$user->displayName}";
+            break;
+        case 'INCIDENT_CREATED':
+            $displayName = empty($user) ? '(Anonymous)' : $user->displayName;
+            $eventTitle = "{$event->description} by {$displayName}";
+            break;
+        default:
+            $eventTitle = "{$event->description} by {$user->displayName}";
+    }
+?>
+<div style="
+    margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+">Overview</div>
+<div style="
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    margin-bottom: 0px;
+">
+<table cellpadding='4' cellspacing='2'>
+    <tr>
+        <th>Event:</th>
+        <td><?php echo $this->escape($eventTitle); ?></td>
+    </tr>
+    <tr>
+        <th>Time:</th>
+        <td><?php echo $this->escape($time); ?></td>
+    </tr>
+<?php if ($url): ?>
+    <tr>
+        <th>URL:</th>
+        <td><a href='<?php echo $this->escape($url); ?>'><?php echo $this->escape($url); ?></a></td>
+    </tr>
+<?php endif; ?>
+</table>
+</div>
+
+<?php if (isset($this->completedStep) && !$paranoid): $completedStep = $this->completedStep; ?>
+<div style="
+    margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+">Details</div>
+<div style="
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    margin-bottom: 0px;
+">
+    <table cellpadding='4' cellspacing='2'>
+        <tr>
+            <th scope='row'>Step</th>
+            <td>
+                <span title='<?php echo $this->escape($completedStep['workflow']['description']); ?>'>
+                    <?php echo $this->escape($completedStep['workflow']['name']); ?>
+                </span>
+                -
+                <span title='<?php echo $this->escape($completedStep['step']['label']); ?>'>
+                    <?php echo $this->escape($completedStep['step']['name']); ?>
+                </span>
+            </td>
+        </tr>
+        <tr>
+            <th scope='row'>Instruction(s)</th>
+            <td><?php echo $this->escape($completedStep['step']['description'], 'none'); ?></td>
+        </tr>
+        <tr>
+            <th scope='row'>Comment</th>
+            <td><?php echo $this->escape($completedStep['comment']); ?></td>
+        </tr>
+        <tr>
+            <th scope='row'>Action</th>
+            <td><?php echo $this->escape($completedStep['transitionName']); ?></td>
+        </tr>
+        <tr>
+            <th scope='row'>Completed by</th>
+            <td><?php
+                $user = Doctrine::getTable('User')->find($completedStep['userId']);
+                echo $this->escape($user->displayName);
+            ?></td>
+        </tr>
+        <tr>
+            <th scope='row'>Completed on</th>
+            <td><?php echo $this->escape($completedStep['timestamp']); ?></td>
+        </tr>
+    </table>
+</div>
+<?php endif; ?>
+
+<?php if (isset($this->suppDetail) && !$paranoid): $suppDetail = $this->suppDetail; ?>
+<div style="
+    margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+">Details</div>
+<div style="
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    margin-bottom: 0px;
+">
+    <?php echo $this->escape($suppDetail, 'none'); ?>
+</div>
+<?php endif; ?>
+
+<?php
+    try {
+        $mailTemplate = Zend_Registry::get('mail_template');
+    } catch (Zend_Exception $e) {
+        global $application;
+        $mailTemplate = $application->getOption('mail_template');
+    }
+    $recordClass = get_class($record);
+    if (isset($mailTemplate[$recordClass]) && !$paranoid):
+        $template = $mailTemplate[$recordClass];
+        $table = $record->getTable();
+?>
+<div style="
+    margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+"><?php echo $this->escape($recordClass); ?> Summary</div>
+<div style="
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    margin-bottom: 0px;
+">
+    <table cellpadding='4' cellspacing='2'>
+    <?php foreach ($template as $field):
+        $value = $record->$field;
+        $name = $table->getLogicalName($field);
+        if (empty($value)):
+            $value = '(none)';
+            $purify = 'none';
+        else:
+            $columnDef = $table->getColumnDefinition($table->getColumnName($field));
+            $purify = (isset($columnDef['extra']['purify'])) ? 'none' : 'html';
+            if (isset($columnDef['extra']['class']) && isset($columnDef['extra']['field'])):
+                $rel = Doctrine::getTable($columnDef['extra']['class']);
+                if ($rel->find($value)):
+                    $value = $rel->find($value)->$columnDef['extra']['field'];
+                endif;
+            endif;
+            if (isset($columnDef['extra']['masked']) && $columnDef['extra']['masked'] === true):
+                $value = '********';
+            endif;
+        endif;
+    ?>
+        <tr>
+            <th><?php echo $this->escape($this->translate($name)); ?></th>
+            <td><?php echo $this->escape($value, $purify); ?></td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+</div>
+<?php endif; ?>
+
+<?php if (in_array($event->name, array(
+    'CONFIGURATION_UPDATED',
+    'USER_UPDATED',
+    'ORGANIZATION_UPDATED',
+    'SYSTEM_UPDATED',
+    'ASSET_UPDATED',
+    'FINDING_UPDATED',
+    'INCIDENT_UPDATED',
+    'VULNERABILITY_UPDATED'
+))): ?>
+<div style="
+    margin-top: 10px;
+    padding: 3px 8px;
+    background-color: #416ed7;
+    color: #fff;
+    border: 1px solid #416ed7;
+    border-bottom: none;
+    font-weight: bold;
+    text-align: left;
+">Updated Field(s)</div>
+<div style="
+    border: 1px solid #d3d3d3;
+    background-color: #ffffff;
+    border-top: none;
+    padding: 10px;
+    margin-bottom: 0px;
+">
+    <?php if (!$paranoid): ?>
+    <table cellpadding='4' cellspacing='2'>
+        <tr>
+            <th>Field</th>
+            <th>Old value</th>
+            <th>New value</th>
+        </tr>
+        <?php foreach ($this->modifiedFields as $name => $values): ?>
+        <tr>
+            <th><?php echo $this->escape($this->translate($values[2])); ?></th>
+            <td><?php echo $this->escape($values[0], $values[3]); ?></td>
+            <td><?php echo $this->escape($values[1], $values[3]); ?></td>
+        </tr>
+        <?php endforeach; ?>
+    </table>
+    <?php else: ?>
+    <ul>
+        <?php foreach ($this->modifiedFields as $name => $values): ?>
+        <li><?php echo $this->escape($this->translate($values[2])); ?></li>
+        <?php endforeach; ?>
+    </ul>
+    <?php endif; ?>
+</div>
+<?php endif; ?>

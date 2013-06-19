@@ -3,15 +3,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  *
  * @fileoverview Handle adding and removing tabs for role/organization assignments to the tabview
@@ -24,49 +24,44 @@
 Fisma.TabView.Roles = (function() {
     return {
         init : function(roles, userid, readOnly) {
-            YAHOO.util.Event.addListener('role', 'change', function(e) {
-                YAHOO.util.Dom.batch(YAHOO.util.Dom.getChildren('role'), function(el) {
-                    var i;
-                    var tabView = Fisma.tabView;
-                    var tabs = tabView.get('tabs');
-
-                    if (el.selected) {
-                        var found = 0;
-                        for (i in tabs) {
-                            if (tabs.hasOwnProperty(i) &&tabs[i].get('id') === el.value) {
-                                found = 1;
-                                break;
-                            }
+            $("input[name^=role], input[name^=groups]").change(function(ev) {
+                var tabs = Fisma.tabView.get("tabs"),
+                    tabShown = false,
+                    tabindex = null,
+                    i, label, newTab;
+                for (i in tabs) {
+                    if (!tabs.hasOwnProperty(i)) {
+                        continue;
+                    }
+                    if (tabs[i].get("id") === $(this).val()) {
+                        tabindex = i;
+                        tabShown = true;
+                        break;
+                    }
+                }
+                if ($(this).is(":checked") && !tabShown) {
+                    for (i in roles) {
+                        if (!roles.hasOwnProperty(i)) {
+                            continue;
                         }
-
-                        if (!found) {
-                            var label;
-                            for (i in roles) {
-                                if (roles.hasOwnProperty(i) && roles[i].id === el.value) {
-                                    label = $P.htmlspecialchars(roles[i].nickname);
-                                    break;
-                                }
-                            }
-
-                            var newTab = new YAHOO.widget.Tab({
-                                id: el.value,
-                                label: label,
-                                dataSrc: '/user/get-organization-subform/user/' + userid
-                                    + '/role/' + el.value + '/readOnly/' + readOnly,
-                                cacheData: true,
-                                active: true
-                            });
-                            newTab.subscribe("dataLoadedChange", Fisma.prepareTab);
-                            tabView.addTab(newTab);
-                        }
-                    } else {
-                        for (i in tabs) {
-                            if (tabs.hasOwnProperty(i) && tabs[i].get('id') === el.value) {
-                                tabView.removeTab(tabs[i]);
-                            }
+                        if (roles[i].id === $(this).val()) {
+                            label = $("<span>").text(roles[i].name).html();
+                            break;
                         }
                     }
-                });
+                    newTab = new YAHOO.widget.Tab({
+                        id: $(this).val(),
+                        label: label,
+                        dataSrc: '/user/get-organization-subform/user/' + userid
+                            + '/role/' + $(this).val() + '/readOnly/' + readOnly,
+                        cacheData: true,
+                        active: true
+                    });
+                    newTab.subscribe("dataLoadedChange", Fisma.prepareTab);
+                    Fisma.tabView.addTab(newTab);
+                } else if(!$(this).is(":checked") && tabShown) {
+                    Fisma.tabView.removeTab(tabs[tabindex]);
+                }
             });
         }
     };

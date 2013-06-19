@@ -39,11 +39,13 @@ class Fisma_Menu
     public static function getMainMenu($user)
     {
         self::$_mainMenuBar = new Fisma_Yui_MenuBar();
-        $path = Fisma::getPath('config');
-        $menuConfig = Doctrine_Parser_YamlSf::load($path . '/menu.yml');
-
-        self::buildMenu($user, $menuConfig, self::$_mainMenuBar);
-
+        try {
+            $path = Fisma::getPath('config');
+            $menuConfig = Doctrine_Parser_YamlSf::load($path . '/menu.yml');
+            self::buildMenu($user, $menuConfig, self::$_mainMenuBar);
+        } catch(Exception $e) {
+            Zend_Registry::get('Zend_Log')->err($e);
+        }
         return self::$_mainMenuBar;
     }
 

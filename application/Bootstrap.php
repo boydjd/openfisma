@@ -208,6 +208,7 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         $viewRenderer = Zend_Controller_Action_HelperBroker::getStaticHelper('viewRenderer');
         $viewRenderer->setView($view);
         $viewRenderer->setViewSuffix('phtml');
+        Kint::enabled(Fisma::debug());
     }
 
     /**
@@ -235,5 +236,14 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         $mailHandler = new Fisma_MailHandler_Queue();
 
         Zend_Registry::set('mail_handler', $mailHandler);
+    }
+
+    /**
+     * Cached the mail templates
+     */
+    protected function _initMailTemplate()
+    {
+        Zend_Registry::set('mail_template', $this->getOption('mail_template'));
+        Zend_Registry::set('mail_title', $this->getOption('mail_title'));
     }
 }

@@ -21,3 +21,8 @@ Mail:
             type: string
             notnull: true
             comment: Email body text
+        format:
+            type: enum
+            values: [text, html]
+            default: text
+            comment: Email format

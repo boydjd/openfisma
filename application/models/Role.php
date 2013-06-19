@@ -4,21 +4,21 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
  * Role
- * 
+ *
  * @author     Ryan Yang <ryan@users.sourceforge.net>
  * @copyright  (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
  * @license    http://www.openfisma.org/content/license GPLv3
@@ -27,8 +27,16 @@
 class Role extends BaseRole
 {
     /**
+     * builtin
+     *
+     * @var string
+     * @static
+     */
+    public static $builtin = array('ADMIN', 'USER', 'VIEWER');
+
+    /**
      * Implements the interface for Zend_Acl_Role_Interface
-     * 
+     *
      * @return int The role id
      */
     public function getRoleId()
@@ -37,14 +45,20 @@ class Role extends BaseRole
     }
 
     /**
-     * preDelete 
-     * 
-     * @param Doctrine_Event $event 
+     * preDelete
+     *
+     * @param Doctrine_Event $event
      * @access public
      * @return void
      */
     public function preDelete($event)
     {
+        if (in_array($this->nickname, self::$builtin)) {
+            throw new Fisma_Zend_Exception_User(
+                'The built-in role ' . $this->nickname . ' cannot be deleted.'
+            );
+        }
+
         if (count($this->Users) > 0) {
             throw new Fisma_Zend_Exception_User(
                 'This role cannot be deleted because it is in use by one or more users'

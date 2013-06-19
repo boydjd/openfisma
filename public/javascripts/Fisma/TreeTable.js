@@ -119,6 +119,11 @@
         _treeData: null,
 
         /**
+         * Function called after successfully reloaded
+         */
+        onReload: null,
+
+        /**
          * Renders the widget.
          *
          * This doesn't really do much because the widget relies on an XHR to get data. This method just creates the
@@ -523,6 +528,9 @@
             }
 
             this.enableFilters();
+            if (this.onReload) {
+                this.onReload();
+            }
         },
 
         /**

@@ -57,7 +57,8 @@ Fisma.Asset = {
                                             'Tag': input,
                                             'Assets': {
                                                 displayText: jcell.siblings().eq(0).find('div a').text(),
-                                                url: '/asset/list?q=/serviceTag/textExactMatch/' + encodeURIComponent(input)
+                                                url: '/asset/list?q=/serviceTag/textExactMatch/'
+                                                    + encodeURIComponent(input)
                                             },
                                             'Edit': {func: Fisma.Asset.renameTag, param: input},
                                             'Delete': '/asset/remove-service-tag/tag/' + encodeURIComponent(input)
@@ -113,7 +114,8 @@ Fisma.Asset = {
                                             'Tag': input,
                                             'Assets': {
                                                 displayText: '0',
-                                                url: '/asset/list?q=/serviceTag/textExactMatch/' + encodeURIComponent(input)},
+                                                url: '/asset/list?q=/serviceTag/textExactMatch/'
+                                                    + encodeURIComponent(input)},
                                             'Edit': {func: Fisma.Asset.renameTag, param: input},
                                             'Delete': '/asset/remove-service-tag/tag/' + encodeURIComponent(input)
                                         });
@@ -133,5 +135,112 @@ Fisma.Asset = {
                 }
             }
         );
+    },
+
+    addService: function (ev, args) {
+        var panel = Fisma.UrlPanel.showPanel(
+            'Add Service',
+            args.url,
+            function () {
+                var body = $(panel.body),
+                    form = body.find("form");
+                $("<input>").attr({
+                    type: "submit",
+                    value: "Submit"
+                }).button()
+                    .css("float", "right")
+                    .appendTo(form.find(".subform"));
+                body.find("script").appendTo(document.body);
+                form.submit(function(ev) {
+                    ev.preventDefault();
+                    $.ajax({
+                        type: "POST",
+                        url: form.attr("action") + "/format/json",
+                        data: form.serialize(),
+                        success: function(response, result, xhr) {
+                            if (response.errors) {
+                                Fisma.Util.showAlertDialog(response.errors);
+                            } else {
+                                Fisma.Registry.get('assetServiceTable').addRow(response.newService);
+                                panel.destroy();
+                            }
+                        },
+                        error: function () {
+                            Fisma.Util.showAlertDialog("An unexpected error has occurred.");
+                        }
+                    });
+                });
+            }
+        );
+    },
+
+    editService: function(ev, args) {
+        ev.preventDefault();
+        var record = $(this).data("record"),
+            recordId = $(this).data("recordId"),
+            dataTable = $(this).data("dataTable"),
+            panel, callback;
+        callback = function () {
+            var body = $(panel.body),
+                form = body.find("form");
+            body.find("script").appendTo(document.body);
+            $("<button/>", {type: "submit"})
+                .html("Submit")
+                .button()
+                .css("float", "right")
+                .appendTo(form.find(".subform"));
+            form.submit(function(ev) {
+                ev.preventDefault();
+                function complete(response, result, xhr) {
+                    if (result === "success") {
+                        if (response.errors) {
+                            Fisma.Util.showAlertDialog(response.errors);
+                        } else {
+                            dataTable.updateRow(recordId, response.service);
+                            panel.destroy();
+                        }
+                    } else {
+                        Fisma.Util.showAlertDialog("An unexpected error has occurred.");
+                    }
+                }
+                $.ajax({
+                    type: "POST",
+                    url: form.attr("action") + "/format/json",
+                    data: form.serialize(),
+                    success: complete,
+                    error: complete
+                });
+            });
+        };
+        panel = Fisma.UrlPanel.showPanel(
+            'Edit Service',
+            "/asset/edit-service/id/" + record.assetId + "/format/html",
+            callback
+        );
+    },
+
+    deleteService: function(ev) {
+        ev.preventDefault();
+        var record = $(this).data("record"),
+            recordId = $(this).data("recordId"),
+            dataTable = $(this).data("dataTable");
+        function complete(response, result, xhr) {
+            if (result === "success") {
+                if (response.errors) {
+                    Fisma.Util.showAlertDialog(response.errors);
+                } else {
+                    dataTable.deleteRow(recordId);
+                }
+            } else {
+                Fisma.Util.showAlertDialog("An unexpected error has occurred.");
+            }
+        }
+        $.ajax({
+            type: "POST",
+            url: "/asset/remove-service/id/" + record.id + "/format/json",
+            data: $("input[name=csrf]:first").serialize(),
+            success: complete,
+            error: complete
+        });
     }
 };

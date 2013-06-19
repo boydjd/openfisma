@@ -1,0 +1,65 @@
+<label for='<?php echo $this->escape($this->name); ?>'>
+    Query
+</label>
+<input
+    type='text'
+    id='<?php echo $this->escape($this->name); ?>'
+    name='<?php echo $this->escape($this->name); ?>'
+    value='<?php echo $this->escape(($this->value) ? $this->value['text'] : ''); ?>'
+    placeholder='<?php echo $this->escape($this->placeholder); ?>'
+/>
+<br/>
+including:
+<br/>
+<input
+    type='checkbox'
+    id='<?php echo $this->escape($this->name); ?>_exact'
+    name='<?php echo $this->escape($this->name); ?>_exact'
+    onchange='Fisma.Search.Criterion.orgExactHandler(this);'
+    <?php if ($this->value && $this->value['self']): ?>checked<?php endif; ?>
+/>
+<label for='<?php echo $this->escape($this->name); ?>_exact'>
+    itself, and
+</label>
+<br/>
+<input
+    type='radio'
+    id='<?php echo $this->escape($this->name); ?>_children_none'
+    name='<?php echo $this->escape($this->name); ?>_children'
+    value='none'
+    <?php if ($this->value && $this->value['self']): ?>checked
+    <?php else: ?>
+    style='display: none;'
+    <?php endif; ?>
+/>
+<label for='<?php echo $this->escape($this->name); ?>_children_none'
+    <?php if (!$this->value || !$this->value['self']): ?>style='display: none;'<?php endif;?> >
+    no children
+</label>
+<br/>
+<input
+    type='radio'
+    id='<?php echo $this->escape($this->name); ?>_children_immediate'
+    name='<?php echo $this->escape($this->name); ?>_children'
+    value='immediate'
+    <?php if ($this->value &&
+        isset($this->value['children']) &&
+        $this->value['children'] === 'immediate'): ?>checked<?php endif; ?>
+/>
+<label for='<?php echo $this->escape($this->name); ?>_children_immediate'>
+    immediate children only
+</label>
+<br/>
+<input
+    type='radio'
+    id='<?php echo $this->escape($this->name); ?>_children_all'
+    name='<?php echo $this->escape($this->name); ?>_children'
+    value='all'
+    <?php if ($this->value &&
+        isset($this->value['children']) &&
+        $this->value['children'] === 'all'): ?>checked<?php endif; ?>
+/>
+<label for='<?php echo $this->escape($this->name); ?>_children_all'>
+    all nested children
+</label>
+<br/>

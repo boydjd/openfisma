@@ -1,6 +1,43 @@
-<?php Fisma_Format_Section::startSection('Vulnerability Dashboard'); ?>
+<?php
+    echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
+?>
 
-<div class='dashboardChart'>
-</div>
+<?php if ($this->message): ?>
+<div class='message'><?php echo $this->escape($this->message); ?></div>
+<?php else: ?>
+    <div class='column left'>
+    <?php
+        $chartOpenVuln = new Fisma_Chart();
+        $chartOpenVuln->setStandardLegendVisibility(false)
+                      ->setTitle('Organization Risk Trending (Last 30 Days)')
+                      ->setChartType('line');
+        $chartOpenVulnLabels = array();
+        $chartOpenVulnData = array();
+        foreach ($this->vulnCvssTrending as $record) {
+            array_unshift($chartOpenVulnLabels, $record['vt_period']);
+            array_unshift($chartOpenVulnData, $record['vt_score']);
+        }
+        $chartOpenVuln->addLine($chartOpenVulnData, $chartOpenVulnLabels);
+        $chartOpenVuln->setColors(array(Fisma_Chart::COLOR_BLUE));
+        echo $this->escape($chartOpenVuln->export('html', false, true), 'none');
+    ?>
+    </div>
 
-<?php Fisma_Format_Section::stopSection(); ?>
+    <div class='column right'>
+    <?php
+        $chartOpenVuln = new Fisma_Chart();
+        $chartOpenVuln->setStandardLegendVisibility(false)
+                      ->setTitle('Open Vulnerabilities (Last 30 Days)')
+                      ->setChartType('line');
+        $chartOpenVulnLabels = array();
+        $chartOpenVulnData = array();
+        foreach ($this->vulnTrending as $record) {
+            array_unshift($chartOpenVulnLabels, $record['vt_period']);
+            array_unshift($chartOpenVulnData, $record['vt_totalOpen']);
+        }
+        $chartOpenVuln->addLine($chartOpenVulnData, $chartOpenVulnLabels);
+        $chartOpenVuln->setColors(array(Fisma_Chart::COLOR_BLUE));
+        echo $this->escape($chartOpenVuln->export('html', false, true), 'none');
+    ?>
+    </div>
+<?php endif; ?>

@@ -1,3 +1,5 @@
-<?php 
+<?php
+    Fisma_Format_Section::startSection('Audit Log');
     echo $this->escape($this->auditLogDataTable, 'none');
+    Fisma_Format_Section::stopSection();
 ?>

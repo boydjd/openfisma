@@ -139,120 +139,58 @@
          * Capture parent select onChange and update copyUserAccess
          */
         parentChanged: function (selectElement) {
-            var parentButton = YAHOO.widget.Button.getButton(selectElement.id + '-button');
-            var copyUserAccessButton =
-                YAHOO.widget.Button.getButton('copyOrganizationId-button') ||
-                YAHOO.widget.Button.getButton('cloneOrganizationId-button')
-            ;
-            copyUserAccessButton.set('label', parentButton.get('label'));
-            copyUserAccessButton.set('selectedMenuItem', parentButton.get('selectedMenuItem'));
+            $('#cloneOrganizationId, #copyOrganizationId').val(selectElement.value);
         },
 
-        renameTag: function(tag) {
-            var jcell = $('td').filter(function(index){
-                return ($(this).text() === tag);
-            });
-            var row = jcell.parent().get(0);
-            var datatable = Fisma.Registry.get('assetPocListTable');
-            datatable.selectRow(row);
-
-            Fisma.Util.showInputDialog(
-                "Rename '" + tag + "' ...",
-                "New name",
-                {
-                    'continue': function(ev, obj) {
-                        YAHOO.util.Event.stopEvent(ev);
-                        var input = obj.textField.value;
-                        if (input !== "") {
-                            obj.errorDiv.innerHTML = "Renaming '" + tag + "'...";
-
-                            $.post(
-                                '/organization/rename-poc-list',
-                                {
-                                    format: 'json',
-                                    oldTag: tag,
-                                    newTag: input,
-                                    csrf: $('[name=csrf]').val()
-                                },
-                                function(data) {
-                                    $('[name=csrf]').val(data.csrfToken);
-
-                                    if (data.result.success) {
-                                        if (data.result.message) {
-                                            Fisma.Util.showAlertDialog(data.result.message);
-                                        } else {
-                                            datatable.updateRow(row, {
-                                                'Position': input,
-                                                'Assignees': jcell.siblings().eq(0).text(),
-                                                'Edit': {func:Fisma.Organization.renameTag, param:input},
-                                                'Delete': '/organization/remove-poc-list/tag/' + encodeURIComponent(input)
-                                            });
-                                        }
-                                    } else {
-                                        Fisma.Util.showAlertDialog(data.result.message);
-                                    }
-                                    obj.panel.hide();
-                                    obj.panel.destroy();
+        addPoc: function(event, args) {
+            event.preventDefault();
+            Fisma.UrlPanel.showPanel(
+                'Add People', //title
+                '/organization/add-poc-form/format/html/', //url
+                function(panel) { //callbackFunction
+                    $('script', panel.body).appendTo(document);
+                    $('button#addPocSubmit').click(function(event) {
+                        $.post(
+                            '/organization/add-poc/format/json/id/' + args.id,
+                            {
+                                'addPocId': $('input#addPocId', panel.body).val(),
+                                'addPocRole': $('select#addPocRole', panel.body).val(),
+                                'returnModule': args.returnModule,
+                                'csrf': $('input[name=csrf]').val()
+                            },
+                            function(data) {
+                                Fisma.Organization.addPocResult = data;
+                                if (data.err) {
+                                    Fisma.Util.showAlertDialog(data.err);
+                                } else {
+                                    $('div#peopleSection').replaceWith($('div#peopleSection', data));
+                                    $(data).filter('script').appendTo(document);
+                                    panel.hide();
+                                    panel.destroy();
                                 }
-                            );
-
-                        } else {
-                            obj.errorDiv.innerHTML = "Tag name cannot be blank.";
-                        }
-                    },
-                    'cancel': function(ev, obj) {
-                        datatable.unselectRow(row);
-                    }
+                            }
+                        );
+                    });
                 }
             );
         },
 
-        addTag: function() {
-            var datatable = Fisma.Registry.get('assetPocListTable');
-
-            Fisma.Util.showInputDialog(
-                "Add a tag ...",
-                "Tag name",
+        removePoc: function(orgId, pocRole, pocId, returnModule) {
+            $.post(
+                '/organization/remove-poc/format/json/id/' + orgId,
                 {
-                    'continue': function(ev, obj) {
-                        YAHOO.util.Event.stopEvent(ev);
-                        var input = obj.textField.value;
-                        if (input !== "") {
-                            obj.errorDiv.innerHTML = "Adding position '" + input + "'...";
-
-                            $.post(
-                                '/organization/add-poc-list/',
-                                {
-                                    format: 'json',
-                                    tag: input,
-                                    csrf: $('[name=csrf]').val()
-                                },
-                                function(data) {
-                                    $('[name=csrf]').val(data.csrfToken);
-
-                                    if (data.result.success) {
-                                        if (data.result.message) {
-                                            Fisma.Util.showAlertDialog(data.result.message);
-                                        } else {
-                                            datatable.addRow({
-                                                'Position': input,
-                                                'Assignees': '0',
-                                                'Edit': {func:Fisma.Organization.renameTag, param:input},
-                                                'Delete': '/organization/remove-poc-list/tag/' + encodeURIComponent(input)
-                                            });
-                                        }
-                                    } else {
-                                        Fisma.Util.showAlertDialog(data.result.message);
-                                    }
-                                    obj.panel.hide();
-                                    obj.panel.destroy();
-                                }
-                            );
-                        } else {
-                            obj.errorDiv.innerHTML = "Position name cannot be blank.";
-                        }
-                    },
-                    'cancel': function(ev, obj) {
+                    'pocId': pocId,
+                    'pocRole': pocRole,
+                    'returnModule': returnModule,
+                    'csrf': $('input[name=csrf]').val()
+                },
+                function(data) {
+                    Fisma.Organization.addPocResult = data;
+                    if (data.err) {
+                        Fisma.Util.showAlertDialog(data.err);
+                    } else {
+                        $('div#peopleSection').replaceWith($('div#peopleSection', data));
+                        $(data).filter('script').appendTo(document);
                     }
                 }
             );

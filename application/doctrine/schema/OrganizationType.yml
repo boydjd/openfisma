@@ -1,14 +1,20 @@
 OrganizationType:
-    listeners: [IndexListener]
+    listeners: [IndexListener, NotificationListener]
 
     columns:
         createdTs: timestamp
         modifiedTs: timestamp
         name:
+            extra:
+                logicalName: Name
+                notify: true
             type: string(255)
             notblank: true
             notnull: true
         nickname:
+            extra:
+                logicalName: Nickname
+                notify: true
             type: string(255)
             unique: true
             notblank: true
@@ -18,6 +24,9 @@ OrganizationType:
             extra:
                 logicalName: Icon
         description:
+            extra:
+                logicalName: Description
+                notify: true
             type: string
             extra:
                 purify: html

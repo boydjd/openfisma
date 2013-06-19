@@ -57,10 +57,8 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
                         ->setHydrationMode(Doctrine::HYDRATE_NONE)
                         ->execute();
 
-        $status = array('OPEN', 'FIXED', 'WONTFIX');
         $threat = array('LOW', 'MODERATE', 'HIGH');
 
-        $statusCount = count($status)-1;
         $threatCount = count($threat)-1;
         $assetIdsCount = count($assetIds)-1;
 
@@ -72,24 +70,29 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
             $discoveredDate = rand(0, time());
 
             $entry = array();
-            $randomstatus = $status[rand(0, $statusCount)];
 
-            //Status defaults to OPEN and state transition does not allow from OPEN to OPEN
-            if ($randomstatus != 'OPEN') {
-                $entry['status'] = $randomstatus;
-            }
-            $entry['threatLevel'] = $threat[$this->_randomLog(0, $threatCount)];
             $entry['assetId'] = $assetIds[$this->_randomLog(0, $assetIdsCount)][0];
+            $entry['summary'] = Fisma_String::loremIpsum(rand(5, 10));
+            $entry['source'] = 'generator';
             $entry['description'] = Fisma_String::loremIpsum(rand(90, 100));
             $entry['recommendation'] = Fisma_String::loremIpsum(rand(90, 100));
             $entry['threat'] = Fisma_String::loremIpsum(rand(90, 100));
             $zdDescDate = new Zend_Date($discoveredDate);
             $entry['discoveredDate'] = $zdDescDate->toString('yyyy-MM-dd');
+            $cvss = $this->_randomCvssVector();
+            $entry['cvssVector'] = $cvss->getBaseVector();
+            $entry['cvssBaseScore'] = $cvss->getBaseScore();
             $entries[] = $entry;
             unset($entry);
 
             $generateProgressBar->update($i, "Generate Vulnerabilities");
         }
+
+        print "\n";
+        $saveProgressBar = $this->_getProgressBar($numEntries);
+        $saveProgressBar->update(0, "Save Vulnerabilities");
+
+        $currentVulnerability = 0;
 
         try {
             Doctrine_Manager::connection()->beginTransaction();
@@ -98,9 +101,34 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
                 $e = new Vulnerability();
                 $e->merge($entry);
                 $e->CreatedBy = $this->_getRandomUser();
+                if (empty($e->pocId)) {
+                    $e->pocId = $this->_getRandomUser()->id;
+                }
+                $e->save();
+
+                //workflow simulation
+                $rand = rand(0, 100);
+                while ($rand >= 25) {
+                    $rand = rand(0, $rand);
+                    $transitions = $e->CurrentStep->transitions;
+                    $randTransition = rand(0, count($transitions) -1);
+                    $transition = $transitions[$randTransition]['name'];
+                    $userId = $this->_getRandomUser()->id;
+                    try {
+                        $nextStep = $e->CurrentStep->getNextStep($transition); //Use destionationId to bypass ACL
+                        WorkflowStep::completeOnObject(
+                            $e, $transition, 'Completed by generation script', $userId, rand(7, 30), $nextStep->id
+                        );
+                    } catch (Exception $e) {
+                    }
+                }
+
                 $e->save();
                 $e->free();
                 unset($e);
+
+                $currentVulnerability++;
+                $saveProgressBar->update($currentVulnerability);
             }
 
             Doctrine_Manager::connection()->commit();
@@ -108,5 +136,6 @@ class Fisma_Cli_GenerateVulnerabilities extends Fisma_Cli_AbstractGenerator
             Doctrine_Manager::connection()->rollBack();
             throw $e;
         }
+        print "\n";
     }
 }

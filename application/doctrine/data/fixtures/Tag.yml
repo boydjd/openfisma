@@ -1,4 +1,13 @@
 Tag:
+    incidentResponseStrategy:
+        tagId: incident-response-strategy
+        labels:
+            - Customer Outreach
+            - Account Access Control
+            - Network Access Control
+            - Configuration Change
+            - Patch Deployment
+            - Change of Custody
     incidentSeverityLevel:
         tagId: incident-severity-level
         labels:
@@ -20,3 +29,11 @@ Tag:
             - Compromised
             - Inconclusive
             - Protection In Place
+    assetEnvironment:
+        tagId: asset-environment
+        labels:
+            - development
+            - testing
+            - pre-production
+            - staging
+            - production

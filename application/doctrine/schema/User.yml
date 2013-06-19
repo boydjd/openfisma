@@ -10,7 +10,7 @@ User:
             type: string(255)
             unique: true
             extra:
-                logicalName: User Name
+                logicalName: Username
                 notify: true
             comment: This users unique authentication credential
         title:
@@ -44,6 +44,8 @@ User:
         displayName:
             type: string
             comment: An internally-modified field which combines first/last/email together.
+            extra:
+                logicalName: Full Name
         phoneOffice:
             type: string(15)
             fixed: true
@@ -67,15 +69,22 @@ User:
             extra:
                 auditLog: true
                 logicalName: Reporting Organization
+                notify: true
+                class: Organization
+                field: name
 
         lockType:
             type: enum
             values: [manual, password, inactive, expired]
             comment: Manual lock means the admin locked the account. Password lock means several consecutive password failures. Inactive lock means the user has not logged in recently enough. Expired locked means the password has expired.
+            extra:
+                logicalName: Account Lock
         published:
             type: boolean
             notnull: true
             default: true
+            extra:
+                logicalName: Visible?
         password:
             type: string(255)
             extra:
@@ -96,6 +105,8 @@ User:
         lastRob:
             type: timestamp
             comment: The last time this user digitally accepted the Rules of Behavior
+            extra:
+                logicalName: Last ROB Date
 
         locked:
             type: boolean
@@ -111,6 +122,8 @@ User:
         lastLoginIp:
             type: string(39)
             Fisma_Doctrine_Validator_Ip: true
+            extra:
+                logicalName: Last Login IP
         lastLoginTs: timestamp
 
         searchColumnsPref:
@@ -167,6 +180,12 @@ User:
             local: userId
             foreign: incidentId
             refClass: IrIncidentUser
+
+        WatchingSteps:
+            class: WorkflowStep
+            local: userId
+            foreign: stepId
+            refClass: WorkflowStepUser
 
     actAs:
         Timestampable:

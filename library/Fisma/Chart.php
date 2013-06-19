@@ -30,10 +30,11 @@
  */
 class Fisma_Chart
 {
-    const COLOR_HIGH = "#F8696B";
-    const COLOR_MODERATE = "#FFEB84";
-    const COLOR_LOW = "#63BE7B";
-    const COLOR_BLUE = "#C8E1FA";
+    const COLOR_CRITICAL = "#993300";
+    const COLOR_HIGH = "#FF3300";
+    const COLOR_MODERATE = "#FF6600";
+    const COLOR_LOW = "#FFCC00";
+    const COLOR_BLUE = "#3366CC";
 
     /**
      * An array that holds information defining how the chart will be constructed and what it will plot
@@ -120,6 +121,7 @@ class Fisma_Chart
         }
 
         $this->chartParamArr['chartType'] = $inString;
+        $this->chartParamArr['grid']['background'] = 'transparent';
         return $this;
     }
 
@@ -370,11 +372,6 @@ class Fisma_Chart
             }
         }
 
-        // If this is a pie-chart, do not add (needless) slices of 0
-        if ($this->getChartType() === 'pie' && $addValue == 0) {
-            return;
-        }
-
         // Add label for this column
         $this->chartParamArr['chartDataText'][] = $columnLabel;
 
@@ -594,6 +591,10 @@ class Fisma_Chart
     public function setStandardLegendVisibility($inBoolean)
     {
         $this->chartParamArr['showlegend'] = $inBoolean;
+        if (!isset($this->chartParamArr['legend'])) {
+            $this->chartParamArr['legend'] = array();
+        }
+        $this->chartParamArr['legend']['show'] = $inBoolean;
         return $this;
     }
 
@@ -747,7 +748,7 @@ class Fisma_Chart
      *
      * @return string
      */
-    public function export($expMode = 'html', $hideHeader = false)
+    public function export($expMode = 'html', $hideHeader = false, $hideGear = false)
     {
         switch ($expMode)
         {
@@ -786,6 +787,7 @@ class Fisma_Chart
             $dataToView['chartParamArr'] = $this->chartParamArr;
             $dataToView['chartId'] = $this->chartParamArr['uniqueid'];
             $dataToView['hideHeader'] = $hideHeader;
+            $dataToView['hideGear'] = $hideGear;
 
             return $view->partial('chart/chart.phtml', 'default', $dataToView);
 

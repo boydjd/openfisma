@@ -30,21 +30,18 @@
      * @constructor
      * @param dataUrl {String}
      * @param numberColumns {Integer} The number of columns to display in the table.
-     * @param msApprovals {Object} An array of the mitigation strategy approval levels.
-     * @param evApprovals {Object} An array of the evidence approval levels.
+     * @param steps {Object} An array of workflow steps.
+     * @param steps {Array} An array of ID's of closed workflow steps.
      */
-    var FS = function(dataUrl, numberColumns, msApprovals, evApprovals) {
+    var FS = function(dataUrl, numberColumns, steps, closedSteps) {
         FS.superclass.constructor.call(this, dataUrl, numberColumns);
 
-        this._msApprovals = msApprovals;
-        this._evApprovals = evApprovals;
+        this._steps = steps;
+        this._closedSteps = closedSteps || [];
 
         this._columnLabels = [];
         this._columnLabels = this._columnLabels.concat(
-            FS.MITIGATION_COLUMNS,
-            msApprovals,
-            FS.EVIDENCE_COLUMNS,
-            evApprovals,
+            steps,
             FS.AGGREGATE_COLUMNS
         );
     };
@@ -54,21 +51,25 @@
      *
      * @static
      */
-    FS.MITIGATION_COLUMNS = ["NEW", "DRAFT"];
+    FS.MITIGATION_COLUMNS = [];
 
     /**
      * The labels for evidence columns (not including approvals)
      *
      * @static
      */
-    FS.EVIDENCE_COLUMNS = ["EN"];
+    FS.EVIDENCE_COLUMNS = [];
 
     /**
      * The labels for aggregate columns
      *
      * @static
      */
-    FS.AGGREGATE_COLUMNS = ["OPEN", "CLOSED", "TOTAL"];
+    FS.AGGREGATE_COLUMNS = [
+        {'label': 'ALL OPEN',   'stepId': 'ALL OPEN',   'name': 'All Open Findings'},
+        {'label': 'ALL CLOSED', 'stepId': 'ALL CLOSED', 'name': 'All Closed Findings'},
+        {'label': 'TOTAL',      'stepId': 'TOTAL',      'name': 'All Findings'}
+    ];
 
     /**
      * The options for the summary type menu.
@@ -79,8 +80,7 @@
      */
     FS.SUMMARY_TYPES = {
         organizationHierarchy: "Organization Hierarchy",
-        pointOfContact: "Point Of Contact",
-        systemAggregation: "System Hierarchy"
+        pointOfContact: "Point Of Contact"
     };
 
     /**
@@ -93,14 +93,9 @@
 
     YAHOO.lang.extend(FS, Fisma.TreeTable, {
         /**
-         * An array of the mitigation strategy approval levels.
+         * An array of workflow steps
          */
-        _msApprovals: null,
-
-        /**
-         * An array of the mitigation strategy approval levels.
-         */
-        _evApprovals: null,
+        _steps: null,
 
         /**
          * The columns labels (not including the first column)
@@ -150,24 +145,14 @@
          * @param rows {Array} An array of TR elements to render the header inside of.
          */
         _renderHeader: function (rows) {
-            this._renderHeaderRow1(rows[0]);
-            this._renderHeaderRow2(rows[1]);
-            this._renderHeaderRow3(rows[2]);
-        },
+            var row = rows[0], label, name, cell, link, index, that = this;
 
-        /**
-         * Render the first row of the header
-         *
-         * @param row {HTMLElement} A TR element to render into.
-         */
-        _renderHeaderRow1: function(row) {
-            var that = this; // For closure
+            Fisma.SummaryTable = this;
 
             // Create top left cell
             var firstCell = document.createElement('th');
             row.appendChild(firstCell);
             firstCell.style.borderBottom = "none";
-            firstCell.rowSpan = 3;
 
             var firstCellSpan = document.createElement('span');
             firstCell.appendChild(firstCellSpan);
@@ -200,98 +185,30 @@
             }
             firstCell.appendChild(select);
 
-            // Create the cell that spans the mitigation strategy columns
-            var mitigationCell = document.createElement('th');
-            mitigationCell.colSpan = FS.MITIGATION_COLUMNS.length + this._msApprovals.length;
-            mitigationCell.style.borderBottom = "none";
-            row.appendChild(mitigationCell);
-
-            var mitigationCellSpan = document.createElement('span');
-            mitigationCell.appendChild(mitigationCellSpan);
-            mitigationCellSpan.appendChild(document.createTextNode("Mitigation Strategy"));
-
-            if (YAHOO.lang.isValue(this._tooltips.mitigationStrategy)) {
-                mitigationCellSpan.className = "tooltip";
-                mitigationCellSpan.title = this._tooltips.mitigationStrategy;
-            }
-
-            // Create the cell that spans the evidence columns
-            var remediationCell = document.createElement('th');
-            remediationCell.colSpan = FS.EVIDENCE_COLUMNS.length + this._evApprovals.length;
-            remediationCell.style.borderBottom = "none";
-            row.appendChild(remediationCell);
-
-            var remediationCellSpan = document.createElement('span');
-            remediationCell.appendChild(remediationCellSpan);
-            remediationCellSpan.appendChild(document.createTextNode("Remediation"));
-
-            if (YAHOO.lang.isValue(this._tooltips.remediation)) {
-                remediationCellSpan.className = "tooltip";
-                remediationCellSpan.title = this._tooltips.remediation;
-            }
-
-            // Create the cell that spans the aggregate columns
-            var blankCell = document.createElement('th');
-            blankCell.colSpan = FS.AGGREGATE_COLUMNS.length;
-            blankCell.rowSpan = 2;
-            row.appendChild(blankCell);
-        },
-
-        /**
-         * Render the second row of the header
-         *
-         * @param row {HTMLElement} A TR element to render into.
-         */
-        _renderHeaderRow2: function(row) {
-            var blankCell1 = document.createElement('th');
-            blankCell1.colSpan = FS.MITIGATION_COLUMNS.length;
-            blankCell1.style.borderTop = "none";
-            row.appendChild(blankCell1);
-
-            var msApprovalCell = document.createElement('th');
-            msApprovalCell.appendChild(document.createTextNode("Approval"));
-            msApprovalCell.colSpan = this._msApprovals.length;
-            row.appendChild(msApprovalCell);
-
-            var blankCell2 = document.createElement('th');
-            blankCell2.style.borderTop = "none";
-            blankCell1.style.colSpan = FS.EVIDENCE_COLUMNS.length;
-            row.appendChild(blankCell2);
-
-            var evApprovalCell = document.createElement('th');
-            evApprovalCell.appendChild(document.createTextNode("Approval"));
-            evApprovalCell.colSpan = this._evApprovals.length;
-            row.appendChild(evApprovalCell);
-        },
-
-        /**
-         * Render the second row of the header
-         *
-         * @param row {HTMLElement} A TR element to render into.
-         */
-        _renderHeaderRow3: function(row) {
-            var label;
-            var cell;
-            var link;
-            var index;
-
             for (index in this._columnLabels) {
                 cell = document.createElement('th');
                 cell.style.borderBottom = "none";
 
-                label = this._columnLabels[index];
+                label = this._columnLabels[index].label;
+                name = this._columnLabels[index].name;
+                $(cell).attr('header', this._columnLabels[index].workflowId);
 
                 link = document.createElement('a');
                 cell.appendChild(link);
-                if ("OPEN" === label) {
-                    link.href = "/finding/remediation/list?q=/denormalizedStatus/enumIsNot/CLOSED";
+                if ("ALL OPEN" === label) {
+                    link.href = "/finding/remediation/list?q=/isResolved/booleanNo";
+                } else if ("ALL CLOSED" === label) {
+                    link.href = "/finding/remediation/list?q=/isResolved/booleanYes";
                 } else if ("TOTAL" === label) {
                     // Pass a blank query, otherwise the saved settings of previous search will be used
                     link.href = "/finding/remediation/list?q=/id/integerEquals/";
                 } else {
-                    link.href = "/finding/remediation/list?q=/denormalizedStatus/enumIs/"
-                              + encodeURIComponent(label);
+                    link.href = "/finding/remediation/list?q=/workflowStep/textExactMatch/"
+                              + encodeURIComponent(name)
+                              + "/workflow/textExactMatch/"
+                              + encodeURIComponent(this._columnLabels[index].workflowName);
                 }
+                link.title = this._columnLabels[index].workflowName + ' - ' + name;
                 link.appendChild(document.createTextNode(label));
 
                 row.appendChild(cell);
@@ -315,9 +232,9 @@
             var index,
                 column;
             for (index in this._columnLabels) {
-                column = $P.urlencode(this._columnLabels[index]);
+                column = $P.urlencode(this._columnLabels[index].stepId);
 
-                if (column === 'CLOSED' || column === 'TOTAL') {
+                if (column === 'ALL+CLOSED' || column === 'TOTAL') {
                     // These columns don't distinguish ontime from overdue (they're handled above)
                     continue;
                 }
@@ -340,9 +257,9 @@
 
                     var j;
                     for (j in this._columnLabels) {
-                        column = $P.urlencode(this._columnLabels[j]);
+                        column = $P.urlencode(this._columnLabels[j].stepId);
 
-                        if (column === 'CLOSED' || column === 'TOTAL') {
+                        if (column === 'ALL+CLOSED' || column === 'TOTAL') {
                             // These columns don't distinguish ontime from overdue (they're handled above)
                             continue;
                         }
@@ -390,27 +307,45 @@
                 container.style.padding = "0px";
 
                 // Use php.js urlencode() to mimic the server-side urlencode()
-                var status = $P.urlencode(this._columnLabels[columnNumber - 1]);
+                var status = $P.urlencode(this._columnLabels[columnNumber - 1].stepId);
+                $(container).attr('header', this._columnLabels[columnNumber - 1].workflowId);
 
                 var link = document.createElement("a");
-                var ontimeUrl = this._makeUrl(true, status, nodeState, nodeData.rowLabel, nodeData.searchKey);
-                var overdueUrl = this._makeUrl(false, status, nodeState, nodeData.rowLabel, nodeData.searchKey);
+                var ontimeUrl = this._makeUrl(true, columnNumber - 1, nodeState, nodeData.rowLabel, nodeData.searchKey);
+                var overdueUrl = this._makeUrl(false, columnNumber - 1, nodeState, nodeData.rowLabel, nodeData.searchKey);
 
                 // If we are in a collapsed tree node, then switch single-record node data to aggregate node data
                 if (nodeState === Fisma.TreeTable.NodeState.COLLAPSED) {
                     nodeData = nodeData.aggregate;
                 }
 
-                if (status === "CLOSED") {
-                    link.href = ontimeUrl;
-                    link.title = "Resolved findings";
-                    container.appendChild(link);
-                    link.appendChild(document.createTextNode(nodeData.closed || 0));
+                if (status === "ALL+CLOSED") {
+                    if (nodeData.closed) {
+                        link.href = ontimeUrl;
+                        link.title = "Resolved findings";
+                        container.appendChild(link);
+                        link.appendChild(document.createTextNode(nodeData.closed));
+                    } else {
+                        container.appendChild(document.createTextNode('-'));
+                    }
                 } else if (status === "TOTAL") {
-                    link.href = ontimeUrl;
-                    link.title = "Total findings";
-                    container.appendChild(link);
-                    link.appendChild(document.createTextNode(nodeData.total || 0));
+                    if (nodeData.total) {
+                        link.href = ontimeUrl;
+                        link.title = "Total findings";
+                        container.appendChild(link);
+                        link.appendChild(document.createTextNode(nodeData.total));
+                    } else {
+                        container.appendChild(document.createTextNode('-'));
+                    }
+                } else if ($P.in_array(status, this._closedSteps)) {
+                    if (nodeData["ontime_" + status]) {
+                        link.href = ontimeUrl;
+                        link.title = "Resolved findings";
+                        container.appendChild(link);
+                        link.appendChild(document.createTextNode(nodeData["ontime_" + status]));
+                    } else {
+                        container.appendChild(document.createTextNode('-'));
+                    }
                 } else {
                     // Set the rendering style based on the existence or absence of ontime and overdue findings
                     var ontime = nodeData["ontime_" + status] || 0;
@@ -528,23 +463,28 @@
          * This function also incorporates filter state to build URLs.
          *
          * @param ontime {Boolean} True if ontime, false if overdue.
-         * @param status {String}
+         * @param index {Integer} Zero-Index to look in _columnLabels
          * @param nodeState {Fisma.TreeTable.NodeState}
          * @param rowLabel {String}
          * @param searchKey {String} The search parameter to search for the rowLabel in.
          * @return {String}
          */
-        _makeUrl: function (ontime, status, nodeState, rowLabel, searchKey) {
+        _makeUrl: function (ontime, index, nodeState, rowLabel, searchKey) {
             var url = "/finding/remediation/list?q=";
 
             // The status contains plus symbols ('+') which is encoded before, so it should be decoded here.
-            status = $P.urldecode(status);
+            var status = this._columnLabels[index].stepId,
+                name = this._columnLabels[index].name,
+                workflowName = this._columnLabels[index].workflowName;
 
             // Add status criterion
-            if (status !== "TOTAL" && status !== "OPEN") {
-                url += "/denormalizedStatus/enumIs/" + encodeURIComponent(status);
-            } else if (status === "OPEN"){
-                url += "/denormalizedStatus/enumIsNot/CLOSED";
+            if (status !== "TOTAL" && status !== "ALL OPEN" && status !== "ALL CLOSED") {
+                url += "/workflowStep/textExactMatch/" + encodeURIComponent(name)
+                     + "/workflow/textExactMatch/" + encodeURIComponent(workflowName);
+            } else if (status === "ALL OPEN"){
+                url += "/isResolved/booleanNo";
+            } else if (status === "ALL CLOSED"){
+                url += "/isResolved/booleanYes";
             }
 
             // Add organization/POC criterion
@@ -559,7 +499,7 @@
             }
 
             // Add ontime criteria (if applicable)
-            if (status !== "TOTAL" && status !== "CLOSED") {
+            if (status !== "TOTAL" && status !== "ALL CLOSED" && !$P.in_array(status, this._closedSteps)) {
                 var today = new Date(),
                     yesterday, todayString, yesterdayString;
                 yesterday = new Date();
@@ -575,12 +515,6 @@
             }
 
             // Add filter criteria
-            var msSelect = this._filters.mitigationType.select;
-            var msValue = msSelect.options[msSelect.selectedIndex].value;
-            if (msValue !== "none") {
-                url += "/type/enumIs/" + encodeURIComponent(msValue);
-            }
-
             var sourceSelect = this._filters.findingSource.select;
             var sourceValue = sourceSelect.options[sourceSelect.selectedIndex].value;
             var sourceLabel = sourceSelect.options[sourceSelect.selectedIndex].text;

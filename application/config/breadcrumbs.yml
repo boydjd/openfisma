@@ -102,6 +102,10 @@ VulnerabilityList:
     url: /vm/vulnerability/list
     labels: [Vulnerabilities, Search]
     links: [no-link, no-link]
+VulnerabilityDashboard:
+    url: /vm/dashboard
+    labels: [Vulnerabilities, Dashboard]
+    links: [no-link, no-link]
 VulnerabilityView:
     url: /vm/vulnerability/view
     labels: [Vulnerabilities, Search, View]
@@ -110,6 +114,10 @@ VulnerabilityUpload:
     url: /vm/vulnerability/plugin
     labels: [Vulnerabilities, Upload Scan Results]
     links: [no-link, no-link]
+VulnerabilityAdminGeneral:
+    url: /vm/config/general
+    labels: [Vulnerabilities, Administration, Upload Configuration]
+    links: [no-link, no-link, no-link]
 VulnerabilityAdminProductsView:
     url: /vm/product/view
     labels: [Vulnerabilities, Administration, Products, View]
@@ -121,18 +129,6 @@ VulnerabilityAdminProductsCreate:
 VulnerabilityAdminProducts:
     url: /vm/product/list
     labels: [Vulnerabilities, Administration, Products]
-    links: [no-link, no-link, no-link]
-VulnerabilityAdminResolutionsView:
-    url: /vm/vulnerability-resolution/view
-    labels: [Vulnerabilities, Administration, Resolutions, View]
-    links: [no-link, no-link, /vm/vulnerability-resolution/list, no-link]
-VulnerabilityAdminResolutionsCreate:
-    url: /vm/vulnerability-resolution/create
-    labels: [Vulnerabilities, Administration, Resolutions, Create]
-    links: [no-link, no-link, /vm/vulnerability-resolution/list, no-link]
-VulnerabilityAdminResolutions:
-    url: /vm/vulnerability-resolution/list
-    labels: [Vulnerabilities, Administration, Resolutions]
     links: [no-link, no-link, no-link]
 VulnerabilityReportAggregated:
     url: /vm/vulnerability-report/risk
@@ -189,6 +185,22 @@ IncidentAdminCategoriesCreate:
 IncidentAdminCategories:
     url: /ir-category/list
     labels: [Incidents, Administration, Categories]
+    links: [no-link, no-link, no-link]
+IncidentAdminImpacts:
+    url: /incident-impact
+    labels: [Incidents, Administration, Impacts]
+    links: [no-link, no-link, no-link]
+IncidentAdminResponseStrategies:
+    url: /incident-response-strategy
+    labels: [Incidents, Administration, Response Strategies]
+    links: [no-link, no-link, no-link]
+IncidentAdminSeverityLevels:
+    url: /incident-severity-level
+    labels: [Incidents, Administration, Severity Levels]
+    links: [no-link, no-link, no-link]
+IncidentAdminSources:
+    url: /incident-source
+    labels: [Incidents, Administration, Sources]
     links: [no-link, no-link, no-link]
 IncidentAdminWorkflowsView:
     url: /ir-workflow/view
@@ -264,7 +276,7 @@ SystemOrganization:
     links: [no-link, no-link]
 SystemOrganizationTree:
     url: /organization/tree
-    labels: [System Inventory, Organizations]
+    labels: [System Inventory, Organization Hierarchy]
     links: [no-link, no-link]
 SystemInventoryView:
     url: /system/view
@@ -276,10 +288,6 @@ SystemInventoryCreate:
     links: [no-link, /system/list, no-link]
 SystemInventory:
     url: /system/list
-    labels: [System Inventory, Systems]
-    links: [no-link, no-link]
-SystemInventoryList:
-    url: /system/aggregation
     labels: [System Inventory, Systems]
     links: [no-link, no-link]
 SystemInventoryDashboard:
@@ -325,10 +333,6 @@ SystemAdminNetworkCreate:
 SystemAdminNetwork:
     url: /network/list
     labels: [System Inventory, Administration, Networks]
-    links: [no-link, no-link, no-link]
-SystemAdminOrganizationPOCList:
-    url: /organization/poc-list
-    labels: [System Inventory, Administration, Organization People]
     links: [no-link, no-link, no-link]
 SystemAdminOrganizationTypeView:
     url: /organization-type/view
@@ -410,21 +414,33 @@ AdminSysConfigContact:
     url: /config/contact
     labels: [Administration, System Configuration, Technical Contact]
     links: [no-link, no-link, no-link]
+AdminWorkflow:
+    url: /workflow/manage
+    labels: [Administration, Workflow Management]
+    links: [no-link, no-link]
+AdminWorkflowView:
+    url: /workflow/view/
+    labels: [Administration, Workflow Management, View]
+    links: [no-link, /workflow, no-link]
 AdminUserManagementRolePrivilegeMatrix:
     url: /role/view-matrix
     labels: [Administration, User Management, Privileges]
     links: [no-link, no-link, no-link]
+AdminUserManagementPOCList:
+    url: /organization/poc-list
+    labels: [Administration, User Management, Organization Roles]
+    links: [no-link, no-link, no-link]
 AdminUserManagementRoleView:
     url: /role/view
-    labels: [Administration, User Management, Roles, View]
+    labels: [Administration, User Management, Permission Schemes, View]
     links: [no-link, no-link, /role/list, no-link]
 AdminUserManagementRoleCreate:
     url: /role/create
-    labels: [Administration, User Management, Roles, Create]
+    labels: [Administration, User Management, Permission Schemes, Create]
     links: [no-link, no-link, /role/list, no-link]
 AdminUserManagementRole:
     url: /role/list
-    labels: [Administration, User Management, Roles]
+    labels: [Administration, User Management, Permission Schemes]
     links: [no-link, no-link, no-link]
 AdminUserManagementUserView:
     url: /user/view

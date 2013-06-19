@@ -25,8 +25,13 @@
  * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
-class RoleTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
+class RoleTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable, Fisma_Search_Facetable
 {
+    protected $_customLogicalNames = array(
+        'createdTs' => 'Created Date',
+        'modifiedTs' => 'Last Modified Date'
+    );
+
     /**
      * Implement the interface for Searchable
      */
@@ -35,13 +40,11 @@ class RoleTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
         return array (
             'name' => array(
                 'initiallyVisible' => true,
-                'label' => 'Name',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'nickname' => array(
                 'initiallyVisible' => true,
-                'label' => 'Nickname',
                 'sortable' => true,
                 'type' => 'text',
                 'formatter' => 'Fisma.TableFormat.recordLink',
@@ -49,23 +52,54 @@ class RoleTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable
                     'prefix' => '/role/view/id/'
                 )
             ),
+            'type' => array(
+                'initiallyVisible' => true,
+                'type' => 'enum',
+                'enumValues' => $this->getEnumValues('type'),
+                'sortable' => true
+
+            ),
             'createdTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Creation Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
             'modifiedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Modified Date',
                 'sortable' => true,
                 'type' => 'datetime'
             ),
             'description' => array(
                 'initiallyVisible' => true,
-                'label' => 'Description',
                 'sortable' => false,
                 'type' => 'text'
+            )
+        );
+    }
+
+    /**
+     * Returns an array of faceted filters
+     *
+     * @return array
+     */
+    public function getFacetedFields()
+    {
+        return array(
+            array(
+                'label' => 'Role Type',
+                'column' => 'type',
+                'filters' => array(
+                    array(
+                        'label' => 'Account Types',
+                        'operator' => 'enumIs',
+                        'operands' => array('ACCOUNT\_TYPE')
+                    ),
+                    array(
+                        'label' => 'User Groups',
+                        'operator' => 'enumIs',
+                        'operands' => array('USER\_GROUP')
+                    )
+                )
             )
         );
     }

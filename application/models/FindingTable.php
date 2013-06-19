@@ -28,6 +28,12 @@
 class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchable,
                                                            Fisma_Search_CustomChunkSize_Interface
 {
+    protected $_customLogicalNames = array(
+        'createdTs' => 'Created',
+        'modifiedTs' => 'Updated'
+    );
+    protected $_viewUrl = '/finding/remediation/view/id/';
+
     /**
      * Because the finding model is quite complex, it has a smaller-than-normal index chunk size which
      * uses less memory and should provide a more responsive UI.
@@ -54,26 +60,22 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'legacyFindingKey' => array(
                 'initiallyVisible' => false,
-                'label' => 'Legacy Finding Key',
                 'sortable' => true,
                 'type' => 'text'
             ),
             'discoveredDate' => array(
                 'initiallyVisible' => false,
-                'label' => 'Discovered',
                 'sortable' => true,
                 'type' => 'date',
                 'formatter' => 'date'
             ),
             'auditYear' => array(
                 'initiallyVisible' => false,
-                'label' => 'Audit Year',
                 'sortable' => true,
                 'type' => 'integer'
             ),
             'createdTs' => array(
                 'initiallyVisible' => true,
-                'label' => 'Created',
                 'sortable' => true,
                 'type' => 'datetime',
                 'formatter' => 'date'
@@ -89,18 +91,10 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => true,
                 'type' => 'text'
             ),
-            'denormalizedStatus' => array(
-                'enumValues' => Finding::getAllStatuses(),
-                'initiallyVisible' => true,
-                'label' => 'Workflow Step',
-                'sortable' => true,
-                'type' => 'enum'
-            ),
             'residualRisk' => array(
                 'enumValues' => $this->getEnumValues('residualRisk'),
                 'initiallyVisible' =>
                     Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? true : false,
-                'label' => 'Risk',
                 'sortable' => true,
                 'type' => 'enum',
                 'hidden' => Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? false : true
@@ -109,13 +103,11 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'enumValues' => $this->getEnumValues('threatLevel'),
                 'initiallyVisible' =>
                     Fisma::configuration()->getConfig('threat_type') == 'threat_level' ? true : false,
-                'label' => 'Threat',
                 'sortable' => true,
                 'type' => 'enum'
             ),
             'threat' => array(
                 'initiallyVisible' => false,
-                'label' => 'Threat Description',
                 'sortable' => true,
                 'type' => 'text'
             ),
@@ -185,6 +177,17 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                 'sortable' => true,
                 'type' => 'text'
             ),
+            'parentOrganization' => array(
+                'initiallyVisible' => false,
+                'label' => 'Parent Organization',
+                'join' => array(
+                    'model' => 'Organization',
+                    'relation' => 'ParentOrganization',
+                    'field' => 'nickname'
+                ),
+                'sortable' => true,
+                'type' => 'text'
+            ),
             'source' => array(
                 'initiallyVisible' => false,
                 'label' => 'Source',
@@ -209,53 +212,40 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'description' => array(
                 'initiallyVisible' => false,
-                'label' => 'Description',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'recommendation' => array(
                 'initiallyVisible' => false,
-                'label' => 'Recommendation',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'jsonComments' => array(
                 'initiallyVisible' => false,
-                'label' => 'Comments',
                 'sortable' => false,
                 'type' => 'text',
+                'label' => 'Comments',
                 'formatter' => 'Fisma.TableFormat.formatComments'
-            ),
-            'type' => array(
-                'enumValues' => $this->getEnumValues('type'),
-                'initiallyVisible' => true,
-                'label' => 'Type',
-                'sortable' => true,
-                'type' => 'enum'
             ),
             'mitigationStrategy' => array(
                 'initiallyVisible' => false,
-                'label' => 'Mitigation Strategy',
                 'sortable' => false,
                 'type' => 'text'
             ),
             'originalEcd' => array(
                 'initiallyVisible' => false,
-                'label' => 'Original ECD',
                 'sortable' => true,
                 'type' => 'date',
                 'formatter' => 'date'
             ),
             'currentEcd' => array(
                 'initiallyVisible' => true,
-                'label' => 'Current ECD',
                 'sortable' => true,
                 'type' => 'date',
                 'formatter' => 'Fisma.TableFormat.formatDuedate'
             ),
             'nextDueDate' => array(
                 'initiallyVisible' => true,
-                'label' => 'Workflow Due Date',
                 'sortable' => true,
                 'type' => 'date',
                 'formatter' => 'Fisma.TableFormat.formatDuedate'
@@ -263,21 +253,47 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             'countermeasuresEffectiveness' => array(
                 'enumValues' => $this->getEnumValues('countermeasuresEffectiveness'),
                 'initiallyVisible' => false,
-                'label' => 'Countermeasures Effectiveness',
                 'sortable' => true,
                 'type' => 'enum',
                 'hidden' => Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? false : true
             ),
             'countermeasures' => array(
                 'initiallyVisible' => false,
-                'label' => 'Countermeasures Description',
                 'sortable' => true,
                 'type' => 'text',
                 'hidden' => Fisma::configuration()->getConfig('threat_type') == 'residual_risk' ? false : true
             ),
+
+            'workflow' => array(
+                'initiallyVisible' => false,
+                'label' => 'Workflow',
+                'sortable' => true,
+                'type' => 'text',
+                'join' => array(
+                    'model' => 'Workflow',
+                    'relation' => 'CurrentStep.Workflow',
+                    'field' => 'name'
+                )
+            ),
+            'workflowStep' => array(
+                'initiallyVisible' => true,
+                'label' => 'Workflow Step',
+                'sortable' => true,
+                'type' => 'text',
+                'join' => array(
+                    'model' => 'WorkflowStep',
+                    'relation' => 'CurrentStep',
+                    'field' => 'name'
+                )
+            ),
+            'isResolved' => array(
+                'initiallyVisible' => false,
+                'label' => 'Finding_Status',
+                'sortable' => true,
+                'type' => 'boolean'
+            ),
             'closedTs' => array(
                 'initiallyVisible' => false,
-                'label' => 'Resolved',
                 'sortable' => true,
                 'type' => 'datetime',
                 'formatter' => 'date'
@@ -301,14 +317,8 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
             ),
             'uploadid' => array(
                 'initiallyVisible' => false,
-                'label' => 'Upload ID',
                 'sortable' => true,
                 'type' => 'integer'
-            ),
-            'status' => array(
-                'hidden' => true,
-                'type' => 'text',
-                'sortable' => false
             )
         );
     }
@@ -321,7 +331,7 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
     public function getAclFields()
     {
         return array(
-            'pocUser' => 'FindingTable::getPoc',
+            'pocUser' => 'CurrentUser::getAclDisplayName',
             'responsibleOrganizationId' => 'FindingTable::getOrganizationIds'
         );
     }
@@ -338,17 +348,6 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
         $organizationIds = $currentUser->getOrganizationsByPrivilege('finding', 'read')->toKeyValueArray('id', 'id');
 
         return $organizationIds;
-    }
-
-    /**
-     * Provide POC list for ACL filter
-     *
-     * @return array
-     */
-    public static function getPoc()
-    {
-        $currentUser = CurrentUser::getInstance();
-        return array($currentUser->displayName);
     }
 
     /**
@@ -377,4 +376,20 @@ class FindingTable extends Fisma_Doctrine_Table implements Fisma_Search_Searchab
                ->where('f.id = ?', $findingId)
                ->andWhere('a.id = ?', $attachmentId);
     }
+
+    protected $_editableFields = array(
+        'pocId',
+        'auditYear',
+        'description',
+        'recommendation',
+        'mitigationStrategy',
+        'resourcesRequired',
+        'currentEcd',
+        'threatLevel',
+        'threat',
+        'countermeasuresEffectiveness',
+        'countermeasures',
+        'securityControlId',
+        'sourceId'
+    );
 }

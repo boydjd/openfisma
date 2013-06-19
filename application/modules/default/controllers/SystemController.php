@@ -50,13 +50,10 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         parent::init();
 
         $this->_helper->ajaxContext()
-                      ->addActionContext('convert-to-organization-form', 'html')
-                      ->initContext();
-
-        $this->_helper->contextSwitch()
-             ->addActionContext('aggregation-data', 'json')
-             ->addActionContext('move-node', 'json')
-             ->initContext();
+            ->addActionContext('convert-to-organization-form', 'html')
+            ->addActionContext('assets', 'html')
+            ->addActionContext('form', 'html')
+            ->initContext();
     }
 
     /**
@@ -96,6 +93,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $tabView->addTab("FIPS-199", "/system/fips/id/$id");
         $tabView->addTab("FISMA Data", "/system/fisma/id/$id");
         $tabView->addTab($this->view->escape($this->view->translate('System_Attachments')), "/system/artifacts/id/$id");
+        $tabView->addTab("Assets", "/system/assets/id/$id/format/html");
         $tabView->addTab("Users", "/system/user/id/$id");
 
         $findingSearchUrl = '/finding/remediation/list?q=/organization/textExactMatch/'
@@ -136,7 +134,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->toolbarButtons = $buttons;
-        $this->view->searchButtons = $this->getSearchButtons($organization, $fromSearchParams);
+        $this->view->searchButtons = $this->getSearchButtons($organization->System, $fromSearchParams);
         $this->view->tabView = $tabView;
     }
 
@@ -160,11 +158,9 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         $system = $organization->System;
         $system->loadReference('AggregateSystem');
-        $aggregateSystem = empty($system->aggregateSystemId) ? null : $system->AggregateSystem;
 
         $this->view->organization = $organization;
         $this->view->system = $system;
-        $this->view->aggregateSystem = $aggregateSystem;
 
         $createdDate = new Zend_Date($organization->createdTs, Fisma_Date::FORMAT_DATE);
         $createdDate->setTimezone(CurrentUser::getAttribute('timezone'));
@@ -180,6 +176,25 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }
 
         $this->view->editable = $editable;
+        $this->view->findingCount = Doctrine_Query::create()
+            ->select('f.id')
+            ->from('Finding f')
+            ->where('f.responsibleOrganizationId = ?', $organization->id)
+            ->andWhere('f.isResolved <> ?', true)
+            ->count();
+        $this->view->incidentCount = Doctrine_Query::create()
+            ->select('i.id')
+            ->from('Incident i')
+            ->where('i.organizationId = ?', $organization->id)
+            ->andWhere('i.status <> ?', 'closed')
+            ->count();
+        $this->view->vulnerabilityCount = Doctrine_Query::create()
+            ->select('v.id')
+            ->from('Vulnerability v')
+            ->leftJoin('v.Asset a')
+            ->where('a.orgSystemId = ?', $organization->id)
+            ->andWhere('v.isResolved <> ?', true)
+            ->count();
 
         $this->render();
     }
@@ -496,7 +511,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             }
 
             $this->view->priorityMessenger($msg, $type);
-            Notification::notify('ORGANIZATION_UPDATED', $organization, CurrentUser::getInstance());
         }
 
         $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
@@ -586,11 +600,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
             $userRoles->save();
         }
 
-        if ($createNew) {
-            Notification::notify('ORGANIZATION_CREATED', $system, CurrentUser::getInstance());
-        } else {
-            Notification::notify('ORGANIZATION_UPDATED', $system, CurrentUser::getInstance());
-        }
         return $system;
     }
 
@@ -698,6 +707,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         $rolesAndUsers = Doctrine::getTable('UserRole')
                          ->getRolesAndUsersByOrganizationIdQuery($organization->id)
+                         ->where('r.type = ?', 'ACCOUNT_TYPE')
                          ->orderBy('r.nickname, u.username')
                          ->execute();
 
@@ -706,7 +716,7 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
 
         // Add roles and their users to the checkbox tree
         foreach ($rolesAndUsers as $role) {
-            $tree->addCheckbox(array('label' => $role->nickname, 'level' => 0));
+            $tree->addCheckbox(array('label' => $role->name, 'level' => 0));
             foreach ($role->UserRole as $userRole) {
                 $tree->addCheckbox(
                     array('name' => $userRole->userRoleId, 'label' => $userRole->User->username, 'level' => 1)
@@ -732,17 +742,18 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         $addUserAccessForm = new Zend_Form_SubForm();
 
         $roles = Doctrine_Query::create()
-                 ->select('r.id, r.nickname')
+                 ->select('r.id, r.name')
                  ->from('Role r')
-                 ->orderBy('r.nickname')
+                 ->where('r.type = ?', 'ACCOUNT_TYPE')
+                 ->orderBy('r.name')
                  ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
                  ->execute();
 
         $select = new Zend_Form_Element_Select('roles');
-        $select->setLabel('Role');
+        $select->setLabel('Account');
 
         foreach ($roles as $role) {
-            $select->addMultiOption($role['id'], $role['nickname']);
+            $select->addMultiOption($role['id'], $role['name']);
         }
 
         $userAutoComplete = new Fisma_Yui_Form_AutoComplete(
@@ -942,197 +953,6 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
     }
 
     /**
-     * Display system aggregation tree.
-     *
-     * @GETAllowed
-     * @return void
-     */
-    public function aggregationAction()
-    {
-        $this->_acl->requirePrivilegeForClass('read', 'Organization');
-
-        $buttons = $this->getToolbarButtons();
-
-        $button = new Fisma_Yui_Form_Button_Link(
-            'toolbarListButton',
-            array(
-                'value' => 'List View',
-                'imageSrc' => '/images/list_view.png',
-                'href' => $this->getBaseUrl() . '/list'
-            )
-        );
-
-        array_unshift($buttons, $button);
-        $this->view->toolbarButtons = $buttons;
-    }
-
-    /**
-     * Returns a JSON object that describes the system aggregation tree.
-     *
-     * @GETAllowed
-     * @return void
-     */
-    public function aggregationDataAction()
-    {
-        $this->_acl->requirePrivilegeForClass('read', 'Organization');
-
-        $includeDisposalSystem = ('true' === $this->getRequest()->getParam('displayDisposalSystem'));
-
-        // Save preferences for this screen
-        $userId = CurrentUser::getInstance()->id;
-        $namespace = 'System.Aggregation';
-        $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($userId, $namespace)->fetchOne();
-        if (empty($storage)) {
-            $storage = new Storage();
-            $storage->userId = $userId;
-            $storage->namespace = $namespace;
-            $storage->data = array();
-        }
-        $data = $storage->data;
-        $data['includeDisposalSystem'] = $includeDisposalSystem;
-        $storage->data = $data;
-        $storage->save();
-
-        $this->view->treeData = $this->getAggregationTree($includeDisposalSystem);
-    }
-
-    /**
-     * Gets the system aggregation tree data
-     *
-     * @GETAllowed
-     * @param boolean $includeDisposal Whether display disposal system or not
-     * @return array The array representation of aggregation tree
-     */
-    public function getAggregationTree($includeDisposal = false)
-    {
-        $orgIds = $this->_me->getOrganizationsByPrivilege('organization', 'read', $includeDisposal)
-                       ->toKeyValueArray('id', 'id');
-
-        if (empty($orgIds)) {
-            return null;
-        }
-
-        $systemObjects = Doctrine_Query::create()
-            ->from ('System s, s.Organization o')
-            ->whereIn ('o.id', $orgIds)
-            ->orderBy('o.nickname')
-            ->execute();
-
-        // convert to arrays
-        $systems = array();
-        foreach ($systemObjects as $s) {
-            $systems[$s->id] = $s->toAggregationTreeNode();
-        }
-        // build up tree
-        foreach ($systems as $k => $v) {
-            if (!empty($v['parent']) && !empty($systems[$v['parent']])) {
-                $systems[$v['parent']]['children'][] =& $systems[$k];
-                unset($systems[$k]);
-            }
-        }
-
-        if (empty($systems)) {
-            return null;
-        }
-
-        return array_values($systems);
-    }
-
-    /**
-     * Override from FZCAO.
-     *
-     * @param Fisma_Doctrine_Record $record The object for which this toolbar applies, or null if not
-     * @return array Array of Fisma_Yui_Form_Button
-     */
-    public function getToolbarButtons(Fisma_Doctrine_Record $record = null, $fromSearchParams = null)
-    {
-        $buttons = parent::getToolbarButtons($record, $fromSearchParams);
-        $isList = $this->getRequest()->getActionName() === 'list';
-        $resourceName = $this->getAclResourceName();
-        $hasReadPrivilege = $this->_acl->hasPrivilegeForClass('read', $resourceName);
-
-        if ($isList && $hasReadPrivilege) {
-            $treeViewButton = new Fisma_Yui_Form_Button_Link(
-                'toolbarAggregationButton',
-                array(
-                    'value' => 'Tree View',
-                    'imageSrc' => '/images/tree_view.png',
-                    'href' => $this->getBaseUrl() . '/aggregation'
-                )
-            );
-            array_unshift($buttons, $treeViewButton);
-        }
-
-        return $buttons;
-    }
-
-    /**
-     * Moves a tree node relative to another tree node. This is used by the YUI tree node to handle drag and drops
-     * of system nodes. It replies with a JSON object.
-     *
-     * @GETAllowed
-     * @return void
-     */
-    public function moveNodeAction()
-    {
-        $this->view->success = true;
-        $this->view->message = null;
-
-        // Find the source and destination objects from the tree
-        $srcId = $this->getRequest()->getParam('src');
-        $src = Doctrine::getTable('System')->find($srcId);
-
-        $destId = $this->getRequest()->getParam('dest');
-        $dest = Doctrine::getTable('System')->find($destId);
-
-        if (!$src || !$dest) {
-            $this->view->success = false;
-            $this->view->message = sprintf("Invalid src or dest parameter (%d, %d)", $srcId, $destId);
-            return;
-        }
-
-        // Make sure that $dest is not in the subtree under $src... this leads to unpredictable results
-        if ($dest->isAggregatedBy($src)) {
-            $this->view->success = false;
-            $this->view->message = 'Cannot move an organization or system into itself.';
-            return;
-        }
-
-        // Find the new parent (null by default in case there is no parent).
-        $dragLocation = $this->getRequest()->getParam('dragLocation');
-        $parent = null;
-
-        if (Fisma_Yui_DragDrop::DRAG_ONTO == $dragLocation) {
-            // If we drag onto, then the parent is the drag destination.
-            $parent = $dest;
-        } elseif ($dest->aggregateSystemId) {
-            // If we drag above or below, then the parent is the parent of the destination.
-            $parent = $dest->AggregateSystem;
-        }
-
-        // Enforce 2 layer maximum on nesting
-        if ($parent && ($parent->aggregateSystemId || $src->AggregatedSystems->count() > 0)) {
-            $this->view->success = false;
-            $this->view->message = 'An aggregated system cannot have systems aggregated underneath it.';
-            return;
-        }
-
-        // Make changes and persist.
-        try {
-            if (isset($parent)) {
-                $src->aggregateSystemId = $parent->id;
-            } else {
-                $src->aggregateSystemId = $dest->aggregateSystemId;
-            }
-
-            $src->save();
-        } catch (Exception $e) {
-            $this->view->success = false;
-            $this->view->message = (string)$e;
-        }
-    }
-
-    /**
      * AJAX action to render the form for converting a System to an Organization.
      *
      * @GETAllowed
@@ -1161,5 +981,116 @@ class SystemController extends Fisma_Zend_Controller_Action_Object
         }
 
         return $form;
+    }
+
+    /**
+     * List all associated assets as requested in OFJ-1958
+     *
+     * @GETAllowed
+     */
+    public function assetsAction()
+    {
+        $id = $this->getRequest()->getParam('id');
+        if (empty($id)) {
+            throw new Fisma_Zend_Exception_User('System ID required.');
+        }
+        $organization = Doctrine::getTable('Organization')->findOneBySystemId($id);
+        if (!$organization) {
+            throw new Fisma_Zend_Exception_User('Invalid ID provided: ' . $id);
+        }
+
+        $this->_acl->requirePrivilegeForObject('read', $organization);
+
+        $assets = $organization->Assets;
+
+        $assetRows = array();
+        foreach ($assets as $asset) {
+            $assetRows[] = array(
+                'name' => "<a href='/asset/view/id/{$asset->id}'>{$asset->name}</a>",
+                'addressIp' => $asset->addressIp,
+                'serviceTag' => ($asset->serviceTag) ? $asset->serviceTag : '',
+                'network' => $asset->Network->displayName,
+                'product' => ($asset->productId) ? $asset->Product->name : ''
+            );
+        }
+        $assetTable = Doctrine::getTable('Asset');
+
+        $dataTable = new Fisma_Yui_DataTable_Local();
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $assetTable->getLogicalName('name'),
+                false,
+                'Fisma.TableFormat.formatHtml',
+                null,
+                'name'
+            )
+        );
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $assetTable->getLogicalName('addressIp'),
+                false,
+                null,
+                null,
+                'addressIp'
+            )
+        );
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $assetTable->getLogicalName('serviceTag'),
+                false,
+                null,
+                null,
+                'serviceTag'
+            )
+        );
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $assetTable->getLogicalName('networkId'),
+                false,
+                null,
+                null,
+                'network'
+            )
+        );
+        $dataTable->addColumn(
+            new Fisma_Yui_DataTable_Column(
+                $assetTable->getLogicalName('productId'),
+                false,
+                null,
+                null,
+                'product'
+            )
+        );
+
+        $dataTable->setData($assetRows);
+        $this->view->dataTable = $dataTable;
+    }
+
+    /**
+     * Display the create form without any layout
+     *
+     * @GETAllowed
+     */
+    public function formAction()
+    {
+        $this->view->form = $this->getForm();
+        $this->view->toolbarButtons = array(
+            new Fisma_Yui_Form_Button(
+                'submitPanel',
+                array(
+                    'label' => 'Submit',
+                    'onClickFunction' => 'Fisma.Vulnerability.submitPanel',
+                    'imageSrc' => '/images/ok.png'
+                )
+            ),
+            new Fisma_Yui_Form_Button(
+                'closePanel',
+                array(
+                    'label' => 'Cancel',
+                    'onClickFunction' => 'Fisma.Vulnerability.closePanel',
+                    'imageSrc' => '/images/no_entry.png'
+                )
+            )
+        );
     }
 }

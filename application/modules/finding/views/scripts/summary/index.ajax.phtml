@@ -6,24 +6,22 @@
 YAHOO.util.Event.onDOMReady(function () {
     var url = '/finding/summary/data/format/json';
 
-    var msApprovals = <?php echo $this->escape($this->msApprovals, 'json'); ?>;
-    var evApprovals = <?php echo $this->escape($this->evApprovals, 'json'); ?>;
+    var closedSteps = <?php echo $this->escape($this->closedSteps, 'json'); ?>;
+    var workflowSteps = <?php echo $this->escape($this->steps, 'json'); ?>;
 
-    var HARDCODED_COLUMN_COUNT = 7; // includes all columns that don't vary, i.e. everything but approvals
-    var columnCount = HARDCODED_COLUMN_COUNT + msApprovals.length + evApprovals.length;
+
+    var HARDCODED_COLUMN_COUNT = 4; // includes all columns that don't vary, i.e. everything but approvals
+    var columnCount = HARDCODED_COLUMN_COUNT + workflowSteps.length;
 
     var storage = new Fisma.PersistentStorage("Finding.Summary");
 
     Fisma.Storage.onReady(function () {
-        var summaryTable = new Fisma.FindingSummary(url, columnCount, msApprovals, evApprovals);
+        var summaryTable = new Fisma.FindingSummary(url, columnCount, workflowSteps, closedSteps);
         Fisma.FindingSummary.SUMMARY_TYPES.pointOfContact = <?php
             echo $this->escape($this->translate('Finding_Point_of_Contact'), 'json');
         ?>;
 
-        // Set tooltips
         summaryTable.setTooltip("viewBy", "<?php echo $this->escape($this->tooltips['viewBy'], "none"); ?>");
-        summaryTable.setTooltip("mitigationStrategy", "<?php echo $this->escape($this->tooltips['ms'], "none"); ?>");
-        summaryTable.setTooltip("remediation", "<?php echo $this->escape($this->tooltips['ev'], "none"); ?>");
 
         // Add filters
         var defaultFindingSource = storage.get("findingSource");
@@ -33,20 +31,38 @@ YAHOO.util.Event.onDOMReady(function () {
             <?php echo $this->escape($this->findingSources, 'json'); ?>,
             defaultFindingSource || "none",
             function (filter, value) {
-                storage.set("findingSource", value);
+                storage.set(filter, value);
                 storage.sync();
             }
         );
 
+        var hideStepsOutsideWorkflow = function(workflowId) {
+            $('[header]').filter(function() {
+                return ($(this).attr('header') !== workflowId);
+            }).hide();
+        };
+
         var defaultMitigationStrategy = storage.get("mitigationType");
+        if (defaultMitigationStrategy && defaultMitigationStrategy !== 'none') {
+            summaryTable.onReload = function() {
+                hideStepsOutsideWorkflow(defaultMitigationStrategy);
+            };
+        }
         summaryTable.addFilter(
             "mitigationType",
-            "Mitigation Type",
+            "Workflow",
             <?php echo $this->escape($this->mitigationTypes, 'json'); ?>,
             defaultMitigationStrategy || "none",
             function (filter, value) {
-                storage.set("mitigationType", value);
+                storage.set(filter, value);
                 storage.sync();
+                $('[header]').show();
+                summaryTable.onReload = null;
+                if (value !== 'none') {
+                    summaryTable.onReload = function() {
+                        hideStepsOutsideWorkflow(value);
+                    };
+                }
             }
         );
 

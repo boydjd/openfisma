@@ -1,0 +1,220 @@
+<form action='/workflow/save-step/<?php
+    if ($this->step):
+        echo $this->escape('id/' . $this->step->id);
+    else:
+        echo $this->escape('workflowId/' . $this->workflow->id);
+    endif;
+?>' method='post' class='accordion'>
+<?php Fisma_Format_Section::startSection('Details'); ?>
+<i>Provide metadata that helps users understand what they need to do in order to complete this step.</i>
+<table class='keyValues'>
+    <tr>
+        <th scope='row'>Name</th>
+        <td><input type='text' name='step[name]' id='stepName' autofocus value='<?php
+            if ($this->step): echo $this->escape($this->step->name); endif;
+        ?>' /></td>
+        <th scope='row'>Label</th>
+        <td><input type='text' name='step[label]' id='stepLabel' value='<?php
+            if ($this->step): echo $this->escape($this->step->label); endif;
+        ?>' /></td>
+    </tr>
+    <tr>
+        <th scope='row'>Resolved</th>
+        <td colspan='3'><input type='checkbox' name='step[isResolved]' <?php
+            if ($this->step && $this->step->isResolved): echo $this->escape('checked'); endif;
+        ?>/> Mark the entity as resolved and the workflow as completed.</td>
+    </tr><tr>
+        <th scope='row'>Instruction(s)</th>
+        <td colspan='3'><textarea name='step[description]' id='stepDescription' cols='60' rows='3'><?php
+            if ($this->step): echo $this->escape($this->step->description, 'none'); endif;
+        ?></textarea></td>
+    </tr>
+</table>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php Fisma_Format_Section::startSection('Time Frame'); ?>
+<i>Define the allotted time period in which users should complete this step.</i>
+<table class='keyValues'>
+    <tr>
+        <th scope='row'>Allotted Time</th>
+        <td>
+            <input type='radio' name='step[allottedTime]' value='unlimited' <?php
+                if (!$this->step || $this->step->allottedTime === 'unlimited'): echo $this->escape('checked'); endif;
+            ?>/> Unlimited<br/>
+            <input type='radio' name='step[allottedTime]' value='days' <?php
+                if ($this->step && $this->step->allottedTime === 'days'): echo $this->escape('checked'); endif;
+            ?>/> Days
+            <input type='text' name='step[allottedDays]' value='<?php
+                echo $this->escape(($this->step && $this->step->allottedDays) ? $this->step->allottedDays : '30');
+            ?>' size='1' /><br/>
+            <input type='radio' name='step[allottedTime]' value='ecd' <?php
+                if ($this->step && $this->step->allottedTime === 'ecd'): echo $this->escape('checked'); endif;
+            ?>/> Until Estimated Completion Date<br/>
+            <input type='radio' name='step[allottedTime]' value='custom' <?php
+                if ($this->step && $this->step->allottedTime === 'custom'): echo $this->escape('checked'); endif;
+            ?>/> User Defined
+        </td>
+    </tr>
+    <tr>
+        <th scope='row'>Automated Transition</th>
+        <td>
+            <input type='checkbox' name='step[autoTransition]' <?php
+                if ($this->step && $this->step->autoTransition): echo $this->escape('checked'); endif;
+            ?>/> To <select name='step[autoTransitionDestination]'>
+                <option value=''>Select a workflow step</option>
+                <?php foreach ($this->availableWorkflows as $destinationWorkflow): ?>
+                <optgroup label='<?php echo $this->escape($destinationWorkflow->name); ?>'>
+                    <?php foreach ($destinationWorkflow->WorkflowSteps as $destinationStep): ?>
+                    <option value='<?php echo $this->escape($destinationStep->id); ?>' <?php
+                        if ($this->step && $this->step->autoTransitionDestination === $destinationStep->id):
+                            echo $this->escape('selected');
+                        endif;
+                    ?>>
+                        <?php echo $this->escape($destinationStep->name); ?>
+                    </option>
+                    <?php endforeach; ?>
+                </optgroup>
+                <?php endforeach; ?>
+            </select> after allotted time expires.
+        </td>
+    </tr>
+    <tr>
+        <td colspan='2' style="font-size: inherit; text-align: left; font-weight: normal">
+            Automated transitions cannot be used when the allotted time is set to unlimited.
+            Any specific privileges, required fields, or pre-requisites will be ignored.
+        </td>
+    </tr>
+</table>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php Fisma_Format_Section::startSection('Field Prerequisites and Restrictions'); ?>
+<i>Specify any custom prerequisites or restrictions you wish to apply to this workflow step.</i>
+<table class='keyValues'>
+    <tr>
+        <th scope='row'>Attachments</th>
+        <td>
+            <input type='checkbox' name='step[attachmentEditable]' <?php
+                if (!$this->step || $this->step->attachmentEditable): echo $this->escape('checked'); endif;
+            ?>/>
+            Allow users to upload and modify attachments.
+        </td>
+    </tr>
+    <tr>
+        <th scope='row' title='Fields that must be completed before entering this step'>Prerequisites</th>
+        <td><?php echo $this->escape($this->prerequisites, 'none'); ?></td>
+    </tr>
+    <tr>
+        <th scope='row' title='Fields that cannot be editted in this step'>Restrictions</th>
+        <td><?php echo $this->escape($this->restrictedFields, 'none'); ?></td>
+    </tr>
+</table>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<?php Fisma_Format_Section::startSection('Transitions'); ?>
+<p><?php echo $this->escape(new Fisma_Yui_Form_Button('addTransition', array(
+    'label' => 'Add Transition',
+    'imageSrc' => '/images/create.png',
+    'onClickFunction' => 'Fisma.Workflow.addTransition'
+)), 'none');
+?></p>
+<i>Define the options for completing this step.</i>
+
+<?php
+$transitions = ($this->step)
+              ? (($this->step->transitions) ? $this->step->transitions : array())
+              : array();
+foreach ($transitions as &$transition) {
+    if (!isset($transition['actions'])) {
+        $transition['actions'] = Zend_Json::encode(array(
+            array(
+                'label' => 'edit',
+                'icon' => '/images/edit.png',
+                'handler' => 'Fisma.Workflow.editTransition'
+            ),
+            array(
+                'label' => 'delete',
+                'icon' => '/images/trash_recyclebin_empty_open.png',
+                'handler' => 'Fisma.Workflow.deleteTransition'
+            )
+        ));
+        //die($transition['actions']);
+    }
+}
+
+$transitionTable = new Fisma_Yui_DataTable_Local();
+$transitionTable->setRegistryName('transition-table');
+$transitionTable->setRespectOrder(false);
+$transitionTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'Name',
+        true,
+        null,
+        null,
+        'name'
+    )
+);
+$transitionTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'Destination',
+        true,
+        null,
+        null,
+        'destination'
+    )
+);
+$transitionTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'Organization Roles',
+        true,
+        'Fisma.TableFormat.formatArray',
+        null,
+        'roles'
+    )
+);
+$transitionTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'Actions',
+        true,
+        'Fisma.TableFormat.formatActions',
+        null,
+        'actions'
+    )
+);
+$transitionTable->addColumn(
+    new Fisma_Yui_DataTable_Column(
+        'Custom Destination',
+        false,
+        'Fisma.TableFormat.formatHtml',
+        null,
+        'customDestination',
+        true
+    )
+);
+$transitionTable->setData($transitions);
+
+echo $this->escape($transitionTable, 'none');
+?>
+<?php Fisma_Format_Section::stopSection(); ?>
+
+<p>
+    <?php echo $this->escape(new Fisma_Yui_Form_Button_Submit('submitStep', array(
+        'label' => 'Save',
+        'imageSrc' => '/images/ok.png'
+    )), 'none'); ?>
+    <?php echo $this->escape(new Fisma_Yui_Form_Button('closeStep', array(
+        'label' => 'Cancel',
+        'imageSrc' => '/images/no_entry.png'
+    )), 'none'); ?>
+</p>
+</form>
+<script type='text/javascript'>
+$(function() {
+    $("form.accordion")
+        .submit(Fisma.Workflow.stepFormSubmitHandler)
+        .accordion({
+            'icons': null,
+            'header': 'div.sectionHeader',
+            'heightStyle': 'content'
+        });
+});
+</script>

@@ -4,63 +4,63 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
 /**
- * Interface to nmap  
- * 
- * @package Fisma_Import_Filter 
+ * Interface to nmap
+ *
+ * @package Fisma_Import_Filter
  * @copyright (c) Endeavor Systems, Inc. 2009 {@link http://www.endeavorsystems.com}
- * @author Josh Boyd <joshua.boyd@endeavorsystems.com> 
+ * @author Josh Boyd <joshua.boyd@endeavorsystems.com>
  * @license http://www.openfisma.org/content/license GPLv3
  */
 class Fisma_Inject_Filter_Nmap
 {
     /**
-     * Path to file 
-     * 
-     * @var string 
+     * Path to file
+     *
+     * @var string
      */
     private $_filePath;
 
     /**
      * Organization ID
-     * 
+     *
      * @var int
      */
     private $_orgSystemId;
 
     /**
      * Network ID
-     * 
+     *
      * @var int
      */
     private $_networkId;
 
     /**
-     * XML loaded into XMLReader 
-     * 
-     * @var XMLReader 
+     * XML loaded into XMLReader
+     *
+     * @var XMLReader
      * @access private
      */
     private $_report;
 
     /**
      * Constructor
-     * 
-     * @param string $filePath 
-     * @param int $orgSystemId 
-     * @param int $networkId 
+     *
+     * @param string $filePath
+     * @param int $orgSystemId
+     * @param int $networkId
      * @return void|boolean
      */
     public function __construct($filePath, $orgSystemId, $networkId)
@@ -80,7 +80,7 @@ class Fisma_Inject_Filter_Nmap
 
     /**
      * Destructor
-     * 
+     *
      * @return void
      */
     public function __destruct()
@@ -89,10 +89,10 @@ class Fisma_Inject_Filter_Nmap
     }
 
     /**
-     * Return assets from an nmap report 
-     * 
+     * Return assets from an nmap report
+     *
      * @access public
-     * @return array|boolean 
+     * @return array|boolean
      */
     public function getAssets()
     {
@@ -107,9 +107,9 @@ class Fisma_Inject_Filter_Nmap
     }
 
     /**
-     * Parse assets out of nmap report 
-     * 
-     * @param array $assets 
+     * Parse assets out of nmap report
+     *
+     * @param array $assets
      * @access private
      */
     private function _parseAssets(&$assets)
@@ -117,6 +117,7 @@ class Fisma_Inject_Filter_Nmap
         $parsedData = array();
         $hostCounter = 0;
         $portCounter = 0;
+        $state = 'down';
 
         while ($this->_report->read()) {
             if ($this->_report->depth >= 1 && $this->_report->nodeType == XMLReader::ELEMENT) {
@@ -127,23 +128,31 @@ class Fisma_Inject_Filter_Nmap
                     $parsedData[$hostCounter]['ip'] = $this->_report->getAttribute('addr');
                 } elseif ($this->_report->name == 'port') {
                     $parsedData[$hostCounter]['ports'][$portCounter]['port'] = $this->_report->getAttribute('portid');
+                    $parsedData[$hostCounter]['ports'][$portCounter]['protocol'] =
+                        $this->_report->getAttribute('protocol');
                 } elseif ($this->_report->name == 'service') {
+                    $parsedData[$hostCounter]['ports'][$portCounter]['service'] =
+                        $this->_report->getAttribute('name');
                     $parsedData[$hostCounter]['ports'][$portCounter]['product'] =
                         $this->_report->getAttribute('product');
                     $parsedData[$hostCounter]['ports'][$portCounter]['version'] =
                         $this->_report->getAttribute('version');
-                    if ($this->_report->getAttribute('name') != 'unknown') {
-                        $parsedData[$hostCounter]['ports'][$portCounter]['name'] = $this->_report->getAttribute('name');
-                    }
                 } elseif ($this->_report->name == 'cpe') {
                     $parsedData[$hostCounter]['ports'][$portCounter]['cpe'] = $this->_report->readString();
                 } elseif ($this->_report->name == 'osmatch') {
                     $parsedData[$hostCounter]['os'] = $this->_report->getAttribute('name');
+                } elseif ($this->_report->name === 'status') {
+                    $state = $this->_report->getAttribute('state');
                 }
             } elseif ($this->_report->nodeType == XMLReader::END_ELEMENT) {
                 if ($this->_report->name == 'host') {
-                    $hostCounter++;
                     $portCounter = 0;
+                    if ($state === 'up') {
+                        $hostCounter++;
+                    } else {
+                        // throw out down hosts
+                        unset($parsedData[$hostCounter]);
+                    }
                 } elseif ($this->_report->name == 'port') {
                     $portCounter++;
                 }
@@ -153,54 +162,59 @@ class Fisma_Inject_Filter_Nmap
         $keyPtr = 0;
 
         foreach ($parsedData as $hosts => $host) {
-            // Create an asset for the host if the OS of the host has been detected
+            $assets[$keyPtr]['name'] = $host['ip'];
+            $assets[$keyPtr]['source'] = 'scan';
+            $assets[$keyPtr]['addressIp'] = $host['ip'];
+            $assets[$keyPtr]['orgSystemId'] = !empty($this->_orgSystemId) ? (int) $this->_orgSystemId : NULL;
+            $assets[$keyPtr]['networkId'] = $this->_networkId;
             if (!empty($host['os'])) {
-                $assets[$keyPtr]['name'] = $host['ip'];
-                $assets[$keyPtr]['source'] = 'scan';
-                $assets[$keyPtr]['addressIp'] = $host['ip'];
-                $assets[$keyPtr]['orgSystemId'] = !empty($this->_orgSystemId) ? (int) $this->_orgSystemId : NULL;
-                $assets[$keyPtr]['networkId'] = $this->_networkId;
                 $assets[$keyPtr]['Product']['name'] = $host['os'];
-                $keyPtr++;
             }
 
-            // Create an asset for each port detected   
+            // Create a service for each port detected
+            $serviceIndex = 0;
             foreach ($host['ports'] as $port) {
-                $assets[$keyPtr]['name'] = $host['ip'];
-                $assets[$keyPtr]['source'] = 'scan';
-                $assets[$keyPtr]['addressIp'] = $host['ip'];
-                $assets[$keyPtr]['addressPort'] = $port['port'];
-                $assets[$keyPtr]['orgSystemId'] = !empty($this->_orgSystemId) ? (int) $this->_orgSystemId : NULL;
-                $assets[$keyPtr]['networkId'] = $this->_networkId;
+                $assets[$keyPtr]['AssetServices'][$serviceIndex]['addressPort'] = $port['port'];
 
-                // Handle create of the product name, since it's built from different report fields depending on 
+                // Handle create of the product name, since it's built from different report fields depending on
                 // what is defined
                 if (empty($port['product'])) {
                     if (!empty($port['name'])) {
                         if (empty($port['version'])) {
-                            $assets[$keyPtr]['Product']['name'] = $port['name'];
+                            $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['name'] = $port['name'];
                         } else {
-                            $assets[$keyPtr]['Product']['name'] = $port['name'] . ' ' . $port['version'];
+                            $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['name'] =
+                                $port['name'] . ' ' . $port['version'];
                         }
                     }
                 } else {
                     if (empty($port['version'])) {
-                        $assets[$keyPtr]['Product']['name'] = $port['product'];
+                        $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['name'] = $port['product'];
                     } else {
-                        $assets[$keyPtr]['Product']['name'] = $port['product'] . ' ' . $port['version'];
+                        $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['name'] =
+                            $port['product'] . ' ' . $port['version'];
                     }
                 }
 
                 if (!empty($port['version'])) {
-                    $assets[$keyPtr]['Product']['version'] = $port['version'];
+                    $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['version'] = $port['version'];
                 }
 
                 if (!empty($port['cpe'])) {
-                    $assets[$keyPtr]['Product']['cpeName'] = $port['cpe'];
+                    $assets[$keyPtr]['AssetServices'][$serviceIndex]['Product']['cpeName'] = $port['cpe'];
                 }
 
-                $keyPtr++;
+                if (!empty($port['protocol'])) {
+                    $assets[$keyPtr]['AssetServices'][$serviceIndex]['protocol'] = $port['protocol'];
+                }
+
+                if (!empty($port['service'])) {
+                    $assets[$keyPtr]['AssetServices'][$serviceIndex]['service'] = $port['service'];
+                }
+
+                $serviceIndex++;
             }
+            $keyPtr++;
         }
     }
 }

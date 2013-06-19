@@ -57,41 +57,40 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
 
         // Create a list of mitigation types
         $this->view->mitigationTypes = array(
-            'none' => '',
-            'AR' => 'Acceptance Of Risk',
-            'CAP' => 'Corrective Action Plan',
-            'FP' => 'False Positive'
+            'none' => ''
         );
 
-        // Get a list of approvals and split them into lists of mitigation and evidence approvals
-        $msApprovals = array();
-        $evApprovals = array();
-        $approvals = Doctrine::getTable('Evaluation')->findAll(Doctrine::HYDRATE_ARRAY);
-
-        foreach ($approvals as $approval) {
-            if ('action' == $approval['approvalGroup']) {
-                $msApprovals[] = $approval['nickname'];
-            } else {
-                $evApprovals[] = $approval['nickname'];
+        // Get a list of workflow steps
+        $allStatuses = array();
+        $closedStatuses = array();
+        $workflows = Doctrine::getTable('Workflow')->listArray('finding');
+        foreach ($workflows as $workflow) {
+            $this->view->mitigationTypes[$workflow->id] = $workflow->name;
+            foreach ($workflow->WorkflowSteps as $step) {
+                if ($step->allottedTime === 'unlimited') {
+                    $closedStatuses[] = $step->id;
+                }
+                $allStatuses[] = array(
+                    'stepId' => $step->id,
+                    'workflowId' => $workflow->id,
+                    'label' => $step->label,
+                    'name' => $step->name,
+                    'workflowName' => $workflow->name
+                );
             }
         }
-
-        $this->view->msApprovals = $msApprovals;
-        $this->view->evApprovals = $evApprovals;
+        $this->view->steps = $allStatuses;
+        $this->view->closedSteps = $closedStatuses;
 
         // Create tooltip texts
         $tooltips = array();
         $tooltips['viewBy'] = $this->view->partial("/summary/view-by-tooltip.phtml");
-        $tooltips['ms'] = $this->view->partial("/summary/ms-approvals-tooltip.phtml", array('approvals' => $approvals));
-        $tooltips['ev'] = $this->view->partial("/summary/ev-approvals-tooltip.phtml", array('approvals' => $approvals));
-
         array_walk($tooltips,
             function (&$value)
             {
                 $value = str_replace("\n", " ", $value);
             }
         );
-
         $this->view->tooltips = $tooltips;
 
         // Create a list of finding sources with a default option
@@ -192,7 +191,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      */
     private function _getOrganizationHierarchyData($findingParams)
     {
-        $joinCondition = $this->_getFindingJoinConditions($findingParams);
+        $sourceJoinCondition = $this->_getFindingSourceJoinConditions($findingParams);
+        $typeJoinCondition = $this->_getFindingTypeJoinConditions($findingParams);
 
         // First get a list of all organizations, even ones this user is not allowed to see. This is used to
         // fill in any "missing" nodes in tree structure.
@@ -220,7 +220,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
                                   ->leftJoin('s.SystemType st')
                                   ->addSelect("IF(ot.nickname = 'system', st.iconId, ot.iconId) iconId")
                                   ->addSelect("IF(ot.nickname = 'system', st.name, ot.name) typeLabel")
-                                  ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
+                                  ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $sourceJoinCondition")
                                   ->groupBy('o.id')
                                   ->orderBy('o.lft');
 
@@ -230,6 +230,11 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->_addFindingStatusFields($userOrgQuery);
+        if (!empty($typeJoinCondition)) {
+            $userOrgQuery->innerJoin("f.CurrentStep ws")->andWhere($typeJoinCondition);
+        }
+
+        //die(print_r($this->_prepareSummaryQueryParameters()) . '');
 
         $userOrgs = $userOrgQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
         if (empty($userOrgs)) {
@@ -284,130 +289,6 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
     }
 
     /**
-     * Get statistics about number of findings in each status for each of this user's systems.
-     *
-     * Systems are grouped together by their aggregation relationship.
-     *
-     * This uses two queries: one query to get the root level and a second query to get the nested level. (The
-     * sysagg relationship does not use nested set, so there is no efficient way to get a deep tree in a single
-     * query.)
-     *
-     * @param $findingParams Array A dictionary of parameters related to findings.
-     * @return Array Flat list of organizations and finding data
-     */
-    private function _getSystemAggregationData($findingParams)
-    {
-        $joinCondition = $this->_getFindingJoinConditions($findingParams);
-
-        // One query to get the outer level and another [similar] query to get the inner level
-        $outerSystemsQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read', true)
-                                       ->select('o.id')
-                                       ->addSelect("CONCAT(o.nickname, ' - ', o.name) AS label")
-                                       ->addSelect('o.nickname AS rowLabel')
-                                       ->innerJoin('o.System s')
-                                       ->leftJoin('s.SystemType st')
-                                       ->addSelect("s.id, st.iconId, st.name AS typeLabel")
-                                       ->addSelect("'organization' AS searchKey")
-                                       ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
-                                       ->andWhere('s.sdlcPhase <> ?', 'disposal')
-                                       ->groupBy('o.id')
-                                       ->orderBy('o.nickname');
-
-        if ($this->_me->username != 'root') {
-            $outerSystemsQuery->distinct()
-                              ->addGroupBy('r.id');
-        }
-
-        $innerSystemsQuery = clone $outerSystemsQuery;
-
-        $outerSystemsQuery->addSelect('0 AS level')->andWhere('s.aggregateSystemId IS NULL')->orderBy('o.nickname');
-        $this->_addFindingStatusFields($outerSystemsQuery);
-        $outerSystems = $outerSystemsQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
-
-        $innerSystemsQuery->addSelect('1 AS level, s.aggregateSystemId')
-                          ->innerJoin('s.AggregateSystem as')
-                          ->innerJoin('as.Organization ao')
-                          ->orderBy('ao.nickname, o.nickname');
-        $this->_addFindingStatusFields($innerSystemsQuery);
-        $innerSystems = $innerSystemsQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
-
-        $disposalSystemIds = Doctrine_Query::create()
-                             ->from('System')
-                             ->where('sdlcphase = ?', 'disposal')
-                             ->execute()
-                             ->toKeyValueArray('id', 'id');
-
-        // If there are child systems, then try to merge them in underneath their parents
-        if (count($innerSystems) > 0) {
-             // Walk down the outer list (the for loop) and splice in children (the while loop).
-            $innerSystemsIndex = 0;
-
-            for ($outerSystemsIndex = 0; $outerSystemsIndex < count($outerSystems); $outerSystemsIndex++) {
-                $outerId = $outerSystems[$outerSystemsIndex]['s_id'];
-                $innerId = isset($innerSystems[$innerSystemsIndex])
-                         ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
-                         : null;
-
-                // Skip all the child systems of a disposal system
-                while (in_array($innerId, $disposalSystemIds)) {
-                    $innerSystemsIndex++;
-                    $innerId = isset($innerSystems[$innerSystemsIndex])
-                             ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
-                             : null;
-                }
-
-                while ($outerId == $innerId) {
-                    array_splice($outerSystems, $outerSystemsIndex + 1, 0, array($innerSystems[$innerSystemsIndex]));
-                    unset($innerSystems[$innerSystemsIndex]);
-                    $innerSystemsIndex++;
-                    $outerSystemsIndex++;
-                    $innerId = isset($innerSystems[$innerSystemsIndex])
-                             ? $innerSystems[$innerSystemsIndex]['s_aggregateSystemId']
-                             : null;
-
-                }
-            }
-        }
-
-        // Merge in any systems not merged above (these are children without matching parents) and move to level 0.
-        if (count($innerSystems) > 0) {
-
-            foreach ($innerSystems as $innerSystem) {
-                $innerSystem['o_level'] = 0;
-                $outerSystemsIndex = 0;
-
-                // Move the outer pointer forward to the next outer system that sorts LOWER than the inner system.
-                foreach ($outerSystems as $key => $outerSystem) {
-                    if ($outerSystem['o_level'] == 0 &&
-                        strcasecmp($outerSystem['o_rowLabel'], $innerSystem['o_rowLabel']) < 0) {
-
-                        $outerSystemsIndex = $key;
-                        $outerSystemsIndex ++;
-                    }
-                }
-
-                if (isset($outerSystems[$outerSystemsIndex])) {
-
-                     // Skip all the child systems of a parent system
-                    for ($i = $outerSystemsIndex, $j = 0; $i < count($outerSystems); $i++) {
-                        if (isset($outerSystems[$i]) && $outerSystems[$i]['o_level'] == 1) {
-                            $j++;
-                        } else {
-                            break;
-                        }
-                    }
-
-                    array_splice($outerSystems, $outerSystemsIndex + $j, 0, array($innerSystem));
-                } else {
-                    $outerSystems[] = $innerSystem;
-                }
-            }
-        }
-
-        return $outerSystems;
-    }
-
-    /**
      * Get statistics about number of findings in each status for Point Of Contact.
      *
      * Every user can see *all* points of contact across *all* organizations.
@@ -417,7 +298,8 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      */
     private function _getPointOfContactData($findingParams)
     {
-        $joinCondition = $this->_getFindingJoinConditions($findingParams);
+        $sourceJoinCondition = $this->_getFindingSourceJoinConditions($findingParams);
+        $typeJoinCondition = $this->_getFindingTypeJoinConditions($findingParams);
 
         // Get the list of organizations (not including systems)
         $organizationQuery = Doctrine_Query::create()
@@ -444,11 +326,12 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         }
 
         // Get list of point of contacts
+        $pocLabel = $this->view->column('pocId', Doctrine::getTable('Finding'), false);
         $pointOfContactQuery = Doctrine_Query::create()
                                ->from('User u')
                                ->addSelect('u.id, u.reportingOrganizationId, "poc" AS type')
                                ->addSelect("CONCAT(u.nameFirst, ' ', u.nameLast) AS label")
-                               ->addSelect("CONCAT('Point\ Of\ Contact') AS typeLabel")
+                               ->addSelect("'$pocLabel' AS typeLabel")
                                ->addSelect("'poc' AS icon, u.username AS rowLabel")
                                ->addSelect("'pocUser' AS searchKey")
                                ->where('u.reportingOrganizationId IS NOT NULL')
@@ -474,7 +357,7 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         // Get a list of finding statistics for each POC
         $findingQuery = $this->_me->getOrganizationsByPrivilegeQuery('finding', 'read')
                                   ->select('o.id, f.id, poc.id')
-                                  ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $joinCondition")
+                                  ->leftJoin("o.Findings f ON o.id = f.responsibleorganizationid $sourceJoinCondition")
                                   ->innerJoin('f.PointOfContact poc')
                                   ->groupBy('poc.id')
                                   ->orderBy('poc.id');
@@ -485,6 +368,9 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         }
 
         $this->_addFindingStatusFields($findingQuery);
+        if (!empty($typeJoinCondition)) {
+            $findingQuery->innerJoin("f.CurrentStep ws")->andWhere($typeJoinCondition);
+        }
         $tempFindings = $findingQuery->execute($this->_prepareSummaryQueryParameters(), Doctrine::HYDRATE_SCALAR);
         $findings = array();
         foreach ($tempFindings as $finding) {
@@ -613,19 +499,31 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      * @param $findingParams Array Optional parameters to join condition.
      * @return string
      */
-    public function _getFindingJoinConditions($findingParams)
+    public function _getFindingSourceJoinConditions($findingParams)
     {
         $dql = '';
-
-        // These are escaped in the dataAction method and are safe to interpolate.
-        if (isset($findingParams['mitigationType'])) {
-            $dql .= " AND f.type = " . $findingParams['mitigationType'];
-        }
 
         if (isset($findingParams['findingSource'])) {
             $dql .= " AND f.sourceId = " . $findingParams['findingSource'];
         }
 
+        return $dql;
+    }
+
+    /**
+     * Returns DQL string that can be used as finding join conditions (i.e. part of "ON" clause)
+     *
+     * @param $findingParams Array Optional parameters to join condition.
+     * @return string
+     */
+    public function _getFindingTypeJoinConditions($findingParams)
+    {
+        $dql = '';
+
+        // These are escaped in the dataAction method and are safe to interpolate.
+        if (isset($findingParams['mitigationType'])) {
+            $dql .= "ws.workflowId = " . $findingParams['mitigationType'];
+        }
         return $dql;
     }
 
@@ -641,27 +539,27 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      */
     public function _addFindingStatusFields(Doctrine_Query $query)
     {
-        $allStatuses = Finding::getAllStatuses();
+        $allStatuses = array();
+        $workflows = Doctrine::getTable('Workflow')->listArray('finding');
+        foreach ($workflows as $workflow) {
+            foreach ($workflow->WorkflowSteps as $step) {
+                $allStatuses[] = $step->id;
+            }
+        }
 
         // Get ontime and overdue statistics for each status where we track overdues
         foreach ($allStatuses as $status) {
-
-            // CLOSED doesn't have ontime/overdue, so it's handled separately
-            if ($status === 'CLOSED') {
-                continue;
-            }
-
             $statusName = urlencode($status);
 
             $query->addSelect(
                 "SUM(
-                    IF(f.denormalizedStatus LIKE ? AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
+                    IF(f.currentStepId LIKE ? AND (DATEDIFF(NOW(), f.nextduedate) <= 0 OR f.nextduedate is NULL), 1, 0)
                 ) ontime_$statusName"
             );
 
             $query->addSelect(
                 "SUM(
-                    IF(f.denormalizedStatus LIKE ? AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
+                    IF(f.currentStepId LIKE ? AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
                 ) overdue_$statusName"
             );
         }
@@ -669,17 +567,17 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
         // Add the last 3 columns: OPEN, CLOSED, TOTAL
         $query->addSelect(
             "SUM(
-                IF(f.denormalizedStatus NOT LIKE 'CLOSED' AND DATEDIFF(NOW(), f.nextduedate) <= 0, 1, 0)
-            ) ontime_OPEN"
+                IF(f.isResolved <> 1 AND (DATEDIFF(NOW(), f.nextduedate) <= 0 OR f.nextduedate is NULL), 1, 0)
+            ) ontime_ALL+OPEN"
         );
 
         $query->addSelect(
             "SUM(
-                IF(f.denormalizedStatus NOT LIKE 'CLOSED' AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
-            ) overdue_OPEN"
+                IF(f.isResolved <> 1 AND DATEDIFF(NOW(), f.nextduedate) > 0, 1, 0)
+            ) overdue_ALL+OPEN"
         );
 
-        $query->addSelect("SUM(IF(f.denormalizedStatus LIKE 'CLOSED', 1, 0)) closed");
+        $query->addSelect("SUM(IF(f.isResolved = 1, 1, 0)) closed");
         $query->addSelect("SUM(IF(f.id IS NOT NULL, 1, 0)) total");
     }
 
@@ -690,14 +588,19 @@ class Finding_SummaryController extends Fisma_Zend_Controller_Action_Security
      */
     private function _prepareSummaryQueryParameters()
     {
-        $allStatus = Finding::getAllStatuses();
+        $allStatuses = array();
+        $workflows = Doctrine::getTable('Workflow')->listArray('finding');
+        foreach ($workflows as $workflow) {
+            foreach ($workflow->WorkflowSteps as $step) {
+                if ($step->isResolved) {
+                    //continue;
+                }
+                $allStatuses[] = $step->id;
+            }
+        }
         $findingStatus = array();
 
-        foreach ($allStatus as $status) {
-            if ($status === 'CLOSED') {
-                continue;
-            }
-
+        foreach ($allStatuses as $status) {
             // Since there are two finding status in a query constructed at _addFindingStatusFields(),
             // it needs to add the status twice accordingly.
             array_push($findingStatus, $status);

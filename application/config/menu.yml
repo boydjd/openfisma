@@ -83,9 +83,6 @@ Finding:
                 func: hasArea
                 param: finding_admin
             submenu:
-                Finding_Workflow:
-                    label: Workflow
-                    link: /finding/workflow/view
                 Finding_General:
                     label: General
                     link: /finding/config/general
@@ -103,6 +100,9 @@ Finding:
                         func: hasPrivilegeForClass
                         param1: manage_relationships
                         param2: Finding
+                Finding_Workflow:
+                    label: Workflows
+                    link: /workflow/manage#0
         Reports:
             label: Reports
             privilege:
@@ -147,6 +147,9 @@ Vulnerability:
                 param2: Vulnerability
         Separator2:
             label: Separator
+        Dashboard:
+            label: Dashboard
+            link: /vm/dashboard/analyst
         Administration:
             label: Administration
             privilege:
@@ -160,13 +163,12 @@ Vulnerability:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: Product
-                Resolutions:
-                    label: Resolutions
-                    link: /vm/vulnerability-resolution/list
-                    privilege:
-                        func: hasPrivilegeForClass
-                        param1: read
-                        param2: VulnerabilityResolution
+                General:
+                    label: Upload Configuration
+                    link: /vm/config/general
+                Vulnerability_Workflow:
+                    label: Workflows
+                    link: /workflow/manage#1
         Reports:
             label: Reports
             privilege:
@@ -202,6 +204,13 @@ Incident:
                     controller: /incident
         Separator1:
             label: Separator
+        Create:
+            label: Create New Incident
+            link: /incident/create
+            privilege:
+                func: hasPrivilegeForClass
+                param1: create
+                param2: Incident
         ReportIncident:
             label: Report An Incident
             link: /incident/report
@@ -229,6 +238,13 @@ Incident:
                     privilege:
                         func: hasPrivilegeForClass
                         param1: manage_impacts
+                        param2: Incident
+                ResponseStrategies:
+                    label: Response Strategies
+                    link: /incident-response-strategy/list
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: manage_response_strategies
                         param2: Incident
                 SeverityLevels:
                     label: Severity Levels
@@ -286,6 +302,9 @@ System:
         Documentation:
             label: Documentation
             link: /system-document/list
+        OrganizationTree:
+            label: Organization Hierarchy
+            link: /organization/tree
         Organizations:
             label: Organizations
             link: /organization/list
@@ -303,12 +322,12 @@ System:
                 func: hasArea
                 param: system_inventory_admin
             submenu:
-                AssetServiceTags:
+                AssetEnvironments:
                     label: Asset Environments
-                    link: /asset/service-tags
+                    link: /asset-environment/list
                     privilege:
                         func: hasPrivilegeForClass
-                        param1: manage_service_tags
+                        param1: manage_environments
                         param2: Asset
                 ControlCatalogs:
                     label: Control Catalogs
@@ -334,13 +353,6 @@ System:
                         func: hasPrivilegeForClass
                         param1: read
                         param2: Network
-                OrganizationPOCList:
-                    label: Organization People
-                    link: /organization/poc-list
-                    privilege:
-                        func: hasPrivilegeForClass
-                        param1: manage_poc_list
-                        param2: Organization
                 OrganizationType:
                     label: Organization Types
                     link: /organization-type/list
@@ -380,6 +392,29 @@ Administration:
         func: hasArea
         param: admin
     submenu:
+        Debug:
+            label: Diagnostics
+            submenu:
+                SystemCache:
+                    label: APC System Cache
+                    link: /debug/apc-cache/type/system
+                    condition: return Fisma_Menu::isApc();
+                UserCache:
+                    label: APC User Cache
+                    link: /debug/apc-cache/type/user
+                    condition: return Fisma_Menu::isApc();
+                ErrorLog:
+                    label: Error log
+                    link: /debug/errorlog
+                PHPInfo:
+                    label: PHP Info
+                    link: /debug/phpinfo
+                PHPlog:
+                    label: PHP Log
+                    link: /debug/phplog
+                Search:
+                    label: Search
+                    link: /config/search
         SysConfig:
             label: System Configuration
             submenu:
@@ -415,8 +450,15 @@ Administration:
             label: User Management
             submenu:
                 Roles:
-                    label: Roles
-                    link: /role/list
+                    label: Account Types
+                    link: /role/list?f=filter_type_enumIs_ACCOUNT\_TYPE
+                    privilege:
+                        func: hasPrivilegeForClass
+                        param1: read
+                        param2: Role
+                OrganizationPOCList:
+                    label: User Groups
+                    link: /role/list?f=filter_type_enumIs_USER\_GROUP
                     privilege:
                         func: hasPrivilegeForClass
                         param1: read
@@ -435,29 +477,9 @@ Administration:
                         func: hasPrivilegeForClass
                         param1: assignPrivileges
                         param2: Role
-        Debug:
-            label: Diagnostics
-            submenu:
-                SystemCache:
-                    label: APC System Cache
-                    link: /debug/apc-cache/type/system
-                    condition: return Fisma_Menu::isApc();
-                UserCache:
-                    label: APC User Cache
-                    link: /debug/apc-cache/type/user
-                    condition: return Fisma_Menu::isApc();
-                ErrorLog:
-                    label: Error log
-                    link: /debug/errorlog
-                PHPInfo:
-                    label: PHP Info
-                    link: /debug/phpinfo
-                PHPlog:
-                    label: PHP Log
-                    link: /debug/phplog
-                Search:
-                    label: Search
-                    link: /config/search
+        Workflow:
+            label: Workflow Management
+            link: /workflow
 UserPreferences:
     label: <span class=currentUser>$currentUser</span>
     submenu:

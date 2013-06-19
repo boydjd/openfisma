@@ -67,8 +67,8 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     {
         $form = Fisma_Zend_Form_Manager::loadForm('user');
         $fieldsToOmit = array(
-            'password', 'confirmPassword', 'generate_password', 'role', 'locked', 'lockReason', 'lockTs',
-            'comment', 'reportingOrganizationId', 'mustResetPassword', 'lookup', 'separator', 'username', 'published'
+            'password', 'confirmPassword', 'generate_password', 'role', 'groups', 'locked', 'lockReason', 'lockTs',
+            'reportingOrganizationId', 'mustResetPassword', 'lookup', 'separator', 'username', 'published'
         );
 
         foreach ($fieldsToOmit as $field) {
@@ -167,10 +167,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                 $subject->lockAccount(User::LOCK_TYPE_MANUAL);
                 unset($values['locked']);
                 unset($values['lockTs']);
-
-                if (!empty($values['comment'])) {
-                    $subject->getComments()->addComment($values['comment']);
-                }
             } elseif (!$values['locked'] && $subject->locked) {
                 $subject->unlockAccount();
                 unset($values['locked']);
@@ -280,14 +276,20 @@ class UserController extends Fisma_Zend_Controller_Action_Object
     protected function setForm($subject, $form)
     {
         $roles = array();
+        $groups = array();
         $assignedRoles = $subject->Roles->toArray();
 
         foreach ($assignedRoles as $assignedRole) {
-            $roles[] = $assignedRole['id'];
+            if ($assignedRole['type'] == 'ACCOUNT_TYPE') {
+                $roles[] = $assignedRole['id'];
+            } else {
+                $groups[] = $assignedRole['id'];
+            }
         }
 
         $form->setDefaults($subject->toArray());
         $form->getElement('role')->setValue($roles);
+        $form->getElement('groups')->setValue($groups);
 
         return $form;
     }
@@ -519,7 +521,6 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
         if ($this->_acl->hasPrivilegeForClass('finding', 'Notification')) {
             $this->view->findingEvents = Doctrine::getTable('Event')->findByCategory('finding');
-            $this->view->evaluationEvents = Doctrine::getTable('Event')->findByCategory('evaluation');
         }
 
         if ($this->_acl->hasPrivilegeForClass('incident', 'Notification')) {
@@ -555,7 +556,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             }
 
             $this->_helper->layout->setLayout('layout');
-            $this->_redirect('/Index/index');
+            $this->_redirect('/index/home');
         }
 
         $this->view->behaviorRule = Fisma::configuration()->getConfig('behavior_rule');
@@ -624,6 +625,13 @@ class UserController extends Fisma_Zend_Controller_Action_Object
 
             foreach ($userOrgs as $userOrg) {
                 $assignedOrgs[] = $userOrg->id;
+            }
+        }
+        $role = Doctrine::getTable('Role')->find($roleId);
+        if (empty($assignedRoles) && $role->type == 'ACCOUNT_TYPE') { // by default, assign to all organizations
+            $allOrgs = Doctrine_Query::create()->select('id')->from('Organization')->orderBy('lft')->execute();
+            foreach ($allOrgs as $org) {
+                $assignedOrgs[] = $org->id;
             }
         }
 
@@ -779,7 +787,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         if (isset($user[0]['Roles'])) {
             foreach ($user[0]['Roles'] as $role) {
                 $tabView->addTab(
-                    $this->view->escape($role['nickname']),
+                    $this->view->escape($role['name']),
                     "/User/get-organization-subform/user/{$id}/role/{$role['id']}/readOnly/$readOnly",
                     $role['id'],
                     $readOnly == 0 ? 'true' : 'false'
@@ -788,7 +796,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         }
 
         $roles = Doctrine_Query::create()
-            ->select('r.id, r.nickname')
+            ->select('r.id, r.name')
             ->from('Role r')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
@@ -833,7 +841,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
         $tabView = new Fisma_Yui_TabView('UserView');
 
         $roles = Doctrine_Query::create()
-            ->select('r.id, r.nickname')
+            ->select('r.id, r.name')
             ->from('Role r')
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
             ->execute();
@@ -1169,7 +1177,11 @@ class UserController extends Fisma_Zend_Controller_Action_Object
                     ->orderBy('nickname')
                     ->execute();
         foreach ($roles as $role) {
-            $form->getElement('role')->addMultiOptions(array($role->id => $role->nickname . ' - ' . $role->name));
+            if ($role->type == 'ACCOUNT_TYPE') {
+                $form->getElement('role')->addMultiOptions(array($role->id => $role->name));
+            } else {
+                $form->getElement('groups')->addMultiOptions(array($role->id => $role->name));
+            }
         }
 
         // Show lock explanation if account is locked. Hide explanation otherwise.
@@ -1716,6 +1728,7 @@ class UserController extends Fisma_Zend_Controller_Action_Object
             } else {
                 $this->view->priorityMessenger('User deleted successfully.', 'info');
             }
+            Notification::notify('USER_DELETED', $subject, CurrentUser::getInstance());
 
         } catch (Exception $e) {
             Doctrine_Manager::connection()->rollback();

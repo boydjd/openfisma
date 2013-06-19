@@ -1,0 +1,506 @@
+Workflow:
+    vulnerability_acceptance:
+        name: 'New'
+        description: 'Decide whether to fix a vulnerability'
+        isDefault: true
+        module: 'vulnerability'
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 1
+                cardinality: 1
+                name: 'Course of Action'
+                label: 'CA'
+                description: 'Please choose a course of action below. Select "Remediate the Vulnerability" if you can address the items listed in the vulnerability description. If you cannot fix the items identified, select "Accept the Risk". You will then need to provide business justification for accepting the risk. Or select "False Positive" if you believe the finding was identified in error and you have evidence to validate this.'
+                attachmentEditable: false
+                allottedTime: 'days'
+                allottedDays: 7
+                transitions:
+                    -
+                        name: 'Remediate the Vulnerability'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 3
+                    -
+                        name: "Accept the Risk"
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 2
+                    -
+                        name: "False Positive"
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 19
+    vulnerability_ar:
+        name: "Risk Acceptance"
+        description: 'If the vulnerabiity exists and it cannot be remediated you will need to accept the risk.'
+        module: 'vulnerability'
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 2
+                cardinality: 1
+                name: "Accepted Risks"
+                label: 'AR'
+                description: 'This vulnerability has been officially designated as accepted risk and will remain valid until it is re-opened and re-evaluated.'
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Re-open Vulnerability'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 1
+    vulnerability_fp:
+        name: "False Positive"
+        description: 'Bucket used for identifying false positives created by various vulnerability scanners.'
+        module: 'vulnerability'
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 19
+                cardinality: 1
+                name: "False Positives"
+                label: 'FP'
+                description: 'This vulnerability has been listed as a false positive, if you believe this is in error you may "Re-Open the Vulnerability". Re-Opening the vulnerability will move the finding back to the "Course of Action" workflow step.'
+                isResolved: true
+                transitions:
+                    -
+                        name: 'Re-open Vulnerability'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 1
+    vulnerability_remediation:
+        name: 'Remediation'
+        description: 'Workflow to remediate vulnerabilities.'
+        isDefault: false
+        module: 'vulnerability'
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 3
+                cardinality: 1
+                label: 'OPEN'
+                name: 'Implementation'
+                description: 'Implement the required changes to remediate the vulnerability. Once you have completed all actions and you believe the finding is successfully remediated click "Close Vulnerability". If the vulnerability is found later it will re-open the vulnerability.'
+                transitions:
+                    -
+                        name: 'Close Vulnerability'
+                        destination: 'next'
+                        roles: '[]'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Change Course of Action'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 1
+            -
+                id: 4
+                cardinality: 2
+                name: 'Fixed'
+                label: 'FIXED'
+                description: 'This vulnerability is officially closed and no more action is required. If you believe the vulnerability still exists you may re-open the finding.'
+                isResolved: true
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: 'Re-open Vulnerability'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 1
+    finding_acceptance:
+        name: 'New'
+        description: 'Default bucket for new findings'
+        isDefault: true
+        module: 'finding'
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 5
+                cardinality: 1
+                name: 'Course of Action'
+                label: 'CA'
+                allottedTime: days
+                allottedDays: 7
+                description: 'Please choose a course of action below. Select "Remediate the Finding" if you can address the items listed in finding description. If you cannot fix the items identified, select "Accept the Risk". You will then need to provide business justification for accepting the risk. Or select "False Positive" if you believe the finding was identified in error and you have evidence to validate this.'
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: 'Accept the Risk'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 6
+                    -
+                        name: 'Declare False Positive'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 9
+                    -
+                        name: 'Remediate the Finding'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 10
+    finding_ar:
+        name: 'Risk Acceptance'
+        description: 'Workflow to accept the risks'
+        isDefault: false
+        module: 'finding'
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 6
+                cardinality: 1
+                name: 'Accept Risk Justification'
+                label: 'JUSTIFY'
+                allottedTime: days
+                allottedDays: 7
+                description: 'To accept the risk of not remediating a finding you must justify why the finding can not be remediated. There may be several factors such as cost required, technical in feasibility, or possibly the length of the corrective action requires the finding to be listed as an accepted risk until the finding is fully corrected. You must also complete the "Risk Analysis" tab to clearly identify the risk to the organization. Under the "Mitigation Strategy" tab you will need to enter your justification in the action plan field. Fully explain why you are accepting the risk and how long the risk will remain active. Risks will normally be re-evaluated on a yearly basis but this may be changed by the authorizing official. If you believe the risk is no longer active and would like to submit evidence the risk is no longer valid select "Close Accepted Risk".'
+                transitions:
+                    -
+                        name: 'Submit Justification'
+                        destination: 'next'
+                        roles: '[]'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Change Course of Action'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 5
+                    -
+                        name: 'Close Accepted Risk'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 15
+            -
+                id: 7
+                cardinality: 2
+                name: 'Accept Risk Approval'
+                label: 'APPROVAL'
+                allottedTime: days
+                allottedDays: 7
+                description: 'Review the risk acceptance justification and evaluate the risk to the organization. If you believe the risk to the organization is acceptable you may approve the risk. If you require additional details select "Request Additional Information".'
+                prerequisites:
+                    - mitigationStrategy
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                transitions:
+                    -
+                        name: 'Accept the Risk'
+                        destination: 'next'
+                        roles: '{"6":"Authorizing Official"}'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Request Additional Information'
+                        destination: 'back'
+                        roles: '{"6":"Authorizing Official"}'
+                        customDestination: 'undefined'
+            -
+                id: 8
+                cardinality: 3
+                name: 'Accepted Risk'
+                label: 'AR'
+                allottedTime: custom
+                autoTransition: true
+                autoTransitionDestination: 6
+                description: 'This finding has been officially designated as accepted risk and will remain valid until the number of days remaining has expired. The system will automatically move expired risk back to the risk acceptance justification workflow step so the organization may re-evaluate the risk and take appropriate steps.'
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: 'Review Risk'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 6
+                    -
+                        name: 'Submit for Closure'
+                        destination: 'next'
+                        roles: '[]'
+                        customDestination: 'undefined'
+            -
+                id: 15
+                cardinality: 4
+                name: 'Approve Closure of Risk'
+                label: 'REVIEW'
+                description: 'This step is used when a previously accepted risk is no longer valid and requires closure. Before officially closing the finding we must validate the risk is no longer valid. Review all evidence provided, if the risk is no longer valid select "Officially Close Accepted Risk" or select "Request Additional Information" to ask for additional details or evidence.'
+                allottedTime: days
+                allottedDays: 7
+                transitions:
+                    -
+                        name: 'Request Additional Information'
+                        destination: 'custom'
+                        roles: '{"4":"Security Officer"}'
+                        customDestination: 6
+                    -
+                        name: 'Officially Close Accepted Risk'
+                        destination: 'next'
+                        roles: '{"4":"Security Officer"}'
+                        customDestination: 'undefined'
+            -
+                id: 16
+                cardinality: 5
+                name: 'Closed'
+                label: 'CLOSED'
+                description: 'This accepted risk is no longer active and is officially closed. If you believe this is in error you may re-open the finding, otherwise no other action is required.'
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                isResolved: true
+                attachmentEditable: false
+                allottedTime: unlimited
+                transitions:
+                    -
+                        name: 'Re-Open Finding'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 5
+    finding_fp:
+        name: 'False Positive'
+        description: 'Discard findings as False Positives'
+        module: 'finding'
+        Creator: root
+        WorkflowSteps:
+            finding_fp:
+        name: 'False Positive'
+        description: 'Discard findings as False Positives'
+        module: 'finding'
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 9
+                cardinality: 1
+                name: False Positive Justification
+                label: FPJ
+                description: 'To declare this finding as a false positive you must provide justification which will be independently evaluated. You may also change the course of action to remediate the finding or accept the risk. Under the "Mitigation Strategy" tab you will need to enter your justification in the action plan field. Fully explain why you believe the finding is a false positive and upload any evidence you have to justify this statement and then select "Submit Justification".'
+                allottedTime: days
+                allottedDays: 7
+                transitions:
+                    -
+                        name: 'Submit Justification'
+                        destination: 'next'
+                        roles: '[]'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Change Course of Action'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 5
+            -
+                id: 17
+                cardinality: 2
+                name: False Positive Approval
+                label: FPA
+                description: 'Review the false positive justification and evidence provided. If you believe sufficient information has been provided to validate the finding is a false positive, then select "Approve False Positive". If you need addition information select "Request Additional Information".'
+                allottedTime: days
+                allottedDays: 7
+                prerequisites:
+                    - mitigationStrategy
+                restrictedFields:
+                    - mitigationStrategy
+                transitions:
+                    -
+                        name: 'Approve False Positive'
+                        destination: 'next'
+                        roles: '{"4":"Security Officer"}'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Request Additional Information'
+                        destination: 'back'
+                        roles: '{"4":"Security Officer"}'
+                        customDestination: 'undefined'
+            -
+                id: 18
+                cardinality: 3
+                name: 'Closed'
+                label: 'CLOSED'
+                description: 'This finding is officially closed and no more action is required. If you believe this finding should not be closed or requires additional information you may "Re-Open the Finding". Re-Opening the finding will move the finding back to the "Course of Action" workflow step.'
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                isResolved: true
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: 'Re-Open Finding'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 5
+    finding_remediation:
+        name: 'Remediation'
+        description: 'Workflow to remediate the findings'
+        isDefault: false
+        module: 'finding'
+        Creator: root
+        WorkflowSteps:
+            -
+                id: 10
+                cardinality: 1
+                name: 'Corrective Action Plan'
+                label: 'CAP'
+                allottedTime: days
+                allottedDays: 7
+                description: 'Please define a corrective action plan for remediating the finding. To do so navigate to the "Mitigation Strategy" tab to fill out the "Action Plan" field and the "Estimated Completion Date". You may also identify any additional resources you may need to complete this action.'
+                transitions:
+                    -
+                        name: 'Submit Corrective Action Plan'
+                        destination: 'next'
+                        roles: '[]'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Change Course of Action'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 5
+            -
+                id: 11
+                cardinality: 2
+                name: 'Corrective Action Plan Approval'
+                label: 'APA'
+                allottedTime: days
+                allottedDays: 7
+                description: 'Please review the corrective action plan for accuracy and completeness. Approve the corrective action plan if you believe all items identified in the finding are addressed. You may also request changes if you believe additional information is required or existing information requires modification.'
+                prerequisites:
+                    - currentEcd
+                    - mitigationStrategy
+                restrictedFields:
+                    - currentEcd
+                    - mitigationStrategy
+                transitions:
+                    -
+                        name: 'Approve Corrective Action'
+                        destination: 'next'
+                        roles: '{"4":"Security Officer"}'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Request Changes'
+                        destination: 'back'
+                        roles: '{"4":"Security Officer"}'
+                        customDestination: 'undefined'
+            -
+                id: 12
+                cardinality: 3
+                name: 'Implementation'
+                label: 'RI'
+                allottedTime: 'ecd'
+                description: 'This workflow step is tied to the expected completion date. Once all corrective actions have taken place you must upload attachments to verify and validate the corrective actions are complete. Attachments may be anything from word documents, to pictures, change tickets, or zip files. Attachments should be under 20 megabytes in size. If more time is needed select "Request Date Extension" to ask for additional time.'
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                transitions:
+                    -
+                        name: 'Submit Evidence for Closure'
+                        destination: 'next'
+                        roles: '[]'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Request Date Extension'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 10
+            -
+                id: 13
+                cardinality: 4
+                name: 'Independent Validation'
+                label: 'IV'
+                allottedTime: days
+                allottedDays: 7
+                description: 'Review the attachments to verify and validate that all proposed corrective actions were completed in accordance with the original action plan. "Request Additional Information" if the attachments are unclear or more detail is required to validate the finding is officially closed. "Approve and Close Finding" if you believe there is sufficient evidence to officially close the finding.'
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                transitions:
+                    -
+                        name: 'Approve and Close Finding'
+                        destination: 'next'
+                        roles: '{"4":"Security Officer"}'
+                        customDestination: 'undefined'
+                    -
+                        name: 'Request Additional Information'
+                        destination: 'back'
+                        roles: '{"4":"Security Officer"}'
+                        customDestination: 'undefined'
+            -
+                id: 14
+                cardinality: 5
+                name: 'Closed'
+                label: 'FIXED'
+                description: 'This finding is officially closed and no more action is required. If you believe this finding should not be closed or requires additional information you may "Re-Open the Finding". Re-Opening the finding will move the finding back to the "Course of Action" workflow step.'
+                restrictedFields:
+                    - description
+                    - recommendation
+                    - sourceId
+                    - currentEcd
+                    - mitigationStrategy
+                    - resourcesRequired
+                    - threatLevel
+                    - threat
+                    - countermeasuresEffectiveness
+                    - countermeasures
+                    - securityControlId
+                isResolved: true
+                attachmentEditable: false
+                transitions:
+                    -
+                        name: 'Re-open Finding'
+                        destination: 'custom'
+                        roles: '[]'
+                        customDestination: 5

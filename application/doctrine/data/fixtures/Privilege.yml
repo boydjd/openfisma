@@ -60,20 +60,6 @@ Privilege:
         action: incident_report
         description: Incident Module Reports
 
-    # Evaluations CRUD
-    evaluation_create:
-        resource: evaluation
-        action: create
-        description: Create Evaluations
-    evaluation_update:
-        resource: evaluation
-        action: update
-        description: Update Evaluations
-    evaluation_delete:
-        resource: evaluation
-        action: delete
-        description: Delete Evaluations
-
     # Findings CRUD
     findings_create:
         resource: finding
@@ -83,120 +69,26 @@ Privilege:
         resource: finding
         action: read
         description: View Findings
-    # findings_update:
-        # ACL for findings is more fine-grained than for other objects, so there is no "update" action. See below.
+    findings_update:
+        resource: finding
+        action: update
+        description: Update Findings
     findings_delete:
         resource: finding
         action: delete
         description: Delete Findings
-
-    # Granular finding privileges
     findings_inject:
         resource: finding
         action: inject
         description: Inject Findings
-    findings_update_type:
-        resource: finding
-        action: update_type
-        description: Update Mitigation Type
-    findings_update_description:
-        resource: finding
-        action: update_description
-        description: Update Finding Description
-    findings_update_course_of_action:
-        resource: finding
-        action: update_course_of_action
-        description: Edit Course of Action
-    findings_update_findings_assignment:
-        resource: finding
-        action: update_assignment
-        description: Edit Finding Organization
-    findings_update_control_assignment:
-        resource: finding
-        action: update_control_assignment
-        description: Edit 800-53 Control Assignment
-    findings_update_countermeasures:
-        resource: finding
-        action: update_countermeasures
-        description: Edit Countermeasures
-    findings_update_threat:
-        resource: finding
-        action: update_threat
-        description: Edit Threat Source
-    findings_update_finding_recommendation:
-        resource: finding
-        action: update_recommendation
-        description: Edit Finding Recommendation
-    findings_update_finding_resources:
-        resource: finding
-        action: update_resources
-        description: Edit Resources Required
-    findings_update_ecd:
-        resource: finding
-        action: update_ecd
-        description: Edit Expected Completion Date (Unless the ECD is Locked)
-    findings_update_locked_ecd:
-        resource: finding
-        action: update_locked_ecd
-        description: Override a Locked ECD
-    findings_upload_evidence:
-        resource: finding
-        action: upload_evidence
-        description: Upload Evidence Artifacts
-    findings_mitigation_strategy_submit:
-        resource: finding
-        action: mitigation_strategy_submit
-        description: Submit Mitigation Strategy
-    findings_mitigation_strategy_revise:
-        resource: finding
-        action: mitigation_strategy_revise
-        description: Revise Mitigation Strategy
     findings_comment:
         resource: finding
         action: comment
         description: Comment on Finding
-    findings_update_legacy_finding_key:
-        resource: finding
-        action: update_legacy_finding_key
-        description: Update Legacy Finding Key
-    findings_update_finding_source:
-        resource: finding
-        action: update_finding_source
-        description: Update Finding Source
-    findings_update_poc:
-        resource: finding
-        action: update_poc
-        description: Update Finding Point Of Contact
-    findings_update_audit_year:
-        resource: finding
-        action: update_audit_year
-        description: Update Finding Audit Year
-    findings_update_relationship:
-        resource: finding
-        action: update_relationship
-        description: Update Finding Links
     finding_manage_relationships:
         resource: finding
         action: manage_relationships
         description: Manage Finding Link Types
-
-    # Default Finding Approval Privileges
-    finding_mitigation_isso:
-        resource: finding
-        action: mitigation_isso
-        description: MS ISSO Approval
-    finding_mitigation_ivv:
-        resource: finding
-        action: mitigation_ivv
-        description: MS IV&V Approval
-    finding_evidence_isso:
-        resource: finding
-        action: evidence_isso
-        description: EV ISSO Approval
-    finding_evidence_ivv:
-        resource: finding
-        action: evidence_ivv
-        description: EV IV&V Approval
 
     # Vulnerability CRUD
     vulnerability_create:
@@ -221,22 +113,10 @@ Privilege:
         description: Comment on Vulnerability
 
     # Assets CRUD
-    asset_create:
+    asset_manage:
         resource: asset
-        action: create
-        description: Create Assets
-    asset_read:
-        resource: asset
-        action: read
-        description: View Assets
-    asset_update:
-        resource: asset
-        action: update
-        description: Edit Assets
-    asset_delete:
-        resource: asset
-        action: delete
-        description: Delete Assets
+        action: manage
+        description: Manage System Assets
     # Asset ACL is based on systems, but not all assets will be connected to systems. This privilege is a special
     # privilege that is orthogonal to the CRUD above; it adds the capability to use the CRUD privileges above on
     # unaffiliated assets. E.g. if you have asset_read AND asset_unaffiliated, then you can view unaffiliated assets,
@@ -244,10 +124,10 @@ Privilege:
     asset_unaffiliated:
         resource: asset
         action: unaffiliated
-        description: Unaffiliated Assets
-    asset_manage_service_tags:
+        description: Manage Unassigned Assets
+    asset_manage_environments:
         resource: asset
-        action: manage_service_tags
+        action: manage_environments
         description: Manage Asset Environments
 
     # Users CRUD
@@ -289,28 +169,6 @@ Privilege:
         resource: organization
         action: oversee
         description: Oversee Organizations/Systems
-    organization_manage_poc_list:
-        resource: organization
-        action: manage_poc_list
-        description: Manage POC Positions
-
-    # Pocs CRUD
-    poc_create:
-        resource: poc
-        action: create
-        description: Create Points of Contact
-    poc_read:
-        resource: poc
-        action: read
-        description: View Points of Contact
-    poc_update:
-        resource: poc
-        action: update
-        description: Edit Points of Contact
-    poc_delete:
-        resource: poc
-        action: delete
-        description: Delete Points of Contact
 
     # Products CRUD
     product_create:
@@ -388,24 +246,6 @@ Privilege:
         action: delete
         description: Delete Networks
 
-    # Vulnerability Resolution CRUD
-    vulnerability_resolution_create:
-        resource: vulnerability_resolution
-        action: create
-        description: Create Resolution
-    vulnerability_resolution_read:
-        resource: vulnerability_resolution
-        action: read
-        description: View Resolution
-    vulnerability_resolution_update:
-        resource: vulnerability_resolution
-        action: update
-        description: Edit Resolution
-    vulnerability_resolution_delete:
-        resource: vulnerability_resolution
-        action: delete
-        description: Delete Resolution
-
     # Notification privileges
     notification_admin:
         resource: notification
@@ -419,6 +259,10 @@ Privilege:
         resource: notification
         action: finding
         description: Finding Notifications
+    notification_incident:
+        resource: notification
+        action: incident
+        description: Incident Notifications
     notification_vulnerability:
         resource: notification
         action: vulnerability
@@ -437,6 +281,10 @@ Privilege:
         resource: incident
         action: update
         description: Update Incident
+    incident_delete:
+        resource: incident
+        action: delete
+        description: Delete Incident
     incident_classify:
         resource: incident
         action: classify
@@ -457,6 +305,10 @@ Privilege:
         resource: incident
         action: manage_impacts
         description: Manage Incident Impacts
+    incident_manage_response_strategies:
+        resource: incident
+        action: manage_response_strategies
+        description: Manage Response Strategies
     incident_manage_severity_levels:
         resource: incident
         action: manage_severity_levels
@@ -464,7 +316,11 @@ Privilege:
     incident_manage_sources:
         resource: incident
         action: manage_sources
-        description: Manage Incident Sources 
+        description: Manage Incident Sources
+    incident_comment:
+        resource: incident
+        action: comment
+        description: Comment on Incidents
 
     # IRWorkflow CRUD
     ir_workflow_def_create:
@@ -578,3 +434,8 @@ Privilege:
         resource: security_control_catalog
         action: delete
         description: Delete Security Control Catalog
+
+    workflows_manage:
+        resource: workflow
+        action: manage
+        description: Manage Workflows

@@ -13,7 +13,7 @@
     <target name="-js.concat">
         <echo message="Concatenating JavaScript..."/>
         <concat destfile="${location.js}/combined.js" force="no">
-            <filelist dir="${location.js}" files="php.js,jstz.js,tiny_mce_config.js,moment.js,Fisma.js,jquery-min.js,jquery-ui-min.js,jquery-tinysort-min.js,jquery-timeentry-min.js,groupeddatatable.js,jstz-min.js"/>
+            <filelist dir="${location.js}" files="php.js,jstz.js,tiny_mce_config.js,moment.js,Fisma.js,jquery-min.js,jquery-ui-min.js,jquery-tinysort-min.js,jquery-timeentry-min.js,groupeddatatable.js,jquery-json-min.js"/>
             <filelist dir="${location.js}" files="Fisma/Storage.js,Fisma/TreeTable.js"/>
             <fileset dir="${location.js}/Fisma" includes="**/*.js" excludes="Storage.js,TreeTable.js"/>
             <fileset dir="${location.js}/jqPlot" includes="**/*.js"/>
@@ -61,7 +61,7 @@
     <target name="-js.clean">
         <echo message="Removing minified scripts..."/>
         <delete>
-            <fileset dir="${location.js}" includes="**/*-min.js" excludes="jquery*-min.js,jstz-min.js"/>
+            <fileset dir="${location.js}" includes="**/*-min.js" excludes="jquery*-min.js"/>
         </delete>
         <delete>
             <filelist dir="${location.js}" files="combined.js"/>
@@ -100,7 +100,7 @@
 
     <target name="jslint-default" depends="check-jslint-cond" unless="cond-is-true">
         <jslint options="browser,sloppy,white,vars,plusplus,nomen,forin,continue,evil" haltOnFailure="false">
-            <predef>jQuery,$$,Fisma,YAHOO,document,PHP_JS,$$P,tinyMCE</predef>
+            <predef>jQuery,$$,Fisma,YAHOO,document,PHP_JS,$$P,tinyMCE,moment</predef>
             <formatter type="plain" />
             <fileset dir="../../public/javascripts/Fisma" includes="**/*.js" excludes="**/*-min.js" />
         </jslint>

@@ -1,5 +1,6 @@
 <div id="menubar"><!-- YUI renders the menubar here --></div>
 <script type="text/javascript">
+$(Fisma.Util.registerJSON);
 YAHOO.util.Event.onDOMReady(function () {
     //Constructs the YUI menu bar for OpenFISMA
     var menuData = <?php
@@ -41,7 +42,8 @@ YAHOO.util.Event.onDOMReady(function () {
         document.URL.match('/debug') ||
         document.URL.match('/user/list') ||
         document.URL.match('/user/view') ||
-        document.URL.match('/user/create')
+        document.URL.match('/user/create') ||
+        document.URL.match('/workflow')
     ) {
         module = 'Administration';
     } else if (document.URL.match('/user')) {

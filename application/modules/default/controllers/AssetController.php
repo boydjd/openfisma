@@ -55,9 +55,199 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         $this->_helper->ajaxContext()
              ->addActionContext('add-service-tag', 'json')
              ->addActionContext('rename-service-tag', 'json')
+             ->addActionContext('add-service', 'html')
+             ->addActionContext('edit-service', 'html')
+             ->addActionContext('delete-service', 'html')
+             ->addActionContext('add-service', 'json')
+             ->addActionContext('edit-service', 'json')
+             ->addActionContext('remove-service', 'json')
              ->initContext();
 
         parent::init();
+    }
+
+    /**
+     * viewAction
+     *
+     * @return void
+     *
+     * @GETAllowed
+     */
+    public function viewAction()
+    {
+        $id = $this->_request->getParam('id');
+
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+        if ($fromSearchUrl) {
+            $this->view->fromSearchUrl = $fromSearchUrl;
+        }
+
+        $asset = Doctrine::getTable('Asset')->find($id);
+
+        if (!$asset) {
+             $msg = '%s (%d) not found. Make sure a valid ID is specified.';
+             throw new Fisma_Zend_Exception_User(sprintf($msg, $this->_modelName, $id));
+        }
+
+        $this->view->asset = $asset;
+
+        $this->_acl->requirePrivilegeForObject('read', $asset);
+        $this->view->canUpdate = $this->_acl->hasPrivilegeForObject('update', $asset);
+        $this->view->canUpdateSystem = $this->_acl->hasPrivilegeForObject('unaffiliated', $asset);
+
+        $this->view->toolbarButtons = $this->getToolbarButtons($asset);
+        $this->view->searchButtons = $this->getSearchButtons($asset, $fromSearchParams);
+
+        $this->view->serviceTable = new Fisma_Yui_DataTable_Local();
+        $serviceTable = Doctrine::getTable('AssetService');
+        $this->view->serviceTable
+             ->addColumn(new Fisma_Yui_DataTable_HiddenColumn('id'))
+             ->addColumn(new Fisma_Yui_DataTable_HiddenColumn('assetId'))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                $serviceTable->getLogicalName('addressPort'), true, null, null, 'addressPort'))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                $serviceTable->getLogicalName('protocol'), true, null, null, 'protocol'))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                $serviceTable->getLogicalName('service'), true, null, null, 'service'))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                $serviceTable->getLogicalName('productId'), true, null, null, 'product'));
+        if ($this->_acl->hasPrivilegeForObject('update', $asset)) {
+            $this->view->serviceTable->addColumn(
+                new Fisma_Yui_DataTable_Column(
+                    'Actions',
+                    false,
+                    'Fisma.TableFormat.formatActions',
+                    array(
+                        array(
+                            'label' => 'edit',
+                            'icon' => '/images/edit.png',
+                            'handler' => 'Fisma.Asset.editService'
+                        ),
+                        array(
+                            'label' => 'delete',
+                            'icon' => '/images/trash_recyclebin_empty_open.png',
+                            'handler' => 'Fisma.Asset.deleteService'
+                        )
+                    ),
+                    'actions'
+                )
+            );
+        }
+        $services = array();
+        foreach ($asset->AssetServices as $service) {
+            $product = '';
+            if (!empty($service->productId)) {
+                $product = $service->Product->name;
+            }
+            $services[] = array(
+                'id' => $service->id,
+                'assetId' => $id,
+                'addressPort' => $service->addressPort,
+                'protocol' => empty($service->protocol) ? '' : $service->protocol,
+                'service' => empty($service->service) ? '' : $service->service,
+                'product' => $product,
+            );
+        }
+        $this->view->serviceTable
+             ->setData($services)
+             ->setRespectOrder(false)
+             ->setRegistryName('assetServiceTable');
+
+        $addServiceUrl = $this->getHelper('url')
+                              ->simple('add-service', null, null, array('id' => $id, 'format' => 'html'));
+        if ($this->_acl->hasPrivilegeForObject('update', $asset)) {
+            $this->view->addServiceButton = new Fisma_Yui_Form_Button(
+                'addService',
+                array(
+                    'label' => 'Add Service',
+                    'onClickFunction' => 'Fisma.Asset.addService',
+                    'onClickArgument' => array('url' => $addServiceUrl),
+                    'imageSrc' => '/images/create.png'
+                )
+            );
+        } else {
+            $this->view->addServiceButton = '';
+        }
+
+        $vulns = Doctrine_Query::create()
+            ->select(
+                'v.id AS id, v.summary AS summary, v.createdTs AS createdTs, v.threatLevel AS threatLevel, ' .
+                'IFNULL(v.nextDueDate, "") AS nextDueDate, u.displayName AS assignee, cs.name AS workflowStep, ' .
+                'v.id, u.id, cs.id'
+            )
+            ->from('Vulnerability v')
+            ->leftJoin('v.PointOfContact u')
+            ->leftJoin('v.CurrentStep cs')
+            ->where('v.assetId = ?', $id)
+            ->andWhere('v.isResolved = ?', false)
+            ->orderBy('v.threatLevel DESC')
+            ->setHydrationMode(Doctrine::HYDRATE_ARRAY)
+            ->execute();
+        foreach ($vulns as &$vuln) {
+            if (empty($vuln['assignee'])) {
+                $vuln['assignee'] = '';
+            }
+            unset($vuln['PointOfContact'], $vuln['CurrentStep']);
+        }
+
+        $this->view->vulnerabilitiesTable = new Fisma_Yui_DataTable_Local();
+        $vulnTable = Doctrine::getTable('Vulnerability');
+        $this->view->vulnerabilitiesTable
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                'ID',
+                true,
+                'Fisma.TableFormat.recordLink',
+                array(
+                    'prefix' => '/vm/vulnerability/view/id/'
+                ),
+                'id'
+            ))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                $vulnTable->getLogicalName('summary'), true, null, null, 'summary'))
+             ->addColumn(new Fisma_Yui_DataTable_Column('Created', true, null, null, 'createdTs'))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                $vulnTable->getLogicalName('threatLevel'), true, null, null, 'threatLevel'))
+             ->addColumn(new Fisma_Yui_DataTable_Column('Assignee', true, null, null, 'assignee'))
+             ->addColumn(new Fisma_Yui_DataTable_Column('Workflow Step', true, null, null, 'workflowStep'))
+             ->addColumn(new Fisma_Yui_DataTable_Column(
+                $vulnTable->getLogicalName('nextDueDate'), true, null, null, 'nextDueDate'))
+             ->setData($vulns)
+             ->setRespectOrder(false)
+             ->setRegistryName('assetVulnerabilitiesTable');
+    }
+
+    /**
+     * updateAction
+     *
+     * @return void
+     */
+    public function updateAction()
+    {
+        $id = $this->_request->getParam('id');
+        $asset = Doctrine::getTable('Asset')->find($id);
+        if (!$asset) {
+            throw new Fisma_Zend_Exception_User("Invalid Asset ID");
+        }
+        $newValues = $this->getRequest()->getPost();
+        $this->_acl->requirePrivilegeForObject('update', $asset);
+        if (isset($newValues['orgSystemId'])) {
+            $this->_acl->requirePrivilegeForObject('unaffiliated', $asset);
+        }
+
+        $fromSearchParams = $this->_getFromSearchParams($this->_request);
+        $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+
+        try {
+            if (!empty($newValues)) {
+                $asset->merge($newValues);
+                $asset->save();
+            }
+        } catch (Doctrine_Validator_Exception $e) {
+            $this->view->priorityMessenger($e->getMessage(), 'warning');
+        }
+
+        $this->_redirect("/asset/view/id/$id$fromSearchUrl");
     }
 
     /**
@@ -76,7 +266,6 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
         $form->getElement('productId')->setValue($subject->productId);
         $form->getElement('product')->setValue($subject->Product->name);
-        $form->getElement('serviceTag')->setValue($subject->serviceTag);
 
         return parent::setForm($subject, $form);
     }
@@ -93,7 +282,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
 
         if (!isset($formName)) {
             $options = array('' => '');
-            $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
+            $tags = Doctrine::getTable('Tag')->findOneByTagId('asset-environment')->labels;
             foreach ($tags as $tag) {
                 $options[$tag] = $tag;
             }
@@ -147,7 +336,7 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         }
         $buttons = parent::getToolbarButtons($record, $fromSearchParams);
 
-        if ($this->_acl->hasPrivilegeForClass('create', 'Asset')) {
+        if ($this->_acl->hasPrivilegeForClass('unaffiliated', 'Asset')) {
             $button = new Fisma_Yui_Form_Button_Link(
                 'importAssetsButton',
                 array(
@@ -156,8 +345,25 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
                     'imageSrc' => '/images/up.png'
                 )
             );
-
             array_unshift($buttons, $button);
+        } else {
+            unset($buttons['create']);
+        }
+
+        if ($record && isset($buttons['delete'])) {
+            $vulnerabilities = Doctrine::getTable('Vulnerability')->findByAssetId($record->id);
+            if ($vulnerabilities->count() > 0) {
+                $onClickArgument = $buttons['delete']->getAttrib('onClickArgument');
+                $onClickArgument['text'] = "WARNING: All {$vulnerabilities->count()} vulnerabilities associated with " .
+                                           "this asset will also be deleted. Do you want to continue?";
+                $buttons['delete']->setAttrib('onClickArgument', $onClickArgument);
+            }
+        }
+
+        if (isset($buttons['deleteSelected'])) {
+            $args = $buttons['deleteSelected']->getAttrib('onClickArgument');
+            $args['text'] = "WARNING: All vulnerabilities associated with these assets will also be deleted. ";
+            $buttons['deleteSelected']->setAttrib('onClickArgument', $args);
         }
 
         return $buttons;
@@ -171,6 +377,15 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
     public function importAction()
     {
         $this->_acl->requirePrivilegeForClass('create', 'Asset');
+        $this->view->toolbarButtons = array(new Fisma_Yui_Form_Button(
+            'upload',
+            array(
+                'label' => 'Submit',
+                'imageSrc' => '/images/ok.png',
+                'onClickFunction' => 'Fisma.Util.submitFirstForm',
+
+            )
+        ));
 
         $uploadForm = $this->getForm('asset_upload');
 
@@ -240,160 +455,97 @@ class AssetController extends Fisma_Zend_Controller_Action_Object
         }
     }
 
-    protected function _isDeletable()
-    {
-        return false;
-    }
-
     /**
-     * Manage service tags
+     * addServiceAction
+     *
+     * @return void
      *
      * @GETAllowed
-     * @return void
      */
-    public function serviceTagsAction()
+    public function addServiceAction()
     {
-        $this->_acl->requirePrivilegeForClass('manage_service_tags', 'Asset');
-        $data = array();
-        $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
+        $id = $this->getRequest()->getParam("id");
+        $asset = Doctrine::getTable('Asset')->find($id);
+        $this->_acl->requirePrivilegeForObject('update', $asset);
+        $form = $this->getForm('asset_service');
+        $form->setAction($this->getHelper('url')->simple('add-service', null, null, array('id' => $id)));
 
-        foreach ($tags as $tag) {
-            $data[] = array(
-                'tag' => $tag,
-                'assets' => json_encode(array(
-                    'displayText' =>
-                        Doctrine_Query::create()->from('Asset')->where('serviceTag = ?', $tag)->count() . '', //toString
-                    'url' => '/asset/list?q=/serviceTag/textExactMatch/' . $this->view->escape($tag, 'url')
-                )),
-                'edit' => 'javascript:Fisma.Asset.renameTag("' . $this->view->escape($tag, 'javascript') . '")',
-                'delete' => '/asset/remove-service-tag/tag/' . $tag
-            );
-        }
-        $table = new Fisma_Yui_DataTable_Local();
-        $table->addColumn(new Fisma_Yui_DataTable_Column('Tag', false, 'YAHOO.widget.DataTable.formatText'))
-              ->addColumn(new Fisma_Yui_DataTable_Column('Assets', false, 'Fisma.TableFormat.formatLink'))
-              ->addColumn(new Fisma_Yui_DataTable_Column('Edit', false, 'Fisma.TableFormat.editControl'))
-              ->addColumn(new Fisma_Yui_DataTable_Column('Delete', false, 'Fisma.TableFormat.deleteControl'))
-              ->setData($data)
-              ->setRegistryName('assetServiceTagTable');
-        $this->view->toolbarButtons = $this->getToolbarButtons();
-        $this->view->csrfToken = $this->_helper->csrf->getToken();
-        $this->view->tags = $table;
-    }
+        $this->view->form = $form;
 
-    /**
-     * Add service tag via AJAX / JSON
-     *
-     * @return void
-     */
-    public function addServiceTagAction()
-    {
-        $this->view->result = new Fisma_AsyncResponse;
-        $this->view->csrfToken = $this->_helper->csrf->getToken();
-
-        if (!$this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
-            $this->view->result->fail('Invalid permission');
-        } else {
-            $tag = $this->getRequest()->getParam('tag');
-            if (!$tag) {
-                $this->view->result->fail('Empty tag');
-            } else {
-                $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
-                if (in_array($tag, $tags)) {
-                    $this->view->result->succeed('Tag already defined.');
-                } else {
-                    $tags[] = $tag;
-                    Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
-                    $this->view->result->succeed();
+        if ($this->getRequest()->isPost()) {
+            $this->view->post = $this->getRequest()->getPost();
+            if ($form->isValid($this->getRequest()->getPost())) {
+                $assetService = new AssetService();
+                $assetService->assetId = $id;
+                $assetService->merge($form->getValues());
+                $assetService->save();
+                $serviceArray = $assetService->toArray();
+                if (!empty($assetService->productId)) {
+                    $serviceArray['product'] = $assetService->Product->name;
                 }
+                $this->view->newService = $serviceArray;
+            } else {
+                $this->view->errors = Fisma_Zend_Form_Manager::getErrors($form);
             }
         }
     }
 
     /**
-     * Rename service tag via AJAX / JSON
+     * editServiceAction
      *
      * @return void
+     *
+     * @GETAllowed
      */
-    public function renameServiceTagAction()
+    public function editServiceAction()
     {
-        $this->view->result = new Fisma_AsyncResponse;
-        $this->view->csrfToken = $this->_helper->csrf->getToken();
+        $id = $this->getRequest()->getParam("id");
+        $form = $this->getForm('asset_service');
+        $form->setAction($this->getHelper('url')->simple('edit-service', null, null, array('id' => $id)));
+        $service = Doctrine::getTable('AssetService')->find($id);
+        $this->_acl->requirePrivilegeForObject('update', $service->Asset);
+        $serviceArray = $service->toArray();
+        if (!empty($service->productId)) {
+            $serviceArray['product'] = $service->Product->name;
+        }
+        $form->setDefaults($serviceArray);
 
-        if (!$this->_acl->hasPrivilegeForClass('manage_service_tags', 'Asset')) {
-            $this->view->result->fail('Invalid permission');
-        } else {
-            $oldTag = $this->getRequest()->getParam('oldTag');
-            $newTag = $this->getRequest()->getParam('newTag');
-            if (!$oldTag || !$newTag) {
-                $this->view->result->fail('Empty tag(s)');
-            } else {
-                $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
-                $key = array_search($oldTag, $tags);
-                if ($key >= 0) {
-                    $tags[$key] = $newTag;
+        $this->view->form = $form;
 
-                    try {
-                        Doctrine_Manager::connection()->beginTransaction();
-
-                        $assets = Doctrine::getTable('Asset')->findByServiceTag($oldTag);
-                        foreach ($assets as $asset) {
-                            $asset->serviceTag = $newTag;
-                        }
-                        $assets->save();
-
-                        Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
-
-                        Doctrine_Manager::connection()->commit();
-                        $this->view->result->succeed();
-                    } catch (Doctrine_Exception $e) {
-                        Doctrine_Manager::connection()->rollback();
-                        $this->view->result->fail($e->getMessage(), $e);
-                    }
-                } else {
-                    $this->view->result->fail('Tag not found.');
+        if ($this->getRequest()->isPost()) {
+            $this->view->post = $this->getRequest()->getPost();
+            if ($form->isValid($this->getRequest()->getPost())) {
+                $service->merge($form->getValues());
+                $service->save();
+                $serviceArray = $service->toArray();
+                if (!empty($service->productId)) {
+                    $serviceArray['product'] = $service->Product->name;
                 }
+                $this->view->service = $serviceArray;
+            } else {
+                $this->view->errors = Fisma_Zend_Form_Manager::getErrors($form);
             }
         }
     }
 
     /**
-     * Delete service tag via HTML POST
+     * removeServiceAction
      *
      * @return void
      */
-    public function removeServiceTagAction()
+    public function removeServiceAction()
     {
-        $this->_acl->requirePrivilegeForClass('manage_service_tags', 'Asset');
-
-        $tag = $this->getRequest()->getParam('tag');
-        if (!$tag) {
-            throw new Fisma_Zend_Exception_User('Empty tag');
-        } else {
-            $tags = explode(',', Fisma::configuration()->getConfig('asset_service_tags'));
-            $key = array_search($tag, $tags);
-            if ($key >= 0) {
-                unset($tags[$key]);
-
-                try {
-                    Doctrine_Manager::connection()->beginTransaction();
-
-                    $assets = Doctrine::getTable('Asset')->findByServiceTag($tag);
-                    foreach ($assets as $asset) {
-                        $asset->serviceTag = '';
-                    }
-                    $assets->save();
-
-                    Fisma::configuration()->setConfig('asset_service_tags', implode(',', $tags));
-
-                    Doctrine_Manager::connection()->commit();
-                    $this->_redirect('/asset/service-tags');
-                } catch (Doctrine_Exception $e) {
-                    throw $e;
-                }
+        $id = $this->getRequest()->getParam("id");
+        $service = Doctrine::getTable('AssetService')->find($id);
+        $this->_acl->requirePrivilegeForObject('update', $service->Asset);
+        try {
+            if (!empty($service)) {
+                $service->delete();
             } else {
-                throw new Fisma_Zend_Exception_User('Tag not found.');
+                $this->view->errors = "Service does not exist.";
             }
+        } catch(Exception $e) {
+            $this->view->errors = 'Error deleting service.';
         }
     }
 }

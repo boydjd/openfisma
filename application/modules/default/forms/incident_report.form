@@ -1,0 +1,85 @@
+[incident_report]
+
+elements.instructions.type = "Element_ConstantText"
+elements.instructions.options.value = "If you would like to report a computer security incident, please complete the following form. Required fields are denoted with an asterisk. Please specify as much information as you can. If there are questions that you do not know the answer to, you are encouraged to leave those questions blank and to submit the incident report in a timely manner. You will be given a chance to review your report before submission. To cancel click the Back button.<br /><br />"
+displayGroups.incident.elements.instructions = "instructions"
+
+elements.reporterFirstName.type = "text"
+elements.reporterFirstName.options.label = "First Name"
+displayGroups.incident.elements.reporterFirstName = "reporterFirstName"
+
+elements.reporterLastName.type = "text"
+elements.reporterLastName.options.label = "Last Name"
+displayGroups.incident.elements.reporterLastName = "reporterLastName"
+
+elements.reporterPhone.type = "Element_Phone"
+elements.reporterPhone.options.label = "Phone"
+elements.reporterPhone.options.tooltip = "Phone numbers should be U.S., 10 digit phone numbers" 
+displayGroups.incident.elements.reporterPhone = "reporterPhone"
+
+elements.reporterEmail.type = "text"
+elements.reporterEmail.options.label = "Email"
+displayGroups.incident.elements.reporterEmail = "reporterEmail"
+
+elements.incidentDate.type = "text"
+elements.incidentDate.options.label = "What date did the incident occur?"
+elements.incidentDate.options.class = "date"
+displayGroups.incident.elements.incidentDate = "incidentDate"
+
+elements.incidentTime.type = "Element_Time"
+elements.incidentTime.options.label = "What time did the incident occur?"
+elements.incidentTime.options.filters.stringtrim.filter = "StringTrim"
+elements.incidentTime.options.filters.null.filter = "Null"
+displayGroups.incident.elements.incidentTime = "incidentTime"
+
+elements.incidentTimezone.type = "Element_TimezoneDetector"
+elements.incidentTimezone.options.filters.stringtrim.filter = "StringTrim"
+elements.incidentTimezone.options.filters.null.filter = "Null"
+displayGroups.incident.elements.incidentTimezone = "incidentTimezone"
+
+elements.additionalInfo.type = "textarea"
+elements.additionalInfo.options.label = "Describe the incident"
+elements.additionalInfo.options.cols = "70%"
+elements.additionalInfo.options.rows = "7"
+elements.additionalInfo.options.validators.mce.validator = "MceNotEmpty"
+elements.additionalInfo.options.required = true
+displayGroups.incident.elements.additionalInfo = "additionalInfo"
+
+elements.assetInvolved.type="Element_YesNo"
+elements.assetInvolved.options.label="Does the incident involve an IT asset?"
+elements.assetInvolved.options.value = "NO"
+elements.assetInvolved.options.filters.null = "Null"
+displayGroups.incident.elements.assetInvolved="assetInvolved"
+
+elements.assetInfo.type = "textarea"
+elements.assetInfo.options.label = "Describe the Asset"
+elements.assetInfo.options.cols = "70%"
+elements.assetInfo.options.rows = "7"
+elements.assetInfo.options.tooltip = "If this incident involves a computer workstation, server, or other computer asset, please describe that asset as fully as possible here."
+displayGroups.incident.elements.assetInfo = "assetInfo"
+
+elements.piiInvolved.type="Element_YesNo"
+elements.piiInvolved.options.label="Was PII involved?"
+elements.piiInvolved.options.value = "NO"
+elements.piiInvolved.options.filters.null = "Null"
+elements.piiInvolved.options.tooltip = "Personally Identifiable Information, or PII, is data that might be used to unique identify an individual. Such data may include (but is not limited to) social security numbers, names, addresses, and phone numbers. If PII may have been compromised, then you will need to answer some additional questions."
+displayGroups.incident.elements.piiInvolved="piiInvolved"
+
+elements.piiMobileMedia.type="Element_YesNo"
+elements.piiMobileMedia.options.label="Was the PII stored on Digital Media?"
+elements.piiMobileMedia.options.filters.null = "Null"
+elements.piiMobileMedia.options.tooltip = "<i>Mobile media</i> refers to any computer storage device which can be removed from a computer and carried separately, such as a CD, DVD, USB drive, etc."
+displayGroups.incident.elements.piiMobileMedia="piiMobileMedia"
+
+elements.piiEncrypted.type="Element_YesNo"
+elements.piiEncrypted.options.label="Was the PII encrypted?"
+elements.piiEncrypted.options.filters.null = "Null"
+displayGroups.incident.elements.piiEncrypted="piiEncrypted"
+
+elements.piiIndividualsCount.type="text"
+elements.piiIndividualsCount.options.label="How many individuals are affected by this loss of PII?"
+elements.piiIndividualsCount.options.tooltip = "For example, if a file containing 100 unique social security numbers was lost, then that would affect 100 individuals."
+elements.piiIndividualsCount.options.validators.alnum.validator = "Digits"
+elements.piiIndividualsCount.options.filters.stringtrim.filter = "StringTrim"
+elements.piiIndividualsCount.options.filters.null.filter = "Null"
+displayGroups.incident.elements.piiIndividualsCount="piiIndividualsCount"

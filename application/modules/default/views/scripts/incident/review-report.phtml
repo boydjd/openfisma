@@ -1,85 +1,42 @@
 <?php
-echo $this->escape($this->searchBox(array()), 'none');
+echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
 Fisma_Format_Section::startSection("Review Incident Report");
 ?>
-
-<h1>Review Report</h1>
-
-<p>
-   Please review all of the report details which you have provided. If anything needs to be changed, you can use the
-   "Go Back" button to revisit the form. When you are satisfied, click the "Submit Report" button.
-</p>
-
-<p>
-    <i>Once you click "Submit Report", the report will be submitted and it cannot be modified after that.</i>
-</p>
-
-<div style="margin: 10px;">
-    <table class="keyValues">
-        <?php
-        foreach ($this->incidentReview as $key => $value):
-        ?>
+<div style="width: 970px;">
+    <div class="form">
+        <div class="subform">
+            <table class="fisma_crud">
+                <tbody>
+                    <tr>
+                        <td colspan="2" style="font-size: inherit; text-align: left; font-weight: normal;">
+                            Please review all of the report details which you have provided. If anything needs to be
+                            changed, you can use the "Back" button to revisit the form. When you are satisfied, click
+                            the "Submit Report" button.
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="2" style="font-size: inherit; text-align: left; font-weight: normal;">
+                            <i>Once you click "Submit Report", the report will be submitted and it cannot be modified
+                            after that.</i>
+                            <br /><br />
+                        </td>
+                    </tr>
+        <?php foreach ($this->incidentReview as $key => $value): ?>
             <tr>
-                <td><?php echo $this->escape($key); ?>:</td>
-                <?php if(!empty($this->richColumns[$key]) && $this->richColumns[$key] == 'html'): ?>
-                <td><?php echo $this->escape($value, 'none'); ?><td>
-                <?php else: ?>
-                <td><?php echo $this->escape($value); ?></td>
-                <?php endif; ?>
+            <?php if(!empty($this->richColumns[$key]) && $this->richColumns[$key] == 'html'): ?>
+                <td style="padding-top: 10px;" width="30%"><?php echo $this->escape($key); ?>:</td>
+                <td style="padding-top: 0px;"><?php echo $this->escape($value, 'none'); ?><td>
+            <?php else: ?>
+                <td width="30%"><?php echo $this->escape($key); ?>:</td>
+                <td style="padding-top: 8px;"><?php echo $this->escape($value); ?></td>
+            <?php endif; ?>
             </tr>
-        <?php
-        endforeach;
-        ?>
-    </table>
+        <?php endforeach; ?>
+                </tbody>
+            </table>
+        </div>
+    </div>
 </div>
 
-    <form method="post"
-          action="<?php echo $this->escape($this->actionUrlBase, 'none'); ?>/save-report"
-          style="display: inline">
-        <?php
-        $saveReportButton = new Fisma_Yui_Form_Button_Submit(
-                'irReportSave',
-                array(
-                    'label' => 'Submit Report',
-                    'imageSrc' => '/images/add.png',
-                    'class' => 'left'
-                )
-            );
-        echo $this->escape($saveReportButton, 'none');
-        ?>
-    </form>
-
-    <form method="post" action="/incident/cancel-report" style="display: inline;">
-        <?php
-        $irReportCancelButton = new Fisma_Yui_Form_Button_Submit(
-            'irReportCancel',
-            array(
-                'label' => 'Cancel Report',
-                'imageSrc' => '/images/del.png',
-            )
-        );
-        echo $this->escape($irReportCancelButton, 'none');
-
-        $formAction = $this->actionUrlBase . '/report/step/' . $this->escape($this->step);
-        ?>
-    </form>
-
-    <form method="post"
-          action="<?php echo $this->escape($formAction, 'none'); ?>"
-          style="display: inline;">
-        <?php
-        $backwardButton = new Fisma_Yui_Form_Button_Submit(
-                'irReportBackwards',
-                array(
-                    'label' => 'Go Back',
-                    'imageSrc' => '/images/left_arrow.png',
-                    'class' => 'left'
-                )
-            );
-        echo $this->escape($backwardButton, 'none');
-        ?>
-    </form>
-
-<?php
-Fisma_Format_Section::stopSection();
-?>
+<?php Fisma_Format_Section::stopSection(); ?>
+<form><?php /* dummy form for CSRF token */ ?></form>

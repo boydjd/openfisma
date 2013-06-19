@@ -1,17 +1,24 @@
 IrSubCategory:
     listeners: [IndexListener]
-    
+
     columns:
-        name: 
+        name:
             type: string(255)
+            extra:
+                logicalName: Subcategory
         description:
             type: string
-            extra: 
+            extra:
                 purify: html
-        categoryId: 
+                logicalName: Description
+        categoryId:
             type: integer
-        workflowId: 
+            extra:
+                logicalName: Category
+        workflowId:
             type: integer
+            extra:
+                logicalName: Workflow
 
     relations:
         Category:

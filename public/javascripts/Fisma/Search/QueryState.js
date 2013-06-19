@@ -125,7 +125,7 @@
             if (!Lang.isString(keywords)) {
                 throw "Can not set non-string as keywords.";
             }
-            if (this.getSearchType() !== QueryState.TYPE_SIMPLE) {
+            if (this.getSearchType() !== QueryState.TYPE_SIMPLE && this.getSearchType() !== QueryState.TYPE_FACETED) {
                 throw "Attempting to save keywords for non-simple search.";
             }
             var data = this.getState() || {};
@@ -157,12 +157,23 @@
             if (!Lang.isObject(query)) {
                 throw "Can not set non-object as advanced search query.";
             }
-            if (this.getSearchType() !== QueryState.TYPE_ADVANCED) {
+            if (this.getSearchType() !== QueryState.TYPE_ADVANCED && this.getSearchType() !== QueryState.TYPE_FACETED) {
                 throw "Attempting to save advanced search query for non-advanced search.";
             }
             var data = this.getState() || {};
             data.advancedQuery = query;
             this.setState(data);
+        },
+
+        setFilters: function(filterName) {
+            var data = this.getState() || {};
+            data.filter = filterName;
+            this.setState(data);
+        },
+
+        getFilters: function() {
+            var data = this.getState() || {'filter': ''};
+            return data.filter;
         }
     };
     Fisma.Search.QueryState = QueryState;

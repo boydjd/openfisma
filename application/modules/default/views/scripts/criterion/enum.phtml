@@ -1,0 +1,15 @@
+<?php foreach ($this->value as $value => $checked): ?>
+<span class='value'>
+    <input
+        type='checkbox'
+        name='<?php echo $this->escape($this->name); ?>_<?php echo $this->escape($value); ?>'
+        id='<?php echo $this->escape($this->name); ?>_<?php echo $this->escape($value); ?>'
+        value='<?php echo $this->escape($value); ?>'
+        onchange='Fisma.Search.Criterion.facetCountCheckbox(this); Fisma.Search.Criterion.facetCount();'
+        <?php if ($checked): ?>checked<?php endif; ?>
+    />
+    <label
+        for='<?php echo $this->escape($this->name); ?>_<?php echo $this->escape($value); ?>'
+    ><?php echo $this->escape($value); ?></label>
+</span>
+<?php endforeach; ?>

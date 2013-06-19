@@ -61,8 +61,10 @@ class Incident extends BaseIncident
         $this->hasMutator('organizationId', 'setOrganizationId');
         $this->hasMutator('pocId', 'setPocId');
         $this->hasMutator('reporterEmail', 'setReporterEmail');
-        $this->hasMutator('ReportingUser', 'setReportingUser');
+        $this->hasMutator('reportingUserId', 'setReportingUserId');
         $this->hasMutator('sourceIp', 'setSourceIp');
+        $this->hasMutator('responseStrategies', 'setResponseStrategies');
+        $this->hasMutator('incidentDateTime', 'setIncidentDateTime');
     }
 
     /**
@@ -92,6 +94,7 @@ class Incident extends BaseIncident
         $this->status = 'closed';
         $this->closedTs = Zend_Date::now()->get(Zend_Date::ISO_8601);
         $this->resolution = 'rejected';
+        Notification::notify('INCIDENT_REJECTED', $this, CurrentUser::getInstance());
 
         // Update incident log
         $this->getAuditLog()->write('Rejected Incident Report');
@@ -130,21 +133,19 @@ class Incident extends BaseIncident
         if ('new' == $this->status) {
             $this->status = 'open';
         }
-        $this->CurrentWorkflowStep = null;
-        $this->save();
-        Doctrine_Query::create()->delete()
-                                ->from('IrIncidentWorkflow w')
-                                ->where('w.incidentId = ?', $this->id)
-                                ->andWhere('w.status <> ?', 'completed')
-                                ->execute();
-
+        $this->currentWorkflowName = null;
+        $completedCount = 0;
+        foreach ($this->Workflow as $key => $step) {
+            if ($step->status === 'completed') {
+                $completedCount++;
+            } else {
+                $this->Workflow->remove($key);
+            }
+        }
         $category = null;
         if (!empty($categoryId)) {
             $category = Doctrine::getTable('IrSubCategory')->find($categoryId);
         }
-
-        // Handle any pre-existing workflows (e.g. when changing from one category to another)
-        $baseCardinality = 0;
 
         $changedWorkflowName = "Change Workflows";
 
@@ -155,18 +156,14 @@ class Incident extends BaseIncident
             $changedWorkflowMessage = "<p>The category has been removed and the workflow has been closed.</p>";
         }
 
-        $irIncidentWorkflow = Doctrine::getTable('IrIncidentWorkflow')->findByIncidentId($this->id);
-        $irIncidentWorkflowCount = $irIncidentWorkflow->count();
-        if ($irIncidentWorkflowCount > 0) {
+        if ($completedCount > 0) {
+            $completedCount++;
             $iw = new IrIncidentWorkflow();
-            $iw->Incident = $this;
             $iw->name = $changedWorkflowName;
             $iw->description = $changedWorkflowMessage;
-            $iw->cardinality = $irIncidentWorkflowCount + 1;
+            $iw->cardinality = $completedCount;
             $iw->completeStep();
-            $iw->save();
-
-            $baseCardinality = $iw->cardinality;
+            $this->Workflow[] = $iw;
         }
 
         if (!empty($category)) {
@@ -186,23 +183,17 @@ class Incident extends BaseIncident
 
             foreach ($workflowSteps as $step) {
                 $iw = new IrIncidentWorkflow();
-
-                $iw->Incident = $this;
                 $iw->Role = $step->Role;
                 $iw->name = $step->name;
                 $iw->description = $step->description;
-                $iw->cardinality = $step->cardinality + $baseCardinality;
-
-                $iw->save();
+                $iw->cardinality = $step->cardinality + $completedCount;
+                $iw->Incident = $this;
+                $this->Workflow[] = $iw;
 
                 if ($firstLoop) {
                     $firstLoop = false;
-
                     $iw->status = 'current';
-                    $iw->save();
-
-                    $this->currentWorkflowStepId = $iw->id;
-                    $this->save();
+                    $this->currentWorkflowName = $iw->name;
                 }
             }
 
@@ -216,14 +207,32 @@ class Incident extends BaseIncident
      * Set the organization ID.
      *
      * @param int $organizationId
+     * @param boolean $load
      */
-    public function setOrganizationId($organizationId)
+    public function setOrganizationId($organizationId, $load = true)
     {
         if ($organizationId === '0' || empty($organizationId)) {
-            $this->_set('organizationId', null);
-        } else {
-            $this->_set('organizationId', $organizationId);
+            $organizationId = null;
         }
+
+        $this->_set('organizationId', $organizationId);
+
+        // now deal with the parent organization
+        $parentOrganizationId = null;
+        if (!empty($organizationId)) {
+            $organization = Doctrine::getTable('Organization')->find($organizationId);
+            $parent = $organization->getNode()->getParent();
+            while (!empty($parent) && !empty($parent->systemId)) {
+                $parent = $parent->getNode()->getParent();
+            }
+            if (empty($parent)) {
+                $parentOrganizationId = null;
+            } else {
+                $parentOrganizationId = $parent->id;
+            }
+        }
+
+        $this->_set('denormalizedParentOrganizationId', $parentOrganizationId);
     }
 
     /**
@@ -239,7 +248,13 @@ class Incident extends BaseIncident
         }
 
         // Update the completed step first
-        $completedStep = Doctrine::getTable('IrIncidentWorkflow')->find($this->currentWorkflowStepId);
+        $completedStep = null;
+        foreach ($this->Workflow as $step) {
+            if ($step->status == 'current') {
+                $completedStep = $step;
+                break;
+            }
+        }
         $completedStep->completeStep($comment);
         $completedStep->save();
 
@@ -263,7 +278,7 @@ class Incident extends BaseIncident
 
         if (0 == count($nextStepResult)) {
             // There is no next step, so close this incident
-            $this->CurrentWorkflowStep = null;
+            $this->currentWorkflowName = null;
             $this->status = 'closed';
             $this->closedTs = Zend_Date::now()->get(Zend_Date::ISO_8601);
             $this->resolution = 'resolved';
@@ -278,7 +293,7 @@ class Incident extends BaseIncident
             $nextStep->save();
 
             // Update this record's workflow pointer
-            $this->CurrentWorkflowStep = $nextStep;
+            $this->currentWorkflowName = $nextStep->name;
             $this->save();
         } else {
             $message = "The workflow for this incident ($this->id) appears to be corrupted. There are two steps"
@@ -334,23 +349,28 @@ class Incident extends BaseIncident
      *
      * @param User $user
      */
-    public function setReportingUser($user)
+    public function setReportingUserId($userId)
     {
-        // Since we're overridding the setter, we have to manipulate the ids directly
-        $this->reportingUserId = $user->id;
+        $this->_set('reportingUserId', $userId);
 
-        $this->reporterTitle = null;
-        $this->reporterFirstName = null;
-        $this->reporterLastName = null;
-        $this->reporterOrganization = null;
-        $this->reporterAddress1 = null;
-        $this->reporterAddress2 = null;
-        $this->reporterCity = null;
-        $this->reporterState = null;
-        $this->reporterZip = null;
-        $this->reporterPhone = null;
-        $this->reporterFax = null;
-        $this->reporterEmail = null;
+        if (empty($userId)) {
+            return;
+        }
+
+        // Make sure the POC is an actor or observer
+        $found = false;
+        foreach ($this->IrIncidentUsers as $iiu) {
+            if (((int)$iiu->userId) === ((int)$userId)) {
+                $found = true;
+                break;
+            }
+        }
+        if (!$found) {
+            $iiu = new IrIncidentUser;
+            $iiu->accessType = 'OBSERVER';
+            $iiu->userId = $userId;
+            $this->IrIncidentUsers[] = $iiu;
+        }
     }
 
     /**
@@ -361,39 +381,71 @@ class Incident extends BaseIncident
     public function setPocId($value)
     {
         // Clear out null values
-        $sanitized = (int)$value;
+        $pocId = (int)$value;
 
-        if (empty($sanitized)) {
+        if (empty($pocId)) {
             $this->_set('pocId', null);
+            return;
         } else {
-            $this->_set('pocId', $sanitized);
+            $this->_set('pocId', $pocId);
 
             // Make sure the POC is an actor
-            $poc = Doctrine::getTable('User')->find($value);
-
-            if ($poc instanceof User) {
-                $pocIsActorQuery = Doctrine_Query::create()->from('IrIncidentUser iu')
-                                                           ->leftJoin('iu.Incident i')
-                                                           ->leftJoin('iu.User u')
-                                                           ->where('i.id = ?', $this->id)
-                                                           ->andWhere('iu.accessType = ?', 'ACTOR')
-                                                           ->andWhere('u.id = ?', $poc->id);
-                if ($pocIsActorQuery->count() === 0) {
-                    $actor = new IrIncidentUser;
-
-                    $actor->accessType = 'ACTOR';
-                    $actor->userId = $poc->id;
-                    $actor->incidentId = $this->id;
-
-                    $actor->save();
+            $found = false;
+            foreach ($this->IrIncidentUsers as $iiu) {
+                if (((int)$iiu->userId) === $pocId) {
+                    // if observer, promote to actor
+                    $iiu->accessType = 'ACTOR';
+                    $found = true;
+                    break;
                 }
+            }
+            if (!$found) {
+                $actor = new IrIncidentUser;
+                $actor->accessType = 'ACTOR';
+                $actor->userId = $pocId;
+                $this->IrIncidentUsers[] = $actor;
             }
             Notification::notify(
                 'USER_POC',
                 $this,
                 CurrentUser::getInstance(),
-                array('userId' => $sanitized, 'url' => '/incident/view/id/')
+                array('userId' => $pocId, 'url' => '/incident/view/id/')
             );
         }
+    }
+
+    /**
+     * setResponseStrategies
+     *
+     * @param array $value
+     * @return void
+     */
+    public function setResponseStrategies($value)
+    {
+        // allow JSON strings as input
+        if (is_string($value)) {
+            try {
+                $value = Zend_Json::decode($value);
+            } catch (Zend_Json_Exception $e) {
+                throw new Fisma_Zend_Exception("Invalid value for response strategies.", $e);
+            }
+        }
+        $value = (is_array($value)) ? $value : array();
+        $this->denormalizedResponseStrategies = implode('; ', $value);
+        $this->_set('responseStrategies', $value);
+    }
+
+    /**
+     * setIncidentDateTime
+     *
+     * @param mixed $value
+     * @return void
+     */
+    public function setIncidentDateTime($value)
+    {
+        $value = str_replace(' at ', ' ', $value);
+        $date = new Zend_Date($value);
+        $this->incidentDate = $date->toString(Fisma_Date::FORMAT_DATE);
+        $this->incidentTime = $date->toString(Fisma_Date::FORMAT_TIME);
     }
 }

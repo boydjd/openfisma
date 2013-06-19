@@ -35,7 +35,7 @@ class View_Helper_ViewAs extends Zend_View_Helper_Abstract
     public function viewAs()
     {
         $url = $this->view->url();;
-        if ($viewAs = CurrentUser::getInstance()->viewAs()) {
+        if (CurrentUser::getInstance() && $viewAs = CurrentUser::getInstance()->viewAs()) {
             $href = $this->view->url(array('controller' => 'view-as', 'action' => 'stop'), null, true);
             $href .= '?url=' . urlencode($url);
             return '<div id="view-as">'

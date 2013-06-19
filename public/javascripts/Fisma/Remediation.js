@@ -349,15 +349,6 @@ Fisma.Remediation = {
                     newOption.selected = true;
                     jQuery('#sourceId > option[value="new"]').after(newOption);
 
-                    // Reflect the change in the YUI Select Menu Button
-                    var selectButton = YAHOO.widget.Button.getButton('sourceId-button');
-                    var newSource = selectButton.getMenu().addItem({
-                        'text': sourceName,
-                        'value': sourceId
-                    });
-                    selectButton.set('selectedMenuItem', newSource);
-                    selectButton.set('label', sourceName);
-
                     Fisma.Util.message('A finding source has been created.', 'info', true);
                 } else {
                     Fisma.Util.message(result.message, 'warning', true);

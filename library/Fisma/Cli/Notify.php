@@ -37,10 +37,10 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
      */
     function getNotificationQuery()
     {
-        return Doctrine_Query::create()
-            ->select('n.*, u.email, u.displayName, u.locked, e.description')
-            ->from('Notification n, n.User u, n.Event e')
-            ->orderBy('n.userId, n.eventId, n.createdTs');
+        $query = Doctrine_Query::create()
+            ->from('Notification n')
+            ->orderBy('n.email, n.eventId, n.createdTs');
+        return $query;
     }
 
     /**
@@ -54,28 +54,7 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
         $query = $this->getNotificationQuery();
         $notifications = $query->execute();
 
-        // Loop through the groups of notifications, concatenate all messages
-        // per user into a single array, then call the e-mail function for
-        // each user. If the e-mail is successful, then remove the notifications
-        // from the table and update the most_recent_notify_ts timestamp.
-        $currentNotifications = array();
-        for ($i = 0; $i < count($notifications); $i++) {
-            $currentNotifications[] = $notifications[$i];
-
-            // If this is the last entry OR if the next entry has a different
-            // user ID or event ID, then this current message is completed and should be
-            // e-mailed to the user.
-            if (($i == (count($notifications) - 1)) ||
-                ($notifications[$i]->userId != $notifications[$i+1]->userId) ||
-                ($notifications[$i]->eventId != $notifications[$i+1]->eventId)
-            ) {
-                $this->sendNotificationEmail($currentNotifications);
-                $this->purgeNotifications($currentNotifications);
-                $notifications[$i]->User->updateNotificationTs();
-                // Move onto the next user
-                $currentNotifications = array();
-            }
-        }
+        self::sendNotificationEmail($notifications, $this->getLog());
     }
 
     /**
@@ -88,36 +67,33 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
      * @param Fisma_MailHandler_Abstract $mailHandler
      * @return void
      */
-    function sendNotificationEmail($notifications, $mailHandler = null)
+    static function sendNotificationEmail($notifications, $log, $mailHandler = null)
     {
-        $user = $notifications[0]->User;
-        $event = $notifications[0]->Event;
+        foreach ($notifications as $notification) {
+            $options = array(
+                'notification'  => $notification,
+                'detail'        => Fisma::configuration()->getConfig('email_detail')
+            );
 
-        if (
-            ($user->locked || !empty($user->deleted_at))
-            && $event->name !== 'USER_LOCKED'
-            && $event->name !== 'USER_DISABLED'
-        ) {
-            return; // don't send anything
-        }
+            $mail = new Mail();
 
-        $options = array('notifyData' => $notifications);
+            $mail->recipient     = $notification->denormalizedEmail;
+            $mail->recipientName = $notification->denormalizedRecipient;
+            $mail->subject       = $notification->eventTitle;
+            $mail->format        = 'html';
 
-        $mail = new Mail();
+            $mail->mailTemplate('notification', $options);
 
-        $mail->recipient     = $user->email;
-        $mail->recipientName = $user->displayName;
-        $mail->subject       = "[" . Fisma::configuration()->getConfig('system_name') . "] " . $event->description;
-
-        $mail->mailTemplate('notification', $options);
-
-        try {
-            $handler = (isset($mailHandler)) ? $mailHandler : new Fisma_MailHandler_Immediate();
-            $handler->setMail($mail)->send();
-            $this->getLog()->info(Fisma::now() . " Email was sent to {$user->email}");
-        } catch (Zend_Mail_Exception $e) {
-            $this->getLog()->err("Failed Sending Email");
-            $this->getLog()->err($e);
+            try {
+                $handler = (isset($mailHandler)) ? $mailHandler : new Fisma_MailHandler_Immediate();
+                $handler->setMail($mail)->send();
+                $log->info(
+                    Fisma::now() . " Email {$notification->id} was sent to {$mail->recipientName} <{$mail->recipient}>"
+                );
+                self::purgeNotification($notification);
+            } catch (Zend_Mail_Exception $e) {
+                $log->err("Failed Sending Email", $e);
+            }
         }
     }
 
@@ -127,12 +103,8 @@ class Fisma_Cli_Notify extends Fisma_Cli_Abstract
      * @param array $notifications A group of rows from the notifications table
      * @return void
      */
-    function purgeNotifications($notifications)
+    static function purgeNotification($notification)
     {
-        $notificationIds = array();
-        foreach ($notifications as $notification) {
-            $notification->delete();
-        }
-
+        $notification->delete();
     }
 }

@@ -63,7 +63,7 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
 
     var urlParamString = document.location.search.substring(1); // strip the leading "?" character
     var urlParams = urlParamString.split('&');
-    var i;
+    var i, j;
 
     for (i in urlParams) {
         var urlParam = urlParams[i];
@@ -80,9 +80,9 @@ Fisma.Search.Panel = function (advancedSearchOptions) {
             }
         } else if ("show" === keyValuePair[0]) {
             this.showAll = "all" === criteriaString;
-        } else if ("f" === keyValuePair[0]) {
-            var obj = document.getElementById(criteriaString);
-            YAHOO.util.Event.onContentReady('advancedSearchCriteria', obj.onclick, obj, true);
+        } else if ("k" === keyValuePair[0]) {
+            new Fisma.Search.QueryState($("#modelName").val()).setSearchType('simple');
+            Fisma.Search.searchPreferences.type = 'simple';
         }
     }
 };
@@ -276,10 +276,13 @@ Fisma.Search.Panel.prototype = {
 
     /**
      * Get the URL query string for the current filter status
+     *
+     * @param boolean asString Return a string that can be append to the URL
      */
-    getQuery : function () {
+    getQuery : function (asString) {
         var query = [];
-        var index;
+        var index, j;
+        var queryString = "";
 
         for (index in this.criteria) {
             var criterion = this.criteria[index];
@@ -288,9 +291,16 @@ Fisma.Search.Panel.prototype = {
             }
 
             query.push(criterion.getQuery());
+
+            var obj = criterion.getQuery();
+            queryString += '/' + obj.field + '/' + obj.operator;
+            for (j in obj.operands) {
+                queryString += '/' + encodeURIComponent(obj.operands[j]);
+            }
         }
 
-        return query;
+        return ((asString) ? queryString : query);
+
     },
 
     /**

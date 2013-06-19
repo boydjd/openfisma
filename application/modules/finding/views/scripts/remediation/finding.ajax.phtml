@@ -1,18 +1,19 @@
 <?php
     $finding = $this->finding;
+    $this->table = $finding->getTable();
     $orgId = $finding->Organization->nickname;
-    $status  = $finding->getStatus();
     if (!$optionalFields = Fisma::configuration()->getConfig('optionalFields')) {
         $optionalFields = array();
     }
+    $step = $finding->CurrentStep;
 ?>
 
 <div class="column66 left">
-    <?php Fisma_Format_Section::startSection("Details"); ?>
+    <?php Fisma_Format_Section::startSection("Summary"); ?>
         <table class="keyValues">
         <?php if (in_array('legacyFindingKey', $optionalFields)): ?>
             <tr>
-                <td>Legacy Finding Key:</td>
+                <th scope='row'><?php $this->column('legacyFindingKey'); ?>:</th>
                 <td>
                     <span
                         <?php if ($this->isLegacyFindingKeyEditable): ?>
@@ -29,7 +30,7 @@
         <?php endif; ?>
         <?php if (in_array('findingAuditYear', $optionalFields)): ?>
             <tr>
-                <td>Audit Year:</td>
+                <th scope='row'><?php $this->column('auditYear'); ?>:</th>
                 <td>
                     <span
                         <?php if ($this->isAuditYearEditable): ?>
@@ -44,8 +45,14 @@
                 </td>
             </tr>
         <?php endif; ?>
+        <?php if ($finding->residualRisk): ?>
             <tr>
-                <td>Source:</td>
+                <th scope='row'><?php $this->column('residualRisk'); ?>:</th>
+                <td><?php echo $this->escape($finding->residualRisk); ?></td>
+            </tr>
+        <?php endif; ?>
+            <tr>
+                <th scope='row'><?php $this->column('sourceId'); ?>:</th>
                 <td>
                     <span id="source"
                           type="select"
@@ -80,10 +87,20 @@
                 <?php endif; ?>
                 </td>
             </tr>
+            <!-- <tr>
+                <th scope='row'><?php $this->column('isResolved'); ?>:</th>
+                <td><?php echo $this->escape(($finding->isResolved) ? 'YES' : 'NO'); ?></td>
+            </tr> -->
             <tr>
-                <td>Workflow Step:</td>
+                <th scope='row'><?php $this->column('currentStepId'); ?>:</th>
                 <td>
-                    <?php echo $this->escape($finding->getLongStatus()); ?>
+                    <span title='<?php echo $this->escape($step->Workflow->description); ?>'>
+                        <?php echo $this->escape($step->Workflow->name); ?>
+                    </span>
+                    -
+                    <span title='<?php echo $this->escape($step->description); ?>'>
+                        <?php echo $this->escape($step->name); ?>
+                    </span>
                     <?php
                     if (strpos($this->workflowOnTimeState, 'On Time') === 0) {
                         ?>(<font color='green'><?php echo $this->escape($this->workflowOnTimeState); ?></font>)<?php
@@ -95,13 +112,13 @@
                     ?>
                 </td>
             </tr>
-        <?php if ($status !== 'NEW' && $status !== 'DRAFT' && $status !== 'CLOSED'): ?>
+        <?php if (!$finding->isResolved && !empty($finding->currentEcd)): ?>
             <tr>
-                <td>ECD:</td>
+                <th scope='row'><?php $this->column('currentEcd'); ?>:</th>
                 <td><?php
-                        $originalEcd = new Zend_Date($finding->originalEcd, Fisma_Date::FORMAT_DATE);
-                        $originalEcd->setTimezone(CurrentUser::getAttribute('timezone'));
-                        echo $this->escape($originalEcd->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR));
+                    $currentEcd = new Zend_Date($finding->currentEcd, Fisma_Date::FORMAT_DATE);
+                    $currentEcd->setTimezone(CurrentUser::getAttribute('timezone'));
+                    echo $this->escape($currentEcd->toString(Fisma_Date::FORMAT_MONTH_DAY_YEAR));
                     ?> (<?php
                     if (strpos($this->onTimeState, 'On Time') === 0) {
                         ?><font color='green'><?php echo $this->escape($this->onTimeState); ?></font><?php
@@ -114,21 +131,29 @@
             </tr>
         <?php endif; ?>
             <tr>
-                <td>
-                    <div>
-                        Organization/System:
-                    </div>
-                </td>
+                <th scope='row'><?php $this->column('responsibleOrganizationId'); ?>:</th>
                 <td>
                     <span id="organization"
                           type="select"
                           name="finding[responsibleOrganizationId]"
+                          affected="parentOrganization"
                           href="/metainfo/list/o/system/format/html/"
                           value="<?php echo $this->escape($finding->responsibleOrganizationId); ?>">
-                    <a href="<?php echo $this->escape($this->organizationViewUrl); ?>">
-                         <?php echo $this->escape($finding->Organization->nickname);?>
-                         - <?php echo $this->escape($finding->Organization->name);?>
-                    </a>
+                        <?php if (!empty($this->finding->Organization)): ?>
+                            <?php
+                                echo $this->escape(
+                                    $this->organizationInfo(
+                                        $this->finding->Organization->nickname
+                                            . " - "
+                                            . $this->finding->Organization->name,
+                                        $this->finding->Organization->id
+                                    ),
+                                    'none'
+                                );
+                            ?>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
                     </span>
 
                     <?php
@@ -140,13 +165,35 @@
                     ?>
                 </td>
             </tr>
+            <tr>
+                <th scope='row'><?php $this->column('denormalizedParentOrganizationId'); ?>:</th>
+                <td>
+                    <span id="parentOrganization">
+                        <?php if (!empty($this->finding->denormalizedParentOrganizationId)): ?>
+                            <?php
+                                echo $this->escape(
+                                    $this->organizationInfo(
+                                        $this->finding->ParentOrganization->nickname
+                                            . " - "
+                                            . $this->finding->ParentOrganization->name,
+                                        $this->finding->ParentOrganization->id
+                                    ),
+                                    'none'
+                                );
+                            ?>
+                        <?php else: ?>
+                            &nbsp;
+                        <?php endif; ?>
+                    </span>
+                </td>
+            </tr>
         </table>
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->isDescriptionEditable):
-        Fisma_Format_Section::startSection('Description', 'finding_description');
+        Fisma_Format_Section::startSection($this->column('description', null, false), 'finding_description');
     else:
-        Fisma_Format_Section::startSection('Description');
+        Fisma_Format_Section::startSection($this->column('description', null, false));
     endif; ?>
         <div name="finding[description]" id="finding_description" type="textarea" rows="3" cols="160">
             <?php echo $this->escape($finding->description, 'none'); ?>
@@ -154,9 +201,9 @@
     <?php Fisma_Format_Section::stopSection(); ?>
 
     <?php if ($this->isRecommendationEditable):
-        Fisma_Format_Section::startSection('Recommendation', 'recommendation');
+        Fisma_Format_Section::startSection($this->column('recommendation', null, false), 'recommendation');
     else:
-        Fisma_Format_Section::startSection('Recommendation');
+        Fisma_Format_Section::startSection($this->column('recommendation', null, false));
     endif; ?>
         <div name="finding[recommendation]" id="recommendation" type="textarea" rows="3" cols="160">
             <?php echo $this->escape($finding->recommendation, 'none'); ?>
@@ -168,15 +215,15 @@
     <?php Fisma_Format_Section::startSection('Dates'); ?>
         <table class="keyValues">
             <tr>
-                <td>Discovered:</td>
+                <th scope='row'><?php $this->column('discoveredDate'); ?>:</th>
                 <td><?php echo $this->escape($this->discoveredDate)?></td>
             </tr>
             <tr>
-                <td>Created:</td>
+                <th scope='row'><?php $this->column('createdTs'); ?>:</th>
                 <td><?php echo $this->escape($this->createdTs)?></td>
             </tr>
             <?php if (!is_null($finding->closedTs)): ?><tr>
-                <td>Resolved:</td>
+                <th scope='row'><?php $this->column('closedTs'); ?>:</th>
                 <td><?php echo $this->escape($this->closedTs); ?></td>
             </tr><?php endif; ?>
         </table>
@@ -185,7 +232,7 @@
     <?php Fisma_Format_Section::startSection('People'); ?>
         <table class="keyValues">
             <tr>
-                <td>Creator:</td>
+                <th scope='row'><?php $this->column('createdByUserId'); ?>:</th>
                 <td>
                     <?php echo $this->escape(
                         $this->userInfo($finding->CreatedBy->displayName, $finding->CreatedBy->id),
@@ -194,7 +241,7 @@
                 </td>
             </tr>
             <tr>
-                <td><?php echo $this->escape($this->translate('Finding_Point_of_Contact')); ?>:</td>
+                <th scope='row'><?php $this->column('pocId'); ?>:</th>
                 <td class="autocomplete-width"><span
                     id="pointOfContact"
                     type="autocomplete"
@@ -224,18 +271,22 @@
             </tr>
         <?php if ($finding->responsibleOrganizationId): ?>
         <?php
-            $tags = explode(',', Fisma::configuration()->getConfig('organization_poc_list'));
-            $pocs = $this->finding->Organization->getPocs();
+            $roleQuery = Doctrine_Query::create()
+                ->from('Role r, r.UserRoles ur, ur.User u, ur.Organizations uro')
+                ->where('r.type = ?', 'USER_GROUP')
+                ->andWhere('uro.id = ?', $finding->Organization->id);
 
-            foreach ($tags as $idx => $type):
-                $poc = $pocs->fetchOneByType($type);
-                if ($poc):
+            foreach ($roleQuery->execute() as $r):
         ?>
             <tr>
-                <td><?php echo $this->escape($type); ?>:</td>
-                <td><?php echo $this->escape($this->userInfo($poc->User->displayName, $poc->User->id), 'none'); ?></td>
-            <tr/>
-        <?php endif; endforeach; ?>
+                <th scope='row'><?php echo $this->escape($r->name); ?>:</th>
+                <td><?php foreach ($r->UserRoles as $ur): ?>
+                    <div>
+                        <?php echo $this->escape($this->userInfo($ur->User->displayName, $ur->User->id), 'none'); ?>
+                    </div>
+                <?php endforeach; ?></td>
+            </tr>
+        <?php endforeach; ?>
     <?php endif; ?></table>
     <?php Fisma_Format_Section::stopSection(); ?>
 
@@ -252,10 +303,11 @@
                 <?php echo $this->escape($relationship->getDirectAction()); ?>
                 <?php echo $this->escape(new Fisma_Yui_Tooltip(
                     'finding' . $endFinding->id,
-                    (($endFinding->status === 'CLOSED') ? '<strike>' : '') .
+                    (($endFinding->isResolved) ? '<strike>' : '') .
                     "<a href='/finding/remediation/view/id/{$endFinding->id}'>Finding #{$endFinding->id}</a>" .
-                    (($endFinding->status === 'CLOSED') ? '</strike>' : ''),
-                    "<b>Status</b>: {$endFinding->getLongStatus()}" .
+                    (($endFinding->isResolved) ? '</strike>' : ''),
+                     "<b>" . $this->escape($this->translate('Finding_Status')) ."</b>: " .
+                    (($finding->isResolved) ? 'YES' : 'NO') .
                     "<p>" . $this->escape($endFinding->description, 'javascript') . "</p>",
                     'none'
                 ), 'none'); ?>
@@ -274,10 +326,11 @@
                 <?php echo $this->escape($relationship->getReverseAction()); ?>
                 <?php echo $this->escape(new Fisma_Yui_Tooltip(
                     'finding' . $startFinding->id,
-                    (($startFinding->status === 'CLOSED') ? '<strike>' : '') .
+                    (($startFinding->isResolved) ? '<strike>' : '') .
                     "Finding #{$startFinding->id}</a>" .
-                    (($startFinding->status === 'CLOSED') ? '</strike>' : ''),
-                    "<b>Status</b>: {$startFinding->getLongStatus()}" .
+                    (($startFinding->isResolved) ? '</strike>' : ''),
+                    "<b>" . $this->escape($this->translate('Finding_Status')) ."</b>: " .
+                    (($finding->isResolved) ? 'YES' : 'NO') .
                     "<p>" . $this->escape($startFinding->description, 'javascript') . "</p>",
                     'none'
                 ), 'none'); ?>

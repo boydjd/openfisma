@@ -210,7 +210,7 @@ Fisma.TableFormat = {
     deleteControl : function (elCell, oRecord, oColumn, oData) {
         if (oData) {
             var icon = document.createElement('img');
-            icon.src = '/images/del.png';
+            icon.src = '/images/trash_recyclebin_empty_closed.png';
 
             while (elCell.hasChildNodes()) {
                 elCell.removeChild(elCell.firstChild);
@@ -272,7 +272,7 @@ Fisma.TableFormat = {
 
         if (status) {
             status = PHP_JS().html_entity_decode(status);
-            overdueFindingSearchUrl += "/denormalizedStatus/enumIs/" + encodeURIComponent(status);
+            overdueFindingSearchUrl += "/workflowStep/textExactMatch/" + encodeURIComponent(status);
         }
 
         // Handle source field
@@ -486,19 +486,12 @@ Fisma.TableFormat = {
      * @param oData The data stored in this cell
      */
     formatDate : function (elCell, oRecord, oColumn, oData) {
+        var m;
         if (oData) {
-            var month = parseInt(oData.substr(5, 2), 10) - 1;
-
-            var date = new Date();
-            date.setFullYear(oData.substr(0,4));
-            date.setMonth(month);
-            date.setDate(oData.substr(8, 2));
-
-            elCell.innerHTML = Fisma.TableFormat.month[date.getMonth()]
-                              + ' '
-                              + date.getDate()
-                              + ', '
-                              + date.getFullYear();
+            m = moment(oData);
+            elCell.innerHTML = m.format("MMM D, YYYY");
+        } else {
+            elCell.innerHTML = "";
         }
     },
 
@@ -512,31 +505,26 @@ Fisma.TableFormat = {
      */
     formatDuedate : function (elCell, oRecord, oColumn, oData) {
         if (oData) {
-            var date = new Date(oData.substr(0,4), parseInt(oData.substr(5, 2), 10) - 1, oData.substr(8, 2));
-            date.setHours(23, 59, 59, 999);
-
-            var now = new Date();
-            now.setHours(23, 59, 59, 999);
+            var date = moment(oData).endOf('day');
+            var now = moment().endOf('day');
             var isLate = (date < now);
             var isToday = ((date - now) === 0);
 
-            elCell.innerHTML =  Fisma.TableFormat.month[date.getMonth()]
-                             +  ' '
-                             +  date.getDate()
-                             +  ', '
-                             +  date.getFullYear();
-            if (oRecord._oData.status !== 'CLOSED') {
+            elCell.innerHTML =  date.format("MMM D, YYYY");
+            if (!oRecord._oData.isResolved) {
                 elCell.innerHTML =  "<font color='" + ((isLate) ? 'red' : ((isToday) ? 'orange' : 'green')) + "'>"
                                  +  elCell.innerHTML
-                                 +  "</font>"
+                                 +  "</font> "
                                  +  ((isLate)
-                                        ? (' (' + parseInt((now - date)/(1000*60*60*24), 10) + ' day(s) late)')
+                                        ? ('(' + parseInt((now - date)/(1000*60*60*24), 10) + ' day(s) late)')
                                         : ((isToday)
                                             ? '(due today)'
-                                            : (' (' + parseInt((date - now)/(1000*60*60*24), 10) + ' day(s) until due)')
+                                            : ('(' + parseInt((date - now)/(1000*60*60*24), 10) + ' day(s) until due)')
                                         )
                                     );
             }
+        } else {
+            elCell.innerHTML = "";
         }
     },
 
@@ -552,7 +540,25 @@ Fisma.TableFormat = {
         var m;
         if (oData) {
             m = moment(oData);
-            elCell.innerHTML = m.format("MMM DD, YYYY") + " at " + m.format("HH:mm A");
+            elCell.innerHTML = m.format("MMM D, YYYY") + " at " + m.format("h:mm A");
+        } else {
+            elCell.innerHTML = "";
+        }
+    },
+
+    /**
+     * A formatter which displays time as 2:24 AM
+     *
+     * @param elCell Reference to a container inside the <td> element
+     * @param oRecord Reference to the YUI row object
+     * @param oColumn Reference to the YUI column object
+     * @param oData The data stored in this cell
+     */
+    formatTime : function (elCell, oRecord, oColumn, oData) {
+        var m;
+        if (oData) {
+            m = moment(oData);
+            elCell.innerHTML = m.format("h:mm A");
         } else {
             elCell.innerHTML = "";
         }
@@ -638,22 +644,34 @@ Fisma.TableFormat = {
         var linkData = YAHOO.lang.JSON.parse(oRecord.getData('displayTotal'));
         var html = "";
         if (oData.LOW) {
-            html += "<a href='" + linkData.url + oData.criteriaQuery + "LOW' title='" + oData.LOW + " low threat findings'>";
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "LOW' ";
+            html += "title='" + oData.LOW + " low severity findings'>";
             html += "<span class='bar LOW' style='width:" + oData.LOW / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
         if (oData.MODERATE) {
-            html += "<a href='" + linkData.url + oData.criteriaQuery + "MODERATE' title='" + oData.MODERATE + " moderate threat findings'>";
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "MODERATE' ";
+            html += "title='" + oData.MODERATE + " moderate severity findings'>";
             html += "<span class='bar MODERATE' style='width:" + oData.MODERATE / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
         if (oData.HIGH) {
-            html += "<a href='" + linkData.url + oData.criteriaQuery + "HIGH' title='" + oData.HIGH + " high threat findings'>";
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "HIGH' ";
+            html += "title='" + oData.HIGH + " high severity findings'>";
             html += "<span class='bar HIGH' style='width:" + oData.HIGH / oData.total * 80 + "%;'></span>";
             html += "</a>";
         }
+        if (oData.CRITICAL) {
+            html += "<a href='" + linkData.url + oData.criteriaQuery + "CRITICAL' ";
+            html += "title='" + oData.CRITICAL + " critical severity findings'>";
+            html += "<span class='bar CRITICAL' style='width:" + oData.CRITICAL / oData.total * 80 + "%;'></span>";
+            html += "</a>";
+        }
         var percentage = 100 * (
-            parseInt(oData.LOW, 10) + parseInt(oData.MODERATE, 10) + parseInt(oData.HIGH, 10)
+            parseInt(oData.LOW, 10) +
+            parseInt(oData.MODERATE, 10) +
+            parseInt(oData.HIGH, 10) +
+            ((oData.CRITICAL) ? parseInt(oData.CRITICAL, 10) : 0)
         ) / oData.total;
         if (percentage > 0 && percentage < 1) {
             html += '&nbsp;less than 1%';
@@ -736,7 +754,7 @@ Fisma.TableFormat = {
             prefix = params.prefix,
             jqAnchor = $("<a/>");
         jqAnchor.text(oData);
-        jqAnchor.attr("href", prefix + oRecord.getData('id'));
+        jqAnchor.attr("href", prefix + oRecord.getData('id') + '/fromSearch/1');
         $(elCell).html(jqAnchor);
     },
 
@@ -751,5 +769,60 @@ Fisma.TableFormat = {
         } catch (e) {
             Fisma.TableFormat.formatHtml(elCell, oRecord, oColumn, oData);
         }
+    },
+
+    formatActions: function(elCell, oRecord, oColumn, oData) {
+        var i, actions;
+        try {
+            // parsing of column data is retained for backward compatibility
+            actions = oColumn.formatterParameters || YAHOO.lang.JSON.parse(oData);
+            $(elCell).empty();
+            for (i in actions) {
+                var button = actions[i],
+                    args = button.args || {};
+                $(elCell).append(
+                    $('<button/>')
+                        .data({
+                            record: oRecord.getData(),
+                            recordId: oRecord.getId(),
+                            dataTable: this
+                        })
+                        .attr('title', button.label)
+                        .append($('<img/>').attr({'alt': button.label, 'src': button.icon}))
+                        .button()
+                        .click(args, Fisma.Util.getObjectFromName(button.handler))
+                );
+            }
+        } catch (e) {
+            Fisma.TableFormat.formatHtml(elCell, oRecord, oColumn, oData);
+        }
+    },
+
+    formatArray: function(elCell, oRecord, oColumn, oData) {
+        try {
+            oData = YAHOO.lang.JSON.parse(oData);
+            var i;
+            $(elCell).empty();
+            var ul = $('<ul/>').appendTo(elCell);
+            for (i in oData) {
+                var item = oData[i];
+                ul.append(
+                    $('<li/>')
+                        .text(item)
+                        .css('margin-left', '0px')
+                );
+            }
+        } catch (e) {
+            Fisma.TableFormat.formatHtml(elCell, oRecord, oColumn, oData);
+        }
+    },
+
+    formatDefault: function(elCell, oRecord, oColumn, oData) {
+        switch(oData) {
+            case 'YES':
+                $(elCell).append($('<img/>').attr({'alt': 'checked', 'src': '/images/default.png'}));
+                break;
+        }
+        $(elCell).css('text-align', 'center');
     }
 };

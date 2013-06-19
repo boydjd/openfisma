@@ -349,7 +349,10 @@ Fisma.Finding = {
 
         //collapsible
         $(".sectionHeader").filter(function(index){
-            return ($('span.ui-icon', this).length < 1);
+            return (
+                $('span.ui-icon', this).length < 1 &&
+                $('table', this).length < 1
+            );
         })
             .prepend("<span class='ui-icon ui-icon-minusthick'></span>")
             .dblclick(function() {
@@ -399,13 +402,37 @@ Fisma.Finding = {
         }
 
         //hide layout if not in Analyst view
-        Fisma.tabView.subscribe('activeIndexChange', function(args) {
-            if (args.newValue === 0) {
-                $('#changeLayout').show();
-            } else {
-                $('#changeLayout').hide();
+        if (Fisma.tabView) {
+            Fisma.tabView.subscribe('activeIndexChange', function(args) {
+                if (args.newValue === 0) {
+                    $('#changeLayout').show();
+                } else {
+                    $('#changeLayout').hide();
+                }
+            });
+        }
+
+        setTimeout(function() {
+            if (Fisma.Registry.isRegistered('Vulnerability.Dashboard.Analyst.bySummaryTable')) {
+                var bySummaryTable = Fisma.Registry.get('Vulnerability.Dashboard.Analyst.bySummaryTable');
+                bySummaryTable.sortColumn(bySummaryTable.getColumn('displayTotal'), YAHOO.widget.DataTable.CLASS_DESC);
             }
-        });
+
+            if (Fisma.Registry.isRegistered('Vulnerability.Dashboard.Analyst.byAssetTable')) {
+                var byAssetTable = Fisma.Registry.get('Vulnerability.Dashboard.Analyst.byAssetTable');
+                byAssetTable.sortColumn(byAssetTable.getColumn('displayTotal'), YAHOO.widget.DataTable.CLASS_DESC);
+            }
+
+            if (Fisma.Registry.isRegistered('Vulnerability.Dashboard.Analyst.bySystemTable')) {
+                var bySystemTable = Fisma.Registry.get('Vulnerability.Dashboard.Analyst.bySystemTable');
+                bySystemTable.sortColumn(bySystemTable.getColumn('displayTotal'), YAHOO.widget.DataTable.CLASS_DESC);
+            }
+
+            if (Fisma.Registry.isRegistered('Vulnerability.Dashboard.Analyst.byPocTable')) {
+                var byPocTable = Fisma.Registry.get('Vulnerability.Dashboard.Analyst.byPocTable');
+                byPocTable.sortColumn(byPocTable.getColumn('displayTotal'), YAHOO.widget.DataTable.CLASS_DESC);
+            }
+        }, 0);
     },
 
     /**

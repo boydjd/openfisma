@@ -96,4 +96,14 @@ class CurrentUser
         }
         return null;
     }
+
+    /**
+     * This is a helper function to use with getAclFields()
+     *
+     * @return array Current user's displayName wrapped in an array
+     */
+    public static function getAclDisplayName()
+    {
+        return array(self::getAttribute('displayName'));
+    }
 }

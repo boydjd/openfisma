@@ -671,8 +671,8 @@ Fisma.Util = {
                 panel.destroy();
             }
         });
-        if (callbacks['cancel']) {
-            panel.subscribe("hide", callbacks['cancel']);
+        if (callbacks.cancel) {
+            panel.subscribe('hide', callbacks.cancel);
         }
 
         // Fill in default value if set
@@ -690,6 +690,15 @@ Fisma.Util = {
 
     getTimezone: function() {
         return window.jstz.determine().name();
+    },
+
+    registerJSON: function() {
+        if (typeof window.JSON !== 'object') {
+            window.JSON = {
+                'stringify': $.toJSON,
+                'parse': $.secureEvalJSON
+            };
+        }
     }
 };
 

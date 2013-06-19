@@ -1,0 +1,22 @@
+<label for='<?php echo $this->escape($this->name); ?>'>
+    Query
+</label>
+<input
+    type='text'
+    id='<?php echo $this->escape($this->name); ?>'
+    name='<?php echo $this->escape($this->name); ?>'
+    value='<?php echo $this->escape(($this->value) ? $this->value['text'] : ''); ?>'
+    placeholder='<?php echo $this->escape($this->placeholder); ?>'
+/>
+<br/>
+(
+<input
+    type='checkbox'
+    id='<?php echo $this->escape($this->name); ?>_exact'
+    name='<?php echo $this->escape($this->name); ?>_exact'
+    <?php if ($this->value && $this->value['exact']): ?>checked<?php endif; ?>
+/>
+<label for='<?php echo $this->escape($this->name); ?>_exact'>
+    Exact match
+</label>
+)

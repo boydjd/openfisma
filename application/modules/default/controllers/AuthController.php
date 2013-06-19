@@ -208,6 +208,12 @@ class AuthController extends Zend_Controller_Action
 
             }
 
+            // display warning message for an unsupported browser
+            $message = $this->_getBrowserUnsupportedMessage();
+            if (!empty($message)) {
+                $this->view->priorityMessenger($message, 'warning');
+            }
+
             // Finally, if the user has passed through all of this,
             // send them to their original requested page or dashboard otherwise
             $session = Fisma::getSession();
@@ -471,5 +477,74 @@ class AuthController extends Zend_Controller_Action
         }
 
        return $msgs;
+    }
+
+    /**
+     * Gets the browser unsupported message
+     *
+     * @return string The message that is shown in the message box
+     *
+     */
+    private function _getBrowserUnsupportedMessage()
+    {
+
+        /** contains the supported browsers, including version numbers
+         *
+         * format $support_browsers[browser_name] = array(
+         *     'min_version' => minium version,
+         *     'max_version' => maximum version
+         * );
+         * max_version: latest dev
+         * min_version: latest stable
+         */
+        $supportedBrowsers = array(
+            'Chrome' => array(
+                'min_version' => "26.0.0.0",
+                'max_version' => "28.0.1485.1"
+            ),
+            'Firefox' => array(
+                'min_version' => "20.0",
+                'max_version' => "22.0"
+            ),
+            'Internet Explorer' => array(
+                'min_version' => "8.0",
+                'max_version' => "11.0"
+            )
+        );
+
+        /** @see Zend_Http_UserAgent */
+        $userAgent = new Zend_Http_UserAgent();
+
+        /** Name of web browser */
+        $userBrowser = $userAgent->getDevice()->getBrowser();
+
+        /** Version of web browser */
+        $userBrowserVersion = $userAgent->getDevice()->getBrowserVersion();
+
+        /** Message to display when web browser is not supported */
+        $unsupportedBrowserMessage = "";
+
+        // determines whether or not a web browser is supported
+        if (array_key_exists($userBrowser, $supportedBrowsers)) {
+            if (version_compare($supportedBrowsers[$userBrowser]['min_version'], $userBrowserVersion, '<')
+                && version_compare($userBrowserVersion, $supportedBrowsers[$userBrowser]['max_version'], '>=')) {
+
+                $unsupportedBrowserMessage = "Warning: You are using an unsupported web browser.";
+
+                if ($userBrowser == 'Internet Explorer'
+                    && (version_compare("7.0", $userBrowserVersion) == 0)
+                    && !$userAgent->getDevice()->hasFlashSupport()) {
+                    $unsupportedBrowserMessage .= "<br />Even though Internet Explorer 7 is not supported, "
+                                                . "it is required that you have Flash installed. ";
+                }
+
+                $unsupportedBrowserMessage .= "<br />Browser info: $userBrowser $userBrowserVersion";
+            }
+        } else {
+            $unsupportedBrowserMessage = "Warning: You are using an unsupported web browser.";
+            $unsupportedBrowserMessage .= "<br />Browser info: $userBrowser $userBrowserVersion";
+        }
+
+        return $unsupportedBrowserMessage;
     }
 }

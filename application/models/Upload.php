@@ -47,7 +47,7 @@ class Upload extends BaseUpload
      */
      private $_mimeTypeBlackList = array(
          /* CSS        */ 'text/css',
-         /* HTML       */ 'text/html', 'application/xhtml+xml',
+         ///* HTML       */ 'text/html', 'application/xhtml+xml',
          /* Javascript */ 'application/x-javascript', 'text/javascript', 'application/ecmascript',
      );
 

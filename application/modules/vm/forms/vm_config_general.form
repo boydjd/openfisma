@@ -1,0 +1,31 @@
+; This is the form for configuring the organization type map.
+;
+; This form should be loaded through FormManager::loadForm() in order to recieve
+; the proper decorators, filters, etc.
+;
+; Author    Ben Zheng <ben.zheng@reyosoft.com>
+; Copyright (c) Endeavor Systems, Inc. 2011 (http://www.endeavorsystems.com)
+; License   http://www.openfisma.org/mw/index.php?title=License
+
+[vm_config_general]
+elementPrefixPath.prefix = Fisma_Zend_Form
+elementPrefixPath.path = Fisma/Zend/Form
+elementPrefixPath.type = Validate
+
+elements.vm_reopen_destination.type = "select"
+elements.vm_reopen_destination.options.label = "Re-opened Destination"
+elements.vm_reopen_destination.options.required = false
+elements.vm_reopen_destination.options.tooltip = "Selecting a Re-Opened Destination informs the system where to move vulnerabilities that were previously resolved but found again during recent scans. By default the system will move re-opened vulnerabilities to the Repeat workflow step"
+displayGroups.general_config.elements.vm_reopen_destination = "vm_reopen_destination"
+
+elements.vm_reopen_source.type = "select"
+elements.vm_reopen_source.options.label = "Fixed Workflow Step"
+elements.vm_reopen_source.options.required = false
+elements.vm_reopen_source.options.tooltip = "All workflow steps marked as 'resolved' are listed here. Only vulnerabilities in the selected workflow step will be re-opened if found again in later scan results."
+displayGroups.general_config.elements.vm_reopen_source = "vm_reopen_source"
+
+elements.vm_aggregation.type = "checkbox"
+elements.vm_aggregation.options.label = "Aggregate Vulnerabilities"
+elements.vm_aggregation.options.required = false
+elements.vm_aggregation.options.tooltip = "With aggregation enabled, the application will attempt to intelligently aggregate similar vulnerabilities."
+displayGroups.general_config.elements.vm_aggregation = "vm_aggregation"

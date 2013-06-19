@@ -1,5 +1,6 @@
 <?php
     $finding = $this->finding;
+    $this->table = $finding->getTable();
     $organization = $finding->Organization->nickname;
 ?>
 <?php
@@ -54,7 +55,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
     Fisma_Format_Section::startSection($threatTooltip);
 ?>
 <p>
-    <b>Threat Level:</b>
+    <b><?php $this->column('threatLevel'); ?>:</b>
 
     <span id ="threat_level" type="select" name="finding[threatLevel]" href="/metainfo/list/o/threat_level/format/html/"
         <?php
@@ -72,7 +73,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
         if ($this->isThreatEditable) {
             echo $this->escape('class="editable"', 'none');
         }
-        ?>>Threat Description:</b>
+        ?>><?php $this->column('threat'); ?>:</b>
 </p>
 
 <div type="textarea" id="threat" name="finding[threat]" rows="5" cols="160">
@@ -95,7 +96,7 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
 ?>
 
 <p>
-    <b>Countermeasures Effectiveness:</b>
+    <b><?php $this->column('countermeasuresEffectiveness'); ?>:</b>
 
     <span type="select"
           name="finding[countermeasuresEffectiveness]"
@@ -117,10 +118,17 @@ if ($this->acl()->hasPrivilegeForObject('read', $finding)) {
                 echo $this->escape('class="editable"', 'none');
             }
         ?>>
-        Description of Countermeasures:</b>
+        <?php $this->column('countermeasures'); ?>:</b>
 </p>
 
 <div type="textarea" id="countermeasure" name="finding[countermeasures]" rows="5" cols="160">
     <?php echo $this->escape($finding->countermeasures, 'none'); ?>
 </div>
 <?php Fisma_Format_Section::stopSection(); ?>
+
+<?php if ($finding->residualRisk): Fisma_Format_Section::startSection('Residual Risk'); ?>
+<p>
+    <b>Residual Risk:</b>
+    <?php echo $this->escape($finding->residualRisk); ?>
+</p>
+<?php Fisma_Format_Section::stopSection(); endif; ?>

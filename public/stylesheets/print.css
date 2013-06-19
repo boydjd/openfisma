@@ -21,8 +21,8 @@
  *
  *******************************************************************************
  *
- * The print.css file creates a layout which is more suitable for printing than the 
- * normal, on-screen layout. For example, tab views are re-styled to display all of 
+ * The print.css file creates a layout which is more suitable for printing than the
+ * normal, on-screen layout. For example, tab views are re-styled to display all of
  * their content, and non-essential elements are hidden.
  *
  * Author:    Mark E. Haase <mhaase@endeavorsystems.com>
@@ -178,7 +178,7 @@ table.treeTable > tr {
 }
 
 table.treeTable > tr > th {
-    text-align: center;   
+    text-align: center;
 }
 
 table.treeTable td.ontime {
@@ -295,4 +295,12 @@ div.dashboardChart {
     margin: 2em 0em;
     text-align: center;
     font-weight: bold;
+}
+
+div.facetBox, label.rowsPerPageInputBoxLabel, .yui-pg-first, .yui-pg-previous, .yui-pg-next, .yui-pg-last {
+    display: none !important;
+}
+
+div.listDatatableContainer {
+    padding-left: 0px;
 }

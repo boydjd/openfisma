@@ -45,6 +45,7 @@ class Test_Library_Fisma_Inject_Factory extends Test_Case_Unit
      */
     public function testInvalidType()
     {
+        Zend_Registry::set('Zend_Log', new Zend_Log(new Zend_Log_Writer_Null()));
         $this->setExpectedException('Fisma_Zend_Exception');
         Fisma_Inject_Factory::create('Test', null);
     }

@@ -1,0 +1,459 @@
+<?php
+    echo $this->escape($this->searchBox($this->toolbarButtons), 'none');
+    $tooltips = array(
+        'cvssAv' => '
+<p>This metric reflects how the vulnerability is exploited. The possible values for this metric are listed below.
+The more remote an attacker can be to attack a host, the greater the vulnerability score.</p>
+<table>
+    <tbody>
+        <tr>
+            <th rel="row">Local</th>
+            <td>A vulnerability exploitable with only local access requires the attacker to have
+            either physical access to the vulnerable system or a local (shell) account.</td>
+        </tr>
+        <tr>
+            <th rel="row">Adjacent Network</th>
+            <td>A vulnerability exploitable with adjacent network access requires the attacker
+            to have access to either the broadcast or collision domain of the vulnerable software.</td>
+        </tr>
+        <tr>
+            <th rel="row">Network</th>
+            <td>A vulnerability exploitable with network access means the vulnerable software
+            is bound to the network stack and the attacker does not require local network access or local access.
+            Such a vulnerability is often termed "remotely exploitable".</td>
+        </tr>
+    </tbody>
+</table>
+        ',
+        'cvssAc' => '
+<p>This metric measures the complexity of the attack required to exploit the vulnerability once an attacker has gained
+access to the target system. For example, consider a buffer overflow in an Internet service: once the target system is
+located, the attacker can launch an exploit at will.</p>
+<p>Other vulnerabilities, however, may require additional steps in order to be exploited. For example, a vulnerability
+in an email client is only exploited after the user downloads and opens a tainted attachment. The possible values for
+this metric are listed below. The lower the required complexity, the higher the vulnerability score.</p>
+<table>
+    <tbody>
+        <tr>
+            <th rel="row">High</th>
+            <td>Specialized access conditions exist.</td>
+        </tr>
+        <tr>
+            <th rel="row">Medium</th>
+            <td>The access conditions are somewhat specialized.</td>
+        </tr>
+        <tr>
+            <th rel="row">Low</th>
+            <td>Specialized access conditions or extenuating circumstances do not exist.</td>
+        </tr>
+    </tbody>
+</table>
+        ',
+        'cvssAu' => '
+<p>This metric measures the number of times an attacker must authenticate to a target in order to exploit a
+vulnerability. This metric does not gauge the strength or complexity of the authentication process, only that an
+attacker is required to provide credentials before an exploit may occur. The possible values for this metric are
+listed below. The fewer authentication instances that are required, the higher the vulnerability score.</p>
+<table>
+    <tbody>
+        <tr>
+            <th rel="row">Multiple</th>
+            <td>Exploiting the vulnerability requires that the attacker authenticate two or more times,
+            even if the same credentials are used each time.</td>
+        </tr>
+        <tr>
+            <th rel="row">Single</th>
+            <td>The vulnerability requires an attacker to be logged into the system
+            (such as at a command line or via a desktop session or web interface).</td>
+        </tr>
+        <tr>
+            <th rel="row">None</th>
+            <td>Authentication is not required to exploit the vulnerability.</td>
+        </tr>
+    </tbody>
+</table>
+        ',
+        'cvssC' => '
+<p>This metric measures the impact on confidentiality of a successfully exploited vulnerability. Confidentiality
+refers to limiting information access and disclosure to only authorized users, as well as preventing access by, or
+disclosure to, unauthorized ones. The possible values for this metric are listed below. Increased confidentiality
+impact increases the vulnerability score.</p>
+<table>
+    <tbody>
+        <tr>
+            <th rel="row">None</th>
+            <td>There is no impact to the confidentiality of the system.</td>
+        </tr>
+        <tr>
+            <th rel="row">Partial</th>
+            <td>There is considerable informational disclosure. Access to some system files is possible, but the
+            attacker does not have control over what is obtained, or the scope of the loss is constrained.</td>
+        </tr>
+        <tr>
+            <th rel="row">Complete</th>
+            <td>There is total information disclosure, resulting in all system files being revealed. The attacker is
+            able to read all of the system\'s data (memory, files, etc.)</td>
+        </tr>
+    </tbody>
+</table>
+        ',
+        'cvssI' => '
+<p>This metric measures the impact to integrity of a successfully exploited vulnerability. Integrity refers to the
+trustworthiness and guaranteed veracity of information. The possible values for this metric are listed below.
+Increased integrity impact increases the vulnerability score.</p>
+<table>
+    <tbody>
+        <tr>
+            <th rel="row">None</th>
+            <td>There is no impact to the integrity of the system.</td>
+        </tr>
+        <tr>
+            <th rel="row">Partial</th>
+            <td>Modification of some system files or information is possible, but the attacker does not have control
+            over what can be modified, or the scope of what the attacker can affect is limited.</td>
+        </tr>
+        <tr>
+            <th rel="row">Complete</th>
+            <td>There is a total compromise of system integrity. There is a complete loss of system protection,
+            resulting in the entire system being compromised. The attacker is able to modify any files on the target
+            system.</td>
+        </tr>
+    </tbody>
+</table>
+        ',
+        'cvssA' => '
+<p>This metric measures the impact to availability of a successfully exploited vulnerability. Availability refers to
+the accessibility of information resources. Attacks that consume network bandwidth, processor cycles, or disk space
+all impact the availability of a system. The possible values for this metric are listed below. Increased availability
+impact increases the vulnerability score.</p>
+<table>
+    <tbody>
+        <tr>
+            <th rel="row">None</th>
+            <td>There is no impact to the availability of the system.</td>
+        </tr>
+        <tr>
+            <th rel="row">Partial</th>
+            <td>There is reduced performance or interruptions in resource availability.</td>
+        </tr>
+        <tr>
+            <th rel="row">Complete</th>
+            <td>There is a total shutdown of the affected resource. The attacker can render the resource completely
+            unavailable..</td>
+        </tr>
+    </tbody>
+</table>
+        '
+    );
+?>
+<?php if ($this->message): ?>
+<div class='message'><?php echo $this->escape($this->message); ?></div>
+<?php else: ?>
+<div id='changeLayout'>
+    Sidebar position:
+    <span id="menuLayoutSelect">
+        <input type="radio" id="layoutLeft" name="layoutSelect" title="Left"/>
+        <label for="layoutLeft">Left</label>
+        <input type="radio" id="layoutRight" name="layoutSelect" checked="checked" title="Right" />
+        <label for="layoutRight">Right</label>
+    </span>
+</div>
+
+<div class="row-fluid">
+    <style>
+        /* This style chunk should be removed in SA branch where Bootstrap's in place. */
+        div.row-fuild {
+            clear: both;
+            width: 100%;
+        }
+        div.span2 {
+            float: left;
+            width: 16%;
+            margin-right: 0.8%;
+        }
+        div.span2:last-child {
+            margin-right: 0%;
+        }
+    </style>
+    <div class="span2"><?php
+        $chartAv = new Fisma_Chart(null, 200);
+        $chartAv->setStandardLegendVisibility(false)->setTitle(
+            new Fisma_Yui_Tooltip('cvssAv', 'Access Vector', $tooltips['cvssAv'])
+        )->setChartType('pie');
+        foreach ($this->byCvssAv as $criteria => $count):
+            $chartAv->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('AV', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/AV:' . $criteria
+            );
+        endforeach;
+        $chartAv->setColors(array(Fisma_Chart::COLOR_MODERATE, Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_HIGH));
+        echo $this->escape($chartAv->export('html', false, true), 'none');
+    ?></div>
+
+    <div class="span2"><?php
+        $chartAc = new Fisma_Chart(null, 200);
+        $chartAc->setStandardLegendVisibility(false)->setTitle(
+            new Fisma_Yui_Tooltip('cvssAc', 'Access Complexity', $tooltips['cvssAc'])
+        )->setChartType('pie');
+        foreach ($this->byCvssAc as $criteria => $count):
+            $chartAc->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('AC', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/AC:' . $criteria
+            );
+        endforeach;
+        $chartAc->setColors(array(Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_MODERATE));
+        echo $this->escape($chartAc->export('html', false, true), 'none');
+    ?></div>
+
+    <div class="span2"><?php
+        $chartAu = new Fisma_Chart(null, 200);
+        $chartAu->setStandardLegendVisibility(false)->setTitle(
+            new Fisma_Yui_Tooltip('cvssAu', 'Authentication', $tooltips['cvssAu'])
+        )->setChartType('pie');
+        foreach ($this->byCvssAu as $criteria => $count):
+            $chartAu->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('Au', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/Au:' . $criteria
+            );
+        endforeach;
+        $chartAu->setColors(array(Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_MODERATE));
+        echo $this->escape($chartAu->export('html', false, true), 'none');
+    ?></div>
+
+    <div class="span2"><?php
+        $chartC = new Fisma_Chart(null, 200);
+        $chartC->setStandardLegendVisibility(false)->setTitle(
+            new Fisma_Yui_Tooltip('cvssC', 'Confidentiality Impact', $tooltips['cvssC']))->setChartType('pie');
+        foreach ($this->byCvssC as $criteria => $count):
+            $chartC->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('C', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/C:' . $criteria
+            );
+        endforeach;
+        $chartC->setColors(array(Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_MODERATE));
+        echo $this->escape($chartC->export('html', false, true), 'none');
+    ?></div>
+
+    <div class="span2"><?php
+        $chartI = new Fisma_Chart(null, 200);
+        $chartI->setStandardLegendVisibility(false)->setTitle(
+            new Fisma_Yui_Tooltip('cvssI', 'Integrity Impact', $tooltips['cvssI']))->setChartType('pie');
+        foreach ($this->byCvssI as $criteria => $count):
+            $chartI->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('I', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/I:' . $criteria
+            );
+        endforeach;
+        $chartI->setColors(array(Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_MODERATE));
+        echo $this->escape($chartI->export('html', false, true), 'none');
+    ?></div>
+
+    <div class="span2"><?php
+        $chartA = new Fisma_Chart(null, 200);
+        $chartA->setStandardLegendVisibility(false)->setTitle(
+            new Fisma_Yui_Tooltip('cvssA', 'Availability Impact', $tooltips['cvssA']))->setChartType('pie');
+        foreach ($this->byCvssA as $criteria => $count):
+            $chartA->addColumn(
+                Fisma_Vulnerability_Cvss::getUserFriendlyValue('A', $criteria),
+                $count,
+                '/vm/vulnerability/list?q=isResolved/booleanNo/cvssVector/textContains/A:' . $criteria
+            );
+        endforeach;
+        $chartA->setColors(array(Fisma_Chart::COLOR_HIGH, Fisma_Chart::COLOR_LOW, Fisma_Chart::COLOR_MODERATE));
+        echo $this->escape($chartA->export('html', false, true), 'none');
+    ?></div>
+</div>
+
+<div class='clear'></div>
+
+<div class='column66 left findingAnalystLeft'>
+    <?php Fisma_Format_Section::startSection(
+        'Unresolved: By ' . $this->escape($this->translate('Vulnerability_Point_of_Contact')),
+        null,
+        null,
+        'byPoc'
+    ); ?>
+    <?php echo $this->escape($this->byPocTable, 'none'); ?>
+    <?php if ($this->byPocTable->countData() > 8): ?>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 0, "<?php
+            echo $this->escape($this->byPocTable->getRegistryName());
+        ?>")'>Show all
+            <?php echo $this->escape($this->byPocTable->countData()); ?> records</a>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 8, "<?php
+            echo $this->escape($this->byPocTable->getRegistryName());
+        ?>")'>Show first 8 records only</a>
+    <?php endif; ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Unresolved: By System', null, null, 'bySystem'); ?>
+    <?php echo $this->escape($this->bySystemTable, 'none'); ?>
+    <?php if ($this->bySystemTable->countData() > 8): ?>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 0, "<?php
+            echo $this->escape($this->bySystemTable->getRegistryName());
+        ?>")'>Show all
+            <?php echo $this->escape($this->bySystemTable->countData()); ?> records</a>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 8, "<?php
+            echo $this->escape($this->bySystemTable->getRegistryName());
+        ?>")'>Show first 8 records only</a>
+    <?php endif; ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection(
+        'Unresolved: By ' . $this->escape($this->translate('Summary')),
+        null,
+        null,
+        'bySummary'
+    ); ?>
+    <?php echo $this->escape($this->bySummaryTable, 'none'); ?>
+    <?php if ($this->bySummaryTable->countData() > 8): ?>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 0, "<?php
+            echo $this->escape($this->bySummaryTable->getRegistryName());
+        ?>")'>Show all
+            <?php echo $this->escape($this->bySummaryTable->countData()); ?> records</a>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 8, "<?php
+            echo $this->escape($this->bySummaryTable->getRegistryName());
+        ?>")'>Show first 8 records only</a>
+    <?php endif; ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection(
+        'Unresolved: By ' . $this->escape($this->translate('Asset')),
+        null,
+        null,
+        'byAsset'
+    ); ?>
+    <?php echo $this->escape($this->byAssetTable, 'none'); ?>
+    <?php if ($this->byAssetTable->countData() > 8): ?>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 0, "<?php
+            echo $this->escape($this->byAssetTable->getRegistryName());
+        ?>")'>Show all
+            <?php echo $this->escape($this->byAssetTable->countData()); ?> records</a>
+        <a href='#' onclick='return Fisma.Finding.restrictTableLengthClickHandler(this, 8, "<?php
+            echo $this->escape($this->byAssetTable->getRegistryName());
+        ?>")'>Show first 8 records only</a>
+    <?php endif; ?>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+
+
+</div>
+<div class='column33 right findingAnalystRight'>
+    <?php Fisma_Format_Section::startSection('Unresolved: By Severity', null, null, 'byThreat'); ?>
+    <table class='custom-widget no-border'>
+    <?php foreach($this->byThreat as $statistic): ?>
+        <tr>
+            <td class='criteria'><?php echo $this->escape($statistic['criteria']); ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
+            <td width='55%'>
+                <a href='/vm/vulnerability/list?q=isResolved/booleanNo/threatLevel/enumIs/<?php
+                    echo $this->escape($statistic['criteria'], 'url');
+                ?>'><span
+                class='bar <?php echo $this->escape($statistic['criteria']); ?>'
+                style='width:<?php echo $this->escape($statistic['count']/$this->total*80); ?>%;'
+                >
+                </span></a>
+                <span class='percentage'><?php
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
+                ?>%</span>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Unresolved: By Workflow', null, null, 'byWorkflow'); ?>
+    <table class='custom-widget no-border'>
+    <?php foreach($this->byWorkflow as $statistic):
+        $criteria = new Fisma_Yui_Tooltip('workflow_' . uniqid(), $statistic['criteria'], $statistic['tooltip']);
+    ?>
+        <tr>
+            <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
+            <td width='55%'>
+                <a href='/vm/vulnerability/list?q=isResolved/booleanNo/workflow/textExactMatch/<?php
+                    echo $this->escape($statistic['criteria'], 'url');
+                ?>'><span class='bar normal' style='width:<?php
+                        echo $this->escape($statistic['count']/$this->total*80);
+                    ?>%;'>
+                </span></a>
+                <span class='percentage'><?php
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
+                ?>%</span>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Unresolved: By Workflow Step', null, null, 'byWorkflowStep'); ?>
+    <table class='custom-widget no-border'>
+    <?php foreach($this->byWorkflowStep as $statistic):
+        $criteria = new Fisma_Yui_Tooltip('workflow_step_' . uniqid(), $statistic['criteria'], $statistic['tooltip']);
+    ?>
+        <tr>
+            <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
+            <td width='55%'>
+                <a href='/vm/vulnerability/list?q=isResolved/booleanNo/workflowStep/textExactMatch/<?php
+                    echo $this->escape($statistic['criteria'], 'url');
+                ?>'><span class='bar normal' style='width:<?php
+                        echo $this->escape($statistic['count']/$this->total*80);
+                    ?>%;'>
+                </span></a>
+                <span class='percentage'><?php
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
+                ?>%</span>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+
+    <?php Fisma_Format_Section::startSection('Unresolved: By Network', null, null, 'byNetwork'); ?>
+    <table class='custom-widget no-border'>
+    <?php foreach($this->byNetwork as $statistic):
+        $criteria = new Fisma_Yui_Tooltip('source_' . uniqid(), $statistic['criteria'], $statistic['tooltip']);
+    ?>
+        <tr>
+            <td class='criteria'><?php echo $this->escape($criteria, 'none'); ?></td>
+            <td class='value'><?php echo $this->escape($statistic['count']); ?></td>
+            <td width='55%'>
+                <a href='/vm/vulnerability/list?q=isResolved/booleanNo/network/textContains/<?php
+                    echo $this->escape($statistic['criteria'], 'url');
+                ?>'><span class='bar normal' style='width:<?php
+                        echo $this->escape($statistic['count']/$this->total*80);
+                    ?>%;'>
+                </span></a>
+                <span class='percentage'><?php
+                    echo $this->escape(
+                        ($statistic['count']/$this->total*100 < 1 && $statistic['count']/$this->total*100 > 0)
+                        ? 'less than 1' : round($statistic['count']/$this->total*100)
+                    );
+                ?>%</span>
+            </td>
+        </tr>
+    <?php endforeach; ?>
+    </table>
+    <?php Fisma_Format_Section::stopSection(); ?>
+</div>
+<div class='clear'></div>
+<script>
+$(function() {
+    Fisma.Finding.initDashboard();
+});
+</script>
+<?php endif; ?>

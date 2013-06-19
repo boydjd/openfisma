@@ -183,3 +183,81 @@ Migration:
         minorVersion: 1
         tagNumber: 4
         name: Commentable
+
+    030107_ActionsTaken:
+        majorVersion: 3
+        minorVersion: 1
+        tagNumber: 7
+        name: ActionsTaken
+
+    030200_ParentOrganization:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: ParentOrganization
+    030200_Incident:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: Incident
+    030200_SavedSearch:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: SavedSearch
+    030200_NotificationsOverhaul:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: NotificationsOverhaul
+    030200_Privilege:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: Privilege
+    030200_Workflow:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: Workflow
+    030200_OrganizationRole:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: OrganizationRole
+    030200_Asset:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: Asset
+    030200_Vulnerability:
+        majorVersion: 3
+        minorVersion: 2
+        tagNumber: 0
+        name: Vulnerability
+
+    030300_Asset:
+        majorVersion: 3
+        minorVersion: 3
+        tagNumber: 0
+        name: Asset
+    030300_SystemAsset:
+        majorVersion: 3
+        minorVersion: 3
+        tagNumber: 0
+        name: SystemAsset
+    030300_VmWorkflow:
+        majorVersion: 3
+        minorVersion: 3
+        tagNumber: 0
+        name: VmWorkflow
+    030300_VmTrending:
+        majorVersion: 3
+        minorVersion: 3
+        tagNumber: 0
+        name: VmTrending
+    030300_VmDashboard:
+        majorVersion: 3
+        minorVersion: 3
+        tagNumber: 0
+        name: VmDashboard

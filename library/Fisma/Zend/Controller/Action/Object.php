@@ -156,60 +156,77 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             }
         }
 
-        if (
-            (
+        if ($isView && !$record->isDeleted() && $id = $this->getRequest()->getParam('id')) {
+            if (
                 !$this->_enforceAcl ||
                 $this->_acl->hasPrivilegeForClass('update', $this->getAclResourceName()) ||
                 $this->_acl->hasPrivilegeForClass('update_*', $this->getAclResourceName())
-            ) &&
-            $isView && $id = $this->getRequest()->getParam('id')
-        ) {
-            $fromSearchUrl = '';
-            $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
-            if (!empty($fromSearchParams)) {
-                $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+            ) {
+                $fromSearchUrl = '';
+                $fromSearchParams = $this->_getFromSearchParams($this->getRequest());
+                if (!empty($fromSearchParams)) {
+                    $fromSearchUrl = $this->_helper->makeUrlParams($fromSearchParams);
+                }
+
+                $buttons['editButton'] = new Fisma_Yui_Form_Button(
+                    'editMode',
+                    array(
+                        'label' => 'Edit',
+                        'onClickFunction' => 'Fisma.Editable.turnAllOn',
+                        'imageSrc' => '/images/edit.png'
+                    )
+                );
+
+                $buttons['submitButton'] = new Fisma_Yui_Form_Button(
+                    'saveChanges',
+                    array(
+                        'label' => 'Save',
+                        'onClickFunction' => 'Fisma.Util.submitFirstForm',
+                        'imageSrc' => '/images/ok.png',
+                        'hidden' => true
+                    )
+                );
+
+                $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
+                    'discardChanges',
+                    array(
+                        'value' => 'Cancel',
+                        'imageSrc' => '/images/no_entry.png',
+                        'href' => $this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl,
+                        'hidden' => true
+                    )
+                );
+
+                if (!empty($this->_associatedModel)) {
+                    $buttons['reassociate'] = new Fisma_Yui_Form_Button(
+                        'toolbarReassociateButton',
+                        array(
+                            'label' => 'Migrate',
+                            'onClickFunction' => 'Fisma.Util.showReassociatePanel',
+                            'onClickArgument' => array(
+                                'title' => 'Migrate Associated ' . $this->_associatedPlural,
+                                'url'   => $this->getBaseUrl() . '/reassociate/id/' . $id . $fromSearchUrl
+                            ),
+                            'imageSrc' => '/images/move.png'
+                        )
+                    );
+                }
             }
 
-            $buttons['editButton'] = new Fisma_Yui_Form_Button(
-                'editMode',
-                array(
-                    'label' => 'Edit',
-                    'onClickFunction' => 'Fisma.Editable.turnAllOn',
-                    'imageSrc' => '/images/edit.png'
-                )
-            );
-
-            $buttons['submitButton'] = new Fisma_Yui_Form_Button(
-                'saveChanges',
-                array(
-                    'label' => 'Save',
-                    'onClickFunction' => 'Fisma.Util.submitFirstForm',
-                    'imageSrc' => '/images/ok.png',
-                    'hidden' => true
-                )
-            );
-
-            $buttons['discardButton'] = new Fisma_Yui_Form_Button_Link(
-                'discardChanges',
-                array(
-                    'value' => 'Cancel',
-                    'imageSrc' => '/images/no_entry.png',
-                    'href' => $this->getBaseUrl() . '/view/id/' . $id . $fromSearchUrl,
-                    'hidden' => true
-                )
-            );
-
-            if (!empty($this->_associatedModel)) {
-                $buttons['reassociate'] = new Fisma_Yui_Form_Button(
-                    'toolbarReassociateButton',
+            if (!$this->_enforceAcl || $this->_acl->hasPrivilegeForClass('delete', $this->getAclResourceName())) {
+                $args = array(null, $this->getBaseUrl() . '/delete/id/', $id);
+                $buttons['delete'] = new Fisma_Yui_Form_Button(
+                    'delete',
                     array(
-                        'label' => 'Migrate',// Associated ' . $this->_associatedPlural,
-                        'onClickFunction' => 'Fisma.Util.showReassociatePanel',
-                        'onClickArgument' => array(
-                            'title' => 'Migrate Associated ' . $this->_associatedPlural,
-                            'url'   => $this->getBaseUrl() . '/reassociate/id/' . $id . $fromSearchUrl
-                        ),
-                        'imageSrc' => '/images/move.png'
+                          'label' => 'Delete',
+                          'imageSrc' => '/images/trash_recyclebin_empty_closed.png',
+                          'onClickFunction' => 'Fisma.Util.showConfirmDialog',
+                          'onClickArgument' => array(
+                              'args' => $args,
+                              'text' => "WARNING: You are about to delete this record. This action cannot be undone. " .
+                                        "Do you want to continue?",
+                              'func' => 'Fisma.Util.formPostAction'
+                        )
                     )
                 );
             }
@@ -270,6 +287,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 );
             }
         }
+
         return $buttons;
     }
 
@@ -674,6 +692,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 $msg   = $this->getSingularModelName() . ' deleted successfully';
                 $type = 'notice';
             } catch (Fisma_Zend_Exception_User $e) {
+                Doctrine_Manager::connection()->rollback();
                 $msg  = $e->getMessage();
                 $type = 'warning';
             } catch (Doctrine_Exception $e) {
@@ -739,6 +758,10 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
             $message = "$numRecords $noun $verb deleted.";
             $status = 'notice';
 
+        } catch (Fisma_Zend_Exception_User $e) {
+            Doctrine_Manager::connection()->rollback();
+            $message  = $e->getMessage();
+            $status = 'warning';
         } catch (Doctrine_Exception $e) {
 
             Doctrine_Manager::connection()->rollback();
@@ -853,7 +876,9 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 continue;
             }
 
-            $label = $this->view->translate($searchParams['label']);
+            $label = (isset($searchParams['label']))
+                   ? $this->view->translate($searchParams['label'])
+                   : $this->view->translate($table->getLogicalName($fieldName));
             $sortable = $searchEngine->isColumnSortable($this->_modelName, $fieldName);
 
             if (isset($visibleColumns[$fieldName])) {
@@ -912,6 +937,8 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         foreach ($searchableFields as $fieldName => $fieldDefinition) {
             if (isset($fieldDefinition['label'])) {
                 $fieldDefinition['label'] = $this->view->translate($fieldDefinition['label']);
+            } else {
+                $fieldDefinition['label'] = $this->view->translate($table->getLogicalName($fieldName));
             }
             $advancedSearchOptions[] = array_merge(array('name' => $fieldName), $fieldDefinition);
         }
@@ -920,9 +947,49 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $this->view->searchPreferences = $this->_getSearchPreferences();
 
         if ($table instanceof Fisma_Search_Facetable) {
-            $this->view->facet = $table->getFacetedFields();
-            $searchForm->removeElement('advanced');
+            $facetFields = $table->getFacetedFields();
+
+            if (isset($facetFields['type'])) {
+
+                // generates a multi-faceted search
+                if ($facetFields['type'] == 'multi') {
+                    $this->view->multifacetPage = $this->_getParam('controller') . '/search_multifacet.phtml';
+                    $this->view->multifacetModel = $this->_modelName;
+
+                    // lists needed for some of the search fields
+                    $this->view->severityList = Doctrine::getTable('vulnerability')->getEnumValues('threatlevel');
+                    $sourceList = Doctrine::getTable('Vulnerability');
+                    $sourceList->setAttribute(Doctrine::ATTR_COLL_KEY, 'source');
+                    $this->view->sourceList = array_keys($sourceList->findAll()->toArray());
+                    $workflowSteps = Doctrine::getTable('WorkflowStep');
+                    $workflowSteps->setAttribute(Doctrine::ATTR_COLL_KEY, 'name');
+                    $this->view->workflowSteps = array_keys($workflowSteps->findAll()->toArray());
+                    $networks = Doctrine::getTable('Network');
+                    $networks->setAttribute(Doctrine::ATTR_COLL_KEY, 'nickname');
+                    $this->view->networks = array_keys($networks->findAll()->toArray());
+
+                    // calculating the dates
+                    $daysOld = array();
+                    $tempDate = new DateTime();
+                    $tempDate->sub(new DateInterval('P30D'));
+                    $daysOld['days30'] = $tempDate->format('Y-m-d');
+                    $tempDate->sub(new DateInterval('P30D'));
+                    $daysOld['days60'] = $tempDate->format('Y-m-d');
+                    $tempDate->sub(new DateInterval('P30D'));
+                    $daysOld['days90'] = $tempDate->format('Y-m-d');
+                    $this->view->daysOld = $daysOld;
+
+                }
+            } else {
+                $this->view->facet = $facetFields;
+                $searchForm->removeElement('advanced');
+            }
         }
+
+        $this->view->filters = Doctrine::getTable('Query')->findByModelAndUser(
+            $this->_modelName,
+            CurrentUser::getAttribute('id')
+        );
 
         $this->renderScript('object/list.phtml');
     }
@@ -1175,9 +1242,11 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
                 // For visible columns, display the column in the report and add data from the
                 // raw result for that column
                 if ($visible) {
-                    $report->addColumn(
-                        new Fisma_Report_Column($searchableField['label']), $searchableField['sortable']
-                    );
+                    $table = Doctrine::getTable($this->_modelName);
+                    $label = (isset($searchableField['label']))
+                           ? $this->view->translate($searchableField['label'])
+                           : $this->view->translate($table->getLogicalName($fieldName));
+                    $report->addColumn(new Fisma_Report_Column($label), $searchableField['sortable']);
 
                     foreach ($rawSearchData as $index => $datum) {
                         if (isset($rawSearchData[$index][$fieldName])) {
@@ -1199,6 +1268,129 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
 
             $this->_helper->reportContextSwitch()->setReport($report);
         }
+    }
+
+    /**
+     * test
+     */
+    public function queryAction()
+    {
+        if ($this->_enforceAcl) {
+            $this->_acl->requirePrivilegeForClass('read', $this->getAclResourceName());
+        }
+
+        $format = $this->getRequest()->getParam('format');
+        $rowsPerPage = $this->_getRowsPerPage();
+
+        // Setup search parameters
+        $sortColumn = $this->getRequest()->getParam('sort');
+
+        $searchableFields = Doctrine::getTable($this->_modelName)->getSearchableFields();
+
+        if (empty($sortColumn)) {
+            // Pick the first searchable column as the default sort column
+            $fieldNames = array_keys($searchableFields);
+
+            $sortColumn = $fieldNames[0];
+        }
+
+        $sortDirection = $this->getRequest()->getParam('dir', 'asc');
+        $sortBoolean = ('asc' == $sortDirection);
+        $showDeletedRecords = ('true' == $this->getRequest()->getParam('showDeleted'));
+
+        if (empty($format)) {
+            // For HTML UI, add a limit/offset to query
+            $start = $this->getRequest()->getParam('start', $this->_paging['startIndex']);
+            $rows = $this->getRequest()->getParam('count', $rowsPerPage);
+        } else {
+            // For PDF/XLS export, $rows is an arbitrarily high number (that won't DoS the system)
+            $start = 0;
+            $rows = self::MAX_EXPORT_RECORDS;
+        }
+
+        // Execute simple search (default) or advanced search (if explicitly requested)
+        $searchEngine = Zend_Registry::get('search_engine');
+
+        $queryType = $this->getRequest()->getParam('queryType');
+
+        if ('advanced' == $queryType) {
+
+            // Extract search criteria from URL query string
+            $searchCriteria = new Fisma_Search_Criteria;
+
+            $queryJson = $this->getRequest()->getParam('query');
+            $query = Zend_Json::decode($queryJson);
+
+            foreach ($query as $queryItem) {
+                $searchCriterion = new Fisma_Search_Criterion(
+                    $queryItem['field'],
+                    $queryItem['operator'],
+                    $queryItem['operands']
+                );
+
+                $searchCriteria->add($searchCriterion);
+            }
+
+            // Run advanced search
+            $result = $searchEngine->generateQuery(
+                $this->_modelName,
+                '',
+                $searchCriteria,
+                $sortColumn,
+                $sortBoolean,
+                $start,
+                $rows,
+                $showDeletedRecords
+            );
+        } else if ('faceted' == $queryType) {
+            // Extract keyword
+            $keywords = $this->getRequest()->getParam('keywords');
+
+            // Extract search criteria from URL query string
+            $searchCriteria = new Fisma_Search_Criteria;
+
+            $queryJson = $this->getRequest()->getParam('query');
+            $query = Zend_Json::decode($queryJson);
+
+            foreach ($query as $queryItem) {
+                $searchCriterion = new Fisma_Search_Criterion(
+                    $queryItem['field'],
+                    $queryItem['operator'],
+                    $queryItem['operands']
+                );
+
+                $searchCriteria->add($searchCriterion);
+            }
+
+            // Run facet search
+            $result = $searchEngine->generateQuery(
+                $this->_modelName,
+                $keywords,
+                $searchCriteria,
+                $sortColumn,
+                $sortBoolean,
+                $start,
+                $rows,
+                $showDeletedRecords
+            );
+        } else {
+            $keywords = $this->getRequest()->getParam('keywords');
+
+            // Run simple search
+            $result = $searchEngine->generateQuery(
+                $this->_modelName,
+                $keywords,
+                new Fisma_Search_Criteria,
+                $sortColumn,
+                $sortBoolean,
+                $start,
+                $rows,
+                $showDeletedRecords
+            );
+        }
+
+        // return JSON
+        return $this->_helper->json($result);
     }
 
     /**
@@ -1488,7 +1680,7 @@ abstract class Fisma_Zend_Controller_Action_Object extends Fisma_Zend_Controller
         $storage = Doctrine::getTable('Storage')->getUserIdAndNamespaceQuery($this->_me->id, 'Fisma.RowsPerPage')
                                                 ->fetchOne();
         $data = empty($storage) ? '' : $storage->data;
-        return empty($storage) ? $this->_paging['count'] : $data['row'];
+        return empty($storage) ? $this->_paging['count'] : (isset($data['row']) ? $data['row'] : 10);
     }
 
     /**

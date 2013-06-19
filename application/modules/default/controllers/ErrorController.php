@@ -4,15 +4,15 @@
  *
  * This file is part of OpenFISMA.
  *
- * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public 
+ * OpenFISMA is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
  * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
  * version.
  *
- * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied 
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more 
+ * OpenFISMA is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
+ * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for more
  * details.
  *
- * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see 
+ * You should have received a copy of the GNU General Public License along with OpenFISMA.  If not, see
  * {@link http://www.gnu.org/licenses/}.
  */
 
@@ -28,9 +28,9 @@
 class ErrorController extends Zend_Controller_Action
 {
     /**
-     * This action handles Application errors, Errors in the controller chain arising from missing 
+     * This action handles Application errors, Errors in the controller chain arising from missing
      * controller classes and/or action methods
-     * 
+     *
      * @GETAllowed
      * @return void
      */
@@ -57,7 +57,7 @@ class ErrorController extends Zend_Controller_Action
 
         if ($errors->exception instanceof Fisma_Zend_Exception_User) {
             $this->view->message = $errors->exception->getMessage();
-        } else {         
+        } else {
             $this->view->message = "<p>An unexpected error has occurred. This error has been logged"
                                  . " for administrator review.</p><p>You may want to try again in a"
                                  . " few minutes. If the problem persists, please contact your"
@@ -76,18 +76,31 @@ class ErrorController extends Zend_Controller_Action
             while($stack->popStack());
         }
 
-        //Remove Fisma_Zend_Controller_Action_Helper_ReportContextSwitch to prevent 
+        //Remove Fisma_Zend_Controller_Action_Helper_ReportContextSwitch to prevent
         //additional exception being thrown
         if ($actionHelperStack = Zend_Controller_Action_HelperBroker::getStack()) {
             if ($actionHelperStack->offsetExists('ReportContextSwitch')) {
                 $actionHelperStack->offsetUnset('ReportContextSwitch');
-            }    
+            }
         }
     }
 
     /**
+     * Error handler for reported JS errors
+     */
+    public function jslogAction()
+    {
+        $errorMessage = $this->getRequest()->getParam('errorMessage');
+        $scriptUrl = $this->getRequest()->getParam('scriptUrl');
+        $lineNumber = $this->getRequest()->getParam('lineNumber');
+
+        $content = "exception 'Javascript_Runtime_Exception' with message '$errorMessage' in $scriptUrl:$lineNumber";
+        $this->getInvokeArg('bootstrap')->getResource('Log')->log($content, Zend_Log::ERR);
+    }
+
+    /**
      * Error handler for input validation error
-     * 
+     *
      * @GETAllowed
      * @return void
      */

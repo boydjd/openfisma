@@ -502,15 +502,25 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             $values = $form->getValues();
             $modifiedFields = array();
             foreach ($values as $item => &$value) {
-                if (Fisma::configuration()->getConfig($item) === $value) {
+                if (Fisma::configuration()->getConfig($item) == $value) {
                     continue;
                 }
+                if ($item === 'smtp_password' && preg_match('/^\*+$/', $value)) {
+                    continue;
+                }
+                $columnDef = Doctrine::getTable('Configuration')->getColumnDefinition($item);
+                $purify = (isset($columnDef['extra']['purify'])) ? 'none' : 'html';
+                $masked = (isset($columnDef['extra']['masked']) && $columnDef['extra']['masked']);
+                $modifiedFields[$item] = array(
+                    (($masked) ? '********' : Fisma::configuration()->getConfig($item)),
+                    (($masked) ? '********' : $value),
+                    $item,
+                    $purify
+                );
                 Fisma::configuration()->setConfig($item, $value);
-                $modifiedFields[] = $item;
             }
 
-            $this->view->priorityMessenger('Configuration updated successfully', 'notice');
-            if (!empty($modifiedFields)) {
+            if (count($modifiedFields) > 0) {
                 Notification::notify(
                     'CONFIGURATION_UPDATED',
                     null,
@@ -518,6 +528,8 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
                     array('modifiedFields' => $modifiedFields)
                 );
             }
+
+            $this->view->priorityMessenger('Configuration updated successfully', 'notice');
         } else {
             $errorString = Fisma_Zend_Form_Manager::getErrors($form);
             $this->view->priorityMessenger("Unable to save configurations:<br>$errorString", 'warning');
@@ -551,6 +563,7 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
 
         $configurations = array('sender',
                                 //'subject',
+                                'email_detail',
                                 'send_type',
                                 'smtp_host',
                                 'smtp_port',
@@ -561,6 +574,10 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
         foreach ($configurations as $configuration) {
             $form->setDefault($configuration, Fisma::configuration()->getConfig($configuration));
         }
+
+        $smtpPw = Fisma::configuration()->getConfig('smtp_password');
+        $form->setDefault('smtp_password', (empty($smtpPw) ? '' : '********'));
+        $form->getElement('smtp_password')->setRenderPassword(true);
 
         $this->view->form = $form;
         $this->view->toolbarButtons = $this->getToolbarButtons();
@@ -865,6 +882,22 @@ class ConfigController extends Fisma_Zend_Controller_Action_Security
             'defaultNumber' => 30,
             'defaultUnit' => 'day',
             'defaultTime' => '03:00:00'
+        ),
+        'recordTrending' => array(
+            'name' => 'record-trending.php',
+            'description' => 'Record VM trending',
+            'defaultEnabled' => true,
+            'defaultNumber' => 1,
+            'defaultUnit' => 'day',
+            'defaultTime' => '01:00:00'
+        ),
+        'workflowTransition' => array(
+            'name' => 'workflow-transition.php',
+            'description' => 'Facilitate workflow auto-transition feature',
+            'defaultEnabled' => true,
+            'defaultNumber' => 1,
+            'defaultUnit' => 'day',
+            'defaultTime' => '02:00:00'
         ),
         'rebuildIndex' => array(
             'name' => 'rebuild-index.php',

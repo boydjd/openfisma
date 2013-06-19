@@ -175,4 +175,14 @@ abstract class Fisma_Migration_Abstract
             $this->_log->info(preg_replace('/^/m', '> ', rtrim($message)));
         }
     }
+
+    /**
+     * Statically return the value to use for createdts, modifiedts
+     *
+     * @return string
+     */
+    public static function now()
+    {
+        return Zend_Date::now()->toString('yyyy-MM-dd HH:mm:ss');
+    }
 }

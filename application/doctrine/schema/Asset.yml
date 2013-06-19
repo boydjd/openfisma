@@ -10,7 +10,7 @@ Asset:
         name:
             type: string(255)
             extra:
-                logicalName: Asset Name
+                logicalName: Name
                 searchIndex: unstored
                 notify: true
             comment: The name of this asset
@@ -19,7 +19,7 @@ Asset:
             values: [manual, scan]
             default: manual
             extra:
-                logicalName: Asset Source
+                logicalName: Source
                 notify: true
             comment: Whether this asset was created manually or by an automated scanner
         addressIp:
@@ -28,33 +28,47 @@ Asset:
             extra:
                 logicalName: IP Address
                 notify: true
-            comment: The IP address for this asset
-        addressPort:
-            type: integer(5)
-            unsigned: false
-            unsigned: false
+        addressMac:
+            type: string
             extra:
-                logicalName: IP Port Number
+                logicalName: MAC Address
                 notify: true
-            comment: The IP port for this asset
         serviceTag:
             type: string(255)
+            extra:
+                logicalName: Environment
+                notify: true
             comment: The service tag of this asset
 
         productId:
             type: integer
             comment: Foreign key to product table
             extra:
+                class: Product
+                field: cpeName
                 logicalName: Product
         orgSystemId:
             type: integer
             comment: Foreign key to a system object in the organization table
             extra:
+                class: Organization
+                field: name
+                notify: true
                 logicalName: System
+        denormalizedParentOrganizationId:
+            type: integer
+            extra:
+                class: Organization
+                field: name
+                notify: true
+                logicalName: Parent Organization
         networkId:
             type: integer
             comment: Foreign key to network table
             extra:
+                class: Network
+                field: name
+                notify: true
                 logicalName: Network
 
     relations:
@@ -66,6 +80,10 @@ Asset:
             local: orgSystemId
             foreign: id
             foreignAlias: Assets
+        ParentOrganization:
+            class: Organization
+            local: denormalizedParentOrganizationId
+            foreign: id
         Network:
             local: networkId
             foreign: id

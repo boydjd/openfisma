@@ -233,21 +233,25 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
 
         $threatField = $threatType === 'Threat Level' ? 'threatLevel' : 'residualRisk';
         $q = Doctrine_Query::create()
-            ->select('count(f.id), ' . $threatField . ', denormalizedstatus')
+            ->select('count(f.id), ' . $threatField . ', ws.label as denormalizedStatus, w.id, ws.cardinality')
             ->from('Finding f')
-            ->where('f.status <> "CLOSED"')
+            ->innerJoin('f.CurrentStep ws')
+            ->leftJoin('ws.Workflow w')
+            ->where('f.isResolved <> ?', true)
             ->whereIn('f.responsibleOrganizationId ', FindingTable::getOrganizationIds())
-            ->groupBy('f.denormalizedstatus, f.' . $threatField)
-            ->orderBy('f.denormalizedstatus, f.threatlevel')
+            ->groupBy('denormalizedStatus, f.' . $threatField)
+            ->orderBy('w.id, ws.cardinality, denormalizedStatus, f.' . $threatField)
             ->setHydrationMode(Doctrine::HYDRATE_ARRAY);
         $rslts = $q->execute();
 
         // Sort results into $sortedRslts[FindingStatusName][High/Mod/Low], where sortedRslts[][] = TheCount
         $sortedRslts = array();
+        $statusArray = array();
         foreach ($rslts as $thisRslt) {
 
             if (empty($sortedRslts[$thisRslt['denormalizedStatus']])) {
                 $sortedRslts[$thisRslt['denormalizedStatus']] = array();
+                $statusArray[] = $thisRslt['denormalizedStatus'];
             }
 
             if ($thisRslt[$threatField] === NULL || $thisRslt[$threatField] === '') {
@@ -258,14 +262,6 @@ class DashboardController extends Fisma_Zend_Controller_Action_Security
         }
 
         $nonStackedLinks = array();
-
-        // Go in order adding columns to chart; New,Draft,MS ISSO, MS IV&V, EN, EV ISSO, EV IV&V
-        $statusArray = Finding::getAllStatuses();
-
-        // Removed the string element 'CLOSED' from the $statusArray array
-        if ($statusArray[count($statusArray) - 1] === 'CLOSED') {
-            array_pop($statusArray);
-        }
 
         foreach ($statusArray as $thisStatus) {
 
