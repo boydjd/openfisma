@@ -38,12 +38,12 @@
 }
 
 .searchBox input[type=text].integer, .searchBox input[type=text].float {
-	width: 10em;
+    width: 10em;
 }
 
 .searchCriteria {
     border-top: 1px dotted #bfbfbf;
-    max-width: 60em;
+    max-width: 1000px;
     padding-top: 5px;
     padding-bottom: 3px;
     -margin-left: auto;
@@ -145,10 +145,16 @@ div.yui-dt.compact tr.yui-dt-rec div.yui-dt-liner {
     display: block;
     padding: 0.5em 0.5em 0.5em 0.7em;
     width: 192px;
+    margin-bottom: 0px;
 }
 
 .facetBox div.ui-accordion-content {
     padding: 4px;
     top: auto;
     margin-top: auto;
+}
+
+.facetBox label {
+    display: inline;
+    vertical-align: text-top;
 }
