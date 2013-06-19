@@ -107,7 +107,6 @@ class View_Helper_InjectAsset
                                       '/javascripts/jquery-tinysort-min.js',
                                       '/javascripts/jquery-timeentry-min.js',
                                       '/javascripts/jquery-json-min.js',
-                                      '/javascripts/jstz-min.js',
                                       '/javascripts/jqPlot/core/jquery_jqplot.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasTextRenderer.js',
                                       '/javascripts/jqPlot/plugins/jqplot_canvasAxisLabelRenderer.js',
