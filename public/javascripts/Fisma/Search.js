@@ -659,7 +659,7 @@ Fisma.Search = (function() {
             var deleteRecords = [];
             deleteRecords.push(YAHOO.lang.JSON.stringify(checkedRecords));
 
-            var warningMessage = args.text;
+            var warningMessage = (args) ? args.text : '';
             if (1 === checkedRecords.length) {
                 warningMessage += 'Are you sure you want to delete 1 record?';
             } else {

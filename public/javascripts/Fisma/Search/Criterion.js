@@ -400,7 +400,8 @@ var FSC = {
                     $.ajax({
                         async: false,
                         type: 'GET',
-                        url: 'http://' + window.location.hostname + ':8983/solr/collection1/select'
+                        url: 'http://' + $('#searchHost').val() + ':' + $('#searchPort').val() + $('#searchPath').val()
+                            + '/select'
                             + '?q=' + encodeURIComponent(data.query)
                             + '&fq=' + encodeURIComponent(data.fq)
                             + '&rows=0&wt=json'
@@ -560,7 +561,8 @@ var FSC = {
             success: function(data) {
                 $.ajax({
                     type: 'GET',
-                    url: 'http://' + window.location.hostname + ':8983/solr/collection1/select'
+                    url: 'http://' + $('#searchHost').val() + ':' + $('#searchPort').val() + $('#searchPath').val()
+                        + '/select'
                         + '?q=' + encodeURIComponent(data.query)
                         + '&fq=' + encodeURIComponent(data.fq)
                         + '&rows=0&wt=json',
