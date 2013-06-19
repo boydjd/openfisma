@@ -400,7 +400,7 @@ var FSC = {
                     $.ajax({
                         async: false,
                         type: 'GET',
-                        url: 'http://' + $('#searchHost').val() + ':' + $('#searchPort').val() + $('#searchPath').val()
+                        url: 'http://' + window.location.hostname + ':' + $('#searchPort').val() + $('#searchPath').val()
                             + '/select'
                             + '?q=' + encodeURIComponent(data.query)
                             + '&fq=' + encodeURIComponent(data.fq)
@@ -561,7 +561,7 @@ var FSC = {
             success: function(data) {
                 $.ajax({
                     type: 'GET',
-                    url: 'http://' + $('#searchHost').val() + ':' + $('#searchPort').val() + $('#searchPath').val()
+                    url: 'http://' + window.location.hostname + ':' + $('#searchPort').val() + $('#searchPath').val()
                         + '/select'
                         + '?q=' + encodeURIComponent(data.query)
                         + '&fq=' + encodeURIComponent(data.fq)
