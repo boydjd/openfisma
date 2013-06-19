@@ -73,33 +73,30 @@ var FSC = {
             $content
                 .addClass('ui-accordion-content-active');
 
-
-            //add criterion
-
-            panel.addCriteria(panelChildren.eq(newIndex));
-
             // holds the last criterion HTML element
-            var criterionContainer = $(panel.container).children().last();
-
-            criterionContainer.attr('id', facetId);
-            criterionContainer.children().eq(1).find("select").val(
-                criterionField).change();
-            criterionContainer.children().eq(2).find("select").val(
-                criterionType).change();
+            var criterionContainer = null;
 
             if (facetType === 'organization') {
                 //add another criteria for the organization itself
-                panel.addCriteria(panelChildren.eq(newIndex + 1));
+                panel.addCriteria(panelChildren.eq(newIndex));
 
                 // holds the last criterion HTML element
                 criterionContainer = $(panel.container).children().last();
 
                 criterionContainer.attr('id', 'organization_exact_criterion');
-                criterionContainer.children().eq(1).find("select").val(
-                    criterionField).change();
-                criterionContainer.children().eq(2).find("select").val(
-                    'textExactMatch').change();
+                criterionContainer.children().eq(1).find("select").val(criterionField).change();
+                criterionContainer.children().eq(2).find("select").val('textExactMatch').change();
             }
+
+            //add criterion
+            panel.addCriteria(panelChildren.eq(newIndex));
+
+            // holds the last criterion HTML element
+            criterionContainer = $(panel.container).children().last();
+
+            criterionContainer.attr('id', facetId);
+            criterionContainer.children().eq(1).find("select").val(criterionField).change();
+            criterionContainer.children().eq(2).find("select").val(criterionType).change();
 
             // show the count for the inputs, if it is of type enum, date_group, or cvssvector
             if (facetType === 'enum') {
@@ -157,7 +154,7 @@ var FSC = {
      * @returns
      */
     facetHandler: function() {
-        $(".criterion legend input:checked").each(function(index) {
+        $(".criterion legend input:checked").each(function (index) {
 
             // advanced search panel
             var panel = Fisma.Search.advancedSearchPanel;
