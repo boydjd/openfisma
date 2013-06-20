@@ -14,3 +14,5 @@ desktop.ini
 *.sublime*
 Thumbs.db
 mailoutput
+.idea
+.buildpath

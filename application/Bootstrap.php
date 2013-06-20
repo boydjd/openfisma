@@ -246,4 +246,39 @@ class Bootstrap extends Fisma_Zend_Application_Bootstrap_SymfonyContainerBootstr
         Zend_Registry::set('mail_template', $this->getOption('mail_template'));
         Zend_Registry::set('mail_title', $this->getOption('mail_title'));
     }
+
+    /**
+     * initializes the debug toolbar, only if debug mode is true
+     */
+    protected function _initZFDebug()
+    {
+        if ( !Fisma::debug() )
+        {
+            return;
+        }
+
+        $autoloader = Zend_Loader_Autoloader::getInstance();
+        $autoloader->registerNamespace('ZFDebug');
+
+        // cache variable
+        $cache = $this->getPluginResource('cachemanager')->getCacheManager()->getCache('default');
+
+        $options = array(
+            'plugins' => array('Variables',
+                'Doctrine1',
+                'File' => array('basePath' => '/usr/share/openfisma'),
+                'Cache' => array( 'backend' => $cache->getBackend() ),
+                'Html',
+                'Constants',
+                'Memory',
+                'Time',
+                'Exception')
+        );
+
+        $debug = new ZFDebug_Controller_Plugin_Debug($options);
+
+        $this->bootstrap('frontController');
+        $frontController = $this->getResource('frontController');
+        $frontController->registerPlugin($debug);
+    }
 }
